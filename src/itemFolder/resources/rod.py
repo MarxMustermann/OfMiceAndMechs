@@ -4,23 +4,15 @@ import src
 
 
 class Rod(src.items.Item):
-    """
+    '''
     ingame item used as ressource. basically does nothing
-    """
-
+    '''
     type = "Rod"
-
     name = "rod"
     description = "used to build items"
-
     bolted = False
     walkable = True
-
     def __init__(self,badQuality=False):
-        """
-        set initial state
-        """
-
         super().__init__(display=src.canvas.displayChars.rod)
 
         if badQuality:
@@ -29,13 +21,12 @@ class Rod(src.items.Item):
             self.baseDamage = int(random.triangular(4,21,10))
 
     def getLongInfo(self):
-        """
+        '''
         return a longer than normal description text
 
         Returns:
             the description text
-        """
-
+        '''
         text = super().getLongInfo()
         text += f"""
 baseDamage:
@@ -46,13 +37,13 @@ baseDamage:
 
     # bad code: very hacky way of equiping things
     def apply(self, character):
-        """
+        '''
         handle a character trying to use this item
         by equiping itself on the player
 
         Parameters:
             character: the character trying to use the iten
-        """
+        '''
 
         character.addMessage(f"you equip the rod and wield a {self.baseDamage} weapon now")
 
@@ -71,11 +62,18 @@ baseDamage:
                 character.inventory.remove(self)
 
     def upgrade(self):
+        '''
+        upgrade the rod. (obsolete?)
+        '''
         self.baseDamage += 1
         super().upgrade()
 
     def downgrade(self):
+        '''
+        downgrade the rod. (obsolete?)
+        '''
         self.baseDamage -= 1
         super().downgrade()
 
+# register the item
 src.items.addType(Rod)

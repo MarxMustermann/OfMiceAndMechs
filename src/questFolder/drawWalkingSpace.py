@@ -120,6 +120,11 @@ Try as hard as you can to achieve this.
             quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,reason="get to the drawing spot")
             return ([quest],None)
 
+        # clear spot
+        if character.container.getItemByPosition(self.targetPosition):
+            quest = src.quests.questMap["CleanSpace"](targetPosition=self.targetPosition,reason="unclutter the drawing spot",targetPositionBig=self.targetPositionBig,)
+            return ([quest],None)
+
         # drop the painter next to the target
         return (None,("l","drop the Painter"))
 

@@ -15,7 +15,7 @@ class DrawFloorPlan(src.quests.MetaQuestSequence):
         tryHard: try to complete the quest in any way possible
     '''
     type = "DrawFloorPlan"
-    def __init__(self, description="draw floor plan", creator=None, targetPosition=None,reason=None,tryHard=True):
+    def __init__(self, description="draw floor plan", creator=None, targetPosition=None,reason=None,tryHard=False):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description

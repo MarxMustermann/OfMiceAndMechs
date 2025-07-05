@@ -1090,6 +1090,7 @@ class CityPlaner(src.items.Item):
             self.plannedRooms.remove((params["coordinate"][0],params["coordinate"][1],0))
         except ValueError:
             logger.error("removed room that is not there to be removed")
+        params["character"].changed("unscheduled room",params)
 
         self.showMap(params["character"], cursor = params["coordinate"])
 

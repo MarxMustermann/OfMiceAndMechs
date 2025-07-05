@@ -262,7 +262,9 @@ Draw a floor plan assigned to a room{reason}.
 
             # shuffle the input slots to make the solver less deterministic
             inputSlots = character.container.floorPlan.get("inputSlots")[:]
-            random.shuffle(inputSlots)
+            if len(inputSlots) > 1:
+                index = random.randint(0,len(inputSlots)-1)
+                inputSlots = inputSlots[index:]+inputSlots[:index]
 
             # generate the quests to draw some storage slots
             if inputSlots:

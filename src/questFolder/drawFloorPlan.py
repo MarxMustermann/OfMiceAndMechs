@@ -203,12 +203,12 @@ Draw a floor plan assigned to a room{reason}.
                     counter += 1
                     counter2 += 1
 
-                    quest = src.quests.questMap["DrawBuildSite"](itemType=buildSite[1],targetPositionBig=self.targetPosition,targetPosition=buildSite[0],extraInfo=buildSite[2])
+                    quest = src.quests.questMap["DrawBuildSite"](itemType=buildSite[1],targetPositionBig=self.targetPosition,targetPosition=buildSite[0],extraInfo=buildSite[2],tryHard=True)
                     quests.append(quest)
 
                     for buildSite2 in buildSites[counter:]:
                         if buildSite[1] == buildSite2[1] and buildSite[2] == buildSite2[2]:
-                            quest = src.quests.questMap["DrawBuildSite"](itemType=buildSite2[1],targetPositionBig=self.targetPosition,targetPosition=buildSite2[0],extraInfo=buildSite2[2])
+                            quest = src.quests.questMap["DrawBuildSite"](itemType=buildSite2[1],targetPositionBig=self.targetPosition,targetPosition=buildSite2[0],extraInfo=buildSite2[2],tryHard=True)
                             quests.append(quest)
                             buildSites.remove(buildSite2)
                             counter2 += 1
@@ -219,7 +219,7 @@ Draw a floor plan assigned to a room{reason}.
 
                 if buildSites:
                     buildSite = buildSites[-1]
-                    quest = src.quests.questMap["DrawBuildSite"](itemType=buildSite[1],targetPositionBig=self.targetPosition,targetPosition=buildSite[0],extraInfo=buildSite[2])
+                    quest = src.quests.questMap["DrawBuildSite"](itemType=buildSite[1],targetPositionBig=self.targetPosition,targetPosition=buildSite[0],extraInfo=buildSite[2],tryHard=True)
                     return ([quest],None)
 
             # clean up the floorplan
@@ -262,12 +262,12 @@ Draw a floor plan assigned to a room{reason}.
                     counter += 1
                     counter2 += 1
 
-                    quest = src.quests.questMap["DrawStockpile"](itemType=storageSlot[1],stockpileType="s",targetPositionBig=self.targetPosition,targetPosition=storageSlot[0],extraInfo=storageSlot[2])
+                    quest = src.quests.questMap["DrawStockpile"](itemType=storageSlot[1],stockpileType="s",targetPositionBig=self.targetPosition,targetPosition=storageSlot[0],extraInfo=storageSlot[2],tryHard=True)
                     quests.append(quest)
 
                     for storageSlot2 in storageSlots[counter:]:
                         if storageSlot[1] == storageSlot2[1] and storageSlot[2] == storageSlot2[2]:
-                            quest = src.quests.questMap["DrawStockpile"](itemType=storageSlot2[1],stockpileType="s",targetPositionBig=self.targetPosition,targetPosition=storageSlot2[0],extraInfo=storageSlot[2])
+                            quest = src.quests.questMap["DrawStockpile"](itemType=storageSlot2[1],stockpileType="s",targetPositionBig=self.targetPosition,targetPosition=storageSlot2[0],extraInfo=storageSlot[2],tryHard=True)
                             quests.append(quest)
                             storageSlots.remove(storageSlot2)
                             counter2 += 1
@@ -317,12 +317,12 @@ Draw a floor plan assigned to a room{reason}.
                     counter += 1
                     counter2 += 1
 
-                    quest = src.quests.questMap["DrawStockpile"](itemType=inputSlot[1],stockpileType="i",targetPositionBig=self.targetPosition,targetPosition=inputSlot[0])
+                    quest = src.quests.questMap["DrawStockpile"](itemType=inputSlot[1],stockpileType="i",targetPositionBig=self.targetPosition,targetPosition=inputSlot[0],tryHard=True)
                     quests.append(quest)
 
                     for inputSlot2 in inputSlots[counter:]:
                         if inputSlot[1] == inputSlot2[1]:
-                            quest = src.quests.questMap["DrawStockpile"](itemType=inputSlot2[1],stockpileType="i",targetPositionBig=self.targetPosition,targetPosition=inputSlot2[0])
+                            quest = src.quests.questMap["DrawStockpile"](itemType=inputSlot2[1],stockpileType="i",targetPositionBig=self.targetPosition,targetPosition=inputSlot2[0],tryHard=True)
                             quests.append(quest)
                             inputSlots.remove(inputSlot2)
                             counter2 += 1

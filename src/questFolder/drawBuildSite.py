@@ -123,7 +123,10 @@ Try as hard as you can to achieve this.
 
             # enter the value for extra parameters
             if submenue.tag == "paintExtraParamValue":
-                valueToSet = self.extraInfo["toProduce"]
+                valueToSet = self.extraInfo.get("toProduce")
+
+                if valueToSet is None:
+                    return (None,(["esc"],"close menu"))
 
                 if valueToSet == submenue.text:
                     return (None,(["enter"],"set the value of the extra parameter"))

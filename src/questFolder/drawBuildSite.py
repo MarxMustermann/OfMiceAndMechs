@@ -67,133 +67,133 @@ Try as hard as you can to achieve this.
         '''
         generates next step to solve the quest
         '''
-        if not self.subQuests:
-            submenue = character.macroState.get("submenue")
-            if submenue:
-                if submenue.tag == "paintModeSelection":
-                    if submenue.text == "":
-                        return (None,(["b"],"configure the painter to build site"))
-                    elif submenue.text == "b":
-                        return (None,(["enter"],"configure the painter to nuild site"))
-                    else:
-                        return (None,(["backspace"],"delete input"))
+        if self.subQuests:
+            return (None,None)
 
-                if submenue.tag == "paintTypeSelection":
-                    itemType = self.itemType
-                    if not itemType:
-                        itemType = ""
+        submenue = character.macroState.get("submenue")
+        if submenue:
+            if submenue.tag == "paintModeSelection":
+                if submenue.text == "":
+                    return (None,(["b"],"configure the painter to build site"))
+                elif submenue.text == "b":
+                    return (None,(["enter"],"configure the painter to nuild site"))
+                else:
+                    return (None,(["backspace"],"delete input"))
 
-                    if itemType == submenue.text:
-                        return (None,(["enter"],"configure the item type"))
+            if submenue.tag == "paintTypeSelection":
+                itemType = self.itemType
+                if not itemType:
+                    itemType = ""
 
-                    correctIndex = 0
-                    while correctIndex < len(itemType) and correctIndex < len(submenue.text):
-                        if itemType[correctIndex] != submenue.text[correctIndex]:
-                            break
-                        correctIndex += 1
+                if itemType == submenue.text:
+                    return (None,(["enter"],"configure the item type"))
 
-                    if correctIndex < len(submenue.text):
-                        return (None,(["backspace"],"delete input"))
+                correctIndex = 0
+                while correctIndex < len(itemType) and correctIndex < len(submenue.text):
+                    if itemType[correctIndex] != submenue.text[correctIndex]:
+                        break
+                    correctIndex += 1
 
-                    return (None,(itemType[correctIndex:],"enter type"))
+                if correctIndex < len(submenue.text):
+                    return (None,(["backspace"],"delete input"))
 
-                if submenue.tag == "paintExtraParamName":
-                    nameToSet = "toProduce"
+                return (None,(itemType[correctIndex:],"enter type"))
 
-                    if nameToSet == submenue.text:
-                        return (None,(["enter"],"set the name of the extra parameter"))
+            if submenue.tag == "paintExtraParamName":
+                nameToSet = "toProduce"
 
-                    correctIndex = 0
-                    while correctIndex < len(nameToSet) and correctIndex < len(submenue.text):
-                        if nameToSet[correctIndex] != submenue.text[correctIndex]:
-                            break
-                        correctIndex += 1
+                if nameToSet == submenue.text:
+                    return (None,(["enter"],"set the name of the extra parameter"))
 
-                    if correctIndex < len(submenue.text):
-                        return (None,(["backspace"],"delete input"))
+                correctIndex = 0
+                while correctIndex < len(nameToSet) and correctIndex < len(submenue.text):
+                    if nameToSet[correctIndex] != submenue.text[correctIndex]:
+                        break
+                    correctIndex += 1
 
-                    return (None,(nameToSet[correctIndex:],"enter name of the extra parameter"))
+                if correctIndex < len(submenue.text):
+                    return (None,(["backspace"],"delete input"))
 
-                if submenue.tag == "paintExtraParamValue":
-                    valueToSet = self.extraInfo["toProduce"]
+                return (None,(nameToSet[correctIndex:],"enter name of the extra parameter"))
 
-                    if valueToSet == submenue.text:
-                        return (None,(["enter"],"set the value of the extra parameter"))
+            if submenue.tag == "paintExtraParamValue":
+                valueToSet = self.extraInfo["toProduce"]
 
-                    correctIndex = 0
-                    while correctIndex < len(valueToSet) and correctIndex < len(submenue.text):
-                        if valueToSet[correctIndex] != submenue.text[correctIndex]:
-                            break
-                        correctIndex += 1
+                if valueToSet == submenue.text:
+                    return (None,(["enter"],"set the value of the extra parameter"))
 
-                    if correctIndex < len(submenue.text):
-                        return (None,(["backspace"],"delete input"))
+                correctIndex = 0
+                while correctIndex < len(valueToSet) and correctIndex < len(submenue.text):
+                    if valueToSet[correctIndex] != submenue.text[correctIndex]:
+                        break
+                    correctIndex += 1
 
-                    return (None,(valueToSet[correctIndex:],"enter value of the extra parameter"))
+                if correctIndex < len(submenue.text):
+                    return (None,(["backspace"],"delete input"))
 
-            rooms = character.getTerrain().getRoomByPosition(self.targetPositionBig)
-            if not rooms:
+                return (None,(valueToSet[correctIndex:],"enter value of the extra parameter"))
+
+        rooms = character.getTerrain().getRoomByPosition(self.targetPositionBig)
+        if not rooms:
+            if not dryRun:
+                self.fail("target room missing")
+            return (None,None)
+        room = rooms[0]
+
+        for buildSite in room.buildSites:
+            if buildSite[0] == self.targetPosition:
                 if not dryRun:
-                    self.fail("target room missing")
+                    self.postHandler()
                 return (None,None)
-            room = rooms[0]
 
-            for buildSite in room.buildSites:
-                if buildSite[0] == self.targetPosition:
-                    if not dryRun:
-                        self.postHandler()
-                    return (None,None)
+        offsets = ((0,0,0),(0,1,0),(1,0,0),(0,-1,0),(-1,0,0))
+        foundOffset = None
+        for offset in offsets:
+            items = room.getItemByPosition((self.targetPosition[0]+offset[0],self.targetPosition[1]+offset[1],self.targetPosition[2]+offset[2]))
+            if not items or items[-1].type != "Painter":
+                continue
 
-            offsets = ((0,0,0),(0,1,0),(1,0,0),(0,-1,0),(-1,0,0))
-            foundOffset = None
-            for offset in offsets:
-                items = room.getItemByPosition((self.targetPosition[0]+offset[0],self.targetPosition[1]+offset[1],self.targetPosition[2]+offset[2]))
-                if not items or items[-1].type != "Painter":
-                    continue
-
-                foundOffset = (offset,items[-1])
-            if foundOffset:
-                item = foundOffset[1]
-                if character.getDistance(item.getPosition()) > 0:
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),reason="get to the painter")
-                    return ([quest],None)
-
-                if item.paintMode != "buildSite":
-                    return (None,(["c","m","b","enter"],"configure the painter to paint build site"))
-
-                if self.itemType != item.paintType:
-                    return (None,(["c", "t", *list(self.itemType), "enter"],"configure the item type for the build site"))
-
-                for (key,_value) in item.paintExtraInfo.items():
-                    if key not in self.extraInfo:
-                        return (None,(["c","c"],"clear the painters extra info"))
-
-                for (key,value) in self.extraInfo.items():
-                    if (key not in item.paintExtraInfo) or (value != item.paintExtraInfo[key]):
-                        return (None,(["c","e",key,"enter",value,"enter"],"clear the painters extra info"))
-
-                if item.offset != (0, 0, 0):
-                    return (None,(["c", "d", ".", "enter"],"remove the offset from the painter"))
-
-                return (None,("jk","draw to stockpile"))
-
-            if not self.painterPos:
-                if not character.inventory or character.inventory[-1].type != "Painter":
-                    quest = src.quests.questMap["FetchItems"](toCollect="Painter",amount=1,reason="be able to draw a stockpile")
-                    return ([quest],None)
-                painter = character.inventory[-1]
-
-            if character.getBigPosition() != self.targetPositionBig:
-                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="get nearby to the drawing spot")
+            foundOffset = (offset,items[-1])
+        if foundOffset:
+            item = foundOffset[1]
+            if character.getDistance(item.getPosition()) > 0:
+                quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),reason="get to the painter")
                 return ([quest],None)
 
-            if character.getDistance(self.targetPosition) > 0:
-                quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,reason="get to the drawing spot")
+            if item.paintMode != "buildSite":
+                return (None,(["c","m","b","enter"],"configure the painter to paint build site"))
+
+            if self.itemType != item.paintType:
+                return (None,(["c", "t", *list(self.itemType), "enter"],"configure the item type for the build site"))
+
+            for (key,_value) in item.paintExtraInfo.items():
+                if key not in self.extraInfo:
+                    return (None,(["c","c"],"clear the painters extra info"))
+
+            for (key,value) in self.extraInfo.items():
+                if (key not in item.paintExtraInfo) or (value != item.paintExtraInfo[key]):
+                    return (None,(["c","e",key,"enter",value,"enter"],"clear the painters extra info"))
+
+            if item.offset != (0, 0, 0):
+                return (None,(["c", "d", ".", "enter"],"remove the offset from the painter"))
+
+            return (None,("jk","draw to stockpile"))
+
+        if not self.painterPos:
+            if not character.inventory or character.inventory[-1].type != "Painter":
+                quest = src.quests.questMap["FetchItems"](toCollect="Painter",amount=1,reason="be able to draw a stockpile")
                 return ([quest],None)
+            painter = character.inventory[-1]
 
-            return (None,("l","drop the Painter"))
+        if character.getBigPosition() != self.targetPositionBig:
+            quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="get nearby to the drawing spot")
+            return ([quest],None)
 
-        return (None,None)
+        if character.getDistance(self.targetPosition) > 0:
+            quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,reason="get to the drawing spot")
+            return ([quest],None)
+
+        return (None,("l","drop the Painter"))
 
     def getQuestMarkersTile(self,character):
         result = super().getQuestMarkersTile(character)

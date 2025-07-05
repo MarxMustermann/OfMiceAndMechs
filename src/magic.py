@@ -681,6 +681,10 @@ def spawnWaves():
     '''
     spawn waves of enemies
     '''
+    bloodMoon = False
+    if src.gamestate.gamestate.tick//(15*15*15)%15 == 0:
+        bloodMoon = True
+
     for (godId,god) in src.gamestate.gamestate.gods.items():
         if ( (god["lastHeartPos"][0] != god["home"][0]) or
              (god["lastHeartPos"][1] != god["home"][1])):
@@ -692,6 +696,9 @@ def spawnWaves():
             numEnemies = 1
             numSpectres = 0
             numSpectres += numEnemies
+
+            if bloodMoon:
+                numSpectres *=2
 
             numGlassHeartsOnPos = 0
             for checkGod in src.gamestate.gamestate.gods.values():
@@ -709,6 +716,9 @@ def spawnWaves():
                 baseHealth = 100
                 baseDamage = 10
                 multipliers = (1.3,1.5,1.3,1.5)
+
+            if bloodMoon:
+                baseDamage *=2
 
             for _i in range(numSpectres):
                 enemy = src.characters.characterMap["Spectre"](6,6)

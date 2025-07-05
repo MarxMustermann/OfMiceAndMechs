@@ -266,6 +266,13 @@ class Character:
         self.outsideOnly = False
 
     def takeTime(self,amount,reason=None):
+        '''
+        make the character take a bit of time
+
+        Parameters:
+            amount: the amount of time to take
+            reason: the reason why time was taken
+        '''
         self.timeTaken += amount
 
     def applyNativeMeleeAttackEffects(self,target):

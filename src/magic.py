@@ -170,13 +170,16 @@ def spawnTrapRoom(terrain, coordinate, faction, doors="0,6 6,0 6,12 12,6"):
 
 
 def spawnArenaRoom(terrain, coordinate, difficulty, doors="0,6 6,0 6,12 12,6"):
+    '''
+    generates an arena room
+    '''
     trapRoom1 = spawnRoom(terrain, "EmptyRoom", coordinate, doors)
     trapRoom1.tag = "arena"
 
     sword = src.items.itemMap["Sword"]()
     sword.baseDamage = 15
     if difficulty == "easy":
-        sword.baseDamage = 25
+        sword.baseDamage = 18
     if difficulty == "difficult":
         sword.baseDamage = 10
     sword.bolted = False
@@ -184,7 +187,7 @@ def spawnArenaRoom(terrain, coordinate, difficulty, doors="0,6 6,0 6,12 12,6"):
     sword = src.items.itemMap["Sword"]()
     sword.baseDamage = 15
     if difficulty == "easy":
-        sword.baseDamage = 25
+        sword.baseDamage = 18
     if difficulty == "difficult":
         sword.baseDamage = 10
     sword.bolted = False

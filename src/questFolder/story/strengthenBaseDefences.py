@@ -185,7 +185,7 @@ Strengthen the base defences
         # count traprooms
         numTrapRooms = 0
         for room in character.getTerrain().rooms:
-            if room.tag == "traproom":
+            if room.tag == "trapRoom":
                 numTrapRooms += 1
 
         # continue working if neccessary threashold is not met

@@ -148,7 +148,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
 
             numTrapRooms = 0
             for room in character.getTerrain().rooms:
-                if room.tag == "traproom":
+                if room.tag == "trapRoom":
                     numTrapRooms += 1
 
             if numTrapRooms < numGlassHearts//2:

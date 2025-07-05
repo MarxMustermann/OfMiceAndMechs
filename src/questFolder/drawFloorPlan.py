@@ -4,8 +4,10 @@ import src
 
 
 class DrawFloorPlan(src.quests.MetaQuestSequence):
+    '''
+    quest to draw a floorplan of a room
+    '''
     type = "DrawFloorPlan"
-
     def __init__(self, description="draw floor plan", creator=None, targetPosition=None,reason=None):
         questList = []
         super().__init__(questList, creator=creator)
@@ -16,6 +18,9 @@ class DrawFloorPlan(src.quests.MetaQuestSequence):
         self.type = "DrawFloorPlan"
 
     def generateTextDescription(self):
+        '''
+        generate a text description
+        '''
         out = []
         reason = ""
         if self.reason:
@@ -27,10 +32,16 @@ Draw a floor plan assigned to a room{reason}.
         return out
 
     def triggerCompletionCheck(self,character=None):
+        '''
+        never complete this way
+        '''
         if not character:
             return
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
+        '''
+        generate the next step to complete this quest
+        '''
         if not self.subQuests:
 
             if not isinstance(character.container,src.rooms.Room):

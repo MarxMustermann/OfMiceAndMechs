@@ -406,8 +406,10 @@ The target tile is {direction[4:]}
                 quest.generatePath(character)
                 return ([quest],None)
 
-            return None
-
+            # fail if path was invalid
+            if not dryRun:
+                self.fail("invalid step in tile path")
+            return (None,None)
 
     def generatePath(self,character):
         self.path = character.getTerrain().getPath(character.getBigPosition(),self.targetPosition,character=character,avoidEnemies=True,outsideOnly=character.outsideOnly)

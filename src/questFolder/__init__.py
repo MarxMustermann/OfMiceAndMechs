@@ -66,3 +66,4 @@ import src.questFolder.dropItemsOutside
 import src.questFolder.brewPotion
 import src.questFolder.consumePotion
 import src.questFolder.discardItemsInside
+import src.questFolder.furnishRoom

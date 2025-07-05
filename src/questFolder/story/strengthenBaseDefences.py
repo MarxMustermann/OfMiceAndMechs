@@ -68,7 +68,7 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
         if len(edgeTrapRooms) != 1:
             1/0 #FIXME: ;-)
 
-        # search for buildsides for the trap room
+        # search for buildsites for the trap room
         cityPlaner = None
         for room in terrain.rooms:
             for item in room.getItemsByType("CityPlaner",needsBolted=True):
@@ -107,13 +107,24 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["ConvertToTrapRoom"](roomPosition=random.choice(convertableRooms))
             return ([quest],None)
 
-        # subquest to help complete drawings of trap rooms 
+        # add subquest to help complete drawings of trap rooms 
         for room in terrain.rooms:
             if not room.tag in ("trapRoom",):
                 continue
             if not room.floorPlan:
                 continue
             quest = src.quests.questMap["DrawFloorPlan"](targetPosition=room.getPosition(),tryHard=True)
+            return ([quest],None)
+
+        # add subquest to help furnishing the unfinished trap rooms
+        for room in terrain.rooms:
+            if not room.tag in ("trapRoom",):
+                continue
+            if room.floorPlan:
+                continue
+            if not room.buildSites:
+                continue
+            quest = src.quests.questMap["FurnishRoom"](targetPositionBig=room.getPosition(),tryHard=True)
             return ([quest],None)
 
         # add subquest to built a rooom already scheduled

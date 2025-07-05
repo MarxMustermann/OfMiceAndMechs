@@ -93,6 +93,21 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["UnScheduleRoomBuilding"](roomPosition=random.choice(obsoleteRoomMarkers))
             return ([quest],None)
 
+        # find convertable entry rooms
+        convertableRooms = []
+        for room in terrain.rooms:
+            if not room.tag in ("entryRoom",):
+                continue
+            if room in edgeTrapRooms:
+                continue
+            convertableRooms.append(room.getPosition())
+
+        # convert entry room
+        if convertableRooms:
+            quest = src.quests.questMap["ConvertToTrapRoom"](roomPosition=random.choice(convertableRooms))
+            return ([quest],None)
+
+
         # add subquest to built a rooom already scheduled
         if plannedTraproomPositions:
             quest = src.quests.questMap["BuildRoom"](targetPosition=random.choice(plannedTraproomPositions),tryHard=True)

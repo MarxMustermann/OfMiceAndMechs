@@ -30,11 +30,12 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
         # prepare common used variables
         terrain = character.getTerrain()
 
-        # find traproom that are accessible from the outside 
+        # find edge rooms that are accessible from the outside 
         edgeTrapRooms = []
         for room in terrain.rooms:
+
             # filter room types
-            if not room.tag in ("traproom",):
+            if not room.tag in ("traproom","entryRoom",):
                 continue
 
             # check for outside connectivity 
@@ -67,7 +68,7 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
         if len(edgeTrapRooms) != 1:
             1/0 #FIXME: ;-)
 
-        # search for buildsides for trap room
+        # search for buildsides for the trap room
         cityPlaner = None
         for room in terrain.rooms:
             for item in room.getItemsByType("CityPlaner",needsBolted=True):
@@ -79,7 +80,8 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
         for offset in offsets:
             offsetedPosition = (roomPos[0]+offset[0],roomPos[1]+offset[1],roomPos[2]+offset[2])
             if offsetedPosition in cityPlaner.plannedRooms:
-                plannedTraproomPositions.append(offsetedPosition)
+                if not terrain.getRoomByPosition(offsetedPosition):
+                    plannedTraproomPositions.append(offsetedPosition)
             if not terrain.getRoomByPosition(offsetedPosition) and offsetedPosition not in terrain.forests and offsetedPosition not in terrain.scrapFields:
                 candidateTraproomPositions.append(offsetedPosition)
 

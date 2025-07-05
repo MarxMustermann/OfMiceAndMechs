@@ -129,33 +129,42 @@ class MachinePlacing(src.quests.MetaQuestSequence):
             if not room.buildSites:
                 continue
 
+            # try to build buildsites in the room
             checkedMaterial = set()
             for buildSite in random.sample(room.buildSites,len(room.buildSites)):
+
+                # test each itemType only once
                 if buildSite[1] in checkedMaterial:
                     continue
                 checkedMaterial.add(buildSite[1])
 
+                # remember issue at hand (not active?)
                 if buildSite[1] == "Machine":
                     lastCheck = character.grievances.get(("SetUpMachine",buildSite[2]["toProduce"],"no machine"),0)
                     if lastCheck+10 > src.gamestate.gamestate.tick:
                         continue
 
+                # remap reqiuirements for special items
                 neededItem = buildSite[1]
                 if buildSite[1] == "Command":
                     neededItem = "Sheet"
+
+                # check if the character has that item in inventory
                 hasItem = False
                 source = None
                 if character.inventory and character.inventory[-1].type == neededItem:
                     hasItem = True
 
+                # create quest to set up actual machines
                 if buildSite[1] == "Machine":
                     quest = src.quests.questMap["SetUpMachine"](itemType=buildSite[2]["toProduce"],targetPositionBig=room.getPosition(),targetPosition=buildSite[0])
                     if not dryRun:
                         beUsefull.idleCounter = 0
                     return ([quest],None)
 
-
+                # try to obtain the item needed
                 if not hasItem:
+                    # check the local list of supplies (not active right now?)
                     for candidateSource in room.sources:
                         if candidateSource[1] != neededItem:
                             continue
@@ -171,6 +180,7 @@ class MachinePlacing(src.quests.MetaQuestSequence):
                         source = candidateSource
                         break
 
+                    # check all rooms 
                     if not source:
                         for checkRoom in random.sample(character.getTerrain().rooms,len(character.getTerrain().rooms)):
                             if not checkRoom.getNonEmptyOutputslots(itemType=neededItem):
@@ -179,6 +189,7 @@ class MachinePlacing(src.quests.MetaQuestSequence):
                             source = (checkRoom.getPosition(),neededItem)
                             break
 
+                    # abort if no source was found (obsolete?)
                     if not source:
                         continue
                     """
@@ -196,12 +207,15 @@ class MachinePlacing(src.quests.MetaQuestSequence):
                         continue
                     """
 
+                # place sheet for setting up command (ugly!)
                 if buildSite[1] != "Command":
                     quest = src.quests.questMap["PlaceItem"](itemType=buildSite[1],targetPositionBig=room.getPosition(),targetPosition=buildSite[0],boltDown=True)
                     if not dryRun:
                         beUsefull.idleCounter = 0
                     return ([quest],None)
 
+                # place the actual command
+                # TODO: remove runCommand
                 if hasItem:
                     quests = []
                     if buildSite[1] == "Command":
@@ -217,7 +231,9 @@ class MachinePlacing(src.quests.MetaQuestSequence):
                     if not dryRun:
                         beUsefull.idleCounter = 0
                     return (quests,None)
-                elif source:
+
+                # obtain item
+                if source:
                     if not character.getFreeInventorySpace() > 0:
                         quest = src.quests.questMap["ClearInventory"]()
                         if not dryRun:
@@ -232,8 +248,8 @@ class MachinePlacing(src.quests.MetaQuestSequence):
                     if not dryRun:
                         beUsefull.idleCounter = 0
                     return (quests,None)
-
-        # spawn city planer if there is none
+                
+        # get city planer
         terrain = character.getTerrain()
         cityCore = terrain.getRoomByPosition(character.getHomeRoomCord())[0]
         cityPlaner = cityCore.getItemByType("CityPlaner",needsBolted=True)
@@ -256,7 +272,7 @@ class MachinePlacing(src.quests.MetaQuestSequence):
                 return True
         """
 
-        # spawn basic items, if not there
+        # calclutate what kind of items have been placed yet (not active?)
         foundPlacedItems = {}
         foundPlacedMachines = {}
         terrain = character.getTerrain()
@@ -269,6 +285,7 @@ class MachinePlacing(src.quests.MetaQuestSequence):
                     foundPlacedItems[item.type] = []
                 foundPlacedItems[item.type].append(item)
 
+        # set up missing important items up in a general purpose room (not active?)
         if cityPlaner:
             checkItems = ["ScrapCompactor","MaggotFermenter","BioPress","GooProducer"]
             checkItems = ["ScrapCompactor"]
@@ -304,7 +321,11 @@ class MachinePlacing(src.quests.MetaQuestSequence):
                     if validTargetPosition:
                         quest = src.quests.questMap["PlaceItem"](targetPositionBig=room.getPosition(),targetPosition=targetPosition,itemType=checkItem,boltDown=True,reason="have at least one scrpa compactor")
                         return ([quest],None)
+
+            # generate no quest
             return (None,None)
+
+        # generate no quest
         return (None,None)
 
 # register the quest

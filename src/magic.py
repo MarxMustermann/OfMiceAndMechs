@@ -682,7 +682,7 @@ def spawnWaves():
     spawn waves of enemies
     '''
     bloodMoon = False
-    if src.gamestate.gamestate.tick//(15*15*15)%15 == 0:
+    if src.gamestate.gamestate.tick%(15*15*15*15) == 0:
         bloodMoon = True
 
     for (godId,god) in src.gamestate.gamestate.gods.items():

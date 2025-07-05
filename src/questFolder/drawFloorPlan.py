@@ -86,6 +86,12 @@ Draw a floor plan assigned to a room{reason}.
                 index = random.randint(0,len(walkingSpaces)-1)
                 walkingSpaces = walkingSpaces[index:]+walkingSpaces[:index]
 
+            # clear floor
+            for walkingSpace in walkingSpaces:
+                if character.container.getItemByPosition(walkingSpace):
+                    quest = src.quests.questMap["CleanSpace"](tryHard=True,targetPositionBig=self.targetPosition,targetPosition=walkingSpace)
+                    return ([quest],None)
+
             # generate the quests to draw some walkingspaces
             counter = 0
             quests = []
@@ -118,6 +124,12 @@ Draw a floor plan assigned to a room{reason}.
             if len(outputSlots) > 1:
                 index = random.randint(0,len(outputSlots)-1)
                 outputSlots = outputSlots[index:]+outputSlots[:index]
+
+            # clear floor
+            for outputSlot in outputSlots:
+                if character.container.getItemByPosition(outputSlot[0]):
+                    quest = src.quests.questMap["CleanSpace"](tryHard=True,targetPositionBig=self.targetPosition,targetPosition=outputSlot[0])
+                    return ([quest],None)
 
             # generate the quests to draw some output slots
             if outputSlots:
@@ -164,6 +176,12 @@ Draw a floor plan assigned to a room{reason}.
             if len(buildSites) > 1:
                 index = random.randint(0,len(buildSites)-1)
                 buildSites = buildSites[index:]+buildSites[:index]
+
+            # clear floor
+            for buildSite in buildSites:
+                if character.container.getItemByPosition(buildSite[0]):
+                    quest = src.quests.questMap["CleanSpace"](tryHard=True,targetPositionBig=self.targetPosition,targetPosition=buildSite[0])
+                    return ([quest],None)
 
             # generate the quests to draw some buildsites
             if buildSites:
@@ -218,6 +236,12 @@ Draw a floor plan assigned to a room{reason}.
                 index = random.randint(0,len(storageSlots)-1)
                 storageSlots = storageSlots[index:]+storageSlots[:index]
 
+            # clear floor
+            for storageSlot in storageSlots:
+                if character.container.getItemByPosition(storageSlot[0]):
+                    quest = src.quests.questMap["CleanSpace"](tryHard=True,targetPositionBig=self.targetPosition,targetPosition=storageSlot[0])
+                    return ([quest],None)
+
             # generate the quests to draw some storage slots
             if storageSlots:
                 quests = []
@@ -267,6 +291,12 @@ Draw a floor plan assigned to a room{reason}.
                 index = random.randint(0,len(inputSlots)-1)
                 inputSlots = inputSlots[index:]+inputSlots[:index]
 
+            # clear floor
+            for inputSlot in inputSlots:
+                if character.container.getItemByPosition(inputSlot[0]):
+                    quest = src.quests.questMap["CleanSpace"](tryHard=True,targetPositionBig=self.targetPosition,targetPosition=inputSlot[0])
+                    return ([quest],None)
+
             # generate the quests to draw some storage slots
             if inputSlots:
                 quests = []
@@ -306,11 +336,19 @@ Draw a floor plan assigned to a room{reason}.
         return (None,None)
 
     def handleQuestFailure(self,extraParam):
+        '''
+        cascade failure
+        '''
         super().handleQuestFailure(extraParam)
         self.fail(reason=extraParam["reason"])
 
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
+        '''
+        generates the quests for the painting duty
+        '''
+
+        # draw floorplans set for rooms
         for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
             if room.floorPlan:
                 quest = src.quests.questMap["DrawFloorPlan"](targetPosition=room.getPosition())
@@ -318,6 +356,7 @@ Draw a floor plan assigned to a room{reason}.
                     beUsefull.idleCounter = 0
                 return ([quest],None)
 
+        # calculate the amount of free storage
         terrain = character.getTerrain()
         numFreeStorage = 0
         for room in terrain.rooms:

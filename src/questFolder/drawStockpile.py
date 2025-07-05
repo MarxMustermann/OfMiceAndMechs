@@ -2,8 +2,10 @@ import src
 
 
 class DrawStockpile(src.quests.MetaQuestSequence):
+    '''
+    quest to draw a stockpile
+    '''
     type = "DrawStockpile"
-
     def __init__(self, description=None, creator=None, targetPosition=None, targetPositionBig=None,itemType=None,stockpileType=None,tryHard=False,reason=None,extraInfo=None):
         questList = []
         super().__init__(questList, creator=creator)
@@ -35,9 +37,15 @@ class DrawStockpile(src.quests.MetaQuestSequence):
             self.extraInfo = extraInfo
 
     def triggerCompletionCheck(self,character=None):
+        '''
+        check for quest completion and end quest
+        '''
+
+        # abort on weird state
         if not character:
             return None
 
+        # end quest if stockpile is drawn
         room = character.getTerrain().getRoomByPosition(self.targetPositionBig)[0]
         if self.stockpileType == "i":
             for inputSlot in room.inputSlots:
@@ -54,10 +62,14 @@ class DrawStockpile(src.quests.MetaQuestSequence):
                 if storageSlot[0] == self.targetPosition and storageSlot[1] == self.itemType:
                     self.postHandler()
                     return True
-            return None
-        return None
+
+        # continue working otherwise
+        return False
 
     def generateTextDescription(self):
+        '''
+        generate a text description of the quest
+        '''
         reason = ""
         if self.reason:
             reason = f",\nto {self.reason}"
@@ -115,13 +127,22 @@ Try as hard as you can to achieve this.
         return text
 
     def unhandledSubQuestFail(self,extraParam):
+        '''
+        fail on subquest fail
+        '''
         self.fail(extraParam["reason"])
 
     def handleQuestFailure(self,extraParam):
+        '''
+        recursve failure
+        '''
         super().handleQuestFailure(extraParam)
         self.fail(extraParam["reason"])
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
+        '''
+        get the next step towards solving the quest
+        '''
         if not self.subQuests:
             submenue = character.macroState.get("submenue")
             if submenue:

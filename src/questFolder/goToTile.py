@@ -412,21 +412,32 @@ The target tile is {direction[4:]}
             return (None,None)
 
     def generatePath(self,character):
+        '''
+        generate a new path to the targets
+        '''
         self.path = character.getTerrain().getPath(character.getBigPosition(),self.targetPosition,character=character,avoidEnemies=True,outsideOnly=character.outsideOnly)
 
     def handleQuestFailure(self,extraParam):
+        '''
+        react to a subquest failing
+        '''
+
+        # ensure the quest is actually active
         if extraParam["quest"] not in self.subQuests:
             return
 
+        # remove failed quest
         self.subQuests.remove(extraParam["quest"])
 
+        # clear the path to target
         if extraParam["reason"] and "no path found" in extraParam["reason"]:
             quest = src.quests.questMap["ClearPathToPosition"](targetPosition=extraParam["quest"].targetPosition)
             self.addQuest(quest)
             self.startWatching(quest,self.handleQuestFailure,"failed")
             return
 
+        # call superclass
         self.fail(extraParam["reason"])
 
-
+# register quest
 src.quests.addType(GoToTile)

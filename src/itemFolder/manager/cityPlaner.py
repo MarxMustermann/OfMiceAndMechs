@@ -341,9 +341,14 @@ class CityPlaner(src.items.Item):
         return room
 
     def setFloorplanFromMap(self,params):
+        '''
+        callback to set a floorplan
+        '''
 
+        # unpack params
         character = params["character"]
 
+        # get user input on what floorplan to set
         if "type" not in params:
             options = []
             options.append(("storage","storage"))
@@ -374,23 +379,28 @@ class CityPlaner(src.items.Item):
             character.macroState["submenue"].followUp = {"container":self,"method":"setFloorplanFromMap","params":params}
             return
 
+        # prepare helper variables
         terrain = self.getTerrain()
         room = terrain.getRoomByPosition(params["coordinate"])[0]
-
         floorPlanType = params["type"]
 
+        # abort if requested
         if floorPlanType == "exit":
             return
 
+        # remove task from todo
         if floorPlanType in self.scheduledFloorPlans:
             self.scheduledFloorPlans.remove(floorPlanType)
 
+        # prepare variables holding the markings
         walkingSpaces = []
         outputSlots = []
         inputSlots = []
         buildSites = []
         storageSlots = []
 
+        # generate prefab for building basic materials with machines
+        # TODO: should be capsuled
         if floorPlanType == "basicMaterialsProduction":
             for y in (1,4,6,8,11,):
                 for x in range(1,12):
@@ -452,6 +462,8 @@ class CityPlaner(src.items.Item):
 
                 walkingSpaces.append((11,y,0))
 
+        # generate prefab for building cases with machines
+        # TODO: should be capsuled
         if floorPlanType == "caseProduction":
             for y in (1,4,7,10,):
                 for x in range(1,12):
@@ -470,6 +482,8 @@ class CityPlaner(src.items.Item):
                 walkingSpaces.append((11,y,0))
             walkingSpaces.append((6,11,0))
 
+        # generate prefab for building cases with machines
+        # TODO: should be capsuled
         if floorPlanType == "caseManufacturing":
             for y in (1,4,7,10,):
                 for x in range(1,12):
@@ -488,6 +502,8 @@ class CityPlaner(src.items.Item):
                 walkingSpaces.append((11,y,0))
             walkingSpaces.append((6,11,0))
 
+        # generate prefab for a goo processing unit
+        # TODO: should be capsuled
         if floorPlanType == "gooProcessing":
             inputSlots.append(((2,3,0),"VatMaggot",{}))
             buildSites.append(((3,3,0),"MaggotFermenter",{}))
@@ -501,6 +517,8 @@ class CityPlaner(src.items.Item):
             buildSites.append(((3,9,0),"CorpseAnimator",{}))
             buildSites.append(((3,10,0),"CorpseShredder",{}))
 
+        # generate prefab for a smokingRoom
+        # TODO: should be capsuled
         if floorPlanType == "smokingRoom":
             buildSites.append(((4,4,0),"CoalBurner",{}))
             buildSites.append(((5,5,0),"CoalBurner",{}))
@@ -536,6 +554,8 @@ class CityPlaner(src.items.Item):
                         continue
                     walkingSpaces.append((x,y,0))
 
+        # generate prefab for a smokingRoom
+        # TODO: should be capsuled
         if floorPlanType == "scrapCompactorProduction":
             for y in (1,4,6,8,11,):
                 for x in range(1,12):
@@ -550,6 +570,8 @@ class CityPlaner(src.items.Item):
                 walkingSpaces.append((6,y,0))
             walkingSpaces.append((6,11,0))
 
+        # generate prefab for producing bolts with machines
+        # TODO: should be capsuled
         if floorPlanType == "boltProduction":
             for y in (1,4,6,8,11,):
                 for x in range(1,12):
@@ -564,6 +586,8 @@ class CityPlaner(src.items.Item):
                 walkingSpaces.append((6,y,0))
             walkingSpaces.append((6,10,0))
 
+        # generate prefab for producing rods with machines
+        # TODO: should be capsuled
         if floorPlanType == "rodProduction":
             for y in (1,4,6,8,11,):
                 for x in range(1,12):
@@ -578,6 +602,8 @@ class CityPlaner(src.items.Item):
                 walkingSpaces.append((6,y,0))
             walkingSpaces.append((6,10,0))
 
+        # generate prefab for producing bisic building items with machines
+        # TODO: should be capsuled
         if floorPlanType == "basicRoombuildingItemsProduction":
             for y in (3,6,10,):
                 for x in range(1,12):
@@ -645,6 +671,8 @@ class CityPlaner(src.items.Item):
             buildSites.append( (( 8,9,0),"Machine",{"toProduce":"puller"}))
             inputSlots.append( (( 7,9,0),"Bolt",{}))
 
+        # generate prefab for producing basic building items with machines
+        # TODO: should be capsuled
         if floorPlanType == "productionRoom":
             for y in (1,4,7,11,):
                 for x in range(1,12):
@@ -653,6 +681,8 @@ class CityPlaner(src.items.Item):
                 walkingSpaces.append((1,y,0))
                 walkingSpaces.append((11,y,0))
 
+        # generate prefab for a trap room
+        # TODO: should be capsuled
         if floorPlanType == "trapRoom":
             for y in (4,8):
                 for x in range(1,12):
@@ -705,8 +735,8 @@ class CityPlaner(src.items.Item):
                 buildSites.append(((6, y, 0),"TriggerPlate",{"floor":"walkingSpace","targets":str([(5,y,0),(7,y,0),boltPos])}))
                 buildSites.append(((7, y, 0),"RodTower",{}))
 
-
-
+        # generate prefab for a scrap compacter room
+        # TODO: should be capsuled
         if floorPlanType == "scrapCompactor":
             #for y in (1,4,7,10,):
             #        walkingSpaces.append((x,y,0))
@@ -719,6 +749,8 @@ class CityPlaner(src.items.Item):
                 walkingSpaces.append((11,y,0))
             walkingSpaces.append((6,11,0))
 
+        # generate prefab for a temple
+        # TODO: should be capsuled
         if floorPlanType == "temple":
             buildSites.append(((6, 6, 0),"Throne",{}))
 
@@ -775,6 +807,8 @@ class CityPlaner(src.items.Item):
             walkingSpaces.append((2,2,0))
             walkingSpaces.append((2,1,0))
 
+        # generate prefab for a wall construction production line
+        # TODO: should be capsuled
         if floorPlanType == "wallProduction2":
             for y in range(1,12):
                 walkingSpaces.append((6,y,0))
@@ -817,6 +851,8 @@ class CityPlaner(src.items.Item):
             walkingSpaces.append((9,1,0))
             walkingSpaces.append((5,1,0))
 
+        # generate prefab for a wall construction production line
+        # TODO: should be capsuled
         if floorPlanType in ("wallProduction","wallManufacturing"):
             productionType = "Machine"
             if floorPlanType == "wallManufacturing":
@@ -851,6 +887,8 @@ class CityPlaner(src.items.Item):
                         walkingSpaces.append((x,y,0))
                 walkingSpaces.append((11,y,0))
 
+        # generate prefab for a storage unit
+        # TODO: should be capsuled
         if floorPlanType == "storage":
             for y in range(1,12):
                 walkingSpaces.append((6,y,0))
@@ -901,6 +939,8 @@ class CityPlaner(src.items.Item):
                     continue
                 storageSlots.append(((x,11,0),None,{}))
 
+        # generate prefab for producing weapons
+        # TODO: should be capsuled
         if floorPlanType in ("weaponProduction","weaponManufacturing"):
             productionType = "Machine"
             if floorPlanType == "weaponManufacturing":
@@ -926,6 +966,8 @@ class CityPlaner(src.items.Item):
                 storageSlots.append(((6,y,0),"Armor",{}))
                 storageSlots.append(((7,y,0),"Armor",{"desiredState":"filled"}))
 
+        # generate prefab for a manufacturing hall
+        # TODO: should be capsuled
         if floorPlanType == "manufacturingHall":
             for y in (2,3,5,6,8,9,):
                 walkingSpaces.append((1,y,0))
@@ -939,6 +981,8 @@ class CityPlaner(src.items.Item):
             walkingSpaces.append((6,11,0))
             buildSites.append(((7,11,0),"ManufacturingManager",{}))
 
+        # generate prefab for a machine hall
+        # TODO: should be capsuled
         if floorPlanType == "machineHall":
             for y in (3,6,9,):
                 for x in range(1,12):
@@ -953,6 +997,8 @@ class CityPlaner(src.items.Item):
             for y in range(1,12):
                 walkingSpaces.append((6,y,0))
 
+        # generate prefab for an electrifier hall
+        # TODO: should be capsuled
         if floorPlanType == "electrifierHall":
             for y in (2,3,5,6,8,9,):
                 walkingSpaces.append((1,y,0))
@@ -966,7 +1012,7 @@ class CityPlaner(src.items.Item):
                     walkingSpaces.append((x,y,0))
             walkingSpaces.append((6,11,0))
 
-
+        # put together the actual floorplan
         floorPlan = {}
         if walkingSpaces:
             floorPlan["walkingSpace"] = walkingSpaces
@@ -992,7 +1038,6 @@ class CityPlaner(src.items.Item):
         Parameters:
             character: the character trying to conigure the machine
         """
-
         options = super().getConfigurationOptions(character)
         if self.bolted:
             options["b"] = ("unbolt", self.unboltAction)

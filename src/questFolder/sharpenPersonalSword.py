@@ -2,6 +2,9 @@ import src
 
 
 class SharpenPersonalSword(src.quests.MetaQuestSequence):
+    '''
+    quest to sharpen your own sword
+    '''
     type = "SharpenPersonalSword"
 
     def __init__(self, description="sharpen personal sword", creator=None, command=None, lifetime=None):
@@ -12,9 +15,15 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
         self.shortCode = "e"
 
     def handleSwordSharpened(self,extraInfo=None):
+        '''
+        end quest when sword was sharpened
+        '''
         self.postHandler()
 
     def assignToCharacter(self, character):
+        '''
+        assign quest to a character
+        '''
         if self.character:
             return
 
@@ -22,6 +31,10 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
         super().assignToCharacter(character)
 
     def triggerCompletionCheck(self,character=None):
+        '''
+        check if the quest completed and end it
+        '''
+
         if not character:
             return False
 
@@ -33,7 +46,11 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
             return True
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
+        '''
+        generate the next step to solve the quest
+        '''
 
+        
         if self.subQuests:
             return (None,None)
 
@@ -52,7 +69,9 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
 
         if character.macroState.get("submenue"):
             submenue = character.macroState.get("submenue")
-            if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu):
+            if submenue.tag == "applyOptionSelection" and submenue.extraInfo.get("item").type == "SwordSharpener":
+                return (None,("j","contact command"))
+            if submenue.tag == "SwordSharpenerSelection":
                 foundOption = False
                 rewardIndex = 0
                 if rewardIndex == 0:

@@ -2,8 +2,19 @@ import src
 import random
 
 class MetalWorking(src.quests.MetaQuestSequence):
-    type = "MetalWorking"
+    '''
+    quest to produce ingame item using metal working
 
+    Parameters:
+        description: the description of the quest to show in the UI
+        creator: the entity creating the object (obsolete?)
+        reason: the reason for assigning the quest to be shown in the UI
+        toProduce: the item type to produce
+        amount: the amount of items to produce
+        produceToInventory: prefer to put the produced Item into your inventory
+        tryHard: try eveerythin possible to complete this quest
+    '''
+    type = "MetalWorking"
     def __init__(self, description="metal working", creator=None, reason=None, toProduce=None, amount=None, produceToInventory=False,tryHard=False):
         questList = []
         super().__init__(questList, creator=creator)

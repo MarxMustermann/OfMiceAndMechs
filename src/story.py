@@ -2079,7 +2079,7 @@ but they are likely to explode when disturbed.
                 },
                 None,
            )
-
+        shelter.tag = "shelter"
 
         ####
         # create the control room

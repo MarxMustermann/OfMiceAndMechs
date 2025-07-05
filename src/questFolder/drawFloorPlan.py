@@ -134,7 +134,7 @@ Draw a floor plan assigned to a room{reason}.
             # clear floor
             for outputSlot in outputSlots:
                 if character.container.getItemByPosition(outputSlot[0]):
-                    quest = src.quests.questMap["CleanSpace"](tryHard=True,targetPositionBig=self.targetPosition,targetPosition=outputSlot[0])
+                    quest = src.quests.questMap["CleanSpace"](tryHard=True,targetPositionBig=self.targetPosition,targetPosition=outputSlot[0],pickUpBolted=True)
                     return ([quest],None)
 
             # generate the quests to draw some output slots
@@ -186,7 +186,7 @@ Draw a floor plan assigned to a room{reason}.
             # clear floor
             for buildSite in buildSites:
                 if character.container.getItemByPosition(buildSite[0]):
-                    quest = src.quests.questMap["CleanSpace"](tryHard=True,targetPositionBig=self.targetPosition,targetPosition=buildSite[0])
+                    quest = src.quests.questMap["CleanSpace"](tryHard=True,targetPositionBig=self.targetPosition,targetPosition=buildSite[0],pickUpBolted=True)
                     return ([quest],None)
 
             # generate the quests to draw some buildsites
@@ -245,7 +245,7 @@ Draw a floor plan assigned to a room{reason}.
             # clear floor
             for storageSlot in storageSlots:
                 if character.container.getItemByPosition(storageSlot[0]):
-                    quest = src.quests.questMap["CleanSpace"](tryHard=True,targetPositionBig=self.targetPosition,targetPosition=storageSlot[0])
+                    quest = src.quests.questMap["CleanSpace"](tryHard=True,targetPositionBig=self.targetPosition,targetPosition=storageSlot[0],pickupBolted=True)
                     return ([quest],None)
 
             # generate the quests to draw some storage slots
@@ -300,7 +300,7 @@ Draw a floor plan assigned to a room{reason}.
             # clear floor
             for inputSlot in inputSlots:
                 if character.container.getItemByPosition(inputSlot[0]):
-                    quest = src.quests.questMap["CleanSpace"](tryHard=True,targetPositionBig=self.targetPosition,targetPosition=inputSlot[0])
+                    quest = src.quests.questMap["CleanSpace"](tryHard=True,targetPositionBig=self.targetPosition,targetPosition=inputSlot[0],pickupBolted=True)
                     return ([quest],None)
 
             # generate the quests to draw some storage slots

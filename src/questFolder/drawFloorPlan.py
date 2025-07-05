@@ -462,6 +462,8 @@ Draw a floor plan assigned to a room{reason}.
                     quest = src.quests.questMap["DrawStockpile"](stockpileType="s",targetPositionBig=room.getPosition(),targetPosition=storageSlot[0],reason="designate special storage for basic items",itemType=checkDesireFilledStorageSlot[0],extraInfo={"desiredState":"filled"})
                     return ([quest],None)
 
+        # generate no quest
         return (None,None)
 
+# register the quest
 src.quests.addType(DrawFloorPlan)

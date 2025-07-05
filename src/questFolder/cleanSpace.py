@@ -31,6 +31,9 @@ class CleanSpace(src.quests.MetaQuestSequence):
         self.tryHard = tryHard
 
     def generateTextDescription(self):
+        '''
+        generate a text description
+        '''
         reason = ""
         if self.reason:
             reason = f",\nto {self.reason}"
@@ -40,9 +43,15 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
         return text
 
     def unhandledSubQuestFail(self,extraParam):
+        '''
+        fail recursively
+        '''
         self.fail(extraParam["reason"])
 
     def triggerCompletionCheck(self,character=None):
+        '''
+        check if the quest is completed and end it
+        '''
         if not character:
             return False
         terrain = character.getTerrain()
@@ -61,6 +70,9 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
         return None
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
+        '''
+        generate the next step towards solving the quest
+        '''
         if self.subQuests:
             return (None,None)
 
@@ -131,9 +143,15 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
         return (None,None)
 
     def pickedUpItem(self,extraInfo):
+        '''
+        check if quest is completed 
+        '''
         self.triggerCompletionCheck(extraInfo[0])
 
     def assignToCharacter(self, character):
+        '''
+        assign the quest to a character
+        '''
         if self.character:
             return None
 
@@ -141,11 +159,17 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
         return super().assignToCharacter(character)
 
     def getQuestMarkersTile(self,character):
+        '''
+        return the quest markers for the minimap
+        '''
         result = super().getQuestMarkersTile(character)
         result.append(((self.targetPositionBig[0],self.targetPositionBig[1]),"target"))
         return result
 
     def getQuestMarkersSmall(self,character,renderForTile=False):
+        '''
+        return the quest markers for the normal map
+        '''
         if isinstance(character.container,src.rooms.Room):
             if renderForTile:
                 return []
@@ -163,6 +187,9 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
 
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
+        '''
+        generate the quest to complete a duty
+        '''
         if len(character.inventory):
             quest = src.quests.questMap["ClearInventory"]()
             if not dryRun:
@@ -229,6 +256,10 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
         return (None,None)
 
     def handleQuestFailure(self, extraParam):
+        '''
+        fail recursively
+        '''
         self.fail()
 
+# reister the quest
 src.quests.addType(CleanSpace)

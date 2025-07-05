@@ -42,9 +42,12 @@ Draw a floor plan assigned to a room{reason}.
         '''
         generate the next step to complete this quest
         '''
+
+        # do nothing if there is a subquest
         if self.subQuests:
             return (None,None)
 
+        # actually enter the current room
         if not isinstance(character.container,src.rooms.Room):
             command = None
             if character.xPosition%15 == 0:
@@ -58,40 +61,50 @@ Draw a floor plan assigned to a room{reason}.
             if command:
                 return (None,(command,"enter room"))
 
+        # go to target room
         if character.getBigPosition() != self.targetPosition:
             quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
             return ([quest],None)
 
+        # fail on weird state
         if not character.container.floorPlan:
             if not dryRun:
                 self.fail()
             return (None,None)
 
+        # draw walkingspaces
         if "walkingSpace" in character.container.floorPlan:
+            # remove completed walkingspaces from todo list
             walkingSpaces = character.container.floorPlan.get("walkingSpace")
             if walkingSpaces and walkingSpaces[-1] in character.container.walkingSpace:
                 walkingSpaces.pop()
 
-            quests = []
-            counter = 0
+            # shuffle the walkingspaces to make the solver less deterministic
             walkingSpaces = list(walkingSpaces)
             if len(walkingSpaces) > 1:
                 index = random.randint(0,len(walkingSpaces)-1)
                 walkingSpaces = walkingSpaces[index:]+walkingSpaces[:index]
+
+            # generate the quests to draw some walkingspaces
+            counter = 0
+            quests = []
             for walkingSpace in reversed(walkingSpaces):
                 if counter > 9:
                     break
                 counter += 1
                 quest = src.quests.questMap["DrawWalkingSpace"](tryHard=True,targetPositionBig=self.targetPosition,targetPosition=walkingSpace)
                 quests.append(quest)
-
             if quests:
                 return (list(reversed(quests)),None)
 
+            # clean up the floorplan
             if walkingSpaces is not None:
                 del character.container.floorPlan["walkingSpace"]
 
+        # draw the output slots
         if "outputSlots" in character.container.floorPlan:
+
+            # remove completed outputslots from todo list
             outputSlots = character.container.floorPlan.get("outputSlots")
             if outputSlots:
                 for existingOutputSlot in character.container.outputSlots:
@@ -99,10 +112,13 @@ Draw a floor plan assigned to a room{reason}.
                         outputSlots.pop()
                         break
 
+            # shuffle the outputslots to make the solver less deterministic
             outputSlots = character.container.floorPlan.get("outputSlots")[:]
             if len(outputSlots) > 1:
                 index = random.randint(0,len(outputSlots)-1)
                 walkingSpaces = outputSlots[index:]+outputSlots[:index]
+
+            # generate the quests to draw some output slots
             if outputSlots:
                 quests = []
                 counter = 0
@@ -124,14 +140,17 @@ Draw a floor plan assigned to a room{reason}.
                             quests.append(quest)
                             outputSlots.remove(outputSlot2)
                             counter2 += 1
-
                 if quests:
                     return (list(reversed(quests)),None)
 
+            # clean up the floorplan
             if outputSlots is not None:
                 del character.container.floorPlan["outputSlots"]
 
+        # draw the build sites
         if "buildSites" in character.container.floorPlan:
+
+            # remove completed buildSites from todo list
             buildSites = character.container.floorPlan.get("buildSites")
             if buildSites:
                 for existingBuildSite in character.container.buildSites:
@@ -139,10 +158,13 @@ Draw a floor plan assigned to a room{reason}.
                         buildSites.pop()
                         break
 
+            # shuffle the buildsites to make the solver less deterministic
             buildSites = character.container.floorPlan.get("buildSites")[:]
             if len(buildSites) > 1:
                 index = random.randint(0,len(buildSites)-1)
                 buildSites = buildSites[index:]+buildSites[:index]
+
+            # generate the quests to draw some buildsites
             if buildSites:
                 quests = []
                 counter = 0
@@ -175,6 +197,7 @@ Draw a floor plan assigned to a room{reason}.
                     quest = src.quests.questMap["DrawBuildSite"](itemType=buildSite[1],targetPositionBig=self.targetPosition,targetPosition=buildSite[0],extraInfo=buildSite[2])
                     return ([quest],None)
 
+            # clean up the floorplan
             if buildSites is not None:
                 del character.container.floorPlan["buildSites"]
 

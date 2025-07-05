@@ -74,7 +74,7 @@ class Regenerator(src.items.Item):
                 break
 
             # only try healing wounded characters
-            if not character.maxHealth-character.health > self.healing_amount:
+            if not character.maxHealth-character.health > 1:
                 continue
 
             # do the actual healing

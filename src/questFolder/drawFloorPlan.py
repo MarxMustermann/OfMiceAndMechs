@@ -12,9 +12,10 @@ class DrawFloorPlan(src.quests.MetaQuestSequence):
         creator: the entity creating this quest. (obsolete?)
         targetPosition: the position of the room dto work in 
         reason: the reason to be shown in the UI
+        tryHard: try to complete the quest in any way possible
     '''
     type = "DrawFloorPlan"
-    def __init__(self, description="draw floor plan", creator=None, targetPosition=None,reason=None):
+    def __init__(self, description="draw floor plan", creator=None, targetPosition=None,reason=None,tryHard=True):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description

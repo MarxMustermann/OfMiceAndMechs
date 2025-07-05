@@ -6,7 +6,7 @@ class SiegeManager(src.items.Item):
     ingame item to control a base during sieges
     '''
     type = "SiegeManager"
-    def __init__(self, name="SiegeManager", noId=False):
+    def __init__(self, name="SiegeManager"):
         super().__init__(display="SM", name=name)
 
         self.applyOptions.extend(

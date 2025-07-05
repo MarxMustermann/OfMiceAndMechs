@@ -342,6 +342,9 @@ The target tile is {direction[4:]}
                 quest.generatePath(character)
                 return ([quest],None)
 
+            # fail if path was invalid
+            if not dryRun:
+                self.fail("invalid step in tile path")
             return (None,None)
         else:
             if character.xPosition%15 == 7 and character.yPosition%15 == 14:

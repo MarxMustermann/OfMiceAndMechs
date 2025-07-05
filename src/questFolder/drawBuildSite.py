@@ -66,20 +66,24 @@ Try as hard as you can to achieve this.
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
         '''
         generates next step to solve the quest
+        TDOD: use painter in hand -_-
         '''
         if self.subQuests:
             return (None,None)
 
+        # navigate the painter menu
         submenue = character.macroState.get("submenue")
         if submenue:
+            # select the right paint mode
             if submenue.tag == "paintModeSelection":
                 if submenue.text == "":
                     return (None,(["b"],"configure the painter to build site"))
                 elif submenue.text == "b":
-                    return (None,(["enter"],"configure the painter to nuild site"))
+                    return (None,(["enter"],"configure the painter to build site"))
                 else:
                     return (None,(["backspace"],"delete input"))
 
+            # select the right item type
             if submenue.tag == "paintTypeSelection":
                 itemType = self.itemType
                 if not itemType:
@@ -99,6 +103,7 @@ Try as hard as you can to achieve this.
 
                 return (None,(itemType[correctIndex:],"enter type"))
 
+            # enter the name for extra parameters
             if submenue.tag == "paintExtraParamName":
                 nameToSet = "toProduce"
 
@@ -116,6 +121,7 @@ Try as hard as you can to achieve this.
 
                 return (None,(nameToSet[correctIndex:],"enter name of the extra parameter"))
 
+            # enter the value for extra parameters
             if submenue.tag == "paintExtraParamValue":
                 valueToSet = self.extraInfo["toProduce"]
 
@@ -133,6 +139,7 @@ Try as hard as you can to achieve this.
 
                 return (None,(valueToSet[correctIndex:],"enter value of the extra parameter"))
 
+        # get target room
         rooms = character.getTerrain().getRoomByPosition(self.targetPositionBig)
         if not rooms:
             if not dryRun:
@@ -140,12 +147,14 @@ Try as hard as you can to achieve this.
             return (None,None)
         room = rooms[0]
 
+        # do extra check for completion, lol
         for buildSite in room.buildSites:
             if buildSite[0] == self.targetPosition:
                 if not dryRun:
                     self.postHandler()
                 return (None,None)
 
+        # check for painters next to the target
         offsets = ((0,0,0),(0,1,0),(1,0,0),(0,-1,0),(-1,0,0))
         foundOffset = None
         for offset in offsets:
@@ -154,6 +163,8 @@ Try as hard as you can to achieve this.
                 continue
 
             foundOffset = (offset,items[-1])
+
+        # use the painter to draw
         if foundOffset:
             item = foundOffset[1]
             if character.getDistance(item.getPosition()) > 0:
@@ -179,28 +190,36 @@ Try as hard as you can to achieve this.
 
             return (None,("jk","draw to stockpile"))
 
+        # fetch a painter
         if not self.painterPos:
             if not character.inventory or character.inventory[-1].type != "Painter":
                 quest = src.quests.questMap["FetchItems"](toCollect="Painter",amount=1,reason="be able to draw a stockpile")
                 return ([quest],None)
             painter = character.inventory[-1]
 
+        # go to drawing spot
         if character.getBigPosition() != self.targetPositionBig:
             quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="get nearby to the drawing spot")
             return ([quest],None)
-
         if character.getDistance(self.targetPosition) > 0:
             quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,reason="get to the drawing spot")
             return ([quest],None)
 
+        # drop painter next to target
         return (None,("l","drop the Painter"))
 
     def getQuestMarkersTile(self,character):
+        '''
+        returns quest markers for the minimap
+        '''
         result = super().getQuestMarkersTile(character)
         result.append(((self.targetPositionBig[0],self.targetPositionBig[1]),"target"))
         return result
 
     def getQuestMarkersSmall(self,character,renderForTile=False):
+        '''
+        returns quest markers for the normal map
+        '''
         if isinstance(character.container,src.rooms.Room):
             if renderForTile:
                 return []
@@ -217,6 +236,9 @@ Try as hard as you can to achieve this.
         return result
 
     def handleDrewMarking(self,extraInfo):
+        '''
+        handle the event indicating quest completion
+        '''
         if not self.active:
             return
         if self.completed:
@@ -225,6 +247,9 @@ Try as hard as you can to achieve this.
         self.triggerCompletionCheck(self.character)
 
     def assignToCharacter(self, character):
+        '''
+        assign the quest to a character
+        '''
         if self.character:
             return None
 
@@ -233,7 +258,11 @@ Try as hard as you can to achieve this.
         return super().assignToCharacter(character)
 
     def handleQuestFailure(self,extraParam):
+        '''
+        fail recursively
+        '''
         self.fail(reason=extraParam["reason"])
         super().handleQuestFailure(extraParam)
 
+# register quest
 src.quests.addType(DrawBuildSite)

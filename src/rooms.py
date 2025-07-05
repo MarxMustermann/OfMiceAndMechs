@@ -965,7 +965,10 @@ class Room:
                             bgColor = "black"
                             
                         if isinstance(char,tuple):
-                            chars[character.yPosition][character.xPosition] = (src.interaction.urwid.AttrSpec(char[0].fg, bgColor), char[1])
+                            try:
+                                chars[character.yPosition][character.xPosition] = (src.interaction.urwid.AttrSpec(char[0].fg, bgColor), char[1])
+                            except Exception as e:
+                                logger.error("drawing error: "+str(e))
                         else:
                             fgColor = "#fff"
                             chars[character.yPosition][character.xPosition] = (src.interaction.urwid.AttrSpec(fgColor, bgColor), char)

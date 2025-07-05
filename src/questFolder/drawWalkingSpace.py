@@ -62,9 +62,12 @@ Try as hard as you can to achieve this.
         '''
         generate the next step to solve the quest
         '''
+
+        # do nothing if there is no subquest
         if self.subQuests:
             return (None,None)
 
+        # get the room
         rooms = character.getTerrain().getRoomByPosition(self.targetPositionBig)
         if not rooms:
             if dryRun:
@@ -72,12 +75,14 @@ Try as hard as you can to achieve this.
             return (None,None)
         room = rooms[0]
 
+        # do an extra completion check
         for pos in room.walkingSpace:
             if pos == self.targetPosition:
                 if not dryRun:
                     self.postHandler()
                 return (None,None)
 
+        # search for a painter near the target
         offsets = ((0,0,0),(0,1,0),(1,0,0),(0,-1,0),(-1,0,0))
         foundOffset = None
         for offset in offsets:
@@ -86,6 +91,8 @@ Try as hard as you can to achieve this.
                 continue
 
             foundOffset = (offset,items[0])
+
+        # use the painter to draw
         if foundOffset:
             item = foundOffset[1]
             if character.getDistance(item.getPosition()) > 0:
@@ -98,20 +105,22 @@ Try as hard as you can to achieve this.
                 return (None,(["c", "d", ".", "enter"],"remove the offset from the painter"))
             return (None,("jk","draw the walkingspace"))
 
+        # ensure player has a painter
         if not self.painterPos:
             if not character.inventory or character.inventory[-1].type != "Painter":
                 quest = src.quests.questMap["FetchItems"](toCollect="Painter",amount=1,reason="be able to draw a stockpile")
                 return ([quest],None)
             painter = character.inventory[-1]
 
+        # go to drawing spot
         if character.getBigPosition() != self.targetPositionBig:
             quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="get nearby to the drawing spot")
             return ([quest],None)
-
         if character.getDistance(self.targetPosition) > 0:
             quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,reason="get to the drawing spot")
             return ([quest],None)
 
+        # drop the painter next to the target
         return (None,("l","drop the Painter"))
 
     def handleDrewMarking(self,extraInfo):

@@ -4,6 +4,9 @@ import src
 class SiegeManager(src.items.Item):
     '''
     ingame item to control a base during sieges
+
+    Parameters:
+        name: the name of the item to be shown in the UI
     '''
     type = "SiegeManager"
     def __init__(self, name="SiegeManager"):
@@ -34,6 +37,9 @@ class SiegeManager(src.items.Item):
     def setSchedule(self,character):
         '''
         open the scheduling menu
+
+        Parameters:
+            character: the character triggering the action
         '''
         self.scheduleLoop({"character":character})
 
@@ -54,6 +60,9 @@ class SiegeManager(src.items.Item):
     def scheduleLoop(self,params):
         '''
         show the scheduling menu
+
+        Parameters:
+            params: the state of the interaction
         '''
 
         # upack the parameters

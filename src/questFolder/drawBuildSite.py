@@ -2,8 +2,10 @@ import src
 
 
 class DrawBuildSite(src.quests.MetaQuestSequence):
+    '''
+    quest to draw a build site
+    '''
     type = "DrawBuildSite"
-
     def __init__(self, description="draw buildsite", creator=None, targetPosition=None, targetPositionBig=None,itemType=None,stockpileType=None,tryHard=False,reason=None,extraInfo=None):
         questList = []
         super().__init__(questList, creator=creator)
@@ -20,17 +22,26 @@ class DrawBuildSite(src.quests.MetaQuestSequence):
         self.reason = reason
 
     def triggerCompletionCheck(self,character=None):
-        if not character:
-            return None
+        '''
+        check for quest completion and end quest
+        '''
 
+        # abort on weird state
+        if not character:
+            return False
+
+        # end the quest if build site exists
         room = character.getTerrain().getRoomByPosition(self.targetPositionBig)[0]
         for buildSite in room.buildSites:
             if buildSite[0] == self.targetPosition:
                 self.postHandler()
                 return True
-        return None
+        return False
 
     def generateTextDescription(self):
+        '''
+        generates a text description
+        '''
         reason = ""
         if self.reason:
             reason = f", to {self.reason}"
@@ -53,6 +64,9 @@ Try as hard as you can to achieve this.
 
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
+        '''
+        generates next step to solve the quest
+        '''
         if not self.subQuests:
             submenue = character.macroState.get("submenue")
             if submenue:

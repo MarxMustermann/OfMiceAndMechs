@@ -116,7 +116,7 @@ Draw a floor plan assigned to a room{reason}.
             outputSlots = character.container.floorPlan.get("outputSlots")[:]
             if len(outputSlots) > 1:
                 index = random.randint(0,len(outputSlots)-1)
-                walkingSpaces = outputSlots[index:]+outputSlots[:index]
+                outputSlots = outputSlots[index:]+outputSlots[:index]
 
             # generate the quests to draw some output slots
             if outputSlots:

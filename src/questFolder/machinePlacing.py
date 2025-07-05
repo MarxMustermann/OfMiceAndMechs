@@ -189,7 +189,7 @@ class MachinePlacing(src.quests.MetaQuestSequence):
                             source = (checkRoom.getPosition(),neededItem)
                             break
 
-                    # abort if no source was found (obsolete?)
+                    # abort if no source was found
                     if not source:
                         continue
                     """

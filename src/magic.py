@@ -705,7 +705,7 @@ def spawnWaves():
                 baseHealth = 10
                 baseDamage = 3
                 multipliers = (1.01,1.02,1.01,1.02)
-            elif src.gamestate.gamestate.difficulty == "difficulty":
+            elif src.gamestate.gamestate.difficulty == "difficult":
                 baseHealth = 100
                 baseDamage = 10
                 multipliers = (1.3,1.5,1.3,1.5)

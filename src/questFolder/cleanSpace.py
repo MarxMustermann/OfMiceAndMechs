@@ -2,6 +2,19 @@ import src
 import random
 
 class CleanSpace(src.quests.MetaQuestSequence):
+    '''
+    quest to clean up a specific spot
+
+    Params:
+        description: the description to be shown in the UI
+        creator: the entity creating this object. (obsolete?)
+        targetPositionBig: the position of the room the spot is in
+        targetPosition: the position of the spot to clear
+        reason: the reason fore assigning the quest to be shown in the UI
+        abortOnfullInventory: stop when character ha a full inventory
+        pickUpBolted: pick up items that are bolted down
+        tryHard: try to complete the quest in any way possible
+    '''
     type = "CleanSpace"
 
     def __init__(self, description="clean space", creator=None, targetPositionBig=None, targetPosition=None, reason=None, abortOnfullInventory=True,pickUpBolted=False,tryHard=False):

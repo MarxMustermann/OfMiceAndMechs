@@ -311,6 +311,7 @@ class Item:
             "what do you want to do?", options
         )
         submenu.extraInfo["item"] = self
+        submenu.tag = "applyOptionSelection"
         character.macroState["submenue"] = submenu
         character.macroState["submenue"].followUp = {
             "method": "handleApplyMenu",

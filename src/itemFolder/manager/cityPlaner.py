@@ -98,18 +98,27 @@ class CityPlaner(src.items.Item):
         return result
 
     def clearFieldFromMap(self,params):
+        '''
+        callback to clear a field
+        '''
         architect = src.items.itemMap["ArchitectArtwork"]()
         self.container.container.addItem(architect,(1,1,0))
         architect.doClearField(params["coordinate"][0], params["coordinate"][1])
         self.container.container.removeItem(architect)
 
     def addMinefieldFromMap(self,params):
+        '''
+        callback to add a minefield
+        '''
         architect = src.items.itemMap["ArchitectArtwork"]()
         self.container.container.addItem(architect,(1,1,0))
         architect.doAddMinefield(params["coordinate"][0], params["coordinate"][1],20)
         self.container.container.removeItem(architect)
 
     def addScrapFieldFromMap(self,params):
+        '''
+        callback to add a scrap field
+        '''
         architect = src.items.itemMap["ArchitectArtwork"]()
         self.container.container.addItem(architect,(1,1,0))
         architect.doAddScrapfield(params["coordinate"][0], params["coordinate"][1],200)
@@ -120,6 +129,9 @@ class CityPlaner(src.items.Item):
             otherRoom.sources.append((params["coordinate"],"rawScrap"))
 
     def addFarmFromMap(self,params,forceSpawn=0):
+        '''
+        callback to add a farm
+        '''
         room = self.addRoom(params["coordinate"])
         if not room:
             return None
@@ -185,6 +197,9 @@ class CityPlaner(src.items.Item):
         return room
 
     def addWorkshopRoomFromMap(self,params):
+        '''
+        callback to add a workshop
+        '''
         room = self.addRoom(params["coordinate"],roomType="WorkshopRoom")
         room.doBasicSetup()
         self.workshopRooms.append(room)

@@ -1150,7 +1150,7 @@ class CityPlaner(src.items.Item):
                         "method":"setFloorplanFromMap",
                         "params":{"character":character,"type":"trapRoom"},
                     },
-                    "description":"clear room",
+                    "description":"convert room to trap room",
                 }
 
         for scrapField in terrain.scrapFields:

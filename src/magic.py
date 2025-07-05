@@ -4,6 +4,9 @@ import random
 import src
 
 def SpawnStorageRoom(terrain, coordinate, controlRoom, teleporter_group):
+    '''
+    spawn storage room
+    '''
     room = spawnRoomFromFloorPlan(terrain, coordinate, "storage1.json")
     pos = room.getPosition()
 
@@ -32,6 +35,9 @@ def SpawnStorageRoom(terrain, coordinate, controlRoom, teleporter_group):
 
 
 def spawnRoomFromFloorPlan(terrain, coordinate, floorplan):
+    '''
+    spawn room based on a floor plan
+    '''
     room = spawnRoom(terrain, "EmptyRoom", coordinate)
     with open("data/floorPlans/" + floorplan) as fileHandle:
         rawFloorplan = json.load(fileHandle)
@@ -42,6 +48,9 @@ def spawnRoomFromFloorPlan(terrain, coordinate, floorplan):
 
 
 def getFloorPlanFromDict(rawFloorplan):
+    '''
+    create floor plan from dictionary
+    '''
     converted = {}
     if "buildSites" in rawFloorplan:
         buildSites = []
@@ -71,6 +80,9 @@ def getFloorPlanFromDict(rawFloorplan):
     return converted
 
 def convertFloorPlanToDict(self, floorPlan):
+    '''
+    convert floor plan to dictionary
+    '''
     converted = {}
     if "buildSites" in floorPlan:
         buildSites = []
@@ -101,6 +113,9 @@ def convertFloorPlanToDict(self, floorPlan):
 
 
 def spawnScrapField(terrain, coordinate):
+    '''
+    spawn a scrap field
+    '''
     bigX, bigY = coordinate
     for x in range(1, 14):
         for y in range(1, 14):
@@ -118,6 +133,9 @@ def spawnScrapField(terrain, coordinate):
     terrain.scrapFields.append((bigX, bigY, 0))
 
 def spawnTrapRoom(terrain, coordinate, faction, doors="0,6 6,0 6,12 12,6"):
+    '''
+    spawn a trap room
+    '''
     trapRoom2 = spawnRoom(terrain, "EmptyRoom", coordinate, doors)
 
     trapRoom2.tag = "traproom"

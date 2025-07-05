@@ -77,24 +77,31 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
         roomPos = edgeTrapRooms[0].getPosition()
         plannedTraproomPositions = []
         candidateTraproomPositions = []
+        obsoleteRoomMarkers = []
         for offset in offsets:
             offsetedPosition = (roomPos[0]+offset[0],roomPos[1]+offset[1],roomPos[2]+offset[2])
             if offsetedPosition in cityPlaner.plannedRooms:
                 if not terrain.getRoomByPosition(offsetedPosition):
                     plannedTraproomPositions.append(offsetedPosition)
+                else:
+                    obsoleteRoomMarkers.append(offsetedPosition)
             if not terrain.getRoomByPosition(offsetedPosition) and offsetedPosition not in terrain.forests and offsetedPosition not in terrain.scrapFields:
                 candidateTraproomPositions.append(offsetedPosition)
 
-        # add the subquest
+        # remove obsolete room markers
+        if obsoleteRoomMarkers:
+            quest = src.quests.questMap["UnScheduleRoomBuilding"](roomPosition=random.choice(obsoleteRoomMarkers))
+            return ([quest],None)
+
+        # add subquest to built a rooom already scheduled
         if plannedTraproomPositions:
-            # add subquest to built a rooom already scheduled
             quest = src.quests.questMap["BuildRoom"](targetPosition=random.choice(plannedTraproomPositions),tryHard=True)
             return ([quest],None)
-        else:
-            # add subquest to schedule building a rooom
-            offsetedPosition = (roomPos[0]+offset[0],roomPos[1]+offset[1],roomPos[2]+offset[2])
-            quest = src.quests.questMap["ScheduleRoomBuilding"](roomPosition=random.choice(candidateTraproomPositions),priorityBuild=True)
-            return ([quest],None)
+
+        # add subquest to schedule building a rooom
+        offsetedPosition = (roomPos[0]+offset[0],roomPos[1]+offset[1],roomPos[2]+offset[2])
+        quest = src.quests.questMap["ScheduleRoomBuilding"](roomPosition=random.choice(candidateTraproomPositions),priorityBuild=True)
+        return ([quest],None)
 
     def generateTextDescription(self):
         '''
@@ -108,6 +115,11 @@ Strengthen the base defences
         return text
 
     def assignToCharacter(self, character):
+        '''
+        handle assignment to character
+        '''
+
+        # abort if the quest is already assigned to a character
         if self.character:
             return
 

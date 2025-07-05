@@ -188,7 +188,6 @@ Draw a floor plan assigned to a room{reason}.
                             counter2 += 1
                             if counter2 > 9:
                                 break
-
                 if quests:
                     return (list(reversed(quests)),None)
 
@@ -201,7 +200,10 @@ Draw a floor plan assigned to a room{reason}.
             if buildSites is not None:
                 del character.container.floorPlan["buildSites"]
 
+        # draw storage slots
         if "storageSlots" in character.container.floorPlan:
+
+            # remove completed storage slots from todo list
             storageSlots = character.container.floorPlan.get("storageSlots")
             if storageSlots:
                 for existingStorageSlot in character.container.storageSlots:
@@ -209,11 +211,13 @@ Draw a floor plan assigned to a room{reason}.
                         storageSlots.pop()
                         break
 
+            # shuffle the storage slots to make the solver less deterministic
             storageSlots = character.container.floorPlan.get("storageSlots")[:]
             if len(storageSlots) > 1:
                 index = random.randint(0,len(storageSlots)-1)
                 storageSlots = storageSlots[index:]+storageSlots[:index]
 
+            # generate the quests to draw some storage slots
             if storageSlots:
                 quests = []
                 counter = 0
@@ -241,10 +245,14 @@ Draw a floor plan assigned to a room{reason}.
                 if quests:
                     return (list(reversed(quests)),None)
 
+            # clean up the floorplan
             if storageSlots is not None:
                 del character.container.floorPlan["storageSlots"]
 
+        # draw input slots
         if "inputSlots" in character.container.floorPlan:
+
+            # remove completed input slots from todo list
             inputSlots = character.container.floorPlan.get("inputSlots")
             if inputSlots:
                 for existingInputslot in character.container.inputSlots:
@@ -252,8 +260,11 @@ Draw a floor plan assigned to a room{reason}.
                         inputSlots.pop()
                         break
 
+            # shuffle the input slots to make the solver less deterministic
             inputSlots = character.container.floorPlan.get("inputSlots")[:]
             random.shuffle(inputSlots)
+
+            # generate the quests to draw some storage slots
             if inputSlots:
                 quests = []
                 counter = 0
@@ -275,10 +286,10 @@ Draw a floor plan assigned to a room{reason}.
                             quests.append(quest)
                             inputSlots.remove(inputSlot2)
                             counter2 += 1
-
                 if quests:
                     return (list(reversed(quests)),None)
 
+            # clean up the floorplan
             if inputSlots is not None:
                 del character.container.floorPlan["inputSlots"]
 

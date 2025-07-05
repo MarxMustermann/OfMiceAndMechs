@@ -108,11 +108,20 @@ class MachinePlacing(src.quests.MetaQuestSequence):
 
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
+        '''
+        generates the quests for the machinePlacing duty
+        '''
+
+        # build the items in all rooms
         terrain = character.getTerrain()
         produceQuest = None
         for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
+
+            # ignore rooms with alarms
             if room.alarm:
                 continue
+
+            
             if (not room.floorPlan) and room.buildSites:
                 checkedMaterial = set()
                 for buildSite in random.sample(room.buildSites,len(room.buildSites)):
@@ -292,4 +301,5 @@ class MachinePlacing(src.quests.MetaQuestSequence):
             return (None,None)
         return (None,None)
 
+# register the quest
 src.quests.addType(MachinePlacing)

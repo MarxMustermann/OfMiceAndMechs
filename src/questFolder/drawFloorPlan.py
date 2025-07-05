@@ -6,6 +6,12 @@ import src
 class DrawFloorPlan(src.quests.MetaQuestSequence):
     '''
     quest to draw a floorplan of a room
+
+    Parameters:
+        description: the description to be shown in the UI
+        creator: the entity creating this quest. (obsolete?)
+        targetPosition: the position of the room dto work in 
+        reason: the reason to be shown in the UI
     '''
     type = "DrawFloorPlan"
     def __init__(self, description="draw floor plan", creator=None, targetPosition=None,reason=None):

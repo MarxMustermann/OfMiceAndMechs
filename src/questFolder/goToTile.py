@@ -308,7 +308,8 @@ The target tile is {direction[4:]}
             if not self.isPathSane(character):
                 self.generatePath(character)
                 if not self.path:
-                    self.fail()
+                    if not dryRun:
+                        self.fail()
                     return (None,None)
 
             # exit the room

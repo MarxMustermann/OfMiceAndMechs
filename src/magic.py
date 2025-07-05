@@ -317,6 +317,9 @@ def spawnArenaRoom(terrain, coordinate, difficulty, doors="0,6 6,0 6,12 12,6"):
 
 
 def spawnTempleRoom(terrain, coordinate, faction, doors="0,6 6,0 6,12 12,6"):
+    '''
+    spawn a temple
+    '''
     throneRoom = spawnRoom(terrain, "EmptyRoom", coordinate, doors)
     throneRoom.tag = "temple"
     for item in throneRoom.itemsOnFloor:
@@ -384,6 +387,9 @@ def spawnTempleRoom(terrain, coordinate, faction, doors="0,6 6,0 6,12 12,6"):
 
 
 def spawnSpawnRoom(terrain, coordinate, faction, doors="0,6 6,0 6,12 12,6"):
+    '''
+    spawn a room with equipment to spawn clones
+    '''
     spawnedRoom = spawnRoom(terrain, "EmptyRoom", coordinate, doors)
     for item in spawnedRoom.itemsOnFloor:
         if item.type != "Door":
@@ -487,6 +493,9 @@ def spawnSpawnRoom(terrain, coordinate, faction, doors="0,6 6,0 6,12 12,6"):
 
 
 def spawnControlRoom(terrain, coordinate, spawnReportArchive=False):
+    '''
+    spawn a main control room for the base
+    '''
     mainRoom = spawnRoom(terrain, "EmptyRoom", coordinate, "0,6 6,0 6,12 12,6")
     mainRoom.storageRooms = []
     for item in mainRoom.getItemByPosition((12, 6, 0)):
@@ -625,6 +634,9 @@ def spawnControlRoom(terrain, coordinate, spawnReportArchive=False):
 
 
 def spawnRoom(terrain, roomType, coordinate, doors="0,6 6,0 6,12 12,6"):
+    '''
+    spawn a room
+    '''
     architect = getArchitect(terrain)
 
     return architect.doAddRoom(
@@ -640,6 +652,9 @@ def spawnRoom(terrain, roomType, coordinate, doors="0,6 6,0 6,12 12,6"):
 
 
 def getArchitect(terrain):
+    '''
+    get an architect item able to do things
+    '''
     items = terrain.getItemByPosition((1, 1, 0))
     if len(items):
         for item in items:
@@ -654,12 +669,18 @@ def getArchitect(terrain):
 
 
 def spawnForest(terrain,coordinate):
+    '''
+    spawn a forrest
+    '''
     terrain.forests.append(coordinate)
     
     tree = src.items.itemMap["Tree"]()
     terrain.addItem(tree,(15*coordinate[0]+7,15*coordinate[1]+7,0))
 
 def spawnWaves():
+    '''
+    spawn waves of enemies
+    '''
     for (godId,god) in src.gamestate.gamestate.gods.items():
         if ( (god["lastHeartPos"][0] != god["home"][0]) or
              (god["lastHeartPos"][1] != god["home"][1])):

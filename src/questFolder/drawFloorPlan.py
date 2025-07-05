@@ -41,6 +41,7 @@ Draw a floor plan assigned to a room{reason}.
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
         '''
         generate the next step to complete this quest
+        TODO: remove side effects in dry run
         '''
 
         # do nothing if there is a subquest
@@ -295,9 +296,11 @@ Draw a floor plan assigned to a room{reason}.
             if inputSlots is not None:
                 del character.container.floorPlan["inputSlots"]
 
+        # delete the floorplan
         if character.container.floorPlan:
             character.container.floorPlan = None
 
+        # complete the quest. (should be somewhere else)
         if not dryRun:
             self.postHandler()
         return (None,None)

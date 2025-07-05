@@ -2,19 +2,12 @@ import src
 
 
 class CityPlaner(src.items.Item):
-    """
-    """
-
-
+    '''
+    ingame item that should offer an easy interface
+    '''
     type = "CityPlaner"
-
     def __init__(self, name="CityPlaner", noId=False):
-        """
-        set up the initial state
-        """
-
         super().__init__(display="CP", name=name)
-
         self.applyOptions.extend(
                         [
                                                                 ("showMap", "show map"),
@@ -34,14 +27,16 @@ class CityPlaner(src.items.Item):
         self.scheduledFloorPlans = []
 
     def addScrapCompactorFromMap(self,params,instaSpawn=False):
-        """
+        '''
         handle a character having selected building a room
         and adding a task to the items task list
 
         Parameters:
             params: parameters given from the interaction menu
-        """
+            instaSpawn: spawn the room contents directly (violates ingame logic)
+        '''
 
+        # unpack parameters
         character = params["character"]
 
         if "type" not in params:

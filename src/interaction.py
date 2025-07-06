@@ -22,6 +22,7 @@ from config import commandChars
 from src import cinematics
 from multiprocessing import Process
 from queue import PriorityQueue
+from heapq import heappush, heappop
 
 ################################################################################
 #
@@ -50,50 +51,69 @@ def advanceGame():
     advance the game
     """
 
-    # collect the characters that need to be advanced
-    global multi_chars
-    mainCharTerrain = src.gamestate.gamestate.mainChar.getTerrain()
-    multi_chars = set()
-    for row in src.gamestate.gamestate.terrainMap:
-        for specificTerrain in row:
-            for character in specificTerrain.characters:
-                multi_chars.add(character)
-            for room in specificTerrain.rooms:
-                for character in room.characters:
+    print("src.gamestate.gamestate.savedThisTurn")
+    print(src.gamestate.gamestate.savedThisTurn)
+
+    # initialize new turn
+    if not src.gamestate.gamestate.savedThisTurn:
+
+        # collect the characters that need to be advanced
+        global multi_chars
+        mainCharTerrain = src.gamestate.gamestate.mainChar.getTerrain()
+        multi_chars = set()
+        for row in src.gamestate.gamestate.terrainMap:
+            for specificTerrain in row:
+                for character in specificTerrain.characters:
                     multi_chars.add(character)
-            specificTerrain.advance()
-            if specificTerrain != mainCharTerrain:
-                specificTerrain.animations = []
                 for room in specificTerrain.rooms:
-                    room.animations = []
-    for extraRoot in src.gamestate.gamestate.extraRoots:
-        for character in extraRoot.characters:
-            multi_chars.add(character)
+                    for character in room.characters:
+                        multi_chars.add(character)
+                specificTerrain.advance()
+                if specificTerrain != mainCharTerrain:
+                    specificTerrain.animations = []
+                    for room in specificTerrain.rooms:
+                        room.animations = []
+        for extraRoot in src.gamestate.gamestate.extraRoots:
+            for character in extraRoot.characters:
+                multi_chars.add(character)
 
-    # change the actual games
-    src.gamestate.gamestate.multi_chars = multi_chars
-    src.gamestate.gamestate.tick += 1
-    logger.info("Tick %d", src.gamestate.gamestate.tick)
+        # change the actual games
+        src.gamestate.gamestate.multi_chars = multi_chars
+        src.gamestate.gamestate.tick += 1
+        logger.info("Tick %d", src.gamestate.gamestate.tick)
 
-    # give every character time to act this round
-    for character in multi_chars:
-        character.timeTaken -= 1
+        # give every character time to act this round
+        for character in multi_chars:
+            character.timeTaken -= 1
 
-    #
-    character_queue = PriorityQueue()
-    counter = 1
-    for character in multi_chars:
-        counter += 1
-        character_queue.put((character.timeTaken, counter, character))
+        # prepare an optimized data sturcture to hold the characters to advance
+        character_queue = []
+        counter = 1
+        for character in multi_chars:
+            counter += 1
 
-    while not character_queue.empty():
-        character = character_queue.get()[2]
+            heappush(character_queue,(character.timeTaken, counter, character))
 
+        # preserve some data in gamestate so it will be available after loading
+        src.gamestate.gamestate.mainLoop["counter"] = counter
+        src.gamestate.gamestate.mainLoop["character_queue"] = character_queue
+
+    # preserve some data from gamestate in case the game was loaded
+    counter = src.gamestate.gamestate.mainLoop["counter"]
+    character_queue = src.gamestate.gamestate.mainLoop["character_queue"]
+
+    # advance all characters in order of initiative
+    while character_queue:
+        character = character_queue[0][2]
         advanceChar(character, singleStep=True)
+        character_queue.pop(0)
 
         if character.timeTaken < 1 and not character.dead:
             counter += 1
-            character_queue.put((character.timeTaken, counter, character))
+            heappush(character_queue,(character.timeTaken, counter, character))
+
+        src.gamestate.gamestate.mainLoop["counter"] = counter
+        src.gamestate.gamestate.mainLoop["character_queue"] = character_queue
 
     # workaroud for backwards compability
     # TODO: removeme
@@ -159,6 +179,9 @@ def advanceGame():
         if src.gamestate.gamestate.tick % 150 == 0:
             src.gamestate.gamestate.save()
             src.gamestate.gamestate.mainChar.addMessage("auto saved")
+
+    # mark completion of the round as it should be
+    src.gamestate.gamestate.savedThisTurn = False
 
 def advanceGame_disabled():
     """

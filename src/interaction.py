@@ -49,8 +49,9 @@ def advanceGame():
     """
     advance the game
     """
-    global multi_chars
 
+    # collect the characters that need to be advanced
+    global multi_chars
     mainCharTerrain = src.gamestate.gamestate.mainChar.getTerrain()
     multi_chars = set()
     for row in src.gamestate.gamestate.terrainMap:
@@ -65,18 +66,20 @@ def advanceGame():
                 specificTerrain.animations = []
                 for room in specificTerrain.rooms:
                     room.animations = []
-
     for extraRoot in src.gamestate.gamestate.extraRoots:
         for character in extraRoot.characters:
             multi_chars.add(character)
 
+    # change the actual games
     src.gamestate.gamestate.multi_chars = multi_chars
     src.gamestate.gamestate.tick += 1
     logger.info("Tick %d", src.gamestate.gamestate.tick)
 
+    # give every character time to act this round
     for character in multi_chars:
         character.timeTaken -= 1
 
+    #
     character_queue = PriorityQueue()
     counter = 1
     for character in multi_chars:
@@ -92,31 +95,38 @@ def advanceGame():
             counter += 1
             character_queue.put((character.timeTaken, counter, character))
 
+    # workaroud for backwards compability
+    # TODO: removeme
     try:
         src.gamestate.gamestate.itemToUpdatePerTick
     except:
         src.gamestate.gamestate.itemToUpdatePerTick = []
-
     try:
         src.gamestate.gamestate.teleporterGroups
     except:
         src.gamestate.gamestate.teleporterGroups = {}
 
+    # update the items that actually do time based things
     for item in src.gamestate.gamestate.itemToUpdatePerTick:
         item.tick()
 
+    # make the teleporters teleport
     for group in src.gamestate.gamestate.teleporterGroups:
         (senders, receivers) = src.gamestate.gamestate.teleporterGroups[group]
         if len(receivers):
             for sender in senders:
                 sender.tick()
 
+    # handle god effects for this turn
     if src.gamestate.gamestate.tick%(15*15*15) == 0:
+
+        # give the gods new mana
         for god in src.gamestate.gamestate.gods.values():
             if "mana" not in god:
                 god["mana"] = 0
             god["mana"] += 10
 
+        # respawn lost glass hearts
         for (godId,god) in src.gamestate.gamestate.gods.items():
             terrain = src.gamestate.gamestate.terrainMap[god["lastHeartPos"][1]][god["lastHeartPos"][0]]
             foundEmptyGlassStatue = None
@@ -131,17 +141,20 @@ def advanceGame():
                         hasItem = True
                     else:
                         foundEmptyGlassStatue = glassStatue
-
             if not hasItem and foundEmptyGlassStatue:
                 foundEmptyGlassStatue.hasItem = True
 
+        # give out mana bonus for controlling glass hearts
         for god in src.gamestate.gamestate.gods.values():
             terrain = src.gamestate.gamestate.terrainMap[god["lastHeartPos"][1]][god["lastHeartPos"][0]]
             increaseAmount = min(1,terrain.maxMana-terrain.mana)
             terrain.mana += increaseAmount
 
+        # spawn enemy waves
         if not src.gamestate.gamestate.difficulty == "tutorial":
             src.magic.spawnWaves()
+
+    # auto save
     if settings.get("auto save"):
         if src.gamestate.gamestate.tick % 150 == 0:
             src.gamestate.gamestate.save()

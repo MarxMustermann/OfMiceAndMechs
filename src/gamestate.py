@@ -192,25 +192,27 @@ class GameState:
 
 
     def loadP(self,gameIndex):
-        """
+        '''
         load the gamestate from disc
+
+        Parameters:
+            gameIndex: the index of the gameslot to load
 
         Returns:
             bool: success indicator
-        """
+        '''
 
+        # update the metadata
         try:
-            # register the save
             with open("gamestate/globalInfo.json") as globalInfoFile:
                 rawState = json.loads(globalInfoFile.read())
         except:
             rawState = {"saves": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"customPrefabs":[],"lastGameIndex":0}
-
         rawState["lastGameIndex"] = gameIndex
         with open("gamestate/globalInfo.json", "w") as globalInfoFile:
             json.dump(rawState,globalInfoFile)
 
-
+        # load the actual gamefile
         import pickle
         with open(f"gamestate/gamestate_{gameIndex}", 'rb') as file:
             newSelf = pickle.loads(zlib.decompress(file.read()))

@@ -1,6 +1,7 @@
 import random
 
 import src
+import src.helpers
 
 # bad code: there is very specific code in here, so it it stopped to be a generic class
 class Monster(src.characters.Character):
@@ -207,14 +208,14 @@ class Monster(src.characters.Character):
         return color
 
     @staticmethod
-    def get_random_multiplier():
+    def get_random_multiplier() -> float:
         match src.gamestate.gamestate.difficulty:
             case "difficult":
-                return random.uniform(1, 2 * 7)
+                return src.helpers.power_distribution(1, 2 * 7, 2.5)
             case "medium":
-                return random.uniform(1, 1 * 4)
+                return src.helpers.power_distribution(1, 1 * 4, 3.0)
             case _:
-                return random.uniform(1, 0.5 * 4)
+                return src.helpers.power_distribution(1, 0.5 * 4, 3.5)
 
     def multiplier_range(self, multiplier):
         match src.gamestate.gamestate.difficulty:

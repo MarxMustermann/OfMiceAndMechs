@@ -160,3 +160,11 @@ def deal_with_window_events(exception=None):
                     src.interaction.tcodContext.present(
                         src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True
                     )
+
+
+def power_distribution(low: int | float, high: int | float, power=2.0) -> float:
+    """
+    return random values between low and high while preferring lower values according to skewed curve/distribution
+    """
+    u = random.random() ** power
+    return low + (high - low) * u

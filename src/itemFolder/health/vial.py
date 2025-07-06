@@ -38,6 +38,7 @@ class Vial(src.items.Item):
                 character.addMessage("you drink from the vial and empty it")
 
         # change state
+        character.takeTime(1,"drank from vial")
         self.uses -= 1
         self.changed()
         character.heal(10+min((character.maxHealth-character.health)//10,10))

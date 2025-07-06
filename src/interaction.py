@@ -51,9 +51,6 @@ def advanceGame():
     advance the game
     """
 
-    print("src.gamestate.gamestate.savedThisTurn")
-    print(src.gamestate.gamestate.savedThisTurn)
-
     # initialize new turn
     if not src.gamestate.gamestate.savedThisTurn:
 

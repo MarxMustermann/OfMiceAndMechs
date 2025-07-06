@@ -152,7 +152,6 @@ class GameState:
         # draw an info that saving is in progress
         offsetX = 51
         offsetY = 10
-        tcodConsole.clear()
         printUrwidToTcod("+-------------+",(offsetX+3+16,offsetY+13))
         printUrwidToTcod("| saving game |",(offsetX+3+16,offsetY+14))
         printUrwidToTcod("+-------------+",(offsetX+3+16,offsetY+15))

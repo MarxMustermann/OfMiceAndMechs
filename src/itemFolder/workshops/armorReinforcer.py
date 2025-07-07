@@ -162,7 +162,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
             params["armor"] = armor
             params["chitinPlates"] = chitinPlates
             character.macroState["submenue"] = src.menuFolder.sliderMenu.SliderMenu(
-                "choose the Defense level to upgrade to",
+                "choose the armor level to upgrade to",
                 defaultValue=max(
                     armor.armorValue,
                     self.preferredMaxDefense

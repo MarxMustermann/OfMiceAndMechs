@@ -4,10 +4,12 @@ import src
 from decimal import Decimal as D
 
 class ArmorReinforcer(src.items.itemMap["WorkShop"]):
-    """
+    '''
     ingame item to uprage armor
-    """
 
+    Parameters:
+        display: the icon for this item
+    '''
     type = "ArmorReinforcer"
     name = "armor Reinforcer"
     description = "Use it to upgrade armors"
@@ -22,6 +24,10 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         self.preferredMaxDefense = None
 
     def amountNeededForOneUpgrade(self, current_defense_output):
+        '''
+        calculate the cost for doing one upgrade
+        '''
+
         # enforce bounds
         if current_defense_output > D("8"):
             return None
@@ -124,6 +130,9 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
 
             # define callback to show total costs
             def amountNeededToLevel(level, allowed=None):
+                '''
+                callback returning the a text describing the cost to upgrade to a certain level
+                '''
                 ChitinPlates_consumed = 0
                 base = D(armor.armorValue)
                 if base == level and not allowed:

@@ -141,7 +141,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         params["nextUpgradeCost"] = amount_grindstone_needed_for_upgrade
         params["grindstones"] = grindstones
 
-        def AmountNeededToLevel(level, allowed=None):
+        def amountNeededToLevel(level, allowed=None):
             grindstone_consumed = 0
             if sword.baseDamage == level and not allowed:
                 return "the sword won't be upgraded"
@@ -174,7 +174,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             defaultValue=max(
                 sword.baseDamage,
                 self.preferredMaxDamage
-                if self.preferredMaxDamage and AmountNeededToLevel(self.preferredMaxDamage, True) <= len(grindstones)
+                if self.preferredMaxDamage and amountNeededToLevel(self.preferredMaxDamage, True) <= len(grindstones)
                 else 0,
             ),
             minValue=sword.baseDamage,

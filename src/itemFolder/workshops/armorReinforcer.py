@@ -107,18 +107,18 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
 
             # abort and notify user if all upgrades are too expensive
             if D(armor.armorValue) >= D("8"):
-                character.macroState["submenue"] = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(
-                    "you can't improve the armor further."
-                )
+                text = "you can't improve the armor further."
+                submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
+                character.macroState["submenue"] = submenue
                 return
 
             # abort and notify the user if no ugrade can be afforded
             next_upgrade_level = D(armor.armorValue) + D("0.5")
             amount_ChitinPlates_needed_for_upgrade = self.amountNeededForOneUpgrade(next_upgrade_level)
             if amount_ChitinPlates_needed_for_upgrade > len(chitinPlates):
-                character.macroState["submenue"] = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(
-                    f"you can't improve your armor.\nYou need {amount_ChitinPlates_needed_for_upgrade} ChitinPlates to upgrade your armor."
-                )
+                text = f"you can't improve your armor.\nYou need {amount_ChitinPlates_needed_for_upgrade} ChitinPlates to upgrade your armor."
+                submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
+                character.macroState["submenue"] = submenue
                 character.changed("improved armor")
                 return
 
@@ -180,7 +180,6 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         if chosenDefenseValue == armorOriginalDamage:
             return
 
-        
         # calculate the cost for the upgrade
         ChitinPlates_consumed = 0
         base = D(params["armor"].armorValue)

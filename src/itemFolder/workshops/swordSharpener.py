@@ -234,7 +234,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         if params.get("nextUpgradeCost"):
             character.addMessage(f'you will need {params.get("nextUpgradeCost")} grindstone to improve the sword again')
 
-    def SetDefaultMaxUpgradeAmount(self, character):
+    def setDefaultMaxUpgradeAmount(self, character):
         '''
         show the UI to set a maximum to sharpen to
         '''
@@ -247,11 +247,11 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         )
         character.macroState["submenue"].followUp = {
             "container": self,
-            "method": "SetterDefaultMaxUpgradeAmount",
+            "method": "setterDefaultMaxUpgradeAmount",
             "params": {"character": character},
         }
 
-    def SetterDefaultMaxUpgradeAmount(self, params):
+    def setterDefaultMaxUpgradeAmount(self, params):
         '''
         set the maximum to sharpen to
         '''
@@ -263,7 +263,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         generate a list of available complex actions
         '''
         base: dict = super().getConfigurationOptions(character)
-        base["s"] = ("set upgrade amount", self.SetDefaultMaxUpgradeAmount)
+        base["s"] = ("set upgrade amount", self.setDefaultMaxUpgradeAmount)
         return base
 
 # register the item type

@@ -133,24 +133,24 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
                 '''
                 callback returning the a text describing the cost to upgrade to a certain level
                 '''
-                ChitinPlates_consumed = 0
+                chitinPlates_consumed = 0
                 base = D(armor.armorValue)
                 if base == level and not allowed:
                     return "the armor won't be upgraded"
 
                 while base < level:
-                    ChitinPlates_consumed += self.amountNeededForOneUpgrade(base)
+                    chitinPlates_consumed += self.amountNeededForOneUpgrade(base)
                     base += D("0.5")
 
-                available = ChitinPlates_consumed <= len(chitinPlates)
+                available = chitinPlates_consumed <= len(chitinPlates)
 
                 if allowed:
                     return available
 
                 if available:
-                    return f"You will use {ChitinPlates_consumed} ChitinPlates"
+                    return f"You will use {chitinPlates_consumed} ChitinPlates"
                 else:
-                    return f"You will need {ChitinPlates_consumed} ChitinPlates to be able to upgrade"
+                    return f"You will need {chitinPlates_consumed} ChitinPlates to be able to upgrade"
 
             # DELETEME: backward compability
             try:

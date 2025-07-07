@@ -183,7 +183,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             stepValue=1,
             bigStepValue=2,
             targetParamName="amount",
-            additionalInfoCallBack=AmountNeededToLevel,
+            additionalInfoCallBack=amountNeededToLevel,
         )
         character.macroState["submenue"].followUp = {
             "container": self,

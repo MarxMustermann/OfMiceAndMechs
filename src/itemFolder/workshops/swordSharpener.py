@@ -162,21 +162,22 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             self.preferredMaxDamage
         except:
             self.preferredMaxDamage = 25
-
-
         try:
             self.preferredMaxDamage
         except:
             self.preferredMaxDamage = None
 
-        character.macroState["submenue"] = src.menuFolder.sliderMenu.SliderMenu(
-            query="choose the damage level to upgrade to",
-            defaultValue=max(
+
+        defaultValue=max(
                 sword.baseDamage,
                 self.preferredMaxDamage
                 if self.preferredMaxDamage and amountNeededToLevel(self.preferredMaxDamage, True) <= len(grindstones)
                 else 0,
-            ),
+            )
+
+        character.macroState["submenue"] = src.menuFolder.sliderMenu.SliderMenu(
+            query="choose the damage level to upgrade to",
+            defaultValue=defaultValue,
             minValue=sword.baseDamage,
             maxValue=30,
             stepValue=1,

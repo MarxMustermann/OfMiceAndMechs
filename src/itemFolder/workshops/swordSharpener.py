@@ -6,21 +6,30 @@ import src.menuFolder.oneKeystrokeMenu
 import src.menuFolder.sliderMenu
 
 class SwordSharpener(src.items.itemMap["WorkShop"]):
+    '''
+    ingame item to sharpen swords with
+    '''
     type = "SwordSharpener"
     name = "sword Sharpener"
     description = "Use it to upgrade swords"
     walkable = False
     bolted = True
-
     def __init__(self):
         super().__init__(display="SH")
         self.applyOptions.extend([("sharpen sword", "sharpen sword")])
         self.applyMap = {"sharpen sword": self.sharpenSwordHook}
         self.preferredMaxDamage = None
+
     def sharpenSwordHook(self, character):
+        '''
+        calls the actual sharpinging function with converted parameters
+        '''
         self.sharpenSword({"character": character})
 
     def amountNeededForOneUpgrade(self, current_damage_output):
+        '''
+        calculate how much the next upgrade would cost
+        '''
         if current_damage_output < 15:
             return 0
 
@@ -46,11 +55,14 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         return amount_grindstone_needed_for_upgrade
 
     def sharpenSword(self, params):
+        '''
+        start sharpening the sword
+        '''
 
         # unnpack paramters
         character = params["character"]
 
-        # start the actual production
+        # start the actual sword sharpening
         if "amount" in params:
             chosenDamageValue = params["amount"]
             swordOriginalDamage = params["sword"].baseDamage
@@ -76,7 +88,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             self.produceItem_wait(params)
             return
 
-        # make the user select the 
+        # make the user select the sword to sharpen
         if "choice" not in params:
             options = [("Sharpen Equipped Sword", "Sharpen Equipped Sword"), ("Sharpen Sword", "Sharpen Sword")]
             submenue = src.menuFolder.selectionMenu.SelectionMenu(
@@ -87,7 +99,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             character.macroState["submenue"].followUp = {"container": self, "method": "sharpenSword", "params": params}
             return
 
-        # check the grindstones that can be used to upgrade the sword
+        # collect the grindstones that can be used to upgrade the sword
         grindstones = []
         for item in character.inventory:
             if not isinstance(item, src.items.itemMap["Grindstone"]):
@@ -98,7 +110,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         if not grindstones:
             character.addMessage("you don't have Grindstone, you only can improve your sword to 15")
 
-        # get the sword to sharpen
+        # get the sword item to sharpen
         sword = None
         if params["choice"] == "Sharpen Equipped Sword":
             if character.weapon:
@@ -140,6 +152,9 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             return
 
         def amountNeededToLevel(level, allowed=None):
+            '''
+            callback returning the a text describing the cost to upgrade to a certain level
+            '''
             grindstone_consumed = 0
             if sword.baseDamage == level and not allowed:
                 return "the sword won't be upgraded"
@@ -202,6 +217,9 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         }
 
     def produceItem_done(self, params):
+        '''
+        actually do the sword sharpening
+        '''
         character = params["character"]
         improvement = params["improvementAmount"]
         character.changed("sharpened sword")
@@ -217,6 +235,9 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             character.addMessage(f'you will need {params.get("nextUpgradeCost")} grindstone to improve the sword again')
 
     def SetDefaultMaxUpgradeAmount(self, character):
+        '''
+        show the UI to set a maximum to sharpen to
+        '''
         character.macroState["submenue"] = src.menuFolder.sliderMenu.SliderMenu(
             "set the preferred max amount of damage to upgrade to",
             self.preferredMaxDamage if self.preferredMaxDamage else 20,
@@ -231,13 +252,19 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         }
 
     def SetterDefaultMaxUpgradeAmount(self, params):
+        '''
+        set the maximum to sharpen to
+        '''
         character = params["character"]
         self.preferredMaxDamage = params["value"]
 
     def getConfigurationOptions(self, character):
+        '''
+        generate a list of available complex actions
+        '''
         base: dict = super().getConfigurationOptions(character)
         base["s"] = ("set upgrade amount", self.SetDefaultMaxUpgradeAmount)
         return base
 
-
+# register the item type
 src.items.addType(SwordSharpener)

@@ -158,17 +158,26 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
             except:
                 self.preferredMaxDefense = 6
 
+            # calculate a reasonable default amount to upgrade
+            defaultValue = armor.armorValue
+            available_chitinPlates = len(chitinPlates)
+            while 1:
+                cost = self.amountNeededForOneUpgrade(defaultValue)
+                if cost is None:
+                    break
+                if cost > available_chitinPlates:
+                    break
+                if self.preferredMaxDefense and defaultValue >= self.preferredMaxDefense:
+                    break
+                available_chitinPlates -= cost
+                defaultValue += 1
+
             # spawn a slider to allow the user to select the amount to upgrade
             params["armor"] = armor
             params["chitinPlates"] = chitinPlates
             character.macroState["submenue"] = src.menuFolder.sliderMenu.SliderMenu(
                 "choose the armor level to upgrade to",
-                defaultValue=max(
-                    armor.armorValue,
-                    self.preferredMaxDefense
-                    if self.preferredMaxDefense and amountNeededToLevel(self.preferredMaxDefense, True) <= len(chitinPlates)
-                    else 0,
-                ),
+                defaultValue=defaultValue,
                 minValue=D(armor.armorValue),
                 maxValue=D(8),
                 stepValue=D(0.5),

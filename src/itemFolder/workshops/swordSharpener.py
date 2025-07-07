@@ -50,6 +50,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         # unnpack paramters
         character = params["character"]
 
+        # start the actual production
         if "amount" in params:
             chosenDamageValue = params["amount"]
             swordOriginalDamage = params["sword"].baseDamage
@@ -126,20 +127,17 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         if sword.baseDamage < 15:
             improvementAmount += 15-sword.baseDamage
 
+        # ensure upgrade cap was not reached
         amount_grindstone_needed_for_upgrade = self.amountNeededForOneUpgrade(sword.baseDamage + improvementAmount + 1)
-
         if amount_grindstone_needed_for_upgrade is None:
             character.addMessage("you can't improve your sword further.")
             return
 
+        # abort and show user feedback if no upgrade can be afforded
         if amount_grindstone_needed_for_upgrade > len(grindstones) and improvementAmount == 0:
             character.addMessage(f"you can't improve your sword.\nYou need {amount_grindstone_needed_for_upgrade} Grindstone to upgrade your sword.")
             character.changed("sharpened sword")
             return
-
-        params["sword"] = sword
-        params["nextUpgradeCost"] = amount_grindstone_needed_for_upgrade
-        params["grindstones"] = grindstones
 
         def amountNeededToLevel(level, allowed=None):
             grindstone_consumed = 0
@@ -158,6 +156,8 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             else:
                 return f"You will need {grindstone_consumed} grindstone to be able to upgrade"
 
+        # workaround for backwards compability
+        # TODO: removeme
         try:
             self.preferredMaxDamage
         except:
@@ -167,14 +167,21 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         except:
             self.preferredMaxDamage = None
 
+        # calculate a reasonable default amount to upgrade
+        defaultValue = sword.baseDamage
+        available_grindstones = len(grindstones)
+        while 1:
+            cost = self.amountNeededForOneUpgrade(defaultValue)
+            if cost is None:
+                break
+            if cost > available_grindstones:
+                break
+            if self.preferredMaxDamage and defaultValue >= self.preferredMaxDamage:
+                break
+            available_grindstones -= cost
+            defaultValue += 1
 
-        defaultValue=max(
-                sword.baseDamage,
-                self.preferredMaxDamage
-                if self.preferredMaxDamage and amountNeededToLevel(self.preferredMaxDamage, True) <= len(grindstones)
-                else 0,
-            )
-
+        # show the UI to select the actual value to upgrade
         character.macroState["submenue"] = src.menuFolder.sliderMenu.SliderMenu(
             query="choose the damage level to upgrade to",
             defaultValue=defaultValue,
@@ -185,13 +192,14 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             targetParamName="amount",
             additionalInfoCallBack=amountNeededToLevel,
         )
+        params["sword"] = sword
+        params["nextUpgradeCost"] = amount_grindstone_needed_for_upgrade
+        params["grindstones"] = grindstones
         character.macroState["submenue"].followUp = {
             "container": self,
             "method": "sharpenSword",
             "params": params,
         }
-
-        # remove/destroy grindstones used to upgrade sword
 
     def produceItem_done(self, params):
         character = params["character"]

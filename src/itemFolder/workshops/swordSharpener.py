@@ -155,20 +155,18 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             character.changed("sharpened sword")
             return
 
-        def amountNeededToLevel(level, allowed=None):
+        def amountNeededToLevel(level):
             '''
             callback returning the a text describing the cost to upgrade to a certain level
             '''
             grindstone_consumed = 0
-            if sword.baseDamage == level and not allowed:
+            if sword.baseDamage == level:
                 return "the sword won't be upgraded"
+
             for i in range(sword.baseDamage, level):
                 grindstone_consumed += self.amountNeededForOneUpgrade(i)
 
             available = grindstone_consumed <= len(grindstones)
-
-            if allowed:
-                return available
 
             if available:
                 return f"You will use {grindstone_consumed} grindstone"

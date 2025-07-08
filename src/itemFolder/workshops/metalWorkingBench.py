@@ -336,6 +336,7 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         # validate type
         if params.get("type") in self.reserved_manufactured_items:
             character.addMessage("cannot produce item type")
+            return
 
         if "amount" not in params:
             options = []

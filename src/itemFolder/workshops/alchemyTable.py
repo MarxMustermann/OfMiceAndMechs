@@ -1,21 +1,15 @@
 import src
 
 class AlchemyTable(src.items.itemMap["WorkShop"]):
-    """
+    '''
     ingame item used as ressource. basically does nothing
-    """
-
+    '''
     type = "AlchemyTable"
     name = "AlchemyTable"
     description = "Use it to build brew potions"
     walkable = False
     bolted = True
-
     def __init__(self):
-        """
-        set up internal state
-        """
-
         super().__init__(display = "AT")
 
         self.applyOptions.extend(
@@ -33,9 +27,15 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
         self.lastProduction = None
 
     def producePotionHook(self,character):
+        '''
+        call the actual funtion with converted parameters
+        '''
         self.producePotion({"character":character})
 
     def producePotion(self,params):
+        '''
+        show the UI to start producing a potion
+        '''
         character = params["character"]
 
         if "type" not in params:
@@ -120,6 +120,9 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
         self.produceItem_wait(params)
 
     def produceItem_done(self,params):
+        '''
+        actually produce to potion
+        '''
         character = params["character"]
         character.stats["items produced"][params["type"]] = character.stats["items produced"].get(params["type"], 0) + 1
         character.addMessage("You produce a %s"%(params["type"],))

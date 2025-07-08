@@ -338,6 +338,7 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
             character.addMessage("cannot produce item type")
             return
 
+        # show UI to set the amount that should be produced
         if "amount" not in params:
             options = []
             options.append((1,"1"))
@@ -352,6 +353,7 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
             character.macroState["submenue"].followUp = {"container":self,"method":"scheduleProduction","params":params}
             return
 
+        # add the task to the todo list
         amount = params["amount"]
         for _i in range(amount):
             self.scheduledItems.append(params["type"])
@@ -359,16 +361,17 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         character.addMessage(self.scheduledItems)
 
     def readyToUse(self):
-
+        '''
+        check if the item is ready to use
+        '''
         metalBarsFound = []
         for item in self.getInputItems():
             if item.type == "MetalBars":
                 metalBarsFound.append(item)
-
         if metalBarsFound:
             return True
         else:
             return False
 
-
+# register item type
 src.items.addType(MetalWorkingBench)

@@ -36,8 +36,11 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
         '''
         show the UI to start producing a potion
         '''
+
+        # unpack parameters
         character = params["character"]
 
+        # get user input for the type of potion to produce
         if "type" not in params:
             options = []
             for potionType in src.items.potionTypes:
@@ -48,7 +51,6 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"producePotion","params":params}
             return
-
         if params.get("type") == "byName":
             submenue = src.menuFolder.inputMenu.InputMenu("Type the name of the item to produce",targetParamName="type")
             submenue.tag = "alchemyTableProductInput"
@@ -56,36 +58,38 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
             character.macroState["submenue"].followUp = {"container":self,"method":"producePotion","params":params}
             return
 
+        # about on weird states
         if params.get("type") == None:
             return
-
-        if not "Potion" in params.get("type"):
+        if not "Potion" in params.get("type"): # TODO: solve this properly
             character.addMessage("You can only produce Potions here.")
             return
-
         if params.get("type") not in src.items.itemMap:
             if params.get("type"):
                 character.addMessage("Item type unknown.")
             return
+
+        # ensure there is a flask available
         accessible_items = character.inventory+self.getInputItems()
         flasks = []
         for item in accessible_items:
             if item.type != "Flask":
                 continue
             flasks.append(item)
-
         if not flasks:
             character.addMessage("You need to have a Flask in your inventory to use produce a potion")
             character.changed("no Flask error",{})
             return
-
         flask = flasks[-1]
 
+        # ensure the product can be stored somewhere
         dropsSpotsFull = self.checkForDropSpotsFull()
         if not character.getFreeInventorySpace() > 0 and flask not in character.inventory and dropsSpotsFull:
             character.addMessage("You have no free inventory space to put the item in")
             character.changed("inventory full error",{})
             return
+
+        # collect the required ingredients
         needed_Ingredients = {ing:None for ing in src.items.itemMap[params["type"]].Ingredients()}
         for item in accessible_items:
             t = type(item)
@@ -93,6 +97,7 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
                 needed_Ingredients[t] = item
         have_ingredients = all(needed_Ingredients[ing] is not None for ing in needed_Ingredients)
         
+        # show user feedback for missing ingredients
         if not have_ingredients:
             n = ""
             i = 1
@@ -103,8 +108,12 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
                         n+= ", "
             character.addMessage("you don't have the "+ n +" ingredient in your inventory")
             return
+
+        # remove potion from todo list
         if params["type"] in self.scheduledItems:
             self.scheduledItems.remove(params["type"])
+
+        # remove the ingredients used
         to_remove = [flask] + [needed_Ingredients[ing] for ing in needed_Ingredients]
         for item in to_remove:
             if item in character.inventory:
@@ -112,8 +121,8 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
             else:
                 self.container.removeItem(item)
 
+        # wait and actually produce the potion
         self.lastProduction = params["type"]
-
         params["productionTime"] = 100
         params["doneProductionTime"] = 0
         params["hitCounter"] = character.numAttackedWithoutResponse
@@ -123,20 +132,26 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
         '''
         actually produce to potion
         '''
+
+        # unpack parameters
         character = params["character"]
+
+        # track statistics
         character.stats["items produced"][params["type"]] = character.stats["items produced"].get(params["type"], 0) + 1
+
+        # show user feedback
         character.addMessage("You produce a %s"%(params["type"],))
         character.addMessage("It took you %s turns to do that"%(params["doneProductionTime"],))
 
-        dropsSpotsFull = self.checkForDropSpotsFull()
-
-        preferInventoryOut = True
-        if params.get("key") == "k":
-            preferInventoryOut = False
-
+        # create potion
         new = src.items.itemMap[params["type"]]()
         new.bolted = False
 
+        # add potion to the world
+        dropsSpotsFull = self.checkForDropSpotsFull()
+        preferInventoryOut = True
+        if params.get("key") == "k":
+            preferInventoryOut = False
         if (dropsSpotsFull or preferInventoryOut) and character.getFreeInventorySpace() > 0:
             character.inventory.append(new)
         elif dropsSpotsFull:
@@ -157,12 +172,14 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
                     self.container.addItem(new,targetPos)
                     break
 
+        # notify listeners
         character.changed("brewed potion",{"item":new})
 
     def getInputItems(self):
-
+        '''
+        get the items from the input slots
+        '''
         result = []
-
         for offset in [(0,1,0),(0,-1,0),(1,0,0),(-1,0,0)]:
             for item in self.container.getItemByPosition(
                 (self.xPosition + offset[0], self.yPosition + offset[1], self.zPosition+offset[2])

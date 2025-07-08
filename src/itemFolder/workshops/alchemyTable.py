@@ -276,7 +276,6 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
         amount = params["amount"]
         for _i in range(amount):
             self.scheduledItems.append(params["type"])
-        character.addMessage(self.scheduledItems)
 
     def readyToUse(self):
         '''

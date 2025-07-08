@@ -181,36 +181,43 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
         '''
         result = []
         for offset in [(0,1,0),(0,-1,0),(1,0,0),(-1,0,0)]:
-            for item in self.container.getItemByPosition(
-                (self.xPosition + offset[0], self.yPosition + offset[1], self.zPosition+offset[2])
-            ):
+            checkPosition = (self.xPosition + offset[0], self.yPosition + offset[1], self.zPosition+offset[2])
+            for item in self.container.getItemByPosition(checkPosition):
                 if item.bolted:
                     continue
                 result.append(item)
         return result
 
     def checkForDropSpotsFull(self):
-
+        '''
+        check if the output spots are full
+        '''
         for output in self.outs:
             targetPos = (self.xPosition+output[0], self.yPosition+output[1], self.zPosition+output[2])
             targetFull = False
             itemList = self.container.getItemByPosition(targetPos)
-
             if len(itemList):
                 targetFull = True
-
             if not targetFull:
                 break
-
         return targetFull
 
     def checkProductionScheduleHook(self,character):
+        '''
+        shoe the user the todo list
+        '''
         character.addMessage(self.scheduledItems)
 
     def scheduleProductionHook(self,character):
+        '''
+        call the actual function with changed parameters
+        '''
         self.scheduleProduction({"character":character})
 
     def repeat(self,character):
+        '''
+        repeat last production
+        '''
         if not self.lastProduction:
             character.addMessage("no last produced item found")
             return
@@ -218,9 +225,14 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
         self.produceItem(params)
 
     def scheduleProduction(self,params):
+        '''
+        schedule a potion to be brewed later
+        '''
 
+        # unpack parameters
         character = params["character"]
 
+        # get the type of potion to produce
         if "type" not in params:
             options = []
             options.append(("delete","delete"))
@@ -233,16 +245,19 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
             character.macroState["submenue"].followUp = {"container":self,"method":"scheduleProduction","params":params}
             return
 
+        # clear todo list if desired
         if params["type"] == "delete":
             self.scheduledItems = []
             return
 
+        # show UI to type in special potion names
         if params.get("type") == "byName":
             submenue = src.menuFolder.inputMenu.InputMenu("Type the name of the potion to produce",targetParamName="type")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"scheduleProduction","params":params}
             return
 
+        # show UI to get the amount of potions to produce
         if "amount" not in params:
             options = []
             options.append((1,"1"))
@@ -257,23 +272,25 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
             character.macroState["submenue"].followUp = {"container":self,"method":"scheduleProduction","params":params}
             return
 
+        # add the task to the todo list
         amount = params["amount"]
         for _i in range(amount):
             self.scheduledItems.append(params["type"])
-
         character.addMessage(self.scheduledItems)
 
     def readyToUse(self):
-
+        '''
+        checks if the item can be used right now
+        '''
         flasks = []
         for item in character.inventory+self.getInputItems():
             if item.type != "Flask":
                 continue
             flasks.append(item)
-
         if not flasks:
             return True
         else:
             return False
 
+# register the item type
 src.items.addType(AlchemyTable)

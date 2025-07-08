@@ -43,8 +43,11 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         '''
         show the UI to actually start producing an item
         '''
+
+        # unpack parameters
         character = params["character"]
 
+        # show the UI to select the type of item to produce
         if "type" not in params:
             options = []
             options.append(("Bolt","Bolt"))
@@ -77,9 +80,11 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
             character.macroState["submenue"].followUp = {"container":self,"method":"produceItem","params":params}
             return
 
+        # assume that only one item should be produced in most cases
         if params.get("key") not in ("J","K",):
             params["amount"] = 1
 
+        # show special UI to select a type by typing it in
         if params.get("type") == "byName":
             submenue = src.menuFolder.inputMenu.InputMenu("Type the name of the item to produce",targetParamName="type")
             submenue.tag = "metalWorkingProductInput"
@@ -87,20 +92,20 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
             character.macroState["submenue"].followUp = {"container":self,"method":"produceItem","params":params}
             return
 
+        # abort on weird states
         if params.get("type") not in src.items.itemMap:
             if params.get("type"):
                 character.addMessage("Item type unknown.")
             return
-
         if params.get("type") in src.items.nonManufacturedTypes:
             ty = params.get("type")
             character.addMessage(f"cannot produce item type {ty}")
             return
 
+        # get user input on how many items should be produced
         if "rawAmount" in params:
             params["amount"] = int(params["rawAmount"])
             del params["rawAmount"]
-
         if not "amount" in params:
             submenue = src.menuFolder.inputMenu.InputMenu("Type how many of the items produce",targetParamName="rawAmount")
             submenue.tag = "metalWorkingAmountInput"
@@ -108,34 +113,38 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
             character.macroState["submenue"].followUp = {"container":self,"method":"produceItem","params":params}
             return
 
+        # get input ressource
         metalBarsFound = []
         for item in character.inventory+self.getInputItems():
             if item.type == "MetalBars":
                 metalBarsFound.append(item)
-
         if not metalBarsFound:
             character.addMessage("You need to have metal bars in your inventory to use the metal working bench")
             character.changed("no metalBars error",{})
             return
-
         metalBar = metalBarsFound[-1]
 
+        # check if there is enough space to drop things
         dropsSpotsFull = self.checkForDropSpotsFull()
         if not character.getFreeInventorySpace() > 0 and metalBar not in character.inventory and dropsSpotsFull:
             character.addMessage("You have no free inventory space to put the item in")
             character.changed("inventory full error",{})
             return
 
+        # remove task from todo list
         if params["type"] in self.scheduledItems:
             self.scheduledItems.remove(params["type"])
 
+        # remove the input resources
         if metalBar in character.inventory:
             character.inventory.remove(metalBar)
         else:
             self.container.removeItem(metalBar)
 
+        # store the type for repeating production
         self.lastProduction = params["type"]
 
+        # trigger the actual production of the item
         timeModifier = 1
         if params["type"] == "Frame":
             timeModifier = 2
@@ -149,10 +158,18 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         self.produceItem_wait(params)
 
     def produceItem_done(self,params):
+        '''
+        actually produce the item
+        '''
+
+        # unpack parameters
         character = params["character"]
+
+        # show user feedback
         character.addMessage("You produce a %s"%(params["type"],))
         character.addMessage("It took you %s turns to do that"%(params["doneProductionTime"],))
 
+        # create the new item
         badListed = ["Sword","Armor","Rod"]
         if params["type"] in badListed:
             character.addMessage("producing this item here will result in a low quality item")
@@ -161,12 +178,11 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
             new = src.items.itemMap[params["type"]]()
         new.bolted = False
 
+        # add the item to the world
         dropsSpotsFull = self.checkForDropSpotsFull()
-
         preferInventoryOut = True
         if params.get("key") in ("k","K",):
             preferInventoryOut = False
-
         if (dropsSpotsFull or preferInventoryOut) and character.getFreeInventorySpace() > 0:
             character.inventory.append(new)
         elif dropsSpotsFull:
@@ -176,28 +192,31 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
                 targetPos = (self.xPosition+output[0], self.yPosition+output[1], self.zPosition+output[2])
                 targetFull = False
                 itemList = self.container.getItemByPosition(targetPos)
-
                 if len(itemList) > 15:
                     targetFull = True
                 for item in itemList:
                     if item.walkable is False:
                         targetFull = True
-
                 if not targetFull:
                     self.container.addItem(new,targetPos)
                     break
 
+        # track stats
         character.stats["items produced"][params["type"]] = character.stats["items produced"].get(params["type"], 0) + 1
+
+        # notify listeners
         character.changed("worked metal",{"item":new})
 
+        # repeat if more items should be produced
         params["amount"] -= 1
         if params["amount"]:
             self.produceItem(params)
 
     def getInputItems(self):
-
+        '''
+        get all items accessible as inputs
+        '''
         result = []
-
         for offset in [(0,1,0),(0,-1,0),(1,0,0),(-1,0,0)]:
             for item in self.container.getItemByPosition(
                 (self.xPosition + offset[0], self.yPosition + offset[1], self.zPosition+offset[2])

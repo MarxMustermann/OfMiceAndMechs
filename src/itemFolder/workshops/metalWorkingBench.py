@@ -227,36 +227,53 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         return result
 
     def checkForDropSpotsFull(self):
-
+        '''
+        checks if there are free drop spots
+        '''
         for output in self.outs:
             targetPos = (self.xPosition+output[0], self.yPosition+output[1], self.zPosition+output[2])
             targetFull = False
             itemList = self.container.getItemByPosition(targetPos)
-
             if len(itemList):
                 targetFull = True
-
             if not targetFull:
                 break
-
         return targetFull
 
     def checkProductionScheduleHook(self,character):
+        '''
+        calls the actual function with modified parameters
+        '''
         character.addMessage(self.scheduledItems)
 
     def scheduleProductionHook(self,character):
+        '''
+        calls the actual function with modified parameters
+        '''
         self.scheduleProduction({"character":character})
 
     def repeat_K(self,character):
+        '''
+        calls the actual function with modified parameters
+        '''
         self.repeat(character,key="K")
 
     def repeat_J(self,character):
+        '''
+        calls the actual function with modified parameters
+        '''
         self.repeat(character,key="J")
 
     def repeat_k(self,character):
+        '''
+        calls the actual function with modified parameters
+        '''
         self.repeat(character,key="k")
 
     def repeat(self,character,key="j"):
+        '''
+        repeat the last production
+        '''
         if not self.lastProduction:
             character.addMessage("no last produced item found")
             return
@@ -264,9 +281,14 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         self.produceItem(params)
 
     def scheduleProduction(self,params):
+        '''
+        show the UI fo schedule production of things
+        '''
 
+        # unpack parameters
         character = params["character"]
 
+        # show UI to select thy type of item to schedule
         if "type" not in params:
             options = []
             options.append(("delete","delete"))
@@ -299,16 +321,19 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
             character.macroState["submenue"].followUp = {"container":self,"method":"scheduleProduction","params":params}
             return
 
+        # clear schedule
         if params["type"] == "delete":
             self.scheduledItems = []
             return
 
+        # show special UI to type in a type
         if params.get("type") == "byName":
             submenue = src.menuFolder.inputMenu.InputMenu("Type the name of the item to produce",targetParamName="type")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"scheduleProduction","params":params}
             return
 
+        # validate type
         if params.get("type") in self.reserved_manufactured_items:
             character.addMessage("cannot produce item type")
 

@@ -1,23 +1,16 @@
 import src
 
 class MetalWorkingBench(src.items.itemMap["WorkShop"]):
-    """
-    ingame item used as ressource. basically does nothing
-    """
-
+    '''
+    ingame item able to produce basically anything
+    '''
     type = "MetalWorkingBench"
     name = "MetalWorkingBench"
     description = "Use it to build simple things"
     walkable = False
     bolted = True
-
     def __init__(self):
-        """
-        set up internal state
-        """
-
         super().__init__(display = "WM")
-
         self.applyOptions.extend(
                         [
                                                                 ("produce item", "produce item"),
@@ -35,16 +28,21 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
                     "repeat_J": self.repeat_J,
                     "repeat_K": self.repeat_K,
                         }
-
         self.ins = [(1,0,0),]
         self.outs = [(0,1,0),(0,-1,0)]
         self.scheduledItems = []
         self.lastProduction = None
 
     def produceItemHook(self,character):
+        '''
+        call the actual function with converted parameters
+        '''
         self.produceItem({"character":character})
 
     def produceItem(self,params):
+        '''
+        show the UI to actually start producing an item
+        '''
         character = params["character"]
 
         if "type" not in params:

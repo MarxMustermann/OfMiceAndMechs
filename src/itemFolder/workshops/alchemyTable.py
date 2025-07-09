@@ -105,24 +105,24 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
             return
 
         # collect the required ingredients
-        ingredients = src.items.itemMap[params["type"]].Ingredients()
+        ingredients = src.items.itemMap[params["type"]].ingredients()
         if ingredients is None:
             ingredients = []
-        needed_Ingredients = {ing:None for ing in ingredients}
+        needed_ingredients = {ing:None for ing in ingredients}
         for item in accessible_items:
             t = type(item)
-            if t in needed_Ingredients and needed_Ingredients[t] is None:
-                needed_Ingredients[t] = item
-        have_ingredients = all(needed_Ingredients[ing] is not None for ing in needed_Ingredients)
+            if t in needed_ingredients and needed_ingredients[t] is None:
+                needed_ingredients[t] = item
+        have_ingredients = all(needed_ingredients[ing] is not None for ing in needed_ingredients)
         
         # show user feedback for missing ingredients
         if not have_ingredients:
             n = ""
             i = 1
-            for ing in needed_Ingredients:
-                if needed_Ingredients[ing] is None:
+            for ing in needed_ingredients:
+                if needed_ingredients[ing] is None:
                     n+= ing.name
-                    if i != len(needed_Ingredients):
+                    if i != len(needed_ingredients):
                         n+= ", "
             character.addMessage("you don't have the "+ n +" ingredient in your inventory")
             return
@@ -132,7 +132,7 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
             self.scheduledItems.remove(params["type"])
 
         # remove the ingredients used
-        to_remove = [flask] + [needed_Ingredients[ing] for ing in needed_Ingredients]
+        to_remove = [flask] + [needed_ingredients[ing] for ing in needed_ingredients]
         for item in to_remove:
             if item in character.inventory:
                 character.inventory.remove(item)

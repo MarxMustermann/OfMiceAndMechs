@@ -25,6 +25,6 @@ class Potion(src.items.Item):
         return src.canvas.displayChars.vial_full
     
     @abstractmethod
-    def Ingredients(): ...
+    def ingredients(): ...
 
 src.items.addType(Potion)

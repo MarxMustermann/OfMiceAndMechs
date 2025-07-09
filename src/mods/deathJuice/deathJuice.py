@@ -15,7 +15,7 @@ class DeathJuicePotion(src.items.itemMap["Potion"]):
     def getLongInfo(self):
         return f"This Potion kills you"
 
-    def Ingredients():
+    def ingredients():
         return [src.items.itemMap["Scrap"]]
 
 src.items.addType(DeathJuicePotion,potion=True)

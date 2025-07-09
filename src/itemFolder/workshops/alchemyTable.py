@@ -105,7 +105,10 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
             return
 
         # collect the required ingredients
-        needed_Ingredients = {ing:None for ing in src.items.itemMap[params["type"]].Ingredients()}
+        ingredients = src.items.itemMap[params["type"]].Ingredients()
+        if ingredients is None:
+            ingredients = []
+        needed_Ingredients = {ing:None for ing in ingredients}
         for item in accessible_items:
             t = type(item)
             if t in needed_Ingredients and needed_Ingredients[t] is None:

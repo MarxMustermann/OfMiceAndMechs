@@ -58,6 +58,10 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
             character.macroState["submenue"].followUp = {"container":self,"method":"producePotion","params":params}
             return
 
+        # assume that only one item should be produced in most cases
+        if params.get("key") not in ("J","K",):
+            params["amount"] = 1
+
         # about on weird states
         if params.get("type") == None:
             return
@@ -67,6 +71,17 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
         if params.get("type") not in src.items.itemMap:
             if params.get("type"):
                 character.addMessage("Item type unknown.")
+            return
+
+        # get user input on how many items should be produced
+        if "rawAmount" in params:
+            params["amount"] = int(params["rawAmount"])
+            del params["rawAmount"]
+        if not "amount" in params:
+            submenue = src.menuFolder.inputMenu.InputMenu("Type how many of the items produce",targetParamName="rawAmount")
+            submenue.tag = "metalWorkingAmountInput"
+            character.macroState["submenue"] = submenue
+            character.macroState["submenue"].followUp = {"container":self,"method":"producePotion","params":params}
             return
 
         # ensure there is a flask available
@@ -174,6 +189,11 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
 
         # notify listeners
         character.changed("brewed potion",{"item":new})
+
+        # repeat if more items should be produced
+        params["amount"] -= 1
+        if params["amount"]:
+            self.producePotion(params)
 
     def getInputItems(self):
         '''

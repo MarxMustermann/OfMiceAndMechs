@@ -381,25 +381,50 @@ The target tile is {direction[4:]}
                     return (None,None)
 
             # go to tile edge
+            terrain = character.getTerrain()
             if self.path[0] == (0,1):
+                rooms = terrain.getRoomByPosition(character.getBigPosition(offset=(0,1,0)))
+                if rooms:
+                    room = rooms[0]
+                    if not room.getPositionWalkable((6,0,0)):
+                        self.fail("path blocken by room")
+                        return (None,None)
                 if character.xPosition%15 == 7 and character.yPosition%15 == 13:
                     return (None,("s","exit the tile"))
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(7,13,0),description="go to tile edge",reason="reach the tiles edge")
                 quest.generatePath(character)
                 return ([quest],None)
             if self.path[0] == (0,-1):
+                rooms = terrain.getRoomByPosition(character.getBigPosition(offset=(0,-1,0)))
+                if rooms:
+                    room = rooms[0]
+                    if not room.getPositionWalkable((6,12,0)):
+                        self.fail("path blocken by room")
+                        return (None,None)
                 if character.xPosition%15 == 7 and character.yPosition%15 == 1:
                     return (None,("w","exit the tile"))
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(7,1,0),description="go to tile edge",reason="reach the tiles edge")
                 quest.generatePath(character)
                 return ([quest],None)
             if self.path[0] == (1,0):
+                rooms = terrain.getRoomByPosition(character.getBigPosition(offset=(1,0,0)))
+                if rooms:
+                    room = rooms[0]
+                    if not room.getPositionWalkable((0,6,0)):
+                        self.fail("path blocken by room")
+                        return (None,None)
                 if character.xPosition%15 == 13 and character.yPosition%15 == 7:
                     return (None,("d","exit the tile"))
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(13,7,0),description="go to tile edge",reason="reach the tiles edge")
                 quest.generatePath(character)
                 return ([quest],None)
             if self.path[0] == (-1,0):
+                rooms = terrain.getRoomByPosition(character.getBigPosition(offset=(-1,0,0)))
+                if rooms:
+                    room = rooms[0]
+                    if not room.getPositionWalkable((12,6,0)):
+                        self.fail("path blocken by room")
+                        return (None,None)
                 if character.xPosition%15 == 1 and character.yPosition%15 == 7:
                     return (None,("a","exit the tile"))
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(1,7,0),description="go to tile edge",reason="reach the tiles edge")

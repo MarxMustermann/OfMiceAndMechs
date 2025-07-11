@@ -164,7 +164,14 @@ def deal_with_window_events(exception=None):
 
 def power_distribution(low: int | float, high: int | float, power=2.0) -> float:
     """
-    return random values between low and high while preferring lower values according to skewed curve/distribution
+    return random values between low and high while preferring **lower** values according to skewed curve/distribution
     """
     u = random.random() ** power
+    return low + (high - low) * u
+
+def reversed_power_dist(low: int | float, high: int | float, power=2.0) -> float:
+    """
+    return random values between low and high while preferring **higher** values according to skewed curve/distribution
+    """
+    u = 1 - random.random() ** power
     return low + (high - low) * u

@@ -999,7 +999,7 @@ class MainGame(BasicPhase):
 
         return pos
 
-    def start(self, seed=0, difficulty=None):
+    def start(self, seed=0, difficulty=None, difficultyMap=None):
         """
         set up terrain and spawn main character
 
@@ -1042,10 +1042,12 @@ class MainGame(BasicPhase):
             difficultyModifier = 0.5
         if self.difficulty == "easy":
             difficultyModifier = 0.5
-        if self.difficulty == "difficult":
+        if self.difficulty in ("difficult", "custom"):
             difficultyModifier = 2
 
         src.gamestate.gamestate.difficulty = self.difficulty
+        if self.difficulty == "custom":
+            src.gamestate.gamestate.difficultyMap = difficultyMap
 
         numDungeons = 7
         if self.difficulty == "tutorial":
@@ -1060,7 +1062,7 @@ class MainGame(BasicPhase):
         if self.difficulty == "tutorial":
             self.setUpGlassHeartDungeon(dungeonPositions[0],1,1*difficultyModifier)
             self.setUpGlassHeartDungeon(dungeonPositions[1],2,1.5*difficultyModifier)
-        elif self.difficulty == "difficult":
+        elif self.difficulty in ("difficult", "custom"):
             gods = [1,2,3,4,5,6,7]
             random.shuffle(gods)
             self.setUpGlassHeartDungeon(dungeonPositions[0],gods[0],1*difficultyModifier)

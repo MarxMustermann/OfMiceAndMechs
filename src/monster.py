@@ -208,8 +208,19 @@ class Monster(src.characters.Character):
         return color
 
     @staticmethod
-    def get_random_multiplier() -> float:
+    def get_random_multiplier(monster=None) -> float:
         match src.gamestate.gamestate.difficulty:
+            case "custom":
+                percentage = src.gamestate.gamestate.difficultyMap["monster"]
+
+                if monster and monster in src.gamestate.gamestate.difficultyMap:
+                    percentage = src.gamestate.gamestate.difficultyMap[monster]
+
+                if percentage <= 0.5:
+                    return src.helpers.power_distribution(1, 2 * 7, 1 + 1.5 * (1 - (percentage / 0.5)))
+
+                return src.helpers.reversed_power_dist(1, 2 * 7, 1 + 1.5 * ((percentage - 0.5) / 0.5))
+
             case "difficult":
                 return src.helpers.power_distribution(1, 2 * 7, 2.5)
             case "medium":

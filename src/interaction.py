@@ -14,6 +14,7 @@ import gzip
 import src.canvas
 import src.chats
 import src.gamestate
+import src.helpers
 import src.menuFolder
 import src.quests
 import src.rooms
@@ -4644,6 +4645,7 @@ def showMainMenu(args=None):
 
     selectedScenario = "mainGame"
     difficulty = "easy"
+    difficultyMap = {}
 
     def fixRoomRender(render):
         for row in render:
@@ -4785,8 +4787,9 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
             terrain.addCharacter(golem, pos[0] + x * 15, pos[1] + y * 15)
 
     lastStep = time.time()
-    submenu = None
-
+    submenu = []
+    slider = []
+    choosen_slider = 0
     while 1:
         tcodConsole.clear()
         time.sleep(0.1)
@@ -4920,7 +4923,9 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
             doLoad()
 
             if loadingControl["needsStart"] is True:
-                src.gamestate.gamestate.currentPhase.start(seed=None,difficulty=difficulty)
+                src.gamestate.gamestate.currentPhase.start(
+                    seed=None, difficulty=difficulty, difficultyMap=difficultyMap
+                )
                 terrain = src.gamestate.gamestate.terrainMap[7][7]
 
                 src.gamestate.gamestate.mainChar.runCommandString("~")
@@ -4983,253 +4988,408 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
         printUrwidToTcod((src.interaction.urwid.AttrSpec(color, "black"),f"(s)cenario   - {selectedScenario}"),(offsetX+3,offsetY+24))
         printUrwidToTcod(f"(g)ameslot   - {gameIndex}",(offsetX+3,offsetY+25))
 
-        if submenu == "gameslot":
-            printUrwidToTcod("+----------------------+",(offsetX+3+16,offsetY+23))
-            printUrwidToTcod("| choose the gameslot: |",(offsetX+3+16,offsetY+24))
-            for i in range(10):
-                if saves[i]:
-                    printUrwidToTcod(f"| {i}: load game         |",(offsetX+3+16,offsetY+25+i))
-                else:
-                    printUrwidToTcod(f"| {i}: new game          |",(offsetX+3+16,offsetY+25+i))
-            printUrwidToTcod("+----------------------+",(offsetX+3+16,offsetY+35))
+        for menu in submenu:
+            match menu:
+                case "gameslot":
+                    printUrwidToTcod("+----------------------+", (offsetX + 3 + 16, offsetY + 23))
+                    printUrwidToTcod("| choose the gameslot: |", (offsetX + 3 + 16, offsetY + 24))
+                    for i in range(10):
+                        if saves[i]:
+                            printUrwidToTcod(f"| {i}: load game         |", (offsetX + 3 + 16, offsetY + 25 + i))
+                        else:
+                            printUrwidToTcod(f"| {i}: new game          |", (offsetX + 3 + 16, offsetY + 25 + i))
+                    printUrwidToTcod("+----------------------+", (offsetX + 3 + 16, offsetY + 35))
+                case "scenario":
+                    maxLength = 0
+                    for scenario in scenarios:
+                        maxLength = max(maxLength, len(scenario[1]))
 
-        if submenu == "scenario":
-            maxLength = 0
-            for scenario in scenarios:
-                maxLength = max(maxLength,len(scenario[1]))
+                    printUrwidToTcod("+" + "-" * (maxLength + 5) + "+", (offsetX + 3 + 16, offsetY + 22))
+                    i = 0
+                    for scenario in scenarios:
+                        printUrwidToTcod(
+                            ("| %s: %s " + " " * (maxLength - len(scenario[1])) + "|")
+                            % (
+                                scenario[2],
+                                scenario[1],
+                            ),
+                            (offsetX + 3 + 16, offsetY + 23 + i),
+                        )
+                        i += 1
+                    printUrwidToTcod("+" + "-" * (maxLength + 5) + "+", (offsetX + 3 + 16, offsetY + 23 + i))
 
-            printUrwidToTcod("+"+"-"*(maxLength+5)+"+",(offsetX+3+16,offsetY+22))
-            i = 0
-            for scenario in scenarios:
-                printUrwidToTcod(("| %s: %s "+" "*(maxLength-len(scenario[1]))+"|")%(scenario[2],scenario[1],),(offsetX+3+16,offsetY+23+i))
-                i += 1
-            printUrwidToTcod("+"+"-"*(maxLength+5)+"+",(offsetX+3+16,offsetY+23+i))
+                case "difficulty":
+                    printUrwidToTcod(
+                        "+-------------------------------------------------------------------+",
+                        (offsetX + 3 + 16, offsetY + 21),
+                    )
+                    printUrwidToTcod(
+                        "| (e)asy                                                            |",
+                        (offsetX + 3 + 16, offsetY + 22),
+                    )
+                    printUrwidToTcod(
+                        "| easy is easy. Recommended to start with.                          |",
+                        (offsetX + 3 + 16, offsetY + 23),
+                    )
+                    printUrwidToTcod(
+                        "| This mode should teach you how the game works.                    |",
+                        (offsetX + 3 + 16, offsetY + 24),
+                    )
+                    printUrwidToTcod(
+                        "|                                                                   |",
+                        (offsetX + 3 + 16, offsetY + 25),
+                    )
+                    printUrwidToTcod(
+                        "| (m)edium                                                          |",
+                        (offsetX + 3 + 16, offsetY + 26),
+                    )
+                    printUrwidToTcod(
+                        "| medium is pretty hard. Recommended after winning an easy run.     |",
+                        (offsetX + 3 + 16, offsetY + 27),
+                    )
+                    printUrwidToTcod(
+                        "| Balanced to be challenging after mastering one game mechanic      |",
+                        (offsetX + 3 + 16, offsetY + 28),
+                    )
+                    printUrwidToTcod(
+                        "|                                                                   |",
+                        (offsetX + 3 + 16, offsetY + 29),
+                    )
+                    printUrwidToTcod(
+                        "| (d)ifficult                                                       |",
+                        (offsetX + 3 + 16, offsetY + 30),
+                    )
+                    printUrwidToTcod(
+                        "| difficult is really hard. not recomended                          |",
+                        (offsetX + 3 + 16, offsetY + 31),
+                    )
+                    printUrwidToTcod(
+                        "| Should be a challenging with full meta knowledge                  |",
+                        (offsetX + 3 + 16, offsetY + 32),
+                    )
+                    printUrwidToTcod(
+                        "|                                                                   |",
+                        (offsetX + 3 + 16, offsetY + 33),
+                    )
+                    printUrwidToTcod(
+                        "| (c)ustom                                                          |",
+                        (offsetX + 3 + 16, offsetY + 34),
+                    )
+                    printUrwidToTcod(
+                        "| custom difficulty settings                                        |",
+                        (offsetX + 3 + 16, offsetY + 35),
+                    )
 
+                    printUrwidToTcod(
+                        "+-------------------------------------------------------------------+",
+                        (offsetX + 3 + 16, offsetY + 36),
+                    )
 
-        if submenu == "difficulty":
-            printUrwidToTcod("+-------------------------------------------------------------------+",(offsetX+3+16,offsetY+21))
-            printUrwidToTcod("| (e)asy                                                            |",(offsetX+3+16,offsetY+22))
-            printUrwidToTcod("| easy is easy. Recommended to start with.                          |",(offsetX+3+16,offsetY+23))
-            printUrwidToTcod("| This mode should teach you how the game works.                    |",(offsetX+3+16,offsetY+24))
-            printUrwidToTcod("|                                                                   |",(offsetX+3+16,offsetY+25))
-            printUrwidToTcod("| (m)edium                                                          |",(offsetX+3+16,offsetY+26))
-            printUrwidToTcod("| medium is pretty hard. Recommended after winning an easy run.     |",(offsetX+3+16,offsetY+27))
-            printUrwidToTcod("| Balanced to be challenging after mastering one game mechanic      |",(offsetX+3+16,offsetY+28))
-            printUrwidToTcod("|                                                                   |",(offsetX+3+16,offsetY+29))
-            printUrwidToTcod("| (d)ifficult                                                       |",(offsetX+3+16,offsetY+30))
-            printUrwidToTcod("| difficult is really hard. not recomended                          |",(offsetX+3+16,offsetY+31))
-            printUrwidToTcod("| Should be a challenging with full meta knowledge                  |",(offsetX+3+16,offsetY+32))
-            printUrwidToTcod("+-------------------------------------------------------------------+",(offsetX+3+16,offsetY+33))
+                case "delete":
+                    printUrwidToTcod(
+                        (src.interaction.urwid.AttrSpec("#f00", "black"), "+---------------------------------------+"),
+                        (offsetX + 2, offsetY + 21),
+                    )
+                    printUrwidToTcod(
+                        (src.interaction.urwid.AttrSpec("#f00", "black"), "| this will delete your game state      |"),
+                        (offsetX + 2, offsetY + 22),
+                    )
+                    printUrwidToTcod(
+                        (src.interaction.urwid.AttrSpec("#f00", "black"), "| press y to confirm                    |"),
+                        (offsetX + 2, offsetY + 23),
+                    )
+                    printUrwidToTcod(
+                        (src.interaction.urwid.AttrSpec("#f00", "black"), "+---------------------------------------+"),
+                        (offsetX + 2, offsetY + 24),
+                    )
 
-        if submenu == "delete":
-            printUrwidToTcod((src.interaction.urwid.AttrSpec("#f00", "black"),"+---------------------------------------+"),(offsetX+2,offsetY+21))
-            printUrwidToTcod((src.interaction.urwid.AttrSpec("#f00", "black"),"| this will delete your game state      |"),(offsetX+2,offsetY+22))
-            printUrwidToTcod((src.interaction.urwid.AttrSpec("#f00", "black"),"| press y to confirm                    |"),(offsetX+2,offsetY+23))
-            printUrwidToTcod((src.interaction.urwid.AttrSpec("#f00", "black"),"+---------------------------------------+"),(offsetX+2,offsetY+24))
+                case "confirmQuit":
+                    printUrwidToTcod(
+                        (src.interaction.urwid.AttrSpec("#fff", "black"), "+-----------------------------+"),
+                        (offsetX + 2, offsetY + 21),
+                    )
+                    printUrwidToTcod(
+                        (src.interaction.urwid.AttrSpec("#fff", "black"), "| Do you really want to quit? |"),
+                        (offsetX + 2, offsetY + 22),
+                    )
+                    printUrwidToTcod(
+                        (src.interaction.urwid.AttrSpec("#fff", "black"), "| press y/enter to confirm    |"),
+                        (offsetX + 2, offsetY + 23),
+                    )
+                    printUrwidToTcod(
+                        (src.interaction.urwid.AttrSpec("#fff", "black"), "+-----------------------------+"),
+                        (offsetX + 2, offsetY + 24),
+                    )
 
-        if submenu == "confirmQuit":
-            printUrwidToTcod((src.interaction.urwid.AttrSpec("#fff", "black"),"+-----------------------------+"),(offsetX+2,offsetY+21))
-            printUrwidToTcod((src.interaction.urwid.AttrSpec("#fff", "black"),"| Do you really want to quit? |"),(offsetX+2,offsetY+22))
-            printUrwidToTcod((src.interaction.urwid.AttrSpec("#fff", "black"),"| press y/enter to confirm    |"),(offsetX+2,offsetY+23))
-            printUrwidToTcod((src.interaction.urwid.AttrSpec("#fff", "black"),"+-----------------------------+"),(offsetX+2,offsetY+24))
+                case "custom_difficulty":
+                    start_x = offsetX + 70
+                    printUrwidToTcod(
+                        "+-------------------------------------+",
+                        (start_x, offsetY + 21),
+                    )
+                    start_y = offsetY + 22
+                    for i, (title, key, current_value) in enumerate(slider):
+                        percantage = current_value / 100
+                        amount = int(percantage * 35) * "║"
+                        amount = amount + (35 - int(percantage * 35)) * "|"
+                        show = "| " + amount + " |"
+                        title_end = ((35 - len(title)) * " ") + " |"
+                        title_adjusted = "| " + title + title_end
+                        if i == choosen_slider:
+                            printUrwidToTcod(
+                                (src.interaction.urwid.AttrSpec("black", "#fff"), title_adjusted),
+                                (start_x, start_y),
+                            )
+                        else:
+                            printUrwidToTcod(
+                                title_adjusted,
+                                (start_x, start_y),
+                            )
+                        printUrwidToTcod(
+                            show,
+                            (start_x, start_y + 1),
+                        )
+                        start_y += 2
+                    printUrwidToTcod(
+                        "+-------------------------------------+",
+                        (start_x, start_y),
+                    )
 
         tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
 
         events = tcod.event.get()
+        current_submenu = submenu[-1] if len(submenu) else ""
         for event in events:
-            if submenu == "gameslot":
-                if isinstance(event,tcod.event.KeyDown):
-                    key = event.sym
-                    if key == tcod.event.KeySym.ESCAPE:
-                        submenu = None
-                    if key == tcod.event.KeySym.F11:
-                        fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
-                            tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
-                        )
-                        tcod.lib.SDL_SetWindowFullscreen(
-                            tcodContext.sdl_window_p,
-                            0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
-                        )
-                    if key == tcod.event.KeySym.N0:
-                        gameIndex = 0
-                        submenu = None
-                    if key == tcod.event.KeySym.N1:
-                        gameIndex = 1
-                        submenu = None
-                    if key == tcod.event.KeySym.N2:
-                        gameIndex = 2
-                        submenu = None
-                    if key == tcod.event.KeySym.N3:
-                        gameIndex = 3
-                        submenu = None
-                    if key == tcod.event.KeySym.N4:
-                        gameIndex = 4
-                        submenu = None
-                    if key == tcod.event.KeySym.N5:
-                        gameIndex = 5
-                        submenu = None
-                    if key == tcod.event.KeySym.N6:
-                        gameIndex = 6
-                        submenu = None
-                    if key == tcod.event.KeySym.N7:
-                        gameIndex = 7
-                        submenu = None
-                    if key == tcod.event.KeySym.N8:
-                        gameIndex = 8
-                        submenu = None
-                    if key == tcod.event.KeySym.N9:
-                        gameIndex = 9
-                        submenu = None
-            elif submenu == "scenario":
-                if isinstance(event,tcod.event.KeyDown):
-                    key = event.sym
-                    convertedKey = None
-                    if key == tcod.event.KeySym.F11:
-                        fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
-                            tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
-                        )
-                        tcod.lib.SDL_SetWindowFullscreen(
-                            tcodContext.sdl_window_p,
-                            0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
-                        )
-                    if key == tcod.event.KeySym.ESCAPE:
-                        submenu = None
-                    if key == tcod.event.KeySym.m:
-                        convertedKey = "m"
-                    if key == tcod.event.KeySym.h:
-                        if event.mod & tcod.event.Modifier.SHIFT:
-                            convertedKey = "H"
-                        else:
-                            convertedKey = "h"
-                    if key == tcod.event.KeySym.t:
-                        if event.mod & tcod.event.Modifier.SHIFT:
-                            convertedKey = "T"
-                        else:
-                            convertedKey = "t"
-                    if key == tcod.event.KeySym.p:
-                        convertedKey = "p"
-                    if key == tcod.event.KeySym.b:
-                        convertedKey = "b"
-                    if key == tcod.event.KeySym.r:
-                        convertedKey = "r"
-                    if key == tcod.event.KeySym.s:
-                        if event.mod & tcod.event.Modifier.SHIFT:
-                            convertedKey = "S"
-                        else:
-                            convertedKey = "s"
-                    if key == tcod.event.KeySym.c:
-                        convertedKey = "c"
-                    if key == tcod.event.KeySym.d:
-                        convertedKey = "d"
-                    if key == tcod.event.KeySym.x:
-                        if event.mod & tcod.event.Modifier.SHIFT:
-                            convertedKey = "X"
-                        else:
-                            convertedKey = "x"
+            match current_submenu:
+                case "gameslot":
+                    if isinstance(event, tcod.event.KeyDown):
+                        key = event.sym
+                        if key == tcod.event.KeySym.ESCAPE:
+                            submenu.pop()
+                        if key == tcod.event.KeySym.F11:
+                            fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
+                                tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
+                            )
+                            tcod.lib.SDL_SetWindowFullscreen(
+                                tcodContext.sdl_window_p,
+                                0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
+                            )
+                        if key == tcod.event.KeySym.N0:
+                            gameIndex = 0
+                            submenu.pop()
+                        if key == tcod.event.KeySym.N1:
+                            gameIndex = 1
+                            submenu.pop()
+                        if key == tcod.event.KeySym.N2:
+                            gameIndex = 2
+                            submenu.pop()
+                        if key == tcod.event.KeySym.N3:
+                            gameIndex = 3
+                            submenu.pop()
+                        if key == tcod.event.KeySym.N4:
+                            gameIndex = 4
+                            submenu.pop()
+                        if key == tcod.event.KeySym.N5:
+                            gameIndex = 5
+                            submenu.pop()
+                        if key == tcod.event.KeySym.N6:
+                            gameIndex = 6
+                            submenu.pop()
+                        if key == tcod.event.KeySym.N7:
+                            gameIndex = 7
+                            submenu.pop()
+                        if key == tcod.event.KeySym.N8:
+                            gameIndex = 8
+                            submenu.pop()
+                        if key == tcod.event.KeySym.N9:
+                            gameIndex = 9
+                            submenu.pop()
 
-                    for scenario in scenarios:
-                        if scenario[2] == convertedKey:
-                            selectedScenario = scenario[0]
-                            submenu = None
+                case "scenario":
+                    if isinstance(event, tcod.event.KeyDown):
+                        key = event.sym
+                        convertedKey = None
+                        if key == tcod.event.KeySym.F11:
+                            fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
+                                tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
+                            )
+                            tcod.lib.SDL_SetWindowFullscreen(
+                                tcodContext.sdl_window_p,
+                                0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
+                            )
+                        if key == tcod.event.KeySym.ESCAPE:
+                            submenu.pop()
+                        if key == tcod.event.KeySym.m:
+                            convertedKey = "m"
+                        if key == tcod.event.KeySym.h:
+                            if event.mod & tcod.event.Modifier.SHIFT:
+                                convertedKey = "H"
+                            else:
+                                convertedKey = "h"
+                        if key == tcod.event.KeySym.t:
+                            if event.mod & tcod.event.Modifier.SHIFT:
+                                convertedKey = "T"
+                            else:
+                                convertedKey = "t"
+                        if key == tcod.event.KeySym.p:
+                            convertedKey = "p"
+                        if key == tcod.event.KeySym.b:
+                            convertedKey = "b"
+                        if key == tcod.event.KeySym.r:
+                            convertedKey = "r"
+                        if key == tcod.event.KeySym.s:
+                            if event.mod & tcod.event.Modifier.SHIFT:
+                                convertedKey = "S"
+                            else:
+                                convertedKey = "s"
+                        if key == tcod.event.KeySym.c:
+                            convertedKey = "c"
+                        if key == tcod.event.KeySym.d:
+                            convertedKey = "d"
+                        if key == tcod.event.KeySym.x:
+                            if event.mod & tcod.event.Modifier.SHIFT:
+                                convertedKey = "X"
+                            else:
+                                convertedKey = "x"
 
-            elif submenu == "difficulty":
-                if isinstance(event,tcod.event.KeyDown):
-                    key = event.sym
-                    if key == tcod.event.KeySym.F11:
-                        fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
-                            tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
-                        )
-                        tcod.lib.SDL_SetWindowFullscreen(
-                            tcodContext.sdl_window_p,
-                            0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
-                        )
-                    if key == tcod.event.KeySym.ESCAPE:
-                        submenu = None
-                    if key == tcod.event.KeySym.e:
-                        difficulty = "easy"
-                        submenu = None
-                    if key == tcod.event.KeySym.m:
-                        difficulty = "medium"
-                        submenu = None
-                    if key == tcod.event.KeySym.d:
-                        difficulty = "difficult"
-                        submenu = None
-            elif submenu == "delete":
-                if isinstance(event,tcod.event.KeyDown):
-                    key = event.sym
+                        for scenario in scenarios:
+                            if scenario[2] == convertedKey:
+                                selectedScenario = scenario[0]
+                                submenu.pop()
 
-                    if key == tcod.event.KeySym.F11:
-                        fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
-                            tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
-                        )
-                        tcod.lib.SDL_SetWindowFullscreen(
-                            tcodContext.sdl_window_p,
-                            0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
-                        )
-                    if key == tcod.event.KeySym.y:
-                        try:
-                            # register the save
-                            with open("gamestate/globalInfo.json") as globalInfoFile:
-                                rawState = json.loads(globalInfoFile.read())
-                        except:
-                            rawState = {"saves": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"customPrefabs":[],"lastGameIndex":0}
+                case "difficulty":
+                    if isinstance(event, tcod.event.KeyDown):
+                        key = event.sym
+                        if key == tcod.event.KeySym.F11:
+                            fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
+                                tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
+                            )
+                            tcod.lib.SDL_SetWindowFullscreen(
+                                tcodContext.sdl_window_p,
+                                0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
+                            )
+                        if key == tcod.event.KeySym.ESCAPE:
+                            submenu.pop()
+                        if key == tcod.event.KeySym.e:
+                            difficulty = "easy"
+                            submenu.pop()
+                        if key == tcod.event.KeySym.m:
+                            difficulty = "medium"
+                            submenu.pop()
+                        if key == tcod.event.KeySym.d:
+                            difficulty = "difficult"
+                            submenu.pop()
+                        if key == tcod.event.KeySym.c:
+                            submenu.append("custom_difficulty")
+                            slider.append(["Monsters Difficulty", "monster", 50])
 
-                        rawState["saves"][gameIndex] = 0
-                        with open("gamestate/globalInfo.json", "w") as globalInfoFile:
-                            json.dump(rawState,globalInfoFile)
+                case "custom_difficulty":
+                    if isinstance(event, tcod.event.KeyDown):
+                        key = event.sym
+                        if key == tcod.event.KeySym.RETURN:
+                            difficulty = "custom"
+                            for _, key, v in slider:
+                                difficultyMap[key] = v / 100
 
-                    submenu = None
-            elif submenu == "confirmQuit":
-                if isinstance(event,tcod.event.KeyDown):
-                    key = event.sym
-                    if key in (tcod.event.KeySym.RETURN,tcod.event.KeySym.y):
+                            submenu.pop()
+                            submenu.pop()
+                        if key in (tcod.event.KeySym.LEFT, tcod.event.KeySym.a):
+                            slider[choosen_slider][2] = src.helpers.clamp(slider[choosen_slider][2] - 10, 0, 100)
+
+                        if key in (tcod.event.KeySym.RIGHT, tcod.event.KeySym.d):
+                            slider[choosen_slider][2] = src.helpers.clamp(slider[choosen_slider][2] + 10, 0, 100)
+
+                        if key in (tcod.event.KeySym.UP, tcod.event.KeySym.w):
+                            choosen_slider = src.helpers.clamp(choosen_slider - 1, 0, len(slider))
+                        if key in (tcod.event.KeySym.DOWN, tcod.event.KeySym.s):
+                            choosen_slider = src.helpers.clamp(choosen_slider + 1, 0, len(slider))
+
+                case "delete":
+                    if isinstance(event, tcod.event.KeyDown):
+                        key = event.sym
+
+                        if key == tcod.event.KeySym.F11:
+                            fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
+                                tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
+                            )
+                            tcod.lib.SDL_SetWindowFullscreen(
+                                tcodContext.sdl_window_p,
+                                0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
+                            )
+                        if key == tcod.event.KeySym.y:
+                            try:
+                                # register the save
+                                with open("gamestate/globalInfo.json") as globalInfoFile:
+                                    rawState = json.loads(globalInfoFile.read())
+                            except:
+                                rawState = {
+                                    "saves": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                    "customPrefabs": [],
+                                    "lastGameIndex": 0,
+                                }
+
+                            rawState["saves"][gameIndex] = 0
+                            with open("gamestate/globalInfo.json", "w") as globalInfoFile:
+                                json.dump(rawState, globalInfoFile)
+
+                        submenu.pop()
+
+                case "confirmQuit":
+                    if isinstance(event, tcod.event.KeyDown):
+                        key = event.sym
+                        if key in (tcod.event.KeySym.RETURN, tcod.event.KeySym.y):
+                            src.interaction.tcodMixer.close()
+                            raise SystemExit()
+                        submenu.pop()
+
+                case _:
+                    if isinstance(event, tcod.event.Quit):
                         src.interaction.tcodMixer.close()
                         raise SystemExit()
-                    submenu = None
-            else:
-                if isinstance(event, tcod.event.Quit):
-                    src.interaction.tcodMixer.close()
-                    raise SystemExit()
-                if isinstance(event, tcod.event.WindowResized):
-                    checkResetWindowSize(event.width,event.height)
-                if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
-                    src.interaction.tcodMixer.close()
-                    raise SystemExit()
-                if isinstance(event,tcod.event.KeyDown):
-                    key = event.sym
-                    if key == tcod.event.KeySym.F11:
-                        fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
-                            tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
-                        )
-                        tcod.lib.SDL_SetWindowFullscreen(
-                            tcodContext.sdl_window_p,
-                            0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
-                        )
-                    if key == tcod.event.KeySym.ESCAPE:
-                        submenu = "confirmQuit"
-                    if key == tcod.event.KeySym.p:
-                        try:
-                            # register the save
-                            with open("gamestate/globalInfo.json") as globalInfoFile:
-                                rawState = json.loads(globalInfoFile.read())
-                        except:
-                            rawState = {"saves": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"customPrefabs":[],"lastGameIndex":0}
+                    if isinstance(event, tcod.event.WindowResized):
+                        checkResetWindowSize(event.width, event.height)
+                    if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
+                        src.interaction.tcodMixer.close()
+                        raise SystemExit()
+                    if isinstance(event, tcod.event.KeyDown):
+                        key = event.sym
+                        if key == tcod.event.KeySym.F11:
+                            fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
+                                tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
+                            )
+                            tcod.lib.SDL_SetWindowFullscreen(
+                                tcodContext.sdl_window_p,
+                                0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
+                            )
+                        if key == tcod.event.KeySym.ESCAPE:
+                            submenu.append("confirmQuit")
+                        if key == tcod.event.KeySym.p:
+                            try:
+                                # register the save
+                                with open("gamestate/globalInfo.json") as globalInfoFile:
+                                    rawState = json.loads(globalInfoFile.read())
+                            except:
+                                rawState = {
+                                    "saves": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                    "customPrefabs": [],
+                                    "lastGameIndex": 0,
+                                }
 
-                        rawState["lastGameIndex"] = gameIndex
-                        with open("gamestate/globalInfo.json", "w") as globalInfoFile:
-                            json.dump(rawState,globalInfoFile)
-                        startGame = True
-                    if key == tcod.event.KeySym.g:
-                        submenu = "gameslot"
-                    if key == tcod.event.KeySym.s:
-                        if not canLoad:
-                            submenu = "scenario"
-                    if key == tcod.event.KeySym.d:
-                        if event.mod & tcod.event.Modifier.SHIFT:
-                            submenu = "delete"
-                        else:
+                            rawState["lastGameIndex"] = gameIndex
+                            with open("gamestate/globalInfo.json", "w") as globalInfoFile:
+                                json.dump(rawState, globalInfoFile)
+                            startGame = True
+                        if key == tcod.event.KeySym.g:
+                            submenu.append("gameslot")
+                        if key == tcod.event.KeySym.s:
                             if not canLoad:
-                                submenu = "difficulty"
+                                submenu.append("scenario")
+                        if key == tcod.event.KeySym.d:
+                            if event.mod & tcod.event.Modifier.SHIFT:
+                                submenu.append("delete")
+                            else:
+                                if not canLoad:
+                                    submenu.append("difficulty")
 
 def showInterruptChoice(text,options):
     tcod.event.get()

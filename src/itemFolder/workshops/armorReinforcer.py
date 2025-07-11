@@ -199,16 +199,16 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
             return
 
         # calculate the cost for the upgrade
-        ChitinPlates_consumed = 0
+        chitinPlates_consumed = 0
         base = D(params["armor"].armorValue)
         while base < chosenDefenseValue:
-            ChitinPlates_consumed += self.amountNeededForOneUpgrade(base)
+            chitinPlates_consumed += self.amountNeededForOneUpgrade(base)
             base += D("0.5")
 
         # remove the resources to pay for the upgrade
         chitinPlates = params["chitinPlates"]
-        if ChitinPlates_consumed:
-            for chitinPlate in chitinPlates[:ChitinPlates_consumed]:
+        if chitinPlates_consumed:
+            for chitinPlate in chitinPlates[:chitinPlates_consumed]:
                 character.inventory.remove(chitinPlate)
 
         # trigger the actual productions process
@@ -216,7 +216,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         params["productionTime"] = 20 * improvementAmount * 2
         params["doneProductionTime"] = 0
         params["improvementAmount"] = improvementAmount
-        params["cost"] = ChitinPlates_consumed
+        params["cost"] = chitinPlates_consumed
         params["hitCounter"] = character.numAttackedWithoutResponse
         self.produceItem_wait(params)
 

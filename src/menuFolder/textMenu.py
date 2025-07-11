@@ -41,6 +41,7 @@ class TextMenu(src.subMenu.SubMenu):
         ):
             if self.followUp:
                 self.callIndirect(self.followUp)
+            self.done = True
             return True
 
         if key in self.specialKeys:

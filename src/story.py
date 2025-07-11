@@ -2251,6 +2251,16 @@ but they are likely to explode when disturbed.
                     wall.bolted = False
                     currentTerrain.addItem(wall,(15*x+random.randint(2,11),15*y+random.randint(2,11),0))
 
+                if random.random() > 0.2:
+                    rod = src.items.itemMap["Rod"]()
+                    rod.bolted = False
+                    currentTerrain.addItem(rod,(15*x+random.randint(2,11),15*y+random.randint(2,11),0))
+                if random.random() > 0.2:
+                    rod = src.items.itemMap["Bolt"]()
+                    rod.bolted = False
+                    currentTerrain.addItem(rod,(15*x+random.randint(2,11),15*y+random.randint(2,11),0))
+
+        # place a ro just in reach for the player
         pos = (15*2+random.randint(2,13),15*7+random.randint(2,13),0)
         rod = src.items.itemMap["Rod"]()
         currentTerrain.addItem(rod,pos)

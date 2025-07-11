@@ -217,7 +217,7 @@ class Monster(src.characters.Character):
                     percentage = src.gamestate.gamestate.difficultyMap[monster]
 
                 if percentage <= 0.5:
-                    return src.helpers.power_distribution(1, 2 * 7, 1 + 1.5 * (percentage / 0.5))
+                    return src.helpers.power_distribution(1, 2 * 7, 1 + 1.5 * (1 - (percentage / 0.5)))
 
                 return src.helpers.reversed_power_dist(1, 2 * 7, 1 + 1.5 * ((percentage - 0.5) / 0.5))
 

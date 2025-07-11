@@ -42,6 +42,7 @@ class GameState:
                 "throneTaken":False
                     }
         self.difficulty = None
+        self.difficultyMap = None
         self.mainLoop = {}
 
         self.multi_chars = set()

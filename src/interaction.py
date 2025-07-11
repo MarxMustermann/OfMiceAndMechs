@@ -104,7 +104,7 @@ def advanceGame():
     while character_queue:
         character = character_queue[0][2]
         advanceChar(character, singleStep=True)
-        character_queue.pop(0)
+        heappop(character_queue)
 
         if character.timeTaken < 1 and not character.dead:
             counter += 1

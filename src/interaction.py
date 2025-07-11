@@ -4644,7 +4644,11 @@ def showMainMenu(args=None):
 
     selectedScenario = "mainGame"
     difficulty = "easy"
-    difficultyMap = {}
+    difficultyMap = {
+        "difficultyModifier": 0.5,
+        "diff_increase_per_dungeon": 0.5,
+        "shuffle_gods": False,
+    }
 
     def fixRoomRender(render):
         for row in render:
@@ -4786,7 +4790,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
             terrain.addCharacter(golem, pos[0] + x * 15, pos[1] + y * 15)
 
     lastStep = time.time()
-    submenu = []
+    submenu = ["default"]
     slider = []
     choosen_slider = 0
     while 1:
@@ -5269,14 +5273,34 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                             submenu.pop()
                         if key == tcod.event.KeySym.e:
                             difficulty = "easy"
+                            difficultyMap = {
+                                "difficultyModifier": 0.5,
+                                "diff_increase_per_dungeon": 0.5,
+                                "shuffle_gods": False,
+                            }
                             submenu.pop()
                         if key == tcod.event.KeySym.m:
                             difficulty = "medium"
+                            difficultyMap = {
+                                "difficultyModifier": 1,
+                                "diff_increase_per_dungeon": 0.5,
+                                "shuffle_gods": False,
+                            }
                             submenu.pop()
                         if key == tcod.event.KeySym.d:
                             difficulty = "difficult"
+                            difficultyMap = {
+                                "difficultyModifier": 2,
+                                "diff_increase_per_dungeon": 1,
+                                "shuffle_gods": True,
+                            }
                             submenu.pop()
                         if key == tcod.event.KeySym.c:
+                            difficultyMap = {
+                                "difficultyModifier": 2,
+                                "diff_increase_per_dungeon": 1,
+                                "shuffle_gods": True,
+                            }
                             submenu.append("custom_difficulty")
                             slider.append(["Monsters Difficulty", "monster", 50])
 

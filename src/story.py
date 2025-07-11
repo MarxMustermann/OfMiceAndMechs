@@ -1037,16 +1037,10 @@ class MainGame(BasicPhase):
         if not self.preselection:
             self.preselection = "Story"
 
-        difficultyModifier = 1
-
-        if self.difficulty == "easy":
-            difficultyModifier = 0.5
-        if self.difficulty in ("difficult", "custom"):
-            difficultyModifier = 2
+        difficultyModifier = difficultyMap["difficultyModifier"]
 
         src.gamestate.gamestate.difficulty = self.difficulty
-        if self.difficulty == "custom":
-            src.gamestate.gamestate.difficultyMap = difficultyMap
+        src.gamestate.gamestate.difficultyMap = difficultyMap
 
         numDungeons = 7
 
@@ -1056,26 +1050,32 @@ class MainGame(BasicPhase):
             dungeonPositions.append(self.get_free_position("dungeon"))
             dungeon_counter += 1
 
-        if self.difficulty in ("difficult", "custom"):
-            gods = [1,2,3,4,5,6,7]
-            random.shuffle(gods)
-            self.setUpGlassHeartDungeon(dungeonPositions[0],gods[0],1*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[1],gods[1],2*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[2],gods[2],3*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[3],gods[3],4*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[4],gods[4],5*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[5],gods[5],6*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[6],gods[6],7*difficultyModifier)
-        else:
-            self.setUpGlassHeartDungeon(dungeonPositions[0],1,1*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[1],2,1.5*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[2],3,2*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[3],4,2.5*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[4],5,3*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[5],6,3.5*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[6],7,4*difficultyModifier)
+        gods = [1, 2, 3, 4, 5, 6, 7]
 
-            dungeonPositions.append(self.get_free_position("dungeon2"))
+        if difficultyMap["shuffle_gods"]:
+            random.shuffle(gods)
+
+        diff_increase_per_dungeon = difficultyMap["diff_increase_per_dungeon"]
+
+        self.setUpGlassHeartDungeon(dungeonPositions[0], gods[0], 1 * difficultyModifier)
+        self.setUpGlassHeartDungeon(dungeonPositions[1], gods[1], (1 + diff_increase_per_dungeon) * difficultyModifier)
+        self.setUpGlassHeartDungeon(
+            dungeonPositions[2], gods[2], (1 + diff_increase_per_dungeon * 2) * difficultyModifier
+        )
+        self.setUpGlassHeartDungeon(
+            dungeonPositions[3], gods[3], (1 + diff_increase_per_dungeon * 3) * difficultyModifier
+        )
+        self.setUpGlassHeartDungeon(
+            dungeonPositions[4], gods[4], (1 + diff_increase_per_dungeon * 4) * difficultyModifier
+        )
+        self.setUpGlassHeartDungeon(
+            dungeonPositions[5], gods[5], (1 + diff_increase_per_dungeon * 5) * difficultyModifier
+        )
+        self.setUpGlassHeartDungeon(
+            dungeonPositions[6], gods[6], (1 + diff_increase_per_dungeon * 6) * difficultyModifier
+        )
+
+        dungeonPositions.append(self.get_free_position("dungeon2"))
 
         if self.preselection == "Story":
             self.sternsBasePosition = self.get_free_position("sterns base")

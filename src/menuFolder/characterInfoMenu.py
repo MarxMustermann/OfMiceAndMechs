@@ -87,6 +87,7 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
         text += f"burnedIn: %s\n" % char.burnedIn
         text += f"tool: %s\n" % char.tool
 
+        text += "\npress e to view the status effect on the character"
         text += "\npress s to view the character statistics"
         return text
 

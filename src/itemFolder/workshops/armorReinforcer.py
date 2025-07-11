@@ -170,7 +170,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
                 if self.preferredMaxDefense and defaultValue >= self.preferredMaxDefense:
                     break
                 available_chitinPlates -= cost
-                defaultValue += 1
+                defaultValue += 0.5
 
             # spawn a slider to allow the user to select the amount to upgrade
             params["armor"] = armor

@@ -117,7 +117,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
 
         # make the user select the sword to sharpen
         if "choice" not in params:
-            options = [("sharpen equipped sword", "sharpen equipped sword"), ("sharpen inventory sword", "sharpen inventory sword")]
+            options = [("sharpen equipped sword", "sharpen equipped sword"), ("sharpen inventory sword", "sharpen sword from inventory")]
             submenue = src.menuFolder.selectionMenu.SelectionMenu(
                 "Choose item To Sharpen", options, targetParamName="choice"
             )

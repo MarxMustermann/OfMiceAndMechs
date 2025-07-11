@@ -212,7 +212,7 @@ class InventoryMenu(src.subMenu.SubMenu):
                         )
             txt.append("\n")
             if not sidebared:
-                txt.append("press ws to move cursor\npress L to drop item nearby\npress l to drop item\n")
+                txt.append("press ws to move cursor\npress L to drop item nearby\npress l to drop item\npress j to activate item\n")
         else:
             txt.append("empty Inventory\n\n")
         return txt

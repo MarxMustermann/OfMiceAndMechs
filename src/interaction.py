@@ -169,8 +169,7 @@ def advanceGame():
             terrain.mana += increaseAmount
 
         # spawn enemy waves
-        if not src.gamestate.gamestate.difficulty == "tutorial":
-            src.magic.spawnWaves()
+        src.magic.spawnWaves()
 
     # auto save
     if settings.get("auto save"):
@@ -4891,8 +4890,6 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                         src.gamestate.gamestate.terrainType = src.terrains.Nothingness
                     elif terrain and terrain == "test":
                         src.gamestate.gamestate.terrainType = src.terrains.GameplayTest
-                    elif terrain and terrain == "tutorial":
-                        src.gamestate.gamestate.terrainType = src.terrains.TutorialTerrain
                     elif terrain and terrain == "desert":
                         src.gamestate.gamestate.terrainType = src.terrains.Desert
                     else:

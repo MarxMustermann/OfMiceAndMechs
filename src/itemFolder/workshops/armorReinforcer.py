@@ -19,8 +19,14 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         super().__init__(display="AR")
 
         # configure interaction menu
-        self.applyOptions.extend([("Reinforce Armor", "Reinforce Armor")])
-        self.applyMap = {"Reinforce Armor": self.reinforceArmorHook}
+        self.applyOptions.extend([
+                                    ("reinforce equipped armor", "reinforce equipped armor"),
+                                    ("reinforce inventory armor", "reinforce armor from inventory"),
+                                ])
+        self.applyMap = {
+                                    "reinforce equipped armor": self.reinforceEquippedArmorHook,
+                                    "reinforce inventory armor": self.reinforceInventoryArmorHook,
+                }
         self.preferredMaxDefense = None
 
     def amountNeededForOneUpgrade(self, current_defense_output):
@@ -50,6 +56,18 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         # return the calculated cost
         return amount_ChitinPlates_needed_for_upgrade
 
+    def reinforceEquippedArmorHook(self, character):
+        """
+        indirection to call the actual function
+        """
+        self.reinforceArmor({"character": character, "choice": "reinforce equipped armor"})
+
+    def reinforceInventoryArmorHook(self, character):
+        """
+        indirection to call the actual function
+        """
+        self.reinforceArmor({"character": character, "choice": "reinforce inventory armor"})
+
     def reinforceArmorHook(self, character):
         """
         indirection to call the actual function
@@ -66,7 +84,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
 
         # get user input on what armor to upgrade
         if "choice" not in params:
-            options = [("Reinforce Equipped Armor", "Reinforce Equipped Armor"), ("Reinforce Armor", "Reinforce Armor")]
+            options = [("reinforce equipped armor", "reinforce equipped armor"), ("reinforce inventory armor", "reinforce armor from inventory")]
             submenue = src.menuFolder.selectionMenu.SelectionMenu(
                 "Choose item To Reinforce", options, targetParamName="choice"
             )
@@ -90,8 +108,9 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
                 character.addMessage("you don't have ChitinPlates, you need ChitinPlates to upgrade your Armor up to more than 3")
 
             # get the armor to upgrade
+            print(params)
             armor = None
-            if params["choice"] == "Reinforce Equipped Armor":
+            if params["choice"] == "reinforce equipped armor":
                 if character.armor:
                     armor = character.armor
                 else:

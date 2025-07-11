@@ -16,13 +16,40 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
     bolted = True
     def __init__(self):
         super().__init__(display="SH")
-        self.applyOptions.extend([("sharpen sword", "sharpen sword")])
-        self.applyMap = {"sharpen sword": self.sharpenSwordHook}
+        self.applyOptions.extend([
+                                    ("sharpen equipped sword", "sharpen equipped sword"),
+                                    ("sharpen inventory sword", "sharpen sword from inventory"),
+                                ])
+        self.applyMap = {
+                                    "sharpen equipped sword": self.sharpenEquippedSwordHook,
+                                    "sharpen inventory sword": self.sharpenInventorySwordHook,
+                }
         self.preferredMaxDamage = None
+
+    def sharpenEquippedSwordHook(self, character):
+        '''
+        calls the actual sharpinging function with converted parameters
+
+        Parameters:
+                character: the character that uses the item
+        '''
+        self.sharpenSword({"character": character, "choice": "sharpen equipped sword"})
+
+    def sharpenInventorySwordHook(self, character):
+        '''
+        calls the actual sharpinging function with converted parameters
+
+        Parameters:
+                character: the character that uses the item
+        '''
+        self.sharpenSword({"character": character, "choice": "sharpen inventory sword"})
 
     def sharpenSwordHook(self, character):
         '''
         calls the actual sharpinging function with converted parameters
+
+        Parameters:
+                character: the character that uses the item
         '''
         self.sharpenSword({"character": character})
 
@@ -90,7 +117,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
 
         # make the user select the sword to sharpen
         if "choice" not in params:
-            options = [("Sharpen Equipped Sword", "Sharpen Equipped Sword"), ("Sharpen Sword", "Sharpen Sword")]
+            options = [("sharpen equipped sword", "sharpen equipped sword"), ("sharpen inventory sword", "sharpen inventory sword")]
             submenue = src.menuFolder.selectionMenu.SelectionMenu(
                 "Choose item To Sharpen", options, targetParamName="choice"
             )
@@ -112,7 +139,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
 
         # get the sword item to sharpen
         sword = None
-        if params["choice"] == "Sharpen Equipped Sword":
+        if params["choice"] == "sharpen equipped sword":
             if character.weapon:
                 sword = character.weapon
             else:

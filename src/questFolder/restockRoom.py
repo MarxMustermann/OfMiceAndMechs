@@ -167,9 +167,12 @@ Place the items in the correct input or storage stockpile.
             for direction in ((-1,0),(1,0),(0,-1),(0,1),(0,0)):
                 neighbour = (character.xPosition+direction[0],character.yPosition+direction[1],character.zPosition)
                 for inputSlot in inputSlots:
-                    if neighbour[0] == inputSlot[0][0] and neighbour[1] == inputSlot[0][1]:
-                        foundDirectDrop = (neighbour,direction,inputSlot)
-                        break
+                    if neighbour[0] != inputSlot[0][0]:
+                        continue
+                    if neighbour[1] != inputSlot[0][1]:
+                        continue
+                    foundDirectDrop = (neighbour,direction,inputSlot)
+                    break
 
             if character.inventory and foundDirectDrop:
                 dropContent = room.getItemByPosition(foundDirectDrop[0])

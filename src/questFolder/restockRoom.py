@@ -176,7 +176,7 @@ Place the items in the correct input or storage stockpile.
 
             if character.inventory and foundDirectDrop:
                 dropContent = room.getItemByPosition(foundDirectDrop[0])
-                if not dropContent or dropContent[0].type != "Scrap":
+                if not dropContent or self.toRestock != "Scrap":
                     maxSpace = foundDirectDrop[2][2].get("maxAmount")
                     if not maxSpace:
                         if (dropContent and dropContent[0].walkable == False) or character.inventory[-1].walkable == False:
@@ -257,6 +257,7 @@ Place the items in the correct input or storage stockpile.
             for slot in inputSlots:
                 if len(slot[0]) < 3:
                     slot = ((slot[0][0],slot[0][1],0),slot[1],slot[2])
+
                 for direction in ((-1,0),(1,0),(0,-1),(0,1)):
                     neighbour = (slot[0][0]-direction[0],slot[0][1]-direction[1],slot[0][2])
                     if neighbour not in room.walkingSpace:
@@ -272,6 +273,7 @@ Place the items in the correct input or storage stockpile.
                 for slot in inputSlots:
                     if len(slot[0]) < 3:
                         slot = ((slot[0][0],slot[0][1],0),slot[1],slot[2])
+
                     for direction in ((-1,0),(1,0),(0,-1),(0,1)):
                         neighbour = (slot[0][0]-direction[0],slot[0][1]-direction[1],slot[0][2])
                         if not room.getPositionWalkable(neighbour):

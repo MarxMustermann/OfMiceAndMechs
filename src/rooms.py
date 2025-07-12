@@ -267,6 +267,9 @@ class Room:
                 result.append(inputSlot)
                 continue
 
+            if items[0].walkable == False and itemType != "Scrap":
+                continue
+
             if fullyEmpty:
                 continue
 
@@ -303,6 +306,9 @@ class Room:
                     result.append(storageSlot)
                     continue
                 elif forceGenericStorage:
+                    continue
+
+                if items[0].walkable == False and itemType != "Scrap":
                     continue
 
                 if fullyEmpty:

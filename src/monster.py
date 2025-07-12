@@ -226,7 +226,7 @@ class Monster(src.characters.Character):
                 src.gamestate.gamestate.difficultyMap["difficultyModifier"]
                 * (1 + src.gamestate.gamestate.difficultyMap["diff_increase_per_dungeon"] * 6)
             ),
-            2,
+            src.gamestate.gamestate.difficultyMap["scale_power_curve"],
         )
 
     def multiplier_range(self, multiplier):

@@ -4648,6 +4648,7 @@ def showMainMenu(args=None):
         "difficultyModifier": 0.5,
         "diff_increase_per_dungeon": 0.5,
         "shuffle_gods": False,
+        "scale_power_curve": 3.5,
     }
 
     def fixRoomRender(render):
@@ -5277,6 +5278,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                                 "difficultyModifier": 0.5,
                                 "diff_increase_per_dungeon": 0.5,
                                 "shuffle_gods": False,
+                                "scale_power_curve": 3.5,
                             }
                             submenu.pop()
                         if key == tcod.event.KeySym.m:
@@ -5285,6 +5287,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                                 "difficultyModifier": 1,
                                 "diff_increase_per_dungeon": 0.5,
                                 "shuffle_gods": False,
+                                "scale_power_curve": 3.0,
                             }
                             submenu.pop()
                         if key == tcod.event.KeySym.d:
@@ -5293,6 +5296,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                                 "difficultyModifier": 2,
                                 "diff_increase_per_dungeon": 1,
                                 "shuffle_gods": True,
+                                "scale_power_curve": 2.5,
                             }
                             submenu.pop()
                         if key == tcod.event.KeySym.c:

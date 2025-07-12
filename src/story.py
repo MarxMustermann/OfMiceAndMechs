@@ -1058,22 +1058,10 @@ class MainGame(BasicPhase):
         diff_increase_per_dungeon = difficultyMap["diff_increase_per_dungeon"]
 
         self.setUpGlassHeartDungeon(dungeonPositions[0], gods[0], 1 * difficultyModifier)
-        self.setUpGlassHeartDungeon(dungeonPositions[1], gods[1], (1 + diff_increase_per_dungeon) * difficultyModifier)
-        self.setUpGlassHeartDungeon(
-            dungeonPositions[2], gods[2], (1 + diff_increase_per_dungeon * 2) * difficultyModifier
-        )
-        self.setUpGlassHeartDungeon(
-            dungeonPositions[3], gods[3], (1 + diff_increase_per_dungeon * 3) * difficultyModifier
-        )
-        self.setUpGlassHeartDungeon(
-            dungeonPositions[4], gods[4], (1 + diff_increase_per_dungeon * 4) * difficultyModifier
-        )
-        self.setUpGlassHeartDungeon(
-            dungeonPositions[5], gods[5], (1 + diff_increase_per_dungeon * 5) * difficultyModifier
-        )
-        self.setUpGlassHeartDungeon(
-            dungeonPositions[6], gods[6], (1 + diff_increase_per_dungeon * 6) * difficultyModifier
-        )
+
+        for i in range(1, numDungeons):
+            dungeon_difficulty_modifier = (1 + diff_increase_per_dungeon * i) * difficultyModifier
+            self.setUpGlassHeartDungeon(dungeonPositions[i], gods[i], dungeon_difficulty_modifier)
 
         dungeonPositions.append(self.get_free_position("dungeon2"))
 

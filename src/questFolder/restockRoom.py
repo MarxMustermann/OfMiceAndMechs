@@ -345,29 +345,30 @@ Place the items in the correct input or storage stockpile.
                             if not sources:
                                 continue
 
-                        reason = "finish hauling"
+                        reason = "finish hauling (duty: hauling)"
                         quests = []
                         if inputSlot[1]:
                             quests.append(src.quests.questMap["RestockRoom"](toRestock=inputSlot[1],allowAny=True,reason=reason,targetPosition=inputSlot[0]))
                             if character.container != room:
-                                quests.append(src.quests.questMap["GoToTile"](targetPosition=room.getPosition()))
+                                quests.append(src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),reason="get to the room to work in (duty: hauling)"))
                         else:
                             if hasItem:
                                 quests.append(src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type,allowAny=True,reason=reason,targetPosition=inputSlot[0]))
                                 if character.container != room:
-                                    quests.append(src.quests.questMap["GoToTile"](targetPosition=room.getPosition()))
+                                    quests.append(src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),reason="get to the room to work in (duty: hauling)"))
                                 if not dryRun:
                                     beUsefull.idleCounter = 0
                                 return (quests,None)
 
                         if not hasItem:
+                            reason = "have items to drop (duty: hauling)"
                             if trueInput:
-                                quests.append(src.quests.questMap["FetchItems"](toCollect=inputSlot[1]))
+                                quests.append(src.quests.questMap["FetchItems"](toCollect=inputSlot[1],reason=reason))
                                 if not dryRun:
                                     beUsefull.idleCounter = 0
                                 return (quests,None)
                             else:
-                                quests.append(src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=sources[0][0]))
+                                quests.append(src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=sources[0][0],reason=reason))
                                 if not dryRun:
                                     beUsefull.idleCounter = 0
                                 return (quests,None)
@@ -395,7 +396,7 @@ Place the items in the correct input or storage stockpile.
                             if not sources:
                                 continue
 
-                        reason = "finish hauling"
+                        reason = "finish hauling (duty: hauling)"
                         quests = []
                         if inputSlot[1]:
                             quests.append(src.quests.questMap["RestockRoom"](toRestock=inputSlot[1],allowAny=True,reason=reason))
@@ -408,13 +409,14 @@ Place the items in the correct input or storage stockpile.
 
 
                         if not hasItem:
+                            reason = "to have items to store (duty: hauling)"
                             if trueInput:
-                                quests.append(src.quests.questMap["FetchItems"](toCollect=inputSlot[1]))
+                                quests.append(src.quests.questMap["FetchItems"](toCollect=inputSlot[1],reason=reason))
                                 if not dryRun:
                                     beUsefull.idleCounter = 0
                                 return (quests,None)
                             else:
-                                quests.append(src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=sources[0][0]))
+                                quests.append(src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=sources[0][0],reason=reason))
                                 if not dryRun:
                                     beUsefull.idleCounter = 0
                                 return (quests,None)
@@ -438,8 +440,8 @@ Place the items in the correct input or storage stockpile.
                         if not items or items[0].type != storageSlot[1] or not items[0].walkable:
                             continue
 
-                        quests = [src.quests.questMap["RestockRoom"](targetPositionBig=room.getPosition(),targetPosition=storageSlot[0],allowAny=True,toRestock=items[0].type,reason="fill a storage stockpile designated to be filled")
-                                 ,src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=checkStorageSlot[0],reason="to get the items to fill a storage stockpile designated to be filled",abortOnfullInventory=True)]
+                        quests = [src.quests.questMap["RestockRoom"](targetPositionBig=room.getPosition(),targetPosition=storageSlot[0],allowAny=True,toRestock=items[0].type,reason="fill a storage stockpile designated to be filled (duty: hauling)")
+                                 ,src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=checkStorageSlot[0],reason="to get the items to fill a storage stockpile designated to be filled (duty: hauling)",abortOnfullInventory=True)]
                         if not dryRun:
                             beUsefull.idleCounter = 0
                         return (quests,None)

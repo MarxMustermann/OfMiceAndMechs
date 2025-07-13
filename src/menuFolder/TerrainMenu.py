@@ -108,7 +108,11 @@ class TerrainMenu(src.subMenu.SubMenu):
                 text = "DU" if HaveGlassHeart else "du"
                 rawMap[pos[1]][pos[0]] = (src.interaction.urwid.AttrSpec(color, "black"), text)
             else:
-                rawMap[pos[1]][pos[0]] = info["tag"][:2]
+                text = info["tag"][:2]
+                color = "#ddd"
+                if info.get("looted"):
+                    color = "#752"
+                rawMap[pos[1]][pos[0]] = (src.interaction.urwid.AttrSpec(color, "black"), text)
         if homeCoordinate:
             rawMap[homeCoordinate[1]][homeCoordinate[0]] = "HH"
         rawMap[characterCoordinate[1]][characterCoordinate[0]] = "@@"

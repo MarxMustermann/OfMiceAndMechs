@@ -1037,21 +1037,12 @@ class MainGame(BasicPhase):
         if not self.preselection:
             self.preselection = "Story"
 
-        difficultyModifier = 1
-        if self.difficulty == "tutorial":
-            difficultyModifier = 0.5
-        if self.difficulty == "easy":
-            difficultyModifier = 0.5
-        if self.difficulty in ("difficult", "custom"):
-            difficultyModifier = 2
+        difficultyModifier = difficultyMap["difficultyModifier"]
 
         src.gamestate.gamestate.difficulty = self.difficulty
-        if self.difficulty == "custom":
-            src.gamestate.gamestate.difficultyMap = difficultyMap
+        src.gamestate.gamestate.difficultyMap = difficultyMap
 
         numDungeons = 7
-        if self.difficulty == "tutorial":
-            numDungeons = 2
 
         dungeonPositions = []
         dungeon_counter = 0
@@ -1059,29 +1050,20 @@ class MainGame(BasicPhase):
             dungeonPositions.append(self.get_free_position("dungeon"))
             dungeon_counter += 1
 
-        if self.difficulty == "tutorial":
-            self.setUpGlassHeartDungeon(dungeonPositions[0],1,1*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[1],2,1.5*difficultyModifier)
-        elif self.difficulty in ("difficult", "custom"):
-            gods = [1,2,3,4,5,6,7]
-            random.shuffle(gods)
-            self.setUpGlassHeartDungeon(dungeonPositions[0],gods[0],1*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[1],gods[1],2*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[2],gods[2],3*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[3],gods[3],4*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[4],gods[4],5*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[5],gods[5],6*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[6],gods[6],7*difficultyModifier)
-        else:
-            self.setUpGlassHeartDungeon(dungeonPositions[0],1,1*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[1],2,1.5*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[2],3,2*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[3],4,2.5*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[4],5,3*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[5],6,3.5*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[6],7,4*difficultyModifier)
+        gods = [1, 2, 3, 4, 5, 6, 7]
 
-            dungeonPositions.append(self.get_free_position("dungeon2"))
+        if difficultyMap["shuffle_gods"]:
+            random.shuffle(gods)
+
+        diff_increase_per_dungeon = difficultyMap["diff_increase_per_dungeon"]
+
+        self.setUpGlassHeartDungeon(dungeonPositions[0], gods[0], 1 * difficultyModifier)
+
+        for i in range(1, numDungeons):
+            dungeon_difficulty_modifier = (1 + diff_increase_per_dungeon * i) * difficultyModifier
+            self.setUpGlassHeartDungeon(dungeonPositions[i], gods[i], dungeon_difficulty_modifier)
+
+        dungeonPositions.append(self.get_free_position("dungeon2"))
 
         if self.preselection == "Story":
             self.sternsBasePosition = self.get_free_position("sterns base")
@@ -1237,9 +1219,6 @@ class MainGame(BasicPhase):
         for popup in src.popups.popupsArray:
             popup().addToChar(mainChar)
 
-        if self.difficulty == "tutorial":
-            mainChar.maxHealth *= 2
-            mainChar.health *= 2
         if self.difficulty == "easy":
             mainChar.maxHealth *= 2
             mainChar.health *= 2
@@ -1247,10 +1226,9 @@ class MainGame(BasicPhase):
             mainChar.maxHealth = int(mainChar.maxHealth*0.5)
             mainChar.health = int(mainChar.health*0.5)
 
-        if not self.difficulty == "tutorial":
-            questMenu = src.menuFolder.questMenu.QuestMenu(mainChar)
-            questMenu.sidebared = True
-            mainChar.rememberedMenu.append(questMenu)
+        questMenu = src.menuFolder.questMenu.QuestMenu(mainChar)
+        questMenu.sidebared = True
+        mainChar.rememberedMenu.append(questMenu)
 
         messagesMenu = src.menuFolder.messagesMenu.MessagesMenu(mainChar)
         mainChar.rememberedMenu2.append(messagesMenu)
@@ -1299,150 +1277,13 @@ try to remember how you got here ..."""
             self.activeStory["sternsContraption"].startMeltdown()
 
     def gotEpochReward(self,extraParam):
-        if self.difficulty == "tutorial" and "NPC" in extraParam["rewardType"]:
-            try:
-                self.showed_npc_respawn_info
-            except:
-                self.showed_npc_respawn_info = False
-
-            if not self.showed_npc_respawn_info:
-                text = """
-You spawned a NPC. The NPC will do some work on the base,
-but that is not why the NPC is so important.
-
-The NPC basically acts as an extra life.
-If you have no NPCs the game is permadeath.
-This means you die and the game ends.
-
-If you die and have NPCs in your base,
-you will take control over one of those NPCs.
-So now you can die and respawn afterwards until you run out of NPCs.
-
-Now claim the other GlassHearts to win the game.
-Use the other GlassStatues (GG) to teleport to dungeons.
-Then go and claim their heart.
-
-You should start with the GlassStatue on the top right.
-That GlassStatue leads to the next easiest dungeon.
-"""
-                submenu = src.menuFolder.textMenu.TextMenu(text+"""
-
-= press esc to close this menu =
-""")
-                self.activeStory["mainChar"].macroState["submenue"] = submenu
-                self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
-                self.activeStory["mainChar"].addMessage(text)
-
-                self.showed_npc_respawn_info = True
-
-        if self.difficulty == "medium":
-            pass
+        pass
 
     def deliveredSpecialItem(self,extraParam):
-        if self.difficulty == "tutorial":
-            try:
-                self.showed_glass_heart_info
-            except:
-                self.showed_glass_heart_info = False
-
-            if not self.showed_glass_heart_info:
-                text = """
-You claimed ownership of a GlassHeart.
-This means you are one step closer to win the game.
-You need to control all GlassHearts to win the game.
-
-You also get some mana as a reward.
-Use that to spawn a NPC. That is pretty important actually.
-
-Use the leftmost Shrine (\\/) to wish for a NPC.
-What the NPC does does not matter on easy.
-"""
-                submenu = src.menuFolder.textMenu.TextMenu(text+"""
-
-= press esc to close this menu =
-""")
-                self.activeStory["mainChar"].macroState["submenue"] = submenu
-                self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
-                self.activeStory["mainChar"].addMessage(text)
-
-                self.showed_glass_heart_info = True
-                return
-
-            try:
-                self.showed_glass_heart_info2
-            except:
-                self.showed_glass_heart_info2 = False
-
-            if not self.showed_glass_heart_info2:
-                text = """
-You claimed ownership of the second GlassHeart.
-On easy this means that you collected all GlassHearts.
-
-Now there is only one step left to do.
-Use the Throne (TT) in the middle of the Temple to win the game.
-"""
-                submenu = src.menuFolder.textMenu.TextMenu(text+"""
-
-= press esc to close this menu =
-""")
-                self.activeStory["mainChar"].macroState["submenue"] = submenu
-                self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
-                self.activeStory["mainChar"].addMessage(text)
-
-                self.showed_glass_heart_info2 = True
-                return
-
-            '''
-            numGlassHearts = 0
-            for god,godData in src.gamestate.gamestate.gods.items():
-                if godData["lastHeartPos"] == (self.activeStory["mainChar"].getTerrain().xPosition,self.activeStory["mainChar"].getTerrain().yPosition):
-                    numGlassHearts += 1
-
-            if numGlassHearts == 7:
-                text = """
-You claimed all GlassHearts.
-
-And when you are done then try medium difficulty, much more will be explained there.
-"""
-                submenu = src.menuFolder.textMenu.TextMenu(text+"""
-
-= press esc to close this menu =
-""")
-                self.activeStory["mainChar"].macroState["submenue"] = submenu
-                self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
-                self.activeStory["mainChar"].addMessage(text)
-
-                self.showed_glass_heart_info2 = True
-                return
-            '''
+        pass
 
     def changedTerrain(self,extraParam):
         item = extraParam["character"]
-
-        if self.difficulty == "tutorial":
-            try:
-                self.showedBaseInfo
-            except:
-                self.showedBaseInfo = False
-
-            if not self.showedBaseInfo:
-                    text = """
-You returned to your base. The base is your home.
-It is a small base, but it has a temple.
-Bring the GlassHeart to your temple.
-
-Use the GlassStatue marked as (kk) to claim the GlassHeart as yours.
-When the GlassHeart is properly set it will show as KK.
-"""
-                    submenu = src.menuFolder.textMenu.TextMenu(text+"""
-
-= press esc to close this menu =
-""")
-                    self.activeStory["mainChar"].macroState["submenue"] = submenu
-                    self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
-                    self.activeStory["mainChar"].addMessage(text)
-
-                    self.showedBaseInfo = True
 
         if self.difficulty == ("medium","easy",):
             try:
@@ -1477,30 +1318,7 @@ a metal worker"""
     def itemPickedUp(self,extraParam):
         item = extraParam[1]
 
-        if self.difficulty == "tutorial":
-            try:
-                self.showedGlassHeartInfo
-            except:
-                self.showedGlassHeartInfo = False
 
-            if not self.showedGlassHeartInfo:
-                if item.type == "SpecialItem":
-                    text = """
-You picked up the GlassHeart.
-Now return to your base to put the GlassHeart to use.
-
-To return back to the base use the Shrine (\\/).
-Select the "teleport home" option to get back to base."""
-                    submenu = src.menuFolder.textMenu.TextMenu(text+"""
-
-= press esc to close this menu =
-    """)
-                    self.activeStory["mainChar"].macroState["submenue"] = submenu
-                    self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
-                    self.activeStory["mainChar"].addMessage(text)
-
-                    self.showedGlassHeartInfo = True
-                    return
         if self.difficulty == ("medium","easy",):
             try:
                 self.showedGlassHeartInfo
@@ -1584,101 +1402,6 @@ So bring it with you to be able to spawn one NPC cheaper.
 
     def enteredRoom(self,extraParam):
         newRoom = extraParam[1]
-
-        if self.difficulty == "tutorial":
-            try:
-                self.showedEnemyWarning
-            except:
-                self.showedEnemyWarning = False
-
-            if not self.showedEnemyWarning:
-                foundEnemies = False
-                for otherChar in newRoom.characters:
-                    if otherChar.faction == extraParam[0].faction:
-                        continue
-                    foundEnemies = True
-
-                if foundEnemies:
-                    text = """
-There are enemies in the room.
-Enemies are shown with a red background.
-Fight the enemies by bumping into them.
-
-There are more complex fighting systems,
-but you won't need them on easy difficulty."""
-                    submenu = src.menuFolder.textMenu.TextMenu(text+"""
-
-= press esc to close this menu =
-""")
-                    self.activeStory["mainChar"].macroState["submenue"] = submenu
-                    self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
-                    self.activeStory["mainChar"].addMessage(text)
-
-                    self.showedEnemyWarning = True
-                    return
-
-            try:
-                self.showedLandMineWarning
-            except:
-                self.showedLandMineWarning = False
-
-            if not self.showedLandMineWarning:
-                foundLandMine = False
-                for item in newRoom.itemsOnFloor:
-                    if item.type != "LandMine":
-                        continue
-                    foundLandMine = True
-
-                if foundLandMine:
-                    text = """
-This room contains LandMines.
-Active LandMines are shown as red "_~".
-
-Try not to step onto them and avoid standing next to them."""
-                    submenu = src.menuFolder.textMenu.TextMenu(text+"""
-
-= press esc to close this menu =
-""")
-                    self.activeStory["mainChar"].macroState["submenue"] = submenu
-                    self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
-                    self.activeStory["mainChar"].addMessage(text)
-
-                    self.showedLandMineWarning = True
-                    return
-
-            try:
-                self.showedStatueExtractInfo
-            except:
-                self.showedStatueExtractInfo = False
-
-            if not self.showedStatueExtractInfo:
-                foundFilledStatue = False
-                for item in newRoom.itemsOnFloor:
-                    if item.type != "GlassStatue":
-                        continue
-                    if not item.hasItem:
-                        continue
-                    foundFilledStatue = True
-
-                if foundFilledStatue:
-                    text = """
-You reached the central chamber of a dungeon.
-
-Use the GlassStatue to extract the GlassHeart from the GlassStatue (KK).
-Pick up the GlassHeart (!!) afterwards.
-
-press ? after closing this menu to see what keys you need to use.
-"""
-                    submenu = src.menuFolder.textMenu.TextMenu(text+"""
-
-= press esc to close this menu =
-""")
-                    self.activeStory["mainChar"].macroState["submenue"] = submenu
-                    self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
-                    self.activeStory["mainChar"].addMessage(text)
-
-                    self.showedStatueExtractInfo = True
-                    return
 
         if self.difficulty == ("medium","easy",):
             foundEnemies = False
@@ -2722,13 +2445,9 @@ but they are likely to explode when disturbed.
         # set branching factor
         extraRooms = []
         numExtraRooms = 2
-        if self.difficulty == "tutorial":
-            numExtraRooms = 0
 
         # set targeted length of the main path
         targetLen = 10
-        if self.difficulty == "tutorial":
-            targetLen = 5
 
         # add entry point to central chamber from random direction
         possibleDirections = [(-1,0),(1,0),(0,-1),(0,1)]

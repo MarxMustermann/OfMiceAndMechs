@@ -209,34 +209,34 @@ class Monster(src.characters.Character):
 
     @staticmethod
     def get_random_multiplier(monster=None) -> float:
-        match src.gamestate.gamestate.difficulty:
-            case "custom":
-                percentage = src.gamestate.gamestate.difficultyMap["monster"]
+        if src.gamestate.gamestate.difficulty == "custom":
+            percentage = src.gamestate.gamestate.difficultyMap["monster"]
 
-                if monster and monster in src.gamestate.gamestate.difficultyMap:
-                    percentage = src.gamestate.gamestate.difficultyMap[monster]
+            if monster and monster in src.gamestate.gamestate.difficultyMap:
+                percentage = src.gamestate.gamestate.difficultyMap[monster]
 
-                if percentage <= 0.5:
-                    return src.helpers.power_distribution(1, 2 * 7, 1 + 1.5 * (1 - (percentage / 0.5)))
+            if percentage <= 0.5:
+                return src.helpers.power_distribution(1, 2 * 7, 1 + 1.5 * (1 - (percentage / 0.5)))
 
-                return src.helpers.reversed_power_dist(1, 2 * 7, 1 + 1.5 * ((percentage - 0.5) / 0.5))
+            return src.helpers.reversed_power_dist(1, 2 * 7, 1 + 1.5 * ((percentage - 0.5) / 0.5))
 
-            case "difficult":
-                return src.helpers.power_distribution(1, 2 * 7, 2.5)
-            case "medium":
-                return src.helpers.power_distribution(1, 1 * 4, 3.0)
-            case _:
-                return src.helpers.power_distribution(1, 0.5 * 4, 3.5)
+        return src.helpers.power_distribution(
+            1,
+            (
+                src.gamestate.gamestate.difficultyMap["difficultyModifier"]
+                * (1 + src.gamestate.gamestate.difficultyMap["diff_increase_per_dungeon"] * 6)
+            ),
+            src.gamestate.gamestate.difficultyMap["scale_power_curve"],
+        )
 
     def multiplier_range(self, multiplier):
-        match src.gamestate.gamestate.difficulty:
-            case "difficult":
-                range = multiplier / (2 * 7)
-            case "easy":
-                range = multiplier / (0.5 * 4)
-            case _:
-                range = multiplier / 4
-        return range
+        if src.gamestate.gamestate.difficultyMap:
+            return multiplier / (
+                src.gamestate.gamestate.difficultyMap["difficultyModifier"]
+                * (1 + src.gamestate.gamestate.difficultyMap["diff_increase_per_dungeon"] * 6)
+            )
+        else:
+            return multiplier / 4
 
 
 src.characters.add_character(Monster)

@@ -169,8 +169,7 @@ def advanceGame():
             terrain.mana += increaseAmount
 
         # spawn enemy waves
-        if not src.gamestate.gamestate.difficulty == "tutorial":
-            src.magic.spawnWaves()
+        src.magic.spawnWaves()
 
     # auto save
     if settings.get("auto save"):
@@ -4645,7 +4644,12 @@ def showMainMenu(args=None):
 
     selectedScenario = "mainGame"
     difficulty = "easy"
-    difficultyMap = {}
+    difficultyMap = {
+        "difficultyModifier": 0.5,
+        "diff_increase_per_dungeon": 0.5,
+        "shuffle_gods": False,
+        "scale_power_curve": 3.5,
+    }
 
     def fixRoomRender(render):
         for row in render:
@@ -4787,7 +4791,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
             terrain.addCharacter(golem, pos[0] + x * 15, pos[1] + y * 15)
 
     lastStep = time.time()
-    submenu = []
+    submenu = ["default"]
     slider = []
     choosen_slider = 0
     while 1:
@@ -4891,8 +4895,6 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                         src.gamestate.gamestate.terrainType = src.terrains.Nothingness
                     elif terrain and terrain == "test":
                         src.gamestate.gamestate.terrainType = src.terrains.GameplayTest
-                    elif terrain and terrain == "tutorial":
-                        src.gamestate.gamestate.terrainType = src.terrains.TutorialTerrain
                     elif terrain and terrain == "desert":
                         src.gamestate.gamestate.terrainType = src.terrains.Desert
                     else:
@@ -5272,14 +5274,37 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                             submenu.pop()
                         if key == tcod.event.KeySym.e:
                             difficulty = "easy"
+                            difficultyMap = {
+                                "difficultyModifier": 0.5,
+                                "diff_increase_per_dungeon": 0.5,
+                                "shuffle_gods": False,
+                                "scale_power_curve": 3.5,
+                            }
                             submenu.pop()
                         if key == tcod.event.KeySym.m:
                             difficulty = "medium"
+                            difficultyMap = {
+                                "difficultyModifier": 1,
+                                "diff_increase_per_dungeon": 0.5,
+                                "shuffle_gods": False,
+                                "scale_power_curve": 3.0,
+                            }
                             submenu.pop()
                         if key == tcod.event.KeySym.d:
                             difficulty = "difficult"
+                            difficultyMap = {
+                                "difficultyModifier": 2,
+                                "diff_increase_per_dungeon": 1,
+                                "shuffle_gods": True,
+                                "scale_power_curve": 2.5,
+                            }
                             submenu.pop()
                         if key == tcod.event.KeySym.c:
+                            difficultyMap = {
+                                "difficultyModifier": 2,
+                                "diff_increase_per_dungeon": 1,
+                                "shuffle_gods": True,
+                            }
                             submenu.append("custom_difficulty")
                             slider.append(["Monsters Difficulty", "monster", 50])
 

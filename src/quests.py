@@ -841,7 +841,7 @@ class MetaQuestSequence(Quest,ABC):
                 (nextQuests, nextCommand) = nextStep
             except:
                 print(self)
-                print(NextStep)
+                print(nextStep)
                 1/0
             if nextQuests:
                 for quest in nextQuests:

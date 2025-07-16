@@ -210,10 +210,10 @@ class Monster(src.characters.Character):
     @staticmethod
     def get_random_multiplier(monster=None) -> float:
         if src.gamestate.gamestate.difficulty == "custom":
-            percentage = src.gamestate.gamestate.difficultyMap["monster"]
+            percentage = src.gamestate.gamestate.difficultyMap["monster_difficulty"]["default"]
 
-            if monster and monster in src.gamestate.gamestate.difficultyMap:
-                percentage = src.gamestate.gamestate.difficultyMap[monster]
+            if monster and monster in src.gamestate.gamestate.difficultyMap["monster"]:
+                percentage = src.gamestate.gamestate.difficultyMap["monster"][monster]
 
             if percentage <= 0.5:
                 return src.helpers.power_distribution(1, 2 * 7, 1 + 1.5 * (1 - (percentage / 0.5)))

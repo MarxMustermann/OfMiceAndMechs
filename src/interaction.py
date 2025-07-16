@@ -5130,8 +5130,8 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                         (start_x, offsetY + 21),
                     )
                     start_y = offsetY + 22
-                    for i, (title, key, current_value) in enumerate(slider):
-                        percantage = current_value / 100
+                    for i, (title, key, current_value, range_values) in enumerate(slider):
+                        percantage = (current_value - range_values["min"]) / (range_values["max"] - range_values["min"])
                         amount = int(percantage * 35) * "║"
                         amount = amount + (35 - int(percantage * 35)) * "|"
                         show = "| " + amount + " |"
@@ -5151,7 +5151,12 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                             show,
                             (start_x, start_y + 1),
                         )
-                        start_y += 2
+                        val = "| " + str(current_value) + ((35 - len(str(current_value))) * " ") + " |"
+                        printUrwidToTcod(
+                            val,
+                            (start_x, start_y + 2),
+                        )
+                        start_y += 3
                     printUrwidToTcod(
                         "+-------------------------------------+",
                         (start_x, start_y),
@@ -5304,30 +5309,69 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                                 "difficultyModifier": 2,
                                 "diff_increase_per_dungeon": 1,
                                 "shuffle_gods": True,
+                                "monster_difficulty": {
+                                    "default": 0.5,
+                                },
                             }
                             submenu.append("custom_difficulty")
-                            slider.append(["Monsters Difficulty", "monster", 50])
+                            slider.clear()
+                            slider.append(
+                                ["Difficulty Modifier", "difficultyModifier", 2, {"min": 0.5, "max": 2, "step": 0.1}]
+                            )
+                            slider.append(
+                                [
+                                    "Difficulty increase Per Dungoen",
+                                    "diff_increase_per_dungeon",
+                                    1,
+                                    {"min": 0.5, "max": 2, "step": 0.1},
+                                ]
+                            )
+                            slider.append(["Shuffle Gods order", "shuffle_gods", 1, {"min": 0, "max": 1, "step": 1}])
+                            slider.append(
+                                [
+                                    "Monsters Difficulty",
+                                    "monster_difficulty.default",
+                                    0.5,
+                                    {"min": 0.1, "max": 1, "step": 0.1},
+                                ]
+                            )
 
                 case "custom_difficulty":
                     if isinstance(event, tcod.event.KeyDown):
                         key = event.sym
                         if key == tcod.event.KeySym.RETURN:
                             difficulty = "custom"
-                            for _, key, v in slider:
-                                difficultyMap[key] = v / 100
+                            for _, key, v, _ in slider:
+                                if "." in key:
+                                    current_key = difficultyMap
+                                    path = key.split(".")
+                                    for k in path[:-1]:
+                                        current_key = current_key[k]
+                                    current_key[path[-1]] = v
+                                else:
+                                    difficultyMap[key] = v
 
                             submenu.pop()
                             submenu.pop()
+
                         if key in (tcod.event.KeySym.LEFT, tcod.event.KeySym.a):
-                            slider[choosen_slider][2] = src.helpers.clamp(slider[choosen_slider][2] - 10, 0, 100)
+                            slider[choosen_slider][2] = src.helpers.clamp(
+                                slider[choosen_slider][2] - slider[choosen_slider][3]["step"],
+                                slider[choosen_slider][3]["min"],
+                                slider[choosen_slider][3]["max"],
+                            )
 
                         if key in (tcod.event.KeySym.RIGHT, tcod.event.KeySym.d):
-                            slider[choosen_slider][2] = src.helpers.clamp(slider[choosen_slider][2] + 10, 0, 100)
+                            slider[choosen_slider][2] = src.helpers.clamp(
+                                slider[choosen_slider][2] + slider[choosen_slider][3]["step"],
+                                slider[choosen_slider][3]["min"],
+                                slider[choosen_slider][3]["max"],
+                            )
 
                         if key in (tcod.event.KeySym.UP, tcod.event.KeySym.w):
-                            choosen_slider = src.helpers.clamp(choosen_slider - 1, 0, len(slider))
+                            choosen_slider = src.helpers.clamp(choosen_slider - 1, 0, len(slider) - 1)
                         if key in (tcod.event.KeySym.DOWN, tcod.event.KeySym.s):
-                            choosen_slider = src.helpers.clamp(choosen_slider + 1, 0, len(slider))
+                            choosen_slider = src.helpers.clamp(choosen_slider + 1, 0, len(slider) - 1)
 
                 case "delete":
                     if isinstance(event, tcod.event.KeyDown):

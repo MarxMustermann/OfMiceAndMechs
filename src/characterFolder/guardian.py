@@ -16,6 +16,7 @@ class Guardian(src.monster.Monster):
         name="Guardian",
         creator=None,
         characterId=None,
+        multiplier=1,
     ):
         """
         basic state setting
@@ -45,7 +46,7 @@ class Guardian(src.monster.Monster):
         )
         self.charType = "Guardian"
         self.specialDisplay = "&&"
-        self.maxHealth = 1000
+        self.maxHealth = 1000 + int((multiplier - 1) * 10)
         self.hasSpecialAttacks = True
         self.hasPushbackAttack = True
         self.health = self.maxHealth
@@ -53,8 +54,8 @@ class Guardian(src.monster.Monster):
         self.movementSpeed = 0.1
         self.baseAttackSpeed = 0.1
         self.specialCharges = 0
-        self.rawBaseDame = 20
-        self.baseDamage = 20
+        self.rawBaseDame = 20 + int(multiplier - 1)
+        self.baseDamage = 20 + int(multiplier - 1)
 
     def hurt(self, damage, reason=None, actor=None):
         try:

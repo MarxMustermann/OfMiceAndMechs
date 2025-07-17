@@ -194,14 +194,12 @@ class Monster(src.characters.Character):
 
         super().changed(tag, info)
 
-    def color_for_multiplier(self, multiplier):
+    def color_for_multiplier(self, multiplier, start=(255, 255, 255), end=(255, 16, 8)):
         range = self.multiplier_range(multiplier)
 
         color = (
             src.interaction.urwid.AttrSpec(
-                src.interaction.urwid.AttrSpec.interpolate(
-                    (255, 255, 255), (255, 16, 8), src.helpers.clamp(range, 0.0, 1.0)
-                ),
+                src.interaction.urwid.AttrSpec.interpolate(start, end, src.helpers.clamp(range, 0.0, 1.0)),
                 "black",
             ),
         )
@@ -210,10 +208,11 @@ class Monster(src.characters.Character):
     @staticmethod
     def get_random_multiplier(monster=None) -> float:
         if src.gamestate.gamestate.difficulty == "custom":
-            percentage = src.gamestate.gamestate.difficultyMap["monster"]
+            percentage = src.gamestate.gamestate.difficultyMap["monster_difficulty"]["default"]
 
-            if monster and monster in src.gamestate.gamestate.difficultyMap:
-                percentage = src.gamestate.gamestate.difficultyMap[monster]
+            if monster and monster in src.gamestate.gamestate.difficultyMap["monster_difficulty"]:
+                monster_specific_percentage = src.gamestate.gamestate.difficultyMap["monster_difficulty"][monster]
+                percentage = percentage * (1 + ((monster_specific_percentage - 0.5) / 0.5))
 
             if percentage <= 0.5:
                 return src.helpers.power_distribution(1, 2 * 7, 1 + 1.5 * (1 - (percentage / 0.5)))

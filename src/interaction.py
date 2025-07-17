@@ -9,13 +9,15 @@ import os
 import random
 import time
 import gzip
-
+import inspect
 
 import src.canvas
+import src.characters
 import src.chats
 import src.gamestate
 import src.helpers
 import src.menuFolder
+import src.monster
 import src.quests
 import src.rooms
 import src.terrains
@@ -4792,6 +4794,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
     lastStep = time.time()
     submenu = ["default"]
+    slider_stack = []
     slider = []
     choosen_slider = 0
     while 1:
@@ -5130,8 +5133,8 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                         (start_x, offsetY + 21),
                     )
                     start_y = offsetY + 22
-                    for i, (title, key, current_value) in enumerate(slider):
-                        percantage = current_value / 100
+                    for i, (title, key, current_value, range_values, sub_slider) in enumerate(slider):
+                        percantage = (current_value - range_values["min"]) / (range_values["max"] - range_values["min"])
                         amount = int(percantage * 35) * "║"
                         amount = amount + (35 - int(percantage * 35)) * "|"
                         show = "| " + amount + " |"
@@ -5151,13 +5154,39 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                             show,
                             (start_x, start_y + 1),
                         )
-                        start_y += 2
+                        val = "| " + str(current_value) + ((35 - len(str(current_value))) * " ") + " |"
+                        printUrwidToTcod(
+                            val,
+                            (start_x, start_y + 2),
+                        )
+                        start_y += 3
+
                     printUrwidToTcod(
-                        "+-------------------------------------+",
+                        "|  press w or s to choose the slider  |",
                         (start_x, start_y),
                     )
+                    printUrwidToTcod(
+                        "|  press a or d to adjust the value   |",
+                        (start_x, start_y + 1),
+                    )
+                    if len(slider[choosen_slider][4]):
+                        printUrwidToTcod(
+                            "|    press e to adjust sub values     |",
+                            (start_x, start_y + 2),
+                        )
+                        start_y += 1
+                    if len(slider_stack):
+                        printUrwidToTcod(
+                            "|      press enter to return back     |",
+                            (start_x, start_y + 2),
+                        )
+                        start_y += 1
+                    printUrwidToTcod(
+                        "+-------------------------------------+",
+                        (start_x, start_y + 2),
+                    )
 
-        tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+        tcodContext.present(tcodConsole, integer_scaling=True, keep_aspect=True)
 
         events = tcod.event.get()
         current_submenu = submenu[-1] if len(submenu) else ""
@@ -5304,31 +5333,115 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                                 "difficultyModifier": 2,
                                 "diff_increase_per_dungeon": 1,
                                 "shuffle_gods": True,
+                                "monster_difficulty": {
+                                    "default": 0.5,
+                                },
                             }
                             submenu.append("custom_difficulty")
-                            slider.append(["Monsters Difficulty", "monster", 50])
+                            slider.clear()
+                            slider.append(
+                                [
+                                    "Difficulty Modifier",
+                                    "difficultyModifier",
+                                    2,
+                                    {"min": 0.5, "max": 2, "step": 0.1},
+                                    [],
+                                ]
+                            )
+                            slider.append(
+                                [
+                                    "Difficulty increase Per Dungoen",
+                                    "diff_increase_per_dungeon",
+                                    1,
+                                    {"min": 0.5, "max": 2, "step": 0.1},
+                                    [],
+                                ]
+                            )
+                            slider.append(
+                                ["Shuffle Gods order", "shuffle_gods", 1, {"min": 0, "max": 1, "step": 1}, []]
+                            )
+
+                            monster_diffs = []
+                            for key, value in src.characters.characterMap.items():
+                                if issubclass(value, src.monster.Monster) and value != src.monster.Monster:
+                                    init = value.__init__
+                                    sig = inspect.signature(init)
+                                    params = sig.parameters
+                                    if "multiplier" in params:
+                                        instence = value()
+                                        monster_diffs.append(
+                                            [
+                                                f"{instence.name} Difficulty",
+                                                f"monster_difficulty.{instence.name}",
+                                                0.5,
+                                                {"min": 0.1, "max": 1, "step": 0.1},
+                                                [],
+                                            ]
+                                        )
+
+                            slider.append(
+                                [
+                                    "Monsters Difficulty",
+                                    "monster_difficulty.default",
+                                    0.5,
+                                    {"min": 0.1, "max": 1, "step": 0.1},
+                                    monster_diffs,
+                                ]
+                            )
 
                 case "custom_difficulty":
                     if isinstance(event, tcod.event.KeyDown):
                         key = event.sym
                         if key == tcod.event.KeySym.RETURN:
+
+                            def SetKey(key, v):
+                                if "." in key:
+                                    current_key = difficultyMap
+                                    path = key.split(".")
+                                    for k in path[:-1]:
+                                        current_key = current_key[k]
+                                    current_key[path[-1]] = v
+                                else:
+                                    difficultyMap[key] = v
+
+                            if len(slider_stack):
+                                slider = slider_stack.copy()
+                                choosen_slider = 0
+                                slider_stack.clear()
+                                continue
+
                             difficulty = "custom"
-                            for _, key, v in slider:
-                                difficultyMap[key] = v / 100
+                            for _, key, v, _, sub_slider in slider:
+                                SetKey(key, v)
+                                for _, key, v, _, sub_slider in sub_slider:
+                                    SetKey(key, v)
 
                             submenu.pop()
                             submenu.pop()
+
                         if key in (tcod.event.KeySym.LEFT, tcod.event.KeySym.a):
-                            slider[choosen_slider][2] = src.helpers.clamp(slider[choosen_slider][2] - 10, 0, 100)
+                            slider[choosen_slider][2] = src.helpers.clamp(
+                                slider[choosen_slider][2] - slider[choosen_slider][3]["step"],
+                                slider[choosen_slider][3]["min"],
+                                slider[choosen_slider][3]["max"],
+                            )
 
                         if key in (tcod.event.KeySym.RIGHT, tcod.event.KeySym.d):
-                            slider[choosen_slider][2] = src.helpers.clamp(slider[choosen_slider][2] + 10, 0, 100)
+                            slider[choosen_slider][2] = src.helpers.clamp(
+                                slider[choosen_slider][2] + slider[choosen_slider][3]["step"],
+                                slider[choosen_slider][3]["min"],
+                                slider[choosen_slider][3]["max"],
+                            )
 
                         if key in (tcod.event.KeySym.UP, tcod.event.KeySym.w):
-                            choosen_slider = src.helpers.clamp(choosen_slider - 1, 0, len(slider))
+                            choosen_slider = src.helpers.clamp(choosen_slider - 1, 0, len(slider) - 1)
                         if key in (tcod.event.KeySym.DOWN, tcod.event.KeySym.s):
-                            choosen_slider = src.helpers.clamp(choosen_slider + 1, 0, len(slider))
+                            choosen_slider = src.helpers.clamp(choosen_slider + 1, 0, len(slider) - 1)
 
+                        if key == tcod.event.KeySym.e and len(slider[choosen_slider][4]):
+                            slider_stack = slider.copy()
+                            slider = slider[choosen_slider][4]
+                            choosen_slider = 0
                 case "delete":
                     if isinstance(event, tcod.event.KeyDown):
                         key = event.sym

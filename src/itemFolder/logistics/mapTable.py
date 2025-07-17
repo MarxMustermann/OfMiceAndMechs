@@ -71,6 +71,20 @@ class MapTable(src.items.Item):
             for (key,value)  in info.items():
                 character.terrainInfo[coordinate][key] = value
 
+    def getConfigurationOptions(self, character):
+        '''
+        register the configuration options with superclass
+
+        Parameters:
+            character: the character trying to conigure the machine
+        '''
+        options = super().getConfigurationOptions(character)
+        if self.bolted:
+            options["b"] = ("unbolt", self.unboltAction)
+        else:
+            options["b"] = ("bolt down", self.boltAction)
+        return options
+
     def boltAction(self,character):
         '''
         bult down item

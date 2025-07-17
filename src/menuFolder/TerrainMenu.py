@@ -121,7 +121,6 @@ class TerrainMenu(src.subMenu.SubMenu):
             rawMap[homeCoordinate[1]][homeCoordinate[0]] = "HH"
         color = "#ff3"
         terrainInfo = character.terrainInfo.get(characterCoordinate)
-        print(terrainInfo)
         if terrainInfo and terrainInfo.get("looted"):
             color = "#863"
         rawMap[characterCoordinate[1]][characterCoordinate[0]] = (src.interaction.urwid.AttrSpec(color, "black"), "@@")

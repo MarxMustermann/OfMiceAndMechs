@@ -194,14 +194,12 @@ class Monster(src.characters.Character):
 
         super().changed(tag, info)
 
-    def color_for_multiplier(self, multiplier):
+    def color_for_multiplier(self, multiplier, start=(255, 255, 255), end=(255, 16, 8)):
         range = self.multiplier_range(multiplier)
 
         color = (
             src.interaction.urwid.AttrSpec(
-                src.interaction.urwid.AttrSpec.interpolate(
-                    (255, 255, 255), (255, 16, 8), src.helpers.clamp(range, 0.0, 1.0)
-                ),
+                src.interaction.urwid.AttrSpec.interpolate(start, end, src.helpers.clamp(range, 0.0, 1.0)),
                 "black",
             ),
         )

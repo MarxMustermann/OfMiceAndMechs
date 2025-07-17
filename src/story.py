@@ -2269,12 +2269,9 @@ but they are likely to explode when disturbed.
 
                     # add monster
                     pos = (random.randint(1,11),random.randint(1,11),0)
-                    if monsterType == "Golem":
-                        golem = src.characters.characterMap["Golem"](
-                            multiplier=src.monster.Monster.get_random_multiplier("Golem")
-                        )
-                    else:
-                        golem = src.characters.characterMap[monsterType]()
+                    golem = src.characters.characterMap[monsterType](
+                        multiplier=src.monster.Monster.get_random_multiplier(monsterType)
+                    )
                     golem.godMode = True
                     quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
                     quest.autoSolve = True
@@ -2286,12 +2283,9 @@ but they are likely to explode when disturbed.
                 for i in range(random.randint(1,3)):
                     monsterType = random.choice(["Golem","ShieldBug"])
                     pos = (random.randint(1,11),random.randint(1,11),0)
-                    if monsterType == "Golem":
-                        golem = src.characters.characterMap["Golem"](
-                            multiplier=src.monster.Monster.get_random_multiplier()
-                        )
-                    else:
-                        golem = src.characters.characterMap[monsterType]()
+                    golem = src.characters.characterMap[monsterType](
+                        multiplier=src.monster.Monster.get_random_multiplier(monsterType)
+                    )
                     golem.godMode = True
                     quest = src.quests.questMap["SecureTile"](toSecure=rand_pos)
                     quest.autoSolve = True
@@ -2346,7 +2340,9 @@ but they are likely to explode when disturbed.
         for _i in range(random.randint(5, 7)):
             monsterType = random.choice(["Golem", "ShieldBug"])
             pos = (random.randint(1, 11), random.randint(1, 11), 0)
-            golem = src.characters.characterMap[monsterType]()
+            golem = src.characters.characterMap[monsterType](
+                multiplier=src.monster.Monster.get_random_multiplier(monsterType)
+            )
             golem.godMode = True
             quest = src.quests.questMap["SecureTile"](toSecure=(8, 7), wandering=False)
             quest.autoSolve = True

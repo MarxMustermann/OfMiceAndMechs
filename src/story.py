@@ -2271,7 +2271,7 @@ but they are likely to explode when disturbed.
                     pos = (random.randint(1,11),random.randint(1,11),0)
                     if monsterType == "Golem":
                         golem = src.characters.characterMap["Golem"](
-                            multiplier=src.monster.Monster.get_random_multiplier()
+                            multiplier=src.monster.Monster.get_random_multiplier("Golem")
                         )
                     else:
                         golem = src.characters.characterMap[monsterType]()

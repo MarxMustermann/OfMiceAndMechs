@@ -20,7 +20,7 @@ class CombatInfoMenu(src.subMenu.SubMenu):
         text = ""
 
         text += "you: \n\n"
-        text += f"name:        {char.name}\n"
+        text += f"name:        {char.name} {char.getPosition()}\n"
         text += f"health:      {char.health}\n"
         text += f"exhaustion:  {char.exhaustion}\n"
         text += f"timeTaken:   {char.timeTaken}\n"
@@ -34,9 +34,9 @@ nearby enemies:
         enemies = char.getNearbyEnemies()
         for enemy in enemies:
             text += "-------------  \n"
-            text += f"name:        {enemy.name}\n" % enemy.name
-            text += f"health:      {enemy.health}\n" % enemy.health
-            text += f"exhaustion:  {enemy.exhaustion}\n" % enemy.exhaustion
+            text += f"name:        {enemy.name} {enemy.getPosition()}\n"
+            text += f"health:      {enemy.health}\n"
+            text += f"exhaustion:  {enemy.exhaustion}\n"
             text += f"timeTaken:   {enemy.timeTaken:f}\n"
 
         text += """
@@ -46,7 +46,7 @@ subordinates:
 """
         for ally in char.subordinates:
             text += "-------------  \n"
-            text += f"name:        {ally.name}\n"
+            text += f"name:        {ally.name} {ally.getPosition()}\n"
             text += f"health:      {ally.health}\n"
             text += f"exhaustion:  {ally.exhaustion}\n"
             text += f"timeTaken:   {ally.timeTaken:f}\n"

@@ -608,6 +608,9 @@ def spawnControlRoom(terrain, coordinate, spawnReportArchive=False):
     personnelTracker = src.items.itemMap["PersonnelTracker"]()
     personnelTracker.bolted = True
     mainRoom.addItem(personnelTracker, (4, 1, 0))
+    mapTable = src.items.itemMap["MapTable"]()
+    mapTable.bolted = True
+    mainRoom.addItem(mapTable, (5, 2, 0))
     communicator = src.items.itemMap["Communicator"]()
     communicator.bolted = True
     mainRoom.addItem(communicator, (1, 3, 0))

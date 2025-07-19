@@ -157,6 +157,7 @@ Activate the corpse shredder to produce mold feed/seeded mold feed.
             return self.display
 
     def checkForInputs(self):
+        corpse = None
         moldSpores = []
         for item in self.container.getItemByPosition((self.xPosition - 1, self.yPosition, 0)):
             if item.type == "Corpse":

@@ -135,7 +135,7 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
         to_remove = [flask] + [needed_ingredients[ing] for ing in needed_ingredients]
         for item in to_remove:
             if item in character.inventory:
-                character.inventory.remove(item)
+                character.removeItemFromInventory(item)
             else:
                 self.container.removeItem(item)
 
@@ -171,7 +171,7 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
         if params.get("key") == "k":
             preferInventoryOut = False
         if (dropsSpotsFull or preferInventoryOut) and character.getFreeInventorySpace() > 0:
-            character.inventory.append(new)
+            character.addToInventory(new)
         elif dropsSpotsFull:
             character.addMessage("you failed to produce since both your inventory and the dropspots are full.")
         else:

@@ -691,7 +691,7 @@ your room produces a MetalBar every {ticksPerBar} ticks on average.""")
             character.runCommandString("*********")
             room.addCharacter(character,0,6)
             for _i in range(10):
-                character.inventory.append(src.items.itemMap["Scrap"]())
+                character.addToInventory(src.items.itemMap["Scrap"]())
 
             quest = src.quests.RestockRoom(targetPosition=(room.xPosition,room.yPosition,0),toRestock="Scrap")
             quest.activate()
@@ -706,7 +706,7 @@ your room produces a MetalBar every {ticksPerBar} ticks on average.""")
             character.runCommandString("*********")
             room.addCharacter(character,0,6)
             for _i in range(10):
-                character.inventory.append(src.items.itemMap["Corpse"]())
+                character.addToInventory(src.items.itemMap["Corpse"]())
 
             quest = src.quests.RestockRoom(targetPosition=(room.xPosition,room.yPosition,0),toRestock="Corpse")
             quest.activate()

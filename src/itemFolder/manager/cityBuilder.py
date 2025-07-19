@@ -159,7 +159,7 @@ class CityBuilder(src.items.Item):
             self.resources[item.type] += 1
 
         for item in foundItems:
-            character.inventory.remove(item)
+            character.removeItemFromInventory(item)
 
     def clearTask(self, character):
         """

@@ -302,7 +302,7 @@ class GlassStatue(src.items.Item):
 
             src.popups.Popup.open_Popup(character, "the GlassHeart drops to the ground after you rip it out of the GlassStatue")
         else:
-            character.inventory.append(newItem)
+            character.addToInventory(newItem)
             src.popups.Popup.open_Popup(character, "you rip the GlassHeart and take it")
 
         self.hasItem = False
@@ -331,11 +331,11 @@ class GlassStatue(src.items.Item):
 
         if glassHeart.epoch < src.gamestate.gamestate.tick//(15*15*15):
             character.addMessage("the heart stpped beating and shatters. Transer the heart faster next time.")
-            character.inventory.remove(glassHeart)
+            character.removeItemFromInventory(glassHeart)
             return
 
         self.hasItem = True
-        character.inventory.remove(glassHeart)
+        character.removeItemFromInventory(glassHeart)
         src.gamestate.gamestate.gods[self.itemID]["lastHeartPos"] = (character.getTerrain().xPosition,character.getTerrain().yPosition)
         character.changed("deliveredSpecialItem",{"itemID":self.itemID})
 

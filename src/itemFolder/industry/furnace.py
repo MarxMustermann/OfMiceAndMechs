@@ -63,7 +63,7 @@ Place the furnace next to a boiler to be able to heat up the boiler with this fu
                 self.activated = True
 
                 # destroy fuel
-                character.inventory.remove(foundItem)
+                character.removeItemFromInventory(foundItem)
                 character.changed()
 
                 # add fluff

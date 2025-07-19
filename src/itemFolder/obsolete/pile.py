@@ -45,7 +45,7 @@ class Pile(src.items.Item):
             return
 
         # spawn item to inventory
-        character.inventory.append(src.items.itemMap[self.itemType]())
+        character.addToInventory(src.items.itemMap[self.itemType]())
         character.changed()
         character.addMessage("you take a piece of " + str(self.itemType))
 

@@ -33,7 +33,7 @@ class TransportInNode(src.items.Item):
         itemToMove = items[0]
 
         self.container.removeItem(itemToMove)
-        character.inventory.append(itemToMove)
+        character.addToInventory(itemToMove)
         character.addMessage("you take an item")
 
     def fetchSpecialRegisterInformation(self):

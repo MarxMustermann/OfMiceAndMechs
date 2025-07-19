@@ -34,7 +34,7 @@ class TransportOutNode(src.items.Item):
 
         toDrop.xPosition = self.xPosition
         toDrop.yPosition = self.yPosition + 1
-        character.inventory.remove(toDrop)
+        character.removeItemFromInventory(toDrop)
         self.container.addItems([toDrop])
         character.addMessage("you take a item")
 

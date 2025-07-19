@@ -40,10 +40,10 @@ class SaccrificialCircle(src.items.Item):
             character.addMessage("no corpse in inventory")
             return
 
-        character.inventory.remove(foundItem)
+        character.removeItemFromInventory(foundItem)
         spark = src.items.itemMap["StaticSpark"]()
         spark.level = self.level
-        character.inventory.append(spark)
+        character.addToInventory(spark)
         character.addMessage("corpse sacrificed for spark")
         self.uses -= 1
 

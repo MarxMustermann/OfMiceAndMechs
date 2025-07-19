@@ -103,7 +103,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             grindstones = params["grindstones"]
             if amount_grindstone_consumed:
                 for grindStone in grindstones[:amount_grindstone_consumed]:
-                    character.inventory.remove(grindStone)
+                    character.removeItemFromInventory(grindStone)
 
             improvementAmount = chosenDamageValue - swordOriginalDamage
             # trigger the actual productions process

@@ -43,11 +43,11 @@ class GooFlask(src.items.Item):
                 container.removeItem(self)
                 container.addItem(flask,pos)
             elif self in character.inventory:
-                character.inventory.remove(self)
-                character.inventory.append(flask)
+                character.removeItemFromInventory(self)
+                character.addToInventory(flask)
             elif character.flask == self:
                 character.flask = None
-                character.inventory.append(flask)
+                character.addToInventory(flask)
 
             return
 

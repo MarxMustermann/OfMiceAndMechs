@@ -122,14 +122,14 @@ Filling a flask will use up a charge from your goo dispenser.
                 return
 
             if isinstance(item, src.items.itemMap["Flask"]):
-                character.inventory.remove(item)
+                character.removeItemFromInventory(item)
                 gooFlask = src.items.itemMap["GooFlask"]()
                 gooFlask.uses = fillAmount
                 filled = True
                 self.charges -= 1
                 self.description = self.baseName + " (%s charges)" % (self.charges)
                 character.addMessage("you fill the goo flask")
-                character.inventory.append(gooFlask)
+                character.addToInventory(gooFlask)
         if filled:
             self.runCommand("filled",character)
             character.addMessage("you fill goo flasks in your inventory")

@@ -79,7 +79,7 @@ class MachiningTable(src.items.itemMap["WorkShop"]):
         metalBar = metalBarsFound[-1]
 
         if metalBar in character.inventory:
-            character.inventory.remove(metalBar)
+            character.removeItemFromInventory(metalBar)
         else:
             self.container.removeItem(metalBar)
 
@@ -112,7 +112,7 @@ class MachiningTable(src.items.itemMap["WorkShop"]):
         character.addMessage("It takes you 1000 turns to do that")
 
         if (dropsSpotsFull or preferInventoryOut) and character.getFreeInventorySpace() > 0:
-            character.inventory.append(new)
+            character.addToInventory(new)
         elif dropsSpotsFull:
             character.addMessage("you failed to produce since both your inventory and the dropspots are full.")
         else:

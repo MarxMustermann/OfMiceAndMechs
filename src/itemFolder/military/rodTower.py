@@ -141,11 +141,11 @@ class RodTower(src.items.Item):
             bestSword = item
 
         if self.weapon:
-            character.inventory.append(self.weapon)
+            character.addToInventory(self.weapon)
 
         if bestSword:
             self.weapon = bestSword
-            character.inventory.remove(self.weapon)
+            character.removeItemFromInventory(self.weapon)
         else:
             self.weapon = None
 

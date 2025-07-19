@@ -559,7 +559,7 @@ class Shrine(src.items.Item):
                 character.addMessage(f"your weapons base damage is increased by {increaseValue} to {character.weapon.baseDamage}")
                 self.getTerrain().mana -= cost
                 if foundWeapon:
-                    character.inventory.remove(foundWeapon)
+                    character.removeItemFromInventory(foundWeapon)
             else:
                 character.addMessage(f"the mana is used up")
 
@@ -613,7 +613,7 @@ class Shrine(src.items.Item):
                 character.addMessage(f"your armors armor value is increased by {increaseValue} to {character.armor.armorValue}")
                 self.getTerrain().mana -= cost
                 if foundArmor:
-                    character.inventory.remove(foundArmor)
+                    character.removeItemFromInventory(foundArmor)
             else:
                 character.addMessage(f"the mana is used up")
 
@@ -638,7 +638,7 @@ class Shrine(src.items.Item):
                 character.addMessage(f"your max health is increased by {increaseValue} to {character.maxHealth}")
                 self.getTerrain().mana -= cost
                 if foundVial:
-                    character.inventory.remove(foundVial)
+                    character.removeItemFromInventory(foundVial)
             else:
                 character.addMessage(f"the mana is used up")
 
@@ -675,7 +675,7 @@ class Shrine(src.items.Item):
                 for _i in range(0,10):
                     item = src.items.itemMap["Wall"]()
                     item.bolted = False
-                    character.inventory.append(item)
+                    character.addToInventory(item)
                 self.getTerrain().mana -= cost
             else:
                 character.addMessage(f"the mana is used up")
@@ -689,7 +689,7 @@ class Shrine(src.items.Item):
                     foundWeapons.append(item)
 
             for foundWeapon in foundWeapons:
-                character.inventory.remove(foundWeapon)
+                character.removeItemFromInventory(foundWeapon)
                 cost -= 0.5
             cost *= glassHeartRebate
             if self.getTerrain().mana >= cost:
@@ -697,7 +697,7 @@ class Shrine(src.items.Item):
                 for _i in range(0,10):
                     item = src.items.itemMap["Bolt"]()
                     item.bolted = False
-                    character.inventory.append(item)
+                    character.addToInventory(item)
                 self.getTerrain().mana -= cost
             else:
                 character.addMessage(f"the mana is used up")
@@ -820,7 +820,7 @@ class Shrine(src.items.Item):
 
 
             if foundFlask:
-                character.inventory.remove(foundFlask)
+                character.removeItemFromInventory(foundFlask)
 
             return True
 

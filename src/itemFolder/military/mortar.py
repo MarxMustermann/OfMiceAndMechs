@@ -42,7 +42,7 @@ class Mortar(src.items.Item):
 
             character.addMessage("you load the mortar")
 
-            character.inventory.remove(itemFound)
+            character.removeItemFromInventory(itemFound)
             self.loadedWith = itemFound
             self.loaded = True
         else:

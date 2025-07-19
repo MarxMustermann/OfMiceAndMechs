@@ -812,11 +812,13 @@ def spawnWaves():
                 enemy.quests.append(quest)
 
 def setUpRuin(pos):
+    '''
+    spwans ruins on a terrain
+    '''
     # get basic info
     currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
 
     # set up helper item to spawn stuff
-    # bad code: spawning stuff should be in a "magic" class or similar
     item = src.items.itemMap["ArchitectArtwork"]()
     architect = item
     item.godMode = True
@@ -846,7 +848,7 @@ def setUpRuin(pos):
             if random.random() > 0.5:
                 loot_types = [random.choice(loot_types)]
 
-            # add random amount of loot
+            # fill room
             monsterType = random.choice(["Golem","ShieldBug"])
             for i in range(0,random.randint(1,8)):
                 # add loot
@@ -854,13 +856,13 @@ def setUpRuin(pos):
                     mana_crystal = src.items.itemMap["ManaCrystal"]()
                     room.addItem(mana_crystal,(6,6,0))
                 else:
-                    positions = [(3,8,0),(2,2,0),(11,4,0),(6,11,0),(10,11,0),(5,5,0)]
+                    position = (random.randint(1,13),random.randint(1,13),0)
                     item = src.items.itemMap[random.choice(loot_types)]()
                     if item.type == "GooFlask":
                         item.uses = 100
                     if item.type == "Vial":
                         item.uses = 10
-                    room.addItem(item,random.choice(positions))
+                    room.addItem(item,position)
 
                 # give one free loot
                 if i == 0:

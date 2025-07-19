@@ -1370,7 +1370,8 @@ class Room:
                         continue
 
                     try:
-                        chars[pos[1]][pos[0]] = display
+                        if display:
+                            chars[pos[1]][pos[0]] = display
                     except:
                         pass
 
@@ -1383,7 +1384,8 @@ class Room:
                     display = extraInfo["chars"][len(extraInfo["chars"])-1-duration]
 
                     try:
-                        chars[pos[1]][pos[0]] = display
+                        if display:
+                            chars[pos[1]][pos[0]] = display
                     except:
                         pass
 

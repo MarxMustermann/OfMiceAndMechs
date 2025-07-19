@@ -1321,7 +1321,7 @@ class Room:
                         extraInfo["display"] = character
                     display = extraInfo["display"]
                     display = (src.interaction.urwid.AttrSpec("#000","#600"),display)
-                    if extraInfo["mainChar"]:
+                    if extraInfo.get("mainChar"):
                         display = "!!"
                         display = (src.interaction.urwid.AttrSpec("#fff","#f00"),display)
 

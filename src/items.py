@@ -1,6 +1,7 @@
 """
 items and item related code belongs here
 """
+
 import logging
 
 import src
@@ -8,15 +9,14 @@ import src
 logger = logging.getLogger(__name__)
 
 class Item:
-    """
+    '''
     This is the base class for ingame items. It is intended to hold the common behaviour of items.
 
     Attributes:
         seed (int): rng seed intended to have predictable randomness
         container: references where the item is placed currently
 
-    """
-
+    '''
     type = "Item"
 
     # flags for traits
@@ -48,6 +48,9 @@ class Item:
     description = "abstract base item should never be used directly"
 
     def getTerrainPosition(self):
+        '''
+        get the position of the terrain this item is on
+        '''
         return self.getTerrain().getPosition()
 
     def callInit(self):

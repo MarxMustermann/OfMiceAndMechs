@@ -1,4 +1,5 @@
 import src
+import random
 
 
 class CorpseShredder(src.items.Item):
@@ -90,13 +91,65 @@ Activate the corpse shredder to produce mold feed/seeded mold feed.
         # remove resources
         self.container.removeItem(corpse)
 
+        # spawn chunks
         for _i in range(corpse.charges // 100):
+            # generate the chunk
             if moldSpores:
                 self.container.removeItem(moldSpores.pop())
                 new = src.items.itemMap["SeededMoldFeed"]()
             else:
-                # spawn the new item
                 new = src.items.itemMap["MoldFeed"]()
-            self.container.addItem(new,( self.xPosition + 1,self.yPosition,self.zPosition))
+
+            # splatter some chunks around
+            pos = ( self.xPosition + 1,self.yPosition,self.zPosition)
+            if random.random() < 0.3:
+                pos = (random.randint(1,12),random.randint(1,12),0) 
+                print(pos)
+                if not self.container.getPositionWalkable(pos):
+                    print("skipped")
+                    continue
+            
+            # actually add the item
+            self.container.addItem(new,pos)
+
+        # show splatter animation
+        center = self.getPosition()
+        for tick in range(1,6):
+            for offset_x in range(-2,3):
+                for offset_y in range(-1,2):
+                    offset = (offset_x,offset_y)
+                    pos = (center[0]+offset_x,center[1]+offset_y)
+                    if tick == 1:
+                        if offset == (-1,0):
+                            self.container.addAnimation(pos,"splatter",1,{})
+                        else:
+                            self.container.addAnimation(pos,"showchar",1,{"char":None})
+                    elif tick == 2:
+                        if offset_x < 1:
+                            self.container.addAnimation(pos,"splatter",1,{})
+                        else:
+                            self.container.addAnimation(pos,"showchar",1,{"char":None})
+                    elif tick == 3:
+                        if offset_x < 2 and offset_x > -2:
+                            self.container.addAnimation(pos,"splatter",1,{})
+                        else:
+                            self.container.addAnimation(pos,"showchar",1,{"char":None})
+                    elif tick == 4:
+                        if offset_x > -1:
+                            self.container.addAnimation(pos,"splatter",1,{})
+                        else:
+                            self.container.addAnimation(pos,"showchar",1,{"char":None})
+                    elif tick == 5:
+                        if offset == (1,0):
+                            self.container.addAnimation(pos,"splatter",1,{})
+                        else:
+                            self.container.addAnimation(pos,"showchar",1,{"char":None})
+                    else:
+                        self.container.addAnimation(pos,"splatter",1,{})
+        for i in range(1,32):
+            pos = (random.randint(0,12),random.randint(0,12),0)
+            self.container.addAnimation(pos,"showchar",i//5,{"char":None})
+            for j in range(i//4,6):
+                self.container.addAnimation(pos,"splatter",1,{})
 
 src.items.addType(CorpseShredder)

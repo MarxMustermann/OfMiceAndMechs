@@ -151,7 +151,12 @@ class ReportArchive(src.items.Item):
             self.generateReports()
 
         if self.fragments_unlocked >= len(self.reports):
-            character.addMessage("You can't unlock more reports")
+            text = "You can't unlock more reports"
+            submenue = src.menuFolder.textMenu.TextMenu(
+                text = text,
+            )
+            character.macroState["submenue"] = submenue
+            character.addMessage(text)
             return
 
         fragments = []
@@ -160,7 +165,12 @@ class ReportArchive(src.items.Item):
                 fragments.append(item)
 
         if not fragments:
-            character.addMessage("You need to have fragments in your inventory to decrypt them")
+            text = "You need to have fragments in your inventory to decrypt them"
+            submenue = src.menuFolder.textMenu.TextMenu(
+                text = text,
+            )
+            character.macroState["submenue"] = submenue
+            character.addMessage(text)
             return
 
         character.inventory.remove(fragments[-1])

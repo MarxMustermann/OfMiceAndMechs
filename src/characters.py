@@ -2312,7 +2312,7 @@ press any other key to attack normally"""
         self.addMessage("you drop a %s" % item.type)
 
         # remove item from inventory
-        self.inventory.remove(item)
+        self.removeItemFromInventory(item)
         self.container.addAnimation(self.getPosition(),"charsequence",1,{"chars":["--",item.render()]})
 
         if src.gamestate.gamestate.mainChar in self.container.characters:

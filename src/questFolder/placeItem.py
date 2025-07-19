@@ -2,8 +2,10 @@ import src
 
 
 class PlaceItem(src.quests.MetaQuestSequence):
+    '''
+    quest to place a item on a coordinate
+    '''
     type = "PlaceItem"
-
     def __init__(self, description="place item", creator=None, lifetime=None, targetPosition=None, targetPositionBig=None, itemType=None, tryHard=False, boltDown=False,reason=None, clearPath = False):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
@@ -17,6 +19,9 @@ class PlaceItem(src.quests.MetaQuestSequence):
         self.clearPath = clearPath
     
     def handleQuestFailure(self,extraInfo):
+        '''
+        react to a subquest failure
+        '''
         if extraInfo["reason"] == "no path found":
             if self.tryHard or self.clearPath:
                 newQuest = src.quests.questMap["ClearPathToPosition"](targetPosition=self.targetPosition)
@@ -143,6 +148,8 @@ Press d to move the cursor and show the subquests description.
         if not item.container:
             return
         if item.type == self.itemType:
+            if isinstance(item.container,src.characters.Character):
+                return
             if item.container.isRoom:
                 if item.container.getPosition() == self.targetPositionBig and item.getPosition() == self.targetPosition:
                     if not self.boltDown or item.bolted:

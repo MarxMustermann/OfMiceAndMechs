@@ -51,7 +51,7 @@ operate the machine on {self.targetPosition}{reason}.
             return True
 
         items = character.container.getItemByPosition(self.targetPosition)
-        if not items or items[0].type not in ("Machine","ScrapCompactor","MaggotFermenter","BioPress","GooProducer","Electrifier","BloomShredder"):
+        if not items or items[0].type not in ("Machine","ScrapCompactor","MaggotFermenter","BioPress","GooProducer","Electrifier","BloomShredder","CorpseShredder"):
             self.fail()
             return True
 
@@ -113,7 +113,7 @@ operate the machine on {self.targetPosition}{reason}.
             for item in items:
                 if not item.bolted:
                     continue
-                if item.type not in ("Machine","ScrapCompactor","MaggotFermenter","BioPress","GooProducer","Electrifier","BloomShredder",):
+                if item.type not in ("Machine","ScrapCompactor","MaggotFermenter","BioPress","GooProducer","Electrifier","BloomShredder","CorpseShredder",):
                     continue
                 if not item.readyToUse():
                     continue

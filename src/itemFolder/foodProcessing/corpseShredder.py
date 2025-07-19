@@ -60,28 +60,18 @@ Activate the corpse shredder to produce mold feed/seeded mold feed.
             character: the character using the item
         """
 
+        character.changed("operated machine",{"character":character,"machine":self})
+
         corpse = None
         moldSpores = []
 
-        for item in self.container.getItemByPosition((self.xPosition - 1, self.yPosition, 0)):
-            if item.type == "Corpse":
-                corpse = item
-            if item.type == "MoldSpore":
-                moldSpores.append(item)
-
         # refuse to produce without resources
+        corpse,moldSpores = self.checkForInputs()
         if not corpse:
             character.addMessage("no corpse")
             return
 
-        targetFull = False
-        items = self.container.getItemByPosition((self.xPosition + 1, self.yPosition,0))
-        if len(items) > 15:
-            targetFull = True
-        for item in items:
-            if item.walkable is False:
-                targetFull = True
-
+        targetFull = self.checkTargetFull()
         if targetFull:
             character.addMessage(
                 "the target area is full, the machine does not produce anything"
@@ -104,9 +94,7 @@ Activate the corpse shredder to produce mold feed/seeded mold feed.
             pos = ( self.xPosition + 1,self.yPosition,self.zPosition)
             if random.random() < 0.3:
                 pos = (random.randint(1,12),random.randint(1,12),0) 
-                print(pos)
                 if not self.container.getPositionWalkable(pos):
-                    print("skipped")
                     continue
             
             # actually add the item
@@ -151,5 +139,47 @@ Activate the corpse shredder to produce mold feed/seeded mold feed.
             self.container.addAnimation(pos,"showchar",i//5,{"char":None})
             for j in range(i//4,6):
                 self.container.addAnimation(pos,"splatter",1,{})
+
+    def checkTargetFull(self):
+        targetFull = False
+        items = self.container.getItemByPosition((self.xPosition + 1, self.yPosition,0))
+        if len(items) > 15:
+            targetFull = True
+        for item in items:
+            if item.walkable is False:
+                targetFull = True
+        return targetFull
+
+    def render(self):
+        if self.readyToUse():
+            return "%>"
+        else:
+            return self.display
+
+    def checkForInputs(self):
+        moldSpores = []
+        for item in self.container.getItemByPosition((self.xPosition - 1, self.yPosition, 0)):
+            if item.type == "Corpse":
+                corpse = item
+            if item.type == "MoldSpore":
+                moldSpores.append(item)
+        return (corpse,moldSpores)
+
+    def readyToUse(self):
+        if not self.container:
+            return False
+
+        if not self.bolted:
+            return False
+
+        targetFull = self.checkTargetFull()
+        if targetFull:
+            return False
+
+        (corpse, _moldSpores) = self.checkForInputs()
+        if not corpse:
+            return False
+
+        return True
 
 src.items.addType(CorpseShredder)

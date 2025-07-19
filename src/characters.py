@@ -1903,9 +1903,16 @@ press any other key to attack normally"""
         """
 
         if force or len(self.inventory) < self.maxInventorySpace:
+            item.container = self
             self.inventory.append(item)
         else:
             self.addMessage("inventory full")
+
+    def removeItem(self, item):
+        '''
+        indirection to offer the interface for containers
+        '''
+        self.removeItemFromInventory(item)
 
     def removeItemFromInventory(self, item):
         """
@@ -1926,6 +1933,7 @@ press any other key to attack normally"""
         """
 
         for item in items:
+            item.container = None
             self.inventory.remove(item)
 
     def generateQuests(self):

@@ -968,11 +968,12 @@ class Item:
             generateScrap: a flag indication wether scrap should be left by the destruction
         """
 
+        # ensure container
         container = self.container
-
         if not container:
             return
 
+        # remember old position
         pos = (self.xPosition, self.yPosition, self.zPosition)
 
         # remove item
@@ -983,11 +984,13 @@ class Item:
 
         # generate scrap
         if generateScrap:
+            # generate item
             amount = 1
             if not self.walkable:
                 amount = 20
             newItem = src.items.itemMap["Scrap"](amount=amount)
 
+            # merge with existing scrap piles
             toRemove = []
             for item in container.getItemByPosition(pos):
                 toRemove.append(item)

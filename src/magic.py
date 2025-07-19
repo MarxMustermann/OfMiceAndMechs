@@ -810,3 +810,93 @@ def spawnWaves():
                 quest.assignToCharacter(enemy)
                 quest.activate()
                 enemy.quests.append(quest)
+
+def setUpRuin(pos):
+    # get basic info
+    currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
+
+    # set up helper item to spawn stuff
+    # bad code: spawning stuff should be in a "magic" class or similar
+    item = src.items.itemMap["ArchitectArtwork"]()
+    architect = item
+    item.godMode = True
+    currentTerrain.addItem(item,(1,1,0))
+    rand_pos = (7,7)
+    make_room = True
+    filled_cord = []
+    for i in range(random.randint(2,6)):
+        if rand_pos in filled_cord:
+            continue
+        filled_cord.append(rand_pos)
+        if make_room:
+            # create the basic room
+            room = architect.doAddRoom(
+                    {
+                        "coordinate": rand_pos,
+                        "roomType": "EmptyRoom",
+                        "doors": "0,6 6,0 12,6 6,12",
+                        "offset": [1,1],
+                        "size": [13, 13],
+                    },
+                    None,
+            )
+
+            # decide between mixed or pure loot room
+            loot_types = ["ScrapCompactor","MetalBars","Vial","MoldFeed","Bolt","Flask","GooFlask","Rod","Sword","Scrap","ManufacturingTable","MemoryFragment"]
+            if random.random() > 0.5:
+                loot_types = [random.choice(loot_types)]
+
+            # add random amount of loot
+            monsterType = random.choice(["Golem","ShieldBug"])
+            for i in range(0,random.randint(1,8)):
+                # add loot
+                if random.random() < 0.2:
+                    mana_crystal = src.items.itemMap["ManaCrystal"]()
+                    room.addItem(mana_crystal,(6,6,0))
+                else:
+                    positions = [(3,8,0),(2,2,0),(11,4,0),(6,11,0),(10,11,0),(5,5,0)]
+                    item = src.items.itemMap[random.choice(loot_types)]()
+                    if item.type == "GooFlask":
+                        item.uses = 100
+                    if item.type == "Vial":
+                        item.uses = 10
+                    room.addItem(item,random.choice(positions))
+
+                # give one free loot
+                if i == 0:
+                    continue
+
+                # add monster
+                pos = (random.randint(1,11),random.randint(1,11),0)
+                golem = src.characters.characterMap[monsterType](
+                    multiplier=src.monster.Monster.get_random_multiplier(monsterType)
+                )
+                golem.godMode = True
+                quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
+                quest.autoSolve = True
+                quest.assignToCharacter(golem)
+                quest.activate()
+                golem.quests.append(quest)
+                room.addCharacter(golem, pos[0], pos[1])
+        else:
+            for i in range(random.randint(1,3)):
+                monsterType = random.choice(["Golem","ShieldBug"])
+                pos = (random.randint(1,11),random.randint(1,11),0)
+                golem = src.characters.characterMap[monsterType](
+                    multiplier=src.monster.Monster.get_random_multiplier(monsterType)
+                )
+                golem.godMode = True
+                quest = src.quests.questMap["SecureTile"](toSecure=rand_pos)
+                quest.autoSolve = True
+                quest.assignToCharacter(golem)
+                quest.activate()
+                golem.quests.append(quest)
+                currentTerrain.addCharacter(golem, pos[0] + rand_pos[0] * 15, pos[1] + rand_pos[1] * 15)
+
+            for i in range(random.randint(1,3)):
+                loot_types = ["Flask", "GooFlask", "Scrap", "Scrap", "MemoryFragment"]
+                item = src.items.itemMap[random.choice(loot_types)]()
+                currentTerrain.addItem(item, (pos[0] + rand_pos[0] * 15, pos[1] + rand_pos[1] * 15,0))
+        rand_pos = (random.randint(3,11),random.randint(3,11))
+        make_room = random.random() < 0.4
+

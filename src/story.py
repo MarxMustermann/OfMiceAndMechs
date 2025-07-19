@@ -1641,28 +1641,6 @@ but they are likely to explode when disturbed.
                         self.showedLandMineCollectingInfo = True
                         return
 
-    def setUpDungeon(self,pos):
-        #set up dungeons
-        currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
-        item = src.items.itemMap["ArchitectArtwork"]()
-        architect = item
-        item.godMode = True
-        currentTerrain.addItem(item,(1,1,0))
-
-        mainRoom = architect.doAddRoom(
-                {
-                       "coordinate": (7,7),
-                       "roomType": "EmptyRoom",
-                       "doors": "0,6 6,0 12,6 6,12",
-                       "offset": [1,1],
-                       "size": [13, 13],
-                },
-                None,
-           )
-
-        glassHeart = src.items.itemMap["GlassHeart"]()
-        mainRoom.addItem(glassHeart,(6,6,0))
-
     def setUpThroneDungeon(self,pos):
         #set up dungeons
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]

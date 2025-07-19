@@ -974,7 +974,12 @@ class Item:
             return
 
         # remember old position
-        pos = (self.xPosition, self.yPosition, self.zPosition)
+        if isinstance(container,src.characters.Character):
+            pos = (container.xPosition, container.yPosition, container.zPosition)
+            drop_container = container.container
+        else:
+            pos = (self.xPosition, self.yPosition, self.zPosition)
+            drop_container = container
 
         # remove item
         container.removeItem(self)
@@ -992,17 +997,17 @@ class Item:
 
             # merge with existing scrap piles
             toRemove = []
-            for item in container.getItemByPosition(pos):
+            for item in drop_container.getItemByPosition(pos):
                 toRemove.append(item)
                 if item.type != "Scrap":
                     newItem.amount += 1
                 else:
                     newItem.amount += item.amount
-            container.removeItems(toRemove)
+            drop_container.removeItems(toRemove)
             newItem.setWalkable()
 
             # place scrap
-            container.addItems([(newItem,pos)])
+            drop_container.addItems([(newItem,pos)])
 
     def constrain_within_room(self, pos):
         x = src.helpers.clamp(pos[0],1,11)

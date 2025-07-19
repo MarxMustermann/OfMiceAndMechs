@@ -83,7 +83,7 @@ or use this item with MoldFeed in your inventory.
         for i in range(amount_to_burn):
             current_moldFeed = moldFeed[i]
             if current_moldFeed in character.inventory:
-                character.inventory.remove(current_moldFeed)
+                character.removeItemFromInventory(current_moldFeed)
             else:
                 self.container.removeItem(current_moldFeed)
 

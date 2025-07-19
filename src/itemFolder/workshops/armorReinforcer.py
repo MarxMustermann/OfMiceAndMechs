@@ -227,7 +227,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         chitinPlates = params["chitinPlates"]
         if chitinPlates_consumed:
             for chitinPlate in chitinPlates[:chitinPlates_consumed]:
-                character.inventory.remove(chitinPlate)
+                character.removeItemFromInventory(chitinPlate)
 
         # trigger the actual productions process
         improvementAmount = chosenDefenseValue - armorOriginalDamage

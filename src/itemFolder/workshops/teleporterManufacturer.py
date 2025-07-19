@@ -44,7 +44,7 @@ class TeleporterManufacturer(src.items.itemMap["WorkShop"]):
             self.stats["items produced"].get("DimensionTeleporter", 0) + 1
         )
 
-        character.inventory.append(src.items.itemMap["DimensionTeleporter"]())
+        character.addToInventory(src.items.itemMap["DimensionTeleporter"]())
 
 
 src.items.addType(TeleporterManufacturer, nonManufactured=True)

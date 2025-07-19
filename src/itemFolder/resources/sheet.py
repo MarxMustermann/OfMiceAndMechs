@@ -131,8 +131,8 @@ This is a level {self.level} item
             self.container.removeItem(self)
             container.addItem(note,pos)
         else:
-            self.character.inventory.remove(self)
-            self.character.inventory.append(note)
+            self.character.removeItemFromInventory(self)
+            self.character.addToInventory(note)
 
     def createMapItem(self):
         """
@@ -146,8 +146,8 @@ This is a level {self.level} item
             self.container.removeItem(self)
             container.addItem(mapItem,pos)
         else:
-            self.character.inventory.remove(self)
-            self.character.inventory.append(mapItem)
+            self.character.removeItemFromInventory(self)
+            self.character.addToInventory(mapItem)
 
     def createJobOrder(self):
         """
@@ -165,8 +165,8 @@ This is a level {self.level} item
             self.container.removeItem(self)
             container.addItem(jobOrder,pos)
         else:
-            self.character.inventory.remove(self)
-            self.character.inventory.append(jobOrder)
+            self.character.removeItemFromInventory(self)
+            self.character.addToInventory(jobOrder)
 
     def createFloorPlan(self):
         """
@@ -184,8 +184,8 @@ This is a level {self.level} item
             self.container.removeItem(self)
             container.addItem(floorPlan,pos)
         else:
-            self.character.inventory.remove(self)
-            self.character.inventory.append(floorPlan)
+            self.character.removeItemFromInventory(self)
+            self.character.addToInventory(floorPlan)
 
         floorPlan.readFloorPlanFromRoom()
         self.character.addMessage("you create a floor plan from the room you are in")
@@ -282,8 +282,8 @@ This is a level {self.level} item
             container.addItem(command, pos)
         else:
             if self in self.character.inventory:
-                self.character.inventory.append(command)
-                self.character.inventory.remove(self)
+                self.character.addToInventory(command)
+                self.character.removeItemFromInventory(self)
 
 
     def storeFromMacro(self):
@@ -336,7 +336,7 @@ This is a level {self.level} item
             self.container.removeItem(self)
             container.addItem(command, pos)
         else:
-            self.character.inventory.append(command)
-            self.character.inventory.remove(self)
+            self.character.addToInventory(command)
+            self.character.removeItemFromInventory(self)
 
 src.items.addType(Sheet)

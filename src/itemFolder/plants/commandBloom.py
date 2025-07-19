@@ -165,7 +165,7 @@ class CommandBloom(src.items.Item):
                         container.addItem(new,pos)
                 index += 1
             for item in removeItems:
-                character.inventory.remove(item)
+                character.removeItemFromInventory(item)
 
             self.beganCluttered = True
             if len(character.inventory) > 7 and not command:

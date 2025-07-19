@@ -133,8 +133,8 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
                 character.addMessage(f"you fill the GrowthTank with {flask.uses} now it has {self.gooCharges}")
 
                 if flask in character.inventory:
-                    character.inventory.remove(flask)
-                    character.inventory.append(src.items.itemMap["Flask"]())
+                    character.removeItemFromInventory(flask)
+                    character.addToInventory(src.items.itemMap["Flask"]())
                 else:
                     pos = flask.getPosition()
                     self.container.removeItem(flask)
@@ -165,7 +165,7 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
         implant = implants[0]
 
         if implant in character.inventory:
-            character.inventory.remove(implant)
+            character.removeItemFromInventory(implant)
         else:
             self.container.removeItem(implant)
         """

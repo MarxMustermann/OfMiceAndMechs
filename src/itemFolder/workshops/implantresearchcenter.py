@@ -41,7 +41,7 @@ class ImplantResearchCenter(src.items.itemMap["WorkShop"]):
             character.addMessage("You need to have implants in your inventory to research them")
             return
 
-        character.inventory.remove(implants[-1])
+        character.removeItemFromInventory(implants[-1])
 
         params["productionTime"] = 10
         params["doneProductionTime"] = 0
@@ -64,7 +64,7 @@ class ImplantResearchCenter(src.items.itemMap["WorkShop"]):
             character.stats["items produced"]["ImplantManipulator"] = (
                 self.stats["items produced"].get("ImplantManipulator", 0) + 1
             )
-            character.inventory.append(src.items.itemMap["ImplantManipulator"]())
+            character.addToInventory(src.items.itemMap["ImplantManipulator"]())
 
             character.changed("researched implant manipulator", {})
         else:

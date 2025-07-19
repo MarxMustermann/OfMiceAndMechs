@@ -42,7 +42,7 @@ class SpecialItemSlot(src.items.Item):
 
             if foundItem:
                 character.changed("deliveredSpecialItem",{"itemID":self.itemID})
-                character.inventory.remove(foundItem)
+                character.removeItemFromInventory(foundItem)
 
                 self.hasItem = True
                 character.addMessage("you add the special item")

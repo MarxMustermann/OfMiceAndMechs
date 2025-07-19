@@ -158,7 +158,7 @@ class BoltTower(src.items.Item):
 
         self.charges += 1
         character.addMessage("you charge the BoltTower")
-        character.inventory.remove(boltFound)
+        character.removeItemFromInventory(boltFound)
 
     def render(self):
         return (src.interaction.urwid.AttrSpec("#fff", "#000"), "BT")

@@ -173,7 +173,7 @@ class ReportArchive(src.items.Item):
             character.addMessage(text)
             return
 
-        character.inventory.remove(fragments[-1])
+        character.removeItemFromInventory(fragments[-1])
 
         self.fragments_unlocked += 1
 

@@ -39,7 +39,7 @@ class StaticWall(src.items.Item):
             character.addMessage("no suitable static spark")
             return
 
-        character.inventory.remove(item)
+        character.removeItemFromInventory(item)
         self.container.removeItem(self)
         character.addMessage(
             "you use a static spark on the static wall and it dissapears"

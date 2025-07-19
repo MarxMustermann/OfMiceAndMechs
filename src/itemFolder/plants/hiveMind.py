@@ -105,15 +105,15 @@ class HiveMind(src.items.Item):
         for item in character.inventory[:]:
             if item.type == "CommandBloom":
                 self.charges += 1
-                character.inventory.remove(item)
+                character.removeItemFromInventory(item)
                 broughtBloom = True
             if item.type == "HiveMind":
                 self.charges += item.charges
-                character.inventory.remove(item)
+                character.removeItemFromInventory(item)
 
         if character.inventory and character.inventory[-1].type == "Scrap":
             character.inventory.pop()
-            character.inventory.append(src.items.itemMap["Coal"]())
+            character.addToInventory(src.items.itemMap["Coal"]())
 
         numItems = 0
         for item in reversed(character.inventory):
@@ -153,7 +153,7 @@ class HiveMind(src.items.Item):
             direction = random.choice(directions)
             new.masterCommand = "13" + direction + "9kkj"
 
-            character.inventory.append(new)
+            character.addToInventory(new)
 
             self.bolted = False
             command = "kilwwj.13" + direction + "lj"
@@ -372,7 +372,7 @@ class HiveMind(src.items.Item):
                 new2 = src.items.itemMap["CommandBloom"]()
                 new2.masterCommand = new.masterCommand
                 new2.faction = self.faction
-                character.inventory.append(new2)
+                character.addToInventory(new2)
                 self.charges -= 1
             character.addMessage(command)
         elif (

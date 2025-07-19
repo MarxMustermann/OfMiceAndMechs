@@ -355,7 +355,7 @@ class RipInReality(src.items.Item):
             self.character.addMessage("no suitable static spark")
             return
 
-        self.character.inventory.remove(staticSpark)
+        self.character.removeItemFromInventory(staticSpark)
 
         if self.submenue.selection == "destabilize":
             if self.stable:

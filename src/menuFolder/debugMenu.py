@@ -264,9 +264,9 @@ class DebugMenu(src.subMenu.SubMenu):
                 if key.lower() == item_name:
                     if m:
                         for _ in range(int(m.group()[1:])):
-                            character.inventory.append(item_ty())
+                            character.addToInventory(item_ty())
                     else:
-                        character.inventory.append(item_ty())
+                        character.addToInventory(item_ty())
 
                     character.addMessage(f"added {item_name}")
                     return

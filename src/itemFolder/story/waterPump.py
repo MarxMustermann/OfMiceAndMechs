@@ -74,7 +74,7 @@ class WaterPump(src.items.Item):
                         "you insert a rod into the water condenser increasing its output"
                     )
                     self.rods += 1
-                    self.character.inventory.remove(item)
+                    self.character.removeItemFromInventory(item)
                     return
             self.character.addMessage("you have no rods in your inventory")
 

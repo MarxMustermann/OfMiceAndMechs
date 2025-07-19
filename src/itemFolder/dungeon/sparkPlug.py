@@ -39,7 +39,7 @@ class SparkPlug(src.items.Item):
             character.addMessage("no suitable static spark")
             return
 
-        character.inventory.remove(item)
+        character.removeItemFromInventory(item)
         newItem = src.items.itemMap["RipInReality"]()
         newItem.depth = self.strength
         self.container.addItem(newItem,self.getPosition())

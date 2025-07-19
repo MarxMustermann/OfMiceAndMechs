@@ -35,7 +35,7 @@ class Shocker(src.items.Item):
                     if self.container.electricalCharges < self.container.maxElectricalCharges:
                         self.container.electricalCharges += 1
                         character.addMessage(f"you activate the shocker and increase the rooms charges to {self.container.electricalCharges}")
-                        character.inventory.remove(compressorFound)
+                        character.removeItemFromInventory(compressorFound)
 
                         self.container.addAnimation(self.getPosition(),"showchar",1,{"char":"~*"})
                         character.changed("charged traproom",(character,self.container))

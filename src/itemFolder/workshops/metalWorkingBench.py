@@ -137,7 +137,7 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
 
         # remove the input resources
         if metalBar in character.inventory:
-            character.inventory.remove(metalBar)
+            character.removeItemFromInventory(metalBar)
         else:
             self.container.removeItem(metalBar)
 
@@ -184,7 +184,7 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         if params.get("key") in ("k","K",):
             preferInventoryOut = False
         if (dropsSpotsFull or preferInventoryOut) and character.getFreeInventorySpace() > 0:
-            character.inventory.append(new)
+            character.addToInventory(new)
         elif dropsSpotsFull:
             character.addMessage("you failed to produce since both your inventory and the dropspots are full.")
         else:

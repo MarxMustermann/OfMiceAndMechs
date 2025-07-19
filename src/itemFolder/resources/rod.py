@@ -51,7 +51,7 @@ baseDamage:
             oldWeapon = character.weapon
             character.weapon = None
             if character.getFreeInventorySpace():
-                character.inventory.append(oldWeapon)
+                character.addToInventory(oldWeapon)
 
         character.weapon = self
         character.changed("equipedItem",(character,self))
@@ -59,7 +59,7 @@ baseDamage:
             self.container.removeItem(self)
         else:
             if self in character.inventory:
-                character.inventory.remove(self)
+                character.removeItemFromInventory(self)
 
     def upgrade(self):
         '''

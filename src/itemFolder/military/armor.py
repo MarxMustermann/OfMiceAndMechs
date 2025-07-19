@@ -120,7 +120,7 @@ protects you in combat
             self.container.removeItem(self)
         else:
             if self in character.inventory:
-                character.inventory.remove(self)
+                character.removeItemFromInventory(self)
 
     def upgrade(self):
         self.armorValue += 1

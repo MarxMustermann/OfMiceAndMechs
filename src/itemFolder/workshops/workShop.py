@@ -110,7 +110,7 @@ class WorkShop(src.items.Item):
             for i in range(ItemTypeAmount[itemType]):
                 current_item = neededItemCount[itemType][i]
                 if current_item in character.inventory:
-                    character.inventory.remove(current_item)
+                    character.removeItemFromInventory(current_item)
                 else:
                     self.container.removeItem(current_item)
 

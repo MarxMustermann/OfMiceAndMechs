@@ -41,7 +41,7 @@ class SparcRewardLock(src.items.Item):
             )
             return
 
-        character.inventory.remove(foundItem)
+        character.removeItemFromInventory(foundItem)
         if not self.treasure:
             character.addMessage("there is no reward")
         else:

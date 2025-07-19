@@ -142,7 +142,7 @@ press . to wait"""]
 
         self.charges += 1
         character.addMessage("you charge the ShockTower")
-        character.inventory.remove(compressorFound)
+        character.removeItemFromInventory(compressorFound)
 
     def render(self):
         return (src.interaction.urwid.AttrSpec("#fff", "#000"), "ST")

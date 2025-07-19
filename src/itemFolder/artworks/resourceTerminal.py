@@ -71,14 +71,12 @@ class ResourceTerminal(src.items.Item):
                 f"you add {len(toRemove)} {self.resource}"
             )
             for item in toRemove:
-                self.character.inventory.remove(item)
+                self.character.removeItemFromInventory(item)
             self.balance += len(toRemove) // 2
             self.character.addMessage(f"your balance is now {self.balance}")
         if self.submenue.selection == "getTokens":
-            self.character.inventory.append(
-                src.items.Token(
-                    None, None, tokenType=self.resource + "Token", payload=self.balance
-                )
+            self.character.addToInventory(
+                src.items.Token(None, None, tokenType=self.resource + "Token", payload=self.balance)
             )
             self.balance = 0
         if self.submenue.selection == "addTokens":
@@ -88,7 +86,7 @@ class ResourceTerminal(src.items.Item):
                     and item.tokenType == self.resource + "Token"
                 ):
                     self.balance += item.payload
-                    self.character.inventory.remove(item)
+                    self.character.removeItemFromInventory(item)
             pass
         if self.submenue.selection == "getResource":
 
@@ -100,7 +98,7 @@ class ResourceTerminal(src.items.Item):
 
                 numAdded += 1
                 self.balance -= 2
-                self.character.inventory.append(src.items.itemMap[self.resource]())
+                self.character.addToInventory(src.items.itemMap[self.resource]())
 
             self.character.addMessage(f"your balance is now {self.balance}")
 

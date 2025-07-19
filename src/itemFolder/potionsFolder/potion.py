@@ -12,8 +12,8 @@ class Potion(src.items.Item):
     def apply(self, character):
         flask = src.items.itemMap["Flask"]()
         if not self.container:
-            character.inventory.remove(self)
-            character.inventory.append(flask)
+            character.removeItemFromInventory(self)
+            character.addToInventory(flask)
         else:
             container = self.container
             pos = self.getPosition()

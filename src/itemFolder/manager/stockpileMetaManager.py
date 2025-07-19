@@ -152,7 +152,7 @@ class StockpileMetaManager(src.items.Item):
 
             self.lastAction = "addStockPileItem"
             character.addMessage("add stockpile item " + stockpile)
-            character.inventory.append(src.items.TypedStockpileManager())
+            character.addToInventory(src.items.TypedStockpileManager())
             plot = self.assignedPlots.pop()
             command = []
             command.extend(self.assignedPlotsInfo[plot]["pathTo"])

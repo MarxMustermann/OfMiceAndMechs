@@ -66,7 +66,7 @@ def test_Anvil_1_from_inventory_to_inventory(anvil_room):
     character = anvil_room[0]
 
     scrap = src.items.itemMap["Scrap"]()
-    character.inventory.append(scrap)
+    character.addToInventory(scrap)
 
     character.runCommandString("Jaj")
 
@@ -82,7 +82,7 @@ def test_Anvil_10_from_inventory_to_inventory(anvil_room):
 
     for i in range(10):
         scrap = src.items.itemMap["Scrap"]()
-        character.inventory.append(scrap)
+        character.addToInventory(scrap)
 
     character.runCommandString("Jasj")
 
@@ -123,7 +123,7 @@ def test_MetalWorkingBench_production1(metalWorking_room):
     character = metalWorking_room[0]
 
     item = src.items.itemMap["MetalBars"]()
-    character.inventory.append(item)
+    character.addToInventory(item)
 
     character.runCommandString("Jajj")
 
@@ -138,9 +138,9 @@ def test_MetalWorkingBench_production2(metalWorking_room):
     character = metalWorking_room[0]
 
     item = src.items.itemMap["MetalBars"]()
-    character.inventory.append(item)
+    character.addToInventory(item)
     item = src.items.itemMap["MetalBars"]()
-    character.inventory.append(item)
+    character.addToInventory(item)
 
     character.runCommandString("Jajj")
 
@@ -156,9 +156,9 @@ def test_MetalWorkingBench_production3(metalWorking_room):
     character = metalWorking_room[0]
 
     item = src.items.itemMap["MetalBars"]()
-    character.inventory.append(item)
+    character.addToInventory(item)
     item = src.items.itemMap["MetalBars"]()
-    character.inventory.append(item)
+    character.addToInventory(item)
 
     character.runCommandString("Jajk")
 
@@ -173,15 +173,15 @@ def test_MetalWorkingBench_production4(metalWorking_room):
     character = metalWorking_room[0]
 
     item = src.items.itemMap["MetalBars"]()
-    character.inventory.append(item)
+    character.addToInventory(item)
     item = src.items.itemMap["MetalBars"]()
-    character.inventory.append(item)
+    character.addToInventory(item)
     item = src.items.itemMap["MetalBars"]()
-    character.inventory.append(item)
+    character.addToInventory(item)
     item = src.items.itemMap["MetalBars"]()
-    character.inventory.append(item)
+    character.addToInventory(item)
     item = src.items.itemMap["MetalBars"]()
-    character.inventory.append(item)
+    character.addToInventory(item)
 
     character.runCommandString(list("JajJ3")+["enter"])
 
@@ -200,15 +200,15 @@ def test_MetalWorkingBench_production5(metalWorking_room):
     character = metalWorking_room[0]
 
     item = src.items.itemMap["MetalBars"]()
-    character.inventory.append(item)
+    character.addToInventory(item)
     item = src.items.itemMap["MetalBars"]()
-    character.inventory.append(item)
+    character.addToInventory(item)
     item = src.items.itemMap["MetalBars"]()
-    character.inventory.append(item)
+    character.addToInventory(item)
     item = src.items.itemMap["MetalBars"]()
-    character.inventory.append(item)
+    character.addToInventory(item)
     item = src.items.itemMap["MetalBars"]()
-    character.inventory.append(item)
+    character.addToInventory(item)
 
     character.runCommandString(list("JajK3")+["enter"])
 

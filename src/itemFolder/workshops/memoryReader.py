@@ -53,7 +53,7 @@ class MemoryReader(src.items.itemMap["WorkShop"]):
             character.addMessage("You need to have fragments in your inventory to decrypt them")
             return
 
-        character.inventory.remove(fragments[-1])
+        character.removeItemFromInventory(fragments[-1])
 
         self.fragments_decrypted += 1
 
@@ -84,9 +84,9 @@ class MemoryReader(src.items.itemMap["WorkShop"]):
 
         fragments = self.getFragments(character)
         for i in range(self.fragment_per_implant):
-            character.inventory.remove(fragments[i])
+            character.removeItemFromInventory(fragments[i])
 
-        character.inventory.append(src.items.itemMap["Implant"]())
+        character.addToInventory(src.items.itemMap["Implant"]())
         character.stats["items produced"]["Implant"] = character.stats["items produced"].get("Implant", 0) + 1
 
         character.addMessage("you got a functional implant")

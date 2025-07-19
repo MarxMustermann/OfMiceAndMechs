@@ -47,6 +47,6 @@ Activate it to eat it. Effect may vary.
             self.container.removeItem(self)
         else:
             if self in character.inventory:
-                character.inventory.remove(self)
+                character.removeItemFromInventory(self)
 
 src.items.addType(VatMaggot)

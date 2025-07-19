@@ -53,9 +53,6 @@ class Item:
         '''
         return self.getTerrain().getPosition()
 
-    def callInit(self):
-        super().__init__()
-
     def __init__(self, display=None, name=None, seed=0, noId=False):
         """
         the constructor
@@ -66,8 +63,6 @@ class Item:
             seed: rng seed
             noId: flag to prevent generating useless ids (obsolete?)
         """
-        #super().__init__()
-
         self.commandOptions = []
         self.applyOptions = []
         self.ignoreAttributes = []
@@ -75,12 +70,8 @@ class Item:
         self.settings = {}
         self.charges = 0
         self.watched = []
+        super().__init__()
 
-        self.callInit()
-
-        self.doOwnInit(display=display,name=name,seed=seed,noId=noId)
-
-    def doOwnInit(self,display=None, name=None, seed=0, noId=False):
         if display:
             self.display = display
         else:

@@ -3,30 +3,31 @@ import random
 import src
 
 class ReportArchive(src.items.Item):
+    '''
+    ingame item to give the player hints to te location on the good-ending lab
+    '''
     type = "ReportArchive"
     name = "report archive"
     description = "Use it to read achived reports"
     walkable = False
     bolted = True
-
     def __init__(self):
         super().__init__(display="RA")
-
         self.applyOptions = [
             ("show reports", "show reports"),
             ("unlock report", "add memory fragment"),
         ]
-
         self.applyMap = {
             "show reports": self.showReports,
             "unlock report": self.unlockReport,
         }
-
         self.fragments_unlocked = 0
-
         self.reports = None
 
     def generateReports(self):
+        '''
+        generates the reports to show
+        '''
         self.reports = []
 
         ownPos = self.getTerrain().getPosition()
@@ -82,6 +83,9 @@ class ReportArchive(src.items.Item):
             )
 
     def showReports(self,character):
+        '''
+        show UI to browse the unlocked reports
+        '''
 
         if self.reports == None:
             self.generateReports()
@@ -120,11 +124,17 @@ class ReportArchive(src.items.Item):
             return
 
     def openReport(self,extraParams):
+        '''
+        triggers opening the UI to show a report
+        '''
         if extraParams["selection"] == None:
             return
         self.read(extraParams["selection"]-1,extraParams["character"])
 
     def read(self, fragment_number, character):
+        '''
+        show the UI to view a report
+        '''
         report = self.reports[fragment_number]
         submenue = src.menuFolder.textMenu.TextMenu(
             f"== {report[0]} ==\n\n{report[1]}"
@@ -134,7 +144,9 @@ class ReportArchive(src.items.Item):
         character.runCommandString("~", nativeKey=True)
 
     def unlockReport(self, character):
-
+        '''
+        unlocks a report
+        '''
         if self.reports == None:
             self.generateReports()
 
@@ -157,4 +169,5 @@ class ReportArchive(src.items.Item):
 
         self.read(self.fragments_unlocked-1, character)
 
+# register item type
 src.items.addType(ReportArchive)

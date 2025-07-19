@@ -900,3 +900,105 @@ def setUpRuin(pos):
         rand_pos = (random.randint(3,11),random.randint(3,11))
         make_room = random.random() < 0.4
 
+def setUpThroneDungeon(pos):
+    #set up dungeons
+    currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
+    item = src.items.itemMap["ArchitectArtwork"]()
+    architect = item
+    item.godMode = True
+    currentTerrain.addItem(item,(1,1,0))
+
+    mainRoom = architect.doAddRoom(
+            {
+                   "coordinate": (7,7),
+                   "roomType": "EmptyRoom",
+                   "doors": "0,6",
+                   "offset": [1,1],
+                   "size": [13, 13],
+            },
+            None,
+       )
+
+    guardRoom = architect.doAddRoom(
+            {
+                   "coordinate": (6,7),
+                   "roomType": "EmptyRoom",
+                   "doors": "0,6 12,6",
+                   "offset": [1,1],
+                   "size": [13, 13],
+            },
+            None,
+       )
+
+
+    glassHeart = src.items.itemMap["GlassThrone"]()
+    mainRoom.addItem(glassHeart,(6,6,0))
+
+    enemy = src.characters.characterMap["Guardian"](4,4)
+    guardRoom.addCharacter(enemy,11,6)
+
+    quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0))
+    quest.autoSolve = True
+    quest.assignToCharacter(enemy)
+    quest.activate()
+    enemy.quests.append(quest)
+
+    for x in range(1,14):
+        for y in range(1,14):
+            if x == 7 and y == 7:
+                continue
+            if x == 6 and y == 7:
+                continue
+
+            enemy = src.characters.characterMap["Monster"](4,4)
+            enemy.health = 300
+            enemy.baseDamage = 70
+            enemy.maxHealth = 300
+            enemy.godMode = True
+            enemy.movementSpeed = 0.8
+
+            quest = src.quests.questMap["SecureTile"](toSecure=(x,y,0))
+            quest.autoSolve = True
+            quest.assignToCharacter(enemy)
+            quest.activate()
+            enemy.quests.append(quest)
+
+            currentTerrain.addCharacter(enemy, x*15+7, y*15+7)
+
+            for _i in range(random.randint(0,3)):
+                for _j in range(2):
+                    scrap = src.items.itemMap["Scrap"](amount=20)
+                    currentTerrain.addItem(scrap,(x*15+random.randint(1,12),y*15+random.randint(1,12),0))
+
+def setUpStatueRoom(pos,itemID=None):
+    if itemID is None:
+        itemID = random.choice([1,2,3,4,5,6,7])
+
+    # get basic info
+    currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
+    currentTerrain.tag = "statue room"
+
+    # set up helper item to spawn stuff
+    # bad code: spawning stuff should be in a "magic" class or similar
+    item = src.items.itemMap["ArchitectArtwork"]()
+    architect = item
+    item.godMode = True
+    currentTerrain.addItem(item,(1,1,0))
+
+    # create the basic room
+    room = architect.doAddRoom(
+            {
+                   "coordinate": (7,7),
+                   "roomType": "EmptyRoom",
+                   "doors": "0,6 6,0 12,6 6,12",
+                   "offset": [1,1],
+                   "size": [13, 13],
+            },
+            None,
+       )
+
+    # add random amount of loot
+    statue = src.items.itemMap["GlassStatue"](itemID=itemID)
+    statue.charges = 5
+    room.addItem(statue,(6,6,0))
+

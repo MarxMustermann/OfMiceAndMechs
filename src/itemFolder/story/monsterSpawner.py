@@ -26,6 +26,8 @@ class MonsterSpawner(src.items.Item):
         quest.activate()
         enemy.quests.append(quest)
 
+        self.destroy()
+
     def render(self):
         return "MS"
 

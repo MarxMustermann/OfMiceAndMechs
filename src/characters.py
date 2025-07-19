@@ -86,7 +86,7 @@ class Character:
         self.rememberedMenu = []
         self.rememberedMenu2 = []
 
-        self.terrainInfo = {}
+        self.terrainInfo = {} # holds knowlede about the surrounding terrain. Key is position
 
         self.pathCache = {}
 

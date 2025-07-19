@@ -1,5 +1,5 @@
 import src.subMenu
-import src.characters
+import src.characters           # holds the logic for characters
 import src.monster
 import src.characterFolder
 import src.statusEffects

@@ -4645,13 +4645,12 @@ def showMainMenu(args=None):
     ]
 
     selectedScenario = "mainGame"
+
+    with open("data/difficultyMap.json", "r") as file:
+        global_difficultyMap = json.load(file)
+
     difficulty = "easy"
-    difficultyMap = {
-        "difficultyModifier": 0.5,
-        "diff_increase_per_dungeon": 0.5,
-        "shuffle_gods": False,
-        "scale_power_curve": 3.5,
-    }
+    difficultyMap = global_difficultyMap[difficulty]
 
     def fixRoomRender(render):
         for row in render:
@@ -5303,40 +5302,18 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                             submenu.pop()
                         if key == tcod.event.KeySym.e:
                             difficulty = "easy"
-                            difficultyMap = {
-                                "difficultyModifier": 0.5,
-                                "diff_increase_per_dungeon": 0.5,
-                                "shuffle_gods": False,
-                                "scale_power_curve": 3.5,
-                            }
+                            difficultyMap = global_difficultyMap[difficulty]
                             submenu.pop()
                         if key == tcod.event.KeySym.m:
                             difficulty = "medium"
-                            difficultyMap = {
-                                "difficultyModifier": 1,
-                                "diff_increase_per_dungeon": 0.5,
-                                "shuffle_gods": False,
-                                "scale_power_curve": 3.0,
-                            }
+                            difficultyMap = global_difficultyMap[difficulty]
                             submenu.pop()
                         if key == tcod.event.KeySym.d:
                             difficulty = "difficult"
-                            difficultyMap = {
-                                "difficultyModifier": 2,
-                                "diff_increase_per_dungeon": 1,
-                                "shuffle_gods": True,
-                                "scale_power_curve": 2.5,
-                            }
+                            difficultyMap = global_difficultyMap[difficulty]
                             submenu.pop()
                         if key == tcod.event.KeySym.c:
-                            difficultyMap = {
-                                "difficultyModifier": 2,
-                                "diff_increase_per_dungeon": 1,
-                                "shuffle_gods": True,
-                                "monster_difficulty": {
-                                    "default": 0.5,
-                                },
-                            }
+                            difficultyMap = global_difficultyMap["custom"]
                             submenu.append("custom_difficulty")
                             slider.clear()
                             slider.append(

@@ -5164,7 +5164,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
                         for i, d in enumerate(custom_difficultyMap):
                             name = d["name"]
-                            label = f"{i}- {name}"
+                            label = f"{i+1}- {name}"
                             space = (66 - len(label)) * " "
                             label = "| " + label + space + "|"
                             printUrwidToTcod(
@@ -5443,7 +5443,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                             prepereCustomDiff()
                     if isinstance(event, tcod.event.TextInput):
                         for i, v in enumerate(custom_difficultyMap):
-                            if i == event.text:
+                            if str(i + 1) == event.text:
                                 difficulty = "custom"
                                 difficultyMap = v["map"]
                                 submenu.pop()

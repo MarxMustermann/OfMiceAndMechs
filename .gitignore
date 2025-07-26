@@ -111,3 +111,4 @@ gamestate/
 .timetracker
 
 config/globalSettings.json
+config/customDifficultyMap.json

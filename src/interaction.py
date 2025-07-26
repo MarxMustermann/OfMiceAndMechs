@@ -4645,13 +4645,17 @@ def showMainMenu(args=None):
     ]
 
     selectedScenario = "mainGame"
+
+    with open("data/difficultyMap.json", "r") as file:
+        global_difficultyMap = json.load(file)
+
+    custom_difficultyMap = []
+    if os.path.exists("config/customDifficultyMap.json"):
+        with open("config/customDifficultyMap.json", "r") as file:
+            custom_difficultyMap = json.load(file)
+
     difficulty = "easy"
-    difficultyMap = {
-        "difficultyModifier": 0.5,
-        "diff_increase_per_dungeon": 0.5,
-        "shuffle_gods": False,
-        "scale_power_curve": 3.5,
-    }
+    difficultyMap = global_difficultyMap[difficulty]
 
     def fixRoomRender(render):
         for row in render:
@@ -4797,6 +4801,60 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
     slider_stack = []
     slider = []
     choosen_slider = 0
+    custom_diff_name = ""
+
+    def prepereCustomDiff():
+        submenu.append("custom_difficulty")
+        slider.clear()
+        slider.append(
+            [
+                "Difficulty Modifier",
+                "difficultyModifier",
+                difficultyMap["difficultyModifier"],
+                {"min": 0.5, "max": 2, "step": 0.1},
+                [],
+            ]
+        )
+        slider.append(
+            [
+                "Difficulty increase Per Dungoen",
+                "diff_increase_per_dungeon",
+                difficultyMap["diff_increase_per_dungeon"],
+                {"min": 0.5, "max": 2, "step": 0.1},
+                [],
+            ]
+        )
+        slider.append(
+            ["Shuffle Gods order", "shuffle_gods", difficultyMap["shuffle_gods"], {"min": 0, "max": 1, "step": 1}, []]
+        )
+
+        monster_diffs = []
+        for key, value in src.characters.characterMap.items():
+            if issubclass(value, src.monster.Monster) and value != src.monster.Monster:
+                init = value.__init__
+                sig = inspect.signature(init)
+                params = sig.parameters
+                if "multiplier" in params:
+                    instence = value()
+                    monster_diffs.append(
+                        [
+                            f"{instence.name} Difficulty",
+                            f"monster_difficulty.{instence.name}",
+                            0.5,
+                            {"min": 0.1, "max": 1, "step": 0.1},
+                            [],
+                        ]
+                    )
+
+        slider.append(
+            [
+                "Monsters Difficulty",
+                "monster_difficulty.default",
+                0.5,
+                {"min": 0.1, "max": 1, "step": 0.1},
+                monster_diffs,
+            ]
+        )
     while 1:
         tcodConsole.clear()
         time.sleep(0.1)
@@ -5084,11 +5142,49 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                         "| custom difficulty settings                                        |",
                         (offsetX + 3 + 16, offsetY + 35),
                     )
-
                     printUrwidToTcod(
-                        "+-------------------------------------------------------------------+",
+                        "|                                                                   |",
                         (offsetX + 3 + 16, offsetY + 36),
                     )
+                    printUrwidToTcod(
+                        "| press shift and difficulty button to edit it                      |",
+                        (offsetX + 3 + 16, offsetY + 37),
+                    )
+                    if not len(custom_difficultyMap):
+                        printUrwidToTcod(
+                            "+-------------------------------------------------------------------+",
+                            (offsetX + 3 + 16, offsetY + 38),
+                        )
+                    else:
+                        printUrwidToTcod(
+                            "|-------------------saved custom difficulties-----------------------|",
+                            (offsetX + 3 + 16, offsetY + 38),
+                        )
+                        start_y = offsetY + 39
+
+                        for i, d in enumerate(custom_difficultyMap):
+                            name = d["name"]
+                            label = f"{i+1}- {name}"
+                            space = (66 - len(label)) * " "
+                            label = "| " + label + space + "|"
+                            printUrwidToTcod(
+                                label,
+                                (offsetX + 3 + 16, start_y),
+                            )
+                            start_y += 1
+
+                        printUrwidToTcod(
+                            "|                                                                   |",
+                            (offsetX + 3 + 16, start_y),
+                        )
+                        printUrwidToTcod(
+                            "| select a custom difficulty by entering its number                 |",
+                            (offsetX + 3 + 16, start_y + 1),
+                        )
+                        printUrwidToTcod(
+                            "+-------------------------------------------------------------------+",
+                            (offsetX + 3 + 16, start_y + 2),
+                        )
 
                 case "delete":
                     printUrwidToTcod(
@@ -5182,10 +5278,30 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                         )
                         start_y += 1
                     printUrwidToTcod(
-                        "+-------------------------------------+",
+                        "|     press q to save the settings    |",
                         (start_x, start_y + 2),
                     )
-
+                    printUrwidToTcod(
+                        "+-------------------------------------+",
+                        (start_x, start_y + 3),
+                    )
+                case "difficulty name input":
+                    start_x = offsetX + 80
+                    printUrwidToTcod(
+                        "+-------------------------------------+",
+                        (start_x, start_y + 1),
+                    )
+                    space = int(39 / 2 - len(custom_diff_name) / 2)
+                    label = " " * space
+                    label = "|" + label + custom_diff_name + label + "|"
+                    printUrwidToTcod(
+                        label,
+                        (start_x, start_y + 2),
+                    )
+                    printUrwidToTcod(
+                        "+-------------------------------------+",
+                        (start_x, start_y + 3),
+                    )
         tcodContext.present(tcodConsole, integer_scaling=True, keep_aspect=True)
 
         events = tcod.event.get()
@@ -5303,91 +5419,35 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                             submenu.pop()
                         if key == tcod.event.KeySym.e:
                             difficulty = "easy"
-                            difficultyMap = {
-                                "difficultyModifier": 0.5,
-                                "diff_increase_per_dungeon": 0.5,
-                                "shuffle_gods": False,
-                                "scale_power_curve": 3.5,
-                            }
-                            submenu.pop()
+                            difficultyMap = global_difficultyMap[difficulty]
+                            if event.mod & tcod.event.Modifier.SHIFT:
+                                prepereCustomDiff()
+                            else:
+                                submenu.pop()
                         if key == tcod.event.KeySym.m:
                             difficulty = "medium"
-                            difficultyMap = {
-                                "difficultyModifier": 1,
-                                "diff_increase_per_dungeon": 0.5,
-                                "shuffle_gods": False,
-                                "scale_power_curve": 3.0,
-                            }
-                            submenu.pop()
+                            difficultyMap = global_difficultyMap[difficulty]
+                            if event.mod & tcod.event.Modifier.SHIFT:
+                                prepereCustomDiff()
+                            else:
+                                submenu.pop()
                         if key == tcod.event.KeySym.d:
                             difficulty = "difficult"
-                            difficultyMap = {
-                                "difficultyModifier": 2,
-                                "diff_increase_per_dungeon": 1,
-                                "shuffle_gods": True,
-                                "scale_power_curve": 2.5,
-                            }
-                            submenu.pop()
+                            difficultyMap = global_difficultyMap[difficulty]
+                            if event.mod & tcod.event.Modifier.SHIFT:
+                                prepereCustomDiff()
+                            else:
+                                submenu.pop()
                         if key == tcod.event.KeySym.c:
-                            difficultyMap = {
-                                "difficultyModifier": 2,
-                                "diff_increase_per_dungeon": 1,
-                                "shuffle_gods": True,
-                                "monster_difficulty": {
-                                    "default": 0.5,
-                                },
-                            }
-                            submenu.append("custom_difficulty")
-                            slider.clear()
-                            slider.append(
-                                [
-                                    "Difficulty Modifier",
-                                    "difficultyModifier",
-                                    2,
-                                    {"min": 0.5, "max": 2, "step": 0.1},
-                                    [],
-                                ]
-                            )
-                            slider.append(
-                                [
-                                    "Difficulty increase Per Dungoen",
-                                    "diff_increase_per_dungeon",
-                                    1,
-                                    {"min": 0.5, "max": 2, "step": 0.1},
-                                    [],
-                                ]
-                            )
-                            slider.append(
-                                ["Shuffle Gods order", "shuffle_gods", 1, {"min": 0, "max": 1, "step": 1}, []]
-                            )
+                            difficultyMap = global_difficultyMap["custom"]
+                            prepereCustomDiff()
+                    if isinstance(event, tcod.event.TextInput):
+                        for i, v in enumerate(custom_difficultyMap):
+                            if str(i + 1) == event.text:
+                                difficulty = "custom"
+                                difficultyMap = v["map"]
+                                submenu.pop()
 
-                            monster_diffs = []
-                            for key, value in src.characters.characterMap.items():
-                                if issubclass(value, src.monster.Monster) and value != src.monster.Monster:
-                                    init = value.__init__
-                                    sig = inspect.signature(init)
-                                    params = sig.parameters
-                                    if "multiplier" in params:
-                                        instence = value()
-                                        monster_diffs.append(
-                                            [
-                                                f"{instence.name} Difficulty",
-                                                f"monster_difficulty.{instence.name}",
-                                                0.5,
-                                                {"min": 0.1, "max": 1, "step": 0.1},
-                                                [],
-                                            ]
-                                        )
-
-                            slider.append(
-                                [
-                                    "Monsters Difficulty",
-                                    "monster_difficulty.default",
-                                    0.5,
-                                    {"min": 0.1, "max": 1, "step": 0.1},
-                                    monster_diffs,
-                                ]
-                            )
 
                 case "custom_difficulty":
                     if isinstance(event, tcod.event.KeyDown):
@@ -5416,6 +5476,11 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                                 for _, key, v, _, sub_slider in sub_slider:
                                     SetKey(key, v)
 
+                            if len(custom_diff_name):
+                                custom_difficultyMap.append({"name": custom_diff_name, "map": difficultyMap})
+                                with open("config/customDifficultyMap.json", "w") as file:
+                                    json.dump(custom_difficultyMap, file, indent=4)
+
                             submenu.pop()
                             submenu.pop()
 
@@ -5442,6 +5507,20 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                             slider_stack = slider.copy()
                             slider = slider[choosen_slider][4]
                             choosen_slider = 0
+
+                        if key == tcod.event.KeySym.q:
+                            submenu.append("difficulty name input")
+                case "difficulty name input":
+                    if isinstance(event, tcod.event.KeyDown):
+                        key = event.sym
+
+                        if key in (tcod.event.KeySym.ESCAPE, tcod.event.KeySym.RETURN):
+                            submenu.pop()
+                        if key == tcod.event.KeySym.BACKSPACE:
+                            custom_diff_name = custom_diff_name[:-1]
+                    if isinstance(event, tcod.event.TextInput):
+                        custom_diff_name += event.text
+
                 case "delete":
                     if isinstance(event, tcod.event.KeyDown):
                         key = event.sym
@@ -5528,7 +5607,24 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                             else:
                                 if not canLoad:
                                     submenu.append("difficulty")
-
+            if isinstance(event, tcod.event.Quit):
+                src.interaction.tcodMixer.close()
+                raise SystemExit()
+            if isinstance(event, tcod.event.WindowResized):
+                checkResetWindowSize(event.width, event.height)
+            if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
+                src.interaction.tcodMixer.close()
+                raise SystemExit()
+            if isinstance(event, tcod.event.KeyDown):
+                key = event.sym
+                if key == tcod.event.KeySym.F11:
+                    fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
+                        tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
+                    )
+                    tcod.lib.SDL_SetWindowFullscreen(
+                        tcodContext.sdl_window_p,
+                        0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
+                    )
 def showInterruptChoice(text,options):
     tcod.event.get()
 

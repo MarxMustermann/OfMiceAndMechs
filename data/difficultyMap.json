@@ -1,0 +1,37 @@
+{
+    "easy": {
+        "difficultyModifier": 0.5,
+        "diff_increase_per_dungeon": 0.5,
+        "shuffle_gods": false,
+        "scale_power_curve": 3.5,
+        "monster_difficulty": {
+            "default": 0.5
+        }
+    },
+    "medium": {
+        "difficultyModifier": 1,
+        "diff_increase_per_dungeon": 0.5,
+        "shuffle_gods": false,
+        "scale_power_curve": 3.0,
+        "monster_difficulty": {
+            "default": 0.5
+        }
+    },
+    "difficult": {
+        "difficultyModifier": 2,
+        "diff_increase_per_dungeon": 1,
+        "shuffle_gods": true,
+        "scale_power_curve": 2.5,
+        "monster_difficulty": {
+            "default": 0.5
+        }
+    },
+    "custom": {
+        "difficultyModifier": 2,
+        "diff_increase_per_dungeon": 1,
+        "shuffle_gods": true,
+        "monster_difficulty": {
+            "default": 0.5
+        }
+    }
+}

@@ -250,4 +250,16 @@ class DimensionTeleporter(src.items.Item):
             text += f"\nNetwork Size: {network_size}"
         return text
 
+    def render(self):
+        if self.mode == self.senderMode:
+            char = "TS"
+        else:
+            char = "TR"
+
+        if self.bolted:
+            color = "#fff"
+        else:
+            color = "#aac"
+        return (src.interaction.urwid.AttrSpec(color, "black"), char)
+
 src.items.addType(DimensionTeleporter, nonManufactured=True)

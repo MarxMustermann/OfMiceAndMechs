@@ -155,7 +155,6 @@ class DimensionTeleporter(src.items.Item):
                 (_senders, receivers) = src.gamestate.gamestate.teleporterGroups[self.group]
                 sending_tries = 0
                 if len(receivers):
-                    print(receivers)
                     while sending_tries != len(receivers) and items:
                         random_receiver: DimensionTeleporter = random.choice(receivers)
                         random_item = items.pop(random.randint(0, len(items) - 1))
@@ -170,7 +169,7 @@ class DimensionTeleporter(src.items.Item):
                 for item in self.container.getItemByPosition(
                     (self.xPosition + offset[0], self.yPosition + offset[1], self.zPosition + offset[2])
                 ):
-                    if item.type == "Rod":
+                    if item.type == "LighntingRod":
                         item.container.removeItem(item)
                         self.charges = self.chargePerLightingRod
                         return

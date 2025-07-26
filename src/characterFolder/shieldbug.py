@@ -28,7 +28,7 @@ class ShieldBug(src.characters.characterMap["Insect"]):
             characterId=characterId,
         )
         self.charType = "Insect"
-        self.specialDisplay = (*self.color_for_multiplier(multiplier, start=(0, 255, 101), end=(33, 66, 46)), "/>")
+        self.specialDisplay = (*self.color_for_multiplier(multiplier, start=(0, 66, 46), end=(33, 255, 101)), "/>")
 
         self.baseDamage = 5
         self.baseDamage = int(self.baseDamage * (1 - runModifier))

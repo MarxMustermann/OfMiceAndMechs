@@ -121,7 +121,7 @@ class DimensionTeleporter(src.items.Item):
                 result.append((item, offset))
         return result
 
-    def TeleportItem(self, item_offset):
+    def teleportItem(self, item_offset):
         item, offset = item_offset
 
         if self.direction:
@@ -155,10 +155,11 @@ class DimensionTeleporter(src.items.Item):
                 (_senders, receivers) = src.gamestate.gamestate.teleporterGroups[self.group]
                 sending_tries = 0
                 if len(receivers):
-                    while sending_tries != len(receivers):
+                    print(receivers)
+                    while sending_tries != len(receivers) and items:
                         random_receiver: DimensionTeleporter = random.choice(receivers)
                         random_item = items.pop(random.randint(0, len(items) - 1))
-                        if not random_receiver.TeleportItem(random_item):
+                        if not random_receiver.teleportItem(random_item):
                             sending_tries += 1
                         else:
                             self.charges -= 1

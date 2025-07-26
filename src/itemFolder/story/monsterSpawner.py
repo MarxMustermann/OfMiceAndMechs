@@ -14,10 +14,7 @@ class MonsterSpawner(src.items.Item):
     def apply(self, character):
         pos = self.getPosition()
         room = self.container
-        enemy = src.characters.characterMap["Guardian"]()
-        enemy.health = 100
-        enemy.baseDamage = 7
-        enemy.faction = "invader"
+        enemy = src.characters.characterMap["Guardian"](modifier=1)
         room.addCharacter(enemy,pos[0],pos[1])
 
         quest = src.quests.questMap["ClearTerrain"]()

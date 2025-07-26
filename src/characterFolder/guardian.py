@@ -99,7 +99,7 @@ class Guardian(src.monster.Monster):
 
     @staticmethod
     def lootTable():
-        return [(None, 6),(src.items.itemMap["Grindstone"], 4)]
+        return [([src.items.itemMap["ManaCrystal"]]*self.multiplier, 1)]
 
     def render(self):
         """

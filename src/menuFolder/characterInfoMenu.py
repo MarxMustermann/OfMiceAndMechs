@@ -79,7 +79,6 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
         text += f"big position: {char.getBigPosition()}\n"
         text += f"terrain position: {char.getTerrainPosition()}\n"
         text += f"grievances: {char.grievances}\n"
-        text += f"registers: {char.registers}\n"
         text += f"terrainName: %s\n" % char.getTerrain().tag
         text += f"disableCommandsOnPlus: %s\n" % char.disableCommandsOnPlus
         text += f"autoExpandQuests: %s\n" % char.autoExpandQuests

@@ -7,14 +7,14 @@ class DimensionTeleporter(src.items.Item):
     type = "DimensionTeleporter"
     name = "Dimension Teleporter"
 
-    ReceiverMode = 1
-    SenderMode = 0
+    receiverMode = 1
+    senderMode = 0
 
     default_offsets = [(0, 1, 0), (0, -1, 0), (1, 0, 0), (-1, 0, 0)]
 
     def __init__(self):
         super().__init__(display="DH", name=self.name)
-        self.mode = self.SenderMode
+        self.mode = self.senderMode
         self.group = None
         self.bolted = False
         self.direction = None
@@ -98,11 +98,11 @@ class DimensionTeleporter(src.items.Item):
             if self in src.gamestate.gamestate.teleporterGroups[self.group][self.mode]:
                 src.gamestate.gamestate.teleporterGroups[self.group][self.mode].remove(self)
 
-            if self.mode == self.SenderMode:
-                self.mode = self.ReceiverMode
+            if self.mode == self.senderMode:
+                self.mode = self.receiverMode
                 self.applyOptions[2] = ("change to sender", "change to sender")
             else:
-                self.mode = self.SenderMode
+                self.mode = self.senderMode
                 self.applyOptions[2] = ("change to receiver", "change to receiver")
 
             src.gamestate.gamestate.teleporterGroups[self.group][self.mode].append(self)
@@ -121,9 +121,10 @@ class DimensionTeleporter(src.items.Item):
                 result.append((item, offset))
         return result
 
-    def teleportItem(self, item_offset):
-        item, offset = item_offset
-
+    def teleportItem(self, item, offset):
+        '''
+        teleport an item to a an reciever station
+        '''
         if self.direction:
             pos = (
                 self.xPosition + self.direction[0],
@@ -152,15 +153,18 @@ class DimensionTeleporter(src.items.Item):
         if self.charges:
             items = self.getInputItems()
             if len(items):
-                (_senders, receivers) = src.gamestate.gamestate.teleporterGroups[self.group]
+                (_senders, recievers) = src.gamestate.gamestate.teleporterGroups[self.group]
+
                 sending_tries = 0
-                if len(receivers):
-                    while sending_tries != len(receivers) and items:
-                        random_receiver: DimensionTeleporter = random.choice(receivers)
+                if len(recievers):
+                    while sending_tries != len(recievers) and items:
+                        random_reciever: DimensionTeleporter = random.choice(recievers)
                         random_item = items.pop(random.randint(0, len(items) - 1))
-                        if not random_receiver.teleportItem(random_item):
+                        if not random_reciever.teleportItem(random_item[0],random_item[1]):
+                            # handle fail
                             sending_tries += 1
                         else:
+                            # handle success
                             self.charges -= 1
                             self.numUsed += 1
                             return
@@ -208,8 +212,8 @@ class DimensionTeleporter(src.items.Item):
                                 if (new_pos_x, new_pos_y, 0) not in character.terrainInfo:
                                     mapContent[new_pos_y][new_pos_x] = " ?"
 
-            show(g[self.SenderMode], "SE")
-            show(g[self.ReceiverMode], "RE")
+            show(g[self.senderMode], "SE")
+            show(g[self.receiverMode], "RE")
 
             network = "\n".join(["".join(x) for x in mapContent])
             network += "\n? Indicate possible teleporter place\nRE indicate a receiver\nSE indicate a sender"
@@ -220,19 +224,19 @@ class DimensionTeleporter(src.items.Item):
     def getLongInfo(self):
         text = "Operation Mode:"
         if self.group:
-            text += " Sender" if self.mode == self.SenderMode else " Receiver"
+            text += " Sender" if self.mode == self.senderMode else " Receiver"
         else:
             text += "OFF"
         text += "\n"
 
-        code = "Input Direction:" if self.mode == self.SenderMode else "Output Direction:"
+        code = "Input Direction:" if self.mode == self.senderMode else "Output Direction:"
 
         if self.direction:
             cases = {(0, -1, 0): "North", (-1, 0, 0): "West", (1, 0, 0): "East", (0, 1, 0): "South"}
 
             text += code + " " + cases[self.direction]
         else:
-            if self.mode == self.SenderMode:
+            if self.mode == self.senderMode:
                 text += code + " From all Directions"
             else:
                 text += code + " To all Directions"

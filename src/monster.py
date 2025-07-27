@@ -87,7 +87,11 @@ class Monster(src.characters.Character):
             lootTable = self.lootTable()
             loot = random.choices([item[0] for item in lootTable],[item[1] for item in lootTable])[0]
             if loot is not None:
-                self.container.addItem(loot(),self.getPosition())
+                if isinstance(loot, list):
+                    for itemtype in loot:
+                        self.container.addItem(itemtype(),self.getPosition())
+                else:
+                    self.container.addItem(loot(),self.getPosition())
 
         super().die(reason, addCorpse=False, killer=killer)
 

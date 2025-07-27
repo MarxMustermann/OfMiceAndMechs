@@ -87,6 +87,8 @@ Filling a flask will use up a charge from your goo dispenser.
 
 
     def readyToUse(self):
+        if not self.bolted:
+            return False
         if not self.charges > 0:
             return False
 

@@ -210,13 +210,13 @@ class DimensionTeleporter(src.items.Item):
                                 new_pos_x = src.helpers.clamp(pos[0] + dx, 1, 13)
                                 new_pos_y = src.helpers.clamp(pos[1] + dy, 1, 13)
                                 if (new_pos_x, new_pos_y, 0) not in character.terrainInfo:
-                                    mapContent[new_pos_y][new_pos_x] = " ?"
+                                    mapContent[new_pos_y][new_pos_x] = "??"
 
             show(g[self.senderMode], "SE")
             show(g[self.receiverMode], "RE")
 
             network = "\n".join(["".join(x) for x in mapContent])
-            network += "\n? Indicate possible teleporter place\nRE indicate a receiver\nSE indicate a sender"
+            network += "\n?? Indicate possible teleporter place\nRE indicate a receiver\nSE indicate a sender"
         character.macroState["submenue"] = src.menuFolder.warningMenu.WarningMenu(
             self.getLongInfo() + f"\nCharges: {self.charges}\n\n{network}"
         )

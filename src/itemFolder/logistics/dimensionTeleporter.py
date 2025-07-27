@@ -83,7 +83,8 @@ class DimensionTeleporter(src.items.Item):
 
     def removeFromGroup(self):
         if self.group:
-            src.gamestate.gamestate.teleporterGroups[self.group][self.mode].remove(self)
+            if self in src.gamestate.gamestate.teleporterGroups[self.group][self.mode]:
+                src.gamestate.gamestate.teleporterGroups[self.group][self.mode].remove(self)
 
     def addToGroup(self):
         if self.group not in src.gamestate.gamestate.teleporterGroups:

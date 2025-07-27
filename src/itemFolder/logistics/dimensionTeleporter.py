@@ -93,6 +93,10 @@ class DimensionTeleporter(src.items.Item):
     def changeGroup(self, character):
         character.macroState["submenue"] = src.menuFolder.teleporterGroupMenu.TeleporterGroupMenu(self)
 
+    def setMode(self, mode, character=None):
+        if self.mode != mode:
+            self.changeMode(character)
+
     def changeMode(self, character):
         if self.group:
             if self in src.gamestate.gamestate.teleporterGroups[self.group][self.mode]:

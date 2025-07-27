@@ -99,6 +99,8 @@ class DimensionTeleporter(src.items.Item):
 
     def changeMode(self, character):
         if self.group:
+            if self.group not in src.gamestate.gamestate.teleporterGroups:
+                src.gamestate.gamestate.teleporterGroups[self.group] = ([], [])
             if self in src.gamestate.gamestate.teleporterGroups[self.group][self.mode]:
                 src.gamestate.gamestate.teleporterGroups[self.group][self.mode].remove(self)
 

@@ -11,7 +11,7 @@ class Potion(src.items.Item):
 
     def apply(self, character):
         flask = src.items.itemMap["Flask"]()
-        if not self.container:
+        if isinstance(self.container,src.characters.characterMap["Clone"]):
             character.removeItemFromInventory(self)
             character.addToInventory(flask)
         else:

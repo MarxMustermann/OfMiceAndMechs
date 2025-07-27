@@ -29,7 +29,7 @@ def SpawnStorageRoom(terrain, coordinate, controlRoom, teleporter_group):
 
     teleporter = src.items.itemMap["DimensionTeleporter"]()
     teleporter.group = teleporter_group
-    teleporter.mode = random.choice([0, 1])
+    teleporter.setMode(random.choice([0, 1]))
     teleporter.boltAction(None)
     room.addItem(teleporter, (1, 1, 0))
 

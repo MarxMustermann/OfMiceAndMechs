@@ -56,6 +56,7 @@ class Guardian(src.monster.Monster):
         self.specialCharges = 0
         self.rawBaseDame = 2*modifier
         self.baseDamage = 2*modifier
+        self.modifier = modifier
 
     def hurt(self, damage, reason=None, actor=None):
         try:
@@ -97,9 +98,12 @@ class Guardian(src.monster.Monster):
         """
         super().die(reason, addCorpse=True, killer=killer)
 
-    @staticmethod
-    def lootTable():
-        return [([src.items.itemMap["ManaCrystal"]]*self.multiplier, 1)]
+    def lootTable(self):
+        try:
+            self.modifier = modifier
+        except:
+            self.modifier = 1
+        return [([src.items.itemMap["ManaCrystal"]]*self.modifier, 1)]
 
     def render(self):
         """

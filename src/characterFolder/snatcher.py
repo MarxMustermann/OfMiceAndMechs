@@ -42,7 +42,11 @@ class Snatcher(src.monster.Monster):
         return super().generateQuests()
 
     def applyNativeMeleeAttackEffects(self,target):
-        target.statusEffects.append(src.statusEffects.statusEffectMap["Slowed"](duration=2,slowDown=0.02,reason="You were caught by a Snatcher"))
+        target.addStatusEffect(
+            src.statusEffects.statusEffectMap["Slowed"](
+                duration=2, slowDown=0.02, reason="You were caught by a Snatcher"
+            )
+        )
         super().applyNativeMeleeAttackEffects(target)
 
 src.characters.add_character(Snatcher)

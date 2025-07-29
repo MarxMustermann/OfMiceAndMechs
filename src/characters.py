@@ -1535,7 +1535,7 @@ press any other key to attack normally"""
         if target.dead:
             overkill = damage-enemyHP
             while overkill > 0:
-                self.statusEffects.append(src.statusEffects.statusEffectMap["Berserk"](reason="You killed somebody"))
+                self.addStatusEffect(src.statusEffects.statusEffectMap["Berserk"](reason="You killed somebody"))
                 overkill -= 20
         else:
             self.applyNativeMeleeAttackEffects(target)
@@ -2806,6 +2806,11 @@ press any other key to attack normally"""
             if issubclass(type(statusEffect), src.statusEffects.HealthRegenBuff):
                 healthRegen = statusEffect.modHealthRegen(healthRegen)
         return healthRegen
+
+    def addStatusEffect(self, effect):
+        self.statusEffects.append(effect)
+        self.changed("added status effect")
+
 
 characterMap = {
     "Character": Character,

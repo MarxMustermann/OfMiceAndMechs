@@ -86,7 +86,9 @@ class Spider(src.monster.Monster):
         return super().generateQuests()
 
     def applyNativeMeleeAttackEffects(self,target):
-        target.statusEffects.append(src.statusEffects.statusEffectMap["Slowed"](duration=2,slowDown=0.1,reason="You were bitten by a Spider"))
+        target.addStatusEffect(
+            src.statusEffects.statusEffectMap["Slowed"](duration=2, slowDown=0.1, reason="You were bitten by a Spider")
+        )
         super().applyNativeMeleeAttackEffects(target)
 
     @staticmethod

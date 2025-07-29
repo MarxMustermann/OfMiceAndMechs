@@ -70,7 +70,7 @@ You need to take the glass throne at (7,7,0)
 
             if noSeekerStatus:
                 newEffect = src.statusEffects.statusEffectMap["ThroneSeeker"]()
-                character.statusEffects.append(newEffect)
+                character.addStatusEffect(newEffect)
 
             character.changed("told to ascend")
 

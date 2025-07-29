@@ -1,2 +1,3 @@
 import src.popupFolder.enterRoom
 import src.popupFolder.enterTerrain
+import src.popupFolder.addedStatusEffect

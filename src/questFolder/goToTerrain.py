@@ -3,6 +3,7 @@ import src
 
 class GoToTerrain(src.quests.MetaQuestSequence):
     type = "GoToTerrain"
+    lowLevel = True
 
     def __init__(self, description="go to terrain", creator=None, targetTerrain=None, allowTerrainMenu=True, reason=None):
         if targetTerrain:

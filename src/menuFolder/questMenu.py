@@ -20,9 +20,29 @@ class QuestMenu(src.subMenu.SubMenu):
         self.char = char
         self.offsetX = 0
         self.questCursor = [0]
+        if char == src.gamestate.gamestate.mainChar:
+            self.setCurrentQuest()
+
         self.sidebared = False
         super().__init__()
 
+    def setCurrentQuest(self):
+        baseList = self.char.quests
+        failed = False
+        while len(baseList) and not failed:
+            for index in self.questCursor:
+                if not len(baseList):
+                    return
+                quest = baseList[index]
+                try:
+                    baseList = quest.subQuests
+                    if (len(baseList) < 1 or hasattr(baseList[0], "lowLevel")) or hasattr(quest, "lowLevel"):
+                        failed = True
+                except:
+                    baseList = None
+                    failed = True
+            if not failed:
+                self.questCursor.append(0)
     def render(self, char):
         return self.renderQuests(char=self.char, asList=True, questCursor=self.questCursor,sidebared=self.sidebared)
 

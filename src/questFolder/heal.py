@@ -3,6 +3,7 @@ import random
 
 class Heal(src.quests.MetaQuestSequence):
     type = "Heal"
+    lowLevel = True
 
     def __init__(self, description="heal",noWaitHeal=False,noVialHeal=False):
         super().__init__()

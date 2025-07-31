@@ -5,6 +5,7 @@ import src
 
 class ClearTerrain(src.quests.MetaQuestSequence):
     type = "ClearTerrain"
+    lowLevel = True
 
     def __init__(self, description="clear terrain", creator=None, command=None, lifetime=None,outsideOnly=False,insideOnly=False):
         questList = []

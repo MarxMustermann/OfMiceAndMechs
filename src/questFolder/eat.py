@@ -5,6 +5,7 @@ import src
 
 class Eat(src.quests.MetaQuestSequence):
     type = "Eat"
+    lowLevel = True
 
     def __init__(self, description="eat", creator=None, command=None, lifetime=None):
         questList = []

@@ -3,6 +3,7 @@ import src
 
 class DeleteMarking(src.quests.MetaQuestSequence):
     type = "DeleteMarking"
+    lowLevel = True
 
     def __init__(self, description="delete marking", creator=None, targetPosition=None, targetPositionBig=None,tryHard=False,reason=None):
         questList = []

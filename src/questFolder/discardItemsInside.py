@@ -4,6 +4,7 @@ import src
 
 class DiscardItemsInside(src.quests.MetaQuestSequence):
     type = "DiscardItemsInside"
+    lowLevel = True
 
     def __init__(self, description="discard items inside", creator=None, toCollect=None, lifetime=None, reason=None):
         self.lastMoveDirection = None

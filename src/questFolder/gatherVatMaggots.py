@@ -3,6 +3,7 @@ import random
 
 class GatherVatMaggots(src.quests.MetaQuestSequence):
     type = "GatherVatMaggots"
+    lowLevel = True
 
     def __init__(self, description="gather vat maggots", creator=None, targetPosition=None,lifetime=None):
         questList = []

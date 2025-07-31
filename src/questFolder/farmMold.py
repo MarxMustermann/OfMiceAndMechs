@@ -4,6 +4,7 @@ import src
 
 class FarmMold(src.quests.MetaQuestSequence):
     type = "FarmMold"
+    lowLevel = True
 
     def __init__(self, description="farm mold", creator=None, toCollect=None, lifetime=None, reason=None, tryHard=False):
         self.lastMoveDirection = None

@@ -5,6 +5,7 @@ import src
 
 class ClearTile(src.quests.MetaQuestSequence):
     type = "ClearTile"
+    lowLevel = True
 
     def __init__(self, description="clean tile", creator=None, targetPosition=None, noDelegate=False, reason=None, story=None):
         questList = []

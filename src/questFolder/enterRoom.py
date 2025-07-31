@@ -3,6 +3,7 @@ import src
 
 class EnterRoom(src.quests.MetaQuestSequence):
     type = "EnterRoom"
+    lowLevel = True
 
     def __init__(self, description="enter room", creator=None, command=None, lifetime=None):
         super().__init__([], creator=creator, lifetime=lifetime)

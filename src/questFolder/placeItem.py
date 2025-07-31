@@ -6,6 +6,8 @@ class PlaceItem(src.quests.MetaQuestSequence):
     quest to place a item on a coordinate
     '''
     type = "PlaceItem"
+    lowLevel = True
+
     def __init__(self, description="place item", creator=None, lifetime=None, targetPosition=None, targetPositionBig=None, itemType=None, tryHard=False, boltDown=False,reason=None, clearPath = False):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)

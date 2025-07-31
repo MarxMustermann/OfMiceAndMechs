@@ -4,6 +4,7 @@ import src
 
 class ConsumePotion(src.quests.MetaQuestSequence):
     type = "ConsumePotion"
+    lowLevel = True
 
     def __init__(self, description="consume potion", creator=None, potionType=None,reason=None):
         questList = []

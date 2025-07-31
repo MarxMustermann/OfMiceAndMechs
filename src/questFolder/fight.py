@@ -5,6 +5,7 @@ import src
 
 class Fight(src.quests.MetaQuestSequence):
     type = "Fight"
+    lowLevel = True
 
     def __init__(self, description="fight", creator=None, command=None, lifetime=None, weaponOnly=False, reason=None, suicidal=False):
         questList = []

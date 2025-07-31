@@ -20,6 +20,8 @@ class GoToTile(src.quests.MetaQuestSequence):
         allowMapMenu: allow solver to use the map menu
     '''
     type = "GoToTile"
+    lowLevel = True
+
     def __init__(self, description="go to tile", creator=None, targetPosition=None, lifetime=None, paranoid=False, showCoordinates=True,reason=None,abortHealthPercentage=0, story=None, allowMapMenu=True):
         if targetPosition:
             if targetPosition[0] < 1 or targetPosition[0] > 13:

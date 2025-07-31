@@ -5,6 +5,7 @@ import src
 
 class FetchItems(src.quests.MetaQuestSequence):
     type = "FetchItems"
+    lowLevel = True
 
     def __init__(self, description="fetch items", creator=None, toCollect=None, amount=None, returnToTile=True,lifetime=None,takeAnyUnbolted=False,tryHard=False,reason=None):
         questList = []

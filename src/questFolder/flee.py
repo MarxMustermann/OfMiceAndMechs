@@ -5,6 +5,7 @@ import src
 
 class Flee(src.quests.MetaQuestSequence):
     type = "Flee"
+    lowLevel = True
 
     def __init__(self, description="Flee", creator=None, command=None, lifetime=None, weaponOnly=False):
         questList = []

@@ -3,6 +3,7 @@ import src
 
 class Equip(src.quests.MetaQuestSequence):
     type = "Equip"
+    lowLevel = True
 
     def __init__(self, description="equip", creator=None, command=None, lifetime=None, weaponOnly=False, reason=None, story=None):
         questList = []

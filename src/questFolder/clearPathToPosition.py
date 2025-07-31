@@ -5,6 +5,7 @@ import src
 
 class ClearPathToPosition(src.quests.MetaQuestSequence):
     type = "ClearPathToPosition"
+    lowLevel = True
 
     def __init__(self, description="clear path to position", creator=None, targetPosition=None, tryHard=False,reason=None):
         questList = []

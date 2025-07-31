@@ -51,8 +51,13 @@ class MonsterSpawner(src.items.Item):
         '''
         return a custom render
         '''
-        return "MS"
+        try:
+            self.strength
+        except:
+            self.strength = random.randint(1,10)
 
+        color = (255,max(0,255-(25*self.strength)),max(0,255-(25*self.strength)))
+        return (src.interaction.urwid.AttrSpec(color, "black"), "MS")
 
     def getLongInfo(self):
         '''

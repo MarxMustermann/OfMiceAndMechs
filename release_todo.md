@@ -16,7 +16,7 @@
   * do popups on new status effect
   * fix crashes
   * add "waiting" popup for coal burner
-  * subquests?
+  * make quest menu show deepest relevant quest
   * make walking animation not hide enemy on first frame
   * make death and respawn scene more differen
     * maybe add an animation that moves to character?

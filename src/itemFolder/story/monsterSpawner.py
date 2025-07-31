@@ -53,5 +53,24 @@ class MonsterSpawner(src.items.Item):
         '''
         return "MS"
 
+
+    def getLongInfo(self):
+        '''
+        generate simple text description
+
+        Returns:
+            the decription text
+        '''
+        try:
+            self.strength
+        except:
+            self.strength = random.randint(1,10)
+
+        text = super().getLongInfo()
+        text += f"""
+strength: {self.strength}
+"""
+        return text
+
 # register the item
 src.items.addType(MonsterSpawner)

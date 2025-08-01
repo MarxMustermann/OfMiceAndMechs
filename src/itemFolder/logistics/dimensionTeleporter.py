@@ -132,6 +132,9 @@ class DimensionTeleporter(src.items.Item):
         '''
         teleport an item to a an reciever station
         '''
+        if not self.xPosition:
+            return False
+
         if self.direction:
             pos = (
                 self.xPosition + self.direction[0],

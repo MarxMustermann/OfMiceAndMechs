@@ -44,8 +44,8 @@ class MonsterSpawner(src.items.Item):
         quest.activate()
         enemy.quests.append(quest)
 
-        # self destruct
-        self.destroy()
+        # increase strength
+        self.strength += 1
 
     def render(self):
         '''
@@ -56,7 +56,8 @@ class MonsterSpawner(src.items.Item):
         except:
             self.strength = random.randint(1,10)
 
-        color = (255,max(0,255-(25*self.strength)),max(0,255-(25*self.strength)))
+        shade = max(0,255-(30*(self.strength-1)))
+        color = (255,shade,shade)
         return (src.interaction.urwid.AttrSpec(color, "black"), "MS")
 
     def getLongInfo(self):
@@ -76,6 +77,37 @@ class MonsterSpawner(src.items.Item):
 strength: {self.strength}
 """
         return text
+
+    def getConfigurationOptions(self, character):
+        '''
+        register the configuration options with superclass
+
+        Parameters:
+            character: the character trying to conigure the machine
+        '''
+
+        options = super().getConfigurationOptions(character)
+        if self.bolted:
+            options["b"] = ("unbolt", self.unboltAction)
+        else:
+            options["b"] = ("bolt down", self.boltAction)
+        return options
+
+    def boltAction(self,character):
+        '''
+        bolt the item down
+        '''
+        self.bolted = True
+        character.addMessage("you bolt down the MonsterSpawner")
+        character.changed("boltedItem",{"character":character,"item":self})
+
+    def unboltAction(self,character):
+        '''
+        unbolt the item
+        '''
+        self.bolted = False
+        character.addMessage("you unbolt the MonsterSpawner")
+        character.changed("unboltedItem",{"character":character,"item":self})
 
 # register the item
 src.items.addType(MonsterSpawner)

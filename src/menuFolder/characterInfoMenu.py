@@ -28,6 +28,8 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
         if char.weapon:
             weaponBaseDamage = char.weapon.baseDamage
 
+        print(char.registers)
+
         text += "name:       %s\n" % char.name
         text += "\n"
         text += "\n"

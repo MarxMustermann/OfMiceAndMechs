@@ -505,37 +505,8 @@ class SiegeManager(src.items.Item):
         Parameters:
             character: the character triggering this (optional)
         '''
-
-        # bolt down
-        self.bolted = True
-
-        # handle effect on the actor
-        if character:
-            character.addMessage("you bolt down the ScrapCompactor")
-            character.changed("boltedItem",{"character":character,"item":self})
-
-        # trigger side effects
-        self.numUsed = 0
+        super().boltAction(character)
         self.handleTick()
-
-    def unboltAction(self,character=None):
-        '''
-        unbolt the item
-
-        Parameters:
-            character: the character triggering this (optional)
-        '''
-
-        # unbolt 
-        self.bolted = False
-
-        # handle effect on the actor
-        if character:
-            character.addMessage("you unbolt the ScrapCompactor")
-            character.changed("unboltedItem",{"character":character,"item":self})
-
-        # trigger side effects
-        self.numUsed = 0
 
 # register the item
 src.items.addType(SiegeManager)

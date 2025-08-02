@@ -32,5 +32,36 @@ It changes your implant and sets your faction marker to {self.faction}.
 """
         character.macroState["submenue"] = src.menuFolder.textMenu.TextMenu(text)
 
+    def getConfigurationOptions(self, character):
+        '''
+        register the configuration options with superclass
+
+        Parameters:
+            character: the character trying to conigure the machine
+        '''
+
+        options = super().getConfigurationOptions(character)
+        if self.bolted:
+            options["b"] = ("unbolt", self.unboltAction)
+        else:
+            options["b"] = ("bolt down", self.boltAction)
+        return options
+
+    def boltAction(self,character):
+        '''
+        bolt the item down
+        '''
+        self.bolted = True
+        character.addMessage("you bolt down the FactionSetter")
+        character.changed("boltedItem",{"character":character,"item":self})
+
+    def unboltAction(self,character):
+        '''
+        unbolt the item
+        '''
+        self.bolted = False
+        character.addMessage("you unbolt the FactionSetter")
+        character.changed("unboltedItem",{"character":character,"item":self})
+
 # register the item
 src.items.addType(FactionSetter)

@@ -173,7 +173,7 @@ class DimensionTeleporter(src.items.Item):
         if not self.xPosition:
             return False
 
-        # get the position of the input
+        # get the position of the output spot
         if self.direction:
             pos = (
                 self.xPosition + self.direction[0],
@@ -183,7 +183,7 @@ class DimensionTeleporter(src.items.Item):
         else:
             pos = (self.xPosition + offset[0], self.yPosition + offset[1], self.zPosition + offset[2])
 
-        # validate coordinate
+        # refuse invalid coordinates
         for i in range(2):
             if isinstance(self.container, src.rooms.Room):
                 if not (pos[i] >= 1 and pos[i] <= 14):
@@ -191,11 +191,17 @@ class DimensionTeleporter(src.items.Item):
             elif not (pos[i] % 15 >= 1 and pos[i] % 15 <= 14):
                 return False
 
-        if any(item.bolted for item in self.container.getItemByPosition(pos)):
+        # refuse blocked target
+        targetSpotItems = self.container.getItemByPosition(pos)
+        if item.walkable == False and targetSpotItems:
+            return False
+        if len(targetSpotItems) > 10:
+            return False
+        if any(targetSpotItem.bolted for targetSpotItem in targetSpotItems):
             return False
 
+        # teleport the item
         item.container.removeItem(item)
-
         self.container.addItem(item, pos)
         return True
 

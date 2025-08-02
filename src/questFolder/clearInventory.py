@@ -206,7 +206,7 @@ To see your items open the your inventory by pressing i."""
                 if not dryRun:
                     beUsefull.idleCounter = 0
                 return (None,None)
-            homeRoom = room.container.getRoomByPosition((character.registers["HOMEx"],character.registers["HOMEy"]))[0]
+            homeRoom = character.getHomeRoom()
             if not hasattr(homeRoom,"storageRooms") or not homeRoom.storageRooms:
                 return (None,None)
 

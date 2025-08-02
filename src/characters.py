@@ -1541,13 +1541,13 @@ press any other key to attack normally"""
             self.applyNativeMeleeAttackEffects(target)
 
     def heal(self, amount, reason=None):
-        """
+        '''
         heal the character
 
         Parameters:
             amount: the amount of health healed
             reason: the reason why the character was healed
-        """
+        '''
         amount = int(amount*self.healingModifier)
 
         #if self.reduceExhaustionOnHeal:
@@ -1569,13 +1569,13 @@ press any other key to attack normally"""
 
     # bad code: only works in a certain room type
     def collidedWith(self, other, actor=None):
-        """
+        '''
         handle collision with another character
 
         Parameters:
             other: the other character
             actor: the character triggering the collision
-        """
+        '''
 
         if other.faction != self.faction:
             if self.personality.get("attacksEnemiesOnContact") and actor == self:
@@ -1585,12 +1585,12 @@ press any other key to attack normally"""
                 self.frustration += self.personality.get("annoyenceByNpcCollisions")
 
     def getRegisterValue(self, key):
-        """
+        '''
         load a value from the characters data store (register)
 
         Parameters:
             key: the name of the register to fetch
-        """
+        '''
 
         try:
             return self.registers[key][-1]
@@ -1598,13 +1598,13 @@ press any other key to attack normally"""
             return None
 
     def setRegisterValue(self, key, value):
-        """
+        '''
         set a value in the characters data store (register)
 
         Parameters:
             key: the name of the register to fetch
             value: the value to set in the register
-        """
+        '''
         if key not in self.registers:
             self.registers[key] = [0]
         self.registers[key][-1] = value
@@ -1612,15 +1612,15 @@ press any other key to attack normally"""
     # bad code: should just be removed
     @property
     def display(self):
-        """
+        '''
         proxy render method to display attribute
-        """
+        '''
         return self.render()
 
     def render(self):
-        """
+        '''
         render the character
-        """
+        '''
         if self.specialRender:
             return self.specialRender
         elif self.specialDisplay:
@@ -1635,51 +1635,52 @@ press any other key to attack normally"""
     # bad code: should be actual attribute
     @property
     def container(self):
-        """
+        '''
         the object the character is in. Either room or terrain
-        """
+        '''
         if self.room:
             return self.room
         else:
             return self.terrain
 
     def getActiveQuest(self):
-        """
+        '''
         returns the currently active quest
         Returns:
             the active quest
-        """
+        '''
         if self.quests:
             return self.quests[0].getActiveQuest()
         return None
 
     def getActiveQuests(self):
-        """
+        '''
         returns the currently active quest and all its parents
+
         Returns:
             a list of the active quest and its parents
-        """
+        '''
         if self.quests:
             return self.quests[0].getActiveQuests()
         return []
 
     # bad code: should be removed
     def getQuest(self):
-        """
+        '''
         get a quest from the character (proxies room quest queue)
-        """
+        '''
         if self.room and self.room.quests:
             return self.room.quests.pop()
         else:
             return None
 
     def addEvent(self, event):
-        """
+        '''
         add an event to the characters event queue
 
         Parameters:
             event: the event to add
-        """
+        '''
 
         # get the position for this event
         index = 0
@@ -1693,9 +1694,9 @@ press any other key to attack normally"""
 
     # bad code: should be removed
     def recalculatePath(self):
-        """
+        '''
         reset the path to the current quest
-        """
+        '''
 
         # log impossible state
         if not self.quests:
@@ -1707,17 +1708,17 @@ press any other key to attack normally"""
         self.setPathToQuest(self.quests[0])
 
     def removeEvent(self, event):
-        """
+        '''
         removes an event from the characters event queue
 
         Parameters:
             event: the event to remove
-        """
+        '''
         self.events.remove(event)
 
     # bad code: adds default chat options
     def getChatOptions(self, partner):
-        """
+        '''
         fetch the chat options the character offers
 
         Parameters:
@@ -1725,7 +1726,7 @@ press any other key to attack normally"""
 
         Returns:
             the chat options
-        """
+        '''
 
         # get the usual chat options
         chatOptions = self.basicChatOptions[:]
@@ -1763,14 +1764,14 @@ press any other key to attack normally"""
         return chatOptions
 
     def awardReputation(self, amount=0, fraction=0, reason=None, carryOver=False):
-        """
+        '''
         give the character reputation (reward)
 
         Parameters:
             amount: how much fixed reputation was awarded
             fraction: how much relative reputation was awarded
             reason: the reason for awarding reputation
-        """
+        '''
 
         totalAmount = amount
         if fraction and self.reputation:
@@ -1788,14 +1789,14 @@ press any other key to attack normally"""
             self.superior.awardReputation(amount=newAmount,fraction=fraction,reason=reason,carryOver=carryOver)
 
     def revokeReputation(self, amount=0, fraction=0, reason=None, carryOver=False):
-        """
+        '''
         remove some of the character reputation (punishment)
 
         Parameters:
             amount: how much fixed reputation was removed
             fraction: how much relative reputation was removed
             reason: the reason for awarding reputation
-        """
+        '''
 
         totalAmount = amount
         if fraction and self.reputation:
@@ -1815,22 +1816,20 @@ press any other key to attack normally"""
     # obsolete: reintegrate
     # bad code: this is kind of incompatible with the meta quests
     def startNextQuest(self):
-        """
+        '''
         starts the next quest in the quest list
-        """
-
+        '''
         if len(self.quests):
             self.quests[0].recalculate()
             self.setPathToQuest(self.quests[0])
 
     def getDetailedInfo(self):
-        """
+        '''
         returns a string with detailed info about the character
 
         Returns:
             the string
-        """
-
+        '''
         return (
             "name: "
             + str(self.name)
@@ -1855,14 +1854,13 @@ press any other key to attack normally"""
     # bad code: this is kind of incompatible with the meta quests
     # obsolete: reintegrate
     def assignQuest(self, quest, active=False):
-        """
+        '''
         adds a quest to the characters quest list
 
         Parameters:
             quest: the quest to add
             active: a flag indication if the quest should be added as active
-        """
-
+        '''
         if active:
             self.quests.insert(0, quest)
         else:
@@ -1877,12 +1875,13 @@ press any other key to attack normally"""
     # bad pattern: the walking should be done in a quest solver so this method should removed on the long run
     # obsolete: probably should be rewritten
     def setPathToQuest(self, quest):
-        """
+        '''
+        (obsolete)
         set the charactes path to a quest
 
         Parameters:
             quest: the quest to set the path from
-        """
+        '''
         self.path = [] # disabled
         return
 
@@ -1894,14 +1893,13 @@ press any other key to attack normally"""
             self.path = []
 
     def addToInventory(self, item, force=False):
-        """
+        '''
         add an item to the characters inventory
 
         Parameters:
             item: the item
             force: flag overriding sanity checks
-        """
-
+        '''
         if force or len(self.inventory) < self.maxInventorySpace:
             item.container = self
             self.inventory.append(item)
@@ -1915,23 +1913,21 @@ press any other key to attack normally"""
         self.removeItemFromInventory(item)
 
     def removeItemFromInventory(self, item):
-        """
+        '''
         remove an item from the characters inventory
 
         Parameters:
             item: the item
-        """
-
+        '''
         self.removeItemsFromInventory([item])
 
     def removeItemsFromInventory(self, items):
-        """
+        '''
         remove items from the characters inventory
 
         Parameters:
             items: a list of items to remove
-        """
-
+        '''
         for item in items:
             item.container = None
             self.inventory.remove(item)
@@ -1942,12 +1938,12 @@ press any other key to attack normally"""
     # obsolete: should probably rewritten
     # bad code: should be handled in quest
     def applysolver(self, solver=None):
-        """
+        '''
         this wrapper converts a character centered call to a solver centered call
 
         Parameters:
             solver: a custom solver to use
-        """
+        '''
 
         # add exponentially increasing penality to prevent AI loops from locking up the game
         self.implantLoad += 1
@@ -1976,9 +1972,10 @@ press any other key to attack normally"""
 
     # bad code: obsolete
     def fallUnconcious(self):
-        """
+        '''
+        (obsolete)
         make the character fall unconcious
-        """
+        '''
 
         self.unconcious = True
         if self.watched:
@@ -1987,9 +1984,10 @@ press any other key to attack normally"""
 
     # bad code: obsolete
     def wakeUp(self):
-        """
+        '''
+        (obsolete)
         wake the character up
-        """
+        '''
 
         self.unconcious = False
         if self.watched:
@@ -1997,13 +1995,13 @@ press any other key to attack normally"""
         self.changed("woke up", self)
 
     def die(self, reason=None, killer = None, addCorpse=True):
-        """
+        '''
         kill the character and do a bit of extra stuff like placing corpses
 
         Parameters:
             reason: the reason for dieing
             addCorpse: flag to control adding a corpse
-        """
+        '''
         if self.dead:
             logger.error("Tried to kill Dead Charc",self,exc_info= 1)
             return
@@ -2066,11 +2064,11 @@ press any other key to attack normally"""
                     otherCharacter.changed("character died on tile",{"deadChar":self,"character":otherCharacter})
 
     def canHeal(self):
-        """
+        '''
         check if the character can heal right now
         Returns:
             wether or not the character can heal right now
-        """
+        '''
         for item in self.inventory:
             if not isinstance(item,src.items.itemMap["Vial"]):
                 continue
@@ -2082,12 +2080,13 @@ press any other key to attack normally"""
     # obsolete: needs to be reintegrated
     # bad pattern: should be contained in quest solver
     def walkPath(self):
-        """
+        '''
+        (obsolete)
         walk the predetermined path
         Returns:
             True when done
             False when not done
-        """
+        '''
 
         # smooth over impossible state
         if self.dead:
@@ -2252,13 +2251,13 @@ press any other key to attack normally"""
         return False
 
     def drop(self, item=None, position=None):
-        """
+        '''
         make the character drop an item
 
         Parameters:
             item: the item to drop
             position: the position to drop the item on
-        """
+        '''
 
         if not self.inventory:
             self.addMessage("no item to drop")
@@ -2331,13 +2330,13 @@ press any other key to attack normally"""
         self.changed("dropped",(self,item))
 
     def examinePosition(self, pos):
-        """
+        '''
         examine a position
         show a menu displaying a description
 
         Parameters:
             pos: the position to examine
-        """
+        '''
         text = f"you are examining the position: {pos}\n\n"
 
         if isinstance(self.container,src.rooms.Room):
@@ -2400,12 +2399,12 @@ press any other key to attack normally"""
         self.macroState["submenue"] = self.submenue
 
     def examine(self, item):
-        """
+        '''
         make the character examine an item
 
         Parameters:
             item: the item to examine
-        """
+        '''
 
         registerInfo = ""
         for (key, value) in item.fetchSpecialRegisterInformation().items():
@@ -2423,11 +2422,11 @@ press any other key to attack normally"""
         self.changed("examine", item)
 
     def advance(self,advanceMacros=False):
-        """
+        '''
         advance the character one tick
         Parameters:
             advanceMacros: wether or not to advance the character based on macros (True = advance)
-        """
+        '''
 
         if self.stasis or self.dead or self.disabled:
             return
@@ -2548,14 +2547,14 @@ press any other key to attack normally"""
 
     # bad pattern: is repeated in items etc
     def addListener(self, listenFunction, tag="default"):
-        """
+        '''
         register a callback function for notifications
         if something wants to wait for the character to die it should register as listener
 
         Parameters:
             listenFunction: the function that should be called if the listener is triggered
             tag: a tag determining what kind of event triggers the listen function. For example "died"
-        """
+        '''
         # create container if container doesn't exist
         # bad performance: string comparison, should use enums. Is this slow in python?
         if tag not in self.listeners:
@@ -2567,13 +2566,13 @@ press any other key to attack normally"""
 
     # bad pattern: is repeated in items etc
     def delListener(self, listenFunction, tag="default"):
-        """
+        '''
         deregister a callback function for notifications
 
         Parameters:
             listenFunction: the function that would be called if the listener is triggered
             tag: a tag determining what kind of event triggers the listen function. For example "died"
-        """
+        '''
 
         # remove listener
         if listenFunction in self.listeners[tag]:
@@ -2586,13 +2585,13 @@ press any other key to attack normally"""
 
     # bad code: probably misnamed
     def changed(self, tag="default", info=None):
-        """
+        '''
         call callbacks functions that did register for listening to events
 
         Parameters:
             tag: the tag determining what kind of event triggers the listen function. For example "died"
             info: additional information
-        """
+        '''
 
         """
         if src.gamestate.gamestate.mainChar == self and tag == "entered room":
@@ -2619,11 +2618,11 @@ press any other key to attack normally"""
                 listenFunction(info)
 
     def startIdling(self):
-        """
+        '''
+        (obsolete?)
         run idle actions using the macro automation
         should be called when the character is bored for some reason
-        """
-
+        '''
         if not self.personality["doIdleAction"]:
             self.runCommandString(".")
             return
@@ -2729,54 +2728,51 @@ press any other key to attack normally"""
         self.runCommandString(command)
 
     def removeSatiation(self, amount):
-        """
+        '''
         make the character more hungry
 
         Parameters:
             amount: how much hungryier the character should be
-        """
-
+        '''
         self.satiation -= amount
         if self.satiation < 0:
             self.die(reason="you starved")
 
     def addSatiation(self, amount, reason=None):
-        """
+        '''
         make the character less hungry
 
         Parameters:
             amount: how much the character should be less hungryier
-        """
-
+        '''
         self.addMessage(f"you gain {amount} satiation because you {reason}")
-
         self.satiation += amount
         if self.satiation > 1000:
             self.satiation = 1000
 
-
     def addFrustration(self, amount):
-        """
+        '''
         increase the characters frustration
 
         Parameters:
             amount: how much the frustration should increase
-        """
-
+        '''
         self.frustration += amount
 
     def removeFrustration(self, amount, reason=None):
-        """
+        '''
         decrease the characters frustration
 
         Parameters:
             amount: how much the frustration should be decreased
-        """
-
+        '''
         self.frustration -= amount
 
     @property
     def attackSpeed(self):
+        '''
+        get the modified attack speed
+        '''
         speed = self.baseAttackSpeed
         for statusEffect in self.statusEffects:
             if issubclass(type(statusEffect), src.statusEffects.AttackSpeedEffect):
@@ -2785,6 +2781,9 @@ press any other key to attack normally"""
 
     @property
     def adjustedMovementSpeed(self):
+        '''
+        get the modified movement speed
+        '''
         speed = self.movementSpeed
         for statusEffect in self.statusEffects:
             if issubclass(type(statusEffect), src.statusEffects.MovementBuff):
@@ -2793,6 +2792,9 @@ press any other key to attack normally"""
 
     @property
     def adjustedMaxHealth(self):
+        '''
+        get the modified max health
+        '''
         maxHealth = self.maxHealth
         for statusEffect in self.statusEffects:
             if issubclass(type(statusEffect), src.statusEffects.HealthBuff):
@@ -2801,6 +2803,9 @@ press any other key to attack normally"""
 
     @property
     def adjustedHealthRegen(self):
+        '''
+        get the modified health regeneration
+        '''
         healthRegen = 1
         for statusEffect in self.statusEffects:
             if issubclass(type(statusEffect), src.statusEffects.HealthRegenBuff):
@@ -2808,13 +2813,16 @@ press any other key to attack normally"""
         return healthRegen
 
     def addStatusEffect(self, effect):
+        '''
+        apply a status effect to the character
+        '''
         self.statusEffects.append(effect)
         self.changed("added status effect")
 
 
+# supply a list of character types available
 characterMap = {
     "Character": Character,
 }
-
 def add_character(ty:type):
     characterMap[ty.__name__] = ty

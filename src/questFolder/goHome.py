@@ -2,8 +2,10 @@ import src
 
 
 class GoHome(src.quests.MetaQuestSequence):
+    '''
+    quest to go home
+    '''
     type = "GoHome"
-
     def __init__(self, description="go home", creator=None, paranoid=False,reason=None):
         questList = []
         super().__init__(questList, creator=creator)
@@ -16,6 +18,9 @@ class GoHome(src.quests.MetaQuestSequence):
         self.reason = reason
 
     def generateTextDescription(self):
+        '''
+        generate a textual description of this quest
+        '''
         reason = ""
         if self.reason:
             reason = f", to {self.reason}"
@@ -40,6 +45,9 @@ Press control-d to stop your character from moving.
         return text
 
     def triggerCompletionCheck(self, character=None):
+        '''
+        check if the quest is completed
+        '''
         if not character:
             return None
 
@@ -49,6 +57,9 @@ Press control-d to stop your character from moving.
         return False
 
     def wrapedTriggerCompletionCheck(self, extraInfo):
+        '''
+        indirection to call the actual fuction
+        '''
         if not self.active:
             return
         self.reroll()
@@ -56,6 +67,9 @@ Press control-d to stop your character from moving.
         self.triggerCompletionCheck(extraInfo[0])
 
     def assignToCharacter(self, character):
+        '''
+        assign this quest to a character
+        '''
         if self.character:
             return
 
@@ -66,18 +80,30 @@ Press control-d to stop your character from moving.
         super().assignToCharacter(character)
 
     def getCityLocation(self):
+        '''
+        get the coordinate of where the city should be
+        '''
         return (self.character.registers["HOMEx"],self.character.registers["HOMEy"],0)
 
     def getHomeLocation(self):
+        '''
+        get the coordinate of where the home terrain should be
+        '''
         return (self.character.registers["HOMETx"],self.character.registers["HOMETy"],0)
 
     def recalcDescription(self):
+        '''
+        reset the description
+        '''
         if self.character:
             cityLocation = self.getCityLocation()
             terrainLocation = self.getHomeLocation()
             self.metaDescription = self.baseDescription+f" {cityLocation[0]}/{cityLocation[1]} on {terrainLocation[0]}/{terrainLocation[1]}"
 
     def getNextStep(self, character=None, ignoreCommands=False, dryRun=True):
+        '''
+        get the next step towards solving the quest
+        '''
         if self.subQuests:
             return (None,None)
 
@@ -196,8 +222,12 @@ Press control-d to stop your character from moving.
         return (None, None)
 
     def getQuestMarkersTile(self, character):
+        '''
+        generate quest markers for this quest
+        '''
         result = super().getQuestMarkersTile(character)
         result.append(((self.getCityLocation()[0],self.getCityLocation()[1]),"target"))
         return result
 
+# register the quest type
 src.quests.addType(GoHome)

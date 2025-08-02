@@ -18,6 +18,7 @@ class DimensionTeleporter(src.items.Item):
         self.group = None
         self.bolted = False
         self.direction = None
+        self.broken = True
 
         self.charges = 100
         self.chargePerLightingRod = 100
@@ -119,6 +120,8 @@ class DimensionTeleporter(src.items.Item):
         '''
         show UI to change the teleporter group
         '''
+        character.addMessage("broken")
+        return
         character.macroState["submenue"] = src.menuFolder.teleporterGroupMenu.TeleporterGroupMenu(self)
 
     def setMode(self, mode, character=None):
@@ -129,6 +132,8 @@ class DimensionTeleporter(src.items.Item):
             self.changeMode(character)
 
     def changeMode(self, character):
+        character.addMessage("broken")
+        return
         '''
         toggle the sender/reciever mode
         '''

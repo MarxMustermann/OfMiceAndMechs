@@ -45,6 +45,7 @@ It changes your implant and sets your faction marker to {self.faction}.
             options["b"] = ("unbolt", self.unboltAction)
         else:
             options["b"] = ("bolt down", self.boltAction)
+        options["f"] = ("set faction",self.setFaction)
         return options
 
     def boltAction(self,character):
@@ -62,6 +63,13 @@ It changes your implant and sets your faction marker to {self.faction}.
         self.bolted = False
         character.addMessage("you unbolt the FactionSetter")
         character.changed("unboltedItem",{"character":character,"item":self})
+
+    def setFaction(self,character):
+        '''
+        set the faction of the faction setter
+        '''
+        character.addMessage("you insert your head into the machine and it sets itself to your faction")
+        self.faction = character.faction
 
 # register the item
 src.items.addType(FactionSetter)

@@ -164,7 +164,7 @@ class DimensionTeleporter(src.items.Item):
                 result.append((item, offset))
         return result
 
-    def teleportItem(self, item, offset):
+    def teleportRecieve(self, item, offset):
         '''
         teleport an item to a an reciever station
         '''
@@ -213,7 +213,7 @@ class DimensionTeleporter(src.items.Item):
                     while sending_tries != len(recievers) and items:
                         random_reciever: DimensionTeleporter = random.choice(recievers)
                         random_item = items.pop(random.randint(0, len(items) - 1))
-                        if not random_reciever.teleportItem(random_item[0],random_item[1]):
+                        if not random_reciever.teleportRecieve(random_item[0],random_item[1]):
                             # handle fail
                             sending_tries += 1
                         else:

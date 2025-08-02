@@ -4,14 +4,14 @@ from functools import partial
 import src
 
 class DimensionTeleporter(src.items.Item):
+    '''
+    ingame item to teleport items around
+    '''
     type = "DimensionTeleporter"
     name = "Dimension Teleporter"
-
     receiverMode = 1
     senderMode = 0
-
     default_offsets = [(0, 1, 0), (0, -1, 0), (1, 0, 0), (-1, 0, 0)]
-
     def __init__(self):
         super().__init__(display="DH", name=self.name)
         self.mode = self.senderMode
@@ -40,19 +40,31 @@ class DimensionTeleporter(src.items.Item):
         }
 
     def d_change(self, offset):
+        '''
+        set a direction the teleporter should work in
+        '''
         self.direction = offset
 
     def changeInputDirection(self, character):
+        '''
+        show UI to set the teleporter direction
+        '''
         character.macroState["submenue"] = src.menuFolder.directionMenu.DirectionMenu(
             "choose input direction", self.direction, self.d_change
         )
 
     def changeOutputDirection(self, character):
+        '''
+        show UI to set the teleporter direction
+        '''
         character.macroState["submenue"] = src.menuFolder.directionMenu.DirectionMenu(
             "choose output direction", self.direction, self.d_change
         )
 
     def getConfigurationOptions(self, character):
+        '''
+        show option to bolt item down
+        '''
         options = super().getConfigurationOptions(character)
         if self.bolted:
             options["b"] = ("unbolt", self.unboltAction)
@@ -61,6 +73,9 @@ class DimensionTeleporter(src.items.Item):
         return options
 
     def boltAction(self, character):
+        '''
+        bolt the item down
+        '''
         self.bolted = True
         if character:
             character.addMessage("you bolt down the " + self.name + " and activate it")
@@ -72,6 +87,9 @@ class DimensionTeleporter(src.items.Item):
             self.addToGroup()
 
     def unboltAction(self, character):
+        '''
+        unbolt the item
+        '''
         self.bolted = False
         if character:
             character.addMessage("you unbolt the " + self.name)
@@ -82,23 +100,38 @@ class DimensionTeleporter(src.items.Item):
         self.removeFromGroup()
 
     def removeFromGroup(self):
+        '''
+        remove this teleporter from the high level implementation
+        '''
         if self.group:
             if self in src.gamestate.gamestate.teleporterGroups[self.group][self.mode]:
                 src.gamestate.gamestate.teleporterGroups[self.group][self.mode].remove(self)
 
     def addToGroup(self):
+        '''
+        add this teleporter from the high level implementation
+        '''
         if self.group not in src.gamestate.gamestate.teleporterGroups:
             src.gamestate.gamestate.teleporterGroups[self.group] = ([], [])
         src.gamestate.gamestate.teleporterGroups[self.group][self.mode].append(self)
 
     def changeGroup(self, character):
+        '''
+        show UI to change the teleporter group
+        '''
         character.macroState["submenue"] = src.menuFolder.teleporterGroupMenu.TeleporterGroupMenu(self)
 
     def setMode(self, mode, character=None):
+        '''
+        set the sender/reciever mode
+        '''
         if self.mode != mode:
             self.changeMode(character)
 
     def changeMode(self, character):
+        '''
+        toggle the sender/reciever mode
+        '''
         if self.group:
             if self.group not in src.gamestate.gamestate.teleporterGroups:
                 src.gamestate.gamestate.teleporterGroups[self.group] = ([], [])
@@ -115,6 +148,9 @@ class DimensionTeleporter(src.items.Item):
             src.gamestate.gamestate.teleporterGroups[self.group][self.mode].append(self)
 
     def getInputItems(self):
+        '''
+        get all items available to process
+        '''
         result = []
 
         offset_to_check = [self.direction] if self.direction else self.default_offsets
@@ -132,9 +168,12 @@ class DimensionTeleporter(src.items.Item):
         '''
         teleport an item to a an reciever station
         '''
+
+        # abort on weird state
         if not self.xPosition:
             return False
 
+        # get the position of the input
         if self.direction:
             pos = (
                 self.xPosition + self.direction[0],
@@ -144,6 +183,7 @@ class DimensionTeleporter(src.items.Item):
         else:
             pos = (self.xPosition + offset[0], self.yPosition + offset[1], self.zPosition + offset[2])
 
+        # validate coordinate
         for i in range(2):
             if isinstance(self.container, src.rooms.Room):
                 if not (pos[i] >= 1 and pos[i] <= 14):
@@ -160,6 +200,9 @@ class DimensionTeleporter(src.items.Item):
         return True
 
     def tick(self):
+        '''
+        handle a tick passing
+        '''
         if self.charges:
             items = self.getInputItems()
             if len(items):
@@ -189,6 +232,9 @@ class DimensionTeleporter(src.items.Item):
                         return
 
     def showProperties(self, character):
+        '''
+        show a UI to view the items state with
+        '''
         network = ""
         if self.group:
             g = src.gamestate.gamestate.teleporterGroups[self.group]
@@ -232,6 +278,9 @@ class DimensionTeleporter(src.items.Item):
         )
 
     def getLongInfo(self):
+        '''
+        generate string with information
+        '''
         text = "Operation Mode:"
         if self.group:
             text += " Sender" if self.mode == self.senderMode else " Receiver"
@@ -261,6 +310,9 @@ class DimensionTeleporter(src.items.Item):
         return text
 
     def render(self):
+        '''
+        return how the item should look like
+        '''
         if self.mode == self.senderMode:
             char = "TS"
         else:
@@ -272,4 +324,5 @@ class DimensionTeleporter(src.items.Item):
             color = "#aac"
         return (src.interaction.urwid.AttrSpec(color, "black"), char)
 
+# register item
 src.items.addType(DimensionTeleporter, nonManufactured=True)

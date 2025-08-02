@@ -2,9 +2,15 @@ import src
 
 
 class GoToTerrain(src.quests.MetaQuestSequence):
+    '''
+    quest to move to a specific terrain
+
+    Params:
+        description: the description shown on the UI
+        creator: 
+    '''
     type = "GoToTerrain"
     lowLevel = True
-
     def __init__(self, description="go to terrain", creator=None, targetTerrain=None, allowTerrainMenu=True, reason=None):
         if targetTerrain:
             if targetTerrain[0] < 1 or targetTerrain[0] > 13:

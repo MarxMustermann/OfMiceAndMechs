@@ -1014,6 +1014,23 @@ class Item:
         y = src.helpers.clamp(pos[1],1,11)
         return x,y,pos[2]
 
+    def boltAction(self,character):
+        '''
+        bolt the odem down
+        '''
+        self.bolted = True
+        character.addMessage("you bolt down the item")
+        character.changed("boltedItem",{"character":character,"item":self})
+
+    def unboltAction(self,character):
+        '''
+        unbolt the item
+        '''
+        self.bolted = False
+        character.addMessage("you unbolt the item")
+        character.changed("unboltedItem",{"character":character,"item":self})
+
+
 commons = [
     "MarkerBean",
     "MetalBars",

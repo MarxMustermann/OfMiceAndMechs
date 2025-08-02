@@ -50,16 +50,20 @@ Press control-d to stop your character from moving.
         check if the quest is completed
         '''
         if not character:
-            return None
+            return False
 
-        if character.getTerrainPosition() == self.getHomeLocation() and character.getBigPosition() == self.getCityLocation():
-            self.postHandler()
-            return True
+        if character.getTerrainPosition() != self.getHomeLocation():
+            return False
 
         homeRoom = character.getHomeRoom()
-        if not homeRoom and character.container.isRoom:
-            self.postHandler()
-            return True
+        if homeRoom:
+            if character.container == homeRoom:
+                self.postHandler()
+                return True
+        else:
+            if character.container.isRoom:
+                self.postHandler()
+                return True
         return False
 
     def wrapedTriggerCompletionCheck(self, extraInfo):

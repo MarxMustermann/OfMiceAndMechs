@@ -285,7 +285,7 @@ Currently the machine has no charges
 """
 
         text += """
-thie is a level %s item
+this is a level %s item
 
 """ % (
             self.level

@@ -130,14 +130,16 @@ To see your items open the your inventory by pressing i."""
                 return ([quest],None)
 
         if "HOMEx" not in character.registers:
-            self.fail(reason="no home")
+            if not dryRun:
+                self.fail(reason="no home")
             return (None,None)
 
         if character.inventory:
             homeRoom = character.getHomeRoom()
 
             if not homeRoom:
-                self.fail(reason="no home")
+                if not dryRun:
+                    self.fail(reason="no home")
                 return (None,None)
 
             if hasattr(homeRoom,"storageRooms") and homeRoom.storageRooms:
@@ -171,6 +173,8 @@ To see your items open the your inventory by pressing i."""
             quest = src.quests.questMap["GoToTile"](description="return to tile",targetPosition=self.tileToReturnTo,reason="get back where your inventory was filled up")
             return ([quest],None)
 
+        if not dryRun:
+            self.postHandler()
         return (None,None)
 
     def setParameters(self,parameters):

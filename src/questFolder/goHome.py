@@ -1,5 +1,6 @@
 import src
 
+import random
 
 class GoHome(src.quests.MetaQuestSequence):
     '''
@@ -52,6 +53,11 @@ Press control-d to stop your character from moving.
             return None
 
         if character.getTerrainPosition() == self.getHomeLocation() and character.getBigPosition() == self.getCityLocation():
+            self.postHandler()
+            return True
+
+        homeRoom = character.getHomeRoom()
+        if not homeRoom and character.container.isRoom:
             self.postHandler()
             return True
         return False
@@ -200,9 +206,20 @@ Press control-d to stop your character from moving.
                 quest = src.quests.questMap["GoToTerrain"](targetTerrain=self.getHomeLocation())
                 return ([quest], None)
 
-        if character.getBigPosition() != self.getCityLocation():
+        # workaround missing home rooms
+        homeRoom = character.getHomeRoom()
+        if not homeRoom:
+            if currentTerrain.rooms:
+                homeRoom = random.choice(currentTerrain.rooms)
+            else:
+                if not dryRun:
+                    self.fail("no home")
+                return (None, None)
+
+        # make character go into the home room
+        if character.getBigPosition() != homeRoom.getPosition():
             quest = src.quests.questMap["GoToTile"](
-                paranoid=self.paranoid, targetPosition=self.getCityLocation(), reason="go to the command center"
+                paranoid=self.paranoid, targetPosition=homeRoom.getPosition(), reason="go to the command center"
             )
             return ([quest], None)
 

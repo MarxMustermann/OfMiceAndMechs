@@ -153,11 +153,6 @@ To see your items open the your inventory by pressing i."""
                     quest2 = src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True, reason="reduce the number of item in your inventory")
                     return ([quest2,quest1],None)
 
-            #if not dryRun:
-            #    character.timeTaken += 1
-            #    character.takeTime(1,"failed quest")
-            #    self.fail(reason="no storage available")
-            #return (None,None)
             if not character.getTerrain().alarm:
                 quest = src.quests.questMap["DropItemsOutside"]()
                 return ([quest],None)

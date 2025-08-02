@@ -2,9 +2,11 @@ import src
 
 
 class ClearInventory(src.quests.MetaQuestSequence):
+    '''
+    quest to clear a characters inventory
+    '''
     type = "ClearInventory"
     lowLevel = True
-
     def __init__(self, description="clear inventory", creator=None, targetPosition=None, returnToTile=True,tryHard=False,reason=None):
         questList = []
         super().__init__(questList, creator=creator)
@@ -18,6 +20,9 @@ class ClearInventory(src.quests.MetaQuestSequence):
         self.tileToReturnTo = None
 
     def generateTextDescription(self):
+        '''
+        generates a textual description
+        '''
         reason = ""
         if self.reason:
             reason += f", to {self.reason}"
@@ -38,12 +43,21 @@ To see your items open the your inventory by pressing i."""
         return text
 
     def droppedItem(self,extraInfo):
+        '''
+        handle the character having dropped an item
+        '''
         self.triggerCompletionCheck(extraInfo[0])
 
     def handleTileChange(self):
+        '''
+        hande the character having moved
+        '''
         self.triggerCompletionCheck(self.character)
 
     def activate(self):
+        '''
+        start to actually be active
+        '''
         if self.character:
             if self.returnToTile and not self.tileToReturnTo:
                 self.tileToReturnTo = self.character.getBigPosition()
@@ -51,6 +65,9 @@ To see your items open the your inventory by pressing i."""
         super().activate()
 
     def assignToCharacter(self, character):
+        '''
+        assign this quest to a character
+        '''
         if self.character:
             return None
 
@@ -64,6 +81,9 @@ To see your items open the your inventory by pressing i."""
         return super().assignToCharacter(character)
 
     def triggerCompletionCheck(self,character=None):
+        '''
+        check if this quest is completed
+        '''
         if not character:
             return
 
@@ -75,6 +95,10 @@ To see your items open the your inventory by pressing i."""
         return
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
+        '''
+        calculate the next step towards solving the quest
+        '''
+        # remember current position as place to return to
         if self.returnToTile and not self.tileToReturnTo:
             self.tileToReturnTo = character.getBigPosition()
 
@@ -148,17 +172,24 @@ To see your items open the your inventory by pressing i."""
         return (None,None)
 
     def setParameters(self,parameters):
+        '''
+        set dict based parameters (obsolete?)
+        '''
         if "returnToTile" in parameters and "returnToTile" in parameters:
             self.returnToTile = parameters["returnToTile"]
         return super().setParameters(parameters)
 
     @staticmethod
     def generateDutyQuest(beUsefull,character,room, dryRun):
+        '''
+        generate the tasks for cleaning duty
+        '''
         if len(character.inventory) > 9:
             quest = src.quests.questMap["ClearInventory"]()
             if not dryRun:
                 beUsefull.idleCounter = 0
             return ([quest],None)
+
         # clear inventory local
         if len(character.inventory) > 1 and character.container.isRoom:
             emptyInputSlots = character.container.getEmptyInputslots(character.inventory[-1].type, allowAny=True)
@@ -188,4 +219,6 @@ To see your items open the your inventory by pressing i."""
                 beUsefull.idleCounter = 0
             return ([quest],None)
         return (None,None)
+
+# register item type
 src.quests.addType(ClearInventory)

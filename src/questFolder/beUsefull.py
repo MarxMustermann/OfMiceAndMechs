@@ -359,7 +359,8 @@ Press d to move the cursor and show the subquests description.
             return ([quest],None)
 
         if not character.container:
-            return (None,None)
+            quest = src.quests.questMap["GoHome"]()
+            return ([quest],None)
 
         if not isinstance(character.container,src.rooms.Room):
             if character.yPosition%15 == 14:

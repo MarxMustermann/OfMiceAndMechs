@@ -4,17 +4,12 @@ import src
 
 
 class CoalBurner(src.items.Item):
-    """
+    '''
     ingame item to provide characters with an oportunity to heal
-    """
+    '''
 
     type = "CoalBurner"
-
     def __init__(self):
-        """
-        configure super class
-        """
-
         super().__init__(display="##")
 
         self.name = "coal burner"
@@ -24,12 +19,12 @@ class CoalBurner(src.items.Item):
         self.bolted = False
 
     def getLongInfo(self):
-        """
+        '''
         return a longer than normal description text
 
         Returns:
             the description text
-        """
+        '''
 
         text = super().getLongInfo()
         text += f"""
@@ -43,6 +38,9 @@ or use this item with MoldFeed in your inventory.
         return text
 
     def getMoldFeed(self,character):
+        '''
+        get input ressources
+        '''
         if not self.container:
             return []
 
@@ -62,12 +60,12 @@ or use this item with MoldFeed in your inventory.
         return moldFeed
 
     def apply(self, character):
-        """
+        '''
         handle a character trying to use this item
 
         Parameters:
             character: the character trying to use this item
-        """
+        '''
 
         moldFeed = self.getMoldFeed(character)
         if len(moldFeed) == 0:
@@ -97,12 +95,12 @@ or use this item with MoldFeed in your inventory.
             self.container.addAnimation(self.getPosition(),"smoke",8,{})
 
     def getConfigurationOptions(self, character):
-        """
+        '''
         register the configuration options with superclass
 
         Parameters:
             character: the character trying to conigure the machine
-        """
+        '''
 
         options = super().getConfigurationOptions(character)
         if self.bolted:
@@ -112,13 +110,20 @@ or use this item with MoldFeed in your inventory.
         return options
 
     def boltAction(self,character):
+        '''
+        bolt the odem down
+        '''
         self.bolted = True
         character.addMessage("you bolt down the CoalBurner")
         character.changed("boltedItem",{"character":character,"item":self})
 
     def unboltAction(self,character):
+        '''
+        unbolt the item
+        '''
         self.bolted = False
         character.addMessage("you unbolt the CoalBurner")
         character.changed("unboltedItem",{"character":character,"item":self})
 
+# register the item type
 src.items.addType(CoalBurner)

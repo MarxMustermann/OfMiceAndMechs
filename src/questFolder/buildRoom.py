@@ -250,9 +250,9 @@ Press d to move the cursor and show the subquests description.
                         beUsefull.idleCounter = 0
                     return ([quest],None)
 
-        rooms = terrain.getRoomByPosition(character.getHomeRoomCord())
-        if rooms:
-            room = rooms[0]
+        rooms = terrain.rooms
+        cityPlaner = None
+        for room in rooms:
             cityPlaner = room.getItemByType("CityPlaner")
             if cityPlaner:
                 for candidate in cityPlaner.plannedRooms:
@@ -272,6 +272,8 @@ Press d to move the cursor and show the subquests description.
                     if not dryRun:
                         beUsefull.idleCounter = 0
                     return ([quest],None)
+        if not cityPlaner:
+            return (None,None)
 
         if not cityPlaner or cityPlaner.autoExtensionThreashold > 0:
             # do not build more rooms when there is an empty room

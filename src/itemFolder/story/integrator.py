@@ -3,15 +3,10 @@ import random
 
 class Integrator(src.items.Item):
     """
+    ingame item to set to baic values a NPC needs to work in a base
     """
-
     type = "Integrator"
-
     def __init__(self,epoch=0):
-        """
-        configure the superclass
-        """
-
         super().__init__(display="IT")
         self.faction = None
 
@@ -51,8 +46,9 @@ class Integrator(src.items.Item):
         character.dutyPriorities["room building"] = 2
         character.dutyPriorities["painting"] = 2
 
-        character.registers["HOMEx"] = 7
-        character.registers["HOMEy"] = 7
+        characterPos = character.getBigPosition()
+        character.registers["HOMEx"] = characterPos[0]
+        character.registers["HOMEy"] = characterPos[1]
         character.registers["HOMETx"] = terrain.xPosition
         character.registers["HOMETy"] = terrain.yPosition
 

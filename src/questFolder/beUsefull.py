@@ -6,6 +6,9 @@ import src
 logger = logging.getLogger(__name__)
 
 class BeUsefull(src.quests.MetaQuestSequence):
+    '''
+    the main quest containing the stuff NPCs do on the bases
+    '''
     type = "BeUsefull"
 
     def __init__(self, description="be useful", creator=None, targetPosition=None, strict=False, reason=None, endOnIdle=False,numTasksToDo=None,failOnIdle=False):
@@ -31,6 +34,9 @@ class BeUsefull(src.quests.MetaQuestSequence):
         self.dutySkipps = {}
 
     def generateTextDescription(self):
+        '''
+        generate a textual description of the quest
+        '''
         try:
             self.dutySkipps
         except:
@@ -112,6 +118,9 @@ Press d to move the cursor and show the subquests description.
 
 
     def awardnearbyKillReputation(self,extraInfo):
+        '''
+        handle somebody nearby getting killed
+        '''
         if extraInfo["deadChar"].faction != self.character.faction:
             if "Questing" in self.character.duties:
                 amount = 5*self.character.rank
@@ -130,6 +139,9 @@ Press d to move the cursor and show the subquests description.
             self.character.revokeReputation(amount,reason="an ally dying nearby")
 
     def handleMovement(self, extraInfo):
+        '''
+        handle the character moving
+        '''
         toRemove = []
         for quest in self.subQuests:
             if quest.completed:
@@ -139,11 +151,17 @@ Press d to move the cursor and show the subquests description.
             self.subQuests.remove(quest)
 
     def handleChangedDuties(self,character=None):
+        '''
+        handle a duty change
+        '''
         for quest in self.subQuests[:]:
             quest.fail()
         self.handleMovement(None)
 
     def handleQuestFailure(self,extraParam):
+        '''
+        handle a subquest failing
+        '''
         quest = extraParam.get("quest")
 
         failedDuty = None
@@ -167,11 +185,18 @@ Press d to move the cursor and show the subquests description.
         super().handleQuestFailure(extraParam)
     
     def handleChargedTrapRoom(self,extraInfo):
+        '''
+        (obsolete)
+        handle having worked on a trap room
+        '''
         # reload trap room
         if "trap setting" in self.character.duties:
             self.character.awardReputation(10, reason="charging a trap room")
 
     def handleDroppedItem(self,extraInfo):
+        '''
+        handle the character dropping an item
+        '''
         if isinstance(self.character.container,src.terrains.Terrain):
             self.character.revokeReputation(2, reason="discarding an item")
             return
@@ -205,6 +230,9 @@ Press d to move the cursor and show the subquests description.
                         self.character.revokeReputation(50, reason="putting a wrong item into an output stockpile")
 
     def handleOperatedMachine(self,extraInfo):
+        '''
+        handle the character having operated a machine
+        '''
         if "machine operation" in self.character.duties:
             if extraInfo["machine"].type == "ScrapCompactor":
                 self.character.awardReputation(5, reason="operating a scrap compactor")
@@ -212,6 +240,9 @@ Press d to move the cursor and show the subquests description.
                 self.character.awardReputation(10, reason="operating a machine")
 
     def pickedUpItem(self,extraInfo):
+        '''
+        handle the character having picked up an item
+        '''
         if self.character != src.gamestate.gamestate.mainChar:
             return
 
@@ -379,7 +410,7 @@ Press d to move the cursor and show the subquests description.
             return step
         step = src.quests.questMap["Eat"].generateDutyQuest(self,character,room,dryRun)
         if step != (None,None):
-                        return step
+            return step
 
         terrain = character.getTerrain()
         for checkRoom in terrain.rooms:

@@ -2,23 +2,15 @@ import src
 
 
 class ScrapCompactor(src.items.Item):
-    """
-    ingame item that converts scrapt to metal bars
-    """
-
+    '''
+    ingame item that converts scrap to metal bars
+    '''
     type = "ScrapCompactor"
-
     def __init__(self):
-        """
-        set up internal state
-        """
-
         super().__init__()
-
         self.display = src.canvas.displayChars.scrapCompactor
         self.name = "scrap compactor"
         self.description = "This machine converts scrap into metal bars."
-
         self.coolDown = 10
         self.coolDownTimer = -self.coolDown
         self.charges = 3
@@ -26,6 +18,9 @@ class ScrapCompactor(src.items.Item):
         self.commands = {}
 
     def readyToUse(self):
+        '''
+        check if the item is ready to use
+        '''
         if not self.container:
             return False
 
@@ -46,13 +41,18 @@ class ScrapCompactor(src.items.Item):
         return True
 
     def render(self):
+        '''
+        get how the item should be rendered
+        '''
         if self.readyToUse():
             return "RC"
         else:
             return self.display
 
     def checkForInputScrap(self):
-
+        '''
+        check if there is material to process
+        '''
         # fetch input scrap
         scrap = None
 
@@ -79,6 +79,9 @@ class ScrapCompactor(src.items.Item):
         return scrap
 
     def checkCoolDownEnded(self):
+        '''
+        check if the item is in cooldown
+        '''
         tick = self.getTick()
         if (
             tick < self.coolDownTimer + self.coolDown
@@ -88,6 +91,9 @@ class ScrapCompactor(src.items.Item):
         return True
 
     def checkTargetFull(self):
+        '''
+        check if the output spots have space
+        '''
         targetPos = (self.xPosition + 1, self.yPosition, self.zPosition)
         targetFull = False
         itemList = self.container.getItemByPosition(targetPos)
@@ -102,18 +108,21 @@ class ScrapCompactor(src.items.Item):
         return (targetFull,itemList)
 
     def getTick(self):
+        '''
+        get the current time
+        '''
         tick = src.gamestate.gamestate.tick
         if self.container and isinstance(self.container,src.rooms.Room):
             tick = self.container.timeIndex
         return tick
 
     def apply(self, character):
-        """
+        '''
         handle a character trying to use this item to produce a metal bar
 
         Parameters:
             character: the character trying to use the item
-        """
+        '''
 
         if not self.container:
             character.addMessage("this machine has be somewhere to be used")
@@ -194,12 +203,12 @@ class ScrapCompactor(src.items.Item):
         self.runCommand("success", character)
 
     def getConfigurationOptions(self, character):
-        """
+        '''
         register the configuration options with superclass
 
         Parameters:
             character: the character trying to conigure the machine
-        """
+        '''
 
         options = super().getConfigurationOptions(character)
         if self.bolted:
@@ -209,22 +218,28 @@ class ScrapCompactor(src.items.Item):
         return options
 
     def boltAction(self,character):
+        '''
+        bolt the item down
+        '''
         self.bolted = True
         character.addMessage("you bolt down the ScrapCompactor")
         character.changed("boltedItem",{"character":character,"item":self})
 
     def unboltAction(self,character):
+        '''
+        unbolt the item
+        '''
         self.bolted = False
         character.addMessage("you unbolt the ScrapCompactor")
         character.changed("unboltedItem",{"character":character,"item":self})
 
     def getLongInfo(self):
-        """
+        '''
         returns a longer than normal description text
 
         Returns:
            a longer than normal description text
-        """
+        '''
 
         text = super().getLongInfo()
 
@@ -278,13 +293,13 @@ thie is a level %s item
         return text
 
     def configure_disabled(self, character):
-        """
+        '''
         handle a character trying to configure the machine
         by offering a selection of possible actions
 
         Parameters:
             character: the character trying to use the machine
-        """
+        '''
 
         options = [("addCommand", "add command")]
         self.submenue = src.menuFolder.selectionMenu.SelectionMenu(
@@ -317,9 +332,9 @@ thie is a level %s item
             self.character.macroState["submenue"].followUp = self.setCommand
 
     def setCommand(self):
-        """
+        '''
         set a command to be run in certain situations
-        """
+        '''
 
         itemType = self.submenue.selection
 
@@ -343,13 +358,13 @@ thie is a level %s item
         return
 
     def runCommand(self, trigger, character):
-        """
+        '''
         run a preconfigured command
 
         Parameters:
             trigger (string): indicator for what command to run
             character: the character to run the command on
-        """
+        '''
 
         if trigger not in self.commands:
             return
@@ -362,4 +377,5 @@ thie is a level %s item
             f"running command to handle trigger {trigger} - {command}"
         )
 
+# register the item
 src.items.addType(ScrapCompactor)

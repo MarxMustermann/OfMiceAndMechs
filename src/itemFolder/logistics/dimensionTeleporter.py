@@ -120,7 +120,8 @@ class DimensionTeleporter(src.items.Item):
         '''
         show UI to change the teleporter group
         '''
-        character.addMessage("broken")
+        if character:
+            character.addMessage("broken")
         return
         character.macroState["submenue"] = src.menuFolder.teleporterGroupMenu.TeleporterGroupMenu(self)
 
@@ -132,7 +133,8 @@ class DimensionTeleporter(src.items.Item):
             self.changeMode(character)
 
     def changeMode(self, character):
-        character.addMessage("broken")
+        if character:
+            character.addMessage("broken")
         return
         '''
         toggle the sender/reciever mode

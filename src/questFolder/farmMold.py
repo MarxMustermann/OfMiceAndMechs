@@ -52,53 +52,52 @@ farm mold"""
         '''
         generate the next step towards solving the quest
         '''
+
+        # skip weird states
         if self.subQuests:
             return (None,None)
-
         if not character:
             return (None,None)
 
+        # search for blooms to pick
         terrain = character.getTerrain()
-
         candidates = []
         for (coord,itemList) in terrain.itemsByBigCoordinate.items():
             if character.getTerrain().getRoomByPosition(coord):
                 continue
-
             for item in itemList:
                 if not item.type == "Bloom":
                     continue
-
                 candidates.append(coord)
 
+        # pick bloom
         if candidates:
             coord = random.choice(candidates)
             quest = src.quests.questMap["FarmMoldTile"](targetPosition=coord,stimulateMoldGrowth=False,tryHard=self.tryHard)
             return ([quest],None)
 
+        # search for sprouts to pick
         candidates = []
         for (coord,itemList) in terrain.itemsByBigCoordinate.items():
             if character.getTerrain().getRoomByPosition(coord):
                 continue
-
             numSprouts = 0
             for item in itemList:
                 if not item.type == "Sprout":
                     continue
-                
                 if len(character.container.getItemByPosition(item.getPosition())) > 1:
                     continue
-
                 numSprouts += 1
-
             if numSprouts > 4:
                 candidates.append(coord)
 
+        # pick sprouts
         if candidates:
             coord = random.choice(candidates)
             quest = src.quests.questMap["FarmMoldTile"](targetPosition=coord,tryHard=self.tryHard)
             return ([quest],None)
 
+        # hang up when nothing to do :-P
         return (None,None)
 
     def pickedUpItem(self,test=None):

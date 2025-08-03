@@ -97,7 +97,9 @@ farm mold"""
             quest = src.quests.questMap["FarmMoldTile"](targetPosition=coord,tryHard=self.tryHard)
             return ([quest],None)
 
-        # hang up when nothing to do :-P
+        # abort when nothing to do
+        if not dryRun:
+            self.fail("no field")
         return (None,None)
 
     def pickedUpItem(self,test=None):

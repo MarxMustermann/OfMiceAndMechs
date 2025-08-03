@@ -248,7 +248,7 @@ class DimensionTeleporter(src.items.Item):
         '''
         network = ""
         if self.group:
-            g = src.gamestate.gamestate.teleporterGroups[self.group]
+            teleporterGroup = src.gamestate.gamestate.teleporterGroups[self.group]
             mapContent = []
             for x in range(15):
                 mapContent.append([])
@@ -264,14 +264,13 @@ class DimensionTeleporter(src.items.Item):
             for pos in character.terrainInfo:
                 mapContent[pos[1]][pos[0]] = "  "
 
-            def show(li, code):
-                for t in li:
-                    pos = t.getTerrainPosition()
-                    if pos in character.terrainInfo:
+            def show(teleporters, code):
+                for teleporter in teleporters:
+                    position = teleporter.getTerrainPosition()
+                    if position in character.terrainInfo:
                         mapContent[pos[1]][pos[0]] = code
                     else:
                         r = range(-1, 2)
-                        # pos = (pos[0] + random.choice(r), pos[1] + random.choice(r), 0)
                         for dx in r:
                             for dy in r:
                                 new_pos_x = src.helpers.clamp(pos[0] + dx, 1, 13)
@@ -279,8 +278,8 @@ class DimensionTeleporter(src.items.Item):
                                 if (new_pos_x, new_pos_y, 0) not in character.terrainInfo:
                                     mapContent[new_pos_y][new_pos_x] = "??"
 
-            show(g[self.senderMode], "SE")
-            show(g[self.receiverMode], "RE")
+            show(teleporterGroup[self.senderMode], "SE")
+            show(teleporterGroup[self.receiverMode], "RE")
 
             network = "\n".join(["".join(x) for x in mapContent])
             network += "\n?? indicates a possible teleporter place\nRE indicates a receiver\nSE indicates a sender"

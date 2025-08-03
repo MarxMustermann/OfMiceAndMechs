@@ -266,6 +266,8 @@ class DimensionTeleporter(src.items.Item):
 
             def show(teleporters, code):
                 for teleporter in teleporters:
+                    if not teleporter.bolted:
+                        continue
                     position = teleporter.getTerrainPosition()
                     if position in character.terrainInfo:
                         mapContent[pos[1]][pos[0]] = code

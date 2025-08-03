@@ -97,6 +97,10 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
             anvils.extend(character.container.getItemsByType("Anvil"))
         if not character.container.isRoom:
             return ([src.quests.questMap["EnterRoom"]()],None)
+        if not anvils:
+            if not dryRun:
+                self.fail("no anvil")
+            return (None,None)
 
         anvilNearBy = None
         for anvil in anvils:

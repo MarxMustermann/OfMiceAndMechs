@@ -1,6 +1,7 @@
 """
 the code for the characters belongs here
 """
+
 import logging
 import random
 import regex
@@ -13,10 +14,20 @@ logger = logging.getLogger(__name__)
 
 
 class Character:
-    """
+    '''
     this is the class for characters meaning both npc and pcs.
-    """
 
+    Parameters:
+        display: how the character is rendered
+        xPosition: obsolete, to be removed
+        yPosition: obsolete, to be removed
+        quests: obsolete, to be removed
+        automated: obsolete, to be removed
+        name: the name the character should have
+        creator: obsolete, to be removed
+        characterId: obsolete, to be removed
+        seed: rng seed
+    '''
     def __init__(
         self,
         display=None,
@@ -29,20 +40,6 @@ class Character:
         characterId=None,
         seed=None,
     ):
-        """
-        sets basic info AND adds default behavior/items
-
-        Parameters:
-            display: how the character is rendered
-            xPosition: obsolete, to be removed
-            yPosition: obsolete, to be removed
-            quests: obsolete, to be removed
-            automated: obsolete, to be removed
-            name: the name the character should have
-            creator: obsolete, to be removed
-            characterId: obsolete, to be removed
-            seed: rng seed
-        """
         if quests is None:
             quests = []
 
@@ -276,9 +273,15 @@ class Character:
         self.timeTaken += amount
 
     def applyNativeMeleeAttackEffects(self,target):
+        '''
+        placeholder to be overwritten later
+        '''
         pass
 
     def getRandomProtisedDuties(self):
+        '''
+        get the duties ordered by priority but randomised within the same priority
+        '''
         priotisedDuties = {}
         for duty in self.duties:
             priority = self.dutyPriorities.get(duty,1)
@@ -296,17 +299,20 @@ class Character:
         return resultList
 
     def showTextMenu(self,text):
+        '''
+        show a popup to the character
+        '''
         submenu = src.menuFolder.textMenu.TextMenu(text)
         self.macroState["submenue"] = submenu
 
     def callIndirect(self, callback, extraParams=None):
-        """
+        '''
         call a callback that is stored in a savable format
 
         Parameters:
             callback: the callback to call
             extraParams: some additional parameters
-        """
+        '''
 
         if extraParams is None:
             extraParams = {}
@@ -326,15 +332,19 @@ class Character:
                 function()
 
     def triggerAutoMoveFixedTerrainTarget(self,extraParam):
+        '''
+        trigger AI move of the character to a certain coordinate
+        '''
         extraParam["coordinate"] = extraParam["targetCoordinate"]
         self.triggerAutoMoveToTerrain(extraParam)
 
     def triggerAutoMoveToTerrain(self,extraParam):
-        """
+        '''
         makes the character auto move to a given tile
+
         parameters:
-        extraParam["coordinate"]: the coordinate to go to
-        """
+            extraParam["coordinate"]: the coordinate to go to
+        '''
         targetPosition = extraParam["coordinate"]
         targetPosition = (targetPosition[0],targetPosition[1],0)
 
@@ -347,15 +357,18 @@ class Character:
         self.quests.insert(0,quest)
 
     def triggerAutoMoveFixedTileTarget(self,extraParam):
+        '''
+        trigger an auto move to a certain coordinate
+        '''
         extraParam["coordinate"] = extraParam["targetCoordinate"]
         self.triggerAutoMoveToTile(extraParam)
 
     def triggerAutoMoveToTile(self,extraParam):
-        """
+        '''
         makes the character auto move to a given tile
         parameters:
-        extraParam["coordinate"]: the coordinate to go to
-        """
+            extraParam["coordinate"]: the coordinate to go to
+        '''
         targetPosition = extraParam["coordinate"]
         targetPosition = (targetPosition[0],targetPosition[1],0)
 
@@ -368,28 +381,28 @@ class Character:
         self.quests.insert(0,quest)
 
     def getEmergencyHealth(self):
-        """
+        '''
         gives the charachter an extra health boost, but reduces the characters max health
-        """
+        '''
         if self.maxHealth > 10:
             self.maxHealth -= 10
             self.heal(50)
 
     def addGrievance(self,grievance):
-        """
+        '''
         stores a grievance for later use
         paramters:
         grievance: the grievance to store
-        """
+        '''
         self.grievances[grievance] = src.gamestate.gamestate.tick
 
     def weightAttack(self,bigPos):
-        """
+        '''
         generates a rating for attacking a certain tile
         parameters:
         bigPos: the coordinate of the tiles to attack
         returns: the rating for attack. >0 pro attack <0 against attack
-        """
+        '''
         enemiesFound = []
 
         terrain = self.getTerrain()
@@ -423,12 +436,13 @@ class Character:
         return -self.health
 
     def learnSkill(self,skill):
-        """
+        '''
         adds a skill to the characters skills
         (not actively used)
+
         parameters:
-        skill: the skill to add
-        """
+            skill: the skill to add
+        '''
         if skill not in self.skills:
             self.skills.append(skill)
         self.changed("learnedSkill",self)
@@ -462,68 +476,82 @@ class Character:
         return weight
 
     def getOffset(self,position):
-        """
+        '''
         get the offset to a given position
+
         parameters:
-        position: the position to get the offset for
-        returns: the offset
-        """
+            position: the position to get the offset for
+        returns:
+            the offset
+        '''
         return (self.xPosition-position[0],self.yPosition-position[1],self.zPosition-position[2])
 
     def getDistance(self,position):
-        """
+        '''
         get the distance to a given position
+
         parameters:
-        position: the position to get the distance to
-        returns: the distance to the position
-        """
+            position: the position to get the distance to
+        returns:
+            the distance to the position
+        '''
         return abs(self.xPosition-position[0])+abs(self.yPosition-position[1])+abs(self.zPosition-position[2])
 
     def getBigDistance(self,position):
-        """
+        '''
         get the distance to a given tile
+
         parameters:
-        position: the tile coordinate to get the distance to
-        returns: the distance to the tile
-        """
+            position: the tile coordinate to get the distance to
+        returns:
+            the distance to the tile
+        '''
         if not isinstance(self.container, src.rooms.Room):
             return abs(self.xPosition//15-position[0])+abs(self.yPosition//15-position[1])+abs(self.zPosition/15-position[2])
         else:
             return abs(self.container.xPosition-position[0])+abs(self.container.yPosition-position[1])+abs(self.container.zPosition-position[2])
 
     def getFreeInventorySpace(self):
-        """
+        '''
         get the characters free inventory space
-        returns: the number of free inventory slots
-        """
+
+        returns:
+            the number of free inventory slots
+        '''
         return 10-len(self.inventory)
 
     def getItemWalkable(self,item):
-        """
+        '''
         returns whether or not a given item is walkable or not for this character
         (the intention is to overwrite this)
-        returns: whether or not the given item is walkable
-        """
+
+        returns:
+            whether or not the given item is walkable
+        '''
         return item.walkable
 
     def freeWillDecison(self,options,weights,localRandom=random):
-        """
+        '''
         make a decison ases on the characters personality
         (not really used)
         (random choice as placeholder)
+
         parameters:
             options: the possible options to choose from
             weights: the pre weighting of the options
             localRandom: a non default RNG to use
-        returns: the chosen option
-        """
+        returns:
+            the chosen option
+        '''
         return localRandom.choices(options,weights=weights)
 
     def getTerrain(self):
-        """
+        '''
         get the terrain the character is on
-        returns: the terrain the character is on
-        """
+
+        returns:
+            the terrain the character is on
+        '''
         # handle invalid state
         if not self.container:
             return None
@@ -538,16 +566,16 @@ class Character:
         return terrain
 
     def getHomeTerrain(self):
-        """
+        '''
         fetch the home terrain for the character
-        """
+        '''
         terrain = src.gamestate.gamestate.terrainMap[self.registers["HOMETy"]][self.registers["HOMETx"]]
         return terrain
 
     def getHomeRoom(self):
-        """
+        '''
         fetch the home room for the character
-        """
+        '''
 
         # get the home room
         terrain = self.getHomeTerrain()
@@ -560,13 +588,18 @@ class Character:
         return homeRoom
 
     def getHomeRoomCord(self):
+        '''
+        get the coordiate of the room considere the NPCs home
+        '''
         return (self.registers["HOMEx"], self.registers["HOMEy"], 0)
 
     def getRoom(self):
-        """
+        '''
         get the room the character is in
-        returns: the room
-        """
+
+        returns:
+            the room
+        '''
 
         # set default
         room = None
@@ -579,22 +612,25 @@ class Character:
         return room
 
     def startGuarding(self,numTicks):
-        """
+        '''
         put the character into guard mode for som ticks
+
         parameters:
             numTicks: the number of ticks the character should guard
-        """
+        '''
         self.guarding = numTicks
         self.hasOwnAction += 1
 
     def getOwnAction(self):
-        """
+        '''
         get an action directly from character state.
         For example attack when guarding.
         This is rarely used.
         This overrides quests,macros and direct keypresses
-        returns: the command to run
-        """
+
+        returns:
+            the command to run
+        '''
         foundEnemy = None
         commands = []
         command = None
@@ -662,16 +698,18 @@ class Character:
         return command
 
     def getNearbyEnemies(self):
-        """
+        '''
         gets enemies near the character
-        returns: a list of nearby enemies
-        """
+
+        returns:
+            a list of nearby enemies
+        '''
         return self.container.getEnemiesOnTile(self)
 
     def getBigPosition_test1(self,offset=None):
-        """
+        '''
         temporary (lol) structure for performance test
-        """
+        '''
         if self.container.isRoom:
             if offset:
                 return (self.container.xPosition+offset[0],self.container.yPosition+offset[1],offset[2])
@@ -684,20 +722,21 @@ class Character:
                 return (self.xPosition//15,self.yPosition//15,0)
 
     def getBigPosition_test2(self,offset=(0,0,0)):
-        """
+        '''
         temporary (lol) structure for performance test
-        """
+        '''
         if self.container.isRoom:
             return (self.container.xPosition+offset[0],self.container.yPosition+offset[1],offset[2])
         else:
             return (self.xPosition//15+offset[0],self.yPosition//15+offset[1],offset[2])
 
     def getBigPosition(self,offset=None):
-        """
+        '''
         get the coordinate of the tile the character is on
+
         parameters:
             offset: offset to shift the coordinate by
-        """
+        '''
         if offset:
             self.getBigPosition_test1(offset)
             return self.getBigPosition_test2(offset)
@@ -706,11 +745,12 @@ class Character:
             return self.getBigPosition_test2()
 
     def getTerrainPosition(self,offset=(0,0,0)):
-        """
+        '''
         get the coordinate of the terrain the character is on
+
         parameters:
             offset: offset to shift the coordinate by
-        """
+        '''
         terrain = self.getTerrain()
         if not terrain:
             return None
@@ -718,18 +758,18 @@ class Character:
             return (self.getTerrain().xPosition,self.getTerrain().yPosition,0)
 
     def huntkill(self):
-        """
+        '''
         set huntkilling mode
         not sure this is really used anymore
-        """
+        '''
         self.addMessage("should start huntkill now")
         self.huntkilling = True
 
     def doHuntKill(self):
-        """
+        '''
         not sure, it also seems completly dysfunctional
         TODO: wipe this
-        """
+        '''
         targets = []
         for character in self.container.characters:
             if character == self:
@@ -751,11 +791,12 @@ class Character:
         return None
 
     def doRangedAttack(self,direction):
-        """
+        '''
         execute a ranged attack
+
         parameters:
             direction: the direction to do the attack in
-        """
+        '''
 
         shift = None
         if direction == "w":
@@ -831,9 +872,9 @@ class Character:
         self.addMessage("the bolt vanishes into the static")
 
     def setDefaultMacroState(self):
-        """
+        '''
         resets the macro automation state
-        """
+        '''
 
         import time
 
@@ -863,34 +904,34 @@ class Character:
         }
 
     def getPosition(self,offset=(0,0,0)):
-        """
+        '''
         returns the characters position
 
         Returns:
             the position
-        """
+        '''
 
         return self.xPosition+offset[0], self.yPosition+offset[1], self.zPosition+offset[2]
 
     def getTilePosition(self,offset=(0,0,0)):
-        """
+        '''
         returns the characters position
 
         Returns:
             the position
-        """
+        '''
         if self.container.isRoom:
             return self.container.getTilePosition(offset=offset)
         else:
             return (self.xPosition//15+offset[0], self.yPosition//15+offset[1], self.zPosition//15+offset[2])
 
     def getSpacePosition(self,offset=(0,0,0)):
-        """
+        '''
         returns the characters position
 
         Returns:
             the position
-        """
+        '''
         if not self.container:
             logger.error("getting position of character that is nowhere")
             return
@@ -901,13 +942,13 @@ class Character:
             return (self.xPosition%15+offset[0], self.yPosition%15+offset[1], self.zPosition%15+offset[2])
 
     def searchInventory(self, itemType, extra=None):
-        """
+        '''
         return a list of items from the characters inventory that satisfy some conditions
 
         Parameters:
             itemType: the item type
             extra: extra conditions
-        """
+        '''
 
         if extra is None:
             extra = {}
@@ -922,13 +963,13 @@ class Character:
         return foundItems
 
     def addMessage(self, message):
-        """
+        '''
         add a message to the characters message log
         basically only for player UI
 
         Parameters:
             message: the message
-        """
+        '''
         
         if len(self.messages):
             last_message:str = self.messages[-1]
@@ -945,7 +986,7 @@ class Character:
             self.messages.append(str(message))
 
     def convertCommandString(self,commandString,nativeKey=False, extraFlags=None):
-        """
+        '''
         convert a command sting into a list of commands
         !!! seems to not be in actual use, see convertCommandString2
         Parameters:
@@ -954,7 +995,7 @@ class Character:
             extraFlags: additional extra flags
         Returns:
             the list of converted commands
-        """
+        '''
 
         # convert command to macro data structure
         if nativeKey:
@@ -982,15 +1023,16 @@ class Character:
         return convertedCommand
 
     def convertCommandString2(self,commandString,nativeKey=False, extraFlags=None):
-        """
+        '''
         convert a command sting into a list of commands
+
         Parameters:
             commandString: the command to convert
             nativeKey: wether or not the keys should be handled as actual keypresses
             extraFlags: additional extra flags
         Returns:
             the list of converted commands
-        """
+        '''
 
         # convert command to macro data structure
         if extraFlags:
@@ -1024,7 +1066,7 @@ class Character:
         return convertedCommand
 
     def runCommandString(self, commandString, clear=False, addBack=False, nativeKey=False, extraFlags=None, preconverted=False):
-        """
+        '''
         run a command using the macro automation
 
         Parameters:
@@ -1034,7 +1076,7 @@ class Character:
             nativeKey: wether or not to register the command as actual keypress
             extraFlag: extra flags for the keypresses
             preconverted: wether or not the command is already in the internal format
-        """
+        '''
 
         if preconverted:
             convertedCommand = commandString
@@ -1058,42 +1100,42 @@ class Character:
         """
 
     def getCommandString(self):
-        """
+        '''
         returns the character command string
         probably disused
 
         Returns:
             the command string
-        """
+        '''
 
         return self.macroState["commandKeyQueue"]
 
     def clearCommandString(self):
-        """
+        '''
         clear macro automation command queue
-        """
+        '''
         self.macroState["commandKeyQueue"] = []
 
     def addJobOrder(self, jobOrder):
-        """
+        '''
         add a job order to the characters queue of job orders and run it
 
         Parameters:
             jobOrder: the job order to run
-        """
+        '''
 
         self.jobOrders.append(jobOrder)
         self.runCommandString("Jj.j")
 
     def hurt(self, damage, reason=None, actor=None):
-        """
+        '''
         hurt the character
 
         Parameters:
             damage: the amount of damage dealt
             reason: the reason damage was dealt
             actor: the character causing the damage
-        """
+        '''
 
         if self.disabled:
             self.disabled = False
@@ -1179,10 +1221,12 @@ class Character:
             self.die(reason="you died from injuries",killer = actor)
 
     def getNumMaxPosSubordinates(self):
-        """
+        '''
         get the maximum number of subordinates allowed for this character
-        return: the number of subordinates allowed
-        """
+
+        return:
+            the number of subordinates allowed
+        '''
         if self.rank == 5:
             return 1
         if self.rank == 4:
@@ -1192,27 +1236,31 @@ class Character:
         return 0
 
     def getNumSubordinates(self):
-        """
+        '''
         get the number of subordinates controlled by this character
-        return: the number of subordinates
-        """
+
+        return:
+            the number of subordinates
+        '''
         return len(self.subordinates)
 
     def getIsHome(self):
-        """
+        '''
         get wether or not this character is at home
+
         Returns:
             wether or not this character is at home
-        """
+        '''
         charPos = self.getBigPosition()
         return (self.registers.get("HOMEx"), self.registers.get("HOMEy"), 0) == charPos
 
     def selectSpecialAttack(self,target):
-        """
+        '''
         spawn the submenu to trigger a special attack
+
         Parameters:
             target: the target of the attack
-        """
+        '''
 
         text = "no special attacks available"
         attacksOffered = []
@@ -1288,13 +1336,14 @@ press any other key to attack normally"""
         self.runCommandString("~",nativeKey=True)
 
     def doSpecialAttack(self,extraParam):
-        """
+        '''
         do a special attack on a target
         this method assumes to be called by a submenu
+
         Parameters:
             extraParam["target"]: the target of the attack
             extraParam["KeyPressed"]: the type of the special attack
-        """
+        '''
 
         target = extraParam["target"]
 
@@ -1341,10 +1390,13 @@ press any other key to attack normally"""
 
     @staticmethod
     def hasTimingBonus():
+        '''
+        check if a combat bonus should be applied
+        '''
         return src.gamestate.gamestate.tick % 4 == 1
 
     def attack(self, target, heavy = False, quick = False, ultraheavy = False, initial=False, harassing=False, light=False, opportunity=False, gambling=False, bestial=False, slow=False):
-        """
+        '''
         make the character attack something
 
         Parameters:
@@ -1359,7 +1411,7 @@ press any other key to attack normally"""
             gambling: wether or not the attack should be a gambling attack
             bestial: wether or not the attack should be a bestial attack
             slow: wether or not the attack should be a slow attack
-        """
+        '''
         if self.dead:
             return
 
@@ -1646,6 +1698,7 @@ press any other key to attack normally"""
     def getActiveQuest(self):
         '''
         returns the currently active quest
+
         Returns:
             the active quest
         '''
@@ -2066,6 +2119,7 @@ press any other key to attack normally"""
     def canHeal(self):
         '''
         check if the character can heal right now
+
         Returns:
             wether or not the character can heal right now
         '''
@@ -2083,6 +2137,7 @@ press any other key to attack normally"""
         '''
         (obsolete)
         walk the predetermined path
+
         Returns:
             True when done
             False when not done
@@ -2424,6 +2479,7 @@ press any other key to attack normally"""
     def advance(self,advanceMacros=False):
         '''
         advance the character one tick
+
         Parameters:
             advanceMacros: wether or not to advance the character based on macros (True = advance)
         '''

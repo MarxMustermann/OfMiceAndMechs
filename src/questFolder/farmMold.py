@@ -1,11 +1,13 @@
-import random
-
 import src
 
+import random
+
 class FarmMold(src.quests.MetaQuestSequence):
+    '''
+    quest to farm mold
+    '''
     type = "FarmMold"
     lowLevel = True
-
     def __init__(self, description="farm mold", creator=None, toCollect=None, lifetime=None, reason=None, tryHard=False):
         self.lastMoveDirection = None
         questList = []
@@ -18,6 +20,9 @@ class FarmMold(src.quests.MetaQuestSequence):
         self.tryHard = tryHard
 
     def generateTextDescription(self):
+        '''
+        get textual description of the quest
+        '''
         out = []
 
         reason = ""
@@ -30,6 +35,9 @@ farm mold"""
         return out
 
     def triggerCompletionCheck(self,character=None):
+        '''
+        check if the quest is completed
+        '''
         if not character:
             return False
         if not character.getFreeInventorySpace():
@@ -41,7 +49,9 @@ farm mold"""
         return False
 
     def getNextStep(self,character,ignoreCommands=False, dryRun = True):
-
+        '''
+        generate the next step towards solving the quest
+        '''
         if self.subQuests:
             return (None,None)
 
@@ -92,10 +102,17 @@ farm mold"""
         return (None,None)
 
     def pickedUpItem(self,test=None):
+        '''
+        (obsolete)
+        handle the character picking up an item
+        '''
         pass
 
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
+        '''
+        generate the quests for doing a duty
+        '''
         terrain = character.getTerrain()
         try:
             terrain.alarm
@@ -109,4 +126,5 @@ farm mold"""
             beUsefull.idleCounter = 0
         return ([quest],None)
 
+# register the quest type
 src.quests.addType(FarmMold)

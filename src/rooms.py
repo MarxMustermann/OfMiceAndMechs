@@ -1477,7 +1477,8 @@ class Room:
 
         self.changed("left room", character)
         character.changed("left room", self)
-        self.characters.remove(character)
+        if character in self.characters:
+            self.characters.remove(character)
         character.room = None
 
     def addItem(self, item, pos, actor=None):

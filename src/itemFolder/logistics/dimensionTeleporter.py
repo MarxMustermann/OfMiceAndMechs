@@ -283,41 +283,41 @@ class DimensionTeleporter(src.items.Item):
             show(g[self.receiverMode], "RE")
 
             network = "\n".join(["".join(x) for x in mapContent])
-            network += "\n?? Indicate possible teleporter place\nRE indicate a receiver\nSE indicate a sender"
+            network += "\n?? indicates a possible teleporter place\nRE indicates a receiver\nSE indicates a sender"
         character.macroState["submenue"] = src.menuFolder.warningMenu.WarningMenu(
-            self.getLongInfo() + f"\nCharges: {self.charges}\n\n{network}"
+            self.getLongInfo() + f"\ncharges: {self.charges}\n\n{network}"
         )
 
     def getLongInfo(self):
         '''
         generate string with information
         '''
-        text = "Operation Mode:"
+        text = "operation mode:"
         if self.group:
-            text += " Sender" if self.mode == self.senderMode else " Receiver"
+            text += " sender" if self.mode == self.senderMode else " receiver"
         else:
             text += "OFF"
         text += "\n"
 
-        code = "Input Direction:" if self.mode == self.senderMode else "Output Direction:"
+        code = "input direction:" if self.mode == self.senderMode else "output direction:"
 
         if self.direction:
-            cases = {(0, -1, 0): "North", (-1, 0, 0): "West", (1, 0, 0): "East", (0, 1, 0): "South"}
+            cases = {(0, -1, 0): "north", (-1, 0, 0): "west", (1, 0, 0): "east", (0, 1, 0): "south"}
 
             text += code + " " + cases[self.direction]
         else:
             if self.mode == self.senderMode:
-                text += code + " From all Directions"
+                text += code + " from all directions"
             else:
-                text += code + " To all Directions"
+                text += code + " to all directions"
 
         f_text = str(self.group) if self.group else "Not Set"
-        text += "\nFrequency: " + f_text
+        text += "\nfrequency: " + f_text
 
         if self.group:
             g = src.gamestate.gamestate.teleporterGroups[self.group]
             network_size = len(g[0]) + len(g[1])
-            text += f"\nNetwork Size: {network_size}"
+            text += f"\nnetwork size: {network_size}"
         return text
 
     def render(self):

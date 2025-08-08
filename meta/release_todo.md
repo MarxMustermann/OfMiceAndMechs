@@ -1,12 +1,12 @@
 * fix known crashes
 * overhaul fonts
-* reduce disabled functions
+* remove disabled functions
   * clean up main menu
   * remove abbandoned factories or make them useful
   * add better rank placeholder
 * test crash reports
   * empty database
-* ensure release
+* create release binary
   * merge to master
   * test windows binary
   * check install instructions
@@ -24,3 +24,4 @@
 * get steam page up and running
 * overhaul website
 * auto playthrough
+* repare feedback questionaire

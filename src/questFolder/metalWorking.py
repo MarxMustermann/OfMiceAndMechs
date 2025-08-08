@@ -184,12 +184,24 @@ Press d to move the cursor and show the subquests description.
         if character.container.isRoom:
             benches.extend(character.container.getItemsByType("MetalWorkingBench"))
 
+        # go to room with benches
+        if not benches:
+            for room in character.getTerrain().rooms:
+                for item in room.getItemsByType("MetalWorkingBench"):
+                    if item.bolted:
+                        continue
+                    quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),reason="go to a room with a MetalWorkingBench")
+                    return ([quest],None)
+            if not dryRun:
+                self.fail("no metal bench available")
+            return (None,None)
+
         # use bench next to the character
         for bench in benches:
             if character.getDistance(bench.getPosition()) > 1:
                 continue
             pos = character.getPosition()
-            benchPos = benchNearBy.getPosition()
+            benchPos = bench.getPosition()
             if (pos[0],pos[1],pos[2]) == benchPos:
                 return (None,("j","start metal working"))
             if (pos[0]-1,pos[1],pos[2]) == benchPos:
@@ -202,11 +214,7 @@ Press d to move the cursor and show the subquests description.
                 return (None,("sj","start metal working"))
 
         # go to a bench
-        if not benches:
-            if not dryRun:
-                self.fail("no metal bench available")
-            return (None,None)
-        quest = src.quests.questMap["GoToPosition"](targetPosition=benches[0].getPosition(),ignoreEndBlocked=True,reason="go to a MetalWorkingBench")
+        quest = src.quests.questMap["GoToPosition"](targetPosition=random.choice(benches).getPosition(),ignoreEndBlocked=True,reason="go to a MetalWorkingBench")
         return ([quest],None)
 
     def handleQuestFailure(self,extraParam):

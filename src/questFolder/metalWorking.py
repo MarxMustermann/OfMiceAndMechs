@@ -107,6 +107,7 @@ Press d to move the cursor and show the subquests description.
 
         # use menu to select what type of item to produce
         if character.macroState["submenue"] and character.macroState["submenue"].tag == "metalWorkingProductSelection":
+            submenue = character.macroState["submenue"]
             index = None
             counter = 1
             for option in submenue.options.items():

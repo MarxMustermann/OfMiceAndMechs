@@ -175,11 +175,6 @@ Press d to move the cursor and show the subquests description.
             else:
                 return (None,(".","undo selection"))
 
-        # go to command center
-        if character.getBigPosition() != character.getHomeRoomCord():
-            quest = src.quests.questMap["GoToTile"](targetPosition=character.getHomeRoomCord(),reason="go to anvil")
-            return ([quest],None)
-
         # find local metal benches
         benches = []
         if character.container.isRoom:
@@ -189,8 +184,9 @@ Press d to move the cursor and show the subquests description.
         if not benches:
             for room in character.getTerrain().rooms:
                 for item in room.getItemsByType("MetalWorkingBench"):
-                    if item.bolted:
+                    if not item.bolted:
                         continue
+                    print("no working benches")
                     quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),reason="go to a room with a MetalWorkingBench")
                     return ([quest],None)
             if not dryRun:

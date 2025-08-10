@@ -151,6 +151,8 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
             return (None,("sj"+activationCommand,"hammer some scrap"))
 
         # hang up the AI, lol
+        if not dryRun:
+            self.fail("impossible state")
         return (None,None)
 
 

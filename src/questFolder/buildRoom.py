@@ -2,8 +2,10 @@ import src
 import random
 
 class BuildRoom(src.quests.MetaQuestSequence):
+    '''
+    quest for clones to build rooms
+    '''
     type = "BuildRoom"
-
     def __init__(self, description="build room", creator=None, command=None, lifetime=None, targetPosition=None,tryHard=False, reason=None, takeAnyUnbolted=False):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
@@ -16,18 +18,26 @@ class BuildRoom(src.quests.MetaQuestSequence):
         self.type = "BuildRoom"
 
     def builtRoom(self,extraParam):
+        '''
+        end when room was build
+        '''
         if self.targetPosition and extraParam["room"].getPosition() != self.targetPosition:
             return
         self.postHandler()
 
     def assignToCharacter(self, character):
+        '''
+        start watching for events
+        '''
         if self.character:
             return
-
         self.startWatching(character, self.builtRoom, "built room")
         super().assignToCharacter(character)
 
     def generateTextDescription(self):
+        '''
+        generate a text desctiption of the quest to be shown on the UI
+        '''
         roombuilder = src.items.itemMap["RoomBuilder"]()
         reason = ""
         if self.reason:
@@ -55,6 +65,9 @@ Press d to move the cursor and show the subquests description.
         return out
 
     def handleQuestFailure(self,extraParam):
+        '''
+        try fallback if the quest failed
+        '''
         super().handleQuestFailure(extraParam)
         reason = extraParam.get("reason")
 
@@ -98,6 +111,11 @@ Press d to move the cursor and show the subquests description.
         self.fail(reason)
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
+        '''
+        generate next step toward solving the quest
+        '''
+
+        # abort if there is an alarm going on
         terrain = character.getTerrain()
         if terrain.alarm and not self.tryHard:
             if not dryRun:

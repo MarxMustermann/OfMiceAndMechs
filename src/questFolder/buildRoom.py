@@ -126,15 +126,18 @@ Press d to move the cursor and show the subquests description.
         if self.subQuests:
             return (None,None)
 
+        # close open menus
         if not ignoreCommands:
             submenue = character.macroState.get("submenue")
             if submenue:
                 return (None,(["esc"],"exit submenu"))
 
+        # attack nearby enemies
         if character.getNearbyEnemies():
             quest = src.quests.questMap["Fight"]()
             return ([quest],None)
 
+        # properly enter tile
         if not character.container.isRoom:
             pos = character.getSpacePosition()
             if pos == (14,7,0):

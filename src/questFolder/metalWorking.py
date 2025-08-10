@@ -64,7 +64,7 @@ Press d to move the cursor and show the subquests description.
         if self.subQuests:
             return (None,None)
 
-        # enter room properly
+        # enter tile properly
         if not character.container.isRoom:
             pos = character.getSpacePosition()
             if pos == (14,7,0):
@@ -186,7 +186,6 @@ Press d to move the cursor and show the subquests description.
                 for item in room.getItemsByType("MetalWorkingBench"):
                     if not item.bolted:
                         continue
-                    print("no working benches")
                     quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),reason="go to a room with a MetalWorkingBench")
                     return ([quest],None)
             if not dryRun:

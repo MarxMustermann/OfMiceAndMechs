@@ -39,6 +39,18 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
         if self.subQuests:
             return (None,None)
 
+        # enter tile properly
+        if not character.container.isRoom:
+            pos = character.getSpacePosition()
+            if pos == (14,7,0):
+                return (None,("a","enter room"))
+            if pos == (0,7,0):
+                return (None,("d","enter room"))
+            if pos == (7,14,0):
+                return (None,("w","enter room"))
+            if pos == (7,0,0):
+                return (None,("s","enter room"))
+
         # use menu to set how much scrap to produce
         if character.macroState["submenue"] and character.macroState["submenue"].tag == "anvilAmountInput":
 
@@ -100,22 +112,21 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
             else:
                 return (None,(".","undo selection"))
 
-        # go to command centre
-        if character.getBigPosition() != character.getHomeRoomCord():
-            quest = src.quests.questMap["GoToTile"](targetPosition=character.getHomeRoomCord(),reason="go to anvil")
-            return ([quest],None)
-
-        # enter room
-        if not character.container.isRoom:
-            return ([src.quests.questMap["EnterRoom"]()],None)
-
         # get local anvils
         anvils = []
         if character.container.isRoom:
             anvils.extend(character.container.getItemsByType("Anvil"))
+
+        # go to room with anvils
         if not anvils:
+            for room in character.getTerrain().rooms:
+                for item in room.getItemsByType("Anvil"):
+                    if not item.bolted:
+                        continue
+                    quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),reason="go to a room with a Anvil")
+                    return ([quest],None)
             if not dryRun:
-                self.fail("no anvil")
+                self.fail("no anvil available")
             return (None,None)
 
         # get anvils right next to the character

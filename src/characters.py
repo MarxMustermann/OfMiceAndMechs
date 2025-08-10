@@ -2872,6 +2872,12 @@ press any other key to attack normally"""
         '''
         apply a status effect to the character
         '''
+        if len(self.statusEffects) > 100:
+            self.die(reason="too many status effects")
+            return
+        if len(self.statusEffects) > 10:
+            self.hurt(amount=(len(self.statusEffects)-1)*10,reason="too many status effects")
+            return
         self.statusEffects.append(effect)
         self.changed("added status effect")
 

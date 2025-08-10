@@ -151,7 +151,7 @@ Press d to move the cursor and show the subquests description.
 
         items = terrain.getItemByPosition((15*self.targetPosition[0]+7,15*self.targetPosition[1]+7,0))
         if not items or items[-1].type != "RoomBuilder":
-            quest = src.quests.questMap["PlaceItem"](targetPosition=character.getHomeRoomCord(),targetPositionBig=self.targetPosition,itemType="RoomBuilder",reason="start building the room",clearPath=True)
+            quest = src.quests.questMap["PlaceItem"](targetPosition=(7,7,0),targetPositionBig=self.targetPosition,itemType="RoomBuilder",reason="start building the room",clearPath=True)
             return ([quest],None)
 
         wallPositions = [(1,1,0),(1,13,0),(13,1,0),(13,13,0)]

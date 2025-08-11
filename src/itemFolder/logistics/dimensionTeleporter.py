@@ -288,6 +288,9 @@ class DimensionTeleporter(src.items.Item):
             network = "\n".join(["".join(x) for x in mapContent])
             network += "\n?? indicates a possible teleporter place\nRE indicates a receiver\nSE indicates a sender"
 
+        if network == "":
+            network == "no netwrok is connected to the teleporter"
+
         character.macroState["submenue"] = src.menuFolder.textMenu.TextMenu(
             self.getLongInfo() + f"\ncharges: {self.charges}\n\n{network}"
         )

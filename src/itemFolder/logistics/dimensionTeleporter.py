@@ -251,6 +251,7 @@ class DimensionTeleporter(src.items.Item):
         network = ""
         if self.group:
             teleporterGroup = src.gamestate.gamestate.teleporterGroups[self.group]
+            print(teleporterGroup)
             mapContent = []
             for x in range(15):
                 mapContent.append([])
@@ -272,13 +273,13 @@ class DimensionTeleporter(src.items.Item):
                         continue
                     position = teleporter.getTerrainPosition()
                     if position in character.terrainInfo:
-                        mapContent[pos[1]][pos[0]] = code
+                        mapContent[position[1]][position[0]] = code
                     else:
                         r = range(-1, 2)
                         for dx in r:
                             for dy in r:
-                                new_pos_x = src.helpers.clamp(pos[0] + dx, 1, 13)
-                                new_pos_y = src.helpers.clamp(pos[1] + dy, 1, 13)
+                                new_pos_x = src.helpers.clamp(position[0] + dx, 1, 13)
+                                new_pos_y = src.helpers.clamp(position[1] + dy, 1, 13)
                                 if (new_pos_x, new_pos_y, 0) not in character.terrainInfo:
                                     mapContent[new_pos_y][new_pos_x] = "??"
 

@@ -222,9 +222,8 @@ Press d to move the cursor and show the subquests description.
             quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
             return ([quest], None)
 
-        roomBuilderPos = character.getHomeRoomCord()
         if character.getDistance((15*self.targetPosition[0]+7,15*self.targetPosition[1]+7,0)) > 1:
-            quest = src.quests.questMap["GoToPosition"](targetPosition=roomBuilderPos,ignoreEndBlocked=True,reason="get next to the RoomBuilder")
+            quest = src.quests.questMap["GoToPosition"](targetPosition=(7,7,0),ignoreEndBlocked=True,reason="get next to the RoomBuilder")
             return ([quest], None)
 
         interactionCommand = "J"

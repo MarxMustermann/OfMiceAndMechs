@@ -75,7 +75,7 @@ class ReportArchive(src.items.Item):
 
         # generate a report hinting at remote bases
         random.shuffle(remoteBases)
-        remoteBases = emptyPlaces[:min(3,len(remoteBases))]
+        remoteBases = remoteBases[:min(3,len(remoteBases))]
         remoteBasesString = ""
         for place,tag in remoteBases:
             remoteBasesString += f"{place}, "

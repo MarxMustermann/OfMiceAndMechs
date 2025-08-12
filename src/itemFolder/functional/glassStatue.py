@@ -303,7 +303,7 @@ class GlassStatue(src.items.Item):
             src.popups.Popup.open_Popup(character, "the GlassHeart drops to the ground after you rip it out of the GlassStatue")
         else:
             character.addToInventory(newItem)
-            src.popups.Popup.open_Popup(character, "you rip the GlassHeart and take it")
+            src.popups.Popup.open_Popup(character, "you rip the Heart from the GlassStatue and take it")
 
         self.hasItem = False
 

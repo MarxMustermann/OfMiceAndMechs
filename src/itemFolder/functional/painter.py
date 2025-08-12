@@ -291,6 +291,9 @@ This should be used in cases where you can not place the Painter on the position
                               (center[0]  ,center[1]+1,center[2]),
                               (center[0]  ,center[1]-1,center[2]),
                              ]
+                for neighnour in neighbours[:]:
+                    if neighnour[0] < 1 or neighnour[0] > 11 or neighnour[1] < 1 or neighnour[1] > 11:
+                        neighbours.remove(neighnour)
 
                 if deletedBuildSite and deletedBuildSite[1] == "TriggerPlate": # override existing drawings
                     room.addBuildSite(center,"RodTower")

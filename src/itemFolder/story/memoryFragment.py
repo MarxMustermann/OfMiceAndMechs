@@ -19,8 +19,8 @@ class MemoryFragment(src.items.Item):
 
         # uncover random position
         pos = (random.randint(1,13),random.randint(1,13))
-        currentInfo = character.terrainInfo.get(pos)
         terrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
+        currentInfo = character.terrainInfo.get(terrain.getPosition())
         if not currentInfo:
             character.terrainInfo[terrain.getPosition()] = {"tag":terrain.tag}
             text = f"you uncovered the terrain {pos}.\nIt is a {terrain.tag}"

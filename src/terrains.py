@@ -433,10 +433,10 @@ class Terrain:
                         # print some info
                         if isinstance(item, src.items.itemMap["Door"]):
                             char.addMessage("you need to open the door first")
-                            char.hurt(20,"getting stuck between rooms")
+                            char.hurt(1,"getting stuck between rooms")
                         else:
                             char.addMessage("the entry is blocked")
-                            char.hurt(20,"getting stuck between rooms")
+                            char.hurt(1,"getting stuck between rooms")
                         # char.addMessage("press "+commandChars.activate+" to apply")
                         # if noAdvanceGame == False:
                         #    header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
@@ -446,7 +446,7 @@ class Terrain:
 
                 if len(room.itemByCoordinates[localisedEntry]) > 15:
                     char.addMessage("the entry is blocked by items.")
-                    char.hurt(20,"getting stuck between rooms")
+                    char.hurt(1,"getting stuck between rooms")
                     # char.addMessage("press "+commandChars.activate+" to apply")
                     # if noAdvanceGame == False:
                     #    header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))

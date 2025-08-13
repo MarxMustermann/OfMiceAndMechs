@@ -100,7 +100,7 @@ class Guardian(src.monster.Monster):
 
     def lootTable(self):
         try:
-            self.modifier = modifier
+            self.modifier
         except:
             self.modifier = 1
         return [([src.items.itemMap["ManaCrystal"]]*self.modifier, 1)]

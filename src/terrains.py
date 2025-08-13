@@ -431,12 +431,8 @@ class Terrain:
                     # handle collisions
                     if not char.getItemWalkable(item):
                         # print some info
-                        if isinstance(item, src.items.itemMap["Door"]):
-                            char.addMessage("you need to open the door first")
-                            char.hurt(1,"getting stuck between rooms")
-                        else:
-                            char.addMessage("the entry is blocked")
-                            char.hurt(1,"getting stuck between rooms")
+                        char.addMessage("the entry is blocked")
+                        char.hurt(5,"getting stuck between rooms")
                         # char.addMessage("press "+commandChars.activate+" to apply")
                         # if noAdvanceGame == False:
                         #    header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
@@ -446,7 +442,7 @@ class Terrain:
 
                 if len(room.itemByCoordinates[localisedEntry]) > 15:
                     char.addMessage("the entry is blocked by items.")
-                    char.hurt(1,"getting stuck between rooms")
+                    char.hurt(5,"getting stuck between rooms")
                     # char.addMessage("press "+commandChars.activate+" to apply")
                     # if noAdvanceGame == False:
                     #    header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
@@ -756,6 +752,14 @@ class Terrain:
             if hadRoomInteraction:
                 item = self.enterLocalised(char, room, localisedEntry, direction)
                 if item:
+                    if direction == "west":
+                        char.runCommandString("dd")
+                    if direction == "east":
+                        char.runCommandString("aa")
+                    if direction == "north":
+                        char.runCommandString("ss")
+                    if direction == "south":
+                        char.runCommandString("ww")
                     return item
 
                 break

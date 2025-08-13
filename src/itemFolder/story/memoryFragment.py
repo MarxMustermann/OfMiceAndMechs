@@ -25,8 +25,16 @@ class MemoryFragment(src.items.Item):
             character.terrainInfo[terrain.getPosition()] = {"tag":terrain.tag}
             text = f"you uncovered the terrain {pos}.\nIt is a {terrain.tag}"
         else:
-            character.terrainInfo[terrain.getPosition()] = {"tag":terrain.tag}
-            text = f"you uncovered the terrain {pos}.\nIt is already known"
+            text = f"you already know about the uncover terrain."
+
+            # convert memory fragment to mana to make up for loosing out
+            terrain = character.getTerrain()
+            if terrain.mana >= 2:
+                manaCrystal = src.items.itemMap["ManaCrystal"]()
+                character.container.addItem(manaCrystal,character.getPosition())
+                text += f"the memory fragment crystalises."
+            else:
+                text += f"the memory fragment starts to crystalise. But there is no mana in this terrain"
         character.addMessage(text)
 
         # self destruct

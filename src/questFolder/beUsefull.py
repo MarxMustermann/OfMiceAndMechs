@@ -502,6 +502,14 @@ Press d to move the cursor and show the subquests description.
             if step != (None,None) and not (not step[0] and not step[1]):
                 if not dryRun:
                     self.numTasksDone += 1
+
+                if step[0]:
+                    for quest in step[0]:
+                        if quest.reason:
+                            quest.reason += f"({duty})"
+                        else:
+                            quest.reason = f"({duty})"
+
                 return step
 
         if self.endOnIdle:

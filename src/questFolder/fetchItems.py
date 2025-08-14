@@ -346,8 +346,10 @@ Press d to move the cursor and show the subquests description.
 
                         if not hasItem:
                             allowStorage = trueInput
+                            allowDesiredFilled = True
                             if inputSlot[2].get("desiredState") == "filled":
                                 allowStorage = True
+                                allowDesiredFilled = False
 
                             source = None
                             for candidateSource in room.sources:
@@ -361,7 +363,7 @@ Press d to move the cursor and show the subquests description.
                                 sourceRoom = sourceRoom[0]
                                 if sourceRoom == character.container:
                                     continue
-                                outputSlots = sourceRoom.getNonEmptyOutputslots(itemType=inputSlot[1],allowStorage=allowStorage,)
+                                outputSlots = sourceRoom.getNonEmptyOutputslots(itemType=inputSlot[1],allowStorage=allowStorage,allowDesiredFilled=allowDesiredFilled)
                                 if not outputSlots:
                                     continue
 
@@ -373,7 +375,7 @@ Press d to move the cursor and show the subquests description.
                                     if otherRoom == room:
                                         continue
 
-                                    outputSlots = otherRoom.getNonEmptyOutputslots(itemType=inputSlot[1],allowStorage=allowStorage,)
+                                    outputSlots = otherRoom.getNonEmptyOutputslots(itemType=inputSlot[1],allowStorage=allowStorage,allowDesiredFilled=allowDesiredFilled)
                                     if not outputSlots:
                                         continue
 
@@ -417,20 +419,20 @@ Press d to move the cursor and show the subquests description.
 
                                 roomPos = (room.xPosition,room.yPosition,0)
                                 if source[0] != roomPos:
-                                    quests.append(src.quests.questMap["GoToTile"](targetPosition=roomPos))
+                                    quests.append(src.quests.questMap["GoToTile"](targetPosition=roomPos,reason="fetched3"))
 
-                                quests.append(src.quests.questMap["FetchItems"](toCollect=inputSlot[1], amount=amountToFetch))
+                                quests.append(src.quests.questMap["FetchItems"](toCollect=inputSlot[1], amount=amountToFetch,reason="fetched4"))
                                 if source[0] != roomPos:
-                                    quests.append(src.quests.questMap["GoToTile"](targetPosition=(source[0])))
+                                    quests.append(src.quests.questMap["GoToTile"](targetPosition=(source[0]),reason="fetched5"))
 
                                 if character.inventory and (not amountToFetch or amountToFetch > character.getFreeInventorySpace()):
-                                    quests.append(src.quests.questMap["ClearInventory"](returnToTile=False))
+                                    quests.append(src.quests.questMap["ClearInventory"](returnToTile=False,reason="fetched6"))
                             else:
                                 roomPos = (room.xPosition,room.yPosition,0)
                                 if source[0] != roomPos:
-                                    quests.append(src.quests.questMap["GoToTile"](targetPosition=roomPos))
+                                    quests.append(src.quests.questMap["GoToTile"](targetPosition=roomPos,reason="fetched7"))
 
-                                quests.append(src.quests.questMap["CleanSpace"](targetPositionBig=source[0],targetPosition=source[2][0][0]))
+                                quests.append(src.quests.questMap["CleanSpace"](targetPositionBig=source[0],targetPosition=source[2][0][0],reason="fetched8"))
                                 if not dryRun:
                                     beUsefull.idleCounter = 0
                                 return (quests,None)
@@ -460,9 +462,9 @@ Press d to move the cursor and show the subquests description.
                                 continue
                             quests = []
                             quests.append(src.quests.questMap["RestockRoom"](targetPositionBig=room.getPosition(),targetPosition=storageSlot[0],allowAny=True,toRestock=items[0].type,reason="fill a storage stockpile designated to be filled"))
-                            quests.append(src.quests.questMap["CleanSpace"](targetPositionBig=otherRoom.getPosition(),targetPosition=checkStorageSlot[0],reason="fill a storage stockpile designated to be filled",abortOnfullInventory=True))
+                            quests.append(src.quests.questMap["CleanSpace"](targetPositionBig=otherRoom.getPosition(),targetPosition=checkStorageSlot[0],reason="have items to fill a storage stockpile with",abortOnfullInventory=True))
                             if character.inventory:
-                                quests.append(src.quests.questMap["ClearInventory"]())
+                                quests.append(src.quests.questMap["ClearInventory"](reason="fetched9"))
                             if not dryRun:
                                 beUsefull.idleCounter = 0
                             return (quests,None)

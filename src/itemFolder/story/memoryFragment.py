@@ -38,7 +38,7 @@ class MemoryFragment(src.items.Item):
         character.addMessage(text)
 
         # self destruct
-        self.destroy()
+        self.destroy(generateScrap=False)
 
 # register the item class
 src.items.addType(MemoryFragment, nonManufactured=True)

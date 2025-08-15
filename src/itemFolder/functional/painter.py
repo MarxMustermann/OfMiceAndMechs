@@ -106,7 +106,7 @@ This should be used in cases where you can not place the Painter on the position
         if keyPressed == "m":
            submenue = src.menuFolder.inputMenu.InputMenu(
                "type in the mode you want to set\n\n"+
-               "inputSlot, outputSlot, storageSlot, walkingSpace, buildSite, delete (i,o,s,w,b,d)"
+               "inputSlot, outputSlot, storageSlot, walkingSpace, buildSite, delete, trap (i,o,s,w,b,d,t)"
                )
            submenue.tag = "paintModeSelection"
            character.macroState["submenue"] = submenue

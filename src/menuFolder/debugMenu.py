@@ -157,7 +157,7 @@ class DebugMenu(src.subMenu.SubMenu):
                                     "j": {
                                         "function": {
                                             "container": self,
-                                            "method": "action",
+                                            "method": "teleport",
                                             "params": {"character":character},
                                         },
                                         "description": "move to it",
@@ -233,6 +233,19 @@ class DebugMenu(src.subMenu.SubMenu):
         # exit submenu
         return key == "esc"
 
+    def teleport(self, params):
+        '''
+        teleport character to a tile 
+        '''
+        character = params["character"]
+        terrain = character.getTerrain()
+        character.container.removeCharacter(character)
+        room = terrain.getRoomByPosition(params["coordinate"])
+        if len(room):
+            room[0].addCharacter(character,7,7)
+        else:
+            terrain.addCharacter(character,15*params["coordinate"][0]+7,15*params["coordinate"][1]+7)
+
     def action(self, params):
         character = params["character"]
 
@@ -242,16 +255,6 @@ class DebugMenu(src.subMenu.SubMenu):
             except Exception as e:
                 print("error: " + str(e))
             return
-
-        if "coordinate" in params:
-            print(params["coordinate"])
-            terrain = character.getTerrain()
-            character.container.removeCharacter(character)
-            room = terrain.getRoomByPosition(params["coordinate"])
-            if len(room):
-                room[0].addCharacter(character,7,7)
-            else:
-                terrain.addCharacter(character,15*params["coordinate"][0]+7,15*params["coordinate"][1]+7)
 
         if "item" in params:
             print(params["item"])

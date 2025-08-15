@@ -27,6 +27,7 @@ class DebugMenu(src.subMenu.SubMenu):
         "pass time",
         "gain endgame strength",
         "gain full strength",
+        "spawn room",
     ]
 
     def __init__(self):
@@ -175,6 +176,49 @@ class DebugMenu(src.subMenu.SubMenu):
                         )
                         character.macroState["submenue"] = submenue
                         return True
+                case "spawn room":
+                    if current_change:
+                        terrain = character.getTerrain()
+                        mapContent = []
+                        functionMap = {}
+
+                        for x in range(15):
+                            mapContent.append([])
+                            for y in range(15):
+                                if x not in (0, 14) and y not in (0, 14):
+                                    displayChar = "  "
+                                elif x != 7 and y != 7:
+                                    displayChar = "##"
+                                else:
+                                    displayChar = "  "
+                                mapContent[x].append(displayChar)
+                        for x in range(1,14):
+                            for y in range(1,14):
+                                functionMap[(y, x)] = {
+                                    "j": {
+                                        "function": {
+                                            "container": self,
+                                            "method": "spawnRoom",
+                                            "params": {"character":character},
+                                        },
+                                        "description": "spawn room",
+                                    }
+                                }
+
+                        for room in terrain.rooms:
+                            mapContent[room.yPosition][room.xPosition] = room.displayChar
+                            del functionMap[(room.xPosition, room.yPosition)]
+                        for scrapField in terrain.scrapFields:
+                            mapContent[scrapField[1]][scrapField[0]] = "ss"
+                            del functionMap[(scrapField[0], scrapField[1])]
+
+                        submenue = src.menuFolder.mapMenu.MapMenu(
+                            mapContent=mapContent,
+                            functionMap=functionMap,
+                            cursor=character.getBigPosition(),
+                        )
+                        character.macroState["submenue"] = submenue
+                        return True
                 case "Teleport Terrain":
                     if current_change:
                         functionMap = {}
@@ -232,6 +276,13 @@ class DebugMenu(src.subMenu.SubMenu):
 
         # exit submenu
         return key == "esc"
+
+    def spawnRoom(self, params):
+        '''
+        spawn a room
+        '''
+        character = params["character"]
+        src.magic.spawnRoom(character.getTerrain(),"EmptyRoom",params["coordinate"])
 
     def teleport(self, params):
         '''

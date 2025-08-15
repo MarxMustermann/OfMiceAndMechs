@@ -7,3 +7,4 @@ import src.itemFolder.potionsFolder.increaseHealthRegenPotion
 import src.itemFolder.potionsFolder.potionOfSpeed
 import src.itemFolder.potionsFolder.antiSlowPotion
 import src.itemFolder.potionsFolder.permaMaxHealthPotion
+import src.itemFolder.potionsFolder.lesserPermaMaxHealthPotion

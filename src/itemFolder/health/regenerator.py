@@ -86,5 +86,19 @@ class Regenerator(src.items.Item):
             # pay mana cost
             self.mana_charges -= 1
 
+    def getLongInfo(self):
+        '''
+        generate simple text description
+
+        Returns:
+            the description text
+        '''
+        text = super().getLongInfo()
+        text += f"""
+
+charges: {self.mana_charges}
+"""
+        return text
+
 # registers class
 src.items.addType(Regenerator)

@@ -18,6 +18,7 @@ class Flee(src.quests.MetaQuestSequence):
 
         self.shortCode = "f"
         self.returnHome = returnHome
+        self.startTick = None
 
     def generateTextDescription(self):
         '''
@@ -56,9 +57,20 @@ run,run,run!!!
         '''
         calculate the next step towards solving this quest
         '''
+
+        # wait for subquests to complete
         if self.subQuests:
             return (None,None)
 
+        # run for a random exit after a while
+        if src.gamestate.gamestate.tick-self.startTick > 50:
+            if not dryRun:
+                self.startTick = src.gamestate.gamestate.tick
+            pos = random.choice([(6,0,0),(0,6,0),(12,6,0),(6,12,0)])
+            quest = src.quests.questMap["GoToPosition"](targetPosition=pos)
+            return ([quest],None)
+
+        # return home after initial esscape 
         if not character.getNearbyEnemies():
             bigPos = character.getBigPosition()
             homePos = character.getHomeRoomCord()
@@ -69,14 +81,17 @@ run,run,run!!!
                 self.postHandler()
             return (None,None)
 
+        # heal
         if character.health < character.maxHealth//5 and character.canHeal():
             return (None,"JH","heal")
 
+        # close other menus
         if not ignoreCommands:
             submenue = character.macroState.get("submenue")
             if submenue:
                 return (None,(["esc"],"exit the menu"))
 
+        # weight escape directions
         commands = []
         command = None
         for foundEnemy in character.getNearbyEnemies():
@@ -84,7 +99,6 @@ run,run,run!!!
                 if character.getPosition(offset=offset[0]) == foundEnemy.getPosition():
                     command = offset[1]
                     break
-
             x = foundEnemy.xPosition
             while x-character.xPosition > 0:
                 commands.append("a")
@@ -102,9 +116,11 @@ run,run,run!!!
                 commands.append("s")
                 y += 1
 
+        # get random escape direction
         if not command and commands:
             command = random.choice(commands)
 
+        # add picking up items to the command
         if command == "d":
             pos = character.getPosition()
             if not character.container.getPositionWalkable((pos[0]+1,pos[1],pos[2]),character=character):
@@ -122,10 +138,23 @@ run,run,run!!!
             if not character.container.getPositionWalkable((pos[0],pos[1]-1,pos[2]),character=character):
                 command = "Kwl"
 
+        # hang up AI at invalid direction :-P
         if command is None:
             return (None,None)
 
+        # run the command
         return (None,(command,"flee"))
+
+    def assignToCharacter(self, character):
+        '''
+        assign quest to character
+        '''
+        if self.character:
+            return None
+
+        self.startTick = src.gamestate.gamestate.tick
+
+        return super().assignToCharacter(character)
 
 # add the quest type
 src.quests.addType(Flee)

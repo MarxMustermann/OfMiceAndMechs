@@ -17,6 +17,6 @@ class ManaCrystal(src.items.Item):
         terrain = character.getTerrain()
         terrain.add_mana(self.charges)
         character.addMessage(f"The terrains mana is increased by {self.charges}")
-        self.destroy()
+        self.destroy(generateScrap=False)
 
 src.items.addType(ManaCrystal)

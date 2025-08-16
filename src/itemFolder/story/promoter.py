@@ -17,6 +17,28 @@ class Promoter(src.items.Item):
         handle activation by trying to promote the user
         '''
 
+        submenu = src.menuFolder.textMenu.TextMenu(f"""
+You put your head into the machine.
+
+Its tendrils reach out and touch your implant.
+
+""")
+        character.macroState["submenue"] = submenu
+        submenu.followUp = {
+            "container": self,
+            "method": "promotion_loop",
+            "params": {"character":character},
+        }
+        character.runCommandString("~",nativeKey=True)
+
+    def promotion_loop(self,extraInfo):
+        '''
+        handle activation by trying to promote the user
+        '''
+
+        # unpack parameters
+        character = extraInfo["character"]
+
         # filter input
         if not character.rank:
             character.addMessage("you need a rank to use this machine")
@@ -94,23 +116,55 @@ Kill all enemies on this terrain, to unlock the promotions to rank 2.
 
             highestAllowed = 2
 
+        if highestAllowed is None:
+            return
+
+        extraInfo["highestAllowed"] = highestAllowed
+        self.do_promotions(extraInfo)
+
+    def do_promotions(self,extraInfo):
+        # unpack parameters
+        character = extraInfo["character"]
+        highestAllowed = extraInfo["highestAllowed"]
+
         while character.rank > highestAllowed:
             if character.rank == 6:
-                 character.hasSpecialAttacks = True
-            character.rank -= 1
+                submenu = src.menuFolder.textMenu.TextMenu("""
+The tendrils touche something inside your implant.
 
-        character.addMessage(f"you were promoted to rank {highestAllowed}")
+You can do special attacks now.
+
+press shift when attacking an enemy and you can do special attacks now.
+""")
+                character.macroState["submenue"] = submenu
+                submenu.followUp = {
+                    "container": self,
+                    "method": "do_promotion",
+                    "params": extraInfo,
+                }
+                character.runCommandString("~",nativeKey=True)
+                return
+            self.do_promotion(extraInfo)
+
         submenu = src.menuFolder.textMenu.TextMenu(f"""
-You put your head into the machine.
+The tendrils retrive.
 
-Its tendrils reach out and touch your implant.
-
-It is upgraded to rank {highestAllowed}.
+You are rank {character.rank} now.
 """)
         character.macroState["submenue"] = submenu
         character.runCommandString("~",nativeKey=True)
 
+    def do_promotion(self,extraInfo):
+        # unpack parameters
+        character = extraInfo["character"]
+
+        if character.rank == 6:
+            character.hasSpecialAttacks = True
+        character.rank -= 1
+        character.addMessage(f"you were promoted to rank {character.rank}")
         character.changed("got promotion",{})
+
+        self.do_promotions(extraInfo)
 
 # register item type
 src.items.addType(Promoter)

@@ -4,9 +4,11 @@ import src
 
 
 class Fight(src.quests.MetaQuestSequence):
+    '''
+    quest for fighting within a tile
+    '''
     type = "Fight"
     lowLevel = True
-
     def __init__(self, description="fight", creator=None, command=None, lifetime=None, weaponOnly=False, reason=None, suicidal=False):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
@@ -18,6 +20,9 @@ class Fight(src.quests.MetaQuestSequence):
         self.shortCode = "f"
 
     def generateTextDescription(self):
+        '''
+        generate a description text to show on the UI
+        '''
         reasonString = ""
         if self.reason:
             reasonString = ", to "+self.reason
@@ -35,6 +40,9 @@ So if an enemy is to directly east of you:
 """]
 
     def triggerCompletionCheck(self,character=None):
+        '''
+        check and end the quest if completed
+        '''
         if not character:
             return None
 
@@ -45,6 +53,9 @@ So if an enemy is to directly east of you:
         return None
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
+        '''
+        generate next step towards solving this quest
+        '''
         if self.subQuests:
             return (None,None)
 
@@ -200,4 +211,5 @@ So if an enemy is to directly east of you:
 
         return (None,(command,"approach enemy"))
 
+# register the quest type
 src.quests.addType(Fight)

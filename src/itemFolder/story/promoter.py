@@ -2,30 +2,29 @@ import src
 import random
 
 class Promoter(src.items.Item):
-    """
-    """
-
+    '''
+    ingame item for marking official progress in the hierarchy
+    '''
     type = "Promoter"
-
     def __init__(self,):
-        """
-        configure the superclass
-        """
-
         super().__init__(display="PR")
         self.faction = None
-
         self.walkable = False
         self.bolted = True
 
     def apply(self,character):
+        '''
+        handle activation by trying to promote the user
+        '''
+
+        # filter input
         if not character.rank:
             character.addMessage("you need a rank to use this machine")
             return
-
         if not self.faction:
             self.faction = character.faction
 
+        # promote to rank 5
         if character.rank > 5:
             numCharacters = 0
             terrain = character.getTerrain()
@@ -117,4 +116,5 @@ It is upgraded to rank 2.
             character.runCommandString("~",nativeKey=True)
         character.changed("got promotion",{})
 
+# register item type
 src.items.addType(Promoter)

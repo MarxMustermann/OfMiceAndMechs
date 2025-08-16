@@ -24,7 +24,8 @@ class Promoter(src.items.Item):
         if not self.faction:
             self.faction = character.faction
 
-        # promote to rank 5
+        # check if promotion to rank 5 applies
+        highestAllowed = None
         if character.rank > 5:
             numCharacters = 0
             terrain = character.getTerrain()
@@ -46,7 +47,7 @@ class Promoter(src.items.Item):
                         continue
                     numCharacters += 1
 
-            if numCharacters < 2:
+            if numCharacters < 2 and not highestAllowed:
                 character.addMessage(f"promotions locked")
 
                 submenu = src.menuFolder.textMenu.TextMenu("""
@@ -60,21 +61,9 @@ There need to be at least 1 clone besides you on the base to allow any promption
                 character.changed("promotion blocked",{"reason":"needs 2 clones on base"})
                 return
 
-            character.rank = 5
-            character.hasSpecialAttacks = True
-            
-            character.addMessage(f"you were promoted to rank 5")
-            submenu = src.menuFolder.textMenu.TextMenu("""
-You put your head into the machine.
+            highestAllowed = 5
 
-Its tendrils reach out and touch your implant.
-
-It is upgraded to rank 5.
-This means you can do special attacks now.""")
-            character.macroState["submenue"] = submenu
-            character.runCommandString("~",nativeKey=True)
-
-        elif character.rank > 2:
+        if character.rank > 2:
             foundEnemies = []
             terrain = self.getTerrain()
             for otherChar in terrain.characters:
@@ -88,7 +77,7 @@ This means you can do special attacks now.""")
                         continue
                     foundEnemies.append(otherChar)
 
-            if foundEnemies:
+            if foundEnemies and not highestAllowed:
                 character.addMessage(f"promotions locked")
 
                 submenu = src.menuFolder.textMenu.TextMenu("""
@@ -103,17 +92,24 @@ Kill all enemies on this terrain, to unlock the promotions to rank 2.
                 character.changed("promotion blocked",{"reason":"needs 2 clones on base"})
                 return
 
-            character.rank = 2
-            character.addMessage(f"you were promoted to base commander")
-            submenu = src.menuFolder.textMenu.TextMenu("""
+            highestAllowed = 2
+
+        while character.rank > highestAllowed:
+            if character.rank == 6:
+                 character.hasSpecialAttacks = True
+            character.rank -= 1
+
+        character.addMessage(f"you were promoted to rank {highestAllowed}")
+        submenu = src.menuFolder.textMenu.TextMenu(f"""
 You put your head into the machine.
 
 Its tendrils reach out and touch your implant.
 
-It is upgraded to rank 2.
+It is upgraded to rank {highestAllowed}.
 """)
-            character.macroState["submenue"] = submenu
-            character.runCommandString("~",nativeKey=True)
+        character.macroState["submenue"] = submenu
+        character.runCommandString("~",nativeKey=True)
+
         character.changed("got promotion",{})
 
 # register item type

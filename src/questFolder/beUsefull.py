@@ -330,7 +330,6 @@ Press d to move the cursor and show the subquests description.
 
         return source
 
-
     def getNextStep(self, character=None, ignoreCommands=False, dryRun = True):
         if not self.subQuests:
             submenue = character.macroState.get("submenue")
@@ -339,6 +338,11 @@ Press d to move the cursor and show the subquests description.
                     return (None,(["esc"],"exit submenu"))
                 return (None,(["esc"],"exit submenu"))
 
+        if character.getNearbyEnemies():
+            if character.container.isRoom:
+                if character.container.tag in ["entryRoom","trapRoom"]:
+                    quest = src.quests.questMap["GoHome"]()
+                    return ([quest],None)
         if character.health > character.maxHealth//5:
             if (not len(self.subQuests) or not isinstance(self.subQuests[0],src.quests.questMap["Fight"])) and character.getNearbyEnemies():
                 quest = src.quests.questMap["Fight"]()

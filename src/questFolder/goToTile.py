@@ -288,6 +288,11 @@ The target tile is {direction[4:]}
             # TODO: reenable random
 
             # fight nearby enemies
+            if character.getNearbyEnemies() and isinstance(character,src.characters.characterMap["Clone"]) and character.isOnHomeTerrain():
+                if character.container.isRoom:
+                    if character.container.tag in ["entryRoom","trapRoom"]:
+                        quest = src.quests.questMap["Flee"](returnHome=True)
+                        return ([quest],None)
             if not self.paranoid:
                 if random.random() < 1.5 and "fighting" in self.character.skills:
                     for otherCharacter in character.container.characters:

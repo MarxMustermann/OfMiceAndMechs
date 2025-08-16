@@ -572,6 +572,15 @@ class Character:
         terrain = src.gamestate.gamestate.terrainMap[self.registers["HOMETy"]][self.registers["HOMETx"]]
         return terrain
 
+    def isOnHomeTerrain(self):
+        '''
+        check if the characters is on his home terrain
+        '''
+        terrain = self.getTerrain()
+        if terrain.xPosition == self.registers["HOMETx"] and terrain.yPosition == self.registers["HOMETy"]:
+            return True
+        return False
+
     def getHomeRoom(self):
         '''
         fetch the home room for the character

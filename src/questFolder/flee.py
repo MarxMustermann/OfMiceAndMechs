@@ -4,6 +4,9 @@ import src
 
 
 class Flee(src.quests.MetaQuestSequence):
+    '''
+    quest to flee from enemies
+    '''
     type = "Flee"
     lowLevel = True
 
@@ -17,11 +20,17 @@ class Flee(src.quests.MetaQuestSequence):
         self.returnHome = returnHome
 
     def generateTextDescription(self):
+        '''
+        generate a description text to show in the UI
+        '''
         return ["""
 run,run,run!!!
 """]
 
     def triggerCompletionCheck(self,character=None):
+        '''
+        check and end the quest if completed
+        '''
         if not character:
             return False
 
@@ -44,6 +53,9 @@ run,run,run!!!
         return False
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
+        '''
+        calculate the next step towards solving this quest
+        '''
         if self.subQuests:
             return (None,None)
 
@@ -115,4 +127,5 @@ run,run,run!!!
 
         return (None,(command,"flee"))
 
+# add the quest type
 src.quests.addType(Flee)

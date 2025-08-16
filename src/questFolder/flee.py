@@ -7,13 +7,14 @@ class Flee(src.quests.MetaQuestSequence):
     type = "Flee"
     lowLevel = True
 
-    def __init__(self, description="Flee", creator=None, command=None, lifetime=None, weaponOnly=False):
+    def __init__(self, description="Flee", creator=None, command=None, lifetime=None, weaponOnly=False, returnHome=False):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = description
         self.weaponOnly = weaponOnly
 
         self.shortCode = "f"
+        self.returnHome = returnHome
 
     def generateTextDescription(self):
         return ["""
@@ -27,7 +28,16 @@ run,run,run!!!
         if not self.active:
             return False
 
+        try:
+            self.returnHome
+        except:
+            self.returnHome = False
+
         if not character.getNearbyEnemies():
+            bigPos = character.getBigPosition()
+            homePos = character.getHomeRoomCord()
+            if self.returnHome and bigPos != homePos:
+                return False
             self.postHandler()
             return True
 
@@ -38,6 +48,11 @@ run,run,run!!!
             return (None,None)
 
         if not character.getNearbyEnemies():
+            bigPos = character.getBigPosition()
+            homePos = character.getHomeRoomCord()
+            if self.returnHome and bigPos != homePos:
+                quest = src.quests.questMap["GoHome"]()
+                return ([quest],None)
             if not dryRun:
                 self.postHandler()
             return (None,None)

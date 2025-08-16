@@ -133,7 +133,7 @@ So if an enemy is to directly east of you:
             return (None,(".","catch breath"))
 
         # move toward enemies (smarter)
-        if character.rank:
+        if isinstance(character,src.characters.characterMap["Clone"]):
             shortestPath = None
             for enemy in character.getNearbyEnemies():
                 if character.container.isRoom:

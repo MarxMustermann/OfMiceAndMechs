@@ -60,11 +60,17 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
         if not statusEffectString == "":
             statusEffectString = statusEffectString[:-2]
         text += f"status effects: %s\npress e to view a detailed buff list"%(statusEffectString,)
+        
+        try:
+            char.hasSwapAttacks
+        except:
+            char.hasSwapAttacks = False
 
         text += "\n"
         text += f"movementSpeed:  {char.movementSpeed}\n"
         text += f"attackSpeed:    {char.attackSpeed}\n"
         text += f"hasSpecialAttacks: {char.hasSpecialAttacks}\n"
+        text += f"hasSwapAttacks: {char.hasSwapAttacks}\n"
         text += "\n"
         for jobOrder in char.jobOrders:
             text += str(jobOrder.taskName)

@@ -137,9 +137,10 @@ You can do special attacks now.
 press shift when attacking an enemy and you can do special attacks now.
 """)
                 character.macroState["submenue"] = submenu
+                extraInfo["rewardType"] = "special attacks"
                 submenu.followUp = {
                     "container": self,
-                    "method": "do_promotion",
+                    "method": "get_rank_6_reward",
                     "params": extraInfo,
                 }
                 character.runCommandString("~",nativeKey=True)
@@ -154,12 +155,17 @@ You are rank {character.rank} now.
         character.macroState["submenue"] = submenu
         character.runCommandString("~",nativeKey=True)
 
+    def get_rank_6_reward(self, extraInfo):
+        # unpack parameters
+        character = extraInfo["character"]
+
+        character.hasSpecialAttacks = True
+        self.do_promotion(extraInfo)
+
     def do_promotion(self,extraInfo):
         # unpack parameters
         character = extraInfo["character"]
 
-        if character.rank == 6:
-            character.hasSpecialAttacks = True
         character.rank -= 1
         character.addMessage(f"you were promoted to rank {character.rank}")
         character.changed("got promotion",{})

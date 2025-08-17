@@ -1776,8 +1776,21 @@ class Room:
                         character.exhaustion -= min(1,character.exhaustion)
                         character.takeTime(character.adjustedMovementSpeed,"moved 2")
             else:
-                character.takeTime(character.adjustedMovementSpeed/2,"moved 3")
-                character.exhaustion += 5
+                try:
+                    character.hasJump
+                except:
+                    character.hasJump = False
+                try:
+                    character.hasRun
+                except:
+                    character.hasRun = False
+
+                if character.hasJump:
+                    character.takeTime(character.adjustedMovementSpeed/2,"moved 3")
+                    character.exhaustion += 5
+                elif character.hasRun:
+                    character.takeTime(character.adjustedMovementSpeed*0.80,"moved 4")
+                    character.exhaustion += 1
             character.stats["steps taken"] = character.stats.get("steps taken", 0) + 1
 
             return self.moveCharacter(character, tuple(newPosition))

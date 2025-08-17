@@ -76,6 +76,8 @@ class Character:
 
         self.hasSpecialAttacks = False
         self.hasSwapAttack = False
+        self.hasJump = False
+        self.hasRun = False
 
         self.showThinking = False
         self.showGotCommand = False

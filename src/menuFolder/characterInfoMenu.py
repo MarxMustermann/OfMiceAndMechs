@@ -71,6 +71,8 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
         text += f"attackSpeed:    {char.attackSpeed}\n"
         text += f"hasSpecialAttacks: {char.hasSpecialAttacks}\n"
         text += f"hasSwapAttacks: {char.hasSwapAttacks}\n"
+        text += f"hasRun: {char.hasRun}\n"
+        text += f"hasJump: {char.hasJump}\n"
         text += "\n"
         for jobOrder in char.jobOrders:
             text += str(jobOrder.taskName)

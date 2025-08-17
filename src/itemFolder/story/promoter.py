@@ -147,7 +147,31 @@ You can only have one close combat perk
                 extraInfo["rewardType"] = "special attacks"
                 submenu.followUp = {
                     "container": self,
-                    "method": "get_rank_6_reward",
+                    "method": "get_rank_reward",
+                    "params": extraInfo,
+                }
+                character.runCommandString("~",nativeKey=True)
+                return
+            if character.rank == 5:
+                options = []
+                options.append(("endurence run","endurence run"))
+                options.append(("jump","jump"))
+                text = """
+As a a reward for reaching rank 4 you can select a special movement perk.
+
+You can only have one special movement perk 
+"""
+                submenu = src.menuFolder.selectionMenu.SelectionMenu(
+                    text = text,
+                    options=options,
+                    targetParamName="rewardType"
+                )
+
+                character.macroState["submenue"] = submenu
+                extraInfo["rewardType"] = "special attacks"
+                submenu.followUp = {
+                    "container": self,
+                    "method": "get_rank_reward",
                     "params": extraInfo,
                 }
                 character.runCommandString("~",nativeKey=True)
@@ -162,7 +186,7 @@ You are rank {character.rank} now.
         character.macroState["submenue"] = submenu
         character.runCommandString("~",nativeKey=True)
 
-    def get_rank_6_reward(self, extraInfo):
+    def get_rank_reward(self, extraInfo):
         # unpack parameters
         character = extraInfo["character"]
         rewardType = extraInfo["rewardType"]
@@ -171,6 +195,10 @@ You are rank {character.rank} now.
             character.hasSpecialAttacks = True
         if rewardType == "swap attacks":
             character.hasSwapAttack = True
+        if rewardType == "endurence run":
+            character.hasRun = True
+        if rewardType == "jump":
+            character.hasJump = True
         self.do_promotion(extraInfo)
 
     def do_promotion(self,extraInfo):

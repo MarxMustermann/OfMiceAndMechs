@@ -75,6 +75,7 @@ class Character:
         self.autoAdvance = False
 
         self.hasSpecialAttacks = False
+        self.hasSwapAttack = False
 
         self.showThinking = False
         self.showGotCommand = False
@@ -1404,7 +1405,7 @@ press any other key to attack normally"""
         '''
         return src.gamestate.gamestate.tick % 4 == 1
 
-    def attack(self, target, heavy = False, quick = False, ultraheavy = False, initial=False, harassing=False, light=False, opportunity=False, gambling=False, bestial=False, slow=False):
+    def attack(self, target, heavy = False, quick = False, ultraheavy = False, initial=False, harassing=False, light=False, opportunity=False, gambling=False, bestial=False, slow=False, swap=False):
         '''
         make the character attack something
 
@@ -1440,6 +1441,15 @@ press any other key to attack normally"""
             return
 
         target.changed("attacked",{})
+
+        if swap:
+            ownPos = self.getPosition()
+            self.xPosition = target.xPosition
+            self.yPosition = target.yPosition
+            target.xPosition = ownPos[0]
+            target.yPosition = ownPos[1]
+            self.changed("moved", (self, None))
+            target.changed("moved", (target, None))
 
         if initial and self.exhaustion > 0:
             self.addMessage("you are too exhausted to do an initial attack")

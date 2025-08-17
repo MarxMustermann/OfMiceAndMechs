@@ -2710,7 +2710,10 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
             charPos = char.getPosition()
             for enemy in char.getNearbyEnemies():
                 if enemy.getPosition(offset=offset) == charPos:
-                    char.selectSpecialAttack(enemy)
+                    if char.hasSpecialAttacks:
+                        char.selectSpecialAttack(enemy)
+                    elif char.hasSwapAttack:
+                        char.attack(enemy,swap=True)
                     return None
 
             if char.tool:

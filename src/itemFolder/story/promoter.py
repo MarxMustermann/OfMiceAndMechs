@@ -129,13 +129,20 @@ Kill all enemies on this terrain, to unlock the promotions to rank 2.
 
         while character.rank > highestAllowed:
             if character.rank == 6:
-                submenu = src.menuFolder.textMenu.TextMenu("""
-The tendrils touche something inside your implant.
+                options = []
+                options.append(("special attacks","special attacks"))
+                options.append(("swap attacks","swap attacks"))
+                text = """
+As a a reward for reaching rank 5 you can select a close combat perk.
 
-You can do special attacks now.
+You can only have one close combat perk
+"""
+                submenu = src.menuFolder.selectionMenu.SelectionMenu(
+                    text = text,
+                    options=options,
+                    targetParamName="rewardType"
+                )
 
-press shift when attacking an enemy and you can do special attacks now.
-""")
                 character.macroState["submenue"] = submenu
                 extraInfo["rewardType"] = "special attacks"
                 submenu.followUp = {
@@ -158,8 +165,12 @@ You are rank {character.rank} now.
     def get_rank_6_reward(self, extraInfo):
         # unpack parameters
         character = extraInfo["character"]
+        rewardType = extraInfo["rewardType"]
 
-        character.hasSpecialAttacks = True
+        if rewardType == "special attacks":
+            character.hasSpecialAttacks = True
+        if rewardType == "swap attacks":
+            character.hasSwapAttack = True
         self.do_promotion(extraInfo)
 
     def do_promotion(self,extraInfo):

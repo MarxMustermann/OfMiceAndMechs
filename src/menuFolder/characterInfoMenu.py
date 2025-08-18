@@ -81,16 +81,27 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
             char.hasRandomShot
         except:
             char.hasRandomShot = False
+        try:
+            char.hasMovementSpeedBoost
+        except:
+            char.hasMovementSpeedBoost = False
+        try:
+            char.hasMaxHealthBoost
+        except:
+            char.hasMaxHealthBoost = False
 
         text += "\n"
-        text += f"movementSpeed:  {char.movementSpeed}\n"
+        text += f"movementSpeed:  {char.adjustedMovementSpeed}\n"
         text += f"attackSpeed:    {char.attackSpeed}\n"
+        text += "\n"
         text += f"hasSpecialAttacks: {char.hasSpecialAttacks}\n"
         text += f"hasSwapAttack: {char.hasSwapAttack}\n"
         text += f"hasRun: {char.hasRun}\n"
         text += f"hasJump: {char.hasJump}\n"
         text += f"hasLineShot: {char.hasLineShot}\n"
         text += f"hasRandomShot: {char.hasRandomShot}\n"
+        text += f"hasMovementSpeedBoost: {char.hasMovementSpeedBoost}\n"
+        text += f"hasMaxHealthBoost: {char.hasMaxHealthBoost}\n"
         text += "\n"
         for jobOrder in char.jobOrders:
             text += str(jobOrder.taskName)

@@ -2893,6 +2893,12 @@ press any other key to attack normally"""
         for statusEffect in self.statusEffects:
             if issubclass(type(statusEffect), src.statusEffects.MovementBuff):
                 speed = statusEffect.modMovement(speed)
+        try:
+            self.hasMovementSpeedBoost
+        except:
+            self.hasMovementSpeedBoost = False
+        if self.hasMovementSpeedBoost:
+            speed *= 0.5
         return speed
 
     @property
@@ -2904,6 +2910,12 @@ press any other key to attack normally"""
         for statusEffect in self.statusEffects:
             if issubclass(type(statusEffect), src.statusEffects.HealthBuff):
                 maxHealth = statusEffect.modHealth(maxHealth)
+        try:
+            self.hasMaxHealthBoost
+        except:
+            self.hasMaxHealthBoost = False
+        if self.hasMaxHealthBoost:
+            maxHealth *= 2
         return maxHealth
 
     @property

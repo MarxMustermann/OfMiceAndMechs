@@ -201,6 +201,29 @@ You can only have one ranged attack perk
                 }
                 character.runCommandString("~",nativeKey=True)
                 return
+            if character.rank == 3:
+                options = []
+                options.append(("max health boost","max health boost"))
+                options.append(("movement speed boost","movement speed boost"))
+                text = """
+As a a reward for reaching rank 2 you can select a attribute perk.
+
+You can only have one attribute perk 
+"""
+                submenu = src.menuFolder.selectionMenu.SelectionMenu(
+                    text = text,
+                    options=options,
+                    targetParamName="rewardType"
+                )
+
+                character.macroState["submenue"] = submenu
+                submenu.followUp = {
+                    "container": self,
+                    "method": "get_rank_reward",
+                    "params": extraInfo,
+                }
+                character.runCommandString("~",nativeKey=True)
+                return
             self.do_promotion(extraInfo)
 
         submenu = src.menuFolder.textMenu.TextMenu(f"""
@@ -235,6 +258,10 @@ You are rank {character.rank} now.
             character.hasLineShot = True
         if rewardType == "ramdom target shot":
             character.hasRandomShot = True
+        if rewardType == "max health boost":
+            character.hasMaxHealthBoost = True
+        if rewardType == "movement speed boost":
+            character.hasMovementSpeedBoost = True
         self.do_promotion(extraInfo)
 
     def do_promotion(self,extraInfo):

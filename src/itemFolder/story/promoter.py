@@ -179,7 +179,7 @@ You can only have one special movement perk
                 options.append(("line shot","line shot"))
                 options.append(("ramdom target shot","ramdom target shot"))
                 text = """
-As a a reward for reaching rank 4 you can select a ranged attack perk.
+As a a reward for reaching rank 3 you can select a ranged attack perk.
 
 You can only have one ranged attack perk 
 """

@@ -154,7 +154,7 @@ You can only have one close combat perk
                 return
             if character.rank == 5:
                 options = []
-                options.append(("endurence run","endurence run"))
+                options.append(("endurance run","endurance run"))
                 options.append(("jump","jump"))
                 text = """
 As a a reward for reaching rank 4 you can select a special movement perk.
@@ -195,7 +195,7 @@ You are rank {character.rank} now.
             character.hasSpecialAttacks = True
         if rewardType == "swap attacks":
             character.hasSwapAttack = True
-        if rewardType == "endurence run":
+        if rewardType == "endurance run":
             character.hasRun = True
         if rewardType == "jump":
             character.hasJump = True

@@ -472,9 +472,9 @@ class Character:
             if not item.type == "Vial":
                 continue
             numVialCharges += item.uses
-        weight += numVialCharges*vialChargeWeight
-        weight-= self.adjustedMovementSpeed* movementSpeedWeight
-        weight-= self.attackSpeed* attackSpeedWeight
+        weight += numVialCharges * vialChargeWeight
+        weight -= self.adjustedMovementSpeed * movementSpeedWeight
+        weight -= self.attackSpeed * attackSpeedWeight
 
         weight = weight*totalWeight
 

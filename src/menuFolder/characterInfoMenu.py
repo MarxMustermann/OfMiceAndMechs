@@ -73,6 +73,14 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
             char.hasJump
         except:
             char.hasJump = False
+        try:
+            char.hasLineShot
+        except:
+            char.hasLineShot = False
+        try:
+            char.hasRandomShot
+        except:
+            char.hasRandomShot = False
 
         text += "\n"
         text += f"movementSpeed:  {char.movementSpeed}\n"
@@ -81,6 +89,8 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
         text += f"hasSwapAttack: {char.hasSwapAttack}\n"
         text += f"hasRun: {char.hasRun}\n"
         text += f"hasJump: {char.hasJump}\n"
+        text += f"hasLineShot: {char.hasLineShot}\n"
+        text += f"hasRandomShot: {char.hasRandomShot}\n"
         text += "\n"
         for jobOrder in char.jobOrders:
             text += str(jobOrder.taskName)

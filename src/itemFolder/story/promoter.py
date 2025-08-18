@@ -144,7 +144,6 @@ You can only have one close combat perk
                 )
 
                 character.macroState["submenue"] = submenu
-                extraInfo["rewardType"] = "special attacks"
                 submenu.followUp = {
                     "container": self,
                     "method": "get_rank_reward",
@@ -168,7 +167,29 @@ You can only have one special movement perk
                 )
 
                 character.macroState["submenue"] = submenu
-                extraInfo["rewardType"] = "special attacks"
+                submenu.followUp = {
+                    "container": self,
+                    "method": "get_rank_reward",
+                    "params": extraInfo,
+                }
+                character.runCommandString("~",nativeKey=True)
+                return
+            if character.rank == 4:
+                options = []
+                options.append(("line shot","line shot"))
+                options.append(("ramdom target shot","ramdom target shot"))
+                text = """
+As a a reward for reaching rank 4 you can select a ranged attack perk.
+
+You can only have one ranged attack perk 
+"""
+                submenu = src.menuFolder.selectionMenu.SelectionMenu(
+                    text = text,
+                    options=options,
+                    targetParamName="rewardType"
+                )
+
+                character.macroState["submenue"] = submenu
                 submenu.followUp = {
                     "container": self,
                     "method": "get_rank_reward",
@@ -199,6 +220,10 @@ You are rank {character.rank} now.
             character.hasRun = True
         if rewardType == "jump":
             character.hasJump = True
+        if rewardType == "line shot":
+            character.hasLineShot = True
+        if rewardType == "ramdom target shot":
+            character.hasRandomShot = True
         self.do_promotion(extraInfo)
 
     def do_promotion(self,extraInfo):

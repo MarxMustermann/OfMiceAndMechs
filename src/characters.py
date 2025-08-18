@@ -78,6 +78,8 @@ class Character:
         self.hasSwapAttack = False
         self.hasJump = False
         self.hasRun = False
+        self.hasLineShot = False
+        self.hasRandomShot = False
 
         self.showThinking = False
         self.showGotCommand = False
@@ -801,6 +803,29 @@ class Character:
         for target in targets:
             distance = abs(target.xPosition-self.xPosition)+abs(target.yPosition-self.yPosition)
         return None
+
+    def doRandomRanged(self):
+        '''
+        '''
+
+        bolt = None
+        for item in self.inventory:
+            if item.type == "Bolt":
+                bolt = item
+
+        if not bolt:
+            self.addMessage("you have no bolt to fire")
+            return
+
+        candidates = self.getNearbyEnemies()
+        random.shuffle(candidates)
+        for candidate in candidates:
+            self.inventory.remove(bolt)
+            candidate.hurt(50,reason="got hit by a bolt",actor=self)
+            return
+
+        self.addMessage("no target to shoot at")
+        return
 
     def doRangedAttack(self,direction):
         '''

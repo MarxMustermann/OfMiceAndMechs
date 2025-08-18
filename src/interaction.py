@@ -2932,8 +2932,18 @@ press key for the configuration interaction
             return None
 
         if key in ("f",):
-            if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-                text = """
+            try:
+                char.hasLineShot
+            except:
+                char.hasLineShot = False
+            try:
+                char.hasRandomShot
+            except:
+                char.hasRandomShot = False
+
+            if char.hasLineShot:
+                if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
+                    text = """
 
 press key to set fire direction
 
@@ -2944,16 +2954,19 @@ press key to set fire direction
 
 """
 
-                header.set_text(
-                    (urwid.AttrSpec("default", "default"), "fire menu")
-                )
-                main.set_text((urwid.AttrSpec("default", "default"), text))
-                footer.set_text((urwid.AttrSpec("default", "default"), ""))
-                char.specialRender = True
+                    header.set_text(
+                        (urwid.AttrSpec("default", "default"), "fire menu")
+                    )
+                    main.set_text((urwid.AttrSpec("default", "default"), text))
+                    footer.set_text((urwid.AttrSpec("default", "default"), ""))
+                    char.specialRender = True
 
-            char.interactionState["fireDirection"] = {}
-            return None
-
+                char.interactionState["fireDirection"] = {}
+                return None
+            elif char.hasRandomShot:
+                char.doRandomRanged()
+            else:
+                char.addMessage("no ranged attack")
         if key in ("K",):
             if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
                 text = """

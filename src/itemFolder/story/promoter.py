@@ -123,6 +123,10 @@ Kill all enemies on this terrain, to unlock the promotions to rank 2.
         self.do_promotions(extraInfo)
 
     def do_promotions(self,extraInfo):
+        '''
+        show the UI for actually getting the promotions
+        '''
+
         # unpack parameters
         character = extraInfo["character"]
         highestAllowed = extraInfo["highestAllowed"]
@@ -208,9 +212,16 @@ You are rank {character.rank} now.
         character.runCommandString("~",nativeKey=True)
 
     def get_rank_reward(self, extraInfo):
+        '''
+        dispense a reward for getting promoted
+        '''
+
         # unpack parameters
         character = extraInfo["character"]
         rewardType = extraInfo["rewardType"]
+
+        if rewardType is None:
+            return
 
         if rewardType == "special attacks":
             character.hasSpecialAttacks = True
@@ -227,6 +238,9 @@ You are rank {character.rank} now.
         self.do_promotion(extraInfo)
 
     def do_promotion(self,extraInfo):
+        '''
+        do an individual rank upgrade
+        '''
         # unpack parameters
         character = extraInfo["character"]
 

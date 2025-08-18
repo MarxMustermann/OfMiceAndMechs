@@ -62,15 +62,23 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
         text += f"status effects: %s\npress e to view a detailed buff list"%(statusEffectString,)
         
         try:
-            char.hasSwapAttacks
+            char.hasSwapAttack
         except:
-            char.hasSwapAttacks = False
+            char.hasSwapAttack = False
+        try:
+            char.hasRun
+        except:
+            char.hasRun = False
+        try:
+            char.hasJump
+        except:
+            char.hasJump = False
 
         text += "\n"
         text += f"movementSpeed:  {char.movementSpeed}\n"
         text += f"attackSpeed:    {char.attackSpeed}\n"
         text += f"hasSpecialAttacks: {char.hasSpecialAttacks}\n"
-        text += f"hasSwapAttacks: {char.hasSwapAttacks}\n"
+        text += f"hasSwapAttack: {char.hasSwapAttack}\n"
         text += f"hasRun: {char.hasRun}\n"
         text += f"hasJump: {char.hasJump}\n"
         text += "\n"

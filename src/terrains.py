@@ -1302,7 +1302,7 @@ class Terrain:
 
         return moves
 
-    def getPathTile(self,tilePos,startPos,targetPos,tryHard=False,avoidItems=None,localRandom=None,ignoreEndBlocked=None,character=None):
+    def getPathTile(self,tilePos,startPos,targetPos,tryHard=False,avoidItems=None,localRandom=None,ignoreEndBlocked=None,character=None,ignoreUnbolted=False):
         """
         path = self.pathCache.get((tilePos,startPos,targetPos))
         if path:
@@ -1340,10 +1340,23 @@ class Terrain:
 
         for y in range(1,14):
             for x in range(1,14):
-                 if ignoreEndBlocked and (x,y,0) == targetPos:
-                    tileMap[x][y] = 1
-                 elif not self.getPositionWalkable((x+15*tilePos[0],y+15*tilePos[1],0),character=character):
-                    tileMap[x][y] = 0
+                if ignoreEndBlocked and (x,y,0) == targetPos:
+                     tileMap[x][y] = 1
+                elif not self.getPositionWalkable((x+15*tilePos[0],y+15*tilePos[1],0),character=character):
+                    if not ignoreUnbolted:
+                        tileMap[x][y] = 0
+                    else:
+                        tileMap[x][y] = 100
+                        smallItemCounter = 0
+                        for item in self.getItemByPosition((x,y,0)):
+                            if item.bolted and not item.walkable:
+                                tileMap[x][y] = 0
+                                break
+                            if item.bolted and item.walkable:
+                                smallItemCounter += 1
+                                continue
+                        if smallItemCounter > 15:
+                            tileMap[x][y] = 0
 
         for y in range(1,14):
             for x in range(1,14):

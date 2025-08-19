@@ -268,7 +268,7 @@ Press d to move the cursor and show the subquests description.
             for y in range(1,13):
                 items = terrain.getItemByPosition((x*15+7,y*15+7,0))
                 if items and items[0].type == "RoomBuilder":
-                    quest = src.quests.questMap["BuildRoom"](targetPosition=(x,y,0),lifetime=1000)
+                    quest = src.quests.questMap["BuildRoom"](targetPosition=(x,y,0),lifetime=15*15*15)
                     if not dryRun:
                         beUsefull.idleCounter = 0
                     return ([quest],None)
@@ -281,7 +281,7 @@ Press d to move the cursor and show the subquests description.
                 for candidate in cityPlaner.plannedRooms:
                     items = terrain.itemsByCoordinate.get((candidate[0]*15+7,candidate[1]*15+7,0))
                     if items and items[-1].type == "RoomBuilder":
-                        quest = src.quests.questMap["BuildRoom"](targetPosition=candidate,lifetime=1000)
+                        quest = src.quests.questMap["BuildRoom"](targetPosition=candidate,lifetime=15*15*15)
                         if not dryRun:
                             beUsefull.idleCounter = 0
                         return ([quest],None)
@@ -291,7 +291,7 @@ Press d to move the cursor and show the subquests description.
                         cityPlaner.plannedRooms.remove(cityPlaner.plannedRooms[0])
                         continue
 
-                    quest= src.quests.questMap["BuildRoom"](targetPosition=cityPlaner.plannedRooms[0],lifetime=1000)
+                    quest= src.quests.questMap["BuildRoom"](targetPosition=cityPlaner.plannedRooms[0],lifetime=15*15*15)
                     if not dryRun:
                         beUsefull.idleCounter = 0
                     return ([quest],None)

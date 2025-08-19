@@ -141,8 +141,19 @@ So if an enemy is to directly east of you:
                 else:
                     path = character.container.getPathTile(character.getBigPosition(),character.getSpacePosition(),enemy.getSpacePosition(),ignoreEndBlocked=True,character=character)
 
-                if shortestPath == None or len(shortestPath) > len(path):
+                if path and (shortestPath == None or len(shortestPath) > len(path)):
                     shortestPath = path
+
+            if not shortestPath:
+                for enemy in character.getNearbyEnemies():
+                    if character.container.isRoom:
+                        path = character.container.getPathTile(character.getPosition(),enemy.getPosition(),ignoreEndBlocked=True,character=character,ignoreUnbolted=True)
+                    else:
+                        path = character.container.getPathTile(character.getBigPosition(),character.getSpacePosition(),enemy.getSpacePosition(),ignoreEndBlocked=True,character=character,ignoreUnbolted=True)
+
+                    if path and (shortestPath == None or len(shortestPath) > len(path)):
+                        shortestPath = path
+
             if shortestPath:
                 command = None
                 step = shortestPath[0]

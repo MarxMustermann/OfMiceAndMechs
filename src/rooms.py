@@ -356,7 +356,7 @@ class Room:
                 command += movementMap[offset]
         return (command,path)
 
-    def getRoomMap(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False,character=None,clearing=False):
+    def getRoomMap(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False,character=None,clearing=False,ignoreUnbolted=False):
 
         roomMap = []
         for x in range(13):
@@ -387,7 +387,20 @@ class Room:
                     if clearing and not (y == 0 or y == 12 or x == 0 or x == 12):
                         roomMap[x][y] = 100
                     else:
-                        roomMap[x][y] = 0
+                        if not ignoreUnbolted:
+                            roomMap[x][y] = 0
+                        else:
+                            roomMap[x][y] = 100
+                            smallItemCounter = 0
+                            for item in self.getItemByPosition((x,y,0)):
+                                if item.bolted and not item.walkable:
+                                    roomMap[x][y] = 0
+                                    break
+                                if item.bolted and item.walkable:
+                                    smallItemCounter += 1
+                                    continue
+                            if smallItemCounter > 15:
+                                roomMap[x][y] = 0
 
         roomMap[6][0] = 1
         roomMap[6][12] = 1
@@ -491,7 +504,7 @@ class Room:
 
         return moves
 
-    def getPathTile(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False,character=None):
+    def getPathTile(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False,character=None,clearing=False,ignoreUnbolted=False):
 
         """
         path = self.pathCache.get((startPos,targetPos))
@@ -509,7 +522,7 @@ class Room:
                 return path[:]
         """
 
-        roomMap = self.getRoomMap(startPos,targetPos,avoidItems,localRandom,tryHard,ignoreEndBlocked,character)
+        roomMap = self.getRoomMap(startPos,targetPos,avoidItems,localRandom,tryHard,ignoreEndBlocked,character,clearing=clearing,ignoreUnbolted=ignoreUnbolted)
         cost = self.convertRoomMap(roomMap)
 
         pathfinder = tcod.path.AStar(cost,diagonal = 0)

@@ -24,7 +24,7 @@ class LesserPermaMaxHealthPotion(src.items.itemMap["Potion"]):
         super().apply(character)
 
     def getLongInfo(self):
-        return f"This Potion increases your max health by {self.healingamount}"
+        return f"This Potion increases your max health by {self.healing_amount}"
 
     def ingredients():
         return [src.items.itemMap["Bloom"],src.items.itemMap["LightningRod"]]

@@ -4428,6 +4428,8 @@ def renderGameDisplay(renderChar=None):
                         if stepSize == 0:
                             stepSize = 1
                         healthRate = int(char.health/stepSize)
+                        if char.health == char.maxHealth:
+                            healthRate = 15
 
                         if char.health == 0:
                             healthDisplay = "---------------"

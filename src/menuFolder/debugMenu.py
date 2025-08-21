@@ -297,6 +297,21 @@ class DebugMenu(src.subMenu.SubMenu):
         else:
             terrain.addCharacter(character,15*params["coordinate"][0]+7,15*params["coordinate"][1]+7)
 
+    def teleportToTerrain(self, params):
+        '''
+        teleport character to a terrain
+        '''
+        x, y = params["big_coordinate"]
+        character = params["character"]
+        terrain = character.getTerrain()
+        character.container.removeCharacter(character)
+        terrain = src.gamestate.gamestate.terrainMap[y][x]
+        room = terrain.getRoomByPosition((7, 7))
+        if len(room):
+            room[0].addCharacter(character, 7, 7)
+        else:
+            terrain.addCharacter(character, 15 * 7 + 7, 15 * 7 + 7)
+
     def action(self, params):
         character = params["character"]
 
@@ -328,16 +343,7 @@ class DebugMenu(src.subMenu.SubMenu):
             character.addMessage(f"item ({item_name}) not found")
 
         if "big_coordinate" in params:
-            print(params["big_coordinate"])
-            x, y = params["big_coordinate"]
-            terrain = character.getTerrain()
-            character.container.removeCharacter(character)
-            terrain = src.gamestate.gamestate.terrainMap[y][x]
-            room = terrain.getRoomByPosition((7, 7))
-            if len(room):
-                room[0].addCharacter(character, 7, 7)
-            else:
-                terrain.addCharacter(character, 15 * 7 + 7, 15 * 7 + 7)
+            self.teleportToTerrain(params)
 
         if "ticks" in params:
             params["productionTime"] = int(params["ticks"])

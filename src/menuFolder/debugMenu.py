@@ -301,16 +301,10 @@ class DebugMenu(src.subMenu.SubMenu):
         '''
         teleport character to a terrain
         '''
-        x, y = params["big_coordinate"]
+        terrain_position = params["big_coordinate"]
         character = params["character"]
-        terrain = character.getTerrain()
-        character.container.removeCharacter(character)
-        terrain = src.gamestate.gamestate.terrainMap[y][x]
-        room = terrain.getRoomByPosition((7, 7))
-        if len(room):
-            room[0].addCharacter(character, 7, 7)
-        else:
-            terrain.addCharacter(character, 15 * 7 + 7, 15 * 7 + 7)
+
+        src.magic.teleportToTerrain(character, terrain_position)
 
     def action(self, params):
         character = params["character"]

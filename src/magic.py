@@ -14,6 +14,19 @@ def teleportToTile(character, position, terrain):
     else:
         terrain.addCharacter(character,15*position[0]+7,15*position[1]+7)
 
+def teleportToTerrain(character, terrainPosition):
+    '''
+    teleport character to a terrain
+    '''
+    x, y = terrainPosition
+    character.container.removeCharacter(character)
+    terrain = src.gamestate.gamestate.terrainMap[y][x]
+    room = terrain.getRoomByPosition((7, 7))
+    if len(room):
+        room[0].addCharacter(character, 7, 7)
+    else:
+        terrain.addCharacter(character, 15 * 7 + 7, 15 * 7 + 7)
+
 def SpawnStorageRoom(terrain, coordinate, controlRoom, teleporter_group):
     '''
     spawn storage room

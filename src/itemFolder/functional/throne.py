@@ -84,9 +84,11 @@ Something you did not know about.
         text = f"""
 You need to visit the true Throne on the terrain (7,7,0) to reach rank 1.
 
-= press enter to continue =
+Do you you want to teleport there now?
+
 """
-        submenu = src.menuFolder.textMenu.TextMenu(text)
+        options = [("yes","yes"),("no","no")]
+        submenu = src.menuFolder.selectionMenu.SelectionMenu(text,options)
         submenu.followUp = {"container":self,"method":"teleport","params":{"character":character}}
         character.macroState["submenue"] = submenu
         character.runCommandString("~",nativeKey=True)
@@ -94,7 +96,12 @@ You need to visit the true Throne on the terrain (7,7,0) to reach rank 1.
         character.changed("told to ascend")
 
     def teleport(self,extraInfo):
-        src.magic.teleportToTerrain(extraInfo["character"], (7,7), spawnOutside=True)
+        if extraInfo.get("selection") != "yes":
+            return
+
+        character = extraInfo["character"]
+        target_terrain_position = (7,7)
+        src.magic.teleportToTerrain(character, target_terrain_position, spawnOutside=True)
 
     def getConfigurationOptions(self, character):
         """

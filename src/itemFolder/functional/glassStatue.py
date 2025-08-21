@@ -232,29 +232,13 @@ class GlassStatue(src.items.Item):
         if self.charges < 5:
             character.addMessage(f"not enough charges ({self.charges}/5)")
             return
-        character.addMessage(str(src.gamestate.gamestate.gods[self.itemID]["lastHeartPos"]))
 
-        (x,y) = src.gamestate.gamestate.gods[self.itemID]["lastHeartPos"]
-        newTerrain = src.gamestate.gamestate.terrainMap[y][x]
-
-        candidates = []
-        for x in range(1,14):
-            for y in range(1,14):
-                if newTerrain.getRoomByPosition((x,y,0)):
-                    continue
-                candidates.append((x,y,0))
-        bigPos = random.choice(candidates)
-
-        character.container.removeCharacter(character)
-        newTerrain.addCharacter(character,15*bigPos[0]+13,15*bigPos[1]+7)
+        terrain_position = src.gamestate.gamestate.gods[self.itemID]["lastHeartPos"]
+        src.magic.teleportToTerrain(character, terrain_position, spawnOutside=True)
 
         self.charges -= 1
         self.numTeleportsDone += 1
-
         character.changed("glass statue used",{})
-        character.changed("changedTerrain",{"character":character})
-
-        character.interactionState["itemMarkedLast"] = None
 
     def showInfo(self,character):
         '''

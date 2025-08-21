@@ -21,11 +21,22 @@ def teleportToTerrain(character, terrainPosition, spawnOutside=False):
     x, y = terrainPosition
     character.container.removeCharacter(character)
     terrain = src.gamestate.gamestate.terrainMap[y][x]
-    room = terrain.getRoomByPosition((7, 7))
+
+    target_tile_position = (7,7)
+    if spawnOutside:
+        candidates = []
+        for x in range(1,14):
+            for y in range(1,14):
+                if terrain.getRoomByPosition((x,y,0)):
+                    continue
+                candidates.append((x,y,0))
+        target_tile_position = random.choice(candidates)
+
+    room = terrain.getRoomByPosition(target_tile_position)
     if len(room):
         room[0].addCharacter(character, 7, 7)
     else:
-        terrain.addCharacter(character, 15 * 7 + 7, 15 * 7 + 7)
+        terrain.addCharacter(character, 15 * target_tile_position[0] + 7, 15 * target_tile_position[1] + 7)
     character.changed("changedTerrain",{"character":character})
     character.interactionState["itemMarkedLast"] = None
 

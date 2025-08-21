@@ -291,7 +291,6 @@ class GlassStatue(src.items.Item):
     def releaseGlassHeart(self,character):
         if self.hasItem:
             src.gamestate.gamestate.gods[self.itemID]["lastHeartPos"] = src.gamestate.gamestate.gods[self.itemID]["home"]
-            print(src.gamestate.gamestate.gods[self.itemID])
             self.hasItem = False
 
     def removeGlassHeart(self,character):

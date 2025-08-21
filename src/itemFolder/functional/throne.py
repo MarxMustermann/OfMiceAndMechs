@@ -83,6 +83,8 @@ Something you did not know about.
 
         text = f"""
 You need to visit the true Throne on the terrain (7,7,0) to reach rank 1.
+
+= press enter to continue =
 """
         submenu = src.menuFolder.textMenu.TextMenu(text)
         submenu.followUp = {"container":self,"method":"teleport","params":{"character":character}}

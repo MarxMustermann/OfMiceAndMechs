@@ -168,6 +168,15 @@ Press d to move the cursor and show the subquests description.
         if self.subQuests:
             return (None,None)
 
+        if self.targetPositionBig:
+            terrain = character.getTerrain()
+            rooms = terrain.getRoomByPosition(self.targetPositionBig)
+            if rooms:
+                container = rooms[0]
+                if container.alarm:
+                    if not dryRun:
+                        self.fail("alarm")
+                    return (None,None)
         if character.getNearbyEnemies():
             quest = src.quests.questMap["Fight"]()
             return ([quest],None)

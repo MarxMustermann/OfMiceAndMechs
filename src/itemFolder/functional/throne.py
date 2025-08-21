@@ -50,17 +50,6 @@ You need to collect all GlassHarts to be accepted as supreme leader.
             character.addMessage("you need to control all GlassHearts")
             return
 
-        text = f"""
-You sit on the Throne, but you realize:
-
-You need to take the glass throne at (7,7,0)
-
-= press enter to continue =
-"""
-        submenu = src.menuFolder.textMenu.TextMenu(text)
-        character.macroState["submenue"] = submenu
-        character.runCommandString("~",nativeKey=True)
-
         noSeekerStatus = True
         for statusEffect in character.statusEffects:
             if not statusEffect.type == "ThroneSeeker":
@@ -71,7 +60,39 @@ You need to take the glass throne at (7,7,0)
             newEffect = src.statusEffects.statusEffectMap["ThroneSeeker"]()
             character.addStatusEffect(newEffect)
 
+            text = f"""
+You sit on the Throne and tendril connect to you body.
+They dig through your flesh and reach you implant.
+
+It unlocks something inside you implant.
+Something you did not know about.
+
+= press enter to continue =
+"""
+            submenu = src.menuFolder.textMenu.TextMenu(text)
+            submenu.followUp = {"container":self,"method":"offerTeleport","params":{"character":character}}
+            character.macroState["submenue"] = submenu
+            character.runCommandString("~",nativeKey=True)
+        else:
+            self.offerTeleport({"character":character})
+
         character.changed("told to ascend")
+
+    def offerTeleport(self,extraInfo):
+        character = extraInfo["character"]
+
+        text = f"""
+You need to visit the true Throne on the terrain (7,7,0) to reach rank 1.
+"""
+        submenu = src.menuFolder.textMenu.TextMenu(text)
+        submenu.followUp = {"container":self,"method":"teleport","params":{"character":character}}
+        character.macroState["submenue"] = submenu
+        character.runCommandString("~",nativeKey=True)
+
+        character.changed("told to ascend")
+
+    def teleport(self,extraInfo):
+        src.magic.teleportToTerrain(extraInfo["character"], (7,7), spawnOutside=True)
 
     def getConfigurationOptions(self, character):
         """

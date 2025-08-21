@@ -2,16 +2,10 @@ import src
 import random
 
 class Throne(src.items.Item):
-    """
-    ingame item ment to be placed by characters and to mark things with
-    """
-
+    '''
+    ingame item repesesenting the starting point to ascend to world leader
+    '''
     type = "Throne"
-
-    """
-    call superclass constructor with modified paramters and set some state
-    """
-
     def __init__(self):
         self.activated = False
         super().__init__("TT")
@@ -25,6 +19,9 @@ A throne. A symbol of power.
         self.lastWave = None
 
     def apply(self,character):
+        '''
+        handly a character trying to get a promotion
+        '''
         if character == src.gamestate.gamestate.mainChar:
             src.gamestate.gamestate.stern["failedAscend"] = True
 
@@ -53,26 +50,28 @@ You need to collect all GlassHarts to be accepted as supreme leader.
             character.addMessage("you need to control all GlassHearts")
             return
 
-        if character == src.gamestate.gamestate.mainChar:
-            text = f"""
+        text = f"""
 You sit on the Throne, but you realize:
 
 You need to take the glass throne at (7,7,0)
 
 = press enter to continue =
 """
+        submenu = src.menuFolder.textMenu.TextMenu(text)
+        character.macroState["submenue"] = submenu
+        character.runCommandString("~",nativeKey=True)
 
-            noSeekerStatus = True
-            for statusEffect in character.statusEffects:
-                if not statusEffect.type == "ThroneSeeker":
-                    continue
-                noSeekerStatus = False
+        noSeekerStatus = True
+        for statusEffect in character.statusEffects:
+            if not statusEffect.type == "ThroneSeeker":
+                continue
+            noSeekerStatus = False
 
-            if noSeekerStatus:
-                newEffect = src.statusEffects.statusEffectMap["ThroneSeeker"]()
-                character.addStatusEffect(newEffect)
+        if noSeekerStatus:
+            newEffect = src.statusEffects.statusEffectMap["ThroneSeeker"]()
+            character.addStatusEffect(newEffect)
 
-            character.changed("told to ascend")
+        character.changed("told to ascend")
 
     def getConfigurationOptions(self, character):
         """

@@ -14,7 +14,7 @@ def teleportToTile(character, position, terrain):
     else:
         terrain.addCharacter(character,15*position[0]+7,15*position[1]+7)
 
-def teleportToTerrain(character, terrainPosition):
+def teleportToTerrain(character, terrainPosition, spawnOutside=False):
     '''
     teleport character to a terrain
     '''
@@ -26,6 +26,8 @@ def teleportToTerrain(character, terrainPosition):
         room[0].addCharacter(character, 7, 7)
     else:
         terrain.addCharacter(character, 15 * 7 + 7, 15 * 7 + 7)
+    character.changed("changedTerrain",{"character":character})
+    character.interactionState["itemMarkedLast"] = None
 
 def SpawnStorageRoom(terrain, coordinate, controlRoom, teleporter_group):
     '''

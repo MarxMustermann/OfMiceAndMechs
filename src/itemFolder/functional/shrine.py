@@ -5,17 +5,11 @@ import math
 
 
 class Shrine(src.items.Item):
-    """
-    """
-
-
+    '''
+    ingame item to interact with the gods
+    '''
     type = "Shrine"
-
     def __init__(self,name="shrine",god=None):
-        """
-        set up the initial state
-        """
-
         super().__init__(display="\\/", name=name)
         self.god = god
 
@@ -37,6 +31,9 @@ class Shrine(src.items.Item):
                         }
 
     def taunt(self,character):
+        '''
+        provoke a god (disbaled)
+        '''
         if self.itemID == 1:
             options = []
             options.append((100,"100"))
@@ -59,20 +56,12 @@ class Shrine(src.items.Item):
             pass
 
     def teleport(self,character):
+        '''
+        teleport the character home
+        '''
         x = character.registers["HOMETx"]
         y = character.registers["HOMETy"]
-        newTerrain = src.gamestate.gamestate.terrainMap[y][x]
-
-        bigPos = (7,7)
-        character.container.removeCharacter(character)
-        room = newTerrain.getRoomByPosition(bigPos)
-        if room:
-            room[0].addCharacter(character,7,7)
-        else:
-            newTerrain.addCharacter(character,15*bigPos[0]+7,15*bigPos[1]+7)
-        character.changed("changedTerrain",{"character":character})
-
-        character.interactionState["itemMarkedLast"] = None
+        src.magic.teleportToTerrain(character, (x,y))
 
     def isChallengeDone(self):
         if self.god == 1:

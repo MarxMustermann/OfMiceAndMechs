@@ -3,6 +3,17 @@ import random
 
 import src
 
+def teleportToTile(character, position, terrain):
+    '''
+    teleport character to a tile 
+    '''
+    character.container.removeCharacter(character)
+    room = terrain.getRoomByPosition(position)
+    if len(room):
+        room[0].addCharacter(character,7,7)
+    else:
+        terrain.addCharacter(character,15*position[0]+7,15*position[1]+7)
+
 def SpawnStorageRoom(terrain, coordinate, controlRoom, teleporter_group):
     '''
     spawn storage room

@@ -288,14 +288,14 @@ class DebugMenu(src.subMenu.SubMenu):
         '''
         teleport character to a tile 
         '''
+
+        # prepare parameters
         character = params["character"]
         terrain = character.getTerrain()
-        character.container.removeCharacter(character)
-        room = terrain.getRoomByPosition(params["coordinate"])
-        if len(room):
-            room[0].addCharacter(character,7,7)
-        else:
-            terrain.addCharacter(character,15*params["coordinate"][0]+7,15*params["coordinate"][1]+7)
+        position = params["coordinate"]
+
+        # call the background mechanism
+        src.magic.teleportToTile(character, position, terrain)
 
     def teleportToTerrain(self, params):
         '''

@@ -310,6 +310,7 @@ class Character:
         '''
         submenu = src.menuFolder.textMenu.TextMenu(text)
         self.macroState["submenue"] = submenu
+        self.runCommandString("~",nativeKey=True)
 
     def callIndirect(self, callback, extraParams=None):
         '''

@@ -70,13 +70,18 @@ Something you did not know about.
 = press enter to continue =
 """
             submenu = src.menuFolder.textMenu.TextMenu(text)
-            submenu.followUp = {"container":self,"method":"offerTeleport","params":{"character":character}}
+            submenu.followUp = {"container":self,"method":"doMagicUpgrade","params":{"character":character}}
             character.macroState["submenue"] = submenu
             character.runCommandString("~",nativeKey=True)
         else:
             self.offerTeleport({"character":character})
 
         character.changed("told to ascend")
+
+    def doMagicUpgrade(self,extraInfo):
+        character.hasMagic = True
+
+        self.offerTeleport(extraInfo)
 
     def offerTeleport(self,extraInfo):
         character = extraInfo["character"]

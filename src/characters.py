@@ -2584,7 +2584,7 @@ press any other key to attack normally"""
             self.events.remove(event)
 
         # handle satiation
-        self.satiation -= self.foodPerRound
+        #self.satiation -= self.foodPerRound
         if self.satiation < 100:
             if self.satiation < 10:
                 self.frustration += 10

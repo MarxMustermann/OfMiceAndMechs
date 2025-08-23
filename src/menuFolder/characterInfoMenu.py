@@ -89,6 +89,10 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
             char.hasMaxHealthBoost
         except:
             char.hasMaxHealthBoost = False
+        try:
+            char.hasMagic
+        except:
+            char.hasMagic = False
 
         text += "\n"
         text += f"movementSpeed:  {char.adjustedMovementSpeed}\n"
@@ -102,6 +106,7 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
         text += f"hasRandomShot: {char.hasRandomShot}\n"
         text += f"hasMovementSpeedBoost: {char.hasMovementSpeedBoost}\n"
         text += f"hasMaxHealthBoost: {char.hasMaxHealthBoost}\n"
+        text += f"hasMagic: {char.hasMagic}\n"
         text += "\n"
         for jobOrder in char.jobOrders:
             text += str(jobOrder.taskName)

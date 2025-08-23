@@ -80,6 +80,7 @@ class Character:
         self.hasRun = False
         self.hasLineShot = False
         self.hasRandomShot = False
+        self.hasMagic = False
 
         self.showThinking = False
         self.showGotCommand = False

@@ -40,7 +40,7 @@ def teleportToTerrain(character, terrainPosition, spawnOutside=False):
     character.changed("changedTerrain",{"character":character})
     character.interactionState["itemMarkedLast"] = None
 
-def SpawnStorageRoom(terrain, coordinate, controlRoom, teleporter_group):
+def spawnStorageRoom(terrain, coordinate, controlRoom, teleporter_group):
     '''
     spawn storage room
     '''

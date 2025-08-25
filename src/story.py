@@ -1109,7 +1109,7 @@ class MainGame(BasicPhase):
 
             if src.helpers.percentage_chance(0.2):
                 remote_base_teleporter_group = random_frequency()
-            src.magic.SpawnStorageRoom(
+            src.magic.spawnStorageRoom(
                 currentTerrain, remove((base_tile[0], base_tile[1] - 2)), controlRoom, remote_base_teleporter_group
             )
 

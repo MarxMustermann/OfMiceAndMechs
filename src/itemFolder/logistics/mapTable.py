@@ -16,7 +16,6 @@ class MapTable(src.items.Item):
         super().__init__(display="MP")
         self.applyOptions.extend(
                         [
-                                ("showMap", "show map"),
                                 ("writeMap", "extend map"),
                                 ("readMap", "study map"),
                         ]

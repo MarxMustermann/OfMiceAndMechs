@@ -270,6 +270,10 @@ class Character:
         self.lastCast = None
 
     def repeatLastCast(self):
+        try:
+            self.lastCast
+        except:
+            self.lastCast = None
         self.castMagic({"keyPressed":self.lastCast}) 
 
     def selectCastMagic(self):

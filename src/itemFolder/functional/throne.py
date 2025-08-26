@@ -79,6 +79,7 @@ Something you did not know about.
         character.changed("told to ascend")
 
     def doMagicUpgrade(self,extraInfo):
+        character = extraInfo["character"]
         character.hasMagic = True
 
         self.offerTeleport(extraInfo)

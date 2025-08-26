@@ -2931,6 +2931,20 @@ press key for the configuration interaction
             handleActivityKeypress(char, header, main, footer, flags)
             return None
 
+        if key in ("p",):
+            try:
+                char.hasMagic
+            except:
+                char.hasMagic = False
+
+            if char.hasMagic:
+                char.selectCastMagic()
+            else:
+                char.showTextMenu("""
+You have a strange feeling, but nothing happens.
+""")
+            return None
+
         if key in ("f",):
             try:
                 char.hasLineShot

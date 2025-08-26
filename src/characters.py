@@ -268,6 +268,29 @@ class Character:
         self.hasPushbackAttack = False
         self.outsideOnly = False
 
+    def selectCastMagic(self):
+        '''
+        trigger casting some magic
+        '''
+        text = "What spell so you want to cast?\n\n"
+        #text += " - damage nearby\n"
+        #text += " - damage distance line\n"
+        #text += " - damage distance random\n"
+        #text += " - get stronger\n"
+        #text += " - heal\n"
+        #text += " - improve equipment\n"
+        submenu = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
+        submenu.followUp = {"container":self,"method":"castMagic","params":{}}
+        self.macroState["submenue"] = submenu
+        self.runCommandString("~",nativeKey=True)
+
+    def castMagic(self,extraInformation):
+        match extraInformation["keyPressed"]:
+            case None | "esc" | "enter":
+                return
+            case _:
+                self.addMessage("spell not found")
+
     def takeTime(self,amount,reason=None):
         '''
         make the character take a bit of time

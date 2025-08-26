@@ -2931,7 +2931,7 @@ press key for the configuration interaction
             handleActivityKeypress(char, header, main, footer, flags)
             return None
 
-        if key in ("p",):
+        if key in ("P",):
             try:
                 char.hasMagic
             except:

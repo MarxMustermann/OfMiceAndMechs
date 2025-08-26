@@ -267,6 +267,10 @@ class Character:
 
         self.hasPushbackAttack = False
         self.outsideOnly = False
+        self.lastCast = None
+
+    def repeatLastCast(self):
+        self.castMagic({"keyPressed":self.lastCast}) 
 
     def selectCastMagic(self):
         '''
@@ -288,6 +292,8 @@ class Character:
                 return
             case _:
                 self.addMessage("spell not found")
+
+        self.lastCast = extraInformation["keyPressed"]
 
     def takeTime(self,amount,reason=None):
         '''

@@ -82,7 +82,22 @@ Something you did not know about.
         character = extraInfo["character"]
         character.hasMagic = True
 
-        self.offerTeleport(extraInfo)
+        text = f"""
+You feel a strange new power.
+
+You can cast spells now.
+press P to cast a spell.
+press p ro recast the last spell you cast.
+
+The spells consume mana from the local terrain.
+The amount of mana available on the current terrain should be shown on you HUD now.
+
+= press enter to continue =
+"""
+        submenu = src.menuFolder.textMenu.TextMenu(text)
+        submenu.followUp = {"container":self,"method":"offerTeleport","params":{"character":character}}
+        character.macroState["submenue"] = submenu
+        character.runCommandString("~",nativeKey=True)
 
     def offerTeleport(self,extraInfo):
         character = extraInfo["character"]

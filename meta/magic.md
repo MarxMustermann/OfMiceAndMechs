@@ -38,6 +38,7 @@ Add ability to cast spells.
   * heal
   * improve equipment
   * displace/push back enemies
+  * spawn equipment
 * terrain specific minor gods
 * have god collect the ecess mana to spawn spontanous magic
 * have terrain burn of in random effects

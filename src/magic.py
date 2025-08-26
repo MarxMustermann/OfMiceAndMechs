@@ -7,11 +7,21 @@ def spawnForceField(character):
     '''
     spawn a ring formed dmage effect around a character
     '''
+
+    terrain = character.getTerrain()
     offsets = [(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]
     for offset in offsets:
+        if terrain.mana < 0.1:
+            character.addMessage("out of mana")
+            return
+        terrain.mana -= 0.1
         position = character.getPosition(offset=offset)
         character.container.addAnimation(position,"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "%%")]})
         for other_character in character.container.getCharactersOnPosition(position):
+            if terrain.mana < 4:
+                character.addMessage("out of mana")
+                return
+            terrain.mana -= 4
             damage_amount = 200
 
             other_character.container.addAnimation(position,"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#fff", "black"), "&9")]})

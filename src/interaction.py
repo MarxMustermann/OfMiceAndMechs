@@ -4382,7 +4382,15 @@ def renderGameDisplay(renderChar=None):
 
                 uiElements.append({"type":"healthInfo","offset":[(assumedScreenWidth-mapWidth)//2,1],"width":mapWidth})
                 uiElements.append({"type":"indicators","offset":[(assumedScreenWidth-mapWidth)//2,2],"width":mapWidth})
-                uiElements.append({"type":"text","offset":[(assumedScreenWidth-mapWidth)//2+37,3], "text":[src.interaction.ActionMeta(content="press ? for help",payload="z")]})
+                if not char.hasMagic:
+                    displayString = "press ? for help"
+                    displayWidth = len(displayString)
+                    uiElements.append({"type":"text","offset":[(assumedScreenWidth-mapWidth)//2+(mapWidth-displayWidth)//2,3], "text":[src.interaction.ActionMeta(content=displayString,payload="z")]})
+                else:
+                    terrain = char.getTerrain()
+                    displayString = " mana: "+str(terrain.mana)+"/"+str(terrain.maxMana)
+                    displayWidth = len(displayString)
+                    uiElements.append({"type":"text","offset":[(assumedScreenWidth-mapWidth)//2+(mapWidth-displayWidth)//2,3],"width":mapWidth,"text":displayString})
                 uiElements.append({"type":"time","offset":[(assumedScreenWidth-mapWidth)//2+35,4]})
 
                 if tcodConsole.width > mapWidth + 15*4:

@@ -6,22 +6,26 @@
 * the shrines use the terrains mana to cast the magic
 * each terrain can hold a certain amount of mana
 * each terrain renegerates mana at the start of every epoch
+* casting spells consume mana from the local terrain
+* characters seeking to ascend are able to cast spells
+* known spells
+  * damage nearby
 
 = code =
 * the actual magic effects (things that violate game logic) are in src.magic.py
+
+= instructions = 
+* press p recast a spell
+* press P to cast a spell
+* terraon mana pool is shown in UI when the hasMagic flag was set
 
 = work in progress =
 Add ability to cast spells.
 
 == done ==
 * add ability to cast spells
-  * add UI to cast
-    * add keybind to cast spell
-    * add keybind to recast last spell
   * implement 5 spells
     * close combat damage
-  * show mana pool in UI when the hasMagic flag was set
-  * make spells consume mana from local terrain
 
 == TODO ==
 * add ability to cast spells

@@ -274,11 +274,6 @@ class Character:
         '''
         text = "What spell so you want to cast?\n\n"
         text += " j - damage nearby\n"
-        #text += " - damage distance line\n"
-        #text += " - damage distance random\n"
-        #text += " - get stronger\n"
-        #text += " - heal\n"
-        #text += " - improve equipment\n"
         submenu = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
         submenu.followUp = {"container":self,"method":"castMagic","params":{}}
         self.macroState["submenue"] = submenu

@@ -4388,7 +4388,7 @@ def renderGameDisplay(renderChar=None):
                     uiElements.append({"type":"text","offset":[(assumedScreenWidth-mapWidth)//2+(mapWidth-displayWidth)//2,3], "text":[src.interaction.ActionMeta(content=displayString,payload="z")]})
                 else:
                     terrain = char.getTerrain()
-                    displayString = " mana: "+str(terrain.mana)+"/"+str(terrain.maxMana)
+                    displayString = f" mana: {round(terrain.mana,2)}/{terrain.maxMana}"
                     displayWidth = len(displayString)
                     uiElements.append({"type":"text","offset":[(assumedScreenWidth-mapWidth)//2+(mapWidth-displayWidth)//2,3],"width":mapWidth,"text":displayString})
                 uiElements.append({"type":"time","offset":[(assumedScreenWidth-mapWidth)//2+35,4]})

@@ -273,7 +273,7 @@ class Character:
         trigger casting some magic
         '''
         text = "What spell so you want to cast?\n\n"
-        #text += " - damage nearby\n"
+        text += " j - damage nearby\n"
         #text += " - damage distance line\n"
         #text += " - damage distance random\n"
         #text += " - get stronger\n"
@@ -286,6 +286,9 @@ class Character:
 
     def castMagic(self,extraInformation):
         match extraInformation["keyPressed"]:
+            case "j":
+                self.takeTime(0.1,reason="casting a spell")
+                src.magic.spawnForceField(self)
             case None | "esc" | "enter":
                 return
             case _:

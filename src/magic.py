@@ -3,6 +3,23 @@ import random
 
 import src
 
+def spawnForceField(character):
+    '''
+    spawn a ring formed dmage effect around a character
+    '''
+    offsets = [(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]
+    for offset in offsets:
+        position = character.getPosition(offset=offset)
+        character.container.addAnimation(position,"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "%%")]})
+        for other_character in character.container.getCharactersOnPosition(position):
+            damage_amount = 200
+
+            other_character.container.addAnimation(position,"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#fff", "black"), "&9")]})
+            other_character.container.addAnimation(position,"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "%%")]})
+
+            other_character.hurt(damage_amount,reason="shocked")
+            character.addMessage(f"you shock somebody for {damage_amount} damage")
+
 def teleportToTile(character, position, terrain):
     '''
     teleport character to a tile 

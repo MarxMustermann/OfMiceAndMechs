@@ -69,21 +69,22 @@ Its tendrils reach out and touch your implant.
                         continue
                     numCharacters += 1
 
-            if numCharacters < 2 and not highestAllowed:
-                character.addMessage(f"promotions locked")
+            if numCharacters < 2:
+                if not highestAllowed:
+                    character.addMessage(f"promotions locked")
 
-                submenu = src.menuFolder.textMenu.TextMenu("""
-Promotions to rank 5 are blocked.
+                    submenu = src.menuFolder.textMenu.TextMenu("""
+    Promotions to rank 5 are blocked.
 
-There need to be at least 1 clone besides you on the base to allow any promptions.
-""")
-                character.macroState["submenue"] = submenu
-                character.runCommandString("~",nativeKey=True)
+    There need to be at least 1 clone besides you on the base to allow any promptions.
+    """)
+                    character.macroState["submenue"] = submenu
+                    character.runCommandString("~",nativeKey=True)
 
-                character.changed("promotion blocked",{"reason":"needs 2 clones on base"})
-                return
-
-            highestAllowed = 5
+                    character.changed("promotion blocked",{"reason":"needs 2 clones on base"})
+                    return
+            else:
+                highestAllowed = 5
 
         if character.rank > 2:
             foundEnemies = []
@@ -99,22 +100,23 @@ There need to be at least 1 clone besides you on the base to allow any promption
                         continue
                     foundEnemies.append(otherChar)
 
-            if foundEnemies and not highestAllowed:
-                character.addMessage(f"promotions locked")
+            if foundEnemies:
+                if not highestAllowed:
+                    character.addMessage(f"promotions locked")
 
-                submenu = src.menuFolder.textMenu.TextMenu("""
-Promotions to rank 2 are blocked.
-Enemies are nearby.
+                    submenu = src.menuFolder.textMenu.TextMenu("""
+    Promotions to rank 2 are blocked.
+    Enemies are nearby.
 
-Kill all enemies on this terrain, to unlock the promotions to rank 2.
-""")
-                character.macroState["submenue"] = submenu
-                character.runCommandString("~",nativeKey=True)
+    Kill all enemies on this terrain, to unlock the promotions to rank 2.
+    """)
+                    character.macroState["submenue"] = submenu
+                    character.runCommandString("~",nativeKey=True)
 
-                character.changed("promotion blocked",{"reason":"needs 2 clones on base"})
-                return
-
-            highestAllowed = 2
+                    character.changed("promotion blocked",{"reason":"needs 2 clones on base"})
+                    return
+            else:
+                highestAllowed = 2
 
         if highestAllowed is None:
             return

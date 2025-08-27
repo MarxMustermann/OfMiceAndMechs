@@ -3,6 +3,21 @@ import random
 
 import src
 
+def addSpeedBuffs(character):
+    terrain = character.getTerrain()
+    if terrain.mana < 0.5:
+        character.addMessage("out of mana")
+        return
+    terrain.mana -= 0.5
+
+    character.heal(200,"magic")
+    buffs = [
+                   src.statusEffects.statusEffectMap["Haste"](speedUp=0.2,duration=200),
+                   src.statusEffects.statusEffectMap["Frenzy"](speedUp=0.2,duration=200),
+            ]
+    for buff in buffs:
+        character.addStatusEffect(buff)
+
 def heal(character):
     terrain = character.getTerrain()
     if terrain.mana < 2.5:

@@ -28,12 +28,12 @@ Add ability to cast spells.
     * close combat damage
     * heal
     * teleport home
+    * speed up
 
 == TODO ==
 * add ability to cast spells
   * implement 5 spells
     * ranged damage line
-    * speed up
 
 = ideas =
 * spell ideas

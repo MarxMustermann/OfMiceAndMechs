@@ -284,6 +284,7 @@ class Character:
         text += " j - damage nearby\n"
         text += " h - heal yourself\n"
         text += " H - teleport home\n"
+        text += " k - temporary speed\n"
         submenu = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
         submenu.followUp = {"container":self,"method":"castMagic","params":{}}
         self.macroState["submenue"] = submenu
@@ -302,6 +303,9 @@ class Character:
                 x = self.registers["HOMETx"]
                 y = self.registers["HOMETy"]
                 src.magic.teleportToTerrain(self, (x,y))
+            case "k":
+                self.takeTime(0.1,reason="casting a spell")
+                src.magic.addSpeedBuffs(self)
             case None | "esc" | "enter":
                 return
             case _:

@@ -60,166 +60,166 @@ done tiles: {self.doneTiles}"""
         '''
         calculate the next logical step towards solving the quest
         '''
-        if not self.subQuests:
-            self.tryHard = False
-            if character.getTerrain().alarm and not self.tryHard:
-                if not dryRun:
-                    self.fail("alarm")
-                return (None,None)
+        if self.subQuests:
+            return (None,None)
 
-            terrain = character.getTerrain()
+        self.tryHard = False
+        if character.getTerrain().alarm and not self.tryHard:
+            if not dryRun:
+                self.fail("alarm")
+            return (None,None)
+
+        terrain = character.getTerrain()
 
 
-            for item in terrain.getNearbyItems(character):
+        for item in terrain.getNearbyItems(character):
+            if self.toCollect and item.type != self.toCollect:
+                continue
+            #if item.type == "Scrap":
+            #    continue
+            if item.bolted:
+                continue
+
+            target = character.getBigPosition()
+
+            if target in self.doneTiles:
+                continue
+
+            centerItems = terrain.getItemByPosition((target[0]*15+7,target[1]*15+7,0))
+            if centerItems and centerItems[0].type == "RoomBuilder":
+                continue
+
+            if not (target not in terrain.scrapFields and target not in terrain.forests and not terrain.getRoomByPosition(target)):
+                continue
+            if terrain.getRoomByPosition(target):
+                continue
+
+            hasIdleSubordinate = False
+            for subordinate in character.subordinates:
+                if len(subordinate.quests) < 2:
+                    hasIdleSubordinate = True
+
+            if hasIdleSubordinate:
+                return (None,("Hjsssssj","make subordinate scavenge"))
+            else:
+                quest = src.quests.questMap["ScavengeTile"](targetPosition=target,toCollect=self.toCollect,reason="fill your inventory")
+                return ([quest],None)
+
+        if not dryRun:
+            self.doneTiles.append(character.getBigPosition())
+
+        offsets = [(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]
+
+        if self.lastMoveDirection:
+            offsets.append(self.lastMoveDirection)
+            offsets.append(self.lastMoveDirection)
+            offsets.append(self.lastMoveDirection)
+            offsets.append(self.lastMoveDirection)
+
+        random.shuffle(offsets)
+
+        pos = character.getBigPosition()
+
+        for offset in offsets:
+
+            target = (pos[0]+offset[0],pos[1]+offset[1],pos[2]+offset[2])
+
+            if target in self.doneTiles:
+                continue
+
+            if target[0] < 1 or target[0] > 13 or target[1] < 1 or target[1] > 13:
+                continue
+
+            if not (target not in terrain.scrapFields and target not in terrain.forests and not terrain.getRoomByPosition(target)):
+                continue
+            if terrain.getRoomByPosition(target):
+                continue
+
+            foundEnemy = False
+            for otherCharacter in terrain.charactersByTile.get(target,[]):
+                if otherCharacter.faction == character.faction:
+                    continue
+                foundEnemy = True
+            if foundEnemy:
+                continue
+
+            centerItems = terrain.getItemByPosition((target[0]*15+7,target[1]*15+7,0))
+            if centerItems and centerItems[0].type == "RoomBuilder":
+                continue
+
+            for item in terrain.itemsByBigCoordinate.get(target,[]):
                 if self.toCollect and item.type != self.toCollect:
                     continue
-                #if item.type == "Scrap":
-                #    continue
                 if item.bolted:
                     continue
 
-                target = character.getBigPosition()
-
-                if target in self.doneTiles:
-                    continue
-
-                centerItems = terrain.getItemByPosition((target[0]*15+7,target[1]*15+7,0))
-                if centerItems and centerItems[0].type == "RoomBuilder":
-                    continue
-
-                if not (target not in terrain.scrapFields and target not in terrain.forests and not terrain.getRoomByPosition(target)):
-                    continue
-                if terrain.getRoomByPosition(target):
-                    continue
-
-                hasIdleSubordinate = False
-                for subordinate in character.subordinates:
-                    if len(subordinate.quests) < 2:
-                        hasIdleSubordinate = True
-
-                if hasIdleSubordinate:
-                    return (None,("Hjsssssj","make subordinate scavenge"))
-                else:
-                    quest = src.quests.questMap["ScavengeTile"](targetPosition=target,toCollect=self.toCollect,reason="fill your inventory")
-                    return ([quest],None)
-
-            if not dryRun:
-                self.doneTiles.append(character.getBigPosition())
-
-            offsets = [(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]
-
-            if self.lastMoveDirection:
-                offsets.append(self.lastMoveDirection)
-                offsets.append(self.lastMoveDirection)
-                offsets.append(self.lastMoveDirection)
-                offsets.append(self.lastMoveDirection)
-
-            random.shuffle(offsets)
-
-            pos = character.getBigPosition()
-
-            for offset in offsets:
-
-                target = (pos[0]+offset[0],pos[1]+offset[1],pos[2]+offset[2])
-
-                if target in self.doneTiles:
-                    continue
-
-                if target[0] < 1 or target[0] > 13 or target[1] < 1 or target[1] > 13:
-                    continue
-
-                if not (target not in terrain.scrapFields and target not in terrain.forests and not terrain.getRoomByPosition(target)):
-                    continue
-                if terrain.getRoomByPosition(target):
-                    continue
-
-                foundEnemy = False
-                for otherCharacter in terrain.charactersByTile.get(target,[]):
-                    if otherCharacter.faction == character.faction:
-                        continue
-                    foundEnemy = True
-                if foundEnemy:
-                    continue
-
-                centerItems = terrain.getItemByPosition((target[0]*15+7,target[1]*15+7,0))
-                if centerItems and centerItems[0].type == "RoomBuilder":
-                    continue
-
-                for item in terrain.itemsByBigCoordinate.get(target,[]):
-                    if self.toCollect and item.type != self.toCollect:
-                        continue
-                    if item.bolted:
-                        continue
-
-                    self.lastMoveDirection = offset
-                    quest = src.quests.questMap["GoToTile"](targetPosition=target,reason="move to a scavenging spot")
-                    return ([quest],None)
-
-            for offset in offsets:
-
-                target = (pos[0]+offset[0],pos[1]+offset[1],pos[2]+offset[2])
-
-                if target in self.doneTiles:
-                    continue
-
-                if target[0] < 1 or target[0] > 13 or target[1] < 1 or target[1] > 13:
-                    continue
-
-                if not (target not in terrain.scrapFields and target not in terrain.forests and not terrain.getRoomByPosition(target)):
-                    continue
-                if terrain.getRoomByPosition(target):
-                    continue
-
-                foundEnemy = False
-                for otherCharacter in terrain.charactersByTile.get(target,[]):
-                    if otherCharacter.faction == character.faction:
-                        continue
-                    foundEnemy = True
-                if foundEnemy:
-                    continue
-
-                centerItems = terrain.getItemByPosition((target[0]*15+7,target[1]*15+7,0))
-                if centerItems and centerItems[0].type == "RoomBuilder":
-                    continue
-
                 self.lastMoveDirection = offset
-                quest = src.quests.questMap["GoToTile"](targetPosition=target,reason="move around to search for items")
+                quest = src.quests.questMap["GoToTile"](targetPosition=target,reason="move to a scavenging spot")
                 return ([quest],None)
 
+        for offset in offsets:
 
-            for offset in offsets:
-                target = (pos[0]+offset[0],pos[1]+offset[1],pos[2]+offset[2])
-                if terrain.getRoomByPosition(target):
+            target = (pos[0]+offset[0],pos[1]+offset[1],pos[2]+offset[2])
+
+            if target in self.doneTiles:
+                continue
+
+            if target[0] < 1 or target[0] > 13 or target[1] < 1 or target[1] > 13:
+                continue
+
+            if not (target not in terrain.scrapFields and target not in terrain.forests and not terrain.getRoomByPosition(target)):
+                continue
+            if terrain.getRoomByPosition(target):
+                continue
+
+            foundEnemy = False
+            for otherCharacter in terrain.charactersByTile.get(target,[]):
+                if otherCharacter.faction == character.faction:
                     continue
+                foundEnemy = True
+            if foundEnemy:
+                continue
 
-                if target in self.doneTiles:
-                    continue
+            centerItems = terrain.getItemByPosition((target[0]*15+7,target[1]*15+7,0))
+            if centerItems and centerItems[0].type == "RoomBuilder":
+                continue
 
-                if target[0] < 1 or target[0] > 13 or target[1] < 1 or target[1] > 13:
-                    continue
-
-                foundEnemy = False
-                for otherCharacter in terrain.charactersByTile.get(target,[]):
-                    if otherCharacter.faction == character.faction:
-                        continue
-                    foundEnemy = True
-                if foundEnemy:
-                    continue
-
-                centerItems = terrain.getItemByPosition((target[0]*15+7,target[1]*15+7,0))
-                if centerItems and centerItems[0].type == "RoomBuilder":
-                    continue
-
-                self.lastMoveDirection = offset
-                quest = src.quests.questMap["GoToTile"](targetPosition=target,reason="move around to search for items")
-                return ([quest],None)
-
-
-            bigPos = (random.randint(1,13),random.randint(1,13),0)
-            quest = src.quests.questMap["GoToTile"](targetPosition=bigPos,reason="move to a random point to search for items")
+            self.lastMoveDirection = offset
+            quest = src.quests.questMap["GoToTile"](targetPosition=target,reason="move around to search for items")
             return ([quest],None)
 
-        return (None,None)
+
+        for offset in offsets:
+            target = (pos[0]+offset[0],pos[1]+offset[1],pos[2]+offset[2])
+            if terrain.getRoomByPosition(target):
+                continue
+
+            if target in self.doneTiles:
+                continue
+
+            if target[0] < 1 or target[0] > 13 or target[1] < 1 or target[1] > 13:
+                continue
+
+            foundEnemy = False
+            for otherCharacter in terrain.charactersByTile.get(target,[]):
+                if otherCharacter.faction == character.faction:
+                    continue
+                foundEnemy = True
+            if foundEnemy:
+                continue
+
+            centerItems = terrain.getItemByPosition((target[0]*15+7,target[1]*15+7,0))
+            if centerItems and centerItems[0].type == "RoomBuilder":
+                continue
+
+            self.lastMoveDirection = offset
+            quest = src.quests.questMap["GoToTile"](targetPosition=target,reason="move around to search for items")
+            return ([quest],None)
+
+
+        bigPos = (random.randint(1,13),random.randint(1,13),0)
+        quest = src.quests.questMap["GoToTile"](targetPosition=bigPos,reason="move to a random point to search for items")
+        return ([quest],None)
 
     def pickedUpItem(self,extraInfo):
         '''

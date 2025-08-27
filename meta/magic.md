@@ -27,11 +27,11 @@ Add ability to cast spells.
   * implement 5 spells
     * close combat damage
     * heal
+    * teleport home
 
 == TODO ==
 * add ability to cast spells
   * implement 5 spells
-    * teleport home
     * ranged damage line
     * speed up
 

@@ -4,9 +4,11 @@ import src
 
 
 class ClearTile(src.quests.MetaQuestSequence):
+    '''
+    quest to make NPC tidy up a room
+    '''
     type = "ClearTile"
     lowLevel = True
-
     def __init__(self, description="clean tile", creator=None, targetPosition=None, noDelegate=False, reason=None, story=None):
         questList = []
         super().__init__(questList, creator=creator)
@@ -23,6 +25,9 @@ class ClearTile(src.quests.MetaQuestSequence):
         self.noDelegate = noDelegate
 
     def generateTextDescription(self):
+        '''
+        generate a long text description to be shown on the UI
+        '''
         reasonString = ""
         if self.reason:
             reasonString = ", to "+self.reason
@@ -56,6 +61,9 @@ Remove all items from the walkways that are not bolted down."""
         return text
 
     def assignToCharacter(self, character):
+        '''
+        handle assigning the quest to a character
+        '''
         if self.character:
             return
 
@@ -63,10 +71,15 @@ Remove all items from the walkways that are not bolted down."""
         super().assignToCharacter(character)
 
     def wrapedTriggerCompletionCheck(self,extraInfo=None):
+        '''
+        indirection to call the actual funtion with converted parameters
+        '''
         self.triggerCompletionCheck(extraInfo[0])
 
     def triggerCompletionCheck(self,character=None):
-
+        '''
+        check and end the quest if completed
+        '''
         if not character:
             return False
 
@@ -77,12 +90,19 @@ Remove all items from the walkways that are not bolted down."""
         return False
 
     def setParameters(self,parameters):
+        '''
+        set the parameters ina indirect way (obsolete)
+        '''
         if "targetPosition" in parameters and "targetPosition" in parameters:
             self.targetPosition = parameters["targetPosition"]
             self.metaDescription = self.baseDescription+" "+str(self.targetPosition)
         return super().setParameters(parameters)
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
+        '''
+        calculate the next step towards solving the quest
+        '''
+
         if self.subQuests:
             return (None,None)
 
@@ -159,7 +179,9 @@ Remove all items from the walkways that are not bolted down."""
         return (None,None)
 
     def getLeftoverItems(self,character):
-
+        '''
+        get a list of items that still needs to be cleaned up
+        '''
         if isinstance(character.container,src.rooms.Room):
             terrain = character.container.container
         else:
@@ -186,4 +208,5 @@ Remove all items from the walkways that are not bolted down."""
 
         return foundItems
 
+# register quest type
 src.quests.addType(ClearTile)

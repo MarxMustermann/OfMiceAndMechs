@@ -4,8 +4,10 @@ import src
 
 
 class Scavenge(src.quests.MetaQuestSequence):
+    '''
+    quest to collect items from the outside on a terrain
+    '''
     type = "Scavenge"
-
     def __init__(self, description="scavenge", creator=None, toCollect=None, lifetime=None, reason=None):
         self.lastMoveDirection = None
         questList = []
@@ -18,6 +20,9 @@ class Scavenge(src.quests.MetaQuestSequence):
         self.doneTiles = []
 
     def generateTextDescription(self):
+        '''
+        generate a text description of the quest to be shown on the UI
+        '''
         out = []
 
         reason = ""
@@ -41,6 +46,9 @@ done tiles: {self.doneTiles}"""
         return out
 
     def triggerCompletionCheck(self,character=None):
+        '''
+        check and end if the quest is completed
+        '''
         if not character:
             return False
         if not character.getFreeInventorySpace():
@@ -49,7 +57,9 @@ done tiles: {self.doneTiles}"""
         return False
 
     def getNextStep(self,character,ignoreCommands=False, dryRun = True):
-
+        '''
+        calculate the next logical step towards solving the quest
+        '''
         try:
             self.doneTiles
         except:
@@ -220,9 +230,15 @@ done tiles: {self.doneTiles}"""
         return (None,None)
 
     def pickedUpItem(self,extraInfo):
+        '''
+        check for completion when picking up stuff
+        '''
         self.triggerCompletionCheck(extraInfo[0])
 
     def assignToCharacter(self, character):
+        '''
+        start watching for the character picking up stuff
+        '''
         if self.character:
             return None
 
@@ -230,6 +246,9 @@ done tiles: {self.doneTiles}"""
         return super().assignToCharacter(character)
 
     def getQuestMarkersSmall(self,character,renderForTile=False):
+        '''
+        generate the quest markers on the smalest level
+        '''
         if isinstance(character.container,src.rooms.Room):
             if renderForTile:
                 return []
@@ -268,6 +287,9 @@ done tiles: {self.doneTiles}"""
     
     @staticmethod
     def generateDutyQuest(beUsefull,character,room, dryRun):
+        '''
+        generate the quests for the scavenging duty
+        '''
         terrain = character.getTerrain()
         try:
             terrain.alarm
@@ -302,4 +324,5 @@ done tiles: {self.doneTiles}"""
             beUsefull.idleCounter = 0
         return ([quest],None)
 
+# register the quest type
 src.quests.addType(Scavenge)

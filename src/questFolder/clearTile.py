@@ -111,6 +111,10 @@ Remove all items from the walkways that are not bolted down."""
         if not character:
             return (None,None)
 
+        # close menus
+        if not ignoreCommands and character.macroState.get("submenue"):
+            return (None,(["esc"],"exit submenu"))
+
         # ensure inventory space
         if not character.getFreeInventorySpace() > 0:
             quest = src.quests.questMap["ClearInventory"](reason="have inventory space to pick up more items",returnToTile=False)

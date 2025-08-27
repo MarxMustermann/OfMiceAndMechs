@@ -14,8 +14,8 @@ class BuffPotion(src.items.itemMap["Potion"], ABC):
         '''
         apply the buffs to the character
         '''
-        character.statusEffects.extend(self.getBuffsToAdd())
-        character.changed("new status effect")
+        for buff in self.getBuffsToAdd():
+            character.addStatusEffect(buff)
         super().apply(character)
 
     @abstractmethod

@@ -44,6 +44,7 @@ Add ability to cast spells.
   * displace/push back enemies
   * spawn equipment
   * spawn blooms
+  * teleport tile/terrain
 * terrain specific minor gods
 * have god collect the ecess mana to spawn spontanous magic
 * have terrain burn of in random effects

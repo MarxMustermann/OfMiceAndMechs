@@ -86,6 +86,7 @@ Its tendrils reach out and touch your implant.
             else:
                 highestAllowed = 5
 
+        # check if promotion to rank 2 applies
         if character.rank > 2:
             foundEnemies = []
             terrain = self.getTerrain()
@@ -118,9 +119,11 @@ Its tendrils reach out and touch your implant.
             else:
                 highestAllowed = 2
 
+        # abort if there is no update
         if highestAllowed is None:
             return
 
+        # do the actual promotions
         extraInfo["highestAllowed"] = highestAllowed
         self.do_promotions(extraInfo)
 

@@ -637,9 +637,8 @@ class Shrine(src.items.Item):
 
             if self.getTerrain().mana >= cost:
                 text = "healing"
-                character.heal(200,"wishing for health")
-                character.addMessage(f"your are healed")
-                self.getTerrain().mana -= cost
+                src.magic.heal(character)
+                self.getTerrain().mana -= cost-2.5
             else:
                 character.addMessage(f"the mana is used up")
 

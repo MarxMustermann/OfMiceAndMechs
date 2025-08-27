@@ -3,6 +3,52 @@ import random
 
 import src
 
+def castLineDamage(character,direction):
+    terrain = character.getTerrain()
+    last_position = character.getPosition()
+    for i in range(0,20):
+        new_position = (last_position[0]+direction[0],last_position[1]+direction[1],last_position[2]+direction[2])
+        if character.container.isRoom:
+            if new_position[0] < 1:
+                break
+            if new_position[1] < 1:
+                break
+            if new_position[0] > 11:
+                break
+            if new_position[1] > 11:
+                break
+        else:
+            if new_position[0]%15 < 1:
+                break
+            if new_position[1]%15 < 1:
+                break
+            if new_position[0]%15 > 13:
+                break
+            if new_position[1]%15 > 13:
+                break
+        last_position = new_position
+
+        if terrain.mana < 0.1:
+            character.addMessage("out of mana")
+            return
+        terrain.mana -= 0.1
+
+        character.container.addAnimation(new_position,"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "++")]})
+
+        other_characters = character.container.getCharactersOnPosition(new_position)
+        if not other_characters:
+            continue
+
+        character.container.addAnimation(new_position,"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#fff", "black"), "&9")]})
+        character.container.addAnimation(new_position,"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "%%")]})
+        for other_character in other_characters:
+            if terrain.mana < 2:
+                character.addMessage("out of mana")
+                return
+            terrain.mana -= 2
+
+            other_character.hurt(100,reason="magic")
+
 def addSpeedBuffs(character):
     terrain = character.getTerrain()
     if terrain.mana < 0.5:
@@ -46,11 +92,10 @@ def spawnForceField(character):
                 character.addMessage("out of mana")
                 return
             terrain.mana -= 4
-            damage_amount = 200
 
+            damage_amount = 200
             other_character.container.addAnimation(position,"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#fff", "black"), "&9")]})
             other_character.container.addAnimation(position,"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "%%")]})
-
             other_character.hurt(damage_amount,reason="shocked")
             character.addMessage(f"you shock somebody for {damage_amount} damage")
 

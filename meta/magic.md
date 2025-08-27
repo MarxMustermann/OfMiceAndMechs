@@ -10,6 +10,10 @@
 * characters seeking to ascend are able to cast spells
 * known spells
   * damage nearby
+  * damage distance line
+  * heal yourself
+  * teleport home
+  * temporary speed  
 
 = code =
 * the actual magic effects (things that violate game logic) are in src.magic.py
@@ -23,17 +27,8 @@
 Add ability to cast spells.
 
 == done ==
-* add ability to cast spells
-  * implement 5 spells
-    * close combat damage
-    * heal
-    * teleport home
-    * speed up
 
 == TODO ==
-* add ability to cast spells
-  * implement 5 spells
-    * ranged damage line
 
 = ideas =
 * spell ideas

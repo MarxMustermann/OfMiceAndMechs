@@ -282,6 +282,7 @@ class Character:
         '''
         text = "What spell so you want to cast?\n\n"
         text += " j - damage nearby\n"
+        text += " l - damage distance line\n"
         text += " h - heal yourself\n"
         text += " H - teleport home\n"
         text += " k - temporary speed\n"
@@ -306,12 +307,38 @@ class Character:
             case "k":
                 self.takeTime(0.1,reason="casting a spell")
                 src.magic.addSpeedBuffs(self)
+            case "l":
+                text = "What direction to cast in?\n\n"
+                text += " w - north\n"
+                text += " a - west\n"
+                text += " s - south\n"
+                text += " d - east\n"
+                submenu = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
+                submenu.followUp = {"container":self,"method":"castLineDamageSpell","params":{}}
+                self.macroState["submenue"] = submenu
+                self.runCommandString("~",nativeKey=True)
             case None | "esc" | "enter":
                 return
             case _:
                 self.addMessage("spell not found")
 
         self.lastCast = extraInformation["keyPressed"]
+
+    def castLineDamageSpell(self,extraInformation):
+        match extraInformation["keyPressed"]:
+            case "w":
+                direction = ( 0,-1,0)
+            case "s":
+                direction = ( 0, 1,0)
+            case "a":
+                direction = (-1, 0,0)
+            case "d":
+                direction = ( 1, 0,0)
+            case _:
+                self.addMessage("invalid direction")
+                return
+        self.takeTime(0.1,reason="casting a spell")
+        src.magic.castLineDamage(self,direction)
 
     def takeTime(self,amount,reason=None):
         '''

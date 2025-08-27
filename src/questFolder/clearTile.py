@@ -178,7 +178,9 @@ Remove all items from the walkways that are not bolted down."""
             quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True)
             return ([quest],None)
 
-        # hang up AI, lol
+        # complete when done
+        if dryRun:
+            self.postHandler()
         return (None,None)
 
     def getLeftoverItems(self,character):

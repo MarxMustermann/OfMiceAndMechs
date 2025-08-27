@@ -62,6 +62,8 @@ Use the Promotor to do this.
             return (None,None)
 
         if character.macroState["submenue"]:
+            if isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu):
+                return (None,(["enter"],"select reward"))
             return (None,(["esc"],"close the menu"))
 
         if not character.container.isRoom:

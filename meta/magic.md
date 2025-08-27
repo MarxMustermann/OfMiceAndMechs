@@ -26,11 +26,11 @@ Add ability to cast spells.
 * add ability to cast spells
   * implement 5 spells
     * close combat damage
+    * heal
 
 == TODO ==
 * add ability to cast spells
   * implement 5 spells
-    * heal
     * teleport home
     * ranged damage line
     * speed up
@@ -43,6 +43,7 @@ Add ability to cast spells.
   * improve equipment
   * displace/push back enemies
   * spawn equipment
+  * spawn blooms
 * terrain specific minor gods
 * have god collect the ecess mana to spawn spontanous magic
 * have terrain burn of in random effects

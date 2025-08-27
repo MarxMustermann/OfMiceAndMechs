@@ -3,6 +3,15 @@ import random
 
 import src
 
+def heal(character):
+    terrain = character.getTerrain()
+    if terrain.mana < 2.5:
+        character.addMessage("out of mana")
+        return
+    terrain.mana -= 2.5
+
+    character.heal(200,"magic")
+
 def spawnForceField(character):
     '''
     spawn a ring formed dmage effect around a character

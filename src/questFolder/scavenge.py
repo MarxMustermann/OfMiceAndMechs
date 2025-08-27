@@ -60,11 +60,6 @@ done tiles: {self.doneTiles}"""
         '''
         calculate the next logical step towards solving the quest
         '''
-        try:
-            self.doneTiles
-        except:
-            self.doneTiles = []
-
         if self.triggerCompletionCheck(character=character):
             return
 

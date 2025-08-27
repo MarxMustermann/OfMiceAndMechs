@@ -2,8 +2,10 @@ import src
 
 
 class GetPromotion(src.quests.MetaQuestSequence):
+    '''
+    quest to get a NPC to fetch a promotion
+    '''
     type = "GetPromotion"
-
     def __init__(self, targetRank, description="get promotion", reason=None):
         super().__init__()
         self.metaDescription = description
@@ -11,38 +13,48 @@ class GetPromotion(src.quests.MetaQuestSequence):
         self.reason = reason
 
     def generateTextDescription(self):
+        '''
+        get a long text description to show on the UI
+        '''
         reasonString = ""
         if self.reason:
             reasonString = ", to "+self.reason
-
         text = f"""
 Rise in the hierarchy and get a Promotion{reasonString}.
 Use the Promotor to do this.
 """
-
         return text
 
     def handleGotPromotion(self, extraInfo):
+        '''
+        complete the quest after getting a promotion
+        '''
         self.postHandler()
 
     def assignToCharacter(self, character):
+        '''
+        start watching the character for getting promotions
+        '''
         if self.character:
             return
-
         self.startWatching(character,self.handleGotPromotion, "got promotion")
-
         super().assignToCharacter(character)
 
     def triggerCompletionCheck(self,character=None):
+        '''
+        check and complete the quest when done
+        '''
         if not character:
             return None
-
         if character.rank <= self.targetRank:
             self.postHandler()
             return True
         return False
 
     def getNextStep(self, character=None, ignoreCommands=False, dryRun = True):
+        '''
+        calculate the next step towards solving the quest
+        '''
         if self.subQuests:
             return (None,None)
 
@@ -93,5 +105,5 @@ Use the Promotor to do this.
         quest = src.quests.questMap["GoToTile"](targetPosition=character.getHomeRoomCord(),description="go to command centre")
         return  ([quest],None)
 
-
+# register the quest type
 src.quests.addType(GetPromotion)

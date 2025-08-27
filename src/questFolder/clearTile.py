@@ -103,15 +103,20 @@ Remove all items from the walkways that are not bolted down."""
         calculate the next step towards solving the quest
         '''
 
+        # wait for subquests to complete
         if self.subQuests:
             return (None,None)
 
+        # abort on weird states
         if not character:
             return (None,None)
 
+        # ensure inventory space
         if not character.getFreeInventorySpace() > 0:
             quest = src.quests.questMap["ClearInventory"](reason="have inventory space to pick up more items",returnToTile=False)
             return ([quest],None)
+
+        # enter rooms properly
         if not isinstance(character.container,src.rooms.Room):
             if character.yPosition%15 == 14:
                 return (None,("w","enter tile"))
@@ -122,12 +127,13 @@ Remove all items from the walkways that are not bolted down."""
             if character.xPosition%15 == 0:
                 return (None,("d","enter tile"))
 
+        # go to the tile to clean up
         if character.getBigPosition() != (self.targetPosition[0], self.targetPosition[1], 0):
             quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
             return ([quest],None)
 
+        # check for items to pick up directly next to the character
         charPos = character.getPosition()
-
         offsets = [(0,0,0),(1,0,0),(0,1,0),(-1,0,0),(0,-1,0)]
         foundOffset = None
         foundItems = None
@@ -138,12 +144,9 @@ Remove all items from the walkways that are not bolted down."""
             items = character.container.getItemByPosition(checkPos)
             if not items:
                 continue
-
             if items[0].bolted:
                 continue
-
             foundOffset = offset
-
             foundItems = []
             for item in items:
                 if item.bolted:
@@ -151,11 +154,11 @@ Remove all items from the walkways that are not bolted down."""
                 foundItems.append(item)
             break
 
+        # clear items directly next to the character
         if foundOffset:
             interactionCommand = "K"
             if "advancedPickup" in character.interactionState:
                 interactionCommand = ""
-
             if foundOffset == (0,0,0):
                 command = "k"
             if foundOffset == (1,0,0):
@@ -166,16 +169,16 @@ Remove all items from the walkways that are not bolted down."""
                 command = interactionCommand+"s"
             if foundOffset == (0,-1,0):
                 command = interactionCommand+"w"
-
             return (None,(command*len(foundItems),"clear spot"))
 
+        # go to an item to pick up
         items = self.getLeftoverItems(character)
         if items:
             item = random.choice(items)
-
             quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True)
             return ([quest],None)
 
+        # hang up AI, lol
         return (None,None)
 
     def getLeftoverItems(self,character):

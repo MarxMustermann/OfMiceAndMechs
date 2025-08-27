@@ -60,9 +60,6 @@ done tiles: {self.doneTiles}"""
         '''
         calculate the next logical step towards solving the quest
         '''
-        if self.triggerCompletionCheck(character=character):
-            return
-
         if not self.subQuests:
             self.tryHard = False
             if character.getTerrain().alarm and not self.tryHard:

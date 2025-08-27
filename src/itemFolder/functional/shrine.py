@@ -17,7 +17,7 @@ class Shrine(src.items.Item):
                         [
                     ("showInfo", "show Info"),
                     ("wish", "wish"),
-                    ("challenge", "pray"),
+                    #("challenge", "pray"),
                     #("taunt", "taunt"),
                     ("teleport", "telport home"),
                         ]

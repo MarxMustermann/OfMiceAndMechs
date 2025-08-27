@@ -60,18 +60,20 @@ done tiles: {self.doneTiles}"""
         '''
         calculate the next logical step towards solving the quest
         '''
+
+        # wait for subquest to complete
         if self.subQuests:
             return (None,None)
 
+        # abort quest when there is an alarm
         self.tryHard = False
         if character.getTerrain().alarm and not self.tryHard:
             if not dryRun:
                 self.fail("alarm")
             return (None,None)
 
+        # scavenge all item on the current tile
         terrain = character.getTerrain()
-
-
         for item in terrain.getNearbyItems(character):
             if self.toCollect and item.type != self.toCollect:
                 continue
@@ -105,21 +107,22 @@ done tiles: {self.doneTiles}"""
                 quest = src.quests.questMap["ScavengeTile"](targetPosition=target,toCollect=self.toCollect,reason="fill your inventory")
                 return ([quest],None)
 
+        # mark current tile as completed
         if not dryRun:
             self.doneTiles.append(character.getBigPosition())
 
+        # prepare a skewed list of directions to go in. Forward monumentum is preserved
         offsets = [(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]
-
         if self.lastMoveDirection:
             offsets.append(self.lastMoveDirection)
             offsets.append(self.lastMoveDirection)
             offsets.append(self.lastMoveDirection)
             offsets.append(self.lastMoveDirection)
-
         random.shuffle(offsets)
 
         pos = character.getBigPosition()
 
+        # check nearby scavenging spots
         for offset in offsets:
 
             target = (pos[0]+offset[0],pos[1]+offset[1],pos[2]+offset[2])
@@ -157,6 +160,7 @@ done tiles: {self.doneTiles}"""
                 quest = src.quests.questMap["GoToTile"](targetPosition=target,reason="move to a scavenging spot")
                 return ([quest],None)
 
+        # visit unvisited neighbours avoiding special areas
         for offset in offsets:
 
             target = (pos[0]+offset[0],pos[1]+offset[1],pos[2]+offset[2])
@@ -188,7 +192,7 @@ done tiles: {self.doneTiles}"""
             quest = src.quests.questMap["GoToTile"](targetPosition=target,reason="move around to search for items")
             return ([quest],None)
 
-
+        # visit unvisited neighbours
         for offset in offsets:
             target = (pos[0]+offset[0],pos[1]+offset[1],pos[2]+offset[2])
             if terrain.getRoomByPosition(target):
@@ -216,7 +220,7 @@ done tiles: {self.doneTiles}"""
             quest = src.quests.questMap["GoToTile"](targetPosition=target,reason="move around to search for items")
             return ([quest],None)
 
-
+        # visit random spot
         bigPos = (random.randint(1,13),random.randint(1,13),0)
         quest = src.quests.questMap["GoToTile"](targetPosition=bigPos,reason="move to a random point to search for items")
         return ([quest],None)

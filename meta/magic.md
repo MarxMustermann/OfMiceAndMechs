@@ -24,10 +24,7 @@
 * terraon mana pool is shown in UI when the hasMagic flag was set
 
 = work in progress =
-Add ability to cast spells.
-
 == done ==
-
 == TODO ==
 
 = ideas =

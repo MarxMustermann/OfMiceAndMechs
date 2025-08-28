@@ -1,4 +1,4 @@
-= base mechanism =
+# base mechanism
 
 * If you control a glass heart each Epoch a wave of enemies is spawned
 * The more glass hears are on a terrain the more mana is spawned
@@ -15,19 +15,19 @@
   * teleport home
   * temporary speed  
 
-= code =
+# code
 * the actual magic effects (things that violate game logic) are in src.magic.py
 
-= instructions = 
+# instructions
 * press p recast a spell
 * press P to cast a spell
 * terraon mana pool is shown in UI when the hasMagic flag was set
 
-= work in progress =
-== done ==
-== TODO ==
+# work in progress
+## done
+## TODO
 
-= ideas =
+# ideas
 * spell ideas
   * ranged damage random
   * get stronger

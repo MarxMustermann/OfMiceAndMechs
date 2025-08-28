@@ -74,10 +74,10 @@ Its tendrils reach out and touch your implant.
                     character.addMessage(f"promotions locked")
 
                     submenu = src.menuFolder.textMenu.TextMenu("""
-    Promotions to rank 5 are blocked.
+Promotions to rank 5 are blocked.
 
-    There need to be at least 1 clone besides you on the base to allow any promptions.
-    """)
+There need to be at least 1 clone besides you on the base to allow any promptions.
+""")
                     character.macroState["submenue"] = submenu
                     character.runCommandString("~",nativeKey=True)
 
@@ -106,11 +106,11 @@ Its tendrils reach out and touch your implant.
                     character.addMessage(f"promotions locked")
 
                     submenu = src.menuFolder.textMenu.TextMenu("""
-    Promotions to rank 2 are blocked.
-    Enemies are nearby.
+Promotions to rank 2 are blocked.
+Enemies are nearby.
 
-    Kill all enemies on this terrain, to unlock the promotions to rank 2.
-    """)
+Kill all enemies on this terrain, to unlock the promotions to rank 2.
+""")
                     character.macroState["submenue"] = submenu
                     character.runCommandString("~",nativeKey=True)
 

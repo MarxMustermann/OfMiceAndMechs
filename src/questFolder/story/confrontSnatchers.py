@@ -1,8 +1,10 @@
 import src
 
 class ConfrontSnatchers(src.quests.MetaQuestSequence):
+    '''
+    quest to clear the snatchers from the outside 
+    '''
     type = "ConfrontSnatchers"
-
     def __init__(self, description="confront snatchers", creator=None, lifetime=None ,reason=None):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
@@ -10,6 +12,9 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
         self.reason = reason
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun=True):
+        '''
+        return next step toward solving the quest
+        '''
 
         if self.subQuests:
             return (None,None)
@@ -135,6 +140,9 @@ Rest and heal and repeat until all Snatchers are dead.
         return result
 
     def triggerCompletionCheck(self,character=None):
+        '''
+        check and end the quest when completed
+        '''
         if not character:
             return False
         
@@ -147,4 +155,5 @@ Rest and heal and repeat until all Snatchers are dead.
         self.postHandler()
         return True
 
+# register the quest type
 src.quests.addType(ConfrontSnatchers)

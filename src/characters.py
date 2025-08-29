@@ -883,6 +883,7 @@ class Character:
 
     def doRandomRanged(self):
         '''
+        do a ranged attack on a random target
         '''
 
         bolt = None
@@ -1709,9 +1710,21 @@ press any other key to attack normally"""
 
         if target.dead:
             overkill = damage-enemyHP
+
+            numBerserk = 0
+            for statusEffect in self.statusEffects:
+                if not isinstance(statusEffect,src.statusEffects.statusEffectMap["Berserk"]):
+                    continue 
+                numBerserk += 1
+
             while overkill > 0:
+                if numBerserk >= 5:
+                    break
+                if len(self.statusEffects) >= 10:
+                    break
                 self.addStatusEffect(src.statusEffects.statusEffectMap["Berserk"](reason="You killed somebody"))
                 overkill -= 20
+                numBerserk += 1
         else:
             self.applyNativeMeleeAttackEffects(target)
 

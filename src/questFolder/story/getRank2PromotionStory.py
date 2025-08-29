@@ -41,8 +41,11 @@ this quest has sub quests. Press d to show subquest.
             case "needs base with at least 6 rooms":
                 quest = src.quests.questMap["StoryExtendBase"]()
                 self.addQuest(quest)
-            case _:
+            case "terrain needs cleared from enemies":
                 quest = src.quests.questMap["StoryClearTerrain"]()
+                self.addQuest(quest)
+            case _:
+                quest = src.quests.questMap["SpawnClone"]()
                 self.addQuest(quest)
 
     def assignToCharacter(self, character):

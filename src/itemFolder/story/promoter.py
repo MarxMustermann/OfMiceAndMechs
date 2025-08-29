@@ -127,7 +127,7 @@ Build more rooms.
                     character.addMessage(f"promotions locked")
 
                     submenu = src.menuFolder.textMenu.TextMenu("""
-Promotions to rank 2 are blocked.
+Promotions to rank 3 are blocked.
 Enemies are nearby.
 
 Kill all enemies on this terrain, to unlock the promotions to rank 3.
@@ -139,6 +139,46 @@ Kill all enemies on this terrain, to unlock the promotions to rank 3.
                     return
             else:
                 highestAllowed = 3
+
+        # check if promotion to rank 2 applies
+        highestAllowed = None
+        if character.rank > 2:
+            numCharacters = 0
+            terrain = character.getTerrain()
+            for checkChar in terrain.characters:
+                if not checkChar.faction == character.faction:
+                    continue
+                if not checkChar.charType == "Clone":
+                    continue
+                if checkChar.burnedIn:
+                    continue
+                numCharacters += 1
+            for room in terrain.rooms:
+                for checkChar in room.characters:
+                    if not checkChar.faction == character.faction:
+                        continue
+                    if not checkChar.charType == "Clone":
+                        continue
+                    if checkChar.burnedIn:
+                        continue
+                    numCharacters += 1
+
+            if numCharacters < 4:
+                if not highestAllowed:
+                    character.addMessage(f"promotions locked")
+
+                    submenu = src.menuFolder.textMenu.TextMenu("""
+Promotions to rank 2 are blocked.
+
+There need to be at least 3 clones besides you on the base to allow any promptions.
+""")
+                    character.macroState["submenue"] = submenu
+                    character.runCommandString("~",nativeKey=True)
+
+                    character.changed("promotion blocked",{"reason":"needs 4 clones on base"})
+                    return
+            else:
+                highestAllowed = 2
 
         # abort if there is no update
         if highestAllowed is None:

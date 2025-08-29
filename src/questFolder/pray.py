@@ -138,6 +138,7 @@ pray on {self.targetPosition}{reason}.
                 beUsefull.idleCounter = 0
             return ([quest],None)
 
+        """
         for checkRoom in beUsefull.getRandomPriotisedRooms(character,currentRoom):
             shrines = checkRoom.getItemsByType("Shrine")
             foundShrine = None
@@ -153,6 +154,7 @@ pray on {self.targetPosition}{reason}.
             if not dryRun:
                 beUsefull.idleCounter = 0
             return ([quest],None)
+        """
         return (None,None)
 
 src.quests.addType(Pray)

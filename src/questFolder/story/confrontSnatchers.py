@@ -16,12 +16,15 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
         return next step toward solving the quest
         '''
 
+        # wait for subquests to complete
         if self.subQuests:
             return (None,None)
 
+        # abort on weird state
         if not character:
             return (None,None)
 
+        # retreat when hurt
         if character.health < character.maxHealth/1.5:
             if not character.getNearbyEnemies():
                 quest = src.quests.questMap["Heal"]()
@@ -39,15 +42,18 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["GoHome"]()
                 return ([quest],None)
 
+        # close unrelated menus
         if character.macroState["submenue"] and not ignoreCommands:
             if character.macroState["submenue"].tag != "specialAttackSelection":
                 return (None,(["esc"],"to close menu"))
 
+        # go to the tile to confront the snatchers in
         targetPos = (5,6,0)
         if not character.getBigPosition() == targetPos:
             quest = src.quests.questMap["GoToTile"](targetPosition=targetPos, reason="to step outside of the base")
             return ([quest],None)
 
+        # wait for snatchers to appear
         enemies = character.getNearbyEnemies()
         if not enemies:
         
@@ -76,8 +82,7 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
                 self.postHandler()
             return (None,None)
 
-        characterPosition = character.getPosition()
-
+        # retreat when too many enemies 
         numDirectNeighbours = 0
         for enemy in enemies:
             if character.getDistance(enemy.getPosition()) > 1:
@@ -86,6 +91,8 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
         if numDirectNeighbours > 2:
             return (None,("s","retreat"))
 
+        # attack the snatchers
+        characterPosition = character.getPosition()
         for enemy in enemies:
             enemyPosition = enemy.getPosition()
             if enemyPosition == characterPosition:
@@ -118,6 +125,7 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
                         return (None,(interactionCommand+"h","attack Snatcher"))
                 return (None,(direction,"attack Snatcher"))
 
+        # let the snatchers approach
         wait_command = "."
         for enemy in enemies:
             enemyPosition = enemy.getPosition()

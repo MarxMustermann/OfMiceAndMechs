@@ -107,8 +107,8 @@ Build more rooms.
             else:
                 highestAllowed = 4
 
-        # check if promotion to rank 2 applies
-        if character.rank > 2:
+        # check if promotion to rank 3 applies
+        if character.rank > 3:
             foundEnemies = []
             terrain = self.getTerrain()
             for otherChar in terrain.characters:
@@ -130,15 +130,15 @@ Build more rooms.
 Promotions to rank 2 are blocked.
 Enemies are nearby.
 
-Kill all enemies on this terrain, to unlock the promotions to rank 2.
+Kill all enemies on this terrain, to unlock the promotions to rank 3.
 """)
                     character.macroState["submenue"] = submenu
                     character.runCommandString("~",nativeKey=True)
 
-                    character.changed("promotion blocked",{"reason":"needs 2 clones on base"})
+                    character.changed("promotion blocked",{"reason":"terrain needs cleared from enemies"})
                     return
             else:
-                highestAllowed = 2
+                highestAllowed = 3
 
         # abort if there is no update
         if highestAllowed is None:

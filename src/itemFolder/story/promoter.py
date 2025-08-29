@@ -141,7 +141,6 @@ Kill all enemies on this terrain, to unlock the promotions to rank 3.
                 highestAllowed = 3
 
         # check if promotion to rank 2 applies
-        highestAllowed = None
         if character.rank > 2:
             numCharacters = 0
             terrain = character.getTerrain()

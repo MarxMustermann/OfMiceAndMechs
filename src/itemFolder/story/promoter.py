@@ -86,6 +86,27 @@ There need to be at least 1 clone besides you on the base to allow any promption
             else:
                 highestAllowed = 5
 
+        # check if promotion to rank 4 applies
+        if character.rank > 4:
+            terrain = character.getTerrain()
+            if len(terrain.rooms) < 7:
+                if not highestAllowed:
+                    character.addMessage(f"promotions locked")
+
+                    submenu = src.menuFolder.textMenu.TextMenu("""
+Promotions to rank 4 are blocked.
+
+The base needs to consist out of at least 6 rooms.
+Build more rooms.
+""")
+                    character.macroState["submenue"] = submenu
+                    character.runCommandString("~",nativeKey=True)
+
+                    character.changed("promotion blocked",{"reason":"needs base with at least 6 rooms"})
+                    return
+            else:
+                highestAllowed = 4
+
         # check if promotion to rank 2 applies
         if character.rank > 2:
             foundEnemies = []

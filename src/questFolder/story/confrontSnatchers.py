@@ -113,7 +113,12 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
                         return (None,(interactionCommand+"h","attack Snatcher"))
                 return (None,(direction,"attack Snatcher"))
 
-        return (None,(".","let Snatchers approach"))
+        wait_command = "."
+        for enemy in enemies:
+            enemyPosition = enemy.getPosition()
+            if character.getDistance(enemyPosition) < 3:
+                wait_command = ":"
+        return (None,(wait_command,"let Snatchers approach"))
 
     def generateTextDescription(self):
         result = [f"""

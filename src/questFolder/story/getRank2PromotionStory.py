@@ -37,8 +37,13 @@ this quest has sub quests. Press d to show subquest.
         for quest in self.subQuests[:]:
             quest.postHandler()
 
-        quest = src.quests.questMap["StoryClearTerrain"]()
-        self.addQuest(quest)
+        match extraInfo.get("reason"):
+            case "needs base with at least 6 rooms":
+                quest = src.quests.questMap["StoryExtendBase"]()
+                self.addQuest(quest)
+            case _:
+                quest = src.quests.questMap["StoryClearTerrain"]()
+                self.addQuest(quest)
 
     def assignToCharacter(self, character):
         if self.character:

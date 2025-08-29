@@ -8,7 +8,7 @@ class Scavenge(src.quests.MetaQuestSequence):
     quest to collect items from the outside on a terrain
     '''
     type = "Scavenge"
-    def __init__(self, description="scavenge", creator=None, toCollect=None, lifetime=None, reason=None):
+    def __init__(self, description="scavenge", creator=None, toCollect=None, lifetime=None, reason=None, ignoreAlarm=False):
         self.lastMoveDirection = None
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
@@ -18,6 +18,7 @@ class Scavenge(src.quests.MetaQuestSequence):
             self.metaDescription += " for "+toCollect
         self.toCollect = toCollect
         self.doneTiles = []
+        self.ignoreAlarm = ignoreAlarm
 
     def generateTextDescription(self):
         '''
@@ -67,7 +68,7 @@ done tiles: {self.doneTiles}"""
 
         # abort quest when there is an alarm
         self.tryHard = False
-        if character.getTerrain().alarm and not self.tryHard:
+        if character.getTerrain().alarm and not self.tryHard and not self.ignoreAlarm:
             if not dryRun:
                 self.fail("alarm")
             return (None,None)
@@ -104,7 +105,7 @@ done tiles: {self.doneTiles}"""
             if hasIdleSubordinate:
                 return (None,("Hjsssssj","make subordinate scavenge"))
             else:
-                quest = src.quests.questMap["ScavengeTile"](targetPosition=target,toCollect=self.toCollect,reason="fill your inventory")
+                quest = src.quests.questMap["ScavengeTile"](targetPosition=target,toCollect=self.toCollect,reason="fill your inventory",ignoreAlarm=self.ignoreAlarm)
                 return ([quest],None)
 
         # mark current tile as completed

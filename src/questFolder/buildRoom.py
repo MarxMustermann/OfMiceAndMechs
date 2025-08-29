@@ -6,7 +6,7 @@ class BuildRoom(src.quests.MetaQuestSequence):
     quest for clones to build rooms
     '''
     type = "BuildRoom"
-    def __init__(self, description="build room", creator=None, command=None, lifetime=None, targetPosition=None,tryHard=False, reason=None, takeAnyUnbolted=False):
+    def __init__(self, description="build room", creator=None, command=None, lifetime=None, targetPosition=None,tryHard=False, reason=None, takeAnyUnbolted=False, ignoreAlarm=False):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = description
@@ -16,6 +16,7 @@ class BuildRoom(src.quests.MetaQuestSequence):
         self.reason = reason
         self.takeAnyUnbolted = takeAnyUnbolted
         self.type = "BuildRoom"
+        self.ignoreAlarm = ignoreAlarm
 
     def builtRoom(self,extraParam):
         '''
@@ -117,7 +118,7 @@ Press d to move the cursor and show the subquests description.
 
         # abort if there is an alarm going on
         terrain = character.getTerrain()
-        if terrain.alarm and not self.tryHard:
+        if terrain.alarm and not self.tryHard and not self.ignoreAlarm:
             if not dryRun:
                 self.fail("alarm")
             return (None,None)

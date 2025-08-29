@@ -80,7 +80,7 @@ Use the Promotor to do this.
         room = character.container
 
         if not isinstance(character.container, src.rooms.Room):
-            quest = src.quests.questMap["GoHome"](description="go to command centre")
+            quest = src.quests.questMap["GoHome"](description="go inside")
             return  ([quest],None)
         
         for item in room.itemsOnFloor:
@@ -104,8 +104,15 @@ Use the Promotor to do this.
             quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to promoter ")
             return  ([quest],None)
         
-        quest = src.quests.questMap["GoToTile"](targetPosition=character.getHomeRoomCord(),description="go to command centre")
-        return  ([quest],None)
+        terrain = character.getTerrain()
+        for room in terrain.rooms:
+            if room.getItemByType("Promoter"):
+                quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),description="go to command centre")
+                return ([quest],None)
+
+        if not dryRun:
+            self.fail("no Promoter")
+        return (None,None)
 
 # register the quest type
 src.quests.addType(GetPromotion)

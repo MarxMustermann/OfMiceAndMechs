@@ -978,6 +978,8 @@ def setUpRuin(pos):
 
             # decide between mixed or pure loot room
             loot_types = ["ScrapCompactor","MetalBars","Vial","MoldFeed","Bolt","Flask","GooFlask","Rod","Sword","Scrap","ManufacturingTable","MemoryFragment"]
+            if src.gamestate.gamestate.difficulty == "easy":
+                loot_types.extend(["Vial","GooFlask","MemoryFragment"])
             if random.random() > 0.5:
                 loot_types = [random.choice(loot_types)]
 
@@ -1031,6 +1033,10 @@ def setUpRuin(pos):
             for i in range(random.randint(1,3)):
                 loot_types = ["Flask", "GooFlask", "Scrap", "Scrap", "MemoryFragment"]
                 item = src.items.itemMap[random.choice(loot_types)]()
+                if item.type == "GooFlask":
+                    item.uses = 100
+                if item.type == "Vial":
+                    item.uses = 10
                 currentTerrain.addItem(item, (pos[0] + rand_pos[0] * 15, pos[1] + rand_pos[1] * 15,0))
         rand_pos = (random.randint(3,11),random.randint(3,11))
         make_room = random.random() < 0.4

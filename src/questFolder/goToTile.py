@@ -291,7 +291,7 @@ The target tile is {direction[4:]}
             if character.getNearbyEnemies() and isinstance(character,src.characters.characterMap["Clone"]) and character.isOnHomeTerrain():
                 if character.container.isRoom:
                     if character.container.tag in ["entryRoom","trapRoom"]:
-                        quest = src.quests.questMap["Flee"](returnHome=True)
+                        quest = src.quests.questMap["Flee"](returnHome=True,lifetime=100)
                         return ([quest],None)
             if not self.paranoid:
                 if random.random() < 1.5 and "fighting" in self.character.skills:
@@ -305,7 +305,7 @@ The target tile is {direction[4:]}
                     if otherCharacter.faction == character.faction:
                         continue
                     if character.health < character.maxHealth//5:
-                        quest = src.quests.questMap["Flee"]()
+                        quest = src.quests.questMap["Flee"](lifetime=100)
                         return ([quest],None)
                     else:
                         quest = src.quests.questMap["Fight"]()

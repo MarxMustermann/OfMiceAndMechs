@@ -26,6 +26,11 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
         if not character:
             return (None,None)
 
+        # defend yourself
+        if character.getNearbyEnemies():
+            quest = src.quests.questMap["Fight"]()
+            return ([quest],None)
+
         # prepare common used variables
         terrain = character.getTerrain()
 

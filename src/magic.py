@@ -1093,12 +1093,7 @@ def setUpThroneDungeon(pos):
             if x == 6 and y == 7:
                 continue
 
-            enemy = src.characters.characterMap["Monster"](4,4)
-            enemy.health = 300
-            enemy.baseDamage = 70
-            enemy.maxHealth = 300
-            enemy.godMode = True
-            enemy.movementSpeed = 0.8
+            enemy = src.characters.characterMap["Monk"](4,4)
 
             quest = src.quests.questMap["SecureTile"](toSecure=(x,y,0))
             quest.autoSolve = True

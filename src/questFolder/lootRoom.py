@@ -207,6 +207,8 @@ Remove all items that are not bolted down."""
                 continue
             if item_pos[0] > 13:
                 continue
+            if character.container.isRoom and (item_pos[0] > 11 or item_pos[1] > 11 or item_pos[0] < 1 or item_pos[1] < 1):
+                continue
             if item.type in ("Scrap","MetalBars"):
                 continue
             if item.walkable == False:

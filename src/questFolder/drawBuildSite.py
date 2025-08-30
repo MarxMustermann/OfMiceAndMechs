@@ -147,7 +147,7 @@ Try as hard as you can to achieve this.
         if not rooms:
             if not dryRun:
                 self.fail("target room missing")
-            return (None,None)
+            return (None,("+","abort the quest"))
         room = rooms[0]
 
         # do extra check for completion, lol
@@ -210,7 +210,7 @@ Try as hard as you can to achieve this.
 
         # clear spot
         if character.container.getItemByPosition(self.targetPosition):
-            quest = src.quests.questMap["CleanSpace"](targetPosition=self.targetPosition,reason="unclutter the drawing spot",targetPositionBig=self.targetPositionBig,pickupBolted=True,abortOnfullInventory=False)
+            quest = src.quests.questMap["CleanSpace"](targetPosition=self.targetPosition,reason="unclutter the drawing spot",targetPositionBig=self.targetPositionBig,pickUpBolted=True,abortOnfullInventory=False)
             return ([quest],None)
 
         # drop painter next to target

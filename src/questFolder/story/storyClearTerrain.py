@@ -185,6 +185,8 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
                 for position in [(8,6,0),(8,8,0)]:
                     if not foundCityPlaner.plannedRooms:
                         rooms = terrain.getRoomByPosition(position)
+                        if rooms:
+                            continue
                         quest = src.quests.questMap["ScheduleRoomBuilding"](roomPosition=position)
                         return ([quest],None)
 

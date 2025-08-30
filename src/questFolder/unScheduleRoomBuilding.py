@@ -80,10 +80,17 @@ Use a CityPlaner to do this.
             return (None,(["esc"],"exit submenu"))
 
         # go to room with city planer
-        pos = character.getBigPosition()
-        if pos != character.getHomeRoomCord():
-            quest = src.quests.questMap["GoHome"](description="go to command centre",reason="go to command centre")
-            return ([quest],None)
+        cityPlaner = character.container.getItemByType("CityPlaner")
+        if not cityPlaner:
+            for room in character.getTerrain().rooms:
+                if not room.getItemByType("CityPlaner"):
+                    continue
+                quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),description="go to command centre",reason="go to command centre")
+                return ([quest],None)
+
+            if not dryRun:
+                self.fail("no planer")
+            return (None,("+","abort the quest"))
 
         # enter room
         if not character.container.isRoom:
@@ -121,11 +128,17 @@ Use a CityPlaner to do this.
         # abort on weird states
         if not character:
             return False
+        if not character.container.isRoom:
+            return False
 
         # fetch the city planer
         terrain = character.getTerrain()
-        room = terrain.getRoomByPosition(character.getHomeRoomCord())[0]
-        cityPlaner = room.getItemsByType("CityPlaner")[0]
+        for room in terrain.rooms:
+            cityPlaner = room.getItemByType("CityPlaner")
+            if cityPlaner:
+                break
+        if not cityPlaner:
+            return False
 
         # continue working if room is still planned
         if self.roomPosition in cityPlaner.plannedRooms:

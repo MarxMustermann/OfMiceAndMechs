@@ -1,4 +1,5 @@
 import src
+import random
 
 class SpawnClone(src.quests.MetaQuestSequence):
     type = "SpawnClone"
@@ -92,11 +93,17 @@ class SpawnClone(src.quests.MetaQuestSequence):
                     self.startWatching(newQuest,self.handleQuestFailure,"failed")
                     return
 
-            # farm for blooms
-            newQuest = src.quests.questMap["FarmMold"](tryHard=True)
-            self.addQuest(newQuest)
-            self.startWatching(newQuest,self.handleQuestFailure,"failed")
-            return
+            if random.random() < 0.5:
+                newQuest = src.quests.questMap["Adventure"](lifetime=3000)
+                self.addQuest(newQuest)
+                self.startWatching(newQuest,self.handleQuestFailure,"failed")
+                return
+            else: 
+                # farm for blooms
+                newQuest = src.quests.questMap["FarmMold"](tryHard=True,lifetime=1000)
+                self.addQuest(newQuest)
+                self.startWatching(newQuest,self.handleQuestFailure,"failed")
+                return
 
         self.fail(reason)
 

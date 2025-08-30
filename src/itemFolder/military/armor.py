@@ -39,10 +39,10 @@ class Armor(src.items.Item):
 
         self.damageTaken += multiplier
         if self.damageTaken > 2**self.armorValue*100:
-            if self.amorvalue > 1:
-                self.amorvalue -= 1
-                if self.amorvalue < 1:
-                    self.amorvalue = 1
+            if self.armorValue > 1:
+                self.armorValue -= 1
+                if self.armorValue < 1:
+                    self.armorValue = 1
                 if character:
                     character.addMessage(f"your armor degrades and has {self.armorValue} armor value now.\nnext degradation at {self.getDamageThreashold()}")
 

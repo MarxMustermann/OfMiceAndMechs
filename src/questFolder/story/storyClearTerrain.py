@@ -304,7 +304,13 @@ Remember that the base provides you with important ressources and healing.
             if otherChar.faction == character.faction:
                 continue
             return False
+        for room in terrain.rooms:
+            for otherChar in room.characters:
+                if otherChar.faction == character.faction:
+                    continue
+                return False
 
         self.postHandler()
+        return True
 
 src.quests.addType(StoryClearTerrain)

@@ -62,16 +62,16 @@ class Guardian(src.monster.Monster):
 
         self.charType = "Guardian"
         self.specialDisplay = "&&"
-        self.maxHealth = 100*modifier
+        self.maxHealth = basehealth*modifier
         self.hasSpecialAttacks = True
         self.hasPushbackAttack = True
         self.health = self.maxHealth
         self.godMode = True
-        self.movementSpeed = 1/modifier
-        self.baseAttackSpeed = 1/modifier
+        self.movementSpeed = baseMovementSpeed/modifier
+        self.baseAttackSpeed = baseAttackSpeed/modifier
         self.specialCharges = 0
-        self.rawBaseDame = 2*modifier
-        self.baseDamage = 2*modifier
+        self.rawBaseDame = baseRawDamage*modifier
+        self.baseDamage = baseRawDamage*modifier
         self.modifier = modifier
 
     def hurt(self, damage, reason=None, actor=None):

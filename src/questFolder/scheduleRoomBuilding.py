@@ -134,9 +134,12 @@ Use a CityPlaner to do this.
 
         # fetch the city planer
         terrain = character.getTerrain()
-        room = terrain.getRoomByPosition(character.getHomeRoomCord())[0]
-        cityPlaner = room.getItemByType("CityPlaner")
+        for room in terrain.rooms:
+            cityPlaner = room.getItemByType("CityPlaner")
+            if cityPlaner:
+                break
         if not cityPlaner:
+            1/0
             return False
 
         # end the quest if room was planned

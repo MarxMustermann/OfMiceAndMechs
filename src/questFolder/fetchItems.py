@@ -318,7 +318,7 @@ Press d to move the cursor and show the subquests description.
 
                 if not dryRun:
                     self.fail(reason=f"no source for item {self.toCollect}")
-                return (None,None)
+                return (None,("+","abort quest"))
         return (None,None)
 
     @staticmethod

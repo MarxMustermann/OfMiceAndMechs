@@ -191,6 +191,11 @@ Press d to move the cursor and show the subquests description.
                         break
                     targetIndex += 1
 
+                if targetIndex >= len(character.inventory):
+                    if not dryRun:
+                        self.fail("lost item")
+                    return (None,("+","abort quest"))
+
                 inventoryCommand = ""
                 inventoryCommand += "s"*(targetIndex-submenue.cursor)
                 inventoryCommand += "w"*(submenue.cursor-targetIndex)

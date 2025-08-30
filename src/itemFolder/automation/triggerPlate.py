@@ -53,6 +53,8 @@ class TriggerPlate(src.items.Item):
         Parameters:
             character: the character trying to use the item
         """
+        if not self.bolted:
+            return
 
         if checkFaction and self.faction == character.faction:
             return

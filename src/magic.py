@@ -1005,9 +1005,10 @@ def setUpRuin(pos):
 
                 # add monster
                 pos = (random.randint(1,11),random.randint(1,11),0)
-                golem = src.characters.characterMap[monsterType](
-                    multiplier=src.monster.Monster.get_random_multiplier(monsterType)
-                )
+                multiplier = src.monster.Monster.get_random_multiplier(monsterType)
+                if src.gamestate.gamestate.difficulty == "easy":
+                    multiplier = 1
+                golem = src.characters.characterMap[monsterType](multiplier=multiplier)
                 golem.godMode = True
                 quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
                 quest.autoSolve = True
@@ -1019,9 +1020,10 @@ def setUpRuin(pos):
             for i in range(random.randint(1,3)):
                 monsterType = random.choice(["Golem","ShieldBug"])
                 pos = (random.randint(1,11),random.randint(1,11),0)
-                golem = src.characters.characterMap[monsterType](
-                    multiplier=src.monster.Monster.get_random_multiplier(monsterType)
-                )
+                multiplier = src.monster.Monster.get_random_multiplier(monsterType)
+                if src.gamestate.gamestate.difficulty == "easy":
+                    multiplier = 1
+                golem = src.characters.characterMap[monsterType](multiplier=multiplier)
                 golem.godMode = True
                 quest = src.quests.questMap["SecureTile"](toSecure=rand_pos)
                 quest.autoSolve = True

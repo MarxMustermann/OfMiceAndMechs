@@ -18,7 +18,6 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
         generate the next step to solve this quest
         currently works by adding 
         '''
-
         # do nothing if there are subquests
         if self.subQuests:
             return (None,None)
@@ -124,6 +123,8 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
                 continue
             if not room.buildSites:
                 continue
+            if room.alarm:
+                continue
             quest = src.quests.questMap["FurnishRoom"](targetPositionBig=room.getPosition(),tryHard=True)
             return ([quest],None)
 
@@ -136,6 +137,17 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
         offsetedPosition = (roomPos[0]+offset[0],roomPos[1]+offset[1],roomPos[2]+offset[2])
         quest = src.quests.questMap["ScheduleRoomBuilding"](roomPosition=random.choice(candidateTraproomPositions),priorityBuild=True)
         return ([quest],None)
+
+    def handleQuestFailure(self,extraParam):
+        reason = extraParam.get("reason")
+        if reason == "no source for item Painter":
+            self.subQuests.remove(extraParam["quest"])
+
+            newQuest = src.quests.questMap["MetalWorking"](toProduce="Painter",amount=1,tryHard=True)
+            self.addQuest(newQuest)
+            self.startWatching(newQuest,self.handleQuestFailure,"failed")
+            return
+        super().handleQuestFailure(extraParam)
 
     def generateTextDescription(self):
         '''

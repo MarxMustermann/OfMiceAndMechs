@@ -204,7 +204,7 @@ the buildsites indicate what needs to be built.
             if material == "Command":
                 material = "Sheet"
 
-            quest = src.quests.questMap["MetalWorking"](toProduce=material, amount=1, produceToInventory=True)
+            quest = src.quests.questMap["MetalWorking"](toProduce=material, amount=1, produceToInventory=True,tryHard=True)
             return ([quest],None)
 
         # fail on weird state

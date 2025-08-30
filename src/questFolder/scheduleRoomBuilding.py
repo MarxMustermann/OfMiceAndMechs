@@ -84,10 +84,17 @@ Use a CityPlaner to do this.
             return (None,(["esc"],"exit submenu"))
 
         # go to room with city planer
-        pos = character.getBigPosition()
-        if pos != character.getHomeRoomCord():
-            quest = src.quests.questMap["GoHome"](description="go to command centre",reason="go to command centre")
-            return ([quest],None)
+        cityPlaner = character.container.getItemByType("CityPlaner")
+        if not cityPlaner:
+            for room in character.getTerrain().rooms:
+                if not room.getItemByType("CityPlaner"):
+                    continue
+                quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),description="go to command centre",reason="go to command centre")
+                return ([quest],None)
+
+            if not dryRun:
+                self.fail("no planer")
+            return (None,("+","abort the quest"))
 
         # enter room
         if not character.container.isRoom:
@@ -95,7 +102,6 @@ Use a CityPlaner to do this.
             return ([quest],None)
 
         # start using the city planer
-        cityPlaner = character.container.getItemsByType("CityPlaner")[0]
         command = None
         if character.getPosition(offset=(1,0,0)) == cityPlaner.getPosition():
             command = "d"

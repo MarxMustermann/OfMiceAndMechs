@@ -81,7 +81,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
 
         return amount_grindstone_needed_for_upgrade
 
-    def getAvailableGrindStones(self):
+    def getAvailableGrindStones(self,character):
         '''
         collect the grindstones that can be used to upgrade the sword
         '''
@@ -138,7 +138,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             return
 
         # warn the player that only basic upgrades can be done without grindstones
-        self.getAvailableGrindStones(character)
+        grindstones = self.getAvailableGrindStones(character)
         if not grindstones:
             character.addMessage("you don't have Grindstone, you only can improve your sword to 15")
 

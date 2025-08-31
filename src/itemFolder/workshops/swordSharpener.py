@@ -81,6 +81,17 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
 
         return amount_grindstone_needed_for_upgrade
 
+    def getAvailableGrindStones(self):
+        '''
+        collect the grindstones that can be used to upgrade the sword
+        '''
+        grindstones = []
+        for item in character.inventory:
+            if not isinstance(item, src.items.itemMap["Grindstone"]):
+               continue 
+            grindstones.append(item)
+        return grindstones
+
     def sharpenSword(self, params):
         '''
         start sharpening the sword
@@ -126,14 +137,8 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             character.macroState["submenue"].followUp = {"container": self, "method": "sharpenSword", "params": params}
             return
 
-        # collect the grindstones that can be used to upgrade the sword
-        grindstones = []
-        for item in character.inventory:
-            if not isinstance(item, src.items.itemMap["Grindstone"]):
-               continue 
-            grindstones.append(item)
-
         # warn the player that only basic upgrades can be done without grindstones
+        self.getAvailableGrindStones(character)
         if not grindstones:
             character.addMessage("you don't have Grindstone, you only can improve your sword to 15")
 
@@ -296,6 +301,17 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         base: dict = super().getConfigurationOptions(character)
         base["s"] = ("set upgrade amount", self.setDefaultMaxUpgradeAmount)
         return base
+
+    def readyToBeUsedByCharacter(self,character):
+        sword = character.weapon
+        if not isinstance(sword,src.items.itemMap["Sword"]):
+            return False
+        amountNeeded = self.amountNeededForOneUpgrade(sword.baseDamage)
+
+        if amountNeeded <= len(self.getAvailableGrindStones(character)):
+            return True
+
+        return False
 
 # register the item type
 src.items.addType(SwordSharpener)

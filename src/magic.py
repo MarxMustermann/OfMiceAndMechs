@@ -375,11 +375,13 @@ def spawnArenaRoom(terrain, coordinate, difficulty, doors="0,6 6,0 6,12 12,6"):
 
     swordSharpener = src.items.itemMap["SwordSharpener"]()
     swordSharpener.bolted = True
-    trapRoom1.addItem(swordSharpener, (11, 5, 0))
+    trapRoom1.addItem(swordSharpener, (10, 5, 0))
+    trapRoom1.addInputSlot((11, 5, 0), "Grindstone")
 
     armorReinforcer = src.items.itemMap["ArmorReinforcer"]()
     armorReinforcer.bolted = True
-    trapRoom1.addItem(armorReinforcer, (11, 7, 0))
+    trapRoom1.addItem(armorReinforcer, (10, 7, 0))
+    trapRoom1.addInputSlot((11, 7, 0), "ChitinPlates")
 
     trapRoom1.addInputSlot((11, 9, 0), "MoldFeed", {})
     moldFeed = src.items.itemMap["MoldFeed"]()
@@ -399,7 +401,7 @@ def spawnArenaRoom(terrain, coordinate, difficulty, doors="0,6 6,0 6,12 12,6"):
 
     for x in range(1, 12):
         for y in range(2, 11):
-            if (x, y) in ((11, 9), (11, 8), (11, 5), (11, 7), (11, 4), (11, 3)):
+            if (x, y) in ((11, 9), (11, 8), (11, 5), (11, 7), (11, 4), (11, 3), (10, 5), (10,7)):
                 continue
             trapRoom1.walkingSpace.add((x, y, 0))
 

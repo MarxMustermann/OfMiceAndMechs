@@ -74,6 +74,14 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         """
         self.reinforceArmor({"character": character})
 
+    def getAvailableChitinPlates(self,character):
+        chitinPlates = []
+        for item in character.inventory:
+            if not isinstance(item, src.items.itemMap["ChitinPlates"]):
+                continue
+            chitinPlates.append(item)
+        return chitinPlates
+
     def reinforceArmor(self, params):
         """
         start upgrading the armor
@@ -97,13 +105,9 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         if "amount" not in params:
 
             # get available chitin plates
-            chitinPlates = []
-            for item in character.inventory:
-                if not isinstance(item, src.items.itemMap["ChitinPlates"]):
-                    continue
-                chitinPlates.append(item)
 
             # show warning message when upgrade items are missing
+            chitinPlates = self.getAvailableChitinPlates(character)
             if not chitinPlates:
                 character.addMessage("you don't have ChitinPlates, you need ChitinPlates to upgrade your Armor up to more than 3")
 
@@ -287,6 +291,18 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         base: dict = super().getConfigurationOptions(character)
         base["s"] = ("set upgrade amount", self.setDefaultMaxUpgradeAmount)
         return base
+
+    def readyToBeUsedByCharacter(self,character):
+        armor = character.armor
+        if not isinstance(armor,src.items.itemMap["Armor"]):
+            return False
+        amountNeeded = self.amountNeededForOneUpgrade(armor.armorValue)
+
+        if amountNeeded <= len(self.getAvailableChitinPlates(character)):
+            return True
+
+        return False
+
 
 # register the item
 src.items.addType(ArmorReinforcer)

@@ -75,11 +75,22 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         self.reinforceArmor({"character": character})
 
     def getAvailableChitinPlates(self,character):
+        if not self.bolted:
+            return []
+
         chitinPlates = []
         for item in character.inventory:
             if not isinstance(item, src.items.itemMap["ChitinPlates"]):
                 continue
             chitinPlates.append(item)
+
+        offsets = [(-1,0,0),(1,0,0),(0,-1,0),(0,1,0)]
+        for offset in offsets:
+            for item in self.container.getItemByPosition(self.getPosition(offset=offset)):
+                if not isinstance(item, src.items.itemMap["ChitinPlates"]):
+                    continue
+                chitinPlates.append(item)
+
         return chitinPlates
 
     def reinforceArmor(self, params):
@@ -231,7 +242,10 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         chitinPlates = params["chitinPlates"]
         if chitinPlates_consumed:
             for chitinPlate in chitinPlates[:chitinPlates_consumed]:
-                character.removeItemFromInventory(chitinPlate)
+                if chitinPlate in character.inventory:
+                    character.removeItemFromInventory(chitinPlate)
+                else:
+                    self.container.removeItem(chitinPlate)
 
         # trigger the actual productions process
         improvementAmount = chosenDefenseValue - armorOriginalDamage

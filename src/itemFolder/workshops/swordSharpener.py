@@ -90,6 +90,14 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             if not isinstance(item, src.items.itemMap["Grindstone"]):
                continue 
             grindstones.append(item)
+
+        offsets = [(-1,0,0),(1,0,0),(0,-1,0),(0,1,0)]
+        for offset in offsets:
+            for item in self.container.getItemByPosition(self.getPosition(offset=offset)):
+                if not isinstance(item, src.items.itemMap["Grindstone"]):
+                    continue
+                grindstones.append(item)
+
         return grindstones
 
     def sharpenSword(self, params):
@@ -114,7 +122,10 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             grindstones = params["grindstones"]
             if amount_grindstone_consumed:
                 for grindStone in grindstones[:amount_grindstone_consumed]:
-                    character.removeItemFromInventory(grindStone)
+                    if grindStone in character.inventory:
+                        character.removeItemFromInventory(grindStone)
+                    else:
+                        self.container.removeItem(grindStone)
 
             improvementAmount = chosenDamageValue - swordOriginalDamage
             # trigger the actual productions process

@@ -85,7 +85,7 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
         if not pointsOfInterest:
             if not dryRun:
                 self.fail("no POI found to explore")
-            return (None,None)
+            return (None,("+","abort the quest"))
 
         char_big_pos = character.getBigPosition()
 
@@ -105,6 +105,8 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
                 logger.error("found ghost item")
                 continue
             if item_pos[0] > 12:
+                continue
+            if character.container.isRoom and (item_pos[0] > 11 or item_pos[1] > 11 or item_pos[0] < 1 or item_pos[1] < 1):
                 continue
 
             if item.type in ("Scrap","MetalBars"):

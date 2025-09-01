@@ -208,7 +208,7 @@ Close this menu by pressing esc and follow the instructions on the left hand men
                 if not dryRun:
                     character.addMessage("moving failed - no path found (solver)")
                     self.fail("no path found")
-                return (None,None)
+                return (None,("+","abort quest"))
         if not ignoreCommands and character.macroState.get("submenue"):
             return (None,(["esc"],"exit submenu"))
         

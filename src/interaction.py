@@ -2511,20 +2511,8 @@ def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
             src.gamestate.gamestate.save()
             # src.interaction.tcodMixer.close()
             raise SystemExit() #HACK: workaround for bug that causes memory leak
-        elif selection == "actions":
-            pass
-        elif selection == "macros":
-            pass
-        elif selection == "changeFaction":
-            if char.faction == "player":
-                char.faction = "monster"
-            else:
-                char.faction = "player"
-            pass
         elif selection == "help":
             charState["submenue"] = src.menuFolder.helpMenu.HelpMenu()
-        elif selection == "keybinding":
-            pass
         elif selection == "change setting":
             charState["submenue"] = src.menuFolder.settingMenu.SettingMenu() 
         elif selection == "main menu":

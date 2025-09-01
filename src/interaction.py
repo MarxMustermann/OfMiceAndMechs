@@ -672,7 +672,7 @@ def handleActivitySelection(key,char):
         terrain = char.getTerrain()
 
         # render empty map
-        mapContent = src.menuFolder.TerrainMenu.TerrainMenu.renderZoneInfo(char)
+        mapContent = src.menuFolder.terrainMenu.TerrainMenu.renderZoneInfo(char)
         functionMap = {}
         extraText = "test"
 
@@ -4436,7 +4436,7 @@ def renderGameDisplay(renderChar=None):
                             printUrwidToTcod(position_string,(2*uiElement["offset"][0]+2,uiElement["offset"][1]))
 
                     if uiElement["type"] == "zoneMap":
-                        miniMapChars = src.menuFolder.TerrainMenu.TerrainMenu.renderZoneInfo(src.gamestate.gamestate.mainChar)
+                        miniMapChars = src.menuFolder.terrainMenu.TerrainMenu.renderZoneInfo(src.gamestate.gamestate.mainChar)
                         canvas = src.canvas.Canvas(
                             size=(15, 15),
                             chars=miniMapChars,

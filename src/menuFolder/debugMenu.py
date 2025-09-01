@@ -235,7 +235,7 @@ class DebugMenu(src.subMenu.SubMenu):
                                     }
                                 }
 
-                        submenue = src.menuFolder.TerrainMenu.TerrainMenu(
+                        submenue = src.menuFolder.terrainMenu.TerrainMenu(
                             functionMap=functionMap,
                             cursor=character.getTerrain().getPosition(),
                             applyKey="big_coordinate",

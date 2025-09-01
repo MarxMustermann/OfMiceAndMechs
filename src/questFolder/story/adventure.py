@@ -31,6 +31,19 @@ class Adventure(src.quests.MetaQuestSequence):
         
         currentTerrain = character.getTerrain()
 
+        if currentTerrain == character.getHomeTerrain():
+            for room in character.getTerrain().rooms:
+                for item in room.getItemsByType("SwordSharpener"):
+                    if item.readyToBeUsedByCharacter(character):
+                        quest = src.quests.questMap["SharpenPersonalSword"]()
+                        return ([quest],None)
+
+            for room in character.getTerrain().rooms:
+                for item in room.getItemsByType("ArmorReinforcer"):
+                    if item.readyToBeUsedByCharacter(character):
+                        quest = src.quests.questMap["ReinforcePersonalArmor"]()
+                        return ([quest],None)
+
         if currentTerrain.tag == "shrine":
             # go home directly
             if character.getFreeInventorySpace() < 2:

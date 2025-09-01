@@ -63,6 +63,10 @@ After fetching the glass heart return the glass heart to your base and set it in
         if self.subQuests:
             return (None,None)
 
+        # close other menus
+        if not ignoreCommands and character.macroState.get("submenue"):
+            return (None,(["esc"],"exit submenu"))
+
         if not character.container.isRoom:
             pos = character.getSpacePosition()
             if pos == (14,7,0):

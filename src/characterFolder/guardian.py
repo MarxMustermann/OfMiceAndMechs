@@ -133,7 +133,7 @@ class Guardian(src.monster.Monster):
 
         color = (255,255,255)
         if self.specialCharges > 1:
-            color = (255,max(0,255-self.baseDamage),max(0,255-self.baseDamage))
+            color = (255,int(max(0,255-self.baseDamage)),int(max(0,255-self.baseDamage)))
         return (src.interaction.urwid.AttrSpec(color, "black"), "&&")
 
 src.characters.add_character(Guardian)

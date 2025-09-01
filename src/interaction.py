@@ -2494,54 +2494,12 @@ def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
                ("main menu","save and back to main menu"),
                ("quit", "save and quit"),
                ("help","help"),
-
-               ("toggleQuestExpanding", "toggleQuestExpanding"),
-               ("toggleQuestExpanding2", "toggleQuestExpanding2"),
-               ("toggleExpandQ", "toggleExpandQ"),
-               ("toggleCommandOnPlus", "toggleCommandOnPlus"),
-               ("change personality settings", "change personality settings"),
-
                ("change setting", "change setting")]
     submenu = src.menuFolder.selectionMenu.SelectionMenu("What do you want to do?", options)
     char.macroState["submenue"] = submenu
 
     def trigger():
         selection = submenu.getSelection()
-        if selection == "change personality settings":
-
-            def getValue():
-                settingName = char.macroState["submenue"].selection
-
-                def setValue():
-                    value = char.macroState["submenue"].text
-                    if settingName in (
-                        "autoCounterAttack",
-                        "autoFlee",
-                        "abortMacrosOnAttack",
-                        "attacksEnemiesOnContact",
-                    ):
-                        if value == "True":
-                            value = True
-                        else:
-                            value = False
-                    else:
-                        value = int(value)
-                    char.personality[settingName] = value
-
-                if settingName is None:
-                    return
-                submenu3 = src.menuFolder.inputMenu.InputMenu("input value")
-                char.macroState["submenue"] = submenu3
-                char.macroState["submenue"].followUp = setValue
-                return
-
-            options = []
-            for (key, value) in char.personality.items():
-                options.append((key, f"{key}: {value}"))
-            submenu2 = src.menuFolder.selectionMenu.SelectionMenu("select personality setting", options)
-            char.macroState["submenue"] = submenu2
-            char.macroState["submenue"].followUp = getValue
-            return
         if selection == "save":
             tmp = char.macroState["submenue"]
             char.macroState["submenue"] = None
@@ -2557,14 +2515,6 @@ def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
             pass
         elif selection == "macros":
             pass
-        elif selection == "toggleQuestExpanding":
-            char.autoExpandQuests = not char.autoExpandQuests
-        elif selection == "toggleQuestExpanding2":
-            char.autoExpandQuests2 = not char.autoExpandQuests2
-        elif selection == "toggleExpandQ":
-            char.autoExpandQ = not char.autoExpandQ
-        elif selection == "toggleCommandOnPlus":
-            char.disableCommandsOnPlus = not char.disableCommandsOnPlus
         elif selection == "changeFaction":
             if char.faction == "player":
                 char.faction = "monster"

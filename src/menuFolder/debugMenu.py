@@ -28,6 +28,11 @@ class DebugMenu(src.subMenu.SubMenu):
         "gain endgame strength",
         "gain full strength",
         "spawn room",
+        "toggleQuestExpanding",
+        "toggleQuestExpanding2",
+        "toggleExpandQ",
+        "toggleCommandOnPlus",
+        "change personality settings",
     ]
 
     def __init__(self):
@@ -56,6 +61,58 @@ class DebugMenu(src.subMenu.SubMenu):
             text += debug
 
             match debug:
+                case "change personality settings":
+                    if current_change:
+                        def getValue():
+                            settingName = character.macroState["submenue"].selection
+
+                            def setValue():
+                                value = character.macroState["submenue"].text
+                                if settingName in (
+                                    "autoCounterAttack",
+                                    "autoFlee",
+                                    "abortMacrosOnAttack",
+                                    "attacksEnemiesOnContact",
+                                ):
+                                    if value == "True":
+                                        value = True
+                                    else:
+                                        value = False
+                                else:
+                                    value = int(value)
+                                character.personality[settingName] = value
+
+                            if settingName is None:
+                                return
+                            submenu3 = src.menuFolder.inputMenu.InputMenu("input value")
+                            character.macroState["submenue"] = submenu3
+                            character.macroState["submenue"].followUp = setValue
+                            return
+
+                        options = []
+                        for (key, value) in character.personality.items():
+                            options.append((key, f"{key}: {value}"))
+                        submenu2 = src.menuFolder.selectionMenu.SelectionMenu("select personality setting", options)
+                        character.macroState["submenue"] = submenu2
+                        character.macroState["submenue"].followUp = getValue
+                        return True
+
+                case "toggleQuestExpanding":
+                    if current_change:
+                        character.autoExpandQuests = not character.autoExpandQuests
+                        return True
+                case "toggleQuestExpanding2":
+                    if current_change:
+                        character.autoExpandQuests2 = not character.autoExpandQuests2
+                        return True
+                case "toggleExpandQ":
+                    if current_change:
+                        character.autoExpandQ = not character.autoExpandQ
+                        return True
+                case "toggleCommandOnPlus":
+                    if current_change:
+                        character.disableCommandsOnPlus = not character.disableCommandsOnPlus
+                        return True
                 case "gain full strength":
                     if current_change:
                         character.maxHealth = 500

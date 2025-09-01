@@ -244,7 +244,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             defaultValue += 1
 
         # show the UI to select the actual value to upgrade
-        character.macroState["submenue"] = src.menuFolder.sliderMenu.SliderMenu(
+        submenue = src.menuFolder.sliderMenu.SliderMenu(
             query="choose the damage level to upgrade to",
             defaultValue=defaultValue,
             minValue=sword.baseDamage,
@@ -254,10 +254,12 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             targetParamName="amount",
             additionalInfoCallBack=amountNeededToLevel,
         )
+        character.macroState["submenue"] = submenue
+        submenue.tag = "SwordSharpenerSlider"
         params["sword"] = sword
         params["nextUpgradeCost"] = amount_grindstone_needed_for_upgrade
         params["grindstones"] = grindstones
-        character.macroState["submenue"].followUp = {
+        submenue.followUp = {
             "container": self,
             "method": "sharpenSword",
             "params": params,

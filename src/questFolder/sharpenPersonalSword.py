@@ -70,7 +70,7 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
         if character.macroState.get("submenue"):
             submenue = character.macroState.get("submenue")
             if submenue.tag == "applyOptionSelection" and submenue.extraInfo.get("item").type == "SwordSharpener":
-                return (None,("j","contact command"))
+                return (None,("j","use SwordSharpener"))
             if submenue.tag == "SwordSharpenerSlider":
                 return (None,("j","sharpen the sword"))
             if submenue.tag == "SwordSharpenerSelection":

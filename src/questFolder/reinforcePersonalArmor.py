@@ -46,6 +46,12 @@ class ReinforcePersonalArmor(src.quests.MetaQuestSequence):
 
         if character.macroState.get("submenue"):
             submenue = character.macroState.get("submenue")
+            if submenue.tag == "applyOptionSelection" and submenue.extraInfo.get("item").type == "ArmorReinforcer":
+                return (None,("j","use ArmorReinforcer"))
+            if submenue.tag == "ArmorReinforceerSelection":
+                return (None,("j","selct reeinforcing the armor"))
+            if submenue.tag == "ArmorReinforcerSlider":
+                return (None,("j","reinforce the armor"))
             if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu):
                 foundOption = False
                 rewardIndex = 0

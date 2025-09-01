@@ -208,7 +208,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
             # spawn a slider to allow the user to select the amount to upgrade
             params["armor"] = armor
             params["chitinPlates"] = chitinPlates
-            character.macroState["submenue"] = src.menuFolder.sliderMenu.SliderMenu(
+            submenue = src.menuFolder.sliderMenu.SliderMenu(
                 "choose the armor level to upgrade to",
                 defaultValue=defaultValue,
                 minValue=D(armor.armorValue),
@@ -218,7 +218,9 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
                 targetParamName="amount",
                 additionalInfoCallBack=amountNeededToLevel,
             )
-            character.macroState["submenue"].followUp = {
+            character.macroState["submenue"] = submenue
+            submenue.tag = "ArmorReinforcerSlider"
+            submenue.followUp = {
                 "container": self,
                 "method": "reinforceArmor",
                 "params": params,

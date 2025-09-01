@@ -105,6 +105,10 @@ To see your items open the your inventory by pressing i."""
         if self.subQuests:
             return (None,None)
 
+        # close other menus
+        if not ignoreCommands and character.macroState.get("submenue"):
+            return (None,(["esc"],"exit submenu"))
+
         if not isinstance(character.container,src.rooms.Room):
             if character.yPosition%15 == 14:
                 return (None,("w","enter tile"))

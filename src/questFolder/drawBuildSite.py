@@ -162,10 +162,10 @@ Try as hard as you can to achieve this.
         foundOffset = None
         for offset in offsets:
             items = room.getItemByPosition((self.targetPosition[0]+offset[0],self.targetPosition[1]+offset[1],self.targetPosition[2]+offset[2]))
-            if not items or items[-1].type != "Painter":
+            if not items or items[0].type != "Painter":
                 continue
 
-            foundOffset = (offset,items[-1])
+            foundOffset = (offset,items[0])
 
         # use the painter to draw
         if foundOffset:

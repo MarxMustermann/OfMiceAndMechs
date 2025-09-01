@@ -1189,8 +1189,8 @@ class MainGame(BasicPhase):
         for _i in range(1,20):
             self.setUpShrine(self.get_free_position("shrine"))
 
-        for _i in range(1,15):
-            self.setUpFactoryRemains(self.get_free_position("factory"))
+        #for _i in range(1,15):
+        #    self.setUpFactoryRemains(self.get_free_position("factory"))
 
         for _i in range(1,20):
             self.setUpCloningLab(self.get_free_position("cloning lab"))

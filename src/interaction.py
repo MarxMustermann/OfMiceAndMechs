@@ -2490,12 +2490,17 @@ def doDockRight(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame)
         char.specialRender = True
 
 def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
-    options = [("save", "save"), ("main menu","save and back to main menu"),("quit", "save and quit"),("help","help"),
+    options = [("save", "save"),
+               ("main menu","save and back to main menu"),
+               ("quit", "save and quit"),
+               ("help","help"),
+
                ("toggleQuestExpanding", "toggleQuestExpanding"),
                ("toggleQuestExpanding2", "toggleQuestExpanding2"),
                ("toggleExpandQ", "toggleExpandQ"),
                ("toggleCommandOnPlus", "toggleCommandOnPlus"),
                ("change personality settings", "change personality settings"),
+
                ("change setting", "change setting")]
     submenu = src.menuFolder.selectionMenu.SelectionMenu("What do you want to do?", options)
     char.macroState["submenue"] = submenu

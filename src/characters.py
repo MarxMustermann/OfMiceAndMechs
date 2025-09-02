@@ -2141,7 +2141,8 @@ press any other key to attack normally"""
 
             hasComand = False
             quest = self.getActiveQuest()
-            if quest.getSolvingCommandString(self):
+            commandString = quest.getSolvingCommandString(self)
+            if commandString:
                 hasComand = True
 
             if hasComand:
@@ -2150,7 +2151,7 @@ press any other key to attack normally"""
                     if quest.autoSolve:
                         hasAutoSolve = True
 
-                if not hasAutoSolve:
+                if not hasAutoSolve and not commandString[0] == "+":
                     self.runCommandString(".")
                     return
 

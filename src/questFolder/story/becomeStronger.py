@@ -27,79 +27,39 @@ class BecomeStronger(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["Heal"]()
             return ([quest],None)
 
-        if not character.weapon:
-            for room in terrain.rooms:
-                if room.getNonEmptyOutputslots("Sword"):
-                    quest = src.quests.questMap["Equip"]()
+        for room in character.getTerrain().rooms:
+            for item in room.getItemsByType("SwordSharpener"):
+                if item.readyToBeUsedByCharacter(character):
+                    quest = src.quests.questMap["SharpenPersonalSword"]()
                     return ([quest],None)
-            quest = src.quests.questMap["MetalWorking"](toProduce="Sword",produceToInventory=False,amount=1)
-            return ([quest],None)
-        else:
-            shouldSharpen = False
-            if character.weapon.baseDamage < 15:
-                shouldSharpen = True
-            elif character.weapon.baseDamage < 30:
-                if character.searchInventory("Grindstone"):
-                    shouldSharpen = True
 
-            if shouldSharpen:
-                for room in terrain.rooms:
-                    for item in room.getItemsByType("SwordSharpener",needsBolted=True):
-                        quest = src.quests.questMap["SharpenPersonalSword"]()
-                        return ([quest],None)
-
-            if character.weapon.baseDamage < 30:
-                for room in terrain.rooms:
-                    if room.getNonEmptyOutputslots("Grindstone"):
-                        quest = src.quests.questMap["FetchItems"](toCollect="Grindstone")
-                        return ([quest],None)
-
-                for x in range(1,14):
-                    for y in range(1,14):
-                        if terrain.getRoomByPosition((x,y,0)):
-                            continue
-                        for item in terrain.itemsByBigCoordinate.get((x,y,0),[]):
-                            if item.type != "Grindstone":
-                                continue
-                            quest = src.quests.questMap["CleanSpace"](targetPosition=item.getSmallPosition(),targetPositionBig=(x,y,0),abortOnfullInventory=False,description="fetch grindstone")
-                            return ([quest],None)
-
-        if not character.armor:
-            for room in terrain.rooms:
-                if room.getNonEmptyOutputslots("Armor"):
-                    quest = src.quests.questMap["Equip"]()
+        for room in character.getTerrain().rooms:
+            for item in room.getItemsByType("ArmorReinforcer"):
+                if item.readyToBeUsedByCharacter(character):
+                    quest = src.quests.questMap["ReinforcePersonalArmor"]()
                     return ([quest],None)
-            quest = src.quests.questMap["MetalWorking"](toProduce="Armor",produceToInventory=False,amount=1)
-            return ([quest],None)
-        else:
-            shouldReinforce = False
-            if character.armor.armorValue < 3:
-                shouldReinforce = True
-            elif character.armor.armorValue < 8:
-                if character.searchInventory("ChitinPlates"):
-                    shouldReinforce = True
 
-            if shouldReinforce:
-                for room in terrain.rooms:
-                    for item in room.getItemsByType("ArmorReinforcer",needsBolted=True):
-                        quest = src.quests.questMap["ReinforcePersonalArmor"]()
-                        return ([quest],None)
-
-            if character.armor.armorValue < 8:
-                for room in terrain.rooms:
-                    if room.getNonEmptyOutputslots("ChitinPlates"):
-                        quest = src.quests.questMap["FetchItems"](toCollect="ChitinPlates")
-                        return ([quest],None)
-
-                for x in range(1,14):
-                    for y in range(1,14):
-                        if terrain.getRoomByPosition((x,y,0)):
+        if character.weapon.baseDamage < 30:
+            for x in range(1,14):
+                for y in range(1,14):
+                    if terrain.getRoomByPosition((x,y,0)):
+                        continue
+                    for item in terrain.itemsByBigCoordinate.get((x,y,0),[]):
+                        if item.type != "Grindstone":
                             continue
-                        for item in terrain.itemsByBigCoordinate.get((x,y,0),[]):
-                            if item.type != "ChitinPlates":
-                                continue
-                            quest = src.quests.questMap["CleanSpace"](targetPosition=item.getSmallPosition(),targetPositionBig=(x,y,0),abortOnfullInventory=False,description="fetch chitin plates")
-                            return ([quest],None)
+                        quest = src.quests.questMap["CleanSpace"](targetPosition=item.getSmallPosition(),targetPositionBig=(x,y,0),abortOnfullInventory=False,description="fetch grindstone")
+                        return ([quest],None)
+
+        if character.armor.armorValue < 8:
+            for x in range(1,14):
+                for y in range(1,14):
+                    if terrain.getRoomByPosition((x,y,0)):
+                        continue
+                    for item in terrain.itemsByBigCoordinate.get((x,y,0),[]):
+                        if item.type != "ChitinPlates":
+                            continue
+                        quest = src.quests.questMap["CleanSpace"](targetPosition=item.getSmallPosition(),targetPositionBig=(x,y,0),abortOnfullInventory=False,description="fetch chitin plates")
+                        return ([quest],None)
 
         if character.maxHealth < 500:
             if character.searchInventory("PermaMaxHealthPotion"):

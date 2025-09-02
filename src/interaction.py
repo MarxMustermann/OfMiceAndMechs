@@ -4413,6 +4413,17 @@ def renderGameDisplay(renderChar=None):
                         else:
                             healthDisplay = [(urwid.AttrSpec("#f00", "default"),"x"*healthRate),(urwid.AttrSpec("#444", "default"),"."*(15-healthRate))]
 
+                        exhaustionDisplay = []
+                        for i in range(0,int(char.exhaustion)):
+                            color = "#fff"
+                            if i > 5:
+                                color = "#f90"
+                            if i > 8:
+                                color = "#f50"
+                            if i > 9:
+                                color = "#f00"
+                            exhaustionDisplay.append((urwid.AttrSpec(color, "default"),"X"))
+
                         flaskInfo = "-"
                         if char.flask:
                             flaskInfo = str(char.flask.uses)
@@ -4432,6 +4443,7 @@ def renderGameDisplay(renderChar=None):
 
                         text = [
                             "health: " , healthDisplay ,
+                            " exhaustion: ", exhaustionDisplay,
                             "  effects: " , statusEffectDisplay
                         ]
 

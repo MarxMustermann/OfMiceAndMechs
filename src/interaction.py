@@ -4416,13 +4416,18 @@ def renderGameDisplay(renderChar=None):
                         exhaustionDisplay = []
                         for i in range(0,int(char.exhaustion)):
                             color = "#fff"
-                            if i > 5:
+                            if i > 4:
                                 color = "#f90"
                             if i > 8:
                                 color = "#f50"
                             if i > 9:
                                 color = "#f00"
                             exhaustionDisplay.append((urwid.AttrSpec(color, "default"),"X"))
+                        if int(char.exhaustion) < 10:
+                            color = "#222"
+                            for i in range(0,10-int(char.exhaustion)):
+                                exhaustionDisplay.append((urwid.AttrSpec(color, "default"),"X"))
+
 
                         flaskInfo = "-"
                         if char.flask:

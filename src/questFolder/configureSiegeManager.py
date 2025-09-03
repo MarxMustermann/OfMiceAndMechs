@@ -75,7 +75,7 @@ class ConfigureSiegeManager(src.quests.MetaQuestSequence):
         if submenue:
 
             # open the scheduling menu
-            if submenue.tag == None:
+            if submenue.tag == "applyOptionSelection":
                 menuEntry = "setSchedule"
                 counter = 1
                 for option in submenue.options.values():

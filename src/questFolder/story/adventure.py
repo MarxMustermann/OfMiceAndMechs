@@ -30,7 +30,6 @@ class Adventure(src.quests.MetaQuestSequence):
             return (None, ("w","enter the terrain"))
         
         currentTerrain = character.getTerrain()
-
         if currentTerrain == character.getHomeTerrain():
             for room in character.getTerrain().rooms:
                 for item in room.getItemsByType("SwordSharpener"):
@@ -43,6 +42,10 @@ class Adventure(src.quests.MetaQuestSequence):
                     if item.readyToBeUsedByCharacter(character):
                         quest = src.quests.questMap["ReinforcePersonalArmor"]()
                         return ([quest],None)
+
+        if not character.weapon or not character.armor:
+            quest = src.quests.questMap["Equip"](tryHard=True)
+            return ([quest],None)
 
         if currentTerrain.tag == "shrine":
             # go home directly

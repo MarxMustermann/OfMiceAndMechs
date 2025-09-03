@@ -2,10 +2,13 @@ import src
 
 
 class Equip(src.quests.MetaQuestSequence):
+    '''
+    quest for a NPC to equip with weapons etc
+    '''
     type = "Equip"
     lowLevel = True
 
-    def __init__(self, description="equip", creator=None, command=None, lifetime=None, weaponOnly=False, reason=None, story=None):
+    def __init__(self, description="equip", creator=None, command=None, lifetime=None, weaponOnly=False, reason=None, story=None, tryHard=False):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = description
@@ -14,6 +17,7 @@ class Equip(src.quests.MetaQuestSequence):
         self.shortCode = "e"
         self.reason = reason
         self.story = story
+        self.tryHard = tryHard
 
     def generateTextDescription(self):
         reasonString = ""

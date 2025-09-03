@@ -319,7 +319,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         sword = character.weapon
         if not isinstance(sword,src.items.itemMap["Sword"]):
             return False
-        amountNeeded = self.amountNeededForOneUpgrade(sword.baseDamage)
+        amountNeeded = self.amountNeededForOneUpgrade(sword.baseDamage+1)
 
         if amountNeeded <= len(self.getAvailableGrindStones(character)):
             return True

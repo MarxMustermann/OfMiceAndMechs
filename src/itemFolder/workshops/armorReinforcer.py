@@ -312,7 +312,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         armor = character.armor
         if not isinstance(armor,src.items.itemMap["Armor"]):
             return False
-        amountNeeded = self.amountNeededForOneUpgrade(armor.armorValue)
+        amountNeeded = self.amountNeededForOneUpgrade(armor.armorValue+1)
 
         if amountNeeded <= len(self.getAvailableChitinPlates(character)):
             return True

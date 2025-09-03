@@ -4428,11 +4428,6 @@ def renderGameDisplay(renderChar=None):
                             for i in range(0,10-int(char.exhaustion)):
                                 exhaustionDisplay.append((urwid.AttrSpec(color, "default"),"X"))
 
-
-                        flaskInfo = "-"
-                        if char.flask:
-                            flaskInfo = str(char.flask.uses)
-
                         statusEffectDisplay = ""
                         status = {}
                         for statusEffect in char.statusEffects:

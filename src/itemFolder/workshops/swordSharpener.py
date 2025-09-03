@@ -107,6 +107,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
 
         # unnpack paramters
         character = params["character"]
+        character.changed("sharpened sword")
 
         # start the actual sword sharpening
         if "amount" in params:
@@ -195,7 +196,6 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             text = f"you can't improve your sword.\nYou need {amount_grindstone_needed_for_upgrade} Grindstone to upgrade your sword."
             submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
             character.macroState["submenue"] = submenue
-            character.changed("sharpened sword")
             return
 
         def amountNeededToLevel(level, allowed=None):

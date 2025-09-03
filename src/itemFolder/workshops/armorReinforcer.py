@@ -100,6 +100,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
 
         # unpack the parameters
         character = params["character"]
+        character.changed("improved armor")
 
         # get user input on what armor to upgrade
         if "choice" not in params:
@@ -158,7 +159,6 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
                 text = f"you can't improve your armor.\nYou need {amount_ChitinPlates_needed_for_upgrade} ChitinPlates to upgrade your armor."
                 submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
                 character.macroState["submenue"] = submenue
-                character.changed("improved armor")
                 return
 
             # define callback to show total costs

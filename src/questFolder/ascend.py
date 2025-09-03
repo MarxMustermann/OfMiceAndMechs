@@ -70,6 +70,20 @@ Rule the world and put an end to those attacks!
             hasSeeker = True
 
         if hasSeeker:
+            currentTerrain = character.getTerrain()
+            if currentTerrain == character.getHomeTerrain():
+                for room in character.getTerrain().rooms:
+                    for item in room.getItemsByType("SwordSharpener"):
+                        if item.readyToBeUsedByCharacter(character):
+                            quest = src.quests.questMap["SharpenPersonalSword"]()
+                            return ([quest],None)
+
+                for room in character.getTerrain().rooms:
+                    for item in room.getItemsByType("ArmorReinforcer"):
+                        if item.readyToBeUsedByCharacter(character):
+                            quest = src.quests.questMap["ReinforcePersonalArmor"]()
+                            return ([quest],None)
+
             terrain = character.getTerrain()
             if terrain.xPosition != 7 or terrain.yPosition != 7:
                 quest = src.quests.questMap["GoToTerrain"](targetTerrain=(7,7,0),reason="get to the glass palace", description="go to glass palace")

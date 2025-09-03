@@ -66,6 +66,10 @@ Use the Promotor to do this.
                 return (None,(["enter"],"select reward"))
             return (None,(["esc"],"close the menu"))
 
+        if not character.getTerrain() == character.getHomeTerrain():
+            quest = src.quests.questMap["GoHome"]()
+            return  ([quest],None)
+
         if not character.container.isRoom:
             pos = character.getSpacePosition()
             if pos == (14,7,0):

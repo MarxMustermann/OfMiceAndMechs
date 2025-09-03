@@ -6,6 +6,7 @@ class Clone(src.characters.Character):
     the "human" player class
     """
 
+
     def __init__(
         self,
         display="@@",
@@ -34,6 +35,7 @@ class Clone(src.characters.Character):
         )
 
         self.charType = "Clone"
+        self.lastMapSync = None
 
     def die(self, reason=None, addCorpse=True, killer=None):
         if not addCorpse:

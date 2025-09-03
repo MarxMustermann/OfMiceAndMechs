@@ -107,7 +107,7 @@ Swords can range from 10 to 25 damage per hit.
         if bestArmor and character.armor and bestArmor.armorValue > character.armor.armorValue:
             return
 
-        if "metal working" in character.duties and (not character.weapon or not character.armor):
+        if ("metal working" in character.duties or self.tryHard) and (not character.weapon or not character.armor):
             return
 
         self.postHandler()
@@ -163,7 +163,7 @@ Swords can range from 10 to 25 damage per hit.
                     return (None,("J"+offset[1],"equip the item"))
             2/0
 
-        if "metal working" in character.duties:
+        if "metal working" in character.duties or self.tryHard:
             if not character.weapon:
                 quests = []
                 quest = src.quests.questMap["ClearInventory"](returnToTile=False)

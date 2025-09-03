@@ -4401,11 +4401,11 @@ def renderGameDisplay(renderChar=None):
                         if not footer:
                             continue
 
-                        stepSize = char.maxHealth/15
+                        stepSize = char.adjustedMaxHealth/15
                         if stepSize == 0:
                             stepSize = 1
                         healthRate = int(char.health/stepSize)
-                        if char.health == char.maxHealth:
+                        if char.health == char.adjustedMaxHealth:
                             healthRate = 15
 
                         if char.health == 0:

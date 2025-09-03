@@ -95,6 +95,9 @@ run,run,run!!!
         commands = []
         command = None
         for foundEnemy in character.getNearbyEnemies():
+            if character.getPosition() == foundEnemy.getPosition():
+                command = "m"
+                break
             for offset in [((1,0,0),"a"),((-1,0,0),"d"),((0,1,0),"w"),((0,-1,0),"s")]:
                 if character.getPosition(offset=offset[0]) == foundEnemy.getPosition():
                     command = offset[1]

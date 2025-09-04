@@ -4412,7 +4412,7 @@ def renderGameDisplay(renderChar=None):
                         if char.health == 0:
                             healthDisplay = "---------------"
                         else:
-                            healthDisplay = [(urwid.AttrSpec("#f00", "default"),"x"*healthRate),(urwid.AttrSpec("#444", "default"),"."*(bar_width-healthRate))]
+                            healthDisplay = [(urwid.AttrSpec("#f00", "default"),"X"*healthRate),(urwid.AttrSpec("#444", "default"),"."*(bar_width-healthRate))]
 
                         exhaustionDisplay = []
                         for i in range(0,int(char.exhaustion)):

@@ -93,6 +93,10 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
             char.hasMagic
         except:
             char.hasMagic = False
+        try:
+            char.lastMapSync
+        except:
+            char.lastMapSync = None
 
         text += "\n"
         text += f"movementSpeed:  {char.adjustedMovementSpeed}\n"
@@ -107,6 +111,8 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
         text += f"hasMovementSpeedBoost: {char.hasMovementSpeedBoost}\n"
         text += f"hasMaxHealthBoost: {char.hasMaxHealthBoost}\n"
         text += f"hasMagic: {char.hasMagic}\n"
+        text += "\n"
+        text += f"lastMapSync: {src.gamestate.gamestate.tick-char.lastMapSync}\n"
         text += "\n"
         for jobOrder in char.jobOrders:
             text += str(jobOrder.taskName)

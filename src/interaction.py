@@ -4401,7 +4401,39 @@ def renderGameDisplay(renderChar=None):
                         if not footer:
                             continue
 
-                        bar_width = 15
+                        if char.adjustedMaxHealth < 50:
+                            bar_width = 5
+                        elif char.adjustedMaxHealth < 60:
+                            bar_width = 6
+                        elif char.adjustedMaxHealth < 70:
+                            bar_width = 7
+                        elif char.adjustedMaxHealth < 80:
+                            bar_width = 8
+                        elif char.adjustedMaxHealth < 90:
+                            bar_width = 9
+                        elif char.adjustedMaxHealth < 100:
+                            bar_width = 10
+                        elif char.adjustedMaxHealth < 150:
+                            bar_width = 11
+                        elif char.adjustedMaxHealth < 200:
+                            bar_width = 12
+                        elif char.adjustedMaxHealth < 300:
+                            bar_width = 13
+                        elif char.adjustedMaxHealth < 400:
+                            bar_width = 14
+                        elif char.adjustedMaxHealth < 500:
+                            bar_width = 15
+                        elif char.adjustedMaxHealth < 600:
+                            bar_width = 16
+                        elif char.adjustedMaxHealth < 700:
+                            bar_width = 17
+                        elif char.adjustedMaxHealth < 800:
+                            bar_width = 18
+                        elif char.adjustedMaxHealth < 900:
+                            bar_width = 19
+                        elif char.adjustedMaxHealth < 1000:
+                            bar_width = 20
+
                         stepSize = char.adjustedMaxHealth/bar_width
                         if stepSize == 0:
                             stepSize = 1
@@ -4409,10 +4441,30 @@ def renderGameDisplay(renderChar=None):
                         if char.health == char.adjustedMaxHealth:
                             healthRate = bar_width
 
-                        if char.health == 0:
-                            healthDisplay = "---------------"
+                        if char.health%stepSize == 0 or healthRate == bar_width:
+                            health_end = None
+                        elif char.health%stepSize < stepSize/3:
+                            health_end = "."
+                        elif char.health%stepSize < (stepSize/3)*2:
+                            health_end = "x"
                         else:
-                            healthDisplay = [(urwid.AttrSpec("#f00", "default"),"X"*healthRate),(urwid.AttrSpec("#444", "default"),"."*(bar_width-healthRate))]
+                            health_end = "X"
+
+                        healthDisplay = []
+                        health_string = str(int(char.health))
+                        max_health_string = str(int(char.maxHealth))
+                        healthDisplay.append(" "*(len(max_health_string)-len(health_string))+health_string+"/"+max_health_string)
+                        healthDisplay.append(" [")
+                        if char.health == 0:
+                            healthDisplay.append("-"*bar_width)
+                        else:
+                            healthDisplay.append((urwid.AttrSpec("#f00", "default"),"X"*(healthRate)))
+                            empty_length = bar_width-healthRate
+                            if health_end:
+                                healthDisplay.append((urwid.AttrSpec("#f00", "default"),health_end))
+                                empty_length -= 1
+                            healthDisplay.append((urwid.AttrSpec("#444", "default"),"."*empty_length))
+                        healthDisplay.append("]")
 
                         exhaustionDisplay = []
                         for i in range(0,int(char.exhaustion)):

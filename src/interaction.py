@@ -4401,17 +4401,18 @@ def renderGameDisplay(renderChar=None):
                         if not footer:
                             continue
 
-                        stepSize = char.adjustedMaxHealth/15
+                        bar_width = 15
+                        stepSize = char.adjustedMaxHealth/bar_width
                         if stepSize == 0:
                             stepSize = 1
                         healthRate = int(char.health/stepSize)
                         if char.health == char.adjustedMaxHealth:
-                            healthRate = 15
+                            healthRate = bar_width
 
                         if char.health == 0:
                             healthDisplay = "---------------"
                         else:
-                            healthDisplay = [(urwid.AttrSpec("#f00", "default"),"x"*healthRate),(urwid.AttrSpec("#444", "default"),"."*(15-healthRate))]
+                            healthDisplay = [(urwid.AttrSpec("#f00", "default"),"x"*healthRate),(urwid.AttrSpec("#444", "default"),"."*(bar_width-healthRate))]
 
                         exhaustionDisplay = []
                         for i in range(0,int(char.exhaustion)):

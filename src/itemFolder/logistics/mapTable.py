@@ -16,15 +16,21 @@ class MapTable(src.items.Item):
         super().__init__(display="MP")
         self.applyOptions.extend(
                         [
+                                ("studyMap", "study map"),
                                 ("writeMap", "extend map"),
                                 ("readMap", "study map"),
                         ]
                     )
         self.applyMap = {
-                    "showMap": self.showMap,
+                    "studyMap": self.studyMap,
                     "writeMap":self.writeMap,
                     "readMap":self.readMap,
                         }
+
+    def studyMap(self, character):
+        self.writeMap(character)
+        self.readMap(character)
+        character.lastMapSync = src.gamestate.gamestate.tick
 
     def showMap(self, character, cursor = None):
         '''

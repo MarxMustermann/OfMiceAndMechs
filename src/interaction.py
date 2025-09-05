@@ -247,6 +247,8 @@ def playSound(soundName,channelName,loop=False):
 zoom = 0
 window_width = None
 window_height = None
+window_charwidth = None
+window_charheight = None
 def checkResetWindowSize(width=None,height=None):
     global window_width
     if width is None:
@@ -277,6 +279,11 @@ def checkResetWindowSize(width=None,height=None):
     global tcodConsole
     root_console = tcod.console.Console(newWidth, newHeight, order="F")
     tcodConsole = root_console
+
+    global window_charwidth
+    global window_charheight
+    window_charwidth = newWidth
+    window_charheight = newHeight
 
 def setUpTcod():
     global settings
@@ -3461,7 +3468,7 @@ def render(char):
         lastCenterY = centerY
 
     # set size of the window into the world
-    viewsize = 44
+    viewsize = window_charheight-5
     halfviewsite = (viewsize - 1) // 2
 
     # calculate the windows position
@@ -3480,13 +3487,14 @@ def render(char):
     )
 
     # render the map
+    renderHeight = window_charheight-5
     if (
         char.room
         and not char.room.xPosition
     ):
         chars = char.room.render()
     else:
-        chars = thisTerrain.render(size=(viewsize, viewsize),coordinateOffset=(centerY - halfviewsite -1, centerX - halfviewsite-1))
+        chars = thisTerrain.render(size=(renderHeight,renderHeight),coordinateOffset=(centerY - renderHeight//2 -1, centerX - renderHeight//2 -1))
         miniMapChars = []
 
         '''
@@ -3541,7 +3549,7 @@ def render(char):
 
     # place rendering in screen
     canvas = src.canvas.Canvas(
-        size=(viewsize+1, viewsize+20),
+        size=(renderHeight, renderHeight),
         chars=chars,
         coordinateOffset=(0,0),
         shift=shift,
@@ -4308,7 +4316,7 @@ def renderGameDisplay(renderChar=None):
                 uiElements = []
                 assumedScreenWidth = tcodConsole.width
 
-                mapWidth = 88
+                mapWidth = window_charheight*2
                 if assumedScreenWidth < mapWidth:
                     assumedScreenWidth = mapWidth
                 uiElements.append({"type":"gameMap","offset":[(assumedScreenWidth-mapWidth)//4,6]})
@@ -4337,7 +4345,7 @@ def renderGameDisplay(renderChar=None):
                     displayString = f" mana: {round(terrain.mana,2)}/{terrain.maxMana}"
                     displayWidth = len(displayString)
                     uiElements.append({"type":"text","offset":[(assumedScreenWidth-mapWidth)//2+(mapWidth-displayWidth)//2,3],"width":mapWidth,"text":displayString})
-                uiElements.append({"type":"time","offset":[(assumedScreenWidth-mapWidth)//2+35,4]})
+                uiElements.append({"type":"time","offset":[(assumedScreenWidth//2)-10,4]})
 
                 if tcodConsole.width > mapWidth + 15*4:
                     uiElements.append({"type":"rememberedMenu","offset":[2,18],"size":(max(0,(assumedScreenWidth-mapWidth)//2-4),tcodConsole.height-18)})

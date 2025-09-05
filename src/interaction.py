@@ -244,8 +244,24 @@ def playSound(soundName,channelName,loop=False):
         if not channel.busy:
             channel.play(sounds[soundName], volume = settings["sound"]/32)
 
-def checkResetWindowSize(width,height):
+zoom = 0
+window_width = None
+window_height = None
+def checkResetWindowSize(width=None,height=None):
+    global window_width
+    if width is None:
+        width = window_width
+    else:
+        window_width = width
+    global window_height
+    if height is None:
+        height = window_height
+    else:
+        window_height = height
+
     tileHeight = height//51//2*2
+    tileHeight += zoom*2
+
     if tileHeight < 6:
         tileHeight = 6
     if tileHeight > 28:
@@ -3563,6 +3579,8 @@ def keyboardListener(key, targetCharacter=None):
     global continousOperation
     continousOperation = -1
 
+    global zoom
+
     if not multi_currentChar:
         multi_currentChar = char
     state = char.macroState
@@ -3596,6 +3614,15 @@ def keyboardListener(key, targetCharacter=None):
             src.gamestate.gamestate.gameHalted = False
         else:
             src.gamestate.gamestate.gameHalted = True
+
+    elif key == "ctrl +":
+        #zoom in
+        zoom += 1
+        checkResetWindowSize()
+    elif key == "ctrl -":
+        #zoom out
+        zoom -= 1
+        checkResetWindowSize()
 
     elif key == "ctrl p":
         if not char.macroStateBackup:
@@ -3752,6 +3779,7 @@ def getTcodEvents():
 
     if lastcheck < time.time()-0.01:
         events = tcod.event.get()
+        ignoreNext = False
         for event in events:
             foundEvent = True
             if isinstance(event, tcod.event.Quit):
@@ -3815,55 +3843,13 @@ def getTcodEvents():
                         translatedKey = "ESC"
                     else:
                         translatedKey = "esc"
-                """
-                if key == tcod.event.KeySym.N1:
-                    translatedKey = "1"
-                if key == tcod.event.KeySym.N2:
-                    translatedKey = "2"
-                if key == tcod.event.KeySym.N3:
-                    translatedKey = "3"
-                if key == tcod.event.KeySym.N4:
-                    translatedKey = "4"
-                if key == tcod.event.KeySym.N5:
-                    translatedKey = "5"
-                if key == tcod.event.KeySym.N6:
-                    translatedKey = "6"
-                if key == tcod.event.KeySym.N7:
-                    translatedKey = "7"
-                if key == tcod.event.KeySym.N8:
-                    translatedKey = "8"
-                if key == tcod.event.KeySym.N9:
-                    translatedKey = "9"
-                if key == tcod.event.KeySym.N0:
-                    translatedKey = "0"
-                if key == tcod.event.KeySym.COMMA:
-                    if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,4097,4098):
-                        translatedKey = ";"
-                    else:
-                        translatedKey = ","
+
                 if key == tcod.event.KeySym.MINUS:
-                    if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,4097,4098):
-                        translatedKey = "_"
-                    else:
-                        translatedKey = "-"
+                    if event.mod & tcod.event.Modifier.CTRL:
+                        translatedKey = "ctrl -"
                 if key == tcod.event.KeySym.PLUS or key == tcod.event.KeySym.KP_PLUS:
-                    if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,4097,4098):
-                        translatedKey = "*"
-                    else:
-                        translatedKey = "+"
-                if key == tcod.event.KeySym.a:
-                    if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,4161,4224,):
-                        translatedKey = "ctrl a"
-                    elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,4097,4098):
-                        translatedKey = "A"
-                    else:
-                        translatedKey = "a"
-                if key == tcod.event.KeySym.b:
-                    if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,4097,4098):
-                        translatedKey = "B"
-                    else:
-                        translatedKey = "b"
-                """
+                    if event.mod & tcod.event.Modifier.CTRL:
+                        translatedKey = "ctrl +"
                 if key == tcod.event.KeySym.c:
                     if event.mod & tcod.event.Modifier.CTRL:
                         translatedKey = "ctrl c"
@@ -4027,8 +4013,13 @@ def getTcodEvents():
                     continue
 
                 keyboardListener(translatedKey)
+                ignoreNext = True
 
             if isinstance(event,tcod.event.TextInput):
+                if ignoreNext:
+                    ignoreNext = False
+                    continue
+
                 translatedKey = event.text
 
                 if translatedKey is None:

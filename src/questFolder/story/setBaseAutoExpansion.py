@@ -107,6 +107,12 @@ class SetBaseAutoExpansion(src.quests.MetaQuestSequence):
         generate a text description to show on the UI
         '''
         text = ["""
+To set up new production lines or facilities a base needs empty rooms.
+Clones can ensure there are always new rooms to build it.
+
+The city planner has a entry that determines how many empty rooms there should be.
+If there are less empty rooms than that entry indicates the NPC will start building a new room.
+You will not designate build sites for that.
 """]
         return text
 

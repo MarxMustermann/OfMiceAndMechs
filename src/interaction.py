@@ -785,6 +785,13 @@ def handleActivitySelection(key,char):
                     },
                     "description":"move to east crossing",
                 }
+                functionMap[(x,y)]["q"] = {
+                    "function": {
+                        "container":char,
+                        "method":"triggerAutoMoveQuestTarget",
+                    },
+                    "description":"move to a quest target"
+                }
 
         for scrapField in terrain.scrapFields:
             mapContent[scrapField[1]][scrapField[0]] = "ss"
@@ -3247,6 +3254,8 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
     # repeat autoadvance keystrokes
     # bad code: keystrokes are abused here, a timer would be more appropriate
     if key in (commandChars.autoAdvance,):
+        if char.disableCommandsOnPlus:
+            return
         if not charState["ignoreNextAutomated"]:
             char.runCommandString(commandChars.autoAdvance)
             char.runCommandString(commandChars.advance)

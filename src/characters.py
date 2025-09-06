@@ -435,6 +435,27 @@ class Character:
 
         self.quests.insert(0,quest)
 
+    def triggerAutoMoveQuestTarget(self):
+        quests = self.getActiveQuests()
+        candidates = []
+        for quest in quests:
+            quest_markers = quest.getQuestMarkersTile(self)
+            for marker in quest_markers:
+                if marker[1] != "target":
+                    continue
+                candidates.append(marker)
+            if candidates:
+                break
+
+        if not candidates:
+            self.addMessage("no quest target found")
+            return
+
+        target = random.choice(candidates)
+
+        extraParam = {"coordinate":target[0]}
+        self.triggerAutoMoveToTile(extraParam)
+
     def triggerAutoMoveFixedTileTarget(self,extraParam):
         '''
         trigger an auto move to a certain coordinate

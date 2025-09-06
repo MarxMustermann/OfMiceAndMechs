@@ -2,8 +2,10 @@ import src
 import random
 
 class SpawnClone(src.quests.MetaQuestSequence):
+    '''
+    quest for a NPC to spawn more NPcs
+    '''
     type = "SpawnClone"
-
     def __init__(self, description="spawn clone", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None,reason=None,tryHard=False):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
@@ -12,6 +14,9 @@ class SpawnClone(src.quests.MetaQuestSequence):
         self.tryHard = tryHard
 
     def handleQuestFailure(self,extraParam):
+        '''
+        try to fix the condition if the quest fails
+        '''
         if extraParam["quest"] not in self.subQuests:
             return
 
@@ -108,6 +113,9 @@ class SpawnClone(src.quests.MetaQuestSequence):
         self.fail(reason)
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
+        '''
+        generate the next step towards solving the quest
+        '''
 
         if self.subQuests:
             return (None,None)
@@ -173,6 +181,9 @@ class SpawnClone(src.quests.MetaQuestSequence):
             return (None,(direction+"j","refill growth tank"))
 
     def generateTextDescription(self):
+        '''
+        generate a textual description to show on the UI
+        '''
         return ["""
 You reach out to your implant and it answers:
 
@@ -184,6 +195,9 @@ Spawn a clone to have a backup in case of emergencies.
 """]
 
     def assignToCharacter(self, character):
+        '''
+        start listening to events
+        '''
         if self.character:
             return
 
@@ -192,9 +206,15 @@ Spawn a clone to have a backup in case of emergencies.
         super().assignToCharacter(character)
 
     def noFlask(self,extraInfo=None):
+        '''
+        fail if there are no flasks
+        '''
         self.fail("no flask")
 
     def handleSpawn(self,extraInfo=None):
+        '''
+        end quest if a new character was spawned
+        '''
         if self.completed:
             1/0
         if not self.active:
@@ -203,9 +223,13 @@ Spawn a clone to have a backup in case of emergencies.
         self.postHandler()
 
     def triggerCompletionCheck(self,character=None):
+        '''
+        never complete without event
+        '''
         if not character:
             return False
 
         return False
 
+# register the quest type
 src.quests.addType(SpawnClone)

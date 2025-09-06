@@ -4451,7 +4451,7 @@ def renderGameDisplay(renderChar=None):
 
                         healthDisplay = []
                         health_string = str(int(char.health))
-                        max_health_string = str(int(char.maxHealth))
+                        max_health_string = str(int(char.adjustedMaxHealth))
                         healthDisplay.append(" "*(len(max_health_string)-len(health_string))+health_string+"/"+max_health_string)
                         healthDisplay.append(" [")
                         if char.health == 0:

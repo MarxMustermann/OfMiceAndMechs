@@ -7372,7 +7372,7 @@ def advanceChar(char,render=True, pull_events = True, singleStep=False):
                     skipedRenders = 0
                     renderGameDisplay()
                 """
-                if src.gamestate.gamestate.tick%3 == 0:
+                if src.gamestate.gamestate.tick%1 == 0:
                     renderGameDisplay()
             lastRender = time.time()
             rerender = False

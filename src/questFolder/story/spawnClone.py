@@ -98,7 +98,15 @@ class SpawnClone(src.quests.MetaQuestSequence):
                     self.startWatching(newQuest,self.handleQuestFailure,"failed")
                     return
 
-            if random.random() < 0.5:
+            hasClone = False
+            for other_character in character.getAllCharacters():
+                if other_character == character:
+                    continue
+                if other_character.faction != character.faction:
+                    continue
+                hasClone = True
+
+            if hasClone and random.random() < 0.5:
                 newQuest = src.quests.questMap["Adventure"](lifetime=3000)
                 self.addQuest(newQuest)
                 self.startWatching(newQuest,self.handleQuestFailure,"failed")

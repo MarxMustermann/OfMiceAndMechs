@@ -137,14 +137,23 @@ class Terrain:
     def getPosition(self):
         return (self.xPosition,self.yPosition,0)
 
-    def addAnimation(self,coordinate,animationType,duration,extraInfo):
+    def addAnimation(self,coordinate,animationType,duration,extraInfo,addFront=False):
+        # discard animations that are not needed
         if not src.gamestate.gamestate.mainChar:
+            3/0
             return
         if self != src.gamestate.gamestate.mainChar.getTerrain():
             return
         if src.interaction.noFlicker:
+            5/0
             return
-        self.animations.append([coordinate,animationType,duration,extraInfo])
+
+        # add the actual animation
+        animation = [coordinate,animationType,duration,extraInfo]
+        if not addFront:
+            self.animations.append([coordinate,animationType,duration,extraInfo])
+        else:
+            self.animations.insert(0,[coordinate,animationType,duration,extraInfo])
 
     def getRoomsByTag(self,tag):
         result = []

@@ -1,12 +1,9 @@
-
 import src
 
 class Clone(src.characters.Character):
-    """
+    '''
     the "human" player class
-    """
-
-
+    '''
     def __init__(
         self,
         display="@@",
@@ -18,9 +15,6 @@ class Clone(src.characters.Character):
         creator=None,
         characterId=None,
     ):
-        """
-        basic state setting
-        """
         if quests is None:
             quests = []
         super().__init__(
@@ -37,6 +31,9 @@ class Clone(src.characters.Character):
         self.charType = "Clone"
         self.lastMapSync = None
 
+    '''
+    drop a implant in addition to the corpse
+    '''
     def die(self, reason=None, addCorpse=True, killer=None):
         if not addCorpse:
             super().die(reason=reason, addCorpse=addCorpse, killer=killer)
@@ -45,5 +42,5 @@ class Clone(src.characters.Character):
         self.container.addItem(src.items.itemMap["Implant"](), self.getPosition())
         super().die(reason=reason, addCorpse=addCorpse, killer=killer)
 
-
+# register the creature type
 src.characters.add_character(Clone)

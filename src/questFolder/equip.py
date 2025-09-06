@@ -20,6 +20,9 @@ class Equip(src.quests.MetaQuestSequence):
         self.tryHard = tryHard
 
     def generateTextDescription(self):
+        '''
+        generate a textual description to show on the UI
+        '''
         reasonString = ""
         if self.reason:
             reasonString = ", to "+self.reason
@@ -44,15 +47,24 @@ Swords can range from 10 to 25 damage per hit.
 """]
 
     def wrapedTriggerCompletionCheck(self, extraInfo):
+        '''
+        calls the actual function with modified parameters
+        '''
         if not self.active:
             return
 
         self.triggerCompletionCheck(extraInfo[0])
 
     def handleMoved(self,extraInfo=None):
+        '''
+        try to fix the quests states with every move
+        '''
         self.subQuestCompleted()
 
     def assignToCharacter(self, character):
+        '''
+        listen for the character to move or equip stuff
+        '''
         if self.character:
             return
 
@@ -61,6 +73,9 @@ Swords can range from 10 to 25 damage per hit.
         super().assignToCharacter(character)
 
     def findBestEquipment(self,character):
+        '''
+        get the best equipment available for the character
+        '''
         bestArmor = None
         bestSword = None
         for room in self.character.getTerrain().rooms:
@@ -90,6 +105,9 @@ Swords can range from 10 to 25 damage per hit.
         return (bestSword,bestArmor)
 
     def triggerCompletionCheck(self,character=None):
+        '''
+        check and end the quest when done
+        '''
         if not character:
             return
 
@@ -114,15 +132,24 @@ Swords can range from 10 to 25 damage per hit.
         return
 
     def clearCompletedSubquest(self):
+        '''
+        remove completed subquests (hack)
+        '''
         while self.subQuests and self.subQuests[0].completed:
             self.subQuests.remove(self.subQuests[0])
 
     def subQuestCompleted(self,extraInfo=None):
+        '''
+        hande a subquest beeing completed
+        '''
         self.clearCompletedSubquest()
         if not self.subQuests:
             self.generateSubquests(self.character)
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
+        '''
+        generate the next step towards solving the quest
+        '''
         if self.subQuests:
             return (None,None)
 
@@ -194,4 +221,5 @@ Swords can range from 10 to 25 damage per hit.
 
         return (None,None)
 
+# register the quest type
 src.quests.addType(Equip)

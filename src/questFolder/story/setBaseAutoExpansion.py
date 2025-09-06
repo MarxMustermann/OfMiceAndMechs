@@ -2,8 +2,10 @@ import src
 
 
 class SetBaseAutoExpansion(src.quests.MetaQuestSequence):
+    '''
+    quest to set the amount of rooms the NPCs should build automatically
+    '''
     type = "SetBaseAutoExpansion"
-
     def __init__(self, description="set base expansion parameter", creator=None, targetLevel=2):
         questList = []
         super().__init__(questList, creator=creator)
@@ -11,9 +13,15 @@ class SetBaseAutoExpansion(src.quests.MetaQuestSequence):
         self.targetLevel = targetLevel
 
     def handleSiegeDisabled(self, extraInfo):
+        '''
+        end quest
+        '''
         self.postHandler()
 
     def assignToCharacter(self, character):
+        '''
+        start listening the events from the character
+        '''
         if self.character:
             return None
 
@@ -22,6 +30,9 @@ class SetBaseAutoExpansion(src.quests.MetaQuestSequence):
         return super().assignToCharacter(character)
 
     def triggerCompletionCheck(self,character=None):
+        '''
+        check and end quest if completed
+        '''
         if not character:
             return False
 
@@ -41,6 +52,9 @@ class SetBaseAutoExpansion(src.quests.MetaQuestSequence):
         return False
 
     def getNextStep(self,character,ignoreCommands=False,dryRun=True):
+        '''
+        generate next step towards solving the quest
+        '''
         if self.subQuests:
             return (None,None)
         
@@ -106,6 +120,9 @@ class SetBaseAutoExpansion(src.quests.MetaQuestSequence):
         return (None,(list(interactionCommand+direction+"a"+"2")+["enter"],"disable the outside restrictions"))
 
     def generateTextDescription(self):
+        '''
+        generate a text description to show on the UI
+        '''
         text = ["""
 """]
         return text

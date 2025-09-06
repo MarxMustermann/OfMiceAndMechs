@@ -3,8 +3,10 @@ import random
 import src
 
 class Adventure(src.quests.MetaQuestSequence):
+    '''
+    quest to adventure and collect cool stuff
+    '''
     type = "Adventure"
-
     def __init__(self, description="adventure", creator=None, lifetime=None, reason=None):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
@@ -13,6 +15,9 @@ class Adventure(src.quests.MetaQuestSequence):
         self.track = []
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
+        '''
+        generate the next step towards solving this quest
+        '''
 
         if self.subQuests:
             return (None,None)
@@ -46,6 +51,15 @@ class Adventure(src.quests.MetaQuestSequence):
         if not character.weapon or not character.armor:
             quest = src.quests.questMap["Equip"](tryHard=True)
             return ([quest],None)
+
+        try:
+            character.lastMapSync
+        except:
+            character.lastMapSync = None
+        if character.getTerrain() == character.getHomeTerrain():
+            if (not character.lastMapSync) or src.gamestate.gamestate.tick-character.lastMapSync > 100:
+                quest = src.quests.questMap["DoMapSync"]()
+                return ([quest],None)
 
         if currentTerrain.tag == "shrine":
             # go home directly
@@ -147,6 +161,9 @@ class Adventure(src.quests.MetaQuestSequence):
         return ([quest], None)
 
     def generateTextDescription(self):
+        '''
+        generate a textual description to be shown on the UI
+        '''
         reason = ""
         if self.reason:
             reason = f", to {self.reason}"
@@ -184,12 +201,18 @@ track:
         return text
 
     def handleChangedTerrain(self,extraInfo):
+        '''
+        keep track of the trail of terrain the character visited
+        '''
         terrain = extraInfo["character"].getTerrain()
         pos = terrain.getPosition()
         tag = terrain.tag
         self.track.append({"pos":pos,"tag":tag})
 
     def assignToCharacter(self, character):
+        '''
+        listen to the character changing the terrain
+        '''
         if self.character:
             return
 
@@ -197,6 +220,9 @@ track:
         super().assignToCharacter(character)
 
     def triggerCompletionCheck(self,character=None):
+        '''
+        check and end quest if completed
+        '''
         if not character:
             return False
 
@@ -212,4 +238,5 @@ track:
         self.postHandler()
         return True
 
+# register the quest type
 src.quests.addType(Adventure)

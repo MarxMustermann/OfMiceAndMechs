@@ -1302,6 +1302,15 @@ class Terrain:
 
         return moves
 
+    def getAllCharacters(self):
+        '''
+        get all characters somewhere on the terrain
+        '''
+        characters = self.characters[:]
+        for room in self.rooms:
+            characters.extend(room.characters)
+        return characters
+
     def getPathTile(self,tilePos,startPos,targetPos,tryHard=False,avoidItems=None,localRandom=None,ignoreEndBlocked=None,character=None,ignoreUnbolted=False):
         """
         path = self.pathCache.get((tilePos,startPos,targetPos))

@@ -12,23 +12,6 @@ class SetBaseAutoExpansion(src.quests.MetaQuestSequence):
         self.metaDescription = description
         self.targetLevel = targetLevel
 
-    def handleSiegeDisabled(self, extraInfo):
-        '''
-        end quest
-        '''
-        self.postHandler()
-
-    def assignToCharacter(self, character):
-        '''
-        start listening the events from the character
-        '''
-        if self.character:
-            return None
-
-        self.startWatching(character,self.handleSiegeDisabled, "did unrestricted outside")
-
-        return super().assignToCharacter(character)
-
     def triggerCompletionCheck(self,character=None):
         '''
         check and end quest if completed

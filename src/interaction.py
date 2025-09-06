@@ -4316,7 +4316,7 @@ def renderGameDisplay(renderChar=None):
                 uiElements = []
                 assumedScreenWidth = tcodConsole.width
 
-                mapWidth = window_charheight*2
+                mapWidth = (window_charheight-5)*2
                 if assumedScreenWidth < mapWidth:
                     assumedScreenWidth = mapWidth
                 uiElements.append({"type":"gameMap","offset":[(assumedScreenWidth-mapWidth)//4,6]})

@@ -56,6 +56,8 @@ class MapTable(src.items.Item):
         self.submenue = src.menuFolder.mapMenu.MapMenu(mapContent=mapContent,functionMap=functionMap)
         character.macroState["submenue"] = self.submenue
 
+        character.changed("synced map",{"character":character})
+
     def writeMap(self, character):
         '''
         add the memory of the npc to the map

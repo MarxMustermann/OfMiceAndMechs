@@ -72,7 +72,7 @@ or use this item with MoldFeed in your inventory.
             character.addMessage("you need to have a MoldFeed in your inventory or in the coal burners input stockpile")
             return
 
-        amount_to_burn = min(len(moldFeed), math.ceil((character.maxHealth - character.health) / 5))
+        amount_to_burn = min(len(moldFeed), math.ceil((character.adjustedMaxHealth - character.health) / 5))
         
         if not amount_to_burn:
             character.addMessage("you need no healing and burn no corpses")

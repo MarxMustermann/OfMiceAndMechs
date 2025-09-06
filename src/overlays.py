@@ -109,6 +109,8 @@ class NPCsOverlay:
                   character.yPosition < coordinateOffset[0] or character.yPosition > coordinateOffset[0]+size[0]):
                 continue
 
+            terrain.addAnimation(character.getPosition(),"showchar",1,{"char":None},addFront=True)
+
             if character.charType not in ("Character","Ghoul","Clone",):
                 #chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = character.display
                 char = character.render()

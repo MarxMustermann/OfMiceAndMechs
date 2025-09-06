@@ -2,8 +2,10 @@ import src
 
 
 class Ascend(src.quests.MetaQuestSequence):
+    '''
+    quest for a player to take the throne and actually win the game
+    '''
     type = "Ascend"
-
     def __init__(self, description="ascend", creator=None, reason=None):
         questList = []
         super().__init__(questList, creator=creator)
@@ -11,6 +13,9 @@ class Ascend(src.quests.MetaQuestSequence):
         self.reason = reason
 
     def handleAscended(self):
+        '''
+        complete when character ascended
+        '''
         if self.completed:
             1/0
         if not self.active:
@@ -19,6 +24,9 @@ class Ascend(src.quests.MetaQuestSequence):
         self.postHandler()
 
     def assignToCharacter(self, character):
+        '''
+        start watching for events
+        '''
         if self.character:
             return None
 
@@ -27,6 +35,9 @@ class Ascend(src.quests.MetaQuestSequence):
         return super().assignToCharacter(character)
 
     def generateTextDescription(self):
+        '''
+        generate text description to show on the UI
+        '''
         text = ["""
 You reach out to your implant and it answers:
 
@@ -41,6 +52,9 @@ Rule the world and put an end to those attacks!
         return text
 
     def triggerCompletionCheck(self,character=None):
+        '''
+        check and end the quest if done
+        '''
         if not character:
             return False
 
@@ -50,6 +64,9 @@ Rule the world and put an end to those attacks!
         self.postHandler()
 
     def getNextStep(self,character,ignoreCommands=False,dryRun=True):
+        '''
+        generate the next step towards solving the quest
+        '''
         if self.subQuests:
             return (None,None)
 
@@ -150,4 +167,5 @@ Rule the world and put an end to those attacks!
             return (None,(interactionCommand+"s","activate the Throne"))
         return (None,None)
 
+# register the quest type
 src.quests.addType(Ascend)

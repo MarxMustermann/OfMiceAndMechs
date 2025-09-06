@@ -1,8 +1,10 @@
 import src
 
 class ContactCommand(src.quests.MetaQuestSequence):
+    '''
+    story quest pretending to try to contact a higher command
+    '''
     type = "ContactCommand"
-
     def __init__(self, description="contact command", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None,reason=None):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
@@ -10,6 +12,9 @@ class ContactCommand(src.quests.MetaQuestSequence):
         self.reason = reason
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
+        '''
+        generate the next step toward solving the quest
+        '''
 
         if self.subQuests:
             return (None,None)

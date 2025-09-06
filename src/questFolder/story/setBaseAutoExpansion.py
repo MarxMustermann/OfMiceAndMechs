@@ -110,5 +110,5 @@ class SetBaseAutoExpansion(src.quests.MetaQuestSequence):
 """]
         return text
 
-
+# register quest type
 src.quests.addType(SetBaseAutoExpansion)

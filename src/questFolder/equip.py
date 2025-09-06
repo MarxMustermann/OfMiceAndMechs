@@ -132,6 +132,18 @@ Swords can range from 10 to 25 damage per hit.
         if character.macroState.get("submenue"):
             return (None,(["esc"],"close the menu"))
 
+        # enter tile properly
+        if not character.container.isRoom:
+            pos = character.getSpacePosition()
+            if pos == (14,7,0):
+                return (None,("a","enter room"))
+            if pos == (0,7,0):
+                return (None,("d","enter room"))
+            if pos == (7,14,0):
+                return (None,("w","enter room"))
+            if pos == (7,0,0):
+                return (None,("s","enter room"))
+
         (bestSword,bestArmor) = self.findBestEquipment(character)
         if bestSword and (not character.weapon or bestSword.baseDamage > character.weapon.baseDamage):
             if character.container != bestSword.container:

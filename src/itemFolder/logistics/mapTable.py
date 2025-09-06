@@ -32,6 +32,8 @@ class MapTable(src.items.Item):
         self.readMap(character)
         character.lastMapSync = src.gamestate.gamestate.tick
 
+        character.changed("synced map",{"character":character})
+
     def showMap(self, character, cursor = None):
         '''
         show a UI to see the map
@@ -55,8 +57,6 @@ class MapTable(src.items.Item):
 
         self.submenue = src.menuFolder.mapMenu.MapMenu(mapContent=mapContent,functionMap=functionMap)
         character.macroState["submenue"] = self.submenue
-
-        character.changed("synced map",{"character":character})
 
     def writeMap(self, character):
         '''

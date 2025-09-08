@@ -53,7 +53,7 @@ So just complete the quest and don't think about it too much."""
         # fail
         if not dryRun:
             self.fail("unexpected position")
-        return (None,None)
+        return (None,("+","abort quest"))
 
     def assignToCharacter(self, character):
         '''

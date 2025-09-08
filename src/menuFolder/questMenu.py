@@ -1,54 +1,53 @@
 import src
 
 class QuestMenu(src.subMenu.SubMenu):
-    """
-    show the quests for a character and allow player interaction
-    """
+    '''
+    menu showing the quests for a character and allow player interaction
+    Parameters:
+        char: the character to show the quests for
+    '''
 
     def __init__(self, char=None):
-        """
-        initialise internal state
-
-        Parameters:
-            char: the character to show the quests for
-        """
-
         self.type = "QuestMenu"
         self.lockOptions = True
         if not char:
             char = src.gamestate.gamestate.mainChar
         self.char = char
         self.offsetX = 0
-        self.questCursor = [0]
-        if char == src.gamestate.gamestate.mainChar:
-            self.setCurrentQuest()
+        self.setCursorToCurrentQuest()
 
         self.sidebared = False
         super().__init__()
 
-    def setCurrentQuest(self):
+    def setCursorToCurrentQuest(self):
+        '''
+        select the deepest quest that is not trivial 
+        '''
         baseList = self.char.quests
-        failed = False
-        while len(baseList) and not failed:
-            for index in self.questCursor:
-                if not len(baseList):
-                    return
-                quest = baseList[index]
-                try:
-                    baseList = quest.subQuests
-                    if (len(baseList) < 1 or hasattr(baseList[0], "lowLevel")) or hasattr(quest, "lowLevel"):
-                        failed = True
-                except:
-                    baseList = None
-                    failed = True
-            if not failed:
-                self.questCursor.append(0)
+        self.questCursor = []
+        while len(baseList):
+            quest = baseList[0]
+            try:
+                baseList = quest.subQuests
+            except:
+                break
+
+            print(quest)
+            try:
+                print(quest.lowLevel)
+                if quest.lowLevel:
+                    break
+            except:
+                pass
+
+            self.questCursor.append(0)
+
     def render(self, char):
         return self.renderQuests(char=self.char, asList=True, questCursor=self.questCursor,sidebared=self.sidebared)
 
     # overrides the superclasses method completely
     def handleKey(self, key, noRender=False, character = None):
-        """
+        '''
         show a questlist and handle interactions
 
         Parameters:
@@ -56,7 +55,7 @@ class QuestMenu(src.subMenu.SubMenu):
             noRender: a flag toskip rendering
         Returns:
             returns True when done
-        """
+        '''
 
         # exit submenu
         if key == "esc":

@@ -60,6 +60,11 @@ class Adventure(src.quests.MetaQuestSequence):
             if (not character.lastMapSync) or src.gamestate.gamestate.tick-character.lastMapSync > 100:
                 quest = src.quests.questMap["DoMapSync"]()
                 return ([quest],None)
+            for item in character.inventory:
+                if item.walkable:
+                    continue
+                quest = src.quests.questMap["ClearInventory"]()
+                return ([quest],None)
 
         if currentTerrain.tag == "shrine":
             # go home directly

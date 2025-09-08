@@ -32,9 +32,7 @@ class QuestMenu(src.subMenu.SubMenu):
             except:
                 break
 
-            print(quest)
             try:
-                print(quest.lowLevel)
                 if quest.lowLevel:
                     break
             except:

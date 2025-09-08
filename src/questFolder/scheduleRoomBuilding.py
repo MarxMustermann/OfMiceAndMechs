@@ -83,6 +83,11 @@ Use a CityPlaner to do this.
         if character.macroState["submenue"] and not ignoreCommands:
             return (None,(["esc"],"exit submenu"))
 
+        # enter room
+        if not character.container.isRoom:
+            quest = src.quests.questMap["EnterRoom"]()
+            return ([quest],None)
+
         # go to room with city planer
         cityPlaner = character.container.getItemByType("CityPlaner")
         if not cityPlaner:
@@ -95,11 +100,6 @@ Use a CityPlaner to do this.
             if not dryRun:
                 self.fail("no planer")
             return (None,("+","abort the quest"))
-
-        # enter room
-        if not character.container.isRoom:
-            quest = src.quests.questMap["EnterRoom"]()
-            return ([quest],None)
 
         # start using the city planer
         command = None

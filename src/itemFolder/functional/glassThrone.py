@@ -75,11 +75,6 @@ I'll try to keep things interesting, but you reached official end of content now
         character.addMessage("you bolt down the Thone")
         character.changed("boltedItem",{"character":character,"item":self})
 
-    def unboltAction(self,character):
-        self.bolted = False
-        character.addMessage("you unbolt the Thone")
-        character.changed("unboltedItem",{"character":character,"item":self})
-
     def getLongInfo(self):
         if self.wavesSpawned:
             return f"""The Throne did not attune to you.

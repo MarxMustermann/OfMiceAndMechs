@@ -259,7 +259,18 @@ class ConfigureSiegeManager(src.quests.MetaQuestSequence):
         generate text description
         '''
         text = ["""
-configure the siege manager
+Waves of enemies appear at the start of each epoch.
+Handling those repeating waves can be automated.
+
+The siege manager allows to do actions at certain points in time.
+
+For example the alarms can always be rang 1000 ticks before the epoch ends.
+That should ensure all Clones are safe when the waves comes ate the end of the epoch.
+The alarms can automatically turned off 1000 ticks into the epoch.
+At that point the wave should be dead and the NPC are safe to go outside.
+
+Configure the siege manager to defend against the waves.
+You can set any trigger times for the actions as long the actions scheduled.
 """]
         return text
 

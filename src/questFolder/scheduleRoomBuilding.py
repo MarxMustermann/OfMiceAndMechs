@@ -85,8 +85,12 @@ Use a CityPlaner to do this.
 
         # enter room
         if not character.container.isRoom:
-            quest = src.quests.questMap["EnterRoom"]()
-            return ([quest],None)
+            if character.getTerrain().getRoomByPosition(character.getBigPosition()):
+                quest = src.quests.questMap["EnterRoom"]()
+                return ([quest],None)
+            else:
+                quest = src.quests.questMap["GoHome"]()
+                return ([quest],None)
 
         # go to room with city planer
         cityPlaner = character.container.getItemByType("CityPlaner")

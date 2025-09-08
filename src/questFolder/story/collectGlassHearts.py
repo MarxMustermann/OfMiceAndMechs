@@ -99,8 +99,15 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,lifetime=100,description="defend the arena",reason="ensure no attackers get into the base")
             return ([quest],None)
 
+        if len(character.terrainInfo) < numGlassHearts*3:
+            if not character.getFreeInventorySpace():
+                quest = src.quests.questMap["ClearInventory"](returnToTile=False)
+                return ([quest],None)
+            quest = src.quests.questMap["Adventure"]()
+            return ([quest],None)
+
         # ensure there is a backup NPC
-        if npcCount < numGlassHearts+2:
+        if npcCount < numGlassHearts+4:
             hasDispenserCharges = 0
             for room in terrain.rooms:
                 for item in room.getItemsByType("GooDispenser",needsBolted=True):
@@ -119,9 +126,8 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                         quest = src.quests.questMap["ClearTile"](targetPosition=room.getPosition())
                         return ([quest],None)
 
-            if npcCount < 2 or hasDispenserCharges > 2:
-                quest = src.quests.questMap["SpawnClone"]()
-                return ([quest],None)
+            quest = src.quests.questMap["SpawnClone"]()
+            return ([quest],None)
 
         # ensure the siege manager is configured
         if terrain.alarm:
@@ -145,15 +151,18 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                     return ([quest],None)
 
         if numGlassHearts:
-
             numTrapRooms = 0
             for room in character.getTerrain().rooms:
                 if room.tag == "trapRoom":
                     numTrapRooms += 1
 
             if numTrapRooms < numGlassHearts//2:
-                quest = src.quests.questMap["StrengthenBaseDefences"](numTrapRoomsBuild=numGlassHearts//2,numTrapRoomsPlanned=numGlassHearts//2+1,lifetime=1000)
-                return ([quest],None)
+                if random.random() < 0.5:
+                    quest = src.quests.questMap["StrengthenBaseDefences"](numTrapRoomsBuild=numGlassHearts//2,numTrapRoomsPlanned=numGlassHearts//2+1,lifetime=1000)
+                    return ([quest],None)
+                else:
+                    quest = src.quests.questMap["Adventure"]()
+                    return ([quest],None)
 
         # ensure the base is set to auto expand
         foundCityPlaner = None

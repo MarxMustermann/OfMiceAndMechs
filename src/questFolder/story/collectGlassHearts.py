@@ -100,9 +100,10 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
             return ([quest],None)
 
         if len(character.terrainInfo) < numGlassHearts*3:
-            if not character.getFreeInventorySpace():
+            if character.getFreeInventorySpace() < 3:
                 quest = src.quests.questMap["ClearInventory"](returnToTile=False)
                 return ([quest],None)
+
             quest = src.quests.questMap["Adventure"]()
             return ([quest],None)
 

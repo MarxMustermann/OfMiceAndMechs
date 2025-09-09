@@ -956,20 +956,19 @@ class Terrain:
                 char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
                 char.changed("moved", (char, direction))
 
-                if not dash:
-                    multiplier = 1
-                    if char.exhaustion:
-                        char.exhaustion -= 1
-                        multiplier = 1.2
-                    char.takeTime(char.adjustedMovementSpeed*multiplier,"moved")
+                if not dash or char.exhaustion >= 10:
+                    char.takeTime(char.adjustedMovementSpeed,"moved 1")
+                    if not dash:
+                        if char.exhaustion > 0:
+                            char.exhaustion -= min(1,char.exhaustion)
+                            char.takeTime(char.adjustedMovementSpeed,"moved 2")
                 else:
-                    if not char.exhaustion > 5:
-                        char.takeTime(char.adjustedMovementSpeed/2,"moved")
+                    if char.hasJump:
+                        char.takeTime(character.adjustedMovementSpeed/2,"moved 3")
                         char.exhaustion += 5
-                    else:
-                        char.takeTime(char.adjustedMovementSpeed,"moved")
-                for item in stepOnActiveItems:
-                    item.doStepOnAction(char)
+                    elif char.hasRun:
+                        char.takeTime(character.adjustedMovementSpeed*0.80,"moved 4")
+                        char.exhaustion += 1
 
             return foundItem
         return None

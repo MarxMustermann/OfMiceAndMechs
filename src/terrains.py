@@ -1954,8 +1954,8 @@ class Terrain:
                 )
 
             #for quest in src.gamestate.gamestate.mainChar.getActiveQuests():
-            quest = src.gamestate.gamestate.mainChar.getActiveQuest()
-            if quest:
+            quests = src.gamestate.gamestate.mainChar.getActiveQuests()
+            for quest in quests:
                 for marker in quest.getQuestMarkersSmall(src.gamestate.gamestate.mainChar,renderForTile=True):
                     pos = marker[0]
                     pos = (pos[0]-coordinateOffset[1],pos[1]-coordinateOffset[0])
@@ -1968,6 +1968,11 @@ class Terrain:
                         display = chars[pos[1]][pos[0]]
                     except:
                         continue
+
+                    color = "#555"
+                    if marker[1] == "target":
+                        color = "#888"
+
 
                     actionMeta = None
                     if isinstance(display,src.interaction.ActionMeta):
@@ -1983,9 +1988,9 @@ class Terrain:
                         continue
 
                     if hasattr(display[0],"fg"):
-                        display = (src.interaction.urwid.AttrSpec(display[0].fg,"#555"),display[1])
+                        display = (src.interaction.urwid.AttrSpec(display[0].fg,color),display[1])
                     else:
-                        display = (src.interaction.urwid.AttrSpec(display[0].foreground,"#555"),display[1])
+                        display = (src.interaction.urwid.AttrSpec(display[0].foreground,color),display[1])
 
                     if actionMeta:
                         actionMeta.content = display

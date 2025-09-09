@@ -1197,8 +1197,8 @@ class Room:
                             chars[character.yPosition][character.xPosition][0].bg = "#855"
                             character.showGaveCommand = False
                     if foundMainchar:
-                        activeQuest = foundMainchar.getActiveQuest()
-                        if activeQuest:
+                        activeQuests = foundMainchar.getActiveQuests()
+                        for activeQuest in activeQuests:
                             for marker in activeQuest.getQuestMarkersSmall(foundMainchar):
                                 pos = marker[0]
                                 try:
@@ -1211,6 +1211,10 @@ class Room:
                                     displayList = display
                                 else:
                                     displayList = [display]
+
+                                color = "#555"
+                                if marker[1] == "target":
+                                    color = "#888"
 
                                 newDisplay = []
                                 for display in displayList:
@@ -1225,10 +1229,10 @@ class Room:
                                         display = (src.interaction.urwid.AttrSpec("#fff","black"),display)
 
                                     if hasattr(display[0],"fg"):
-                                        display = (src.interaction.urwid.AttrSpec(display[0].fg,"#555"),display[1])
+                                        display = (src.interaction.urwid.AttrSpec(display[0].fg,color),display[1])
                                     else:
                                         if not isinstance(display[0],tuple):
-                                            display = (src.interaction.urwid.AttrSpec(display[0].foreground,"#555"),display[1])
+                                            display = (src.interaction.urwid.AttrSpec(display[0].foreground,color),display[1])
 
                                     if actionMeta:
                                         actionMeta.content = display

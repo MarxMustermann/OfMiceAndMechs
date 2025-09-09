@@ -323,6 +323,25 @@ Press d to move the cursor and show the subquests description.
         # hang up AI :-P
         return (None,None)
 
+    def getQuestMarkersSmall(self,character,renderForTile=False):
+        '''
+        return the quest markers for the normal map
+        '''
+        if isinstance(character.container,src.rooms.Room):
+            if renderForTile:
+                return []
+        else:
+            if not renderForTile:
+                return []
+
+        result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
+        if renderForTile:
+            if isinstance(character.container,src.rooms.Room):
+                room = character.container
+                for outputSlot in character.container.getNonEmptyOutputslots(itemType=self.toCollect):
+                    result.append((outputSlot[0],"target"))
+        return result
+
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
 

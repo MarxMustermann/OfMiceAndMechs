@@ -99,10 +99,10 @@ class SpawnClone(src.quests.MetaQuestSequence):
                     return
 
             hasClone = False
-            for other_character in character.getAllCharacters():
-                if other_character == character:
+            for other_character in self.character.getTerrain().getAllCharacters():
+                if other_character == self.character:
                     continue
-                if other_character.faction != character.faction:
+                if other_character.faction != self.character.faction:
                     continue
                 hasClone = True
 

@@ -178,5 +178,23 @@ Use a CityPlaner to do this.
         # call superclass
         return super().assignToCharacter(character)
 
+    def getQuestMarkersSmall(self,character,renderForTile=False):
+        '''
+        return the quest markers for the normal map
+        '''
+        if isinstance(character.container,src.rooms.Room):
+            if renderForTile:
+                return []
+        else:
+            if not renderForTile:
+                return []
+
+        result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
+        if not renderForTile:
+            if isinstance(character.container,src.rooms.Room):
+                for item in character.container.getItemsByType("CityPlaner"):
+                    result.append((item.getPosition(),"target"))
+        return result
+
 # register quest
 src.quests.addType(ScheduleRoomBuilding)

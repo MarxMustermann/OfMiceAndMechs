@@ -67,7 +67,6 @@ Use the MapTable to do this.
                 menuEntry = "studyMap"
                 counter = 1
                 for option in submenue.options.values():
-                    print(option)
                     if option == menuEntry:
                         index = counter
                         break
@@ -135,6 +134,28 @@ Use the MapTable to do this.
         if not dryRun:
             self.fail("no Map Table")
         return (None,("+","abort the quest"))
+
+    def getQuestMarkersSmall(self,character,renderForTile=False):
+        '''
+        return the quest markers for the normal map
+        '''
+        if isinstance(character.container,src.rooms.Room):
+            if renderForTile:
+                return []
+        else:
+            if not renderForTile:
+                return []
+
+        result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
+        if not renderForTile:
+            if isinstance(character.container,src.rooms.Room):
+                for item in character.container.itemsOnFloor:
+                    if not item.type == "MapTable":
+                        continue
+                    if not item.bolted:
+                        continue
+                    result.append((item.getPosition(),"target"))
+        return result
 
 # register the quest type
 src.quests.addType(DoMapSync)

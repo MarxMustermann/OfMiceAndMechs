@@ -52,6 +52,24 @@ So if an enemy is to directly east of you:
 
         return None
 
+    def getQuestMarkersSmall(self,character,renderForTile=False):
+        '''
+        return the quest markers for the normal map
+        '''
+        if isinstance(character.container,src.rooms.Room):
+            if renderForTile:
+                return []
+        else:
+            if not renderForTile:
+                return []
+
+        result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
+        if not renderForTile:
+            if isinstance(character.container,src.rooms.Room):
+                for enemy in character.getNearbyEnemies():
+                    result.append((enemy.getPosition(),"target"))
+        return result
+
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
         '''
         generate next step towards solving this quest

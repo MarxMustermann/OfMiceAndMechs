@@ -335,7 +335,7 @@ Press d to move the cursor and show the subquests description.
                 return []
 
         result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
-        if renderForTile:
+        if not renderForTile:
             if isinstance(character.container,src.rooms.Room):
                 room = character.container
                 for outputSlot in character.container.getNonEmptyOutputslots(itemType=self.toCollect):

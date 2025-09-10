@@ -40,6 +40,9 @@ class QuestMenu(src.subMenu.SubMenu):
 
             self.questCursor.append(0)
 
+        if self.questCursor == []:
+            self.questCursor.append(0)
+
     def render(self, char):
         return self.renderQuests(char=self.char, asList=True, questCursor=self.questCursor,sidebared=self.sidebared)
 

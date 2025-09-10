@@ -312,6 +312,26 @@ Place the items in the correct input or storage stockpile.
             result.append(((self.targetPositionBig[0],self.targetPositionBig[1]),"target"))
         return result
 
+    def getQuestMarkersSmall(self,character,renderForTile=False):
+        '''
+        return the quest markers for the normal map
+        '''
+        if isinstance(character.container,src.rooms.Room):
+            if renderForTile:
+                return []
+        else:
+            if not renderForTile:
+                return []
+
+        result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
+        if not renderForTile:
+            if isinstance(character.container,src.rooms.Room):
+                room = character.container
+                inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny,allowStorage=True)
+                for inputSlot in inputSlots:
+                    result.append((inputSlot[0],"target"))
+        return result
+
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
         checkedTypes = set()

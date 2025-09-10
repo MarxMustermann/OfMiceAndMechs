@@ -139,4 +139,27 @@ Press JH to auto heal.
     
         self.triggerCompletionCheck(self.character)
 
+    def getQuestMarkersSmall(self,character,renderForTile=False):
+        '''
+        return the quest markers for the normal map
+        '''
+        if isinstance(character.container,src.rooms.Room):
+            if renderForTile:
+                return []
+        else:
+            if not renderForTile:
+                return []
+
+        result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
+        if not renderForTile:
+            if isinstance(character.container,src.rooms.Room):
+                room = character.container
+                items = room.getItemsByType("CoalBurner",needsBolted=True)
+                foundBurners = []
+                for item in items:
+                    if not item.getMoldFeed(character):
+                        continue
+                    result.append((item.getPosition(),"target"))
+        return result
+
 src.quests.addType(Heal)

@@ -48,6 +48,17 @@ class Adventure(src.quests.MetaQuestSequence):
                         quest = src.quests.questMap["ReinforcePersonalArmor"]()
                         return ([quest],None)
 
+            if character.health < character.adjustedMaxHealth:
+                readyCoalBurner = False
+                for room in currentTerrain.rooms:
+                    for coalBurner in room.getItemsByType("CoalBurner"):
+                        if not coalBurner.getMoldFeed(character):
+                            continue
+                        readyCoalBurner = True
+                if readyCoalBurner:
+                    quest = src.quests.questMap["Heal"](noWaitHeal=True,noVialHeal=True)
+                    return ([quest],None)
+
         if not character.weapon or not character.armor:
             quest = src.quests.questMap["Equip"](tryHard=True)
             return ([quest],None)

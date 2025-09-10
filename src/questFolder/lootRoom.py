@@ -227,6 +227,26 @@ Remove all items that are not bolted down."""
             foundItems.append(item)
 
         return foundItems
+
+    def getQuestMarkersSmall(self,character,renderForTile=False):
+        '''
+        return the quest markers for the normal map
+        '''
+        if isinstance(character.container,src.rooms.Room):
+            if renderForTile:
+                return []
+        else:
+            if not renderForTile:
+                return []
+
+        result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
+        if not renderForTile:
+            if isinstance(character.container,src.rooms.Room):
+                if not character.getNearbyEnemies():
+                    for item in self.getLeftoverItems(character):
+                        result.append((item.getPosition(),"target"))
+        return result
+
     
     def handleQuestFailure(self,extraInfo):
         if extraInfo["reason"] == "no path found":

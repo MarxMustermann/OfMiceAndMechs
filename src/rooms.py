@@ -1198,9 +1198,12 @@ class Room:
                             character.showGaveCommand = False
                     if foundMainchar:
                         activeQuests = foundMainchar.getActiveQuests()
+                        blockedPositions = []
                         for activeQuest in activeQuests:
                             for marker in activeQuest.getQuestMarkersSmall(foundMainchar):
                                 pos = marker[0]
+                                if pos in blockedPositions:
+                                    continue
                                 try:
                                     display = chars[pos[1]][pos[0]]
                                 except IndexError:
@@ -1214,6 +1217,7 @@ class Room:
 
                                 color = "#555"
                                 if marker[1] == "target":
+                                    blockedPositions.append(pos)
                                     if src.gamestate.gamestate.tick %10 > 5:
                                         color = "#880"
                                     else:

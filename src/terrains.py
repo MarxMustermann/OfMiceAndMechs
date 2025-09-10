@@ -1955,10 +1955,13 @@ class Terrain:
 
             #for quest in src.gamestate.gamestate.mainChar.getActiveQuests():
             quests = src.gamestate.gamestate.mainChar.getActiveQuests()
+            blockedPositions = []
             for quest in quests:
                 for marker in quest.getQuestMarkersSmall(src.gamestate.gamestate.mainChar,renderForTile=True):
                     pos = marker[0]
                     pos = (pos[0]-coordinateOffset[1],pos[1]-coordinateOffset[0])
+                    if pos in blockedPositions:
+                        continue
                     if pos[0] < 0:
                         continue
                     if pos[1] < 0:
@@ -1971,6 +1974,7 @@ class Terrain:
 
                     color = "#555"
                     if marker[1] == "target":
+                        blockedPositions.append(pos)
                         if src.gamestate.gamestate.tick %10 > 5:
                             color = "#999"
                         else:

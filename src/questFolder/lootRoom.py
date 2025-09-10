@@ -187,6 +187,8 @@ Remove all items that are not bolted down."""
             room = None
             if rooms:
                 room = rooms[0]
+            else:
+                return []
 
             if room.floorPlan:
                 return []
@@ -246,7 +248,6 @@ Remove all items that are not bolted down."""
                     for item in self.getLeftoverItems(character):
                         result.append((item.getPosition(),"target"))
         return result
-
     
     def handleQuestFailure(self,extraInfo):
         if extraInfo["reason"] == "no path found":

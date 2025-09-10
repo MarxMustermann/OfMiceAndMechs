@@ -80,7 +80,9 @@ Use a CityPlaner to do this.
             return (None,(["esc"],"exit submenu"))
 
         # go to room with city planer
-        cityPlaner = character.container.getItemByType("CityPlaner")
+        cityPlaner = None
+        if character.container.isRoom:
+            cityPlaner = character.container.getItemByType("CityPlaner")
         if not cityPlaner:
             for room in character.getTerrain().rooms:
                 if not room.getItemByType("CityPlaner"):

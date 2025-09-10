@@ -1214,10 +1214,10 @@ class Room:
 
                                 color = "#555"
                                 if marker[1] == "target":
-                                    if src.gamestate.gamestate.tick %2 == 0:
-                                        color = "#ff0"
-                                    else:
+                                    if src.gamestate.gamestate.tick %10 > 5:
                                         color = "#880"
+                                    else:
+                                        color = "#777"
 
                                 newDisplay = []
                                 for display in displayList:

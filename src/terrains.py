@@ -1970,10 +1970,11 @@ class Terrain:
                         continue
 
                     color = "#555"
-                    if src.gamestate.gamestate.tick %2 == 0:
-                        color = "#ff0"
-                    else:
-                        color = "#880"
+                    if marker[1] == "target":
+                        if src.gamestate.gamestate.tick %10 > 5:
+                            color = "#999"
+                        else:
+                            color = "#880"
 
                     actionMeta = None
                     if isinstance(display,src.interaction.ActionMeta):

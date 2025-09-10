@@ -111,13 +111,13 @@ Press JH to auto heal.
 
         if dryRun:
             self.fail("no way to heal")
-        return (None,None)
+        return (None,("+","abort quest"))
 
     def triggerCompletionCheck(self,character=None):
         if not character:
             return False
 
-        if character.health < character.maxHealth:
+        if character.health < character.adjustedMaxHealth:
             return False
 
         self.postHandler()

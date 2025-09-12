@@ -137,6 +137,35 @@ After fetching the glass heart return the glass heart to your base and set it in
                 #    self.fail("too hurt")
                 #return (None,None)
 
+            currentTerrain = character.getTerrain()
+            if currentTerrain == character.getHomeTerrain():
+                for room in character.getTerrain().rooms:
+                    for item in room.getItemsByType("SwordSharpener"):
+                        if item.readyToBeUsedByCharacter(character):
+                            quest = src.quests.questMap["SharpenPersonalSword"]()
+                            return ([quest],None)
+
+                for room in character.getTerrain().rooms:
+                    for item in room.getItemsByType("ArmorReinforcer"):
+                        if item.readyToBeUsedByCharacter(character):
+                            quest = src.quests.questMap["ReinforcePersonalArmor"]()
+                            return ([quest],None)
+
+                if character.health < character.adjustedMaxHealth:
+                    readyCoalBurner = False
+                    for room in currentTerrain.rooms:
+                        for coalBurner in room.getItemsByType("CoalBurner"):
+                            if not coalBurner.getMoldFeed(character):
+                                continue
+                            readyCoalBurner = True
+                    if readyCoalBurner:
+                        quest = src.quests.questMap["Heal"](noWaitHeal=True,noVialHeal=True)
+                        return ([quest],None)
+
+            if not character.weapon or not character.armor:
+                quest = src.quests.questMap["Equip"](tryHard=True)
+                return ([quest],None)
+
             # get to the terrain the dungeon is on
             if terrain.xPosition != self.targetTerrain[0] or terrain.yPosition != self.targetTerrain[1]:
                 # try to teleport to the dungeon

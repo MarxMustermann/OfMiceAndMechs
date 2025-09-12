@@ -55,6 +55,9 @@ Draw a floor plan assigned to a room{reason}.
         if self.subQuests:
             return (None,None)
 
+        if character.container.alarm:
+            return (None,("+","abort quest"))
+
         # actually enter the current room
         if not isinstance(character.container,src.rooms.Room):
             command = None

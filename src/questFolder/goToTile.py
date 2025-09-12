@@ -103,7 +103,6 @@ class GoToTile(src.quests.MetaQuestSequence):
         if self.character.xPosition%15 == 0 or  self.character.yPosition%15 == 0 or self.character.xPosition%15 == 14 or self.character.yPosition%15 == 14:
             return []
         result = super().getQuestMarkersTile(character)
-        self.getSolvingCommandString(character)
         if self.path:
             if isinstance(character.container,src.rooms.Room):
                 pos = (character.container.xPosition,character.container.yPosition)
@@ -277,7 +276,7 @@ The target tile is {direction[4:]}
                 return (None,(menuCommand+"mc","use fast travel to reach your destination"))
             currentPos = character.getBigPosition()
             offset = (self.targetPosition[0]-currentPos[0], self.targetPosition[1]-currentPos[1], 0)
-            if abs(offset[0])+abs(offset[1]) > 4:
+            if abs(offset[0])+abs(offset[1]) > 4 and self.getQuestMarkersTile(character):
                 return (None,(menuCommand+"mq","use fast travel to current questmarker"))
             return (None,(menuCommand+"m"+"d"*offset[0]+"a"*(-offset[0])+"s"*offset[1]+"w"*(-offset[1])+"j","use fast travel to reach your destination"))
 

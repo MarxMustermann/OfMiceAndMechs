@@ -960,6 +960,65 @@ class Room:
                     logger.error(f"item placed outside of room {item.yPosition}/{item.xPosition}")
                     continue
 
+            foundMainchar = None
+            for character in self.characters:
+                if character == src.gamestate.gamestate.mainChar:
+                    foundMainchar = character
+
+            # draw quest markers
+            if foundMainchar:
+                activeQuests = foundMainchar.getActiveQuests()
+                blockedPositions = []
+                for activeQuest in activeQuests:
+                    for marker in activeQuest.getQuestMarkersSmall(foundMainchar):
+                        pos = marker[0]
+                        if pos in blockedPositions:
+                            continue
+                        try:
+                            display = chars[pos[1]][pos[0]]
+                        except IndexError:
+                            logger.error(f"drawing outside of room {pos}")
+                            continue
+
+                        if isinstance(display,list):
+                            displayList = display
+                        else:
+                            displayList = [display]
+
+                        color = "#555"
+                        if marker[1] == "target":
+                            blockedPositions.append(pos)
+                            if src.gamestate.gamestate.tick %10 > 5:
+                                color = "#880"
+                            else:
+                                color = "#777"
+
+                        newDisplay = []
+                        for display in displayList:
+                            actionMeta = None
+                            if isinstance(display,src.interaction.ActionMeta):
+                                actionMeta = display
+                                display = display.content
+
+                            if isinstance(display,int):
+                                display = src.canvas.displayChars.indexedMapping[display]
+                            if isinstance(display,str):
+                                display = (src.interaction.urwid.AttrSpec("#fff","black"),display)
+
+                            if hasattr(display[0],"fg"):
+                                display = (src.interaction.urwid.AttrSpec(display[0].fg,color),display[1])
+                            else:
+                                if not isinstance(display[0],tuple):
+                                    display = (src.interaction.urwid.AttrSpec(display[0].foreground,color),display[1])
+
+                            if actionMeta:
+                                actionMeta.content = display
+                                display = actionMeta
+
+                            newDisplay.append(display)
+
+                        chars[pos[1]][pos[0]] = newDisplay
+
             # draw characters
             viewChar = "name"
             viewColour = "name"
@@ -967,10 +1026,7 @@ class Room:
                 viewChar = src.gamestate.gamestate.mainChar.personality["viewChar"]
                 viewColour = src.gamestate.gamestate.mainChar.personality["viewColour"]
 
-            foundMainchar = None
             for character in self.characters:
-                if character == src.gamestate.gamestate.mainChar:
-                    foundMainchar = character
                 if character.yPosition < len(chars) and character.xPosition < len(
                     chars[character.yPosition]
                 ):
@@ -1196,61 +1252,10 @@ class Room:
                         if character.showGaveCommand:
                             chars[character.yPosition][character.xPosition][0].bg = "#855"
                             character.showGaveCommand = False
-                    if foundMainchar:
-                        activeQuests = foundMainchar.getActiveQuests()
-                        blockedPositions = []
-                        for activeQuest in activeQuests:
-                            for marker in activeQuest.getQuestMarkersSmall(foundMainchar):
-                                pos = marker[0]
-                                if pos in blockedPositions:
-                                    continue
-                                try:
-                                    display = chars[pos[1]][pos[0]]
-                                except IndexError:
-                                    logger.error(f"drawing outside of room {pos}")
-                                    continue
-
-                                if isinstance(display,list):
-                                    displayList = display
-                                else:
-                                    displayList = [display]
-
-                                color = "#555"
-                                if marker[1] == "target":
-                                    blockedPositions.append(pos)
-                                    if src.gamestate.gamestate.tick %10 > 5:
-                                        color = "#880"
-                                    else:
-                                        color = "#777"
-
-                                newDisplay = []
-                                for display in displayList:
-                                    actionMeta = None
-                                    if isinstance(display,src.interaction.ActionMeta):
-                                        actionMeta = display
-                                        display = display.content
-
-                                    if isinstance(display,int):
-                                        display = src.canvas.displayChars.indexedMapping[display]
-                                    if isinstance(display,str):
-                                        display = (src.interaction.urwid.AttrSpec("#fff","black"),display)
-
-                                    if hasattr(display[0],"fg"):
-                                        display = (src.interaction.urwid.AttrSpec(display[0].fg,color),display[1])
-                                    else:
-                                        if not isinstance(display[0],tuple):
-                                            display = (src.interaction.urwid.AttrSpec(display[0].foreground,color),display[1])
-
-                                    if actionMeta:
-                                        actionMeta.content = display
-                                        display = actionMeta
-
-                                    newDisplay.append(display)
-
-                                chars[pos[1]][pos[0]] = newDisplay
                 else:
                     logger.debug("character is rendered outside of room")
 
+            # indicate alarm
             try:
                 self.alarm
             except:
@@ -1279,6 +1284,7 @@ class Room:
                 else:
                     logger.debug("character is rendered outside of room")
 
+            # show animations
             usedAnimationSlots = set()
             for animation in self.animations[:]:
                 (pos,animationType,duration,extraInfo) = animation

@@ -966,12 +966,15 @@ class Room:
                     foundMainchar = character
 
             # draw quest markers
+            targetMarkers = {}
             if foundMainchar:
                 activeQuests = foundMainchar.getActiveQuests()
                 blockedPositions = []
                 for activeQuest in activeQuests:
                     for marker in activeQuest.getQuestMarkersSmall(foundMainchar):
                         pos = marker[0]
+                        if len(pos) < 3:
+                            pos = (pos[0],pos[1],0)
                         if pos in blockedPositions:
                             continue
                         try:
@@ -988,6 +991,7 @@ class Room:
                         color = "#555"
                         if marker[1] == "target":
                             blockedPositions.append(pos)
+                            targetMarkers[pos] = marker
                             if src.gamestate.gamestate.tick %10 > 5:
                                 color = "#880"
                             else:
@@ -1035,9 +1039,15 @@ class Room:
                         char = character.render()
 
                         if src.characters.Character.hasTimingBonus():
-                            bgColor = "#f33"
+                            if not character.getPosition() in targetMarkers:
+                                bgColor = "#f33"
+                            else:
+                                bgColor = "#ff3"
                         else:
-                            bgColor = "black"
+                            if not character.getPosition() in targetMarkers:
+                                bgColor = "black"
+                            else:
+                                bgColor = "#f55"
                             
                         if isinstance(char,tuple):
                             try:

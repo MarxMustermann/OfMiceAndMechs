@@ -181,7 +181,7 @@ Place the items in the correct input or storage stockpile.
 
             if character.inventory and foundDirectDrop:
                 dropContent = room.getItemByPosition(foundDirectDrop[0])
-                if not dropContent or self.toRestock != "Scrap":
+                if not dropContent or self.toRestock != "Scrap" or dropContent[0].type != "Scrap":
                     maxSpace = foundDirectDrop[2][2].get("maxAmount")
                     if not maxSpace:
                         if (dropContent and dropContent[0].walkable == False) or character.inventory[-1].walkable == False:

@@ -3134,8 +3134,8 @@ press key for advanced drop
     if key in (commandChars.show_help,):
         char.specialRender = True
 
-    if key == "t":
-        charState["submenue"] = src.menuFolder.shoutMenu.ShoutMenu()
+    #if key == "t":
+    #    charState["submenue"] = src.menuFolder.shoutMenu.ShoutMenu()
 
     return (1,key)
 

@@ -133,6 +133,11 @@ Place the items in the correct input or storage stockpile.
             if not isinstance(character.macroState["submenue"],src.menuFolder.inventoryMenu.InventoryMenu):
                 return (None,(["esc"],"close the menu"))
 
+        if character.getNearbyEnemies():
+            if not dryRun:
+                self.fail("nearby enemies")
+            return (None,("+","abort quest"))
+
         if self.targetPositionBig and character.getBigPosition() != self.targetPositionBig:
             quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig)
             return ([quest],None)

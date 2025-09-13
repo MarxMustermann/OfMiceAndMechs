@@ -205,10 +205,6 @@ Press d to move the cursor and show the subquests description.
             if submenue:
                 return (None,(["esc"],"exit the menu"))
 
-        if character.getBigPosition() != self.targetPositionBig:
-            quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,description="go to buildsite",reason=f"be able to place the {self.itemType}")
-            return ([quest],None)
-
         itemFound = None
         itemPlaced = None
         if self.boltDown:

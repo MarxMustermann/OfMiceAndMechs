@@ -89,23 +89,29 @@ Use a CityPlaner to do this.
         if character.macroState["submenue"] and not ignoreCommands:
             return (None,(["esc"],"exit submenu"))
 
-        # go to room with city planer
-        pos = character.getBigPosition()
-        if pos != character.getHomeRoomCord():
-            quest = src.quests.questMap["GoHome"](description="go to command centre",reason="go to command centre")
-            return ([quest],None)
-
         # enter room
         if not character.container.isRoom:
-            quest = src.quests.questMap["EnterRoom"]()
-            return ([quest],None)
+            if character.getTerrain().getRoomByPosition(character.getBigPosition()):
+                quest = src.quests.questMap["EnterRoom"]()
+                return ([quest],None)
+            else:
+                quest = src.quests.questMap["GoHome"]()
+                return ([quest],None)
 
-        # start using the city planer
+        # go to room with city planer
         cityPlaner = character.container.getItemByType("CityPlaner")
         if not cityPlaner:
+            for room in character.getTerrain().rooms:
+                if not room.getItemByType("CityPlaner"):
+                    continue
+                quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),description="go to command centre",reason="go to command centre")
+                return ([quest],None)
+
             if not dryRun:
-                self.fail("no city planer")
-            return (None,("+","abort quest"))
+                self.fail("no planer")
+            return (None,("+","abort the quest"))
+
+        # start using the city planer
         command = None
         if character.getPosition(offset=(1,0,0)) == cityPlaner.getPosition():
             command = "d"

@@ -237,6 +237,7 @@ tcodAudioDevice = None
 tcodMixer = None
 sounds = {}
 settings = None
+sdl_cache = []
 
 def playSound(soundName,channelName,loop=False):
     if settings["sound"] != 0:
@@ -249,7 +250,11 @@ window_width = None
 window_height = None
 window_charwidth = None
 window_charheight = None
+tileHeight = None
+tileWidth = None
 def checkResetWindowSize(width=None,height=None):
+    global tileHeight
+    global tileWidth
     global window_width
     if width is None:
         width = window_width
@@ -268,6 +273,7 @@ def checkResetWindowSize(width=None,height=None):
         tileHeight = 6
     if tileHeight > 28:
         tileHeight = 28
+    tileWidth = tileHeight//2
 
     newHeight = height//tileHeight
     newWidth  = (width//tileHeight)*2
@@ -284,6 +290,9 @@ def checkResetWindowSize(width=None,height=None):
     global window_charheight
     window_charwidth = newWidth
     window_charheight = newHeight
+
+    global sdl_renderer
+    sdl_renderer = tcodContext.sdl_renderer
 
 def setUpTcod():
     global settings
@@ -4057,6 +4066,11 @@ class ActionMeta:
         self.payload = payload
         self.content = content
 
+class CharacterMeta:
+    def __init__(self, character ,content=None):
+        self.character = character
+        self.content = content
+
 def printUrwidToTcod(inData,offset,color=None,internalOffset=None,size=None, actionMeta=None, explecitConsole=None):
     if explecitConsole:
         tcodConsole_local = explecitConsole
@@ -4115,6 +4129,9 @@ def printUrwidToTcod(inData,offset,color=None,internalOffset=None,size=None, act
 
     if isinstance(inData, ActionMeta):
         printUrwidToTcod(inData.content,offset,color,internalOffset,size,inData.payload,explecitConsole = tcodConsole_local)
+
+    if isinstance(inData, CharacterMeta):
+        printUrwidToTcod(inData.content,offset,color,internalOffset,size,actionMeta,explecitConsole = tcodConsole_local)
 
     #footertext = stringifyUrwid(inData)
 
@@ -4180,7 +4197,24 @@ def printUrwidToDummy(dummy,inData,offset,color=None,internalOffset=None,size=No
     if isinstance(inData, ActionMeta):
         printUrwidToDummy(dummy,inData.content,offset,color,internalOffset,size,inData.payload)
 
+    if isinstance(inData, CharacterMeta):
+        printUrwidToDummy(dummy,inData.content,offset,color,internalOffset,size,actionMeta)
     #footertext = stringifyUrwid(inData)
+
+allow_sdl = False
+def draw_sdl():
+    global sdl_cache
+    if not allow_sdl:
+        return None
+
+    for element in sdl_cache:
+        if element[0] == "line":
+            sdl_renderer.draw_line(element[1],element[2])
+        if element[0] == "rect":
+            sdl_renderer.draw_color = element[2]
+            sdl_renderer.fill_rect(element[1])
+    sdl_renderer.present()
+    sdl_cache = []
 
 def renderGameDisplay(renderChar=None):
     pseudoDisplay = []
@@ -4220,6 +4254,8 @@ def renderGameDisplay(renderChar=None):
             if isinstance(item, str):
                 outData += item
             if isinstance(item, ActionMeta):
+                outData += item.content
+            if isinstance(item, CharacterMeta):
                 outData += item.content
         return outData
 
@@ -4579,6 +4615,7 @@ def renderGameDisplay(renderChar=None):
 
                 if not char.specialRender:
                     tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+                    draw_sdl()
             if not useTiles and not tcodConsole:
                 main.set_text(
                     (
@@ -4672,6 +4709,7 @@ def renderGameDisplay(renderChar=None):
             if not renderChar:
                 printUrwidToTcod(main.get_text(),(offsetLeft+2,offsetTop+2))
                 tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+                draw_sdl()
             else:
                 printUrwidToDummy(pseudoDisplay, main.get_text(),(offsetLeft+2,offsetTop+2))
 

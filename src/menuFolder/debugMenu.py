@@ -33,6 +33,7 @@ class DebugMenu(src.subMenu.SubMenu):
         "toggleExpandQ",
         "toggleCommandOnPlus",
         "change personality settings",
+        "toggle SDL",
     ]
 
     def __init__(self):
@@ -327,6 +328,9 @@ class DebugMenu(src.subMenu.SubMenu):
                             "method": "action",
                             "params": {"character": character},
                         }
+                case "toggle SDL":
+                    if current_change:
+                        src.interaction.allow_sdl = not src.interaction.allow_sdl
             text += "\n"
 
         src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), text))

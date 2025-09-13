@@ -1050,13 +1050,15 @@ class Room:
                                 bgColor = "#f55"
                             
                         if isinstance(char,tuple):
-                            try:
-                                chars[character.yPosition][character.xPosition] = (src.interaction.urwid.AttrSpec(char[0].fg, bgColor), char[1])
-                            except Exception as e:
-                                logger.error("drawing error: "+str(e))
+                            display = (src.interaction.urwid.AttrSpec(char[0].fg, bgColor), char[1])
                         else:
                             fgColor = "#fff"
-                            chars[character.yPosition][character.xPosition] = (src.interaction.urwid.AttrSpec(fgColor, bgColor), char)
+                            display = (src.interaction.urwid.AttrSpec(fgColor, bgColor), char)
+
+                        try:
+                            chars[character.yPosition][character.xPosition] = src.interaction.CharacterMeta(content=display,character=character)
+                        except Exception as e:
+                            logger.error("drawing error: "+str(e))
                     else:
                         if viewChar == "rank":
                             if not isinstance(character,src.characters.characterMap["Ghoul"]):
@@ -1249,7 +1251,8 @@ class Room:
                             color = "#f00"
                             char = "EE"
 
-                        chars[character.yPosition][character.xPosition] = (src.interaction.urwid.AttrSpec(color, bgColor), char)
+                        display = (src.interaction.urwid.AttrSpec(color, bgColor), char)
+                        chars[character.yPosition][character.xPosition] = display
 
                         if character.timeTaken > 2:
                             chars[character.yPosition][character.xPosition][0].bg = "#553"
@@ -1262,6 +1265,9 @@ class Room:
                         if character.showGaveCommand:
                             chars[character.yPosition][character.xPosition][0].bg = "#855"
                             character.showGaveCommand = False
+
+                        display = chars[character.yPosition][character.xPosition]
+                        chars[character.yPosition][character.xPosition] = src.interaction.CharacterMeta(content=display,character=character)
                 else:
                     logger.debug("character is rendered outside of room")
 
@@ -1290,7 +1296,8 @@ class Room:
                 ) and src.gamestate.gamestate.mainChar.xPosition < len(
                     chars[src.gamestate.gamestate.mainChar.yPosition]
                 ):
-                    chars[src.gamestate.gamestate.mainChar.yPosition][src.gamestate.gamestate.mainChar.xPosition] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
+                    display = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
+                    chars[src.gamestate.gamestate.mainChar.yPosition][src.gamestate.gamestate.mainChar.xPosition] = src.interaction.CharacterMeta(content=display,character=src.gamestate.gamestate.mainChar)
                 else:
                     logger.debug("character is rendered outside of room")
 

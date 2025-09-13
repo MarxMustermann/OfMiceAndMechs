@@ -224,7 +224,12 @@ The target tile is {direction[4:]}
             if self.targetPosition == (7,7,0):
                 return (None,("c","auto move to tile"))
 
+
             submenue = character.macroState["submenue"]
+
+            if abs(self.targetPosition[0]-submenue.cursor[0])+abs(self.targetPosition[1]-submenue.cursor[1]) > 4 and self.getQuestMarkersTile(character):
+                return (None,("q","use fast travel to current questmarker"))
+
             command = ""
             if submenue.cursor[0] > self.targetPosition[0]:
                 command += "a"*(submenue.cursor[0]-self.targetPosition[0])

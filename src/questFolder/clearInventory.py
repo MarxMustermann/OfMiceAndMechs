@@ -105,6 +105,11 @@ To see your items open the your inventory by pressing i."""
         if self.subQuests:
             return (None,None)
 
+        if character.getNearbyEnemies():
+            if not dryRun:
+                self.fail("nearby enemies")
+            return (None,("+","abort quest"))
+
         # close other menus
         if not ignoreCommands and character.macroState.get("submenue"):
             return (None,(["esc"],"exit submenu"))

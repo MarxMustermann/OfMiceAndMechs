@@ -43,7 +43,7 @@ Use a CityPlaner to do this.
         Parameters:
             character: the character that is acting
             ignoreCommands: do not generate commands as output
-            dryRum: do not actually change things
+            dryRun: do not actually change things
         '''
 
         # do nothing if there are subquests
@@ -101,7 +101,11 @@ Use a CityPlaner to do this.
             return ([quest],None)
 
         # start using the city planer
-        cityPlaner = character.container.getItemsByType("CityPlaner")[0]
+        cityPlaner = character.container.getItemByType("CityPlaner")
+        if not cityPlaner:
+            if not dryRun:
+                self.fail("no city planer")
+            return (None,("+","abort quest"))
         command = None
         if character.getPosition(offset=(1,0,0)) == cityPlaner.getPosition():
             command = "d"

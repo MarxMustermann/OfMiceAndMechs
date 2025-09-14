@@ -2701,7 +2701,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
         move the player into a direction
         """
         # move the player
-        if key in (":"):
+        if key in (":",):
             char.takeTime(0.1,"short wait")
         if key in (commandChars.wait):
             char.takeTime(1,"wait")
@@ -4651,7 +4651,7 @@ def renderGameDisplay(renderChar=None):
                         printUrwidToTcod(uiElement["text"],uiElement["offset"])
                         printUrwidToDummy(pseudoDisplay,uiElement["text"],uiElement["offset"])
                     if uiElement["type"] == "time":
-                        text = f"epoch: {src.gamestate.gamestate.tick//(15*15*15)} tick: {src.gamestate.gamestate.tick%(15*15*15)}"
+                        text = f"epoch: {src.gamestate.gamestate.tick//(15*15*15)} tick: {src.gamestate.gamestate.tick%(15*15*15)} {char.timeTaken}"
                         printUrwidToTcod(text,uiElement["offset"],((255, 68, 51),(0,0,0)) if src.gamestate.gamestate.mainChar.timeTaken > 1 else None)
                         printUrwidToDummy(pseudoDisplay,text,uiElement["offset"])
                     if uiElement["type"] == "rememberedMenu" and char.rememberedMenu:
@@ -5051,7 +5051,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 printUrwidToTcod("+--------------+",(offsetX+3+16,offsetY+13))
                 printUrwidToTcod("| loading game |",(offsetX+3+16,offsetY+14))
                 printUrwidToTcod("+--------------+",(offsetX+3+16,offsetY+15))
-                tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+                tcodPresent()
 
             def doLoad():
                 if canLoad:
@@ -5784,7 +5784,7 @@ def showInterruptChoice(text,options):
     while 1:
         tcodConsole.clear()
         printUrwidToTcod(text,(0,0))
-        tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+        tcodPresent()
 
         events = tcod.event.get()
         for event in events:
@@ -5813,7 +5813,7 @@ def showInterruptText(text):
     while 1:
         tcodConsole.clear()
         printUrwidToTcod(text,(0,0))
-        tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+        tcodPresent()
 
         events = tcod.event.get()
         for event in events:
@@ -5975,7 +5975,7 @@ You """+"."*stageState["substep"]+"""
                     )
                 else:
                     printUrwidToTcod(text, (40 + c_offset - int(len(text) / 2), 2))
-                tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+                tcodPresent()
 
             if stageState["substep"] == 4 and (time.time()-stageState["lastChange"] > 0.2 or skip) and stageState["animationStep"] < 17:
                 stageState["animationStep"] += 1
@@ -6262,7 +6262,7 @@ You """+"."*stageState["substep"]+"""
                 terrainRender[22][22] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
                 printUrwidToTcod(text, (38 + c_offset, 2))
                 printUrwidToTcod(terrainRender, (19 + c_offset, 5))
-                tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+                tcodPresent()
 
             if stageState["walkingSpaces"] and stageState["subStep"] > 1:
                 stageState["lastChange"] = time.time()
@@ -6357,7 +6357,7 @@ You """+"."*stageState["substep"]+"""
                 printUrwidToTcod(text2, (42 + c_offset, 3))
                 printUrwidToTcod(terrainRender, (19 + c_offset, 5))
 
-                tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+                tcodPresent()
 
             if time.time()-stageState["lastChange"] > 2 or skip:
                 stageState = None
@@ -6425,7 +6425,7 @@ You """+"."*stageState["substep"]+"""
                     printUrwidToTcod("press space to stop watching", (47 + c_offset, 4))
                 else:
                     printUrwidToTcod("press space to continue watching", (46 + c_offset, 4))
-            tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+            tcodPresent()
 
             if stageState["substep"] < 1 and time.time()-stageState["lastChange"] > 0:
                 stageState["lastChange"] = time.time()
@@ -6467,7 +6467,7 @@ You """+"."*stageState["substep"]+"""
                     printUrwidToTcod(terrainRender, (19 + 2 * offset + c_offset, 5 + offset))
                 printUrwidToTcod(text1, (38 + c_offset, 2 + offset))
                 printUrwidToTcod(text2, (42 + c_offset, 3 + offset))
-                tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+                tcodPresent()
 
             if time.time()-stageState["lastChange"] > 0.3:
                 stageState["lastChange"] = time.time()
@@ -6499,7 +6499,7 @@ FOLLOW YOUR ORDERS
                 printUrwidToTcod(text2, (44 + c_offset, 23))
             if stageState["substep"] > 3:
                 printUrwidToTcod(src.urwidSpecials.makeRusty(text3)[: stageState["animationStep"]], (55 + c_offset, 25))
-            tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+            tcodPresent()
 
             if stageState["substep"] == 4 and stageState["animationStep"] < len(text3):
                 if time.time()-stageState["lastChange"] > 0.1:
@@ -6612,7 +6612,7 @@ It connects and is ready to merge with you.
 
             if not subStep2 < len(textBase[-1]):
                 printUrwidToTcod("press enter to merge with the throne",(45,27))
-            tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+            tcodPresent()
             if subStep < len(textBase)-1:
                 time.sleep(0.5)
                 subStep += 1
@@ -6658,7 +6658,7 @@ The gods bow and
 
             if not subStep2 < len(textBase[-1]):
                 printUrwidToTcod("press enter to reach out to implant",(45,27))
-            tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+            tcodPresent()
             if subStep < len(textBase)-1:
                 time.sleep(0.5)
                 subStep += 1
@@ -6708,7 +6708,7 @@ press enter to run credits"""]
                 text += textBase[-1][0:subStep2]
             printUrwidToTcod(text,(45,17))
 
-            tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+            tcodPresent()
             if subStep < len(textBase)-1:
                 time.sleep(0.5)
                 subStep += 1
@@ -6758,7 +6758,7 @@ press enter"""]
                 text += textBase[-1][0:subStep2]
             printUrwidToTcod(text,(45,17))
 
-            tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+            tcodPresent()
             if subStep < len(textBase)-1:
                 time.sleep(0.5)
                 subStep += 1
@@ -6856,7 +6856,7 @@ starts to burn your flesh.                                                \n\
             if not subStep < len(textBase)-1:
                 text += textBase[-1][0:subStep2]
             printUrwidToTcod(text, (45 + c_offset, 17))
-            tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+            tcodPresent()
             if subStep < len(textBase)-1:
                 time.sleep(0.5)
                 subStep += 1
@@ -6912,7 +6912,7 @@ grows and grows and grows and grows
 """.split(" ")
             text = " ".join(textBase[0:subStep])
             printUrwidToTcod(text, (45 + c_offset, 17))
-            tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+            tcodPresent()
             for _i in range(100):
                 pos = (random.randint(1,199),random.randint(1,50))
                 if pos[0] > 37 and pos[0] < 121 and pos[1] > 13 and pos[1] < 34:
@@ -7109,7 +7109,7 @@ suggested action:
 press enter to continue
 """
             printUrwidToTcod(text, (45 + c_offset, 17))
-            tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+            tcodPresent()
             time.sleep(0.2)
             subStep += 1
         elif stage ==  3:
@@ -7199,7 +7199,7 @@ to remember"""
 
             offset = src.gamestate.gamestate.mainChar.getPosition()
             printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "), (76 + 6 + c_offset, 22 + 6))
-            tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+            tcodPresent()
             time.sleep(0.1)
         else:
             break

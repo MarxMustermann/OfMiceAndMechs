@@ -198,7 +198,7 @@ if __name__ == '__main__':
 
                     src.helpers.draw_frame_text(src.interaction.tcodConsole ,width, height, text, x, y)
 
-                    src.interaction.tcodContext.present(src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True)
+                    src.interaction.tcodPresent()
 
 
                     exceptionText = ''.join(traceback.format_exception(None, e, e.__traceback__))
@@ -248,12 +248,12 @@ if __name__ == '__main__':
                                     x = int(src.interaction.tcodConsole.width / 2 - len(text) / 2)
                                     tcod.sdl.sys._set_clipboard(exceptionText)
                                     src.helpers.draw_frame_text(src.interaction.tcodConsole ,len(text), 1, text, x, y)
-                                    src.interaction.tcodContext.present(src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True)
+                                    src.interaction.tcodPresent()
                                     t.start()
                                     while t.is_alive():
                                         src.helpers.deal_with_window_events(e)
                                     raise e
-                                src.interaction.tcodContext.present(src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True)
+                                src.interaction.tcodPresent()
                             if isinstance(event, tcod.event.Quit):
                                 raise e
                             if isinstance(event, tcod.event.WindowEvent):
@@ -261,10 +261,13 @@ if __name__ == '__main__':
                                     case "WINDOWCLOSE":
                                         raise e
                                     case _:
-                                        src.interaction.tcodContext.present(src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True)
+                                        src.interaction.tcodPresent()
 
     except Exception as e:
         if src.interaction.tcodMixer:
             src.interaction.tcodMixer.close()
+
+        if src.interaction.sdl_window.fullscreen:
+            src.interaction.sdl_window.fullscreen = False
 
         raise e

@@ -429,7 +429,7 @@ class Canvas:
                     character = char.character
 
                     if character.health != character.adjustedMaxHealth:
-                        basePos = (x*src.interaction.tileWidth*2+(src.interaction.window_width%src.interaction.tileWidth)//2,y*src.interaction.tileHeight+(src.interaction.window_height%src.interaction.tileHeight)//2)
+                        basePos = (x*src.interaction.tileWidth*2,y*src.interaction.tileHeight)
                         src.interaction.sdl_cache.append(("rect",(basePos[0],basePos[1]+2,src.interaction.tileWidth*2,5),(255,255,255,255)))
                         barwidth = int((src.interaction.tileWidth*2-2)*(character.health/character.adjustedMaxHealth))
                         src.interaction.sdl_cache.append(("rect",(basePos[0]+1,basePos[1]+3,(src.interaction.tileWidth*2-2),3),(0,0,0,255)))

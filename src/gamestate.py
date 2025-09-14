@@ -157,7 +157,7 @@ class GameState:
         printUrwidToTcod("+-------------+",(offsetX+3+16,offsetY+13))
         printUrwidToTcod("| saving game |",(offsetX+3+16,offsetY+14))
         printUrwidToTcod("+-------------+",(offsetX+3+16,offsetY+15))
-        tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+        src.interaction.tcodPresent()
 
         # import stuff. (should not be within a function -_-)
         import os

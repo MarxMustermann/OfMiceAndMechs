@@ -275,12 +275,12 @@ def checkResetWindowSize(width=None,height=None):
         tileHeight = 28
     tileWidth = tileHeight//2
 
+    global tileset
     newHeight = height//tileHeight
     newWidth  = (width//tileHeight)*2
     tileset = tcod.tileset.load_tilesheet(
         f"scaled_{tileHeight//2}x{tileHeight}.png", 16, 16, tcod.tileset.CHARMAP_CP437
     )
-    tcodContext.change_tileset(tileset)
 
     global tcodConsole
     root_console = tcod.console.Console(newWidth, newHeight, order="F")
@@ -291,11 +291,15 @@ def checkResetWindowSize(width=None,height=None):
     window_charwidth = newWidth
     window_charheight = newHeight
 
-    global sdl_renderer
-    sdl_renderer = tcodContext.sdl_renderer
-
+sdl_renderer2 = None
+tileset = None
+atlas = None
+sdl_window = None
 def setUpTcod():
     global settings
+    global tileset
+    global atlas
+
     if os.path.isfile("config/globalSettings.json"):
                 with open("config/globalSettings.json") as f:
                     settings = json.loads(f.read())
@@ -329,6 +333,42 @@ def setUpTcod():
     tileset =  tcod.tileset.load_truetype_font("./config/font/dejavu-sans-mono-fonts-ttf-2.35/ttf/DejaVuSansMono.ttf",48,24)
     """
 
+    global tcodConsole
+    global sdl_renderer2
+    global sdl_window
+
+    global window_charwidth
+    global window_charheight
+    window_charwidth = 200
+    window_charheight = 50
+
+    global tileHeight
+    global tileWidth
+    tileHeight = 100
+    tileWidth = 30
+
+    global window_width
+    global window_height
+    window_width = window_charwidth*tileWidth
+    window_height = window_charheight*tileHeight
+
+    tcodConsole = tcod.console.Console(window_charwidth,window_charheight, order="F")
+    tcodConsole.print(x=1,y=1,string="loading game")
+    sdl_window = tcod.sdl.video.new_window(
+            500,
+            500,
+            flags=tcod.lib.SDL_WINDOW_RESIZABLE | tcod.lib.SDL_WINDOW_MAXIMIZED,
+        )
+    sdl_renderer2 = tcod.sdl.render.new_renderer(sdl_window, target_textures=True)
+    atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset)
+    console_render = tcod.render.SDLConsoleRender(atlas)
+
+    #if settings["fullscreen"]:
+    #    sdl_window.fullscreen = True
+
+    checkResetWindowSize(width=sdl_window.size[0],height=sdl_window.size[1])
+
+    """
     context = tcod.context.new_terminal(
             None,
             None,
@@ -336,6 +376,17 @@ def setUpTcod():
             title="OfMiceAndMechs",
             vsync=True,
             sdl_window_flags=tcod.lib.SDL_WINDOW_RESIZABLE | tcod.lib.SDL_WINDOW_MAXIMIZED,
+                )
+    """
+
+    """
+    context = tcod.context.new_terminal(
+            None,
+            None,
+            tileset=tileset,
+            title="OfMiceAndMechs",
+            vsync=True,
+            sdl_window_flags=tcod.lib.SDL_WINDOW_RESIZABLE,
                 )
     size = context.recommended_console_size()
 
@@ -354,6 +405,7 @@ def setUpTcod():
         tcodContext.sdl_window_p,
         tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP if settings["fullscreen"] else 0,
     )
+    """
     
     import soundfile as sf
     import tcod.sdl.audio as audio
@@ -3819,6 +3871,7 @@ def getTcodEvents():
                     raise SystemExit()
                 if event.type == "WINDOWEXPOSED":
                     renderGameDisplay()
+            """
             if isinstance(event,tcod.event.MouseButtonDown):# or isinstance(event,tcod.event.MouseButtonUp):
                 tcodContext.convert_event(event)
                 clickPos = (event.tile.x,event.tile.y)
@@ -3839,6 +3892,7 @@ def getTcodEvents():
 
                 if isinstance(event,tcod.event.MouseButtonUp):
                     src.gamestate.gamestate.dragState = None
+            """
 
             if isinstance(event,tcod.event.KeyDown):
                 key = event.sym
@@ -4015,14 +4069,6 @@ def getTcodEvents():
                     else:
                         translatedKey = "z"
                 """
-                if key == tcod.event.KeySym.F11:
-                    fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
-                        tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
-                    )
-                    tcod.lib.SDL_SetWindowFullscreen(
-                        tcodContext.sdl_window_p,
-                        0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
-                    )
                 if key == tcod.event.KeySym.RIGHT:
                     if not (event.mod & tcod.event.Modifier.CTRL or event.mod & tcod.event.Modifier.SHIFT):
                          translatedKey = "right"
@@ -4035,6 +4081,9 @@ def getTcodEvents():
                 if key == tcod.event.KeySym.DOWN:
                     if not (event.mod & tcod.event.Modifier.CTRL or event.mod & tcod.event.Modifier.SHIFT):
                         translatedKey = "down"
+                if key == tcod.event.KeySym.F11:
+                    sdl_window.fullscreen = not sdl_window.fullscreen
+
                 if translatedKey is None:
                     continue
 
@@ -4070,6 +4119,21 @@ class CharacterMeta:
     def __init__(self, character ,content=None):
         self.character = character
         self.content = content
+
+def tcodPresent():
+    atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset)
+    console_render = tcod.render.SDLConsoleRender(atlas)
+
+    sdl_renderer2.draw_color = (0,0,0,255)
+    sdl_renderer2.clear()
+    renderedToTexture = console_render.render(tcodConsole)
+    #sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.height,renderedToTexture.width),(0,0,sdl_window.size[0]*2,sdl_window.size[1]*2))
+    #sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(0,0,sdl_window.size[0]//2,sdl_window.size[1]//2))
+    sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(0,0,renderedToTexture.width,renderedToTexture.height),)
+
+    draw_sdl()
+
+    sdl_renderer2.present()
 
 def printUrwidToTcod(inData,offset,color=None,internalOffset=None,size=None, actionMeta=None, explecitConsole=None):
     if explecitConsole:
@@ -4204,16 +4268,15 @@ def printUrwidToDummy(dummy,inData,offset,color=None,internalOffset=None,size=No
 allow_sdl = False
 def draw_sdl():
     global sdl_cache
-    if not allow_sdl:
-        return None
+    #if not allow_sdl:
+    #    return None
 
     for element in sdl_cache:
         if element[0] == "line":
-            sdl_renderer.draw_line(element[1],element[2])
+            sdl_renderer2.draw_line(element[1],element[2])
         if element[0] == "rect":
-            sdl_renderer.draw_color = element[2]
-            sdl_renderer.fill_rect(element[1])
-    sdl_renderer.present()
+            sdl_renderer2.draw_color = element[2]
+            sdl_renderer2.fill_rect(element[1])
     sdl_cache = []
 
 def renderGameDisplay(renderChar=None):
@@ -4614,7 +4677,7 @@ def renderGameDisplay(renderChar=None):
                         printUrwidToDummy(pseudoDisplay,chars,offset,size=size)
 
                 if not char.specialRender:
-                    tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+                    tcodPresent()
                     draw_sdl()
             if not useTiles and not tcodConsole:
                 main.set_text(
@@ -4708,8 +4771,7 @@ def renderGameDisplay(renderChar=None):
             #printUrwidToTcod(main.get_text(),(offsetLeft+2,offsetTop+2),size=(width,height))
             if not renderChar:
                 printUrwidToTcod(main.get_text(),(offsetLeft+2,offsetTop+2))
-                tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
-                draw_sdl()
+                tcodPresent()
             else:
                 printUrwidToDummy(pseudoDisplay, main.get_text(),(offsetLeft+2,offsetTop+2))
 
@@ -5408,7 +5470,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                         "+-------------------------------------+",
                         (start_x, start_y + 3),
                     )
-        tcodContext.present(tcodConsole, integer_scaling=True, keep_aspect=True)
+        tcodPresent()
 
         events = tcod.event.get()
         current_submenu = submenu[-1] if len(submenu) else ""
@@ -5677,13 +5739,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                     if isinstance(event, tcod.event.KeyDown):
                         key = event.sym
                         if key == tcod.event.KeySym.F11:
-                            fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
-                                tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
-                            )
-                            tcod.lib.SDL_SetWindowFullscreen(
-                                tcodContext.sdl_window_p,
-                                0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
-                            )
+                            sdl_window.fullscreen = not sdl_window.fullscreen
                         if key == tcod.event.KeySym.ESCAPE:
                             submenu.append("confirmQuit")
                         if key == tcod.event.KeySym.p:
@@ -5721,16 +5777,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
             if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
                 src.interaction.tcodMixer.close()
                 raise SystemExit()
-            if isinstance(event, tcod.event.KeyDown):
-                key = event.sym
-                if key == tcod.event.KeySym.F11:
-                    fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
-                        tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
-                    )
-                    tcod.lib.SDL_SetWindowFullscreen(
-                        tcodContext.sdl_window_p,
-                        0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
-                    )
+
 def showInterruptChoice(text,options):
     tcod.event.get()
 
@@ -5818,9 +5865,10 @@ You """+"."*stageState["substep"]+"""
 
 
 """
-                printUrwidToTcod(text, (64 + c_offset - int(len(text) / 2), 24))
-                printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "), (63 + c_offset, 27))
-                tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+                #printUrwidToTcod(text, (64 + c_offset - int(len(text) / 2), 24))
+                #printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "), (63 + c_offset, 27))
+                #tcodPresent()
+                return
 
             if time.time()-stageState["lastChange"] > 1 or skip:
                 stageState["substep"] += 1

@@ -2,6 +2,9 @@ import src
 import random
 
 class CollectGlassHearts(src.quests.MetaQuestSequence):
+    '''
+    quest to collect glass hearts
+    '''
     type = "CollectGlassHearts"
 
     def __init__(self, description="collect glass hearts", creator=None, lifetime=None):
@@ -178,6 +181,25 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
             if not foundCityPlaner.autoExtensionThreashold:
                 quest = src.quests.questMap["SetBaseAutoExpansion"](targetLevel=2)
                 return ([quest],None)
+
+        # fill empty rooms with life
+        if foundCityPlaner:
+            rooms = foundCityPlaner.getAvailableRooms()
+            random.shuffle(rooms)
+            if rooms:
+                room = rooms[0]
+
+                candidates = ["manufacturingHall","electrifierHall","smokingRoom"]
+                random.shuffle(candidates)
+                candidates.insert(0,"wallManufacturing")
+                candidates.insert(0,"storage")
+                for checkRoom in terrain.rooms:
+                    if checkRoom.tag in candidates:
+                        candidates.remove(checkRoom.tag)
+                
+                if candidates:
+                    quest = src.quests.questMap["AssignFloorPlan"](floorPlanType=candidates[0],roomPosition=room.getPosition())
+                    return ([quest],None)
 
         # get statues ready for teleport
         strengthRating = character.getStrengthSelfEstimate()

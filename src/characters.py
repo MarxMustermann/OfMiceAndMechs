@@ -767,7 +767,7 @@ class Character:
                 return "~"
 
             self.waitForEnemy -= 1
-            if not self.waitForEnemy < 0:
+            if self.waitForEnemy <= 0:
                 self.hasOwnAction = 0
             return "."
 
@@ -779,8 +779,7 @@ class Character:
                     return "~"
 
             self.waitForEnemyApproach -= 0.1
-            print(self.waitForEnemyApproach)
-            if  self.waitForEnemyApproach < 0:
+            if  self.waitForEnemyApproach <= 0:
                 self.hasOwnAction = 0
             return ":"
 

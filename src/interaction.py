@@ -229,7 +229,6 @@ class AbstractedDisplay:
         pass
 
 tcodConsole = None
-tcodContext = None
 tcod = None
 soundloader = None
 tcodAudio = None
@@ -5484,13 +5483,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                         if key == tcod.event.KeySym.ESCAPE:
                             submenu.pop()
                         if key == tcod.event.KeySym.F11:
-                            fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
-                                tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
-                            )
-                            tcod.lib.SDL_SetWindowFullscreen(
-                                tcodContext.sdl_window_p,
-                                0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
-                            )
+                            sdl_window.fullscreen = not sdl_window.fullscreen
                         if key == tcod.event.KeySym.N0:
                             gameIndex = 0
                             submenu.pop()
@@ -5527,13 +5520,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                         key = event.sym
                         convertedKey = None
                         if key == tcod.event.KeySym.F11:
-                            fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
-                                tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
-                            )
-                            tcod.lib.SDL_SetWindowFullscreen(
-                                tcodContext.sdl_window_p,
-                                0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
-                            )
+                            sdl_window.fullscreen = not sdl_window.fullscreen
                         if key == tcod.event.KeySym.ESCAPE:
                             submenu.pop()
                         if key == tcod.event.KeySym.m:
@@ -5578,13 +5565,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                     if isinstance(event, tcod.event.KeyDown):
                         key = event.sym
                         if key == tcod.event.KeySym.F11:
-                            fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
-                                tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
-                            )
-                            tcod.lib.SDL_SetWindowFullscreen(
-                                tcodContext.sdl_window_p,
-                                0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
-                            )
+                            sdl_window.fullscreen = not sdl_window.fullscreen
                         if key == tcod.event.KeySym.ESCAPE:
                             submenu.pop()
                         if key == tcod.event.KeySym.e:
@@ -5696,13 +5677,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                         key = event.sym
 
                         if key == tcod.event.KeySym.F11:
-                            fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
-                                tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
-                            )
-                            tcod.lib.SDL_SetWindowFullscreen(
-                                tcodContext.sdl_window_p,
-                                0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
-                            )
+                            sdl_window.fullscreen = not sdl_window.fullscreen
                         if key == tcod.event.KeySym.y:
                             try:
                                 # register the save
@@ -6537,13 +6512,7 @@ FOLLOW YOUR ORDERS
             if isinstance(event,tcod.event.KeyDown):
                 key = event.sym
                 if key == tcod.event.KeySym.F11:
-                    fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
-                        tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
-                    )
-                    tcod.lib.SDL_SetWindowFullscreen(
-                        tcodContext.sdl_window_p,
-                        0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
-                    )
+                    sdl_window.fullscreen = not sdl_window.fullscreen
                 if key == tcod.event.KeySym.RETURN:
                     skip = True
                 if key == tcod.event.KeySym.SPACE and stage == 4:
@@ -6785,13 +6754,7 @@ press enter"""]
             if isinstance(event,tcod.event.KeyDown):
                 key = event.sym
                 if key == tcod.event.KeySym.F11:
-                    fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
-                        tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
-                    )
-                    tcod.lib.SDL_SetWindowFullscreen(
-                        tcodContext.sdl_window_p,
-                        0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
-                    )
+                    sdl_window.fullscreen = not sdl_window.fullscreen
                 if key == tcod.event.KeySym.ESCAPE:
                     stage = 7
                 if key == tcod.event.KeySym.RETURN:
@@ -7219,13 +7182,7 @@ to remember"""
             if isinstance(event,tcod.event.KeyDown):
                 key = event.sym
                 if key == tcod.event.KeySym.F11:
-                    fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
-                        tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
-                    )
-                    tcod.lib.SDL_SetWindowFullscreen(
-                        tcodContext.sdl_window_p,
-                        0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
-                    )
+                    sdl_window.fullscreen = not sdl_window.fullscreen
                 if key == tcod.event.KeySym.ESCAPE:
                     stage = 7
                 if key == tcod.event.KeySym.RETURN:

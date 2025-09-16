@@ -148,7 +148,6 @@ class GameState:
 
         # get context for drawing stuff
         tcodConsole = src.interaction.tcodConsole
-        tcodContext = src.interaction.tcodContext
         printUrwidToTcod = src.interaction.printUrwidToTcod
 
         # draw an info that saving is in progress

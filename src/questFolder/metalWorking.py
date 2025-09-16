@@ -273,6 +273,26 @@ Press d to move the cursor and show the subquests description.
 
         return super().assignToCharacter(character)
 
+    def getQuestMarkersSmall(self,character,renderForTile=False):
+        '''
+        return the quest markers for the normal map
+        '''
+        if isinstance(character.container,src.rooms.Room):
+            if renderForTile:
+                return []
+        else:
+            if not renderForTile:
+                return []
+
+        result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
+        if not renderForTile:
+            if isinstance(character.container,src.rooms.Room):
+                for metalWorkingBench in character.container.getItemsByType("MetalWorkingBench"):
+                    if not metalWorkingBench.readyToUse():
+                        continue
+                    result.append((metalWorkingBench.getPosition(),"target"))
+        return result
+
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
         freeMetalWorkingBenches = []

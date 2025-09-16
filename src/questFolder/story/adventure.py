@@ -74,7 +74,7 @@ class Adventure(src.quests.MetaQuestSequence):
             for item in character.inventory:
                 if item.walkable:
                     continue
-                quest = src.quests.questMap["ClearInventory"]()
+                quest = src.quests.questMap["ClearInventory"](returnToTile=False)
                 return ([quest],None)
 
         if currentTerrain.tag == "shrine":

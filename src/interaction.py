@@ -2703,7 +2703,9 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
         if key in (":",):
             char.takeTime(0.1,"short wait")
         if key in (",",):
-            char.startWaitForEnemy(10)
+            char.startWaitForEnemyApproach(10)
+        if key in (";",):
+            char.startWaitForEnemy(100)
         if key in (commandChars.wait):
             char.takeTime(1,"wait")
             if char.exhaustion > 1:

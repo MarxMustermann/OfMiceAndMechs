@@ -219,6 +219,7 @@ class Character:
         self.huntkilling = False
         self.guarding = 0
         self.waitForEnemy = 0
+        self.waitForEnemyApproach = 0
 
         # bad code: story specific state
         self.serveQuest = None
@@ -728,6 +729,10 @@ class Character:
         self.waitForEnemy = numTicks
         self.hasOwnAction += 1
 
+    def startWaitForEnemyApproach(self,numTicks):
+        self.waitForEnemyApproach = numTicks
+        self.hasOwnAction += 1
+
     def startGuarding(self,numTicks):
         '''
         put the character into guard mode for som ticks
@@ -756,16 +761,29 @@ class Character:
             return "."
 
         if self.waitForEnemy:
+            if self.getNearbyEnemies():
+                self.waitForEnemy = 0
+                self.hasOwnAction = 0
+                return "~"
+
+            self.waitForEnemy -= 1
+            if not self.waitForEnemy < 0:
+                self.hasOwnAction = 0
+            return "."
+
+        if self.waitForEnemyApproach:
             for enemy in self.getNearbyEnemies():
                 if self.getDistance(enemy.getPosition()) < 2:
-                    self.waitForEnemy = 0
+                    self.waitForEnemyApproach = 0
                     self.hasOwnAction = 0
                     return "~"
 
-            self.waitForEnemy -= 1
-            if not self.waitForEnemy:
+            self.waitForEnemyApproach -= 0.1
+            print(self.waitForEnemyApproach)
+            if  self.waitForEnemyApproach < 0:
                 self.hasOwnAction = 0
-            return "."
+            return ":"
+
 
         for character in self.container.characters:
             if character == self:

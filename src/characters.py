@@ -218,6 +218,7 @@ class Character:
         self.lastJobOrder = ""
         self.huntkilling = False
         self.guarding = 0
+        self.waitForEnemy = 0
 
         # bad code: story specific state
         self.serveQuest = None
@@ -723,6 +724,10 @@ class Character:
         # return room
         return room
 
+    def startWaitForEnemy(self,numTicks):
+        self.waitForEnemy = numTicks
+        self.hasOwnAction += 1
+
     def startGuarding(self,numTicks):
         '''
         put the character into guard mode for som ticks
@@ -748,6 +753,18 @@ class Character:
         command = None
         if not self.container:
             self.hasOwnAction = 0
+            return "."
+
+        if self.waitForEnemy:
+            for enemy in self.getNearbyEnemies():
+                if self.getDistance(enemy.getPosition()) < 2:
+                    self.waitForEnemy = 0
+                    self.hasOwnAction = 0
+                    return "~"
+
+            self.waitForEnemy -= 1
+            if not self.waitForEnemy:
+                self.hasOwnAction = 0
             return "."
 
         for character in self.container.characters:

@@ -56,6 +56,8 @@ Draw a floor plan assigned to a room{reason}.
             return (None,None)
 
         if character.container.alarm:
+            if not dryRun:
+                self.fail("no floor plan")
             return (None,("+","abort quest"))
 
         # actually enter the current room

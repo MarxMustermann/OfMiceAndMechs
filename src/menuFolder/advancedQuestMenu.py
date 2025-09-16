@@ -339,7 +339,6 @@ class AdvancedQuestMenu(src.subMenu.SubMenu):
                         questInstance = self.quest()
 
                     # assign the quest
-
                     self.character.assignQuest(questInstance, active=True)
 
                     self.state = "done"

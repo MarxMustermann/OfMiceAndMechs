@@ -117,6 +117,8 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
                 continue
             if not room.floorPlan:
                 continue
+            if room.alarm:
+                continue
             quest = src.quests.questMap["DrawFloorPlan"](targetPosition=room.getPosition(),tryHard=True)
             return ([quest],None)
 

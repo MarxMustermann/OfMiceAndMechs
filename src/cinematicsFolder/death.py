@@ -86,7 +86,7 @@ def Death(extraParam):
             (width,height) = po
             src.interaction.tcodConsole.rgb[width, height]["fg"] = src.pseudoUrwid.AttrSpec.interpolate(src.interaction.tcodConsole.rgb[width, height]["fg"],(0,0,0), 1 - i / len(p) - 0.01)
             src.interaction.tcodConsole.rgb[width, height]["bg"] = src.pseudoUrwid.AttrSpec.interpolate(src.interaction.tcodConsole.rgb[width, height]["bg"],(0,0,0), 1 - i / len(p) - 0.01)
-        src.interaction.tcodContext.present(src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True)
+        src.interaction.tcodPresent()
         src.helpers.deal_with_window_events()
         time.sleep(0.014)
 
@@ -110,7 +110,7 @@ def Death(extraParam):
     original_window_content = src.interaction.tcodConsole.rgba.copy()
     src.helpers.draw_frame_text(src.interaction.tcodConsole ,width, height, text, x, y)
 
-    src.interaction.tcodContext.present(src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True)
+    src.interaction.tcodPresent()
     while 1:
         events = list(tcod.event.get())
         while events or runStar:
@@ -134,7 +134,7 @@ def Death(extraParam):
                             if target_console[width,height]["ch"] == ord(" "):
                                 src.interaction.tcodConsole.rgb[width, height]["fg"] = src.pseudoUrwid.AttrSpec.interpolate(src.interaction.tcodConsole.rgb[width, height]["fg"],(0,0,0),i/total_frames)
                                 src.interaction.tcodConsole.rgb[width, height]["bg"] = src.pseudoUrwid.AttrSpec.interpolate(src.interaction.tcodConsole.rgb[width, height]["bg"],(0,0,0),i/total_frames)
-                    src.interaction.tcodContext.present(src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True)
+                    src.interaction.tcodPresent()
                     time.sleep(0.04)
                     src.helpers.deal_with_window_events()
                 for i in range(total_frames+1):
@@ -143,7 +143,7 @@ def Death(extraParam):
                             if (width,height) != playerpos:
                                 src.interaction.tcodConsole.rgb[width, height]["fg"] = src.pseudoUrwid.AttrSpec.interpolate(src.interaction.tcodConsole.rgb[width, height]["fg"],(0,0,0),i/total_frames)
                                 src.interaction.tcodConsole.rgb[width, height]["bg"] = src.pseudoUrwid.AttrSpec.interpolate(src.interaction.tcodConsole.rgb[width, height]["bg"],(0,0,0),i/total_frames)
-                    src.interaction.tcodContext.present(src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True)
+                    src.interaction.tcodPresent()
                     time.sleep(0.01)
                     src.helpers.deal_with_window_events()
                 time.sleep(1.0)
@@ -194,7 +194,7 @@ def Death(extraParam):
                     src.gamestate.gamestate.save()
                     return
             src.helpers.deal_with_window_events()
-            src.interaction.tcodContext.present(src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True)
+            src.interaction.tcodPresent()
 
 
 def show_Stats(original_window_content, character):
@@ -233,4 +233,4 @@ def show_Stats(original_window_content, character):
                 return
 
             src.helpers.deal_with_window_events()
-            src.interaction.tcodContext.present(src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True)
+            src.interaction.tcodPresent()

@@ -157,9 +157,7 @@ def deal_with_window_events(exception=None):
                 case "WindowHidden":
                     pass
                 case _:
-                    src.interaction.tcodContext.present(
-                        src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True
-                    )
+                    src.interaction.tcodPresent()
 
 
 def power_distribution(low: int | float, high: int | float, power=2.0) -> float:

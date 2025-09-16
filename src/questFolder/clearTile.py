@@ -217,5 +217,10 @@ Remove all items from the walkways that are not bolted down."""
 
         return foundItems
 
+    def getRequiredParameters(self):
+        parameters = super().getRequiredParameters()
+        parameters.append({"name":"targetPosition","type":"coordinate"})
+        return parameters
+
 # register quest type
 src.quests.addType(ClearTile)

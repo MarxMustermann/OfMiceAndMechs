@@ -257,4 +257,9 @@ Remove all items that are not bolted down."""
             return
         self.fail(extraInfo["reason"])
 
+    def getRequiredParameters(self):
+        parameters = super().getRequiredParameters()
+        parameters.append({"name":"targetPosition","type":"coordinate"})
+        return parameters
+
 src.quests.addType(LootRoom)

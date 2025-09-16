@@ -114,6 +114,8 @@ class AdvancedQuestMenu(src.subMenu.SubMenu):
                     """
                     options.append(("GoHome", "GoHome"))
                     options.append(("Adventure", "Adventure"))
+                    options.append(("ClearTile", "ClearTile"))
+                    options.append(("LootRoom", "LootRoom"))
                     options.append(("ScavengeTile", "ScavengeTile"))
                     options.append(("SecureTile", "SecureTile"))
                     options.append(("ClearInventory", "ClearInventory"))

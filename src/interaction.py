@@ -5067,7 +5067,11 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 if canLoad:
                     src.gamestate.gamestate = src.gamestate.gamestate.loadP(gameIndex)
                     setUpNoUrwid()
-                    src.gamestate.gamestate.mainChar.runCommandString("~")
+
+                    if tcod.event.get_modifier_state() & tcod.event.Modifier.CAPS:
+                        src.gamestate.gamestate.mainChar.showTextMenu("warning: caps lock is enabled\nIt is recommended to play without capslock")
+                    else:
+                        src.gamestate.gamestate.mainChar.runCommandString("~")
                 else:
                     seed = 0
                     src.gamestate.setup(gameIndex)
@@ -5169,7 +5173,10 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 )
                 terrain = src.gamestate.gamestate.terrainMap[7][7]
 
-                src.gamestate.gamestate.mainChar.runCommandString("~")
+                if tcod.event.get_modifier_state() & tcod.event.Modifier.CAPS:
+                    src.gamestate.gamestate.mainChar.showTextMenu("warning: caps lock is enabled\nIt is recommended to play without capslock")
+                else:
+                    src.gamestate.gamestate.mainChar.runCommandString("~")
 
                 global lastTerrain
                 lastTerrain = terrain

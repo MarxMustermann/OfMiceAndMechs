@@ -5858,10 +5858,9 @@ You """+"."*stageState["substep"]+"""
 
 
 """
-                #printUrwidToTcod(text, (64 + c_offset - int(len(text) / 2), 24))
-                #printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "), (63 + c_offset, 27))
-                #tcodPresent()
-                return
+                printUrwidToTcod(text, (64 + c_offset - int(len(text) / 2), 24))
+                printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "), (63 + c_offset, 27))
+                tcodPresent()
 
             if time.time()-stageState["lastChange"] > 1 or skip:
                 stageState["substep"] += 1

@@ -4642,7 +4642,14 @@ def renderGameDisplay(renderChar=None):
 
                             autoIndicator = ActionMeta(content=(urwid.AttrSpec("#f00", "default"),"*"),payload=test)
                             """
-                        indicators = [ActionMeta(content="x",payload="x~")," ",ActionMeta(content="q",payload="q~")," ",ActionMeta(content="v",payload="v~")," ",autoIndicator," ",ActionMeta(content="t",payload="t~")]
+                        cap_activated = (
+                            src.pseudoUrwid.AttrSpec((255, 68, 51), (0, 0, 0))
+                            if tcod.event.get_modifier_state() & tcod.event.Modifier.CAPS
+                            else src.pseudoUrwid.AttrSpec((0, 0, 0), (0, 0, 0))
+                        )
+
+                        cap = (cap_activated,"CAPS")
+                        indicators = [ActionMeta(content="x",payload="x~")," ",ActionMeta(content="q",payload="q~")," ",ActionMeta(content="v",payload="v~")," ",autoIndicator," ",ActionMeta(content="t",payload="t~")," ", cap]
 
                         x = max(uiElement["offset"][0]+uiElement["width"]//2-len(indicators)//2,0)
                         y = uiElement["offset"][1]
@@ -5060,7 +5067,11 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 if canLoad:
                     src.gamestate.gamestate = src.gamestate.gamestate.loadP(gameIndex)
                     setUpNoUrwid()
-                    src.gamestate.gamestate.mainChar.runCommandString("~")
+
+                    if tcod.event.get_modifier_state() & tcod.event.Modifier.CAPS:
+                        src.gamestate.gamestate.mainChar.showTextMenu("warning: caps lock is enabled\nIt is recommended to play without capslock")
+                    else:
+                        src.gamestate.gamestate.mainChar.runCommandString("~")
                 else:
                     seed = 0
                     src.gamestate.setup(gameIndex)
@@ -5162,7 +5173,10 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 )
                 terrain = src.gamestate.gamestate.terrainMap[7][7]
 
-                src.gamestate.gamestate.mainChar.runCommandString("~")
+                if tcod.event.get_modifier_state() & tcod.event.Modifier.CAPS:
+                    src.gamestate.gamestate.mainChar.showTextMenu("warning: caps lock is enabled\nIt is recommended to play without capslock")
+                else:
+                    src.gamestate.gamestate.mainChar.runCommandString("~")
 
                 global lastTerrain
                 lastTerrain = terrain

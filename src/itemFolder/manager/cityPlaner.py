@@ -85,6 +85,8 @@ class CityPlaner(src.items.Item):
 
         result = []
         for room in terrain.rooms:
+            if room.tag:
+                continue
             if len(room.itemsOnFloor) > 13+13+11+11 or room.floorPlan or room.storageSlots or len(room.walkingSpace) > 4 or room.inputSlots or room.buildSites:
                 continue
 

@@ -102,8 +102,8 @@ Press JH to auto heal.
 
         if not self.noWaitHeal:
             if character.container.isRoom and character.container.tag == "temple":
-                regenerator = character.container.getItemsByType("Regenerator",needsBolted=True)[0]
-                if regenerator.mana_charges:
+                regenerator = character.container.getItemByType("Regenerator",needsBolted=True)
+                if regenerator and regenerator.mana_charges:
                     direction = None
                     if character.getPosition(offset=(1,0,0)) == regenerator.getPosition():
                         direction = "d"

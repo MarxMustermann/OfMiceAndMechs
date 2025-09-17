@@ -102,7 +102,28 @@ Press JH to auto heal.
 
         if not self.noWaitHeal:
             if character.container.isRoom and character.container.tag == "temple":
-                return (None,("..........","wait to heal"))
+                regenerator = character.container.getItemsByType("Regenerator",needsBolted=True)[0]
+                if regenerator.mana_charges:
+                    direction = None
+                    if character.getPosition(offset=(1,0,0)) == regenerator.getPosition():
+                        direction = "d"
+                    if character.getPosition(offset=(-1,0,0)) == regenerator.getPosition():
+                        direction = "a"
+                    if character.getPosition(offset=(0,1,0)) == regenerator.getPosition():
+                        direction = "s"
+                    if character.getPosition(offset=(0,-1,0)) == regenerator.getPosition():
+                        direction = "w"
+
+                    if direction:
+                        interactionCommand = "J"
+                        if "advancedInteraction" in character.interactionState:
+                            interactionCommand = ""
+                        return (None,(interactionCommand+direction,"activate the regenerator"))
+                    else:
+                        quest = src.quests.questMap["GoToPosition"](targetPosition=regenerator.getPosition(),ignoreEndBlocked=True)
+                        return ([quest],None)
+                else:
+                    return (None,("..........","wait to heal"))
 
             for room in rooms:
                 if room.tag == "temple":

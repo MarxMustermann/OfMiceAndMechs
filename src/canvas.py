@@ -428,7 +428,7 @@ class Canvas:
                 if isinstance(char, src.interaction.CharacterMeta):
                     character = char.character
 
-                    if character.health != character.adjustedMaxHealth:
+                    if character.health != character.adjustedMaxHealth and not src.gamestate.gamestate.mainChar.specialRender:
                         basePos = (x*src.interaction.tileWidth*2,y*src.interaction.tileHeight)
                         src.interaction.sdl_cache.append(("rect",(basePos[0],basePos[1]+2,src.interaction.tileWidth*2,5),(255,255,255,255)))
                         barwidth = int((src.interaction.tileWidth*2-2)*(character.health/character.adjustedMaxHealth))

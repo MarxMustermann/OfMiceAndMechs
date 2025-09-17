@@ -1050,7 +1050,12 @@ class Room:
                                 bgColor = "#f55"
                             
                         if isinstance(char,tuple):
-                            display = (src.interaction.urwid.AttrSpec(char[0].fg, bgColor), char[1])
+                            fgColor = "#fff"
+                            try:
+                                fgColor = char[0].fg
+                            except:
+                                fgColor = char[0].foreground
+                            display = (src.interaction.urwid.AttrSpec(fgColor, bgColor), char[1])
                         else:
                             fgColor = "#fff"
                             display = (src.interaction.urwid.AttrSpec(fgColor, bgColor), char)

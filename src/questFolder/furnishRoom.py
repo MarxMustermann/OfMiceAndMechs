@@ -103,8 +103,13 @@ the buildsites indicate what needs to be built.
 
         # place items on buildsites
         checkedMaterial = set()
+        numCheckedMaterial = {}
         room = character.container
         for buildSite in room.buildSites:
+
+            if buildSite[1] not in numCheckedMaterial:
+                numCheckedMaterial[buildSite[1]] = 0
+            numCheckedMaterial[buildSite[1]] += 1
 
             # test each itemType only once
             if buildSite[1] in checkedMaterial:
@@ -163,7 +168,7 @@ the buildsites indicate what needs to be built.
 
             # place sheet for setting up command (ugly!)
             if buildSite[1] != "Command":
-                quest = src.quests.questMap["PlaceItem"](itemType=buildSite[1],targetPositionBig=room.getPosition(),targetPosition=buildSite[0],boltDown=True)
+                quest = src.quests.questMap["PlaceItem"](itemType=buildSite[1],targetPositionBig=room.getPosition(),targetPosition=buildSite[0],boltDown=True,tryHard=self.tryHard)
                 return ([quest],None)
 
             # place the actual command
@@ -203,8 +208,11 @@ the buildsites indicate what needs to be built.
         for material in checkedMaterial:
             if material == "Command":
                 material = "Sheet"
-
-            quest = src.quests.questMap["MetalWorking"](toProduce=material, amount=1, produceToInventory=True,tryHard=True)
+            
+            amount = numCheckedMaterial[material]
+            if amount > 10:
+                amount = 10
+            quest = src.quests.questMap["MetalWorking"](toProduce=material, amount=amount, produceToInventory=True,tryHard=True)
             return ([quest],None)
 
         # fail on weird state

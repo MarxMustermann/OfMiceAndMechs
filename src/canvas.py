@@ -429,13 +429,21 @@ class Canvas:
                     character = char.character
 
                     if character.health != character.adjustedMaxHealth and not src.gamestate.gamestate.mainChar.specialRender:
-                        verticalOffsetPercentage = (src.interaction.tileWidth/13)
-                        horizontalOffsetPercentage = (src.interaction.tileHeight/26)
                         basePos = (x*src.interaction.tileWidth*2,y*src.interaction.tileHeight)
-                        src.interaction.sdl_cache.append(("rect",(basePos[0],basePos[1]+2*horizontalOffsetPercentage,src.interaction.tileWidth*2,5*horizontalOffsetPercentage),(255,255,255,255)))
-                        barwidth = int((src.interaction.tileWidth*2-2*verticalOffsetPercentage)*(character.health/character.adjustedMaxHealth))
-                        src.interaction.sdl_cache.append(("rect",(basePos[0]+1*verticalOffsetPercentage,basePos[1]+3*horizontalOffsetPercentage,(src.interaction.tileWidth*2-2),3),(0,0,0,255)))
-                        src.interaction.sdl_cache.append(("rect",(basePos[0]+1*verticalOffsetPercentage,basePos[1]+3*horizontalOffsetPercentage,barwidth,3*horizontalOffsetPercentage),(255,0,0,255)))
+                        barHeight = src.interaction.tileHeight//8
+                        if barHeight:
+                            offsetTop = src.interaction.tileHeight//8
+                            basePos = (basePos[0],basePos[1]+offsetTop)
+
+                            # draw background
+                            borderWidth = 1
+                            if src.interaction.tileHeight < 20:
+                                borderWidth = 0
+                            src.interaction.sdl_cache.append(("rect",(basePos[0]            , basePos[1]            , src.interaction.tileWidth*2                ,barHeight+2*borderWidth),(255,255,255,255)))
+                            src.interaction.sdl_cache.append(("rect",(basePos[0]+borderWidth, basePos[1]+borderWidth, src.interaction.tileWidth*2-2*borderWidth  ,barHeight              ),(0,0,0,255)))
+
+                            barwidth = int((src.interaction.tileWidth*2-borderWidth*2)*(character.health/character.adjustedMaxHealth))
+                            src.interaction.sdl_cache.append(("rect",(basePos[0]+borderWidth, basePos[1]+borderWidth, barwidth                                   ,barHeight              ),(255,0,0,255)))
 
                     char = char.content
 

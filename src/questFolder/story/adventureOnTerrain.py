@@ -109,7 +109,7 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
             if character.container.isRoom and (item_pos[0] > 11 or item_pos[1] > 11 or item_pos[0] < 1 or item_pos[1] < 1):
                 continue
 
-            if item.type in ("Scrap","MetalBars"):
+            if item.type in ("Scrap","MetalBars","MoldFeed"):
                 continue
 
             invalidStack = False

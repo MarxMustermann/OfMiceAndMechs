@@ -16,6 +16,11 @@ class IncreaseHealthRegen(src.statusEffects.HealthRegenBuff):
 
     def getLoreDescription(self):
         text = ""
+        text += f"You feel you are recovering better than usual, for a time."
+        return text
+
+    def getLoreDescription(self):
+        text = ""
         text += f"you feel fresh and heal better"
         return text
 

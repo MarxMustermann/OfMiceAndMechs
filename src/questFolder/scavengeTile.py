@@ -100,8 +100,6 @@ This quest will end when the target tile has no items left."""
         items = items[:]
         random.shuffle(items)
         for item in items:
-            #if item.type == "Scrap":
-            #    continue
             if self.toCollect and item.type != self.toCollect:
                 continue
             if item.bolted:

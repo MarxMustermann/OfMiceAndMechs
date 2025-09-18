@@ -92,6 +92,8 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
                 activationCommand = "j"
             else:
                 activationCommand = "k"
+            if self.amount-self.amountDone > 1:
+                activationCommand = activationCommand.upper()
             offset = index-submenue.selectionIndex
             command = ""
             if offset > 0:

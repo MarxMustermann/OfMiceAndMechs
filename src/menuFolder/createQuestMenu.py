@@ -56,7 +56,7 @@ class CreateQuestMenu(src.subMenu.SubMenu):
             self.stealAllKeys = True
             return False
 
-        if not self.requiredParams and key == " ":
+        if not self.requiredParams and key in (" ","enter",):
             for char in self.assignTo:
                 if char is None or char.dead:
                     continue
@@ -75,6 +75,8 @@ class CreateQuestMenu(src.subMenu.SubMenu):
                     foundQuest.addQuest(quest)
                 quest.activate()
                 quest.assignToCharacter(char)
+                if key == "enter":
+                    quest.autoSolve = True
                 if char == self.activeChar:
                     quest.selfAssigned = True
                 char.showGotCommand = True
@@ -117,5 +119,5 @@ class CreateQuestMenu(src.subMenu.SubMenu):
         if not noRender:
             src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\ncreate Quest\n"))
             # show rendered text via urwid
-            src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), "type: {}\n\nparameters: \n\n{}\n\ncurrent parameter: \n\n{} : {}\n\noptional parameters: \n\n{}\n\npress space to confirm".format(self.questType,self.questParams,self.parameterName,self.parameterValue,self.optionalParams)))
+            src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), "type: {}\n\nparameters: \n\n{}\n\ncurrent parameter: \n\n{} : {}\n\noptional parameters: \n\n{}\n\npress space to confirm^".format(self.questType,self.questParams,self.parameterName,self.parameterValue,self.optionalParams)))
         return False

@@ -277,8 +277,9 @@ Press d to move the cursor and show the subquests description.
         rooms = terrain.rooms
         cityPlaner = None
         for room in rooms:
-            cityPlaner = room.getItemByType("CityPlaner")
-            if cityPlaner:
+            checkCityPlaner = room.getItemByType("CityPlaner")
+            if checkCityPlaner:
+                cityPlaner = checkCityPlaner
                 for candidate in cityPlaner.plannedRooms:
                     items = terrain.itemsByCoordinate.get((candidate[0]*15+7,candidate[1]*15+7,0))
                     if items and items[-1].type == "RoomBuilder":
@@ -297,6 +298,7 @@ Press d to move the cursor and show the subquests description.
                         beUsefull.idleCounter = 0
                     return ([quest],None)
         if not cityPlaner:
+            1/0
             return (None,None)
 
         if not cityPlaner or cityPlaner.autoExtensionThreashold > 0:

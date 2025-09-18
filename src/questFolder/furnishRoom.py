@@ -23,6 +23,7 @@ class FurnishRoom(src.quests.MetaQuestSequence):
         self.targetPositionBig = targetPositionBig
         self.reason = reason
         self.type = "FurnishRoom"
+        self.tryHard = tryHard
 
     def generateTextDescription(self):
         '''

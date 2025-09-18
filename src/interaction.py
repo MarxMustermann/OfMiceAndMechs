@@ -7440,7 +7440,12 @@ def advanceChar(char,render=True, pull_events = True, singleStep=False):
                     skipedRenders = 0
                     renderGameDisplay()
                 """
-                if src.gamestate.gamestate.tick%1 == 0:
+                automated = False
+                for quest in char.getActiveQuests():
+                    if not quest.autoSolve:
+                        continue
+                    automated = True
+                if not automated or src.gamestate.gamestate.tick%5 == 0:
                     renderGameDisplay()
             lastRender = time.time()
             rerender = False

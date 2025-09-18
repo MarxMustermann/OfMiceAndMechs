@@ -173,7 +173,7 @@ Press d to move the cursor and show the subquests description.
             rooms = terrain.getRoomByPosition(self.targetPositionBig)
             if rooms:
                 container = rooms[0]
-                if container.alarm:
+                if container.alarm and not self.tryHard:
                     if not dryRun:
                         self.fail("alarm")
                     return (None,None)

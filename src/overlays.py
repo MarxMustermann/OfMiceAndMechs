@@ -330,6 +330,9 @@ class NPCsOverlay:
                     chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].bg = "#855"
                     character.showGaveCommand = False
 
+            display = chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]]
+            chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = src.interaction.CharacterMeta(content=display,character=character)
+
 class MainCharOverlay:
     """
     overly showing the main character
@@ -348,4 +351,5 @@ class MainCharOverlay:
                   mainChar.xPosition < coordinateOffset[1] or mainChar.xPosition > coordinateOffset[1]+size[1] or
                   mainChar.yPosition < coordinateOffset[0] or mainChar.yPosition > coordinateOffset[0]+size[0]):
 
-            chars[mainChar.yPosition-coordinateOffset[0]][mainChar.xPosition-coordinateOffset[1]] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
+            display = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
+            chars[mainChar.yPosition-coordinateOffset[0]][mainChar.xPosition-coordinateOffset[1]] = src.interaction.CharacterMeta(content=display,character=mainChar)

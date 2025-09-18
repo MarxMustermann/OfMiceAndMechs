@@ -873,7 +873,7 @@ class Terrain:
                     char.addMessage(f"you moved from terrain {pos[0]}/{pos[1]} to terrain {pos[0]}/{pos[1]-1}")
 
                     self.removeCharacter(char)
-                    newTerrain.addCharacter(char,char.xPosition,15*15-2)
+                    newTerrain.addCharacter(char,char.xPosition,14*15)
                     char.changed("changedTerrain",{"character":char})
 
                     if char == src.gamestate.gamestate.mainChar:
@@ -898,7 +898,7 @@ class Terrain:
                     char.addMessage(f"you moved from terrain {pos[0]}/{pos[1]} to terrain {pos[0]}/{pos[1]+1}")
 
                     self.removeCharacter(char)
-                    newTerrain.addCharacter(char,char.xPosition,2)
+                    newTerrain.addCharacter(char,char.xPosition,15)
                     char.changed("changedTerrain",{"character":char})
 
                     if char == src.gamestate.gamestate.mainChar:
@@ -923,7 +923,7 @@ class Terrain:
                     char.addMessage(f"you moved from terrain {pos[0]}/{pos[1]} to terrain {pos[0]-1}/{pos[1]}")
 
                     self.removeCharacter(char)
-                    newTerrain.addCharacter(char,15*15-2,char.yPosition)
+                    newTerrain.addCharacter(char,14*15,char.yPosition)
                     char.changed("changedTerrain",{"character":char})
 
                     if char == src.gamestate.gamestate.mainChar:
@@ -948,7 +948,7 @@ class Terrain:
                     char.addMessage(f"you moved from terrain {pos[0]}/{pos[1]} to terrain {pos[0]+1}/{pos[1]}")
 
                     self.removeCharacter(char)
-                    newTerrain.addCharacter(char,2,char.yPosition)
+                    newTerrain.addCharacter(char,15,char.yPosition)
                     char.changed("changedTerrain",{"character":char})
 
                     if char == src.gamestate.gamestate.mainChar:
@@ -1984,6 +1984,9 @@ class Terrain:
                     if isinstance(display,src.interaction.ActionMeta):
                         actionMeta = display
                         display = display.content
+                    if isinstance(display,src.interaction.CharacterMeta):
+                        actionMeta = display
+                        display = display.content
 
                     if isinstance(display,int):
                         display = src.canvas.displayChars.indexedMapping[display]
@@ -2031,6 +2034,11 @@ class Terrain:
                     display = ".x"
                 else:
                     display = ".."
+
+                oldDisplay = chars[pos[1]][pos[0]]
+                if isinstance(oldDisplay,src.interaction.CharacterMeta):
+                    oldDisplay.content = display
+                    display = oldDisplay
                 chars[pos[1]][pos[0]] = display
 
                 if duration > 10:
@@ -2043,6 +2051,11 @@ class Terrain:
                     display = (src.interaction.urwid.AttrSpec("#fff","#f00"),display)
                 if animationType == "shielded":
                     display = (src.interaction.urwid.AttrSpec("#fff","#555"),display)
+
+                oldDisplay = chars[pos[1]][pos[0]]
+                if isinstance(oldDisplay,src.interaction.CharacterMeta):
+                    oldDisplay.content = display
+                    display = oldDisplay
                 chars[pos[1]][pos[0]] = display
 
                 if duration > 10:
@@ -2453,36 +2466,28 @@ class Terrain:
 
         if room.xPosition < 0:
             src.gamestate.gamestate.mainChar.addMessage("switch to")
-            terrain = src.gamestate.gamestate.terrainMap[self.yPosition][
-                self.xPosition - 1
-            ]
+            terrain = src.gamestate.gamestate.terrainMap[self.yPosition][self.xPosition-1]
             room.terrain = terrain
             self.removeRoom(room)
             terrain.addRoom(room)
             room.xPosition = 15
         if room.yPosition < 0:
             src.gamestate.gamestate.mainChar.addMessage("switch to")
-            terrain = src.gamestate.gamestate.terrainMap[self.yPosition - 1][
-                self.xPosition
-            ]
+            terrain = src.gamestate.gamestate.terrainMap[self.yPosition-1][self.xPosition]
             room.terrain = terrain
             self.removeRoom(room)
             terrain.addRoom(room)
             room.yPosition = 15
         if room.xPosition > 15:
             src.gamestate.gamestate.mainChar.addMessage("switch to")
-            terrain = src.gamestate.gamestate.terrainMap[self.yPosition][
-                self.xPosition + 1
-            ]
+            terrain = src.gamestate.gamestate.terrainMap[self.yPosition][self.xPosition + 1]
             room.terrain = terrain
             self.removeRoom(room)
             terrain.addRoom(room)
             room.xPosition = 0
         if room.yPosition > 15:
             src.gamestate.gamestate.mainChar.addMessage("switch to")
-            terrain = src.gamestate.gamestate.terrainMap[self.yPosition + 1][
-                self.xPosition
-            ]
+            terrain = src.gamestate.gamestate.terrainMap[self.yPosition + 1][self.xPosition]
             room.terrain = terrain
             self.removeRoom(room)
             terrain.addRoom(room)

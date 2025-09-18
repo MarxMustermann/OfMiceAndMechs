@@ -1332,6 +1332,11 @@ class Room:
                     else:
                         display = ".."
 
+                    oldDisplay = chars[pos[1]][pos[0]]
+                    if isinstance(oldDisplay,src.interaction.CharacterMeta):
+                        oldDisplay.content = display
+                        display = oldDisplay
+
                     try:
                         chars[pos[1]][pos[0]] = display
                     except:
@@ -1349,6 +1354,10 @@ class Room:
                     if animationType == "shielded":
                         display = (src.interaction.urwid.AttrSpec("#fff","#555"),display)
 
+                    oldDisplay = chars[pos[1]][pos[0]]
+                    if isinstance(oldDisplay,src.interaction.CharacterMeta):
+                        oldDisplay.content = display
+                        display = oldDisplay
                     try:
                         chars[pos[1]][pos[0]] = display
                     except:

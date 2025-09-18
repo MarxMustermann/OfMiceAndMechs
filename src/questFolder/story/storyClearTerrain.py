@@ -13,7 +13,6 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
         self.metaDescription = description
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
-
         if self.subQuests:
             return (None,None)
 
@@ -31,7 +30,7 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
                 for item in character.container.itemsByBigCoordinate.get(character.getBigPosition(),[]):
                     if item.bolted:
                         continue
-                    if item.type in ("Wall","Scrap",):
+                    if item.type in ("Wall","Scrap","MoldFeed"):
                         continue
                     quest = src.quests.questMap["LootRoom"](targetPosition=character.getBigPosition())
                     return ([quest],None)

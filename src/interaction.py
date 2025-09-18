@@ -4643,14 +4643,12 @@ def renderGameDisplay(renderChar=None):
 
                             autoIndicator = ActionMeta(content=(urwid.AttrSpec("#f00", "default"),"*"),payload=test)
                             """
-                        cap_activated = (
-                            src.pseudoUrwid.AttrSpec((255, 68, 51), (0, 0, 0))
-                            if tcod.event.get_modifier_state() & tcod.event.Modifier.CAPS
-                            else src.pseudoUrwid.AttrSpec((0, 0, 0), (0, 0, 0))
-                        )
 
-                        cap = (cap_activated,"CAPS")
-                        indicators = [ActionMeta(content="x",payload="x~")," ",ActionMeta(content="q",payload="q~")," ",ActionMeta(content="v",payload="v~")," ",autoIndicator," ",ActionMeta(content="t",payload="t~")," ", cap]
+                        indicators = [ActionMeta(content="x",payload="x~")," ",ActionMeta(content="q",payload="q~")," ",ActionMeta(content="v",payload="v~")," ",autoIndicator," ",ActionMeta(content="t",payload="t~")]
+                        if tcod.event.get_modifier_state() & tcod.event.Modifier.CAPS:
+                            cap_warning = (src.pseudoUrwid.AttrSpec((255, 68, 51), (0, 0, 0)),"CAPS")
+                            indicators.append(" ")
+                            indicators.append(cap_warning)
 
                         x = max(uiElement["offset"][0]+uiElement["width"]//2-len(indicators)//2,0)
                         y = uiElement["offset"][1]

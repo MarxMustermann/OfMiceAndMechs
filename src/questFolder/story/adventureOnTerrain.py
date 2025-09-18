@@ -122,12 +122,8 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
             if invalidStack:
                 continue
 
-            if character.container.isRoom:
-                quest = src.quests.questMap["LootRoom"](targetPosition=character.getBigPosition(),endWhenFull=True)
-                return ([quest],None)
-            else:
-                quest = src.quests.questMap["ScavengeTile"](targetPosition=character.getBigPosition())
-                return ([quest],None)
+            quest = src.quests.questMap["LootRoom"](targetPosition=character.getBigPosition(),endWhenFull=True)
+            return ([quest],None)
 
         if not dryRun:
             self.donePointsOfInterest.append(character.getBigPosition())

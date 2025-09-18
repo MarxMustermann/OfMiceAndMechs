@@ -130,8 +130,6 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
                 continue
             if not room.buildSites:
                 continue
-            if room.alarm:
-                continue
             quest = src.quests.questMap["FurnishRoom"](targetPositionBig=room.getPosition(),tryHard=True)
             return ([quest],None)
 

@@ -177,13 +177,17 @@ Press d to move the cursor and show the subquests description.
                 return ([quest],None)
             if not character.inventory or character.inventory[-1].type != "Wall":
 
-                for room in character.getTerrain().rooms:
-                    if room.getNonEmptyOutputslots("Wall"):
-                        continue
-
-                    if not dryRun:
-                        self.fail("no source for item type Wall")
-                    return (None,("+","abort quest"))
+                if not self.tryHard:
+                    hasWallSource = False
+                    for room in character.getTerrain().rooms:
+                        if not room.getNonEmptyOutputslots("Wall"):
+                            continue
+                        hasWallSource = True
+                    
+                    if not hasWallSource:
+                        if not dryRun:
+                            self.fail("no source for item type Wall")
+                        return (None,("+","abort quest"))
 
                 amount = min(5,len(missingWallPositions),character.getFreeInventorySpace()-1)
                 quest = src.quests.questMap["FetchItems"](toCollect="Wall",takeAnyUnbolted=self.takeAnyUnbolted,tryHard=self.tryHard,amount=amount,reason="have walls for the rooms outline")

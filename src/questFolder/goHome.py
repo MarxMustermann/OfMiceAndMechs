@@ -121,6 +121,10 @@ Press control-d to stop your character from moving.
             return (None,None)
 
         if not character.container.isRoom:
+            submenue = character.macroState["submenue"]
+            if submenue:
+                return (None,(["esc"],"close menu"))
+
             pos = character.getSpacePosition()
             if pos == (14,7,0):
                 return (None,("a","enter room"))

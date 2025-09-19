@@ -340,6 +340,38 @@ You are rank {character.rank} now.
         character.addMessage(f"you were promoted to rank {character.rank}")
         character.changed("got promotion",{})
 
+        rewardType = extraInfo.get("rewardType")
+        del extraInfo["rewardType"]
+        specialMomenemtText = """
+You got a special movement perk. 
+
+You can du special movements by pressing shift when walking.
+Bumping into enemies will not do a special movement!
+
+For example d will move you to the east normally and 
+pressing D will do a special movement towards the east.
+
+"""
+        if rewardType == "endurance run":
+            text = specialMomenemtText + """
+You chose endurance run as special movement.
+
+This means you can move a bit faster but for a relatively long time.
+
+Each step you take will be 20% faster, but will cost you 1 exhaustion.
+You cannot run, if you have 10 or more exhaustion.
+"""
+            submenu = src.menuFolder.textMenu.TextMenu(text)
+
+            character.macroState["submenue"] = submenu
+            submenu.followUp = {
+                "container": self,
+                "method": "do_promotions",
+                "params": extraInfo,
+            }
+            character.runCommandString("~",nativeKey=True)
+            return
+    
         self.do_promotions(extraInfo)
 
 # register item type

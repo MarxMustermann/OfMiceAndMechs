@@ -1172,7 +1172,7 @@ def doAdvancedInteraction(params):
                     item.apply(character)
                     break
 
-                while item.uses and character.health < character.maxHealth:
+                while item.uses and character.health < character.adjustedMaxHealth:
                     item.apply(character)
     del char.interactionState["advancedInteraction"]
 

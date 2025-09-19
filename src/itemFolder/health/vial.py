@@ -41,7 +41,7 @@ class Vial(src.items.Item):
         character.takeTime(1,"drank from vial")
         self.uses -= 1
         self.changed()
-        character.heal(10+min((character.maxHealth-character.health)//10,10))
+        character.heal(10+min((character.adjustedMaxHealth-character.health)//10,10))
         character.changed()
 
     def render(self):

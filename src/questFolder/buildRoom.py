@@ -347,6 +347,7 @@ Press d to move the cursor and show the subquests description.
             for candidate in baseNeighbours:
                 if (candidate not in terrain.scrapFields) and (candidate not in terrain.forests):
                     possibleBuildSites.append(candidate)
+            random.shuffle(possibleBuildSites)
 
             for candidate in possibleBuildSites:
                 items = terrain.itemsByCoordinate.get((candidate[0]*15+7,candidate[1]*15+7,0))

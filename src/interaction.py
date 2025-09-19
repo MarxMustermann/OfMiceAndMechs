@@ -5501,34 +5501,34 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                             submenu.pop()
                         if key == tcod.event.KeySym.F11:
                             sdl_window.fullscreen = not sdl_window.fullscreen
-                        if key == tcod.event.KeySym.N0:
+                        if key in (tcod.event.KeySym.N0, tcod.event.KeySym.KP_0):
                             gameIndex = 0
                             submenu.pop()
-                        if key == tcod.event.KeySym.N1:
+                        if key in (tcod.event.KeySym.N1, tcod.event.KeySym.KP_1):
                             gameIndex = 1
                             submenu.pop()
-                        if key == tcod.event.KeySym.N2:
+                        if key in (tcod.event.KeySym.N2, tcod.event.KeySym.KP_2):
                             gameIndex = 2
                             submenu.pop()
-                        if key == tcod.event.KeySym.N3:
+                        if key in (tcod.event.KeySym.N3, tcod.event.KeySym.KP_3):
                             gameIndex = 3
                             submenu.pop()
-                        if key == tcod.event.KeySym.N4:
+                        if key in (tcod.event.KeySym.N4, tcod.event.KeySym.KP_4):
                             gameIndex = 4
                             submenu.pop()
-                        if key == tcod.event.KeySym.N5:
+                        if key in (tcod.event.KeySym.N5, tcod.event.KeySym.KP_5):
                             gameIndex = 5
                             submenu.pop()
-                        if key == tcod.event.KeySym.N6:
+                        if key in (tcod.event.KeySym.N6, tcod.event.KeySym.KP_6):
                             gameIndex = 6
                             submenu.pop()
-                        if key == tcod.event.KeySym.N7:
+                        if key in (tcod.event.KeySym.N7, tcod.event.KeySym.KP_7):
                             gameIndex = 7
                             submenu.pop()
-                        if key == tcod.event.KeySym.N8:
+                        if key in (tcod.event.KeySym.N8, tcod.event.KeySym.KP_8):
                             gameIndex = 8
                             submenu.pop()
-                        if key == tcod.event.KeySym.N9:
+                        if key in (tcod.event.KeySym.N9, tcod.event.KeySym.KP_9):
                             gameIndex = 9
                             submenu.pop()
 

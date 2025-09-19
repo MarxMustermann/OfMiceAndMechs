@@ -162,25 +162,25 @@ def getTcodEvents():
                         translatedKey = "ESC"
                     else:
                         translatedKey = "esc"
-                if key == tcod.event.KeySym.N1:
+                if key in (tcod.event.KeySym.N1, tcod.event.KeySym.KP_1):
                     translatedKey = "1"
-                if key == tcod.event.KeySym.N2:
+                if key in (tcod.event.KeySym.N2, tcod.event.KeySym.KP_2):
                     translatedKey = "2"
-                if key == tcod.event.KeySym.N3:
+                if key in (tcod.event.KeySym.N3, tcod.event.KeySym.KP_3):
                     translatedKey = "3"
-                if key == tcod.event.KeySym.N4:
+                if key in (tcod.event.KeySym.N4, tcod.event.KeySym.KP_4):
                     translatedKey = "4"
-                if key == tcod.event.KeySym.N5:
+                if key in (tcod.event.KeySym.N5, tcod.event.KeySym.KP_5):
                     translatedKey = "5"
-                if key == tcod.event.KeySym.N6:
+                if key in (tcod.event.KeySym.N6, tcod.event.KeySym.KP_6):
                     translatedKey = "6"
-                if key == tcod.event.KeySym.N7:
+                if key in (tcod.event.KeySym.N7, tcod.event.KeySym.KP_7):
                     translatedKey = "7"
-                if key == tcod.event.KeySym.N8:
+                if key in (tcod.event.KeySym.N8, tcod.event.KeySym.KP_8):
                     translatedKey = "8"
-                if key == tcod.event.KeySym.N9:
+                if key in (tcod.event.KeySym.N9, tcod.event.KeySym.KP_9):
                     translatedKey = "9"
-                if key == tcod.event.KeySym.N0:
+                if key in (tcod.event.KeySym.N0, tcod.event.KeySym.KP_0):
                     translatedKey = "0"
                 if key == tcod.event.KeySym.COMMA:
                     if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):

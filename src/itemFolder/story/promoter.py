@@ -352,8 +352,19 @@ For example d will move you to the east normally and
 pressing D will do a special movement towards the east.
 
 """
+        rewardText = None
+        if rewardType == "jump":
+            rewardText = specialMomenemtText + """
+You chose jump as special movement.
+
+This means you can move a fast a few times.
+
+You will move 50% faster, but each jump will cost you 5 exhaustion.
+You cannot jump, if you have 10 or more exhaustion.
+"""
+
         if rewardType == "endurance run":
-            text = specialMomenemtText + """
+            rewardText = specialMomenemtText + """
 You chose endurance run as special movement.
 
 This means you can move a bit faster but for a relatively long time.
@@ -361,7 +372,9 @@ This means you can move a bit faster but for a relatively long time.
 Each step you take will be 20% faster, but will cost you 1 exhaustion.
 You cannot run, if you have 10 or more exhaustion.
 """
-            submenu = src.menuFolder.textMenu.TextMenu(text)
+
+        if rewardText:
+            submenu = src.menuFolder.textMenu.TextMenu(rewardText)
 
             character.macroState["submenue"] = submenu
             submenu.followUp = {

@@ -128,7 +128,7 @@ So if an enemy is to directly east of you:
             specialAttack = None
             if character.exhaustion == 0:
                 specialAttack = "k"
-            elif character.exhaustion < 10:
+            elif character.exhaustion <= 7:
                 specialAttack = "h"
             if not specialAttack:
                 return (None,(directionCommand,"attack enemy"))

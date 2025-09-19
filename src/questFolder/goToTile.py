@@ -174,11 +174,15 @@ The target tile is {direction[4:]}
             return False
         if not self.active:
             return None
+
+        shouldBeWithinRoom = character.getTerrain().getRoomByPosition(self.targetPosition)
         if isinstance(character.container,src.rooms.Room):
             if character.container.xPosition == self.targetPosition[0] and character.container.yPosition == self.targetPosition[1]:
                 self.postHandler()
                 return True
         elif character.xPosition//15 == self.targetPosition[0] and character.yPosition//15 == self.targetPosition[1]:
+            if shouldBeWithinRoom:
+                return False
             self.postHandler()
             return True
         return False

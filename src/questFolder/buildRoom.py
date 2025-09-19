@@ -172,10 +172,11 @@ Press d to move the cursor and show the subquests description.
             missingWallPositions.append(wallPos)
 
         if missingWallPositions:
+            if character.getFreeInventorySpace() < 2 and not character.searchInventory("Wall"):
+                quest = src.quests.questMap["ClearInventory"](returnToTile=False)
+                return ([quest],None)
             if not character.inventory or character.inventory[-1].type != "Wall":
-                amount = None
-                if len(missingWallPositions) < 10:
-                    amount = len(missingWallPositions)
+                amount = min(5,len(missingWallPositions),character.getFreeInventorySpace()-1)
                 quest = src.quests.questMap["FetchItems"](toCollect="Wall",takeAnyUnbolted=self.takeAnyUnbolted,tryHard=self.tryHard,amount=amount,reason="have walls for the rooms outline")
                 return ([quest],None)
 

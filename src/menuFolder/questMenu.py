@@ -257,6 +257,14 @@ class QuestMenu(src.subMenu.SubMenu):
                     nextstep = f"suggested action: \npress {solvingCommangString} \nto {reason}\n\n"
                 else:
                     nextstep = "suggested action: \npress + \nto generate subquests\n\n"
+
+                automatic = False
+                for quest in char.getActiveQuests():
+                    if not quest.autoSolve:
+                        continue
+                    automatic = True
+                if char.hasOwnAction or automatic:
+                    nextstep = "suggested action: \n\nwait or press ctrl-d to stop auto solve\n\n"
                 txt.append(src.interaction.ActionMeta(payload="+",content=nextstep))
 
             if not sidebared:

@@ -143,7 +143,7 @@ Try luring enemies into landmines or detonating some bombs."""
                         y= src.helpers.clamp(y+int(random.uniform(-3,3)),2,12)
                         quest = src.quests.questMap["GoToPosition"](targetPosition = (x,y))
                         return ([quest], None)
-                    return (None, ("."*10,"wait"))
+                    return (None, (";","wait"))
         return super().getNextStep(character=character,ignoreCommands=ignoreCommands)
 
 src.quests.addType(SecureTile)

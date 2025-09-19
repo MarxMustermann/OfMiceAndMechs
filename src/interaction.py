@@ -3928,7 +3928,7 @@ def getTcodEvents():
                     else:
                         translatedKey = "esc"
 
-                if key == tcod.event.KeySym.MINUS:
+                if key in (tcod.event.KeySym.MINUS,tcod.event.KeySym.KP_MINUS):
                     if event.mod & tcod.event.Modifier.CTRL:
                         translatedKey = "ctrl -"
                 if key == tcod.event.KeySym.PLUS or key == tcod.event.KeySym.KP_PLUS:

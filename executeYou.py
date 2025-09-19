@@ -187,7 +187,7 @@ def getTcodEvents():
                         translatedKey = ";"
                     else:
                         translatedKey = ","
-                if key == tcod.event.KeySym.MINUS:
+                if key in (tcod.event.KeySym.MINUS,tcod.event.KeySym.KP_MINUS):
                     if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
                         translatedKey = "_"
                     else:

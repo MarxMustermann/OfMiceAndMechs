@@ -77,7 +77,7 @@ class BaitSpiders(src.quests.MetaQuestSequence):
                     return (None,("d","flee tile"))
 
             if character.getBigPosition() != (6,7,0):
-                quest = src.quests.questMap["GoToTile"](targetPosition=(6,7,0),reason="get to safety",description="run back to base",paranoid=True)
+                quest = src.quests.questMap["GoToTile"](targetPosition=(6,7,0),reason="get to safety",description="run back to base",paranoid=True,allowMapMenu=False)
                 phase = "end"
                 if not dryRun:
                     self.phase = phase

@@ -158,7 +158,7 @@ done tiles: {self.doneTiles}"""
                     continue
 
                 self.lastMoveDirection = offset
-                quest = src.quests.questMap["GoToTile"](targetPosition=target,reason="move to a scavenging spot")
+                quest = src.quests.questMap["GoToTile"](targetPosition=target,reason="move to a scavenging spot",paranoid=True)
                 return ([quest],None)
 
         # visit unvisited neighbours avoiding special areas
@@ -190,7 +190,7 @@ done tiles: {self.doneTiles}"""
                 continue
 
             self.lastMoveDirection = offset
-            quest = src.quests.questMap["GoToTile"](targetPosition=target,reason="move around to search for items")
+            quest = src.quests.questMap["GoToTile"](targetPosition=target,reason="move around to search for items",paranoid=True)
             return ([quest],None)
 
         # visit unvisited neighbours
@@ -218,12 +218,12 @@ done tiles: {self.doneTiles}"""
                 continue
 
             self.lastMoveDirection = offset
-            quest = src.quests.questMap["GoToTile"](targetPosition=target,reason="move around to search for items")
+            quest = src.quests.questMap["GoToTile"](targetPosition=target,reason="move around to search for items",paranoid=True)
             return ([quest],None)
 
         # visit random spot
         bigPos = (random.randint(1,13),random.randint(1,13),0)
-        quest = src.quests.questMap["GoToTile"](targetPosition=bigPos,reason="move to a random point to search for items")
+        quest = src.quests.questMap["GoToTile"](targetPosition=bigPos,reason="move to a random point to search for items",paranoid=True)
         return ([quest],None)
 
     def pickedUpItem(self,extraInfo):

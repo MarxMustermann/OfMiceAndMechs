@@ -1026,8 +1026,8 @@ class Terrain:
                 tileMap[room.xPosition*2+1][room.yPosition*2+2] = "0"
 
         if character and avoidEnemies:
-            for x in range(1,13):
-                for y in range(1,13):
+            for x in range(1,14):
+                for y in range(1,14):
                     if self.getEnemiesOnTile(character,(x,y,0)):
                         tileMap[x*2+1][y*2+1] = 10000
 
@@ -1038,8 +1038,8 @@ class Terrain:
         for forest in self.forests:
             tileMap[forest[0]*2+1][forest[1]*2+1] = 2000
 
-        for x in range(1,13):
-            for y in range(1,13):
+        for x in range(1,14):
+            for y in range(1,14):
                 items = self.getItemByPosition((15*x+7,15*y+7,0))
                 if items and items[0].type == "RoomBuilder":
                     tileMap[x*2+1][y*2+1] = 2000

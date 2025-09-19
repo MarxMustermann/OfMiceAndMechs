@@ -129,12 +129,8 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
             self.donePointsOfInterest.append(character.getBigPosition())
 
         pointOfInterest = random.choice(pointsOfInterest)
-        if currentTerrain.getRoomByPosition(pointOfInterest):
-            quest = src.quests.questMap["LootRoom"](targetPosition=pointOfInterest,endWhenFull=True)
-            return ([quest],None)
-        else:
-            quest = src.quests.questMap["ScavengeTile"](targetPosition=pointOfInterest)
-            return ([quest],None)
+        quest = src.quests.questMap["LootRoom"](targetPosition=pointOfInterest,endWhenFull=True)
+        return ([quest],None)
 
     def generateTextDescription(self):
         return [f"""

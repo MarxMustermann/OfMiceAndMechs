@@ -180,6 +180,29 @@ Set the floor plan: {self.floorPlanType}
         self.startWatching(character,self.handleAssignFloorPlan, "assigned floor plan")
 
         return super().assignToCharacter(character)
+
+    def getQuestMarkersSmall(self,character,renderForTile=False):
+        '''
+        return the quest markers for the normal map
+        '''
+        if isinstance(character.container,src.rooms.Room):
+            if renderForTile:
+                return []
+        else:
+            if not renderForTile:
+                return []
+
+        result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
+        if not renderForTile:
+            if isinstance(character.container,src.rooms.Room):
+                for item in character.container.itemsOnFloor:
+                    if not item.type == "CityPlaner":
+                        continue
+                    if not item.bolted:
+                        continue
+                    result.append((item.getPosition(),"target"))
+        return result
+
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
         terrain = character.getTerrain()

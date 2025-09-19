@@ -107,7 +107,6 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
 
         # unnpack paramters
         character = params["character"]
-        character.changed("sharpened sword")
 
         # start the actual sword sharpening
         if "amount" in params:
@@ -160,6 +159,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             if character.weapon:
                 sword = character.weapon
             else:
+                character.changed("sharpened sword")
                 character.addMessage("you don't have any sword equipped")
                 return
         else:
@@ -168,6 +168,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
                     sword = item
                     break
             if sword is None:
+                character.changed("sharpened sword")
                 character.addMessage("you don't have any base sword in the inventory")
                 return
 
@@ -189,6 +190,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             text = "you can't improve your sword further."
             submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
             character.macroState["submenue"] = submenue
+            character.changed("sharpened sword")
             return
 
         # abort and show user feedback if no upgrade can be afforded
@@ -196,6 +198,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             text = f"you can't improve your sword.\nYou need {amount_grindstone_needed_for_upgrade} Grindstone to upgrade your sword."
             submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
             character.macroState["submenue"] = submenue
+            character.changed("sharpened sword")
             return
 
         def amountNeededToLevel(level, allowed=None):

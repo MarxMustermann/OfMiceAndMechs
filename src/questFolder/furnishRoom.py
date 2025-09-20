@@ -169,7 +169,7 @@ the buildsites indicate what needs to be built.
 
             # place sheet for setting up command (ugly!)
             if buildSite[1] != "Command":
-                quest = src.quests.questMap["PlaceItem"](itemType=buildSite[1],targetPositionBig=room.getPosition(),targetPosition=buildSite[0],boltDown=True,tryHard=self.tryHard)
+                quest = src.quests.questMap["PlaceItem"](itemType=buildSite[1],targetPositionBig=room.getPosition(),targetPosition=buildSite[0],boltDown=True,tryHard=self.tryHard,clearSpace=True)
                 return ([quest],None)
 
             # place the actual command

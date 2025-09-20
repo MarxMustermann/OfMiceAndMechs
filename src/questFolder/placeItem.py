@@ -8,7 +8,7 @@ class PlaceItem(src.quests.MetaQuestSequence):
     type = "PlaceItem"
     lowLevel = True
 
-    def __init__(self, description="place item", creator=None, lifetime=None, targetPosition=None, targetPositionBig=None, itemType=None, tryHard=False, boltDown=False,reason=None, clearPath = False):
+    def __init__(self, description="place item", creator=None, lifetime=None, targetPosition=None, targetPositionBig=None, itemType=None, tryHard=False, boltDown=False,reason=None, clearPath = False, clearSpace=False):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = f"{description} {itemType} on position {targetPosition} on tile {targetPositionBig}"
@@ -19,6 +19,7 @@ class PlaceItem(src.quests.MetaQuestSequence):
         self.boltDown = boltDown
         self.reason = reason
         self.clearPath = clearPath
+        self.clearSpace = clearSpace
     
     def handleQuestFailure(self,extraInfo):
         '''
@@ -250,6 +251,16 @@ Press d to move the cursor and show the subquests description.
                     items = character.container.getItemByPosition((self.targetPosition[0],self.targetPosition[1],0))
                 else:
                     items = character.container.getItemByPosition((self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0))
+                if items and items[-1].type != self.itemType:
+                    quest = src.quests.questMap["CleanSpace"](targetPosition=self.targetPosition,targetPositionBig=self.targetPositionBig,pickUpBolted=True)
+                    return ([quest],None)
+
+            try:
+                self.clearSpace
+            except:
+                self.clearSpace = False
+
+            if self.clearSpace:
                 if items and items[-1].type != self.itemType:
                     quest = src.quests.questMap["CleanSpace"](targetPosition=self.targetPosition,targetPositionBig=self.targetPositionBig,pickUpBolted=True)
                     return ([quest],None)

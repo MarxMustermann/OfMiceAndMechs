@@ -172,10 +172,11 @@ Press d to move the cursor and show the subquests description.
             missingWallPositions.append(wallPos)
 
         if missingWallPositions:
-            if character.getFreeInventorySpace() < 2 and not character.searchInventory("Wall"):
-                quest = src.quests.questMap["ClearInventory"](returnToTile=False)
-                return ([quest],None)
-            if not character.inventory or character.inventory[-1].type != "Wall":
+            numWalls = len(character.searchInventory("Wall"))
+            if not numWalls:
+                if character.getFreeInventorySpace() < 2 and not character.searchInventory("Wall"):
+                    quest = src.quests.questMap["ClearInventory"](returnToTile=False)
+                    return ([quest],None)
 
                 if not self.tryHard:
                     hasWallSource = False
@@ -196,7 +197,7 @@ Press d to move the cursor and show the subquests description.
             quests = []
             counter = 0
             for missingWallPos in missingWallPositions:
-                if not (len(character.inventory) > counter and character.inventory[-1-counter].type == "Wall"):
+                if counter >= numWalls:
                     break
                 quest = src.quests.questMap["PlaceItem"](targetPosition=missingWallPos,targetPositionBig=self.targetPosition,itemType="Wall",tryHard=self.tryHard,reason="build the outline of the room",clearPath=True)
                 quests.append(quest)

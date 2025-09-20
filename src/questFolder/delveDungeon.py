@@ -162,6 +162,11 @@ After fetching the glass heart return the glass heart to your base and set it in
                         quest = src.quests.questMap["Heal"](noWaitHeal=True,noVialHeal=True)
                         return ([quest],None)
 
+                for item in character.inventory:
+                    if item.walkable == False:
+                        quest = src.quests.questMap["ClearInventory"](returnToTile=False)
+                        return ([quest],None)
+
             if not character.weapon or not character.armor:
                 quest = src.quests.questMap["Equip"](tryHard=True)
                 return ([quest],None)

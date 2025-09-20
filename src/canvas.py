@@ -466,19 +466,21 @@ class Canvas:
                                 basePos = (basePos[0],basePos[1]+src.interaction.tileHeight-offsetTop-barHeight-2*borderWidth)
 
                                 color = (255,255,255,255)
+                                borderColor = (255,255,255,255)
                                 if character.exhaustion-1 > 4:
                                     color = (255,153,0,255)
                                 if character.exhaustion-1 > 8:
                                     color = (255,85,0,255)
                                 if character.exhaustion-1 > 9:
                                     color = (255,0,0,255)
+                                    borderColor = (255,0,0,255)
 
                                 src.interaction.sdl_cache.append(("rect",(
                                                                             basePos[0],
                                                                             basePos[1],
                                                                             src.interaction.tileWidth*2,
                                                                             barHeight+2*borderWidth
-                                                                                ),(255,255,255,255)))
+                                                                                ),borderColor))
                                 src.interaction.sdl_cache.append(("rect",(
                                                                             basePos[0]+borderWidth,
                                                                             basePos[1]+borderWidth,

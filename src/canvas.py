@@ -463,7 +463,7 @@ class Canvas:
                                                                             barHeight
                                                                                 ),(255,0,0,255)))
                             if character.exhaustion != 0:
-                                basePos = (basePos[0],basePos[1]+src.interaction.tileHeight-offsetTop)
+                                basePos = (basePos[0],basePos[1]+src.interaction.tileHeight-offsetTop-barHeight-2*borderWidth)
 
                                 color = (255,255,255,255)
                                 if character.exhaustion-1 > 4:

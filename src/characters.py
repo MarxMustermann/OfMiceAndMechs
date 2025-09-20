@@ -2194,24 +2194,35 @@ press any other key to attack normally"""
 
         if self.disableCommandsOnPlus:
 
-            hasComand = False
-            quest = self.getActiveQuest()
-            commandString = quest.getSolvingCommandString(self)
-            if commandString:
-                hasComand = True
+            hasAutoSolve = False
+            for quest in self.getActiveQuests():
+                if quest.autoSolve:
+                    hasAutoSolve = True
 
-            if hasComand:
+            if not hasAutoSolve:
+                hasComand = False
+                quest = self.getActiveQuest()
+                commandString = quest.getSolvingCommandString(self)
+                if commandString:
+                    hasComand = True
+
+                if hasComand:
+                    if commandString[0] != "+":
+                        self.runCommandString(".")
+                        return
+
+        if not solver and self.quests:
+            quest = self.quests[0]
+            quest.solver(self)
+
+            if quest.completed:
                 hasAutoSolve = False
                 for quest in self.getActiveQuests():
                     if quest.autoSolve:
                         hasAutoSolve = True
 
-                if not hasAutoSolve and not commandString[0] == "+":
-                    self.runCommandString(".")
-                    return
-
-        if not solver and self.quests:
-            self.quests[0].solver(self)
+                if not (hasAutoSolve or self.macroState["commandKeyQueue"]):
+                    self.runCommandString("~",nativeKey=True)
             return
         return
 

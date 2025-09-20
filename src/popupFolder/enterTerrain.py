@@ -23,15 +23,15 @@ class EnterTerrain(src.popups.Popup):
 terrain_message = [
     (
         "ruin",
-        """you see the remains of a lost colony and a lot of rogue creatures, which begs the question what has happened to them""",
+        """Everything you see is in ruins. You can't tell what once was here.\n\nYou can clearly see movement between the roublw though.""",
     ),
     (
         "shrine",
-        """there is a room, that has a loot and a statue, it looks like it is a shrine of some sort, maybe you can prey there""",
+        """A small shrine inviting you to pray.\nIt reminds you of home.""",
     ),
     (
         "lab",
-        """it looks like there is a lab in the middle but it guarded by a lot of monster, what kind of secrets the lab have, that is up for you to know""",
+        """it looks like there is a lab in the middle but it guarded by a lot of monsters.\n\nBetter not to find out what dark secrets lie here.""",
     ),
 ]
 

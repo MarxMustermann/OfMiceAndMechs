@@ -342,17 +342,46 @@ You are rank {character.rank} now.
 
         rewardType = extraInfo.get("rewardType")
         del extraInfo["rewardType"]
+
+        rewardText = None
+        specialAttackText = """
+You got a attack perk. 
+
+You can do an alternative attack by pressing shift when attacking.
+
+For example d will attack an enemy to the east normally and 
+pressing D will do an alternative attack to an enemy to the east.
+
+The alternative attacks usually cost exhaustion.
+If you have more than 10 exhaustion you will do much less damage.
+So try not to exeed 10 exhaustion.
+"""
+        if rewardType == "special attacks":
+            rewardText = specialAttackText + """
+You chose special attacks as alternate attack.
+
+You will be able to choose from a variety of attacks.
+Each attack has a different costs and advantages.
+You will figure it out.
+"""
+        if rewardType == "swap attack":
+            rewardText = specialAttackText + """
+You chose a swap attack as alternate attack.
+
+This allows you to swap places with an enemy.
+This should allow you to get out of tricky situations
+"""
+
         specialMomenemtText = """
 You got a special movement perk. 
 
-You can du special movements by pressing shift when walking.
+You can do special movements by pressing shift when walking.
 Bumping into enemies will not do a special movement!
 
 For example d will move you to the east normally and 
 pressing D will do a special movement towards the east.
 
 """
-        rewardText = None
         if rewardType == "jump":
             rewardText = specialMomenemtText + """
 You chose jump as special movement.
@@ -362,7 +391,6 @@ This means you can move a fast a few times.
 You will move 50% faster, but each jump will cost you 5 exhaustion.
 You cannot jump, if you have 10 or more exhaustion.
 """
-
         if rewardType == "endurance run":
             rewardText = specialMomenemtText + """
 You chose endurance run as special movement.
@@ -371,6 +399,49 @@ This means you can move a bit faster but for a relatively long time.
 
 Each step you take will be 20% faster, but will cost you 1 exhaustion.
 You cannot run, if you have 10 or more exhaustion.
+"""
+
+        rangedCombatText = """
+You got a ranged combat perk. 
+
+You can do a ranged combat attack by pressing f.
+
+"""
+        if rewardType == "line shot":
+            rewardText = rangedCombatText + """
+You chose "line shot" as your ranged combat perk.
+
+This means you can shoot in a straight line from your character.
+This means you can target your shot, but only target a few spots.
+
+After pressing f you will be promteod for what direction you want to fire in,
+Each shot will cost you 1 Bolt.
+"""
+        if rewardType == "ramdom target shot":
+            rewardText = rangedCombatText + """
+You chose "random target shot" as your ranged combat perk.
+Simple, but not ineffective.
+
+You press f and somebody gets shot.
+A random enemy is targeted.
+Each shot will cost you 1 Bolt.
+"""
+
+        attributeBonusText = """
+You got an attribute bonus perk. 
+
+This is an improvement on one of your stats.
+You don't need to activate this perk.
+
+"""
+
+        if rewardType == "max health boost":
+            rewardText = attributeBonusText + """
+You have twice as much max HP now!
+"""
+        if rewardType == "movement speed boost":
+            rewardText = attributeBonusText + """
+You move twice as fast now.
 """
 
         if rewardText:

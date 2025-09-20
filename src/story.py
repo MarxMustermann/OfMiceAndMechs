@@ -2971,6 +2971,13 @@ but they are likely to explode when disturbed.
                     if item.bolted:
                         continue
 
+                    foundCorpse = False
+                    for room in terrain.rooms:
+                        if room.tag == "shelter":
+                            continue
+                        if room.getItemByType("Corpse"):
+                            foundCorpse = True
+
                     if not hunterCount:
                         # spawn trap cleaning ghul
                         quest = src.quests.questMap["SpawnGhul"]()

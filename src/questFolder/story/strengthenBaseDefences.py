@@ -134,7 +134,7 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
             return ([quest],None)
 
         # add subquest to built a rooom already scheduled
-        if plannedTraproomPositions and not character.getTerrain().alarm:
+        if plannedTraproomPositions:
             quest = src.quests.questMap["BuildRoom"](targetPosition=random.choice(plannedTraproomPositions),tryHard=True)
             return ([quest],None)
 

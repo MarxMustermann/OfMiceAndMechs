@@ -162,7 +162,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
 
             if numTrapRooms < numGlassHearts//2:
                 if random.random() < 0.5:
-                    quest = src.quests.questMap["StrengthenBaseDefences"](numTrapRoomsBuild=numGlassHearts//2,numTrapRoomsPlanned=numGlassHearts//2+1,lifetime=1000)
+                    quest = src.quests.questMap["StrengthenBaseDefences"](numTrapRoomsBuild=numGlassHearts//2,numTrapRoomsPlanned=numGlassHearts//2+1,lifetime=200)
                     return ([quest],None)
                 else:
                     quest = src.quests.questMap["Adventure"]()

@@ -82,6 +82,7 @@ This should be used in cases where you can not place the Painter on the position
         submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(
                "what do you want to do?\n\nm: set painting mode\nt: set type\ne: set extra info\nc: clear extra info\nd: set direction"
                                        )
+        submenue.tag = "PainterActivitySelection"
         character.macroState["submenue"] = submenue
         character.macroState["submenue"].followUp = {"container":self,"method":"configure2","params":{"character":character}}
         character.runCommandString("~",nativeKey=True)

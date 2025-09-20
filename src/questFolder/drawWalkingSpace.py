@@ -82,6 +82,21 @@ Try as hard as you can to achieve this.
                     self.postHandler()
                 return (None,None)
 
+        # navigate the painter menu
+        submenue = character.macroState.get("submenue")
+        if submenue:
+            # select the right paint mode
+            if submenue.tag == "PainterActivitySelection":
+                return (None,("m","selwct painter mode"))
+            if submenue.tag == "paintModeSelection":
+                if submenue.text == "":
+                    return (None,(["w"],"configure the painter to walking space"))
+                elif submenue.text == "w":
+                    return (None,(["enter"],"configure the painter to walking space"))
+                else:
+                    return (None,(["backspace"],"delete input"))
+            return (None,(["esc"],"close menu"))
+
         # search for a painter near the target
         offsets = ((0,0,0),(0,1,0),(1,0,0),(0,-1,0),(-1,0,0))
         foundOffset = None
@@ -103,7 +118,9 @@ Try as hard as you can to achieve this.
                 return (None,(["c","m","w","enter"],"configure the painter to walking space"))
             if item.offset != (0, 0, 0):
                 return (None,(["c", "d", ".", "enter"],"remove the offset from the painter"))
-            return (None,("jk","draw the walkingspace"))
+            if character.getDistance(self.targetPosition) == 0:
+                return (None,("jk","draw the walkingspace"))
+            return (None,("k","pick up painter"))
 
         # ensure player has a painter
         if not self.painterPos:

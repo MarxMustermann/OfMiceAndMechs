@@ -184,7 +184,7 @@ class Adventure(src.quests.MetaQuestSequence):
         if self.reason:
             reason = f", to {self.reason}"
         
-        text = ["""
+        text = [f"""
 Go out and adventure{reason}.
 
 track:

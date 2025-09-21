@@ -75,6 +75,23 @@ Try as hard as you can to achieve this.
         submenue = character.macroState.get("submenue")
         if submenue:
             # select the right paint mode
+            if submenue.tag == "PainterActivitySelection":
+                item = submenue.extraInfo.get("item")
+                if item.paintMode != "buildSite":
+                    return (None,("m","select mode"))
+                if self.itemType != item.paintType:
+                    return (None,("t","select type"))
+                for (key,_value) in item.paintExtraInfo.items():
+                    if key not in self.extraInfo:
+                        return (None,("c","select clear"))
+                for (key,value) in self.extraInfo.items():
+                    if (key not in item.paintExtraInfo) or (value != item.paintExtraInfo[key]):
+                        return (None,("e","select extra info"))
+                if item.offset != (0, 0, 0):
+                    return (None,("d","select direction"))
+                return (None,(["esc"],"close menu"))
+
+            # select the right paint mode
             if submenue.tag == "paintModeSelection":
                 if submenue.text == "":
                     return (None,(["b"],"configure the painter to build site"))
@@ -105,7 +122,14 @@ Try as hard as you can to achieve this.
 
             # enter the name for extra parameters
             if submenue.tag == "paintExtraParamName":
-                nameToSet = "toProduce"
+                nameToSet = None
+                for (key,value) in self.extraInfo.items():
+                    item = submenue.extraInfo["item"]
+                    if (key not in item.paintExtraInfo) or (value != item.paintExtraInfo[key]):
+                        nameToSet = key
+                        break
+                if not nameToSet:
+                    return (None,(["esc"],"close menu"))
 
                 if nameToSet == submenue.text:
                     return (None,(["enter"],"set the name of the extra parameter"))
@@ -123,7 +147,7 @@ Try as hard as you can to achieve this.
 
             # enter the value for extra parameters
             if submenue.tag == "paintExtraParamValue":
-                valueToSet = self.extraInfo.get("toProduce")
+                valueToSet = self.extraInfo.get(submenue.extraInfo["name"])
 
                 if valueToSet is None:
                     return (None,(["esc"],"close menu"))
@@ -196,6 +220,10 @@ Try as hard as you can to achieve this.
         # fetch a painter
         if not self.painterPos:
             if not character.inventory or character.inventory[-1].type != "Painter":
+                items = room.getItemByPosition(character.getPosition())
+                if items and items[0].type == "Painter":
+                    return (None,("k","pick up painter"))
+
                 quest = src.quests.questMap["FetchItems"](toCollect="Painter",amount=1,reason="be able to draw a stockpile")
                 return ([quest],None)
             painter = character.inventory[-1]

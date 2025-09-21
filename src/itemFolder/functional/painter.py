@@ -83,6 +83,7 @@ This should be used in cases where you can not place the Painter on the position
                "what do you want to do?\n\nm: set painting mode\nt: set type\ne: set extra info\nc: clear extra info\nd: set direction"
                                        )
         submenue.tag = "PainterActivitySelection"
+        submenue.extraInfo["item"] = self
         character.macroState["submenue"] = submenue
         character.macroState["submenue"].followUp = {"container":self,"method":"configure2","params":{"character":character}}
         character.runCommandString("~",nativeKey=True)
@@ -163,6 +164,7 @@ This should be used in cases where you can not place the Painter on the position
         character.macroState["submenue"] = submenue
         submenue.tag = "paintExtraParamValue"
         submenue.extraInfo["item"] = self
+        submenue.extraInfo["name"] = extraInfo["name"]
         character.macroState["submenue"].followUp = {"container":self,"method":"addExtraInfo3","params":extraInfo}
 
     def addExtraInfo3(self,extraInfo):

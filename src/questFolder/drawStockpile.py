@@ -146,8 +146,37 @@ Try as hard as you can to achieve this.
         if self.subQuests:
             return (None,None)
 
+        if "advancedConfigure" in character.interactionState:
+            if not character.inventory or character.inventory[-1].type != "Painter":
+                return (None,(".","clear interaction state"))
+            return (None,("i","activate Painter"))
+
         submenue = character.macroState.get("submenue")
         if submenue:
+            if submenue.tag == "PainterActivitySelection":
+                item = submenue.extraInfo["item"]
+                if self.stockpileType == "i" and item.paintMode != "inputSlot":
+                    return (None,(["m","i","enter"],"configure the painter to input stockpile"))
+                if self.stockpileType == "o" and item.paintMode != "outputSlot":
+                    return (None,(["m","o","enter"],"configure the painter to output stockpile"))
+                if self.stockpileType == "s" and item.paintMode != "storageSlot":
+                    return (None,(["m","s","enter"],"configure the painter to storage stockpile"))
+                if self.itemType != item.paintType:
+                    if self.itemType:
+                        return (None,(["t", *list(self.itemType), "enter"],"configure the item type for the stockpile"))
+                    else:
+                        return (None,(["t", "enter"],"remove the item type for the stockpile"))
+                for (key,_value) in item.paintExtraInfo.items():
+                    if key not in self.extraInfo:
+                        return (None,(["c"],"clear the painters extra info"))
+
+                for (key,value) in self.extraInfo.items():
+                    if (key not in item.paintExtraInfo) or (value != item.paintExtraInfo[key]):
+                        return (None,(["e",key,"enter",value,"enter"],"clear the painters extra info"))
+
+                if item.offset != (0, 0, 0):
+                    return (None,(["d", ".", "enter"],"remove the offset from the painter"))
+
             if submenue.tag == "paintModeSelection":
                 if submenue.text == "":
                     if self.stockpileType == "i":
@@ -231,6 +260,12 @@ Try as hard as you can to achieve this.
 
                 return (None,(valueToSet[correctIndex:],"enter value of the extra parameter"))
 
+            if submenue.tag == "paintDirectionSelection":
+                if submenue.text == ".":
+                    return (None,(["enter"],"remove the offset from the painter"))
+                if submenue.text != "":
+                    return (None,(["backspace"],"remove mistyped characters"))
+                return (None,([".", "enter"],"remove the offset from the painter"))
         rooms = character.getTerrain().getRoomByPosition(self.targetPositionBig)
         if not rooms:
             if not dryRun:

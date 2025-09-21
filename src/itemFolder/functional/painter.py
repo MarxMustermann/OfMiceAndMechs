@@ -104,6 +104,7 @@ This should be used in cases where you can not place the Painter on the position
                "type in the direction to set\n\n"+
                "(w,a,s,d)"
                )
+           submenue.tag = "paintDirectionSelection"
            character.macroState["submenue"] = submenue
            character.macroState["submenue"].followUp = {"container":self,"method":"setDirection","params":{"character":character}}
            return

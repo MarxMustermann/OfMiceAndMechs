@@ -62,14 +62,17 @@ def Death(extraParam):
     src.interaction.advanceGame()
     src.interaction.renderGameDisplay()
 
-    # playerpos = (-99999,-9999)
-    # for width in range(src.interaction.tcodConsole.width):
-    #     for height in range(src.interaction.tcodConsole.height):
-    #         if src.interaction.tcodConsole.rgb[width, height]["ch"] == ord("@"):
-    #             if width > playerpos[0] and height > playerpos[1]:
-    #                 playerpos = (width, height)
-    playerpos = (src.interaction.tcodConsole.width // 2 - 1, src.interaction.tcodConsole.height // 2 - 1)
-    src.interaction.tcodConsole.rgb[playerpos[0], playerpos[1]]["ch"] = ord("@")
+
+    assumedScreenWidth = src.interaction.tcodConsole.width
+    mapWidth = (src.interaction.window_charheight-5)*2
+    mapHeight = src.interaction.tcodConsole.height - 1-5
+    mapStart  = ((assumedScreenWidth-mapWidth)//2,6)
+
+
+    playerpos = (mapStart[0] + mapWidth//2 + 1, mapStart[1]+ mapHeight//2 + 1)
+
+    src.interaction.tcodConsole.rgb[playerpos[0], playerpos[1]] = ord("@"),tcod.white,tcod.black
+    src.interaction.tcodConsole.rgb[playerpos[0]+1, playerpos[1]]= ord(" "),tcod.black,tcod.black
     p = {}
     max_dist = -99999
     for width in range(src.interaction.tcodConsole.width):
@@ -124,7 +127,7 @@ def Death(extraParam):
                 numpy.copyto(src.interaction.tcodConsole.rgba, current_content)
             if (isinstance(event, tcod.event.KeyDown) and event.sym == tcod.event.KeySym.RETURN) or runStar:
                 new_console = tcod.console.Console(src.interaction.tcodConsole.width,src.interaction.tcodConsole.height,src.interaction.tcodConsole._order)
-                src.interaction.render(src.gamestate.gamestate.mainChar).printTcod(new_console, 34, 6, False)
+                src.interaction.render(src.gamestate.gamestate.mainChar).printTcod(new_console, (assumedScreenWidth-mapWidth)//4, 6, False)
                 src.helpers.draw_frame_text(new_console, width, height, text, x, y)
                 target_console = new_console.rgb
                 total_frames = 5

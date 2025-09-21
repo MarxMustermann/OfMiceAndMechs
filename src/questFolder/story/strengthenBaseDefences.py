@@ -119,7 +119,7 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
                 continue
             if room.alarm:
                 continue
-            quest = src.quests.questMap["DrawFloorPlan"](targetPosition=room.getPosition(),tryHard=True)
+            quest = src.quests.questMap["DrawFloorPlan"](targetPosition=room.getPosition(),tryHard=True, onlyDrawOneBatch=True)
             return ([quest],None)
 
         # add subquest to help furnishing the unfinished trap rooms

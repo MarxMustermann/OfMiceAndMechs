@@ -198,6 +198,9 @@ Try as hard as you can to achieve this.
                 quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),reason="get to the painter")
                 return ([quest],None)
 
+            if character.getDistance(self.targetPosition) > 0:
+                return (None,("k","pick up painter"))
+
             if item.paintMode != "buildSite":
                 return (None,(["c","m","b","enter"],"configure the painter to paint build site"))
 
@@ -215,7 +218,9 @@ Try as hard as you can to achieve this.
             if item.offset != (0, 0, 0):
                 return (None,(["c", "d", ".", "enter"],"remove the offset from the painter"))
 
-            return (None,("jk","draw to stockpile"))
+            if character.getDistance(self.targetPosition) == 0:
+                return (None,("jk","draw the build site"))
+            return (None,("k","pick up painter"))
 
         # fetch a painter
         if not self.painterPos:

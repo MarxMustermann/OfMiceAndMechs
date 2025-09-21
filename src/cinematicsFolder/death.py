@@ -81,7 +81,7 @@ def Death(extraParam):
         text += "The last bit of your life force leaves and you die.\n"
         text += "But something else leaves your implant as well.\n"
         text += "It took over another clone from your base.\n"
-
+        text += "\n- press enter to respawn -"
 
         splitted = text.splitlines()
         width = len(max(splitted, key=len))
@@ -92,8 +92,28 @@ def Death(extraParam):
         src.helpers.draw_frame_text(src.interaction.tcodConsole ,width, height, text, x, y)
         src.interaction.tcodPresent()
 
-        src.helpers.deal_with_window_events()
-        time.sleep(3.0)
+        def PreDeathLoop():
+            while 1:
+                events = list(tcod.event.get())
+                while events or runStar:
+                    if events:
+                        event = events.pop(0)
+                    else:
+                        event = None
+                    if (isinstance(event, tcod.event.KeyDown) and event.sym == tcod.event.KeySym.RETURN) or runStar:
+                        return
+                    if isinstance(event, tcod.event.Quit):
+                        raise SystemExit()
+                    if isinstance(event, tcod.event.WindowEvent):
+                        match event.type:
+                            case "WINDOWCLOSE":
+                                raise SystemExit()
+                            case "WindowHidden":
+                                pass
+                            case _:
+                                src.interaction.tcodPresent()
+
+        PreDeathLoop()
 
         if src.gamestate.gamestate.difficulty == "difficult":
             chosen_candidate.health = int(chosen_candidate.health/2)

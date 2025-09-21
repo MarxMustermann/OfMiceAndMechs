@@ -29,7 +29,7 @@ class DrawStockpile(src.quests.MetaQuestSequence):
             itemTypeName = ""
             if itemType:
                 itemTypeName = f" for {itemType}"
-            self.metaDescription = f"draw {stockpileTypeName}stockpile{itemTypeName}"
+            self.metaDescription = f"draw {stockpileTypeName} stockpile{itemTypeName}"
 
         if not extraInfo:
             self.extraInfo = {}

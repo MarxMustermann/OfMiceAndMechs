@@ -149,19 +149,28 @@ Try as hard as you can to achieve this.
             if submenue.tag == "paintExtraParamValue":
                 valueToSet = self.extraInfo.get(submenue.extraInfo["name"])
 
+                ignoreSpaces = False
+                if submenue.extraInfo["name"] in ("targets",):
+                    ignoreSpaces = True
+
+                enteredText = submenue.text
+                if ignoreSpaces:
+                    valueToSet = valueToSet.replace(" ","")
+                    enteredText = enteredText.replace(" ","")
+
                 if valueToSet is None:
                     return (None,(["esc"],"close menu"))
 
-                if valueToSet == submenue.text:
+                if valueToSet == enteredText:
                     return (None,(["enter"],"set the value of the extra parameter"))
 
                 correctIndex = 0
-                while correctIndex < len(valueToSet) and correctIndex < len(submenue.text):
-                    if valueToSet[correctIndex] != submenue.text[correctIndex]:
+                while correctIndex < len(valueToSet) and correctIndex < len(enteredText):
+                    if valueToSet[correctIndex] != enteredText[correctIndex]:
                         break
                     correctIndex += 1
 
-                if correctIndex < len(submenue.text):
+                if correctIndex < len(enteredText):
                     return (None,(["backspace"],"delete input"))
 
                 return (None,(valueToSet[correctIndex:],"enter value of the extra parameter"))
@@ -212,7 +221,12 @@ Try as hard as you can to achieve this.
                     return (None,(["c","c"],"clear the painters extra info"))
 
             for (key,value) in self.extraInfo.items():
-                if (key not in item.paintExtraInfo) or (value != item.paintExtraInfo[key]):
+                actualValue = item.paintExtraInfo[key]
+                if key in ("targets",):
+                    actualValue = actualValue.replace(" ","")
+                    value = value.replace(" ","")
+
+                if (key not in item.paintExtraInfo) or (value != actualValue):
                     return (None,(["c","e",key,"enter",value,"enter"],"clear the painters extra info"))
 
             if item.offset != (0, 0, 0):

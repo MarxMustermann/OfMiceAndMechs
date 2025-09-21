@@ -4286,6 +4286,7 @@ def draw_sdl():
 
     for element in sdl_cache:
         if element[0] == "line":
+            sdl_renderer2.draw_color = element[3]
             sdl_renderer2.draw_line(element[1],element[2])
         if element[0] == "rect":
             sdl_renderer2.draw_color = element[2]

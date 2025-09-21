@@ -73,6 +73,72 @@ def Death(extraParam):
 
     src.interaction.tcodConsole.rgb[playerpos[0], playerpos[1]] = ord("@"),tcod.white,tcod.black
     src.interaction.tcodConsole.rgb[playerpos[0]+1, playerpos[1]]= ord(" "),tcod.black,tcod.black
+
+    if pre:
+        text = f"{reason}\n"
+        if killer:
+            text += f"by {killer.name}\n"
+        text += "The last bit of your life force leaves and you die.\n"
+        text += "But something else leaves your implant as well.\n"
+        text += "It took over another clone from your base.\n"
+
+
+        splitted = text.splitlines()
+        width = len(max(splitted, key=len))
+        height = len(splitted)
+        x = int(playerpos[0]- width / 2)
+        y = int(src.interaction.tcodConsole.height / 2 - 3 - height)
+        original_window_content = src.interaction.tcodConsole.rgba.copy()
+        src.helpers.draw_frame_text(src.interaction.tcodConsole ,width, height, text, x, y)
+        src.interaction.tcodPresent()
+
+        src.helpers.deal_with_window_events()
+        time.sleep(3.0)
+
+        if src.gamestate.gamestate.difficulty == "difficult":
+            chosen_candidate.health = int(chosen_candidate.health/2)
+            chosen_candidate.maxHealth = int(chosen_candidate.maxHealth/2)
+        chosen_candidate.addListener(src.cinematicsFolder.death.Death,"died_pre")
+        chosen_candidate.autoExpandQuests = src.gamestate.gamestate.mainChar.autoExpandQuests
+        chosen_candidate.autoExpandQuests2 = src.gamestate.gamestate.mainChar.autoExpandQuests2
+        chosen_candidate.disableCommandsOnPlus = src.gamestate.gamestate.mainChar.disableCommandsOnPlus
+        chosen_candidate.personality = src.gamestate.gamestate.mainChar.personality
+        chosen_candidate.duties = src.gamestate.gamestate.mainChar.duties
+        chosen_candidate.dutyPriorities = src.gamestate.gamestate.mainChar.dutyPriorities
+
+        src.gamestate.gamestate.mainChar = chosen_candidate
+
+        questMenu = src.menuFolder.questMenu.QuestMenu(chosen_candidate)
+        questMenu.sidebared = True
+        chosen_candidate.rememberedMenu.append(questMenu)
+        messagesMenu = src.menuFolder.messagesMenu.MessagesMenu(chosen_candidate)
+        chosen_candidate.rememberedMenu2.append(messagesMenu)
+        inventoryMenu = src.menuFolder.inventoryMenu.InventoryMenu(chosen_candidate)
+        inventoryMenu.sidebared = True
+        chosen_candidate.rememberedMenu2.append(inventoryMenu)
+        combatMenu = src.menuFolder.combatInfoMenu.CombatInfoMenu(chosen_candidate)
+        combatMenu.sidebared = True
+        chosen_candidate.rememberedMenu.insert(0,combatMenu)
+        for quest in chosen_candidate.quests[:]:
+            quest.fail("aborted")
+        chosen_candidate.quests = []
+        src.gamestate.gamestate.story.reachImplant()
+        src.gamestate.gamestate.story.activeStory["mainChar"] = chosen_candidate
+        chosen_candidate.rank = 6
+
+        if runStar:
+            chosen_candidate.runCommandString("*")
+
+        chosen_candidate.addListener(src.gamestate.gamestate.story.enteredRoom,"entered room")
+        chosen_candidate.addListener(src.gamestate.gamestate.story.itemPickedUp,"itemPickedUp")
+        chosen_candidate.addListener(src.gamestate.gamestate.story.changedTerrain,"changedTerrain")
+        chosen_candidate.addListener(src.gamestate.gamestate.story.deliveredSpecialItem,"deliveredSpecialItem")
+        chosen_candidate.addListener(src.gamestate.gamestate.story.gotEpochReward,"got epoch reward")
+
+        #  do autosave
+        src.gamestate.gamestate.save()
+        return
+
     p = {}
     max_dist = -99999
     for width in range(src.interaction.tcodConsole.width):
@@ -97,14 +163,9 @@ def Death(extraParam):
     if killer:
         text += f"by {killer.name}\n"
 
-    if not pre:
-        text += "press s to see the characters stats\n"
-        text += "press enter to return to main menu"
-    else:
-        text += "The last bit of your life force leaves and you die.\n"
-        text += "But something else leaves your implant as well.\n"
-        text += "It takes over another clone from your base.\n"
-        text += "\n- press enter to respawn -"
+    text += "press s to see the characters stats\n"
+    text += "press enter to return to main menu"
+
     splitted = text.splitlines()
     width = len(max(splitted, key=len))
     height = len(splitted)
@@ -150,52 +211,8 @@ def Death(extraParam):
                     time.sleep(0.01)
                     src.helpers.deal_with_window_events()
                 time.sleep(1.0)
-                if not pre:
-                    raise src.interaction.EndGame("character died")
-                else:
-                    if src.gamestate.gamestate.difficulty == "difficult":
-                        chosen_candidate.health = int(chosen_candidate.health/2)
-                        chosen_candidate.maxHealth = int(chosen_candidate.maxHealth/2)
-                    chosen_candidate.addListener(src.cinematicsFolder.death.Death,"died_pre")
-                    chosen_candidate.autoExpandQuests = src.gamestate.gamestate.mainChar.autoExpandQuests
-                    chosen_candidate.autoExpandQuests2 = src.gamestate.gamestate.mainChar.autoExpandQuests2
-                    chosen_candidate.disableCommandsOnPlus = src.gamestate.gamestate.mainChar.disableCommandsOnPlus
-                    chosen_candidate.personality = src.gamestate.gamestate.mainChar.personality
-                    chosen_candidate.duties = src.gamestate.gamestate.mainChar.duties
-                    chosen_candidate.dutyPriorities = src.gamestate.gamestate.mainChar.dutyPriorities
+                raise src.interaction.EndGame("character died")
 
-                    src.gamestate.gamestate.mainChar = chosen_candidate
-
-                    questMenu = src.menuFolder.questMenu.QuestMenu(chosen_candidate)
-                    questMenu.sidebared = True
-                    chosen_candidate.rememberedMenu.append(questMenu)
-                    messagesMenu = src.menuFolder.messagesMenu.MessagesMenu(chosen_candidate)
-                    chosen_candidate.rememberedMenu2.append(messagesMenu)
-                    inventoryMenu = src.menuFolder.inventoryMenu.InventoryMenu(chosen_candidate)
-                    inventoryMenu.sidebared = True
-                    chosen_candidate.rememberedMenu2.append(inventoryMenu)
-                    combatMenu = src.menuFolder.combatInfoMenu.CombatInfoMenu(chosen_candidate)
-                    combatMenu.sidebared = True
-                    chosen_candidate.rememberedMenu.insert(0,combatMenu)
-                    for quest in chosen_candidate.quests[:]:
-                        quest.fail("aborted")
-                    chosen_candidate.quests = []
-                    src.gamestate.gamestate.story.reachImplant()
-                    src.gamestate.gamestate.story.activeStory["mainChar"] = chosen_candidate
-                    chosen_candidate.rank = 6
-
-                    if runStar:
-                        chosen_candidate.runCommandString("*")
-
-                    chosen_candidate.addListener(src.gamestate.gamestate.story.enteredRoom,"entered room")
-                    chosen_candidate.addListener(src.gamestate.gamestate.story.itemPickedUp,"itemPickedUp")
-                    chosen_candidate.addListener(src.gamestate.gamestate.story.changedTerrain,"changedTerrain")
-                    chosen_candidate.addListener(src.gamestate.gamestate.story.deliveredSpecialItem,"deliveredSpecialItem")
-                    chosen_candidate.addListener(src.gamestate.gamestate.story.gotEpochReward,"got epoch reward")
-
-                    #  do autosave
-                    src.gamestate.gamestate.save()
-                    return
             src.helpers.deal_with_window_events()
             src.interaction.tcodPresent()
 

@@ -156,7 +156,7 @@ def Death(extraParam):
         chosen_candidate.addListener(src.gamestate.gamestate.story.gotEpochReward,"got epoch reward")
 
         #  do autosave
-        src.gamestate.gamestate.save()
+        src.gamestate.gamestate.saveAtTheTurnEnd = True
         return
 
     p = {}

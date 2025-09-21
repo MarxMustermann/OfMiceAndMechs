@@ -182,6 +182,15 @@ def advanceGame():
     # mark completion of the round as it should be
     src.gamestate.gamestate.savedThisTurn = False
 
+    try:
+        src.gamestate.gamestate.saveAtTheTurnEnd
+    except:
+        src.gamestate.gamestate.saveAtTheTurnEnd = False
+        
+    if src.gamestate.gamestate.saveAtTheTurnEnd:
+        src.gamestate.gamestate.saveAtTheTurnEnd = False
+        src.gamestate.gamestate.save()
+
 def advanceGame_disabled():
     """
     advance the game

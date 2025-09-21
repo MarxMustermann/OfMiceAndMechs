@@ -35,6 +35,7 @@ class GameState:
         self.gameOver = False
         self.gameOverText = ""
         self.savedThisTurn = False
+        self.saveAtTheTurnEnd = False
         self.waitedForInputThisTurn = False
         self.stern = {}
         self.gods = {}

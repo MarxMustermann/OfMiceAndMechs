@@ -75,46 +75,6 @@ def Death(extraParam):
     src.interaction.tcodConsole.rgb[playerpos[0]+1, playerpos[1]]= ord(" "),tcod.black,tcod.black
 
     if pre:
-        text = f"{reason}\n"
-        if killer:
-            text += f"by {killer.name}\n"
-        text += "The last bit of your life force leaves and you die.\n"
-        text += "But something else leaves your implant as well.\n"
-        text += "It took over another clone from your base.\n"
-        text += "\n- press enter to respawn -"
-
-        splitted = text.splitlines()
-        width = len(max(splitted, key=len))
-        height = len(splitted)
-        x = int(playerpos[0]- width / 2)
-        y = int(src.interaction.tcodConsole.height / 2 - 3 - height)
-        original_window_content = src.interaction.tcodConsole.rgba.copy()
-        src.helpers.draw_frame_text(src.interaction.tcodConsole ,width, height, text, x, y)
-        src.interaction.tcodPresent()
-
-        def PreDeathLoop():
-            while 1:
-                events = list(tcod.event.get())
-                while events or runStar:
-                    if events:
-                        event = events.pop(0)
-                    else:
-                        event = None
-                    if (isinstance(event, tcod.event.KeyDown) and event.sym == tcod.event.KeySym.RETURN) or runStar:
-                        return
-                    if isinstance(event, tcod.event.Quit):
-                        raise SystemExit()
-                    if isinstance(event, tcod.event.WindowEvent):
-                        match event.type:
-                            case "WINDOWCLOSE":
-                                raise SystemExit()
-                            case "WindowHidden":
-                                pass
-                            case _:
-                                src.interaction.tcodPresent()
-
-        PreDeathLoop()
-
         if src.gamestate.gamestate.difficulty == "difficult":
             chosen_candidate.health = int(chosen_candidate.health/2)
             chosen_candidate.maxHealth = int(chosen_candidate.maxHealth/2)
@@ -127,6 +87,26 @@ def Death(extraParam):
         chosen_candidate.dutyPriorities = src.gamestate.gamestate.mainChar.dutyPriorities
 
         src.gamestate.gamestate.mainChar = chosen_candidate
+
+        text = f"{reason}\n"
+        if killer:
+            text += f"by {killer.name}\n"
+        text += "The last bit of your life force left your body and you died.\n"
+        text += "But something else left your body as well.\n"
+        text += "It took over another clone from your base.\n"
+        text += "\n- press enter to continue -"
+        splitted = text.splitlines()
+        longestLine = 0
+        for line in splitted:
+            if len(line) <= longestLine:
+                continue
+            longestLine = len(line)
+
+        newText = ""
+        for line in splitted:
+            newText += " "*((longestLine-len(line))//2) + line+"\n"
+
+        chosen_candidate.showTextMenu(newText)
 
         questMenu = src.menuFolder.questMenu.QuestMenu(chosen_candidate)
         questMenu.sidebared = True

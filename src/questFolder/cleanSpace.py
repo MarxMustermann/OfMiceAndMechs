@@ -88,7 +88,7 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
             if self.abortOnfullInventory:
                 if not dryRun:
                     self.fail("full inventory")
-                return (None,None)
+                return (None,("+","abort quest"))
             quest = src.quests.questMap["ClearInventory"](reason="be able to pick up more items",returnToTile=False)
             return ([quest],None)
 
@@ -102,13 +102,13 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
             if not items or ((not self.pickUpBolted) and items[0].bolted):
                 if not dryRun:
                     self.postHandler()
-                return (None,None)
+                return (None,("+","end quest"))
         else:
             items = terrain.getItemByPosition((self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0))
             if not items or ((not self.pickUpBolted) and items[0].bolted):
                 if not dryRun:
                     self.postHandler()
-                return (None,None)
+                return (None,("+","end quest"))
 
         if character.container.isRoom:
             if character.getDistance(self.targetPosition) > 1:

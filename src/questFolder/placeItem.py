@@ -252,7 +252,7 @@ Press d to move the cursor and show the subquests description.
                 else:
                     items = character.container.getItemByPosition((self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0))
                 if items and items[-1].type != self.itemType:
-                    quest = src.quests.questMap["CleanSpace"](targetPosition=self.targetPosition,targetPositionBig=self.targetPositionBig,pickUpBolted=True)
+                    quest = src.quests.questMap["CleanSpace"](targetPosition=self.targetPosition,targetPositionBig=self.targetPositionBig,pickUpBolted=True,abortOnfullInventory=False)
                     return ([quest],None)
 
             try:
@@ -262,7 +262,7 @@ Press d to move the cursor and show the subquests description.
 
             if self.clearSpace:
                 if items and items[-1].type != self.itemType:
-                    quest = src.quests.questMap["CleanSpace"](targetPosition=self.targetPosition,targetPositionBig=self.targetPositionBig,pickUpBolted=True)
+                    quest = src.quests.questMap["CleanSpace"](targetPosition=self.targetPosition,targetPositionBig=self.targetPositionBig,pickUpBolted=True,abortOnfullInventory=False)
                     return ([quest],None)
 
             if character.getSpacePosition() != self.targetPosition:

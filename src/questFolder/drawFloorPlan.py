@@ -15,7 +15,7 @@ class DrawFloorPlan(src.quests.MetaQuestSequence):
         tryHard: try to complete the quest in any way possible
     '''
     type = "DrawFloorPlan"
-    def __init__(self, description="draw floor plan", creator=None, targetPosition=None,reason=None,tryHard=False, onlyDrawOneBatch=True):
+    def __init__(self, description="draw floor plan", creator=None, targetPosition=None,reason=None,tryHard=False, onlyDrawOneBatch=False):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
@@ -57,11 +57,6 @@ Draw a floor plan assigned to a room{reason}.
         if self.subQuests:
             return (None,None)
 
-        if character.container.alarm:
-            if not dryRun:
-                self.fail("no floor plan")
-            return (None,("+","abort quest"))
-
         # actually enter the current room
         if not isinstance(character.container,src.rooms.Room):
             command = None
@@ -81,20 +76,16 @@ Draw a floor plan assigned to a room{reason}.
             quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
             return ([quest],None)
 
+        if character.container.alarm:
+            if not dryRun:
+                self.fail("alarm")
+            return (None,("+","abort quest"))
+
         # fail on weird state
         if not character.container.floorPlan:
             if not dryRun:
                 self.fail()
             return (None,None)
-
-        try:
-            self.onlyDrawOneBatch
-        except:
-            self.onlyDrawOneBatch = True
-        try:
-            self.drewOneBatch
-        except:
-            self.drewOneBatch = False
 
         if self.onlyDrawOneBatch:
             if self.drewOneBatch:

@@ -221,7 +221,7 @@ Try as hard as you can to achieve this.
                     return (None,(["c","c"],"clear the painters extra info"))
 
             for (key,value) in self.extraInfo.items():
-                actualValue = item.paintExtraInfo[key]
+                actualValue = item.paintExtraInfo.get(key,"")
                 if key in ("targets",):
                     actualValue = actualValue.replace(" ","")
                     value = value.replace(" ","")

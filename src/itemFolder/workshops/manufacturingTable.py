@@ -172,7 +172,7 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
 
         itemsFound = []
         for material in materialsNeeded:
-            for item in self.getInputItems():
+            for item in self.getInputItems(character):
                 if item in itemsFound:
                     continue
                 if item.type == material:
@@ -180,7 +180,7 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
                     break
 
         if not len(materialsNeeded) == len(itemsFound):
-            character.addMessage(f"You need to put the raw items into the manufacturing tables input\nitems: {materialsNeeded}")
+            character.addMessage(f"You need to put the raw items into the manufacturing tables input or have them in your inventory\nitems: {materialsNeeded}")
             character.changed("failed manufacturing",{})
             return
 
@@ -191,7 +191,11 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
             return
 
         if not self.toProduce == "MetalBars" or itemsFound[0].amount == 1:
-            self.container.removeItems(itemsFound)
+            for item in itemsFound:
+                if item in character.inventory:
+                    character.removeItemFromInventory(item)
+                else:
+                    self.container.removeItem(item)
         else:
             itemsFound[0].amount -= 1
             itemsFound[0].setWalkable()
@@ -281,7 +285,7 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
 
         return True
 
-    def getInputItems(self):
+    def getInputItems(self, character = None):
 
         result = []
 
@@ -292,6 +296,11 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
                 if item.bolted:
                     continue
                 result.append(item)
+
+        if character:
+            for item in character.inventory:
+                result.append(item)
+
         return result
 
     def isOutputEmpty(self):

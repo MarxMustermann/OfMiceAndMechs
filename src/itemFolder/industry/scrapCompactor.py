@@ -49,7 +49,7 @@ class ScrapCompactor(src.items.Item):
         else:
             return self.display
 
-    def checkForInputScrap(self):
+    def checkForInputScrap(self, character = None):
         '''
         check if there is material to process
         '''
@@ -76,6 +76,12 @@ class ScrapCompactor(src.items.Item):
                 if isinstance(item, itemMap["Scrap"]):
                     scrap = item
                     break
+
+        if character and not scrap:
+            for item in character.inventory:
+                if item.type == "Scrap":
+                    return item
+
         return scrap
 
     def checkCoolDownEnded(self):
@@ -160,7 +166,7 @@ class ScrapCompactor(src.items.Item):
             self.container.addAnimation(self.getPosition(offset=(1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec(color, "black"),"][")})
             return
 
-        scrap = self.checkForInputScrap()
+        scrap = self.checkForInputScrap(character)
         if not scrap:
             character.addMessage("no scraps available")
             self.runCommand("material Scrap", character)
@@ -177,7 +183,10 @@ class ScrapCompactor(src.items.Item):
 
         # remove resources
         if scrap.amount <= 1:
-            self.container.removeItem(scrap)
+            if scrap in character.inventory:
+                character.removeItemFromInventory(scrap)
+            else:
+                self.container.removeItem(scrap)
         else:
             scrap.amount -= 1
             scrap.setWalkable()

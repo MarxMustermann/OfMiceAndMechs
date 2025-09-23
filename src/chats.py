@@ -2031,7 +2031,7 @@ class ChatMenu(Chat):
                             break
                     self.partner.runCommandString(movementString)
                 elif self.selection == "run command":
-                    self.partner.runCommandString("j")
+                    self.partner.runCommandString("jj")
                 elif self.selection == "step east":
                     if isinstance(self.partner.container,src.rooms.Room) and self.partner.xPosition == 12:
                         self.partner.runCommandString("dd")

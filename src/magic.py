@@ -574,6 +574,12 @@ def spawnSpawnRoom(terrain, coordinate, faction, doors="0,6 6,0 6,12 12,6"):
     flask = src.items.itemMap["GooFlask"]()
     flask.uses = 100
     spawnedRoom.addItem(flask, (2, 3, 0))
+    flask = src.items.itemMap["GooFlask"]()
+    flask.uses = 100
+    spawnedRoom.addItem(flask, (2, 3, 0))
+    flask = src.items.itemMap["GooFlask"]()
+    flask.uses = 100
+    spawnedRoom.addItem(flask, (2, 3, 0))
 
     spawnedRoom.addStorageSlot((7, 5, 0), "Flask", {"desiredState": "filled"})
     item = src.items.itemMap["AlchemyTable"]()

@@ -237,7 +237,7 @@ if __name__ == '__main__':
                                     w = len(max(text.splitlines(), key=len))
                                     x = int(src.interaction.tcodConsole.width / 2 - w / 2 )
                                     src.helpers.draw_frame_text(src.interaction.tcodConsole ,w, 2, text, x, y)
-                                    src.interaction.tcodContext.present(src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True)
+                                    src.interaction.tcodPresent()
                                     while t.is_alive():
                                         src.helpers.deal_with_window_events(e)
                                     raise e

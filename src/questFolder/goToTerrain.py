@@ -1,3 +1,6 @@
+import numpy as np
+import tcod
+
 import src
 
 
@@ -11,7 +14,7 @@ class GoToTerrain(src.quests.MetaQuestSequence):
     '''
     type = "GoToTerrain"
     lowLevel = True
-    def __init__(self, description="go to terrain", creator=None, targetTerrain=None, allowTerrainMenu=True, reason=None):
+    def __init__(self, description="go to terrain", creator=None, targetTerrain=None, allowTerrainMenu=True, reason=None,terrainsWeight= None):
         if targetTerrain:
             if targetTerrain[0] < 1 or targetTerrain[0] > 13:
                 raise ValueError("target position out of range")
@@ -24,6 +27,7 @@ class GoToTerrain(src.quests.MetaQuestSequence):
         self.allowTerrainMenu = allowTerrainMenu
         self.metaDescription = description + " " + str(self.targetTerrain)
         self.reason = reason
+        self.terrainsWeight = terrainsWeight
 
     def triggerCompletionCheck(self,character=None):
         if character is None:
@@ -45,18 +49,41 @@ class GoToTerrain(src.quests.MetaQuestSequence):
             return True
         return False
 
+    def getTerrainPath(self,startPos,targetPos):
+
+        if self.terrainsWeight:
+            terrainMap = np.zeros((14,14),dtype=np.int16)
+
+            for x in range(1,14):
+                for y in range(1,14):
+                    terrainMap[x][y] = self.terrainsWeight[(x,y,0)]
+        else:
+            terrainMap = np.ones((14,14),dtype=np.int16)
+
+        pathfinder = tcod.path.AStar(terrainMap,diagonal = 0)
+        path = pathfinder.get_path(startPos[0],startPos[1],targetPos[0],targetPos[1])
+
+        return path
+
     def getNextStep(self,character,ignoreCommands=False, dryRun = True):
         if self.subQuests:
             return (None,None)
+
+        terrainPos = character.getTerrainPosition()
+
+        if terrainPos != self.targetTerrain:
+            targetTerrain = self.getTerrainPath(terrainPos,self.targetTerrain)[0]
+        else:
+            targetTerrain = self.targetTerrain
 
         submenue = character.macroState.get("submenue")
         if submenue:
             if submenue.tag == "terrainMovementmenu":
                 movementCommand = ""
-                movementCommand += "s"*(self.targetTerrain[1]-submenue.cursor[1])
-                movementCommand += "w"*(submenue.cursor[1]-self.targetTerrain[1])
-                movementCommand += "d"*(self.targetTerrain[0]-submenue.cursor[0])
-                movementCommand += "a"*(submenue.cursor[0]-self.targetTerrain[0])
+                movementCommand += "s"*(targetTerrain[1]-submenue.cursor[1])
+                movementCommand += "w"*(submenue.cursor[1]-targetTerrain[1])
+                movementCommand += "d"*(targetTerrain[0]-submenue.cursor[0])
+                movementCommand += "a"*(submenue.cursor[0]-targetTerrain[0])
                 return (None,(movementCommand+"j","start the auto movement"))
             return (None,(["esc"],"close the menu"))
 
@@ -67,10 +94,10 @@ class GoToTerrain(src.quests.MetaQuestSequence):
 
         if self.allowTerrainMenu:
             movementCommand = ""
-            movementCommand += "s"*(self.targetTerrain[1]-character.getTerrain().yPosition)
-            movementCommand += "w"*(character.getTerrain().yPosition-self.targetTerrain[1])
-            movementCommand += "d"*(self.targetTerrain[0]-character.getTerrain().xPosition)
-            movementCommand += "a"*(character.getTerrain().xPosition-self.targetTerrain[0])
+            movementCommand += "s"*(targetTerrain[1]-character.getTerrain().yPosition)
+            movementCommand += "w"*(character.getTerrain().yPosition-targetTerrain[1])
+            movementCommand += "d"*(targetTerrain[0]-character.getTerrain().xPosition)
+            movementCommand += "a"*(character.getTerrain().xPosition-targetTerrain[0])
 
             menuCommand = "g"
             if "runaction" in character.interactionState:
@@ -78,7 +105,7 @@ class GoToTerrain(src.quests.MetaQuestSequence):
 
             return (None,(menuCommand+"M"+movementCommand+"j","auto move to terrain"))
 
-        if character.getTerrain().yPosition > self.targetTerrain[1]:
+        if character.getTerrain().yPosition > targetTerrain[1]:
             if character.getBigPosition()[0] == 0:
                 return (None, ("d","enter the terrain"))
             if character.getBigPosition()[0] == 14:
@@ -93,7 +120,7 @@ class GoToTerrain(src.quests.MetaQuestSequence):
                 return ([quest],None)
             return (None,("w","go to terrain"))
 
-        if character.getTerrain().yPosition < self.targetTerrain[1]:
+        if character.getTerrain().yPosition < targetTerrain[1]:
             if character.getBigPosition()[0] == 0:
                 return (None, ("d","enter the terrain"))
             if character.getBigPosition()[0] == 14:
@@ -108,7 +135,7 @@ class GoToTerrain(src.quests.MetaQuestSequence):
                 return ([quest],None)
             return (None,("s","go to terrain"))
 
-        if character.getTerrain().xPosition > self.targetTerrain[0]:
+        if character.getTerrain().xPosition > targetTerrain[0]:
             if character.getBigPosition()[0] == 14:
                 return (None, ("a","enter the terrain"))
             if character.getBigPosition()[1] == 0:
@@ -123,7 +150,7 @@ class GoToTerrain(src.quests.MetaQuestSequence):
                 return ([quest],None)
             return (None,("a","go to terrain"))
 
-        if character.getTerrain().xPosition < self.targetTerrain[0]:
+        if character.getTerrain().xPosition < targetTerrain[0]:
             if character.getBigPosition()[0] == 0:
                 return (None, ("d","enter the terrain"))
             if character.getBigPosition()[1] == 0:

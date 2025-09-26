@@ -136,11 +136,11 @@ class Adventure(src.quests.MetaQuestSequence):
         for x in range(1,14):
             for y in range(1,14):
                 coordinate = (x, y, 0)
-                extraWeight[coordinate] = 0
+                extraWeight[coordinate] = 1
                 if coordinate in character.terrainInfo:
                     info = character.terrainInfo[coordinate]
                     if character.getFreeInventorySpace() < 2:
-                        extraWeight[coordinate] = 2
+                        extraWeight[coordinate] = -3
                         if not info.get("tag") == "shrine":
                             continue
                     else:
@@ -148,13 +148,15 @@ class Adventure(src.quests.MetaQuestSequence):
                             continue
                         if info.get("looted"):
                             continue
+                if coordinate == (7,7,0): # avoid endgame dungeon
+                    extraWeight[coordinate] = 9999
                 candidates.append(coordinate)
 
         # do special handling of the characters home
         homeCoordinate = (character.registers["HOMETx"], character.registers["HOMETy"], 0)
         if character.getFreeInventorySpace() < 2:
             candidates.append(homeCoordinate)
-            extraWeight[coordinate] = 3
+            extraWeight[coordinate] = -3
         else:
             if homeCoordinate in candidates:
                 candidates.remove(homeCoordinate)
@@ -166,12 +168,12 @@ class Adventure(src.quests.MetaQuestSequence):
 
         # sort weighted with slight random
         random.shuffle(candidates)
-        candidates.sort(key=lambda x: src.helpers.distance_between_points(character.getTerrainPosition(), x)+random.random()-extraWeight[x])
+        candidates.sort(key=lambda x: src.helpers.distance_between_points(character.getTerrainPosition(), x)+random.random()+extraWeight[x])
         targetTerrain = candidates[0]
 
         # move to the actual target terrain
         if character.getFreeInventorySpace() and (targetTerrain != homeCoordinate):
-            quest = src.quests.questMap["AdventureOnTerrain"](targetTerrain=targetTerrain)
+            quest = src.quests.questMap["AdventureOnTerrain"](targetTerrain=targetTerrain,terrainsWeight = extraWeight)
         else:
             quest = src.quests.questMap["GoToTerrain"](targetTerrain=targetTerrain)
         return ([quest], None)

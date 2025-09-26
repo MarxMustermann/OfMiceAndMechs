@@ -6550,13 +6550,14 @@ FOLLOW YOUR ORDERS
         if not stageState:
             stage += 1
 
-def showRunOutro():
+def showRunOutro(endingType="bad"):
 
     def fixRoomRender(render):
         for row in render:
             row.append("\n")
         return render
 
+    numStruggled = 0
     stage = 0
     stageState = None
     room = None
@@ -6641,18 +6642,27 @@ It connects and is ready to merge with you.
 
 """
             printUrwidToTcod(text,(40,14))
-            textBase = ["""
+            if endingType == "bad":
+                textBase = ["""
 You merge with the Throne.
-The gods bow and
-
-        you rule the world now."""]
+You feel that the power of the world flowing though you.
+You try to reach out to it, but you can't move."""]
+            else:
+                textBase = ["""
+You merge with the Throne.
+You rule the world now and you feel it.
+You feel that the power of the world flowing though you.
+You grab hold onto it and harness it."""]
             text = "".join(textBase[0:subStep])
             if not subStep < len(textBase)-1:
                 text += textBase[-1][0:subStep2]
             printUrwidToTcod(text,(45,17))
 
             if not subStep2 < len(textBase[-1]):
-                printUrwidToTcod("press enter to reach out to implant",(45,27))
+                if endingType == "bad":
+                    printUrwidToTcod("press enter to reach out to implant",(45,27))
+                else:
+                    printUrwidToTcod("press enter to continue",(45,27))
             tcodPresent()
             if subStep < len(textBase)-1:
                 time.sleep(0.5)
@@ -6662,7 +6672,7 @@ The gods bow and
                 time.sleep(0.05)
             else:
                 time.sleep(0.1)
-        elif stage == 2:
+        elif endingType == "bad":
             if stageState is None:
                 stageState = {"substep":1,"lastChange":time.time()}
             text = """
@@ -6687,32 +6697,46 @@ The gods bow and
 
 """
             printUrwidToTcod(text,(40,14))
-            textBase = ["""
+            
+            '''
+            (src.interaction.urwid.AttrSpec(painColor, "black"), painChar), (painPos[0] + c_offset, painPos[1])
+            '''
+
+            color_step = numStruggled
+            if color_step > 15:
+                color_step = 15
+
+            color1 = "#"+(hex(15-color_step)[-1])*3
+            color2 = "#"+(hex(color_step)[-1])*3
+
+            textBase = [(src.interaction.urwid.AttrSpec(color1, "black"),"""
 You reach out to your implant and it answers:
 
-No advice can be rendered to a true leader.
-You rule this world now and your responsibility.
+You servered me well, but you served your purpose."""),(src.interaction.urwid.AttrSpec(color2, "black"),"""
+credits:"""),(src.interaction.urwid.AttrSpec(color1, "black"),"""
+You rule the world now, but i control you."""),(src.interaction.urwid.AttrSpec(color2, "black"),"""
+MarxMustermann
+"""),(src.interaction.urwid.AttrSpec(color2, "black"),"""
 
+press esc to end the game"""),(src.interaction.urwid.AttrSpec(color1, "black"),"""
+press enter to fight for control""")]
 
+            text = []
+            maxCursor = subStep2
+            for subtext in textBase:
+                text.append((subtext[0],subtext[1][0:maxCursor]))
+                maxCursor -= len(subtext[1])
 
-
-
-press enter to run credits"""]
-            text = "".join(textBase[0:subStep])
-            if not subStep < len(textBase)-1:
-                text += textBase[-1][0:subStep2]
+                if maxCursor <= 0:
+                    break
             printUrwidToTcod(text,(45,17))
 
             tcodPresent()
-            if subStep < len(textBase)-1:
-                time.sleep(0.5)
-                subStep += 1
-            elif subStep2 < len(textBase[-1]):
-                subStep2 += 1
-                time.sleep(0.05)
-            else:
-                time.sleep(0.1)
-        elif stage == 3:
+
+            subStep2 += 1
+            time.sleep(0.05)
+
+        elif stage == 2:
             if stageState is None:
                 stageState = {"substep":1,"lastChange":time.time()}
             text = """
@@ -6747,7 +6771,7 @@ MarxMustermann
 
 
 
-press enter"""]
+press enter to continue playing"""]
             text = "".join(textBase[0:subStep])
             if not subStep < len(textBase)-1:
                 text += textBase[-1][0:subStep2]
@@ -6781,9 +6805,19 @@ press enter"""]
                     sdl_window.fullscreen = not sdl_window.fullscreen
                 if key == tcod.event.KeySym.ESCAPE:
                     stage = 7
+                    if endingType == "bad":
+                        if stage > 1:
+                            src.gamestate.gamestate = None
+                            raise EndGame("the game was won")
+
                 if key == tcod.event.KeySym.RETURN:
-                    stage += 1
-                    subStep = 0
+                    if endingType == "bad" and stage == 2:
+                        numStruggled += 1
+                    if not endingType == "bad" or stage < 2:
+                        stage += 1
+                        subStep = 0
+                        subStep2 = 0
+                        
 
 def showRunIntro():
 

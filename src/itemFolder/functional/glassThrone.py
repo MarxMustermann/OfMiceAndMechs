@@ -40,7 +40,7 @@ A throne. Take control over the throne to win the game.
                     endingType = "good"
                 else:
                     endingType = "bad"
-                src.interaction.showRunOutro()
+                src.interaction.showRunOutro(endingType)
                 text = f"""
 You won the game! congratulations
 

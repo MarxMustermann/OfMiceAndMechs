@@ -8,14 +8,14 @@ logger = logging.getLogger(__name__)
 class AdventureOnTerrain(src.quests.MetaQuestSequence):
     type = "AdventureOnTerrain"
 
-    def __init__(self, description="adventure on terrain", creator=None, lifetime=None, reason=None, targetTerrain=None):
+    def __init__(self, description="adventure on terrain", creator=None, lifetime=None, reason=None, targetTerrain=None,terrainsWeight= None):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description+f" {targetTerrain}"
         self.reason = reason
         self.targetTerrain = targetTerrain
         self.donePointsOfInterest = []
-
+        self.terrainsWeight = terrainsWeight
     def getRemainingPointsOfInterests(self):
         result = []
 
@@ -59,7 +59,7 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
             return (None,None)
 
         if not (currentTerrain.xPosition == self.targetTerrain[0] and currentTerrain.yPosition == self.targetTerrain[1]):
-            quest = src.quests.questMap["GoToTerrain"](targetTerrain=self.targetTerrain)
+            quest = src.quests.questMap["GoToTerrain"](targetTerrain=self.targetTerrain,terrainsWeight= self.terrainsWeight)
             return ([quest],None)
 
         if character.getBigPosition()[0] == 0:

@@ -156,6 +156,8 @@ class SternsContraption(src.items.Item):
                 terrain.scrapFields.append((bigX,bigY,0))
 
                 enemySpawns = [(4,6,0),(4,8,0),(3,10,0),(3,7,0),(5,8,0),(7,9,0)]
+                if src.gamestate.gamestate.difficulty == "easy":
+                    enemySpawns.remove((4,8,0))
                 for bigPos in enemySpawns:
                     numEnemies = random.randint(1,5)
                     if bigPos == (5,8,0):

@@ -136,6 +136,22 @@ def teleportToTerrain(character, terrainPosition, spawnOutside=False):
     character.changed("changedTerrain",{"character":character})
     character.interactionState["itemMarkedLast"] = None
 
+def spawnCharacter(terrain, bigCoordinate=None, coordinate=None, monsterType=None, faction=None):
+    if not faction:
+        faction = "ghost"
+    if not monsterType:
+        faction = "Monster"
+    if not coordinate:
+        coordinate = (random.randint(1,13),random.randint(1,13))
+
+    character = src.characters.characterMap[monsterType]()
+    character.faction = faction
+    character.automated = True
+
+    terrain.addCharacter(character, bigCoordinate[0]*15+coordinate[0], bigCoordinate[1]*15+coordinate[1])
+
+    return character
+
 def spawnStorageRoom(terrain, coordinate, controlRoom, teleporter_group):
     '''
     spawn storage room

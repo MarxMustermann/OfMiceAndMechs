@@ -19,7 +19,7 @@ class FactionSetter(src.items.Item):
         '''
         character.faction = self.faction
         character.addMessage(f"your faction was changed to {self.faction}")
-        character.changed("set faction")
+        character.changed("set faction",{"character":character})
 
         self.container.addAnimation(character.getPosition(),"showchar",1,{"char":"OO"})
         self.container.addAnimation(self.getPosition(),"showchar",1,{"char":"OO"})

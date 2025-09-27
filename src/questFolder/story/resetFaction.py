@@ -87,7 +87,7 @@ Use it to reset your faction marker.
         self.startWatching(character,self.wrapedTriggerCompletionCheck, "set faction")
         super().assignToCharacter(character)
 
-    def wrapedTriggerCompletionCheck(self):
+    def wrapedTriggerCompletionCheck(self, extraInfo):
         if self.completed:
             1/0
         if not self.active:

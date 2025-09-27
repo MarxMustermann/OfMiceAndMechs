@@ -2585,6 +2585,24 @@ but they are likely to explode when disturbed.
 
                 currentTerrain.addCharacter(enemy, x*15+pos[0], y*15+pos[1])
 
+    def spawnExtraInvasion(self,extraInfo):
+        character = extraInfo["character"]
+
+        terrain = character.getTerrain()
+
+        if not terrain.mana >= 0.1:
+            return
+
+        for _i in range(5):
+            terrain.mana -= 0.1
+            attacker = src.magic.spawnCharacter(terrain, bigCoordinate=(4, 7, 0), monsterType="Spiderling")
+
+            quest = src.quests.questMap["SecureTile"](toSecure=(6, 7, 0))
+            quest.autoSolve = True
+            attacker.assignQuest(quest, active=True)
+
+        character.addMessage("Your implant emmits pain for a moment")
+
     def createRoguelikeStart(self):
         homeTerrain = src.gamestate.gamestate.terrainMap[self.playerBasePosition[1]][self.playerBasePosition[0]]
 
@@ -2616,6 +2634,7 @@ but they are likely to explode when disturbed.
         mainChar.personality["abortMacrosOnAttack"] = False
         mainChar.personality["autoCounterAttack"] = False
         mainChar.addListener(src.cinematicsFolder.death.Death,"died_pre")
+        mainChar.addListener(self.spawnExtraInvasion,"set faction")
 
         storyStartInfo = {}
         storyStartInfo["terrain"] = homeTerrain
@@ -2690,6 +2709,7 @@ but they are likely to explode when disturbed.
         mainChar.personality["abortMacrosOnAttack"] = False
         mainChar.personality["autoCounterAttack"] = False
         mainChar.addListener(src.cinematicsFolder.death.Death,"died_pre")
+        mainChar.addListener(self.spawnExtraInvasion,"set faction")
 
         storyStartInfo = {}
         storyStartInfo["terrain"] = homeTerrain
@@ -2771,6 +2791,7 @@ but they are likely to explode when disturbed.
         mainChar.personality["abortMacrosOnAttack"] = False
         mainChar.personality["autoCounterAttack"] = False
         mainChar.addListener(src.cinematicsFolder.death.Death,"died_pre")
+        mainChar.addListener(self.spawnExtraInvasion,"set faction")
 
         storyStartInfo = {}
         storyStartInfo["terrain"] = homeTerrain

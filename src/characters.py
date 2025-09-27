@@ -786,9 +786,10 @@ class Character:
             self.waitForEnemyApproach -= 0.1
             if self.waitForEnemyApproach <= 0:
                 self.hasOwnAction = 0
-            if self.getDistance(enemy.getPosition()) > 3:
-                return "."
-            return ":"
+            for enemy in self.getNearbyEnemies():
+                if self.getDistance(enemy.getPosition()) < 3:
+                    return ":"
+            return "."
 
 
         for character in self.container.characters:

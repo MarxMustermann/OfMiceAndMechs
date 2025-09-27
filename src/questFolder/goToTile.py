@@ -163,6 +163,8 @@ You are on the target tile.
 
 The target tile is {direction[4:]}
 """
+        if self.paranoid:
+            text += "Be paranoid."
         return text
 
     def triggerCompletionCheck(self, character=None):

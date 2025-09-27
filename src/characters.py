@@ -220,6 +220,7 @@ class Character:
         self.guarding = 0
         self.waitForEnemy = 0
         self.waitForEnemyApproach = 0
+        self.waitLength = 5
 
         # bad code: story specific state
         self.serveQuest = None
@@ -766,10 +767,14 @@ class Character:
                 self.hasOwnAction = 0
                 return "~"
 
-            self.waitForEnemy -= 1
+            try:
+                self.waitLength
+            except:
+                self.waitLength = 5
+            self.waitForEnemy -= self.waitLength
             if self.waitForEnemy <= 0:
                 self.hasOwnAction = 0
-            return "."
+            return "."*self.waitLength
 
         if self.waitForEnemyApproach:
             for enemy in self.getNearbyEnemies():

@@ -49,12 +49,16 @@ def castLineDamage(character,direction):
 
             other_character.hurt(100,reason="magic")
 
-def addSpeedBuffs(character):
+def addStatusEffect(character,buffType,cost=0.1):
+    buff = src.statusEffects.statusEffectMap[effectType]()
+    character.addStatusEffect(buff)
+
+def addSpeedBuffs(character,cost=0.5):
     terrain = character.getTerrain()
-    if terrain.mana < 0.5:
+    if terrain.mana < cost:
         character.addMessage("out of mana")
         return
-    terrain.mana -= 0.5
+    terrain.mana -= cost
 
     buffs = [
                    src.statusEffects.statusEffectMap["Haste"](speedUp=0.2,duration=200),

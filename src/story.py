@@ -2593,13 +2593,26 @@ but they are likely to explode when disturbed.
         if not terrain.mana >= 0.1:
             return
 
-        for _i in range(5):
+        for i in range(10):
+            if not terrain.mana >= 0.1:
+                break
             terrain.mana -= 0.1
             attacker = src.magic.spawnCharacter(terrain, bigCoordinate=(4, 7, 0), monsterType="Spiderling")
+            attacker.timetalen = 10*1
 
             quest = src.quests.questMap["SecureTile"](toSecure=(6, 7, 0))
             quest.autoSolve = True
             attacker.assignQuest(quest, active=True)
+
+        for other_character in terrain.characters:
+            if not terrain.mana >= 0.1:
+                break
+            if not isinstance(other_character,src.characters.characterMap["Hunter"]):
+                break
+            terrain.mana -= 0.1
+            src.magic.addStatusEffect(other_character,"Haste",cost=0.1)
+            src.magic.addStatusEffect(other_character,"Haste",cost=0.1)
+            src.magic.addStatusEffect(other_character,"Haste",cost=0.1)
 
         character.addMessage("Your implant emmits pain for a moment")
 

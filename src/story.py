@@ -2593,7 +2593,7 @@ but they are likely to explode when disturbed.
         if not terrain.mana >= 0.1:
             return
 
-        for i in range(10):
+        for i in range(5):
             if not terrain.mana >= 0.1:
                 break
             terrain.mana -= 0.1

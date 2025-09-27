@@ -22,7 +22,7 @@ class GoToTile(src.quests.MetaQuestSequence):
     type = "GoToTile"
     lowLevel = True
 
-    def __init__(self, description="go to tile", creator=None, targetPosition=None, lifetime=None, paranoid=False, showCoordinates=True,reason=None,abortHealthPercentage=0, story=None, allowMapMenu=True):
+    def __init__(self, description="go to tile", creator=None, targetPosition=None, lifetime=None, paranoid=False, showCoordinates=True,reason=None,abortHealthPercentage=0, story=None, allowMapMenu=True, abortOnDanger=False):
         if targetPosition:
             if targetPosition[0] < 1 or targetPosition[0] > 13:
                 raise ValueError(f"target position {targetPosition} out of range")
@@ -43,6 +43,7 @@ class GoToTile(src.quests.MetaQuestSequence):
         self.abortHealthPercentage = abortHealthPercentage
         self.story = story
         self.allowMapMenu = allowMapMenu
+        self.abortOnDanger = abortOnDanger
 
     def handleChangedTile(self):
         '''
@@ -223,6 +224,15 @@ The target tile is {direction[4:]}
                 self.fail("target position out of range")
             return (None,None)
 
+        try:
+            self.abortOnDanger
+        except:
+            self.abortOnDanger = False
+
+        if character.getNearbyEnemies() and self.abortOnDanger:
+            if not dryRun:
+                self.fail("enemies nearby")
+            return (None,None)
         # move using the room menu
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.mapMenu.MapMenu) and not ignoreCommands:
             if self.targetPosition == (7,7,0):

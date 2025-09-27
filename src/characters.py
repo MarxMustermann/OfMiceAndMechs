@@ -474,7 +474,7 @@ class Character:
         targetPosition = extraParam["coordinate"]
         targetPosition = (targetPosition[0],targetPosition[1],0)
 
-        quest = src.quests.questMap["GoToTile"](targetPosition=targetPosition,lifetime=1000,allowMapMenu=False)
+        quest = src.quests.questMap["GoToTile"](targetPosition=targetPosition,lifetime=1000,allowMapMenu=False,abortOnDanger=True)
         quest.selfAssigned = True
         quest.autoSolve = True
         quest.assignToCharacter(self)

@@ -1608,13 +1608,9 @@ class Room:
                         targets = targets.replace(" ","")
                         item.targets = []
                         if targets != "[]":
-                            print(targets)
                             targets = targets[2:-2]
-                            print(targets)
                             for target in targets.split("),("):
-                                print(target)
                                 target = target.split(",")
-                                print(target)
                                 item.targets.append((int(target[0]),int(target[1]),int(target[2])))
                         if buildSite[2].get("floor") == "walkingSpace":
                             self.walkingSpace.add(pos)

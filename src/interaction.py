@@ -6814,7 +6814,7 @@ press enter to continue playing"""]
                             raise EndGame("the game was won")
 
                 if key == tcod.event.KeySym.RETURN:
-                    if endingType == "bad" and stage == 2:
+                    if endingType == "bad" and stage == 2 and subStep2 > 200:
                         numStruggled += 1
                     if not endingType == "bad" or stage < 2:
                         stage += 1

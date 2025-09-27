@@ -56,7 +56,6 @@ def addSpeedBuffs(character):
         return
     terrain.mana -= 0.5
 
-    character.heal(200,"magic")
     buffs = [
                    src.statusEffects.statusEffectMap["Haste"](speedUp=0.2,duration=200),
                    src.statusEffects.statusEffectMap["Frenzy"](speedUp=0.2,duration=200),

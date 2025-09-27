@@ -76,7 +76,7 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
                     if character.yPosition%15 == 14:
                         return (None,("w","enter tile"))
 
-                return (None,("...........","wait for Snatchers"))
+                return (None,(";","wait for Snatchers"))
 
             if not dryRun:
                 self.postHandler()

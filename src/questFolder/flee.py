@@ -100,6 +100,8 @@ run,run,run!!!
                 break
             for offset in [((1,0,0),"a"),((-1,0,0),"d"),((0,1,0),"w"),((0,-1,0),"s")]:
                 if character.getPosition(offset=offset[0]) == foundEnemy.getPosition():
+                    if random.random() < 0.3:
+                        return (None,("m","fight"))
                     command = offset[1]
                     break
             x = foundEnemy.xPosition

@@ -3041,12 +3041,18 @@ but they are likely to explode when disturbed.
                         return
 
                     # clear room yourself
-                    quest = src.quests.questMap["ClearTile"](description="clean up trap room",targetPosition=room.getPosition(),reason="clean the trap room.\n\nThe trap room relies on TriggerPlates to work.\nThose only work, if there are no items ontop of them.\nRestore the defence by removing the enemies remains.\nAvoid any enemies entering the trap room while you work",story="You reach out to your implant and it answers:\n\nThe main defence of the base is the trap room,\nit needs to be cleaned to ensure it works correctly.")
-                    quest.assignToCharacter(mainChar)
-                    quest.activate()
-                    mainChar.assignQuest(quest,active=True)
-                    quest.endTrigger = {"container": self, "method": "reachImplant"}
-                    return
+                    hasEnemy = False
+                    for other_character in room.characters:
+                        if other_character.faction == character.faction:
+                            continue
+                        hasEnemy = True
+                    if not hasEnemy:
+                        quest = src.quests.questMap["ClearTile"](description="clean up trap room",targetPosition=room.getPosition(),reason="clean the trap room.\n\nThe trap room relies on TriggerPlates to work.\nThose only work, if there are no items ontop of them.\nRestore the defence by removing the enemies remains.\nAvoid any enemies entering the trap room while you work",story="You reach out to your implant and it answers:\n\nThe main defence of the base is the trap room,\nit needs to be cleaned to ensure it works correctly.")
+                        quest.assignToCharacter(mainChar)
+                        quest.activate()
+                        mainChar.assignQuest(quest,active=True)
+                        quest.endTrigger = {"container": self, "method": "reachImplant"}
+                        return
 
         # wait out hunters
         if hunterCount:

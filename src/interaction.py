@@ -6715,7 +6715,7 @@ You grab hold onto it and harness it."""]
             textBase = [(src.interaction.urwid.AttrSpec(color1, "black"),"""
 The implant answers:
 
-You servered me well, but you served your purpose."""),(src.interaction.urwid.AttrSpec(color2, "black"),"""
+You served me well, but you served your purpose."""),(src.interaction.urwid.AttrSpec(color2, "black"),"""
 credits:"""),(src.interaction.urwid.AttrSpec(color1, "black"),"""
 You rule the world now, but i control you."""),(src.interaction.urwid.AttrSpec(color2, "black"),"""
 MarxMustermann

@@ -66,6 +66,7 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
                 break
 
             if foundSnatcher:
+
                 if not character.container.isRoom:
                     if character.xPosition%15 == 0:
                         return (None,("d","enter tile"))
@@ -126,11 +127,14 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
                 return (None,(direction,"attack Snatcher"))
 
         # let the snatchers approach
-        for enemy in enemies:
-            enemyPosition = enemy.getPosition()
-            if character.getDistance(enemyPosition) < 3:
-                return (None,(":","let Snatchers approach very slowly"))
-        return (None,(".","let Snatchers approach"))
+        if character.stats.get("total enemies killed",{}).get("Snatcher",0) < 5:
+            for enemy in enemies:
+                enemyPosition = enemy.getPosition()
+                if character.getDistance(enemyPosition) < 3:
+                    return (None,(":","let Snatchers approach very slowly"))
+            return (None,(".","let Snatchers approach"))
+        else:
+            return (None,(",","let Snatchers approach"))
 
     def generateTextDescription(self):
         result = [f"""

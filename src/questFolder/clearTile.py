@@ -111,6 +111,12 @@ Remove all items from the walkways that are not bolted down."""
         if not character:
             return (None,None)
 
+        # abort if threatended
+        if character.getNearbyEnemies():
+            if not dryRun:
+                self.fail("nearby enemies")
+            return (None,("+","abort quest"))
+
         # close menus
         if not ignoreCommands and character.macroState.get("submenue"):
             return (None,(["esc"],"exit submenu"))

@@ -192,14 +192,16 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
         for room in character.getTerrain().rooms:
             for item in room.getItemsByType("SwordSharpener"):
                 if item.readyToBeUsedByCharacter(character):
-                    quest = src.quests.questMap["SharpenPersonalSword"]()
-                    return ([quest],None)
+                    quest1 = src.quests.questMap["SharpenPersonalSword"]()
+                    quest2 = src.quests.questMap["ClearInventory"](returnToTile=False)
+                    return ([quest2,quest1],None)
 
         for room in character.getTerrain().rooms:
             for item in room.getItemsByType("ArmorReinforcer"):
                 if item.readyToBeUsedByCharacter(character):
                     quest = src.quests.questMap["ReinforcePersonalArmor"]()
-                    return ([quest],None)
+                    quest2 = src.quests.questMap["ClearInventory"](returnToTile=False)
+                    return ([quest2,quest1],None)
 
         if not character.getFreeInventorySpace():
             quest = src.quests.questMap["ClearInventory"](returnToTile=False)

@@ -27,7 +27,7 @@ Activate a filled corpse animator to spawn a ghoul
 
         self.runsCommands = True
         self.filled = filled
-        self.commands = {"born":"j"}
+        self.commands = {"born":"jj"}
 
         self.commandOptions = [
                 ("born", "set command for newly animated ghouls"),

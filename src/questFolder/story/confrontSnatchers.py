@@ -1,4 +1,5 @@
 import src
+import random
 
 class ConfrontSnatchers(src.quests.MetaQuestSequence):
     '''
@@ -97,7 +98,7 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
                             return (None,(command,"pick up items"))
 
                 if len(snatchers) < 5:
-                    quest = src.quests.questMap["SecureTile"](toSecure=random.choice(snatchers).getPosition())
+                    quest = src.quests.questMap["SecureTile"](toSecure=random.choice(snatchers).getBigPosition(),endWhenCleared=True)
                     return ([quest],None)
                     
 

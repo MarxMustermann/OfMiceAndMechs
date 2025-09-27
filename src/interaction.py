@@ -1428,7 +1428,7 @@ def doAdvancedDrop(params):
                         if char.inventory:
                             dropType = char.inventory[-1].type
                     else:
-                        dropType = items[-1].type
+                        dropType = items[0].type
 
             foundOutputSlot = None
             for checkOutputSlot in room.outputSlots:

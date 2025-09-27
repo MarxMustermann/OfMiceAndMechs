@@ -6645,8 +6645,11 @@ It connects and is ready to merge with you.
             if endingType == "bad":
                 textBase = ["""
 You merge with the Throne.
-You feel that the power of the world flowing though you.
-You try to reach out to it, but you can't move."""]
+You feel the power of the world flowing though you.
+You try to reach out to it, but you can't move.
+
+
+"""]
             else:
                 textBase = ["""
 You merge with the Throne.
@@ -6710,7 +6713,7 @@ You grab hold onto it and harness it."""]
             color2 = "#"+(hex(color_step)[-1])*3
 
             textBase = [(src.interaction.urwid.AttrSpec(color1, "black"),"""
-You reach out to your implant and it answers:
+The implant answers:
 
 You servered me well, but you served your purpose."""),(src.interaction.urwid.AttrSpec(color2, "black"),"""
 credits:"""),(src.interaction.urwid.AttrSpec(color1, "black"),"""

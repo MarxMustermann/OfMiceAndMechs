@@ -315,23 +315,13 @@ The target tile is {direction[4:]}
                     if character.container.tag in ["entryRoom","trapRoom"]:
                         quest = src.quests.questMap["Flee"](returnHome=True,lifetime=100)
                         return ([quest],None)
-            if not self.paranoid:
-                if random.random() < 1.5 and "fighting" in self.character.skills:
-                    for otherCharacter in character.container.characters:
-                        if otherCharacter.faction == character.faction:
-                            continue
-                        quest = src.quests.questMap["Fight"]()
-                        return ([quest],None)
-
-                for otherCharacter in character.container.characters:
-                    if otherCharacter.faction == character.faction:
-                        continue
-                    if character.health < character.maxHealth//5:
-                        quest = src.quests.questMap["Flee"](lifetime=100)
-                        return ([quest],None)
-                    else:
-                        quest = src.quests.questMap["Fight"]()
-                        return ([quest],None)
+            if character.getNearbyEnemies():
+                if character.health < character.maxHealth//5 or self.paranoid:
+                    quest = src.quests.questMap["Flee"]()
+                    return ([quest],None)
+                else:
+                    quest = src.quests.questMap["Fight"]()
+                    return ([quest],None)
 
             # check path and fail if appropriate
             if not self.isPathSane(character):
@@ -388,19 +378,13 @@ The target tile is {direction[4:]}
 
             # fight nearby enemies
             # TODO: reenable random
-            if not self.paranoid:
-                if random.random() < 1.5 and "fighting" in self.character.skills:
-                    if character.container.getEnemiesOnTile(character):
-                        quest = src.quests.questMap["Fight"]()
-                        return ([quest],None)
-
-                    if character.container.getEnemiesOnTile(character):
-                        if character.health < character.maxHealth//5:
-                            quest = src.quests.questMap["Flee"]()
-                            return ([quest],None)
-                        else:
-                            quest = src.quests.questMap["Fight"]()
-                            return ([quest],None)
+            if character.getNearbyEnemies():
+                if character.health < character.maxHealth//5 or self.paranoid:
+                    quest = src.quests.questMap["Flee"]()
+                    return ([quest],None)
+                else:
+                    quest = src.quests.questMap["Fight"]()
+                    return ([quest],None)
 
             # chack and regenerate path
             if not self.isPathSane(character):

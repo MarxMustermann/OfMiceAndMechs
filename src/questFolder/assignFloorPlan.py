@@ -239,6 +239,8 @@ Set the floor plan: {self.floorPlanType}
             targets = []
             counter = 0
             for checkRoom in terrain.rooms:
+                if checkRoom.tag == "shelter":
+                    continue
                 roomPos = checkRoom.getPosition()
                 for offset in ((1,0,0),(-1,0,0),(0,1,0),(0,-1,0)):
                     newPos = (roomPos[0]+offset[0],roomPos[1]+offset[1],0)

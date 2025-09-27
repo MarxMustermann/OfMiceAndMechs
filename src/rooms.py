@@ -1849,6 +1849,8 @@ class Room:
                 elif character.hasRun:
                     character.takeTime(character.adjustedMovementSpeed*0.80,"moved 4")
                     character.exhaustion += 1
+                else:
+                    character.takeTime(character.adjustedMovementSpeed,"moved")
             character.stats["steps taken"] = character.stats.get("steps taken", 0) + 1
 
             return self.moveCharacter(character, tuple(newPosition))

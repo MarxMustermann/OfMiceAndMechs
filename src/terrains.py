@@ -969,6 +969,8 @@ class Terrain:
                     elif char.hasRun:
                         char.takeTime(char.adjustedMovementSpeed*0.80,"moved 4")
                         char.exhaustion += 1
+                    else:
+                        char.takeTime(char.adjustedMovementSpeed,"moved")
 
             return foundItem
         return None

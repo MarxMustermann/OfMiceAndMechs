@@ -1,7 +1,11 @@
+import logging
+
 import numpy as np
 import tcod
 
 import src
+
+logger = logging.getLogger(__name__)
 
 
 class GoToTerrain(src.quests.MetaQuestSequence):
@@ -54,6 +58,10 @@ class GoToTerrain(src.quests.MetaQuestSequence):
         if self.terrainsWeight:
             terrainMap = np.zeros((14,14),dtype=np.int16)
 
+            min_weight = min(self.terrainsWeight.values())
+            if min_weight<0:
+                logger.warn("Terrains Weight Map is wrongly constructed")
+
             for x in range(1,14):
                 for y in range(1,14):
                     terrainMap[x][y] = self.terrainsWeight[(x,y,0)]
@@ -72,7 +80,11 @@ class GoToTerrain(src.quests.MetaQuestSequence):
         terrainPos = character.getTerrainPosition()
 
         if terrainPos != self.targetTerrain:
-            targetTerrain = self.getTerrainPath(terrainPos,self.targetTerrain)[0]
+            path = self.getTerrainPath(terrainPos,self.targetTerrain)
+            if not len(path):
+                self.fail("Empty Path")
+
+            targetTerrain = path[0]
         else:
             targetTerrain = self.targetTerrain
 

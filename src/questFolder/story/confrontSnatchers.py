@@ -77,6 +77,26 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
                     if character.yPosition%15 == 14:
                         return (None,("w","enter tile"))
 
+                offsets = [(0,0,0),(0,1,0),(1,0,0),(-1,0,0),(0,-1,0)]
+                for offset in offsets:
+                    items = character.container.getItemByPosition(character.getPosition(offset=offset))
+                    if items and character.getFreeInventorySpace() and not items[0].bolted:
+                        command = None
+                        if offset == (0,0,0):
+                            command = "."
+                        if offset == (0,1,0):
+                            command = "s"
+                        if offset == (1,0,0):
+                            command = "d"
+                        if offset == (0,-1,0):
+                            command = "w"
+                        if offset == (-1,0,0):
+                            command = "a"
+                        if command:
+                            if character.interactionState.get("advancedPickup") is None:
+                                command = "K"+command
+                            return (None,(command,"pick up items"))
+
                 return (None,(";","wait for Snatchers"))
 
             if not dryRun:

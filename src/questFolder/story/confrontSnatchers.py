@@ -97,7 +97,10 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
                                 command = "K"+command
                             return (None,(command,"pick up items"))
 
-                return (None,(";","wait for Snatchers"))
+                if character.stats.get("total enemies killed",{}).get("Snatcher",0) < 5:
+                    return (None,(".............","wait for Snatchers"))
+                else:
+                    return (None,(";","wait for Snatchers"))
 
             if not dryRun:
                 self.postHandler()

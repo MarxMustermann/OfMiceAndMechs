@@ -136,11 +136,11 @@ class Adventure(src.quests.MetaQuestSequence):
         for x in range(1,14):
             for y in range(1,14):
                 coordinate = (x, y, 0)
-                extraWeight[coordinate] = 1
+                extraWeight[coordinate] = 5
                 if coordinate in character.terrainInfo:
                     info = character.terrainInfo[coordinate]
                     if character.getFreeInventorySpace() < 2:
-                        extraWeight[coordinate] = -3
+                        extraWeight[coordinate] = 1
                         if not info.get("tag") == "shrine":
                             continue
                     else:
@@ -149,14 +149,14 @@ class Adventure(src.quests.MetaQuestSequence):
                         if info.get("looted"):
                             continue
                 if coordinate == (7,7,0): # avoid endgame dungeon
-                    extraWeight[coordinate] = 9999
+                    extraWeight[coordinate] = 99999
                 candidates.append(coordinate)
 
         # do special handling of the characters home
         homeCoordinate = (character.registers["HOMETx"], character.registers["HOMETy"], 0)
         if character.getFreeInventorySpace() < 2:
             candidates.append(homeCoordinate)
-            extraWeight[coordinate] = -3
+            extraWeight[coordinate] = 1
         else:
             if homeCoordinate in candidates:
                 candidates.remove(homeCoordinate)

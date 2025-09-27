@@ -135,7 +135,7 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         result = [f"""
 The outside of the base is still a dangerous place.
-One of the reasons for that Snatchers will swarm and kill anybody that goes outside.
+Snatchers will swarm and kill anybody that goes outside.
 You need to confront and kill them, to make the outside accessible.
 
 Use their swarming behaviour against them.
@@ -153,10 +153,14 @@ Rest and heal and repeat until all Snatchers are dead.
         if not character:
             return False
         
+        numSnatchers = 0
         terrain = character.getTerrain()
         for otherChar in terrain.characters:
             if not otherChar.charType == "Snatcher":
                 continue
+            numSnatchers += 1
+
+        if numSnatchers > 5:
             return False
 
         self.postHandler()

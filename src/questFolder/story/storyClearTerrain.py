@@ -104,7 +104,7 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
             return ([quest],None)
 
         # kill snatchers (redundant to GetRank2Promotion)
-        if snatcherCount:
+        if snatcherCount > 5:
             quest = src.quests.questMap["ConfrontSnatchers"]()
             return ([quest],None)
 

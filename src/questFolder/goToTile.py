@@ -22,7 +22,7 @@ class GoToTile(src.quests.MetaQuestSequence):
     type = "GoToTile"
     lowLevel = True
 
-    def __init__(self, description="go to tile", creator=None, targetPosition=None, lifetime=None, paranoid=False, showCoordinates=True,reason=None,abortHealthPercentage=0, story=None, allowMapMenu=True, abortOnDanger=False):
+    def __init__(self, description="go to tile", creator=None, targetPosition=None, lifetime=None, paranoid=False, showCoordinates=True,reason=None,abortHealthPercentage=0, story=None, allowMapMenu=True, abortOnDanger=False, ignoreEnemies=False):
         if targetPosition:
             if targetPosition[0] < 1 or targetPosition[0] > 13:
                 raise ValueError(f"target position {targetPosition} out of range")
@@ -44,6 +44,7 @@ class GoToTile(src.quests.MetaQuestSequence):
         self.story = story
         self.allowMapMenu = allowMapMenu
         self.abortOnDanger = abortOnDanger
+        self.ignoreEnemies = ignoreEnemies
 
     def handleChangedTile(self):
         '''
@@ -305,17 +306,22 @@ The target tile is {direction[4:]}
         if self.subQuests:
             return (None,None)
 
+        try:
+            self.ignoreEnemies
+        except:
+            self.ignoreEnemies = False
+
         # handle the actual movement
         if isinstance(character.container,src.rooms.Room):
             # TODO: reenable random
 
             # fight nearby enemies
-            if character.getNearbyEnemies() and isinstance(character,src.characters.characterMap["Clone"]) and character.isOnHomeTerrain():
+            if not self.ignoreEnemies and character.getNearbyEnemies() and isinstance(character,src.characters.characterMap["Clone"]) and character.isOnHomeTerrain():
                 if character.container.isRoom:
                     if character.container.tag in ["entryRoom","trapRoom"]:
                         quest = src.quests.questMap["Flee"](returnHome=True,lifetime=100)
                         return ([quest],None)
-            if character.getNearbyEnemies():
+            if not self.ignoreEnemies and character.getNearbyEnemies():
                 if character.health < character.maxHealth//5 or self.paranoid:
                     quest = src.quests.questMap["Flee"]()
                     return ([quest],None)
@@ -378,7 +384,7 @@ The target tile is {direction[4:]}
 
             # fight nearby enemies
             # TODO: reenable random
-            if character.getNearbyEnemies():
+            if not self.ignoreEnemies and character.getNearbyEnemies():
                 if character.health < character.maxHealth//5 or self.paranoid:
                     quest = src.quests.questMap["Flee"]()
                     return ([quest],None)

@@ -2996,6 +2996,25 @@ but they are likely to explode when disturbed.
                 if character.charType == "Ghoul":
                     ghulCount += 1
 
+        # defent base against the implant wave
+        coordinates = [(6,7,0),(5,7,0),(4,7,0)]
+        for coordinate in coordinates:
+            rooms = homeTerrain.getRoomByPosition(coordinate)
+            if not rooms:
+                characters = terrain.charactersByTile.get(coordinate,[])
+            else:
+                characters = rooms[0].characters
+
+            for other_character in characters:
+                if other_character.faction == character.faction:
+                    continue
+                quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,lifetime=100,description="defend the arena",reason="ensure no attackers get into the base")
+                quest.assignToCharacter(mainChar)
+                quest.activate()
+                mainChar.assignQuest(quest,active=True)
+                quest.endTrigger = {"container": self, "method": "reachImplant"}
+                return
+
         # keep trap rooms clean
         if not ghulCount:
             room = homeTerrain.getRoomByPosition((5,7,0))[0]
@@ -3037,7 +3056,7 @@ but they are likely to explode when disturbed.
             mainChar.assignQuest(quest,active=True)
             quest.endTrigger = {"container": self, "method": "reachImplant"}
             return
-        
+
         # try to contact base leader
         if not src.gamestate.gamestate.stern.get("failedContact1"):
             quest = src.quests.questMap["ContactCommand"]()

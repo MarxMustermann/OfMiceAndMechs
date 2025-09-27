@@ -277,6 +277,8 @@ Set the floor plan: {self.floorPlanType}
         # ensure there is a general purpose room
         if cityPlaner and not cityPlaner.generalPurposeRooms:
             for room in terrain.rooms:
+                if room.tag == "shelter":
+                    continue
                 if room.getPosition() == (7,0,0):
                     continue
                 if room.getPosition() in cityPlaner.specialPurposeRooms:

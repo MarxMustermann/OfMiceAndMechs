@@ -779,8 +779,10 @@ class Character:
                     return "~"
 
             self.waitForEnemyApproach -= 0.1
-            if  self.waitForEnemyApproach <= 0:
+            if self.waitForEnemyApproach <= 0:
                 self.hasOwnAction = 0
+            if self.getDistance(enemy.getPosition()) > 3:
+                return "."
             return ":"
 
 

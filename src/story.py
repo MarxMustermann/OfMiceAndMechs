@@ -3140,7 +3140,7 @@ but they are likely to explode when disturbed.
                     npcCount += 1
 
         # kill snatchers (redundant to GetRank2Promotion)
-        if snatcherCount > 5:
+        if snatcherCount:
             quest = src.quests.questMap["ConfrontSnatchers"]()
             quest.assignToCharacter(mainChar)
             quest.activate()

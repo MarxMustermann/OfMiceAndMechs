@@ -58,14 +58,13 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
         if not enemies:
         
             terrain = character.getTerrain()
-            foundSnatcher = False
+            snatchers = []
             for otherChar in terrain.characters:
                 if not otherChar.charType == "Snatcher":
                     continue
-                foundSnatcher = True
-                break
+                snatchers.append(otherChar)
 
-            if foundSnatcher:
+            if snatchers:
 
                 if not character.container.isRoom:
                     if character.xPosition%15 == 0:
@@ -96,6 +95,11 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
                             if character.interactionState.get("advancedPickup") is None:
                                 command = "K"+command
                             return (None,(command,"pick up items"))
+
+                if len(snatchers) < 5:
+                    quest = src.quests.questMap["SecureTile"](toSecure=random.choice(snatchers).getPosition())
+                    return ([quest],None)
+                    
 
                 if character.stats.get("total enemies killed",{}).get("Snatcher",0) < 5:
                     return (None,(".............","wait for Snatchers"))
@@ -187,7 +191,7 @@ Rest and heal and repeat until all Snatchers are dead.
                 continue
             numSnatchers += 1
 
-        if numSnatchers > 5:
+        if numSnatchers:
             return False
 
         self.postHandler()

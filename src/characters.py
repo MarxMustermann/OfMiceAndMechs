@@ -706,6 +706,8 @@ class Character:
         '''
         get the coordiate of the room considere the NPCs home
         '''
+        if not "HOMEx" in self.registers or "HOMEy" in self.registers:
+            return None
         return (self.registers["HOMEx"], self.registers["HOMEy"], 0)
 
     def getRoom(self):

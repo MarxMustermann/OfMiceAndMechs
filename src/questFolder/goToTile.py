@@ -232,7 +232,7 @@ The target tile is {direction[4:]}
         except:
             self.abortOnDanger = False
 
-        if character.getNearbyEnemies() and self.abortOnDanger:
+        if self.abortOnDanger and character.getNearbyEnemies():
             if not dryRun:
                 self.fail("enemies nearby")
             return (None,None)

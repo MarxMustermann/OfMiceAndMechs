@@ -236,6 +236,7 @@ The target tile is {direction[4:]}
             if not dryRun:
                 self.fail("enemies nearby")
             return (None,None)
+
         # move using the room menu
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.mapMenu.MapMenu) and not ignoreCommands:
             if self.targetPosition == (7,7,0):
@@ -289,7 +290,7 @@ The target tile is {direction[4:]}
             return (None,None)
 
         # open map menu
-        if self.allowMapMenu and len(self.path) > 3:
+        if not character.getNearbyEnemies() and self.allowMapMenu and len(self.path) > 3:
             menuCommand = "g"
             if "runaction" in character.interactionState:
                 menuCommand = ""

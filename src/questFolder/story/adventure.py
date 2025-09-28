@@ -149,7 +149,7 @@ class Adventure(src.quests.MetaQuestSequence):
                         if info.get("looted"):
                             continue
                 if coordinate == (7,7,0): # avoid endgame dungeon
-                    extraWeight[coordinate] = 99999
+                    extraWeight[coordinate] = 32000
                 candidates.append(coordinate)
 
         # do special handling of the characters home

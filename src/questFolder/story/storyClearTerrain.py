@@ -199,7 +199,7 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
         for room in character.getTerrain().rooms:
             for item in room.getItemsByType("ArmorReinforcer"):
                 if item.readyToBeUsedByCharacter(character):
-                    quest = src.quests.questMap["ReinforcePersonalArmor"]()
+                    quest1 = src.quests.questMap["ReinforcePersonalArmor"]()
                     quest2 = src.quests.questMap["ClearInventory"](returnToTile=False)
                     return ([quest2,quest1],None)
 

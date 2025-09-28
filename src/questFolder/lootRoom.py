@@ -141,17 +141,17 @@ Remove all items that are not bolted down."""
 
         if foundOffset:
             if foundOffset == (0,0,0):
-                command = "k"
+                command = "k"*len(foundItems)
             elif foundOffset == (1,0,0):
-                command = "Kd"
+                command = "KD"
             elif foundOffset == (-1,0,0):
-                command = "Ka"
+                command = "KA"
             elif foundOffset == (0,1,0):
-                command = "Ks"
+                command = "KS"
             elif foundOffset == (0,-1,0):
-                command = "Kw"
+                command = "KW"
 
-            return (None,(command*len(foundItems),"clear spot"))
+            return (None,(command,"clear spot"))
 
         items = self.getLeftoverItems(character)
         random.shuffle(items)

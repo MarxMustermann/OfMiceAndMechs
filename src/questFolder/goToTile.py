@@ -342,28 +342,28 @@ The target tile is {direction[4:]}
             if self.path[0] == (0,1):
                 if character.getPosition() == (6,12,0):
                     return (None,("ss","exit the room"))
-                quest = src.quests.questMap["GoToPosition"](targetPosition=(6,12,0),description="go to room exit",reason="reach the rooms exit")
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(6,12,0),description="go to room exit",reason="reach the rooms exit",lifetime=100)
                 quest.assignToCharacter(character)
                 quest.generatePath(character)
                 return ([quest],None)
             if self.path[0] == (0,-1):
                 if character.getPosition() == (6,0,0):
                     return (None,("ww","exit the room"))
-                quest = src.quests.questMap["GoToPosition"](targetPosition=(6,0,0),description="go to room exit",reason="reach the rooms exit")
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(6,0,0),description="go to room exit",reason="reach the rooms exit",lifetime=100)
                 quest.assignToCharacter(character)
                 quest.generatePath(character)
                 return ([quest],None)
             if self.path[0] == (1,0):
                 if character.getPosition() == (12,6,0):
                     return (None,("dd","exit the room"))
-                quest = src.quests.questMap["GoToPosition"](targetPosition=(12,6,0),description="go to room exit",reason="reach the rooms exit")
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(12,6,0),description="go to room exit",reason="reach the rooms exit",lifetime=100)
                 quest.assignToCharacter(character)
                 quest.generatePath(character)
                 return ([quest],None)
             if self.path[0] == (-1,0):
                 if character.getPosition() == (0,6,0):
                     return (None,("aa","exit the room"))
-                quest = src.quests.questMap["GoToPosition"](targetPosition=(0,6,0),description="go to room exit",reason="reach the rooms exit")
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(0,6,0),description="go to room exit",reason="reach the rooms exit",lifetime=100)
                 quest.assignToCharacter(character)
                 quest.generatePath(character)
                 return ([quest],None)

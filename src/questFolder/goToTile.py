@@ -322,7 +322,7 @@ The target tile is {direction[4:]}
                     if character.container.tag in ["entryRoom","trapRoom"]:
                         quest = src.quests.questMap["Flee"](returnHome=True,lifetime=100)
                         return ([quest],None)
-            if not self.ignoreEnemies and character.getNearbyEnemies():
+            if not self.ignoreEnemies and character.getNearbyEnemies() and isinstance(character,src.characters.characterMap["Clone"]):
                 if character.health < character.maxHealth//5 or self.paranoid:
                     quest = src.quests.questMap["Flee"]()
                     return ([quest],None)
@@ -385,7 +385,7 @@ The target tile is {direction[4:]}
 
             # fight nearby enemies
             # TODO: reenable random
-            if not self.ignoreEnemies and character.getNearbyEnemies():
+            if not self.ignoreEnemies and character.getNearbyEnemies() and isinstance(character,src.characters.characterMap["Clone"]):
                 if character.health < character.maxHealth//5 or self.paranoid:
                     quest = src.quests.questMap["Flee"]()
                     return ([quest],None)

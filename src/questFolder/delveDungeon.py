@@ -171,12 +171,13 @@ After fetching the glass heart return the glass heart to your base and set it in
                     quest = src.quests.questMap["Equip"](tryHard=True)
                     return ([quest],None)
 
-            if character.container.isRoom and character.getFreeInventorySpace() and isinstance(character,src.characters.characterMap["Clone"]):
-                for item in character.container.itemsOnFloor:
-                    if not item.type in ("GooFlask","Vial","Bolt","Grindstone","Implant","Corpse","MemoryFragment","ChitinPlates",):
-                        continue
-                    quest = src.quests.questMap["LootRoom"](targetPosition=character.container.getPosition())
-                    return ([quest],None)
+            if currentTerrain != character.getHomeTerrain():
+                if character.container.isRoom and character.getFreeInventorySpace() and isinstance(character,src.characters.characterMap["Clone"]):
+                    for item in character.container.itemsOnFloor:
+                        if not item.type in ("GooFlask","Vial","Bolt","Grindstone","Implant","Corpse","MemoryFragment","ChitinPlates",):
+                            continue
+                        quest = src.quests.questMap["LootRoom"](targetPosition=character.container.getPosition())
+                        return ([quest],None)
 
             # get to the terrain the dungeon is on
             if terrain.xPosition != self.targetTerrain[0] or terrain.yPosition != self.targetTerrain[1]:

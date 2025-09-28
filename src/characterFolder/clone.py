@@ -30,6 +30,7 @@ class Clone(src.characters.Character):
 
         self.charType = "Clone"
         self.lastMapSync = None
+        self.waitLength = 1
 
     '''
     drop a implant in addition to the corpse

@@ -35,12 +35,12 @@ class Regenerator(src.items.Item):
         # do nothing when already running
         if self.activated:
             text = "your place your hand on the Regenerator" 
-            if character.health >= character.maxHealth:
+            if character.health >= character.adjustedMaxHealth:
                 text += ", but you do not need healing."
             elif not self.mana_charges:
                 text += ", but the Regenerator has no charges left."
             else:
-                heal_amount = min(self.healing_amount*self.mana_charges,character.maxHealth-character.health)
+                heal_amount = min(self.healing_amount*self.mana_charges,character.adjustedMaxHealth-character.health)
                 character.heal(heal_amount, reason="the Regenerator heals you")
                 text += f" and it heals you for {heal_amount} HP."
                 self.mana_charges -= heal_amount//self.healing_amount

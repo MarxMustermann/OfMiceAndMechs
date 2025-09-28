@@ -176,7 +176,7 @@ After fetching the glass heart return the glass heart to your base and set it in
                     for item in character.container.itemsOnFloor:
                         if not item.type in ("GooFlask","Vial","Bolt","Grindstone","Implant","Corpse","MemoryFragment","ChitinPlates",):
                             continue
-                        quest = src.quests.questMap["LootRoom"](targetPosition=character.container.getPosition())
+                        quest = src.quests.questMap["LootRoom"](targetPosition=character.container.getPosition(),endWhenFull=True)
                         return ([quest],None)
 
             # get to the terrain the dungeon is on

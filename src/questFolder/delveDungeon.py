@@ -137,6 +137,11 @@ After fetching the glass heart return the glass heart to your base and set it in
                 #    self.fail("too hurt")
                 #return (None,None)
 
+            # kill direct threats
+            if character.getNearbyEnemies():
+                quest = src.quests.questMap["Fight"](suicidal=True)
+                return ([quest],None)
+
             currentTerrain = character.getTerrain()
             if currentTerrain == character.getHomeTerrain():
                 for room in character.getTerrain().rooms:

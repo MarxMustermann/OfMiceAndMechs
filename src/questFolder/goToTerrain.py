@@ -104,6 +104,10 @@ class GoToTerrain(src.quests.MetaQuestSequence):
         except:
             self.allowTerrainMenu = True
 
+        if character.getNearbyEnemies():
+            quest = src.quests.questMap["Fight"]()
+            return ([quest],None)
+
         if self.allowTerrainMenu:
             movementCommand = ""
             movementCommand += "s"*(targetTerrain[1]-character.getTerrain().yPosition)

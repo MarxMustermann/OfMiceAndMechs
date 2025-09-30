@@ -233,6 +233,16 @@ class Terrain:
             event.handleEvent()
             self.events.remove(event)
 
+    def clearGhosts(self):
+        for (coord,characters) in self.charactersByTile.items():
+            if coord != (4,7,0):
+                continue
+            if self != src.gamestate.gamestate.mainChar.getHomeTerrain():
+                continue
+            for character in characters[:]:
+                if character.getBigPosition() != coord:
+                    characters.remove(character)
+
     def advance(self):
         self.lastRender = None
 
@@ -240,6 +250,7 @@ class Terrain:
         self.advanceRoom()
         self.advanceBiomes()
         self.handleEvents()
+        self.clearGhosts()
 
         if src.gamestate.gamestate.tick%(15*15*15) == 0:
             self.add_mana(self.manaRegen)

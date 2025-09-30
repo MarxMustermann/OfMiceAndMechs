@@ -143,7 +143,7 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
                         continue
                     hasBerserk = True
 
-                if not hasBerserk:
+                if not hasBerserk and character.hasSpecialAttacks:
                     interactionCommand = direction.upper()
                     if character.macroState.get("submenue") and character.macroState["submenue"].tag == "specialAttackSelection":
                         interactionCommand = ""

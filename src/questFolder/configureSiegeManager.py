@@ -104,6 +104,7 @@ class ConfigureSiegeManager(src.quests.MetaQuestSequence):
                     command = None
 
                     # determine where to move the cursor to
+                    target = None
                     if scheduledAction[2]["type"] == "restrict outside":
                         target = upperTarget
                     if scheduledAction[2]["type"] == "sound alarms":
@@ -114,22 +115,24 @@ class ConfigureSiegeManager(src.quests.MetaQuestSequence):
                         target = lowerTarget
 
                     # get keystrokes to move slider to the right place
-                    if tick <= target-250:
-                        command = "D"
-                    elif tick <= target-100:
-                        command = "E"
-                    elif tick <= target-10:
-                        command = "e"
-                    elif tick <= target-1:
-                        command = "d"
-                    if tick >= target+250:
-                        command = "A"
-                    elif tick >= target+100:
-                        command = "Q"
-                    elif tick >= target+10:
-                        command = "q"
-                    elif tick >= target+1:
-                        command = "a"
+                    if target:
+                        if tick <= target-250:
+                            jommand = "D"
+                            description = "move the xo"
+                        elif tick <= target-100:
+                            command = "E"
+                        elif tick <= target-10:
+                            command = "e"
+                        elif tick <= target-1:
+                            command = "d"
+                        if tick >= target+250:
+                            command = "A"
+                        elif tick >= target+100:
+                            command = "Q"
+                        elif tick >= target+10:
+                            command = "q"
+                        elif tick >= target+1:
+                            command = "a"
 
                     # run the keystrokes to move slider to the right place
                     if command:

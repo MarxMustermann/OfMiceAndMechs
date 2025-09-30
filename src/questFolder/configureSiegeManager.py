@@ -103,81 +103,33 @@ class ConfigureSiegeManager(src.quests.MetaQuestSequence):
                     tick = scheduledAction[1]
                     command = None
 
-                    # get keystrokes to move slider to the right place
+                    # determine where to move the cursor to
                     if scheduledAction[2]["type"] == "restrict outside":
-                        if tick <= upperTarget-250:
-                            command = "D"
-                        elif tick <= upperTarget-100:
-                            command = "E"
-                        elif tick <= upperTarget-10:
-                            command = "e"
-                        elif tick <= upperTarget-1:
-                            command = "d"
-                        if tick >= upperTarget+250:
-                            command = "A"
-                        elif tick >= upperTarget+100:
-                            command = "Q"
-                        elif tick >= upperTarget+10:
-                            command = "q"
-                        elif tick >= upperTarget+1:
-                            command = "a"
-
-                    # get keystrokes to move slider to the right place
+                        target = upperTarget
                     if scheduledAction[2]["type"] == "sound alarms":
-                        if tick <= upperTarget-250:
-                            command = "D"
-                        elif tick <= upperTarget-100:
-                            command = "E"
-                        elif tick <= upperTarget-10:
-                            command = "e"
-                        elif tick <= upperTarget-1:
-                            command = "d"
-                        if tick >= upperTarget+250:
-                            command = "A"
-                        elif tick >= upperTarget+100:
-                            command = "Q"
-                        elif tick >= upperTarget+10:
-                            command = "q"
-                        elif tick >= upperTarget+1:
-                            command = "a"
-
-                    # get keystrokes to move slider to the right place
+                        target = upperTarget
                     if scheduledAction[2]["type"] == "unrestrict outside":
-                        if tick <= lowerTarget-250:
-                            command = "D"
-                        elif tick <= lowerTarget-100:
-                            command = "E"
-                        elif tick <= lowerTarget-10:
-                            command = "e"
-                        elif tick <= lowerTarget-1:
-                            command = "d"
-                        if tick >= lowerTarget+250:
-                            command = "A"
-                        elif tick >= lowerTarget+100:
-                            command = "Q"
-                        elif tick >= lowerTarget+10:
-                            command = "q"
-                        elif tick >= lowerTarget+1:
-                            command = "a"
+                        target = lowerTarget
+                    if scheduledAction[2]["type"] == "silence alarms":
+                        target = lowerTarget
 
                     # get keystrokes to move slider to the right place
-                    if scheduledAction[2]["type"] == "silence alarms":
-                        if tick <= lowerTarget-250:
-                            command = "D"
-                        elif tick <= lowerTarget-100:
-                            command = "E"
-                        elif tick <= lowerTarget-10:
-                            command = "e"
-                        elif tick <= lowerTarget-1:
-                            command = "d"
-                        if tick >= lowerTarget+250:
-                            command = "A"
-                        elif tick >= lowerTarget+100:
-                            command = "Q"
-                        elif tick >= lowerTarget+10:
-                            command = "q"
-                        elif tick >= lowerTarget+1:
-                            command = "a"
+                    if tick <= target-250:
+                        command = "D"
+                    elif tick <= target-100:
+                        command = "E"
+                    elif tick <= target-10:
+                        command = "e"
+                    elif tick <= target-1:
+                        command = "d"
+                    if tick >= target+250:
+                        command = "A"
+                    elif tick >= target+100:
+                        command = "Q"
+                    elif tick >= target+10:
+                        command = "q"
+                    elif tick >= target+1:
+                        command = "a"
 
                     # run the keystrokes to move slider to the right place
                     if command:

@@ -158,6 +158,12 @@ Scrapfields are shown on the minimap as white ss"""]
                         scrapFields.remove(scrapField)
 
                 if not scrapFields:
+                    if self.tryHard:
+                        terrain = character.getTerrain()
+                        if terrain.mana >= 20:
+                            quest = src.quests.questMap["GetEpochReward"](rewardType="spawn scrap",reason="ensure enough scrap is available")
+                            return ([quest],None)
+
                     self.fail(reason="no scrap source")
                     return (None,None)
 

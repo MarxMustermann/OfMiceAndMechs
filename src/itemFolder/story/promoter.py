@@ -104,7 +104,7 @@ Build more rooms.
 
                     character.changed("promotion blocked",{"reason":"needs base with at least 6 rooms"})
                     return
-            elif highestAllowed == 5:
+            elif highestAllowed == 5 or character.rank == 5:
                 highestAllowed = 4
 
         # check if promotion to rank 3 applies
@@ -137,7 +137,7 @@ Kill all enemies on this terrain, to unlock the promotions to rank 3.
 
                     character.changed("promotion blocked",{"reason":"terrain needs cleared from enemies"})
                     return
-            elif highestAllowed == 4:
+            elif highestAllowed == 4 or character.rank == 4:
                 highestAllowed = 3
 
         # check if promotion to rank 2 applies
@@ -176,7 +176,7 @@ There need to be at least 3 clones besides you on the base to allow any promptio
 
                     character.changed("promotion blocked",{"reason":"needs 4 clones on base"})
                     return
-            elif highestAllowed == 3:
+            elif highestAllowed == 3 or character.rank == 3:
                 highestAllowed = 2
 
         # abort if there is no update

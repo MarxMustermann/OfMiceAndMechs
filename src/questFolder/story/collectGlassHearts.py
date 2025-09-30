@@ -102,6 +102,24 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,lifetime=100,description="defend the arena",reason="ensure no attackers get into the base")
             return ([quest],None)
 
+
+        terrain = character.getTerrain()
+        scrapFields = terrain.scrapFields[:]
+        for scrapField in scrapFields[:]:
+            foundScrap = False
+            for item in terrain.itemsByBigCoordinate.get(scrapField,[]):
+                if item.type == "Scrap":
+                    foundScrap = True
+                    break
+            if not foundScrap:
+                scrapFields.remove(scrapField)
+
+        if not scrapFields:
+            terrain = character.getTerrain()
+            if terrain.mana >= 20:
+                quest = src.quests.questMap["GetEpochReward"](rewardType="spawn scrap",reason="ensure enough scrap is available")
+                return ([quest],None)
+
         if len(character.terrainInfo) < numGlassHearts*3:
             if character.getFreeInventorySpace() < 3:
                 quest = src.quests.questMap["ClearInventory"](returnToTile=False)

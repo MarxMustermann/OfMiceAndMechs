@@ -57,11 +57,11 @@ class Regenerator(src.items.Item):
 
         # show user feedback
         character.addMessage("You activated the regenerator")
-        text = f"You activated the Regenerator.
+        text = f"""You activated the Regenerator.
 It will heal every creature in this room when it pulses.
 It pulses every 15 ticks
 
-To heal faster you can use the Regenerator directly."
+To heal faster you can use the Regenerator directly."""
         submenue = src.menuFolder.textMenu.TextMenu(text)
         character.macroState["submenue"] = submenue
         character.runCommandString("~",nativeKey=True)

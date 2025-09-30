@@ -675,6 +675,10 @@ class Character:
         '''
         fetch the home terrain for the character
         '''
+        try:
+            src.gamestate.gamestate.terrainMap
+        except:
+            return None
         terrain = src.gamestate.gamestate.terrainMap[self.registers["HOMETy"]][self.registers["HOMETx"]]
         return terrain
 

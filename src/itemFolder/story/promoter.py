@@ -87,7 +87,7 @@ There need to be at least 1 clone besides you on the base to allow any promption
                 highestAllowed = 5
 
         # check if promotion to rank 4 applies
-        if character.rank > 4 and highestAllowed == 5:
+        if character.rank > 4:
             terrain = character.getTerrain()
             if len(terrain.rooms) < 7:
                 if not highestAllowed:
@@ -108,7 +108,7 @@ Build more rooms.
                 highestAllowed = 4
 
         # check if promotion to rank 3 applies
-        if character.rank > 3 and highestAllowed == 4:
+        if character.rank > 3:
             foundEnemies = []
             terrain = self.getTerrain()
             for otherChar in terrain.characters:
@@ -141,7 +141,7 @@ Kill all enemies on this terrain, to unlock the promotions to rank 3.
                 highestAllowed = 3
 
         # check if promotion to rank 2 applies
-        if character.rank > 2 highestAllowed == 3:
+        if character.rank > 2:
             numCharacters = 0
             terrain = character.getTerrain()
             for checkChar in terrain.characters:

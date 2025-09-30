@@ -118,25 +118,32 @@ class ConfigureSiegeManager(src.quests.MetaQuestSequence):
                     if target:
                         if tick <= target-250:
                             jommand = "D"
-                            description = "move the xo"
+                            description = "move the event left 250 ticks"
                         elif tick <= target-100:
                             command = "E"
+                            description = "move the event left 100 ticks"
                         elif tick <= target-10:
                             command = "e"
+                            description = "move the event left 10 ticks"
                         elif tick <= target-1:
                             command = "d"
+                            description = "move the event left 1 ticks"
                         if tick >= target+250:
                             command = "A"
+                            description = "move the event right 250 ticks"
                         elif tick >= target+100:
                             command = "Q"
+                            description = "move the event right 100 ticks"
                         elif tick >= target+10:
                             command = "q"
+                            description = "move the event right 10 ticks"
                         elif tick >= target+1:
                             command = "a"
+                            description = "move the event right 1 ticks"
 
                     # run the keystrokes to move slider to the right place
                     if command:
-                        return (None,(command,"select when the action should happen"))
+                        return (None,(command,description))
 
                 # open the menu to schedule a new action
                 command = "c"

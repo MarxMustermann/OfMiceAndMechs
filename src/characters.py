@@ -63,6 +63,7 @@ class Character:
         self.disableCommandsOnPlus = False
         self.autoExpandQuests = False
         self.autoExpandQuests2 = False
+        self.autoExpandCounter = 0
         self.autoExpandQ = False
         self.charType = "Character"
         self.disabled = False
@@ -2705,6 +2706,7 @@ press any other key to attack normally"""
             return
 
         self.implantLoad = 0
+        self.autoExpandCounter = 0
 
         if advanceMacros:
             src.interaction.advanceChar(self,[])

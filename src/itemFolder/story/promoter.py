@@ -364,7 +364,7 @@ You will be able to choose from a variety of attacks.
 Each attack has a different costs and advantages.
 You will figure it out.
 """
-        if rewardType == "swap attack":
+        if rewardType == "swap attacks":
             rewardText = specialAttackText + """
 You chose a swap attack as alternate attack.
 

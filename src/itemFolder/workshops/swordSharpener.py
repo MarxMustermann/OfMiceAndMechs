@@ -318,11 +318,11 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         base["s"] = ("set upgrade amount", self.setDefaultMaxUpgradeAmount)
         return base
 
-    def readyToBeUsedByCharacter(self,character):
+    def readyToBeUsedByCharacter(self,character, extraIncrease = 0):
         sword = character.weapon
         if not isinstance(sword,src.items.itemMap["Sword"]):
             return False
-        amountNeeded = self.amountNeededForOneUpgrade(sword.baseDamage+1)
+        amountNeeded = self.amountNeededForOneUpgrade(sword.baseDamage+1+extraIncrease)
 
         if amountNeeded <= len(self.getAvailableGrindStones(character)):
             return True

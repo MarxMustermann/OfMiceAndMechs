@@ -32,7 +32,7 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
                         continue
                     if item.type in ("Wall","Scrap","MoldFeed"):
                         continue
-                    quest = src.quests.questMap["LootRoom"](targetPosition=character.getBigPosition())
+                    quest = src.quests.questMap["LootRoom"](targetPosition=character.getBigPosition(),endWhenFull=True)
                     return ([quest],None)
 
         # ensure healing for the clones
@@ -191,21 +191,17 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
 
         for room in character.getTerrain().rooms:
             for item in room.getItemsByType("SwordSharpener"):
-                if item.readyToBeUsedByCharacter(character):
+                if item.readyToBeUsedByCharacter(character,extraIncrease=1):
                     quest1 = src.quests.questMap["SharpenPersonalSword"]()
                     quest2 = src.quests.questMap["ClearInventory"](returnToTile=False)
                     return ([quest2,quest1],None)
 
         for room in character.getTerrain().rooms:
             for item in room.getItemsByType("ArmorReinforcer"):
-                if item.readyToBeUsedByCharacter(character):
+                if item.readyToBeUsedByCharacter(character,extraIncrease=1):
                     quest1 = src.quests.questMap["ReinforcePersonalArmor"]()
                     quest2 = src.quests.questMap["ClearInventory"](returnToTile=False)
                     return ([quest2,quest1],None)
-
-        if not character.getFreeInventorySpace():
-            quest = src.quests.questMap["ClearInventory"](returnToTile=False)
-            return ([quest],None)
 
         # check for spider lairs
         targets_found = []

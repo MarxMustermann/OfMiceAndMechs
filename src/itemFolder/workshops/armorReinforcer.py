@@ -308,11 +308,11 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         base["s"] = ("set upgrade amount", self.setDefaultMaxUpgradeAmount)
         return base
 
-    def readyToBeUsedByCharacter(self,character):
+    def readyToBeUsedByCharacter(self,character,extraIncrease=1):
         armor = character.armor
         if not isinstance(armor,src.items.itemMap["Armor"]):
             return False
-        amountNeeded = self.amountNeededForOneUpgrade(armor.armorValue+1)
+        amountNeeded = self.amountNeededForOneUpgrade(armor.armorValue+1+extraIncrease)
 
         if amountNeeded is None:
             return False

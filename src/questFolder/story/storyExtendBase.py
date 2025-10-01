@@ -114,11 +114,6 @@ class StoryExtendBase(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,lifetime=100,description="defend the arena",reason="ensure no attackers get into the base")
             return ([quest],None)
 
-        ## unrestrict outside movement
-        #if terrain.alarm:
-        #    quest = src.quests.questMap["LiftOutsideRestrictions"]()
-        #    return ([quest],None)
-
         for room in terrain.rooms:
             if not room.tag == "traproom":
                 continue

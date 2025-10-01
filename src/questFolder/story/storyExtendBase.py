@@ -160,7 +160,7 @@ class StoryExtendBase(src.quests.MetaQuestSequence):
                     if not character.getFreeInventorySpace():
                         quest = src.quests.questMap["ClearInventory"](tryHard=True)
                         return ([quest],None)
-                    quest = src.quests.questMap["Scavenge"](toCollect="Wall",ignoreAlarm=True)
+                    quest = src.quests.questMap["StoryScavengeWalls"]()
                     return ([quest],None)
         else:
             room = terrain.getRoomByPosition((8,7,0))[0]

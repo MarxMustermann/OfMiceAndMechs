@@ -26,3 +26,4 @@ import src.questFolder.story.adventureOnTerrain
 import src.questFolder.story.strengthenBaseDefences
 import src.questFolder.story.setBaseAutoExpansion
 import src.questFolder.story.storyExtendBase
+import src.questFolder.story.storyScavengeWalls

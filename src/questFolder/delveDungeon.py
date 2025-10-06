@@ -305,7 +305,12 @@ After fetching the glass heart return the glass heart to your base and set it in
         return (None,(directionCommand+"jssj","insert glass heart"))
 
     def delveToRoomIfSafe(self,character,path,dryRun=True):
-        new_pos = (path[0][0] + character.getBigPosition()[0], path[0][1] + character.getBigPosition()[1])
+        new_pos = character.getBigPosition()
+        for direction in path:
+            new_pos = (new_pos[0]+direction[0], new_pos[1]+direction[1], 0)
+            rooms = character.getTerrain().getRoomByPosition(new_pos)
+            if rooms:
+                break
 
         tryNextTile = False
         if self.suicidal:

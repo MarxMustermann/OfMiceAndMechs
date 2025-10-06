@@ -2601,7 +2601,7 @@ but they are likely to explode when disturbed.
             if not terrain.mana >= 0.1:
                 break
             terrain.mana -= 0.1
-            attacker = src.magic.spawnCharacter(terrain, bigCoordinate=(4, 7, 0), monsterType="Spiderling")
+            attacker = src.magic.spawnCharacter(terrain, bigCoordinate=(4, 7, 0), monsterType="Spiderling", faction="insects")
             attacker.timetalen = 10*1
 
             quest = src.quests.questMap["SecureTile"](toSecure=(6, 7, 0))

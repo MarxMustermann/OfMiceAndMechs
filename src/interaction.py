@@ -5496,6 +5496,21 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                         "+-------------------------------------+",
                         (start_x, start_y + 3),
                     )
+        
+        items = ["press z for discord", "press x for website", "press c for github"]
+        widthForItem = (tcodConsole.width-3)//len(items)
+        emptySpace =(tcodConsole.width-3) - widthForItem*len(items)
+    
+        itemsText = " "*emptySpace
+        for item in items:
+            space = int(widthForItem/2 - len(item)/2)
+            itemsText+= space * " " + item + space * " "
+
+        printUrwidToTcod(
+            "+"+ ("-" *len(itemsText)) +"+\n"+
+            f"|{itemsText}|"
+            ,(1, tcodConsole.height-2)
+        )
         tcodPresent()
 
         events = tcod.event.get()
@@ -5740,6 +5755,16 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                         raise SystemExit()
                     if isinstance(event, tcod.event.KeyDown):
                         key = event.sym
+                        if key == tcod.event.KeySym.z:
+                            import webbrowser
+                            webbrowser.open_new_tab("https://discord.gg/wQAcXBDqk8")
+                        if key == tcod.event.KeySym.x:
+                            import webbrowser
+                            webbrowser.open_new_tab("http://ofmiceandmechs.com/")
+                        if key == tcod.event.KeySym.c:
+                            import webbrowser
+                            webbrowser.open_new_tab("https://github.com/MarxMustermann/OfMiceAndMechs")
+                            
                         if key == tcod.event.KeySym.F11:
                             sdl_window.fullscreen = not sdl_window.fullscreen
                         if key == tcod.event.KeySym.ESCAPE:

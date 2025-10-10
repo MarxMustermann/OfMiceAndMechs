@@ -143,13 +143,22 @@ Remove all items that are not bolted down."""
             if foundOffset == (0,0,0):
                 command = "k"*len(foundItems)
             elif foundOffset == (1,0,0):
-                command = "KD"
+                command = "Kd"
             elif foundOffset == (-1,0,0):
-                command = "KA"
+                command = "Ka"
             elif foundOffset == (0,1,0):
-                command = "KS"
+                command = "Ks"
             elif foundOffset == (0,-1,0):
-                command = "KW"
+                command = "Kw"
+
+            if len(items) > 1 and command[0] == "K":
+                hasAvoidItem = False 
+                for item in items:
+                    if not item.type in ("Scrap","MetalBars"):
+                        continue
+                    hasAvoidItem = True
+                if not hasAvoidItem:
+                    command = command.upper()
 
             return (None,(command,"clear spot"))
 

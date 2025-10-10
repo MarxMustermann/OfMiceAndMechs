@@ -542,12 +542,14 @@ Press d to move the cursor and show the subquests description.
                 character.takeTime(self.idleCounter,"was idle")
                 return ([quest],None)
 
-        room = character.getTerrain().getRoomByPosition(character.getHomeRoomCord())[0]
-        if room != character.container:
-            quest = src.quests.questMap["GoToTile"](targetPosition=character.getHomeRoomCord(),description="go to meeting hall")
-            if not dryRun:
-                self.idleCounter += 1
-            return ([quest],None)
+        homePos = character.getHomeRoomCord()
+        if homePos:
+            room = character.getTerrain().getRoomByPosition(character.getHomeRoomCord())[0]
+            if room != character.container:
+                quest = src.quests.questMap["GoToTile"](targetPosition=homePos,description="go to meeting hall")
+                if not dryRun:
+                    self.idleCounter += 1
+                return ([quest],None)
         quest = src.quests.questMap["GoToPosition"](targetPosition=(random.randint(1,11),random.randint(1,11),0),description="wait for something to happen",reason="ensure nothing exciting will happening")
         if not dryRun:
             self.idleCounter += 1

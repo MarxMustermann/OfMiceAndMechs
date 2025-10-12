@@ -53,6 +53,9 @@ class Huntdown(src.quests.MetaQuestSequence):
             if character.xPosition%15 == 14:
                 return (None,("a","move toward target"))
 
+            if not dryRun:
+                self.target.changed("hunted", {"hunter":character})
+
             if charPos != targetPos:
                 if self.alwaysfollow or abs(charPos[0]-targetPos[0])+abs(charPos[1]-targetPos[1]) == 1:
                     newPos = targetPos

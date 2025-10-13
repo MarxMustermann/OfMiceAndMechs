@@ -74,12 +74,11 @@ class MemoryReader(src.items.itemMap["WorkShop"]):
             return
 
         params = {"character": character}
-        params["productionTime"] = 50
-        params["doneProductionTime"] = 0
-        params["hitCounter"] = character.numAttackedWithoutResponse
-        self.produceItem_wait(params)
+        params["delayTime"] = 50
+        params["action"]= "output_produced_item"
+        self.delayedAction(params)
 
-    def produceItem_done(self, params):
+    def output_produced_item(self, params):
         character = params["character"]
 
         fragments = self.getFragments(character)

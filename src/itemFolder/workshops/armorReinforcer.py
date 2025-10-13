@@ -251,14 +251,13 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
 
         # trigger the actual productions process
         improvementAmount = chosenDefenseValue - armorOriginalDamage
-        params["productionTime"] = 20 * improvementAmount * 2
-        params["doneProductionTime"] = 0
+        params["delayTime"] = 20 * improvementAmount * 2
         params["improvementAmount"] = improvementAmount
         params["cost"] = chitinPlates_consumed
-        params["hitCounter"] = character.numAttackedWithoutResponse
-        self.produceItem_wait(params)
+        params["action"]= "output_produced_item"
+        self.delayedAction(params)
 
-    def produceItem_done(self, params):
+    def output_produced_item(self,params):
         """
         Finalize improving the armor
         """

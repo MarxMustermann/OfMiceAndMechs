@@ -141,12 +141,11 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
 
         # wait and actually produce the potion
         self.lastProduction = params["type"]
-        params["productionTime"] = 100
-        params["doneProductionTime"] = 0
-        params["hitCounter"] = character.numAttackedWithoutResponse
-        self.produceItem_wait(params)
+        params["delayTime"] = 100
+        params["action"]= "output_produced_item"
+        self.delayedAction(params)
 
-    def produceItem_done(self,params):
+    def output_produced_item(self,params):
         '''
         actually produce to potion
         '''
@@ -159,7 +158,7 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
 
         # show user feedback
         character.addMessage("You produce a %s"%(params["type"],))
-        character.addMessage("It took you %s turns to do that"%(params["doneProductionTime"],))
+        character.addMessage("It took you %s turns to do that"%(params["doneTime"],))
 
         # create potion
         new = src.items.itemMap[params["type"]]()

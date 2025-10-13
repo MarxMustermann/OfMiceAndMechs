@@ -200,21 +200,20 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
             itemsFound[0].amount -= 1
             itemsFound[0].setWalkable()
 
-        params["productionTime"] = 75-min(50,self.numUsed)
+        params["delayTime"] = 75-min(50,self.numUsed)
         if self.toProduce == "MetalBars":
-            params["productionTime"] = params["productionTime"]//10
-        params["doneProductionTime"] = 0
-        params["hitCounter"] = character.numAttackedWithoutResponse
-        self.produceItem_wait(params)
+            params["delayTime"] = params["delayTime"]//10
+        params["action"]= "output_produced_item"
+        self.delayedAction(params)
         self.numUsed += 1
         self.inUse = True
 
-    def produceItem_done(self,params):
+    def output_produced_item(self,params):
         character = params["character"]
         if not params["type"]:
             return
         character.addMessage("You produce a "+params["type"])
-        character.addMessage("It took you "+str(params["productionTime"])+" turns to do that")
+        character.addMessage("It took you "+str(params["delayTime"])+" turns to do that")
 
         badListed = ["Sword","Armor","Rod"]
         if params["type"] in badListed:

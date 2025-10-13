@@ -105,14 +105,13 @@ class Anvil(src.items.itemMap["WorkShop"]):
             "preferInventoryOut": preferInventoryOut,
             "dropsSpotsFull": dropsSpotsFull,
         }
-        params["productionTime"] = 10
-        params["doneProductionTime"] = 0
-        params["hitCounter"] = character.numAttackedWithoutResponse
+
         params["extraAmount"] = amount-1
+        params["delayTime"] = 10
+        params["action"]= "output_produced_item"
+        self.delayedAction(params)
 
-        self.produceItem_wait(params)
-
-    def produceItem_done(self,params):
+    def output_produced_item(self,params):
         character = params["character"]
         scrap = params["scrap"]
         preferInventoryOut = params["preferInventoryOut"]

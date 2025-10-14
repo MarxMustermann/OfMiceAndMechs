@@ -1030,6 +1030,50 @@ class Item:
         character.addMessage("you unbolt the item")
         character.changed("unboltedItem",{"character":character,"item":self})
 
+    
+    def delayedAction(self, params):
+        character = params["character"]
+
+        if not "doneTime" in params:
+            params["doneTime"] = 0
+
+        if not "hitCounter" in params:
+            params["hitCounter"] = character.numAttackedWithoutResponse
+
+        if params["hitCounter"] != character.numAttackedWithoutResponse:
+            character.addMessage("You got hit while working")
+            return
+
+        ticksLeft = params["delayTime"] - params["doneTime"]
+        character.takeTime(1,"working")
+        params["doneTime"] += 1
+
+        barLength = params["delayTime"]//10
+        if params["delayTime"]%10:
+            barLength += 1
+        baseProgressbar = "X" * int(params["doneTime"] // 10) + "." * int(
+            barLength - (params["doneTime"] // 10)
+        )
+        progressBar = ""
+        while len(baseProgressbar) > 10:
+            progressBar += baseProgressbar[:10]+"\n"
+            baseProgressbar = baseProgressbar[10:]
+        progressBar += baseProgressbar
+
+        submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(progressBar, targetParamName="abortKey")
+        submenue.tag = "Wait"
+        character.macroState["submenue"] = submenue
+        character.macroState["submenue"].followUp = {
+            "container": self,
+            "method": params["action"] if ticksLeft <= 0 else "delayedAction",
+            "params": params,
+        }
+
+        character.runCommandString(".", nativeKey=True)
+        if ticksLeft % 10 != 9 and src.gamestate.gamestate.mainChar == character:
+            src.interaction.skipNextRender = True
+
+
 
 commons = [
     "MarkerBean",

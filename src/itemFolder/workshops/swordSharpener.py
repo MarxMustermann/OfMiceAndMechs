@@ -129,12 +129,11 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
 
             improvementAmount = chosenDamageValue - swordOriginalDamage
             # trigger the actual productions process
-            params["productionTime"] = 20 * improvementAmount
-            params["doneProductionTime"] = 0
+            params["delayTime"] = 20 * improvementAmount
             params["improvementAmount"] = improvementAmount
             params["cost"] = amount_grindstone_consumed
-            params["hitCounter"] = character.numAttackedWithoutResponse
-            self.produceItem_wait(params)
+            params["action"]= "output_produced_item"
+            self.delayedAction(params)
             return
 
         # make the user select the sword to sharpen
@@ -268,7 +267,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             "params": params,
         }
 
-    def produceItem_done(self, params):
+    def output_produced_item(self, params):
         '''
         actually do the sword sharpening
         '''

@@ -401,14 +401,14 @@ class DebugMenu(src.subMenu.SubMenu):
             self.teleportToTerrain(params)
 
         if "ticks" in params:
-            params["productionTime"] = int(params["ticks"])
-            params["doneProductionTime"] = 0
-            params["hitCounter"] = character.numAttackedWithoutResponse
+            params["delayTime"] = int(params["ticks"])
+            params["action"]= "onDone"
 
-            class Dummy(src.items.itemMap["WorkShop"]):
-                def produceItem_done(self, params):
-                    ticks = params["productionTime"]
-                    character = params["character"]
-                    character.addMessage(f"passed {ticks} tick")
+            def onDone(params):
+                ticks = params["delayTime"]
+                character = params["character"]
+                character.addMessage(f"passed {ticks} tick")
 
-            Dummy().produceItem_wait(params)
+            dummy = src.items.Item()
+            dummy.onDone = onDone
+            dummy.delayedAction(params)

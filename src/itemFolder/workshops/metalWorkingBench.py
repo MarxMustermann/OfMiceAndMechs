@@ -152,12 +152,11 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
             timeModifier = 3
         if params["type"] == "Wall":
             timeModifier = 4
-        params["productionTime"] = 100*timeModifier
-        params["doneProductionTime"] = 0
-        params["hitCounter"] = character.numAttackedWithoutResponse
-        self.produceItem_wait(params)
+        params["delayTime"] = 100*timeModifier
+        params["action"]= "output_produced_item"
+        self.delayedAction(params)
 
-    def produceItem_done(self,params):
+    def output_produced_item(self,params):
         '''
         actually produce the item
         '''
@@ -167,7 +166,7 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
 
         # show user feedback
         character.addMessage("You produce a %s"%(params["type"],))
-        character.addMessage("It took you %s turns to do that"%(params["doneProductionTime"],))
+        character.addMessage("It took you %s turns to do that"%(params["doneTime"],))
 
         # create the new item
         badListed = ["Sword","Armor","Rod"]

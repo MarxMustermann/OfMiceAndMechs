@@ -1287,6 +1287,8 @@ class Terrain:
                     items = self.getItemByPosition((x+15*tilePos[0],y+15*tilePos[1],0))
                     if items:
                         tileMap[x][y] = 20
+                    if len(items) == 1 and items[0].type == "Paving":
+                        tileMap[x][y] = 1
 
             for y in range(1,14):
                 for x in range(1,14):

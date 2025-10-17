@@ -2263,7 +2263,7 @@ press any other key to attack normally"""
             self.addMessage("*grown*")
         self.changed("woke up", self)
 
-    def die(self, reason=None, killer = None, addCorpse=True):
+    def die(self, reason=None, killer = None, addCorpse=True, corpseType="Corpse"):
         '''
         kill the character and do a bit of extra stuff like placing corpses
 
@@ -2303,7 +2303,7 @@ press any other key to attack normally"""
                     container.addItem(self.flask, pos)
                     self.flask = None
 
-                corpse = src.items.itemMap["Corpse"]()
+                corpse = src.items.itemMap[corpseType]()
                 container.addItem(corpse, pos)
 
             if src.gamestate.gamestate.mainChar in container.characters:

@@ -172,6 +172,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                     quest = src.quests.questMap["ConfigureSiegeManager"]()
                     return ([quest],None)
 
+        # ensure there is enough trap rooms
         if numGlassHearts:
             numTrapRooms = 0
             for room in character.getTerrain().rooms:

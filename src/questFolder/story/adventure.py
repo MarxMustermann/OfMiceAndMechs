@@ -33,6 +33,10 @@ class Adventure(src.quests.MetaQuestSequence):
             return (None, ("s","enter the terrain"))
         if character.getBigPosition()[1] == 14:
             return (None, ("w","enter the terrain"))
+
+        if character.searchInventory("MemoryFragment"):
+            quest = src.quests.questMap["ConsumePotion"](potionType="MemoryFragment")
+            return ([quest],None)
         
         currentTerrain = character.getTerrain()
         if currentTerrain == character.getHomeTerrain():

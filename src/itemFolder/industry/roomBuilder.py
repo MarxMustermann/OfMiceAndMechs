@@ -23,6 +23,30 @@ Place Walls and and Doors around the room builder and activate the room builder 
 The room has to be a rectangle.
 """
 
+    def get_missing_items(self):
+        """
+        get information on what items still need to be placed
+        """
+        # set up helper variables
+        big_pos = self.getBigPosition()
+        terrain = self.getTerrain()
+        if terrain == None:
+            return None
+
+        # get missing items
+        missing_items = []
+        for x in range(1,14):
+            for y in range(1,14):
+                item_type = "Wall"
+                if x == 7 or y == 7:
+                    item_type = "Door"
+                pos = (big_pos[0]*15+x,big_pos[1]*15+y,0)
+                found_items = terrain.getItemByPosition(pos)
+                if len(found_items) == 1 and found_items[0].type == item_type:
+                    continue
+                missing_items.append((item_type,pos))
+        return missing_items
+
     def apply(self, character):
         """
         handle a character trying to build a room

@@ -174,13 +174,45 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
 
         # ensure there is enough trap rooms
         if numGlassHearts:
+
+            # count trap rooms
             numTrapRooms = 0
             for room in character.getTerrain().rooms:
                 if room.tag == "trapRoom":
                     numTrapRooms += 1
 
+            # ensure an appropriate number of trap rooms
             if numTrapRooms < numGlassHearts//2:
-                if random.random() < 0.5:
+
+                # check to continue building open buildsite when convinent
+                forceBuildRoom = False
+                for room in terrain.rooms:
+                    
+                    # ignore non trap rooms
+                    if not room.tag in ("traproom","entryRoom",):
+                        continue
+
+                    # check for neighbouring buildsites
+                    offsets = [(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]
+                    roomBuilders = []
+                    for offset in offsets:
+
+                        # get room builder
+                        roomPos = room.getPosition()
+                        checkPos = (roomPos[0]+offset[0], roomPos[1]+offset[1], 0)
+                        items = terrain.getItemByPosition((checkPos[0]*15+7,checkPos[1]*15+7,0))
+                        if not len(items) == 1 or not items[0].type == "RoomBuilder":
+                            continue
+                        roomBuilder = items[0]
+
+                        # set flad to force building, if the needed items are in inventory
+                        missingItems = roomBuilder.get_missing_items()
+                        for (itemType,position) in missingItems:
+                            if character.searchInventory(itemType):
+                                forceBuildRoom = True
+
+                # either actively build base defences or pass time
+                if random.random() < 0.5 or forceBuildRoom:
                     quest = src.quests.questMap["StrengthenBaseDefences"](numTrapRoomsBuild=numGlassHearts//2,numTrapRoomsPlanned=numGlassHearts//2+1,lifetime=200)
                     return ([quest],None)
                 else:

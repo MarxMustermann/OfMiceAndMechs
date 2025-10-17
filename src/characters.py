@@ -1134,14 +1134,12 @@ class Character:
             itemType: the item type
             extra: extra conditions
         '''
-
         if extra is None:
             extra = {}
         foundItems = []
         for item in self.inventory:
             if item.type != itemType:
                 continue
-
             if extra.get("uses") and not item.uses >= extra.get("uses"):
                 continue
             foundItems.append(item)

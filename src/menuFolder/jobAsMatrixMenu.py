@@ -45,7 +45,7 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
         if key == "C":
             for npc in npcs:
                 npc.duties = []
-        if key in ("w","up") and not self.index[0] < 1:
+        if key in ("w","up") and not self.index[0] < 0:
             self.index[0] -= 1
         if key in ("s","down"):
             self.index[0] += 1
@@ -61,7 +61,7 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
                 if isinstance(npc,src.characters.characterMap["Ghoul"]):
                     continue
 
-                if rowCounter == self.index[0]:
+                if rowCounter == self.index[0] or self.index[0] == -1:
                     dutyname = duties[self.index[1]]
 
                     if key == "l":
@@ -100,6 +100,8 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
             color = "default"
             if rowCounter == self.index[1]:
                 color = "#555"
+                if self.index[0] == -1:
+                    color = "#888"
             text.append("|")
             text.append((src.interaction.urwid.AttrSpec("default", color)," "+duty+" "))
             rowCounter += 1

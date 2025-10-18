@@ -11,6 +11,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
+        self.room_building_streak_length = 0
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
         if self.subQuests:
@@ -212,10 +213,35 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                                 forceBuildRoom = True
 
                 # either actively build base defences or pass time
-                if random.random() < 0.5 or forceBuildRoom:
+                forceAdventure = False
+                if self.room_building_streak_length >= 3:
+                    forceAdventure = True
+                if (random.random() < 0.5 or forceBuildRoom) and not forceAdventure:
+                    if not dryRun:
+                        self.room_building_streak_length += 1
                     quest = src.quests.questMap["StrengthenBaseDefences"](numTrapRoomsBuild=numGlassHearts//2,numTrapRoomsPlanned=numGlassHearts//2+1,lifetime=200)
                     return ([quest],None)
                 else:
+                    if not dryRun:
+                        self.room_building_streak_length = 0
+
+                    # ensure at least one Clone has Room building as highest prio
+                    foundClone = False
+                    for candidate in terrain.getAllCharacters():
+                        if not candidate.faction == character.faction:
+                            continue
+                        if candidate == character:
+                            continue
+                        if not candidate.getRandomProtisedDuties():
+                            continue
+                        if not candidate.getRandomProtisedDuties()[0] == "room building":
+                            continue
+                        foundClone = True
+                    if not foundClone:
+                        quest = src.quests.questMap["EnsureMaindutyClone"](dutyType="room building")
+                        return ([quest],None)
+
+                    # beat people up for fun .... erh to gather ressources
                     quest = src.quests.questMap["Adventure"]()
                     return ([quest],None)
 
@@ -300,6 +326,10 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
         return ([quest],None)
 
     def generateTextDescription(self):
+        try:
+             self.room_building_streak_length
+        except:
+             self.room_building_streak_length = 0
         text = ["""
 You reach out to your implant and it answers:
 

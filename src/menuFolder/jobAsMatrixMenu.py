@@ -8,6 +8,9 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
         self.dutyArtwork = dutyArtwork
         self.index = [0,0]
 
+    def get_duties(self):
+        return list(reversed(["manufacturing","scavenging","machine operation","cleaning","painting","maggot gathering","machine placing","room building","machining","metal working","hauling","resource fetching","scrap hammering","resource gathering","praying","mold farming"]))
+
     def handleKey(self, key, noRender=False, character = None):
         """
         show the help text and ignore keypresses
@@ -39,8 +42,7 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
         if src.gamestate.gamestate.mainChar in npcs:
             npcs.remove(src.gamestate.gamestate.mainChar)
 
-        duties = list(reversed(["manufacturing","scavenging","machine operation","cleaning","painting","maggot gathering","machine placing","room building","machining","metal working","hauling","resource fetching","scrap hammering","resource gathering","praying","mold farming"]))
-
+        duties = self.get_duties()
 
         if key == "C":
             for npc in npcs:

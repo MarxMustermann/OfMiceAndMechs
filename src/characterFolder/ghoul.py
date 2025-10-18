@@ -54,4 +54,7 @@ class Ghoul(src.characters.Character):
         """
         super().hurt(max(1,damage//2),reason=reason,actor=actor)
 
+    def die(self, reason=None, killer = None, addCorpse=True, corpseType="MoldFeed"):
+        return super().die(reason=reason,killer=killer,addCorpse=addCorpse,corpseType=corpseType)
+
 src.characters.add_character(Ghoul)

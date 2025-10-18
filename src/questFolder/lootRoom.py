@@ -112,7 +112,7 @@ Remove all items that are not bolted down."""
 
             foundValuableItem = False
             for item in items:
-                if item.type in ("Scrap","MetalBars"):
+                if item.type in ("Scrap","MetalBars","MoldFeed",):
                     continue
                 if item.walkable == False:
                     continue
@@ -154,7 +154,7 @@ Remove all items that are not bolted down."""
             if len(items) > 1 and command[0] == "K":
                 hasAvoidItem = False 
                 for item in items:
-                    if not item.type in ("Scrap","MetalBars"):
+                    if not item.type in ("Scrap","MetalBars","MoldFeed",):
                         continue
                     hasAvoidItem = True
                 if not hasAvoidItem:

@@ -85,19 +85,26 @@ the buildsites indicate what needs to be built.
             if command:
                 return (None,(command,"enter room"))
 
-        # go to target room
-        if character.getBigPosition() != self.targetPositionBig:
-            quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig)
-            return ([quest],None)
+        ## go to target room
+        #if character.getBigPosition() != self.targetPositionBig:
+        #    quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig)
+        #    return ([quest],None)
+        # set up helper variables
+        targetRoom = character.getTerrain().getRoomByPosition(self.targetPositionBig)
+        if not targetRoom:
+            if not dryRun:
+                self.fail("no room found")
+            return (None,("+","abort quest"))
+        targetRoom = targetRoom[0]
 
         # abort on rooms not fully painted
-        if character.container.floorPlan:
+        if targetRoom.floorPlan:
             if not dryRun:
                 self.fail("room not fully painted yet")
             return (None,None)
             
         # end if no more buildsites left
-        if not character.container.buildSites:
+        if not targetRoom.buildSites:
             if not dryRun:
                 self.postHandler()
             return (None,None)
@@ -105,8 +112,7 @@ the buildsites indicate what needs to be built.
         # place items on buildsites
         checkedMaterial = set()
         numCheckedMaterial = {}
-        room = character.container
-        for buildSite in room.buildSites:
+        for buildSite in targetRoom.buildSites:
 
             if buildSite[1] not in numCheckedMaterial:
                 numCheckedMaterial[buildSite[1]] = 0
@@ -131,7 +137,7 @@ the buildsites indicate what needs to be built.
 
             # create quest to set up actual machines
             if buildSite[1] == "Machine":
-                quest = src.quests.questMap["SetUpMachine"](itemType=buildSite[2]["toProduce"],targetPositionBig=room.getPosition(),targetPosition=buildSite[0])
+                quest = src.quests.questMap["SetUpMachine"](itemType=buildSite[2]["toProduce"],targetPositionBig=targetRoom.getPosition(),targetPosition=buildSite[0])
                 if not dryRun:
                     beUsefull.idleCounter = 0
                 return ([quest],None)
@@ -139,11 +145,11 @@ the buildsites indicate what needs to be built.
             # try to obtain the item needed
             if not hasItem:
                 # check the local list of supplies (not active right now?)
-                for candidateSource in room.sources:
+                for candidateSource in targetRoom.sources:
                     if candidateSource[1] != neededItem:
                         continue
 
-                    sourceRoom = room.container.getRoomByPosition(candidateSource[0])
+                    sourceRoom = targetRoom.container.getRoomByPosition(candidateSource[0])
                     if not sourceRoom:
                         continue
 
@@ -169,7 +175,7 @@ the buildsites indicate what needs to be built.
 
             # place sheet for setting up command (ugly!)
             if buildSite[1] != "Command":
-                quest = src.quests.questMap["PlaceItem"](itemType=buildSite[1],targetPositionBig=room.getPosition(),targetPosition=buildSite[0],boltDown=True,tryHard=self.tryHard,clearSpace=True)
+                quest = src.quests.questMap["PlaceItem"](itemType=buildSite[1],targetPositionBig=targetRoom.getPosition(),targetPosition=buildSite[0],boltDown=True,tryHard=self.tryHard,clearSpace=True)
                 return ([quest],None)
 
             # place the actual command
@@ -183,8 +189,8 @@ the buildsites indicate what needs to be built.
                         quests.append(src.quests.questMap["RunCommand"](command="jjssj.\n"))
                 quests.append(src.quests.questMap["RunCommand"](command="lcb"))
                 quests.append(src.quests.questMap["GoToPosition"](targetPosition=buildSite[0]))
-                buildSite[2]["reservedTill"] = room.timeIndex+100
-                quests.append(src.quests.questMap["GoToTile"](targetPosition=room.getPosition()))
+                buildSite[2]["reservedTill"] = targetRoom.timeIndex+100
+                quests.append(src.quests.questMap["GoToTile"](targetPosition=targetRoom.getPosition()))
                 #self.addQuest(produceQuest)
                 return (quests,None)
 
@@ -196,7 +202,7 @@ the buildsites indicate what needs to be built.
                         beUsefull.idleCounter = 0
                     return ([quest],None)
 
-                roomPos = (room.xPosition,room.yPosition)
+                roomPos = (targetRoom.xPosition,targetRoom.yPosition)
                 quests = []
                 if source[0] != roomPos:
                     quests.append(src.quests.questMap["GoToTile"](targetPosition=(roomPos[0],roomPos[1],0)))

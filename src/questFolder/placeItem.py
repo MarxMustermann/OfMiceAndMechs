@@ -221,9 +221,9 @@ Press d to move the cursor and show the subquests description.
                 container = character.container
 
             if character.container.isRoom:
-                items = character.container.getItemByPosition((self.targetPosition[0],self.targetPosition[1],0))
+                items = container.getItemByPosition((self.targetPosition[0],self.targetPosition[1],0))
             else:
-                items = character.container.getItemByPosition((self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0))
+                items = container.getItemByPosition((self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0))
 
             if items and items[-1].type == self.itemType:
                 itemFound = items[-1]

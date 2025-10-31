@@ -87,6 +87,8 @@ class GoToTerrain(src.quests.MetaQuestSequence):
             targetTerrain = path[0]
         else:
             targetTerrain = self.targetTerrain
+        if self.allowTerrainMenu:
+            targetTerrain = self.targetTerrain
 
         submenue = character.macroState.get("submenue")
         if submenue:

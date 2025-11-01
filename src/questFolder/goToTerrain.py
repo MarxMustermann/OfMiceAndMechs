@@ -82,7 +82,9 @@ class GoToTerrain(src.quests.MetaQuestSequence):
         if terrainPos != self.targetTerrain:
             path = self.getTerrainPath(terrainPos,self.targetTerrain)
             if not len(path):
-                self.fail("Empty Path")
+                if not dryRun:
+                    self.fail("Empty Path")
+                return ("+","abort quest")
 
             targetTerrain = path[0]
         else:

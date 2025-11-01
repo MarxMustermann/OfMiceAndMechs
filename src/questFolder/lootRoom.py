@@ -156,7 +156,7 @@ Remove all items that are not bolted down."""
             for item in items:
                 if item.bolted:
                     break
-                if item.type == "Bolt":
+                if item.type == "Bolt" and character.getFreeInventorySpace() <= 1:
                     continue
                 foundItems.append(item)
 
@@ -217,15 +217,16 @@ Remove all items that are not bolted down."""
                 continue
             if item.walkable == False:
                 continue
-            if item.type in ["Bolt"]:
+            if item.type in ["Bolt"] and character.getFreeInventorySpace() <= 1:
                 continue
 
             quest = src.quests.questMap["GoToPosition"](targetPosition=item_pos,ignoreEndBlocked=True)
             return ([quest],None)
 
+        abort_reason = "uknown reason"
         if not dryRun:
-            self.fail()
-        return (None,("+","abort quest"))
+            self.fail(abort_reason)
+        return (None,("+","abort quest\n("+abort_reason+")"))
 
     def getLeftoverItems(self,character):
 

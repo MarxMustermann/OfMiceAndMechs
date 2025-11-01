@@ -28,6 +28,8 @@ class EnsureMaindutyClone(src.quests.MetaQuestSequence):
                 continue
             if candidate == character:
                 continue
+            if not candidate.duties:
+                continue
             if not candidate.getRandomProtisedDuties()[0] == self.dutyType:
                 continue
             print(candidate.name)

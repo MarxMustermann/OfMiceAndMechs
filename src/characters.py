@@ -3118,6 +3118,8 @@ press any other key to attack normally"""
         self.statusEffects.append(effect)
         self.changed("added status effect")
 
+    def description(self):
+        return f"{(type(self)).__name__} has no description and needs to be added"
 
 # supply a list of character types available
 characterMap = {

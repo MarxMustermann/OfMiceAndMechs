@@ -245,7 +245,4 @@ class Monster(src.characters.Character):
         else:
             return multiplier / 4
 
-    def description(self):
-        return f"{(type(self)).__name__} has no description and needs to be added"
-
 src.characters.add_character(Monster)

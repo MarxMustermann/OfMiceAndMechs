@@ -203,7 +203,7 @@ Press d to move the cursor and show the subquests description.
                     return (None,(inventoryCommand,"drop the item"))
 
                 if submenue.tag == "configurationSelection":
-                    return (None,("b","bot down the item"))
+                    return (None,("b","bolt down the item"))
 
                 return (None,(["esc"],"exit the menu"))
 

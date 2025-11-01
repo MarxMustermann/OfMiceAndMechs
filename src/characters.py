@@ -618,14 +618,22 @@ class Character:
         else:
             return abs(self.container.xPosition-position[0])+abs(self.container.yPosition-position[1])+abs(self.container.zPosition-position[2])
 
-    def getFreeInventorySpace(self):
+    def getFreeInventorySpace(self,ignoreTypes=None):
         '''
         get the characters free inventory space
 
         returns:
             the number of free inventory slots
         '''
-        return 10-len(self.inventory)
+        if not ignoreTypes:
+            return 10-len(self.inventory)
+
+        num_items_in_inventory = 0
+        for item in self.inventory:
+            if item.type in ignoreTypes:
+                continue
+            num_items_in_inventory += 1
+        return 10-num_items_in_inventory
 
     def getItemWalkable(self,item):
         '''

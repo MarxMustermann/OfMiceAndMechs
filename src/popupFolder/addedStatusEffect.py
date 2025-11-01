@@ -20,16 +20,24 @@ class AddedStatusEffect(src.popups.Popup):
         short_name = instance.getShortCode()
         description = instance.getLoreDescription()
 
-        output = f"you gained a new status effect: {status_name}({short_name})\n\n{description}"
+        output = f"{status_name} ({short_name})\n\n{description}"
 
         if not hasattr(self.character,"notFirstTimeEffect"):
             self.character.notFirstTimeEffect = True
-            return f"""You Feel your first status effect as it changes yourself
-Effect can change certain attributes
+            output = f"""You feel different. You are affected by a status effect.
+Status effects can do various thinga and have various causes.
+
+You are affected by:
+
 
 {output}"""
         else:
-            return output
+            output = f"""You encountered a new status effect:
+
+{output}"""
+
+
+        return output
 
     def conditionMet(self, params) -> bool:
         return self.character.statusEffects[-1].type == self.effect.type

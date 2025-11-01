@@ -52,7 +52,7 @@ Remove all items that are not bolted down."""
         if character.getBigPosition() != (self.targetPosition[0], self.targetPosition[1], 0):
             return False
 
-        if self.endWhenFull and character.getFreeInventorySpace() == 0:
+        if self.endWhenFull and character.getFreeInventorySpace(ignoreTypes=["Bolt"]) == 0:
             self.postHandler()
             return True
         
@@ -75,11 +75,33 @@ Remove all items that are not bolted down."""
         if not character:
             return (None,None)
 
+        if not ignoreCommands:
+            submenue = character.macroState.get("submenue")
+
+            if submenue:
+                if isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu) and character.getFreeInventorySpace() <= 1:
+                    targetIndex = 0
+                    for item in character.inventory:
+                        if item.type == "Bolt":
+                            break
+                        targetIndex += 1
+
+                    if targetIndex >= len(character.inventory):
+                        return (None,(["esc"],"exit the menu"))
+
+                    inventoryCommand = ""
+                    inventoryCommand += "s"*(targetIndex-submenue.cursor)
+                    inventoryCommand += "w"*(submenue.cursor-targetIndex)
+                    inventoryCommand += "l"
+                    return (None,(inventoryCommand,"drop the item"))
+
+                return (None,(["esc"],"exit the menu"))
+
         if character.getNearbyEnemies():
             quest = src.quests.questMap["Fight"]()
             return ([quest],None)
 
-        if not character.getFreeInventorySpace() > 0:
+        if not character.getFreeInventorySpace(ignoreTypes=["Bolt"]) > 0:
             quest = src.quests.questMap["ClearInventory"](reason="have inventory space to pick up more items",returnToTile=False)
             return ([quest],None)
         if not isinstance(character.container,src.rooms.Room):
@@ -130,14 +152,33 @@ Remove all items that are not bolted down."""
             if invalidStack:
                 continue
 
-            foundOffset = offset
-
             foundItems = []
             for item in items:
                 if item.bolted:
                     break
+                if item.type == "Bolt":
+                    continue
                 foundItems.append(item)
-            break
+
+            if foundItems:
+                foundOffset = offset
+                break
+
+        if not character.getFreeInventorySpace() > 0:
+            if character.inventory[-1].type == "Bolt":
+                return (None,("l","drop item"))
+
+            index = 0
+            for item in character.inventory:
+                if item.type in ["Bolt"]:
+                    break
+                index += 1
+            else:
+                abort_reason = "no item type to drop"
+                if not dryRun:
+                    self.fail(abort_reason)
+                return (None,("+","abort quest\n("+abort_reason+")"))
+            return (None,("i"+"s"*index+"l","drop item"))
 
         if foundOffset:
             if foundOffset == (0,0,0):
@@ -176,11 +217,15 @@ Remove all items that are not bolted down."""
                 continue
             if item.walkable == False:
                 continue
+            if item.type in ["Bolt"]:
+                continue
 
             quest = src.quests.questMap["GoToPosition"](targetPosition=item_pos,ignoreEndBlocked=True)
             return ([quest],None)
 
-        return (None,None)
+        if not dryRun:
+            self.fail()
+        return (None,("+","abort quest"))
 
     def getLeftoverItems(self,character):
 
@@ -221,6 +266,8 @@ Remove all items that are not bolted down."""
             if character.container.isRoom and (item_pos[0] > 11 or item_pos[1] > 11 or item_pos[0] < 1 or item_pos[1] < 1):
                 continue
             if item.type in ("Scrap","MetalBars","MoldFeed",):
+                continue
+            if item.type == "Bolt" and character.getFreeInventorySpace() <= 1:
                 continue
             if item.walkable == False:
                 continue

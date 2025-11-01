@@ -254,7 +254,7 @@ track:
         if not currentTerrain.yPosition == character.registers["HOMETy"]:
             return False
 
-        if not character.getFreeInventorySpace() < 2:
+        if not character.getFreeInventorySpace(ignoreTypes=["Bolt"]) < 2:
             return False
 
         self.postHandler()

@@ -112,6 +112,9 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
             if item.type in ("Scrap","MetalBars","MoldFeed"):
                 continue
 
+            if item.type in ("Bolt",) and character.getFreeInventorySpace() <= 1:
+                continue
+
             invalidStack = False
             for stackedItem in character.container.getItemByPosition(item.getPosition()):
                 if stackedItem == item:
@@ -122,6 +125,7 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
             if invalidStack:
                 continue
 
+            print(character.getBigPosition())
             quest = src.quests.questMap["LootRoom"](targetPosition=character.getBigPosition(),endWhenFull=True)
             return ([quest],None)
 
@@ -148,7 +152,7 @@ Go out and adventure on tile {self.targetTerrain}.
         if not (currentTerrain.xPosition == self.targetTerrain[0] and currentTerrain.yPosition == self.targetTerrain[1]):
             return False
 
-        if not character.getFreeInventorySpace():
+        if not character.getFreeInventorySpace(ignoreTypes=["Bolt"]):
             self.postHandler()
             return True
 

@@ -7598,7 +7598,7 @@ def advanceChar(char,render=True, pull_events = True, singleStep=False):
             char.runCommandString("~",nativeKey=True)
         elif char.autoExpandQuests and char.getActiveQuest() and not (char.getActiveQuest().getSolvingCommandString(char)):
             char.runCommandString("+",nativeKey=True)
-        elif char.autoExpandQuests2 and char.getActiveQuest() and char.getActiveQuest().getSolvingCommandString(char)[0] == "+" and char.autoExpandCounter < 20:
+        elif char.autoExpandQuests2 and char.getActiveQuest() and char.getActiveQuest().getSolvingCommandString(char)[0] == "+" and char.autoExpandCounter < 5:
             char.autoExpandCounter += 1
             char.runCommandString("+",nativeKey=True)
         else:

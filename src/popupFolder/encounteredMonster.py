@@ -1,4 +1,3 @@
-import src
 import src.characters
 
 

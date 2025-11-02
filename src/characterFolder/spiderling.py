@@ -67,5 +67,4 @@ class Spiderling(src.monster.Monster):
     def description(self):
         return self.getLoreDescription()+"\n\n---- "+self.getFunctionalDescription()
 
-
 src.characters.add_character(Spiderling)

@@ -95,4 +95,13 @@ class Spider(src.monster.Monster):
     def lootTable():
         return [(None, 9),(src.items.itemMap["SpiderEye"], 1)]
 
+    def getLoreDescription(self):
+        return f"You see a Spider. Poission is dripping from its fangs.\nIt seems to be as persistent as it is patient."
+
+    def getFunctionalDescription(self):
+        return f"Spiders are somwhat dangerous in a fight and are about as fast as a Clone.\nThe main risk fighting them is that they can slow you down, preventing an escape.\nSpiders will always chase after you"
+
+    def description(self):
+        return self.getLoreDescription()+"\n\n---- "+self.getFunctionalDescription()
+
 src.characters.add_character(Spider)

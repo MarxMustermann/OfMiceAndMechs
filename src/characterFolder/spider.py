@@ -99,7 +99,7 @@ class Spider(src.monster.Monster):
         return f"You see a Spider. Poission is dripping from its fangs.\nIt seems to be as persistent as it is patient."
 
     def getFunctionalDescription(self):
-        return f"Spiders are somwhat dangerous in a fight and are about as fast as a Clone.\nThe main risk fighting them is that they can slow you down, preventing an escape.\nSpiders will always chase after you"
+        return f"Spiders are somewhat dangerous in a fight and are about as fast as a Clone.\nThe main risk fighting them is that they can slow you down, preventing an escape.\nSpiders will always chase after you, you can abuse that behaviour."
 
     def description(self):
         return self.getLoreDescription()+"\n\n---- "+self.getFunctionalDescription()

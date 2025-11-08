@@ -92,6 +92,7 @@ or use this item with MoldFeed in your inventory.
 
         params = {"character":character,"amount_to_burn":amount_to_burn,"delayTime":30,"action":"doHealing"}
         self.delayedAction(params)
+        character.runCommandString(".")
 
     def doHealing(self,params):
         amount_to_burn = params["amount_to_burn"]

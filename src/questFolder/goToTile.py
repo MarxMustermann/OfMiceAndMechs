@@ -217,15 +217,15 @@ The target tile is {direction[4:]}
         if character is None:
             return (None,None)
 
+        # do nothing if there is a suqbquest
+        if self.subQuests:
+            return (None,None)
+
         # validate the boundaries
         if self.targetPosition[0] < 1 or self.targetPosition[0] > 13:
-            if not dryRun:
-                self.fail("target position out of range")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"target position out of range")
         if self.targetPosition[1] < 1 or self.targetPosition[1] > 13:
-            if not dryRun:
-                self.fail("target position out of range")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"target position out of range")
 
         try:
             self.abortOnDanger
@@ -233,9 +233,7 @@ The target tile is {direction[4:]}
             self.abortOnDanger = False
 
         if self.abortOnDanger and character.getNearbyEnemies():
-            if not dryRun:
-                self.fail("enemies nearby")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"enemies nearby")
 
         # move using the room menu
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.mapMenu.MapMenu) and not ignoreCommands:
@@ -266,9 +264,7 @@ The target tile is {direction[4:]}
 
         # abort quest when too hurt
         if character.health < character.maxHealth*self.abortHealthPercentage:
-            if not dryRun:
-                self.fail("low health")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"low health")
 
         # enter terrains properly
         bigPos = character.getBigPosition()
@@ -303,10 +299,6 @@ The target tile is {direction[4:]}
                 return (None,(menuCommand+"mq","use fast travel to current questmarker"))
             return (None,(menuCommand+"m"+"d"*offset[0]+"a"*(-offset[0])+"s"*offset[1]+"w"*(-offset[1])+"j","use fast travel to reach your destination"))
 
-        # do nothing if there is a suqbquest
-        if self.subQuests:
-            return (None,None)
-
         try:
             self.ignoreEnemies
         except:
@@ -334,9 +326,7 @@ The target tile is {direction[4:]}
             if not self.isPathSane(character):
                 self.generatePath(character)
                 if not self.path:
-                    if not dryRun:
-                        self.fail()
-                    return (None,None)
+                    return self._solver_trigger_fail(dryRun,"low path")
 
             # exit the room
             if self.path[0] == (0,1):
@@ -369,9 +359,7 @@ The target tile is {direction[4:]}
                 return ([quest],None)
 
             # fail if path was invalid
-            if not dryRun:
-                self.fail("invalid step in tile path")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"invalid step in tile path")
         else:
             # actually enter the tile
             if character.xPosition%15 == 7 and character.yPosition%15 == 14:
@@ -397,8 +385,7 @@ The target tile is {direction[4:]}
             if not self.isPathSane(character):
                 self.generatePath(character)
                 if not self.path:
-                    self.fail()
-                    return (None,None)
+                    return self._solver_trigger_fail(dryRun,"no path")
 
             # go to tile edge
             terrain = character.getTerrain()
@@ -407,8 +394,7 @@ The target tile is {direction[4:]}
                 if rooms:
                     room = rooms[0]
                     if not room.getPositionWalkable((6,0,0)):
-                        self.fail("path blocken by room")
-                        return (None,None)
+                        return self._solver_trigger_fail(dryRun,"path blocked by room")
                 if character.xPosition%15 == 7 and character.yPosition%15 == 13:
                     return (None,("s","exit the tile"))
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(7,13,0),description="go to tile edge",reason="reach the tiles edge")
@@ -419,8 +405,7 @@ The target tile is {direction[4:]}
                 if rooms:
                     room = rooms[0]
                     if not room.getPositionWalkable((6,12,0)):
-                        self.fail("path blocken by room")
-                        return (None,None)
+                        return self._solver_trigger_fail(dryRun,"path blocked by room")
                 if character.xPosition%15 == 7 and character.yPosition%15 == 1:
                     return (None,("w","exit the tile"))
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(7,1,0),description="go to tile edge",reason="reach the tiles edge")
@@ -431,8 +416,7 @@ The target tile is {direction[4:]}
                 if rooms:
                     room = rooms[0]
                     if not room.getPositionWalkable((0,6,0)):
-                        self.fail("path blocken by room")
-                        return (None,None)
+                        return self._solver_trigger_fail(dryRun,"path blocked by room")
                 if character.xPosition%15 == 13 and character.yPosition%15 == 7:
                     return (None,("d","exit the tile"))
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(13,7,0),description="go to tile edge",reason="reach the tiles edge")
@@ -443,8 +427,7 @@ The target tile is {direction[4:]}
                 if rooms:
                     room = rooms[0]
                     if not room.getPositionWalkable((12,6,0)):
-                        self.fail("path blocken by room")
-                        return (None,None)
+                        return self._solver_trigger_fail(dryRun,"path blocked by room")
                 if character.xPosition%15 == 1 and character.yPosition%15 == 7:
                     return (None,("a","exit the tile"))
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(1,7,0),description="go to tile edge",reason="reach the tiles edge")
@@ -452,9 +435,7 @@ The target tile is {direction[4:]}
                 return ([quest],None)
 
             # fail if path was invalid
-            if not dryRun:
-                self.fail("invalid step in tile path")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"invalid step in tile path")
 
     def generatePath(self,character):
         '''

@@ -205,6 +205,9 @@ Set the floor plan: {self.floorPlanType}
 
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
+        if not character.getHomeRoomCord():
+            return (None,None)
+
         terrain = character.getTerrain()
         cityCore = terrain.getRoomByPosition(character.getHomeRoomCord())[0]
         cityPlaner = cityCore.getItemByType("CityPlaner",needsBolted=True)

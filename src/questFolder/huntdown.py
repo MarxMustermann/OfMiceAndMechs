@@ -25,7 +25,8 @@ class Huntdown(src.quests.MetaQuestSequence):
         return False
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
-        self.triggerCompletionCheck()
+        if not dryRun:
+            self.triggerCompletionCheck()
 
         if self.subQuests:
             return (None,None)
@@ -75,6 +76,7 @@ class Huntdown(src.quests.MetaQuestSequence):
 
             quest = src.quests.questMap["GoToTile"](paranoid=True,targetPosition=newPos)
             return ([quest],None)
+
         quest = src.quests.questMap["Fight"](suicidal=True)
         return ([quest],None)
 

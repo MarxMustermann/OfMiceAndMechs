@@ -225,13 +225,13 @@ Place the items in the correct input or storage stockpile.
                                 interactionCommand = ""
 
                         if foundDirectDrop[1] == (-1,0):
-                            return (None,((inventoryCommand+interactionCommand+"A")*numToDrop,"store an item"))
+                            return (None,((interactionCommand+"A")*numToDrop,"store an item"))
                         if foundDirectDrop[1] == (1,0):
-                            return (None,((inventoryCommand+interactionCommand+"D")*numToDrop,"store an item"))
+                            return (None,((interactionCommand+"D")*numToDrop,"store an item"))
                         if foundDirectDrop[1] == (0,-1):
-                            return (None,((inventoryCommand+interactionCommand+"W")*numToDrop,"store an item"))
+                            return (None,((interactionCommand+"W")*numToDrop,"store an item"))
                         if foundDirectDrop[1] == (0,1):
-                            return (None,((inventoryCommand+interactionCommand+"S")*numToDrop,"store an item"))
+                            return (None,((interactionCommand+"S")*numToDrop,"store an item"))
                         if foundDirectDrop[1] == (0,0):
                             return (None,((inventoryCommand+"l")*numToDrop,"store an item"))
                 else:

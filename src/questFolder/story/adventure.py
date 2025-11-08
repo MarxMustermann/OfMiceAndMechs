@@ -144,7 +144,7 @@ class Adventure(src.quests.MetaQuestSequence):
                 extraWeight[coordinate] = 5
                 if coordinate in character.terrainInfo:
                     info = character.terrainInfo[coordinate]
-                    if character.getFreeInventorySpace() < 2:
+                    if character.getFreeInventorySpace(ignoreTypes=["Bolt"]) < 2:
                         extraWeight[coordinate] = 1
                         if not info.get("tag") == "shrine":
                             continue
@@ -159,7 +159,7 @@ class Adventure(src.quests.MetaQuestSequence):
 
         # do special handling of the characters home
         homeCoordinate = (character.registers["HOMETx"], character.registers["HOMETy"], 0)
-        if character.getFreeInventorySpace() < 1:
+        if character.getFreeInventorySpace(ignoreTypes=["Bolt"]) < 2:
             candidates.append(homeCoordinate)
             extraWeight[coordinate] = 1
         else:

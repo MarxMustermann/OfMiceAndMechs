@@ -19,6 +19,7 @@ class Adventure(src.quests.MetaQuestSequence):
         generate the next step towards solving this quest
         '''
 
+
         if self.subQuests:
             return (None,None)
 
@@ -158,7 +159,7 @@ class Adventure(src.quests.MetaQuestSequence):
 
         # do special handling of the characters home
         homeCoordinate = (character.registers["HOMETx"], character.registers["HOMETy"], 0)
-        if character.getFreeInventorySpace() < 2:
+        if character.getFreeInventorySpace() < 1:
             candidates.append(homeCoordinate)
             extraWeight[coordinate] = 1
         else:
@@ -166,9 +167,10 @@ class Adventure(src.quests.MetaQuestSequence):
                 candidates.remove(homeCoordinate)
 
         if not len(candidates):
+            abort_reason = "no candidates"
             if dryRun:
-                self.fail()
-            return (None, None)
+                self.fail(abort_reason)
+            return (None, ("+","abort quest\n({abort_reason})"))
 
         # sort weighted with slight random
         random.shuffle(candidates)
@@ -180,6 +182,7 @@ class Adventure(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["AdventureOnTerrain"](targetTerrain=targetTerrain,terrainsWeight = extraWeight)
         else:
             quest = src.quests.questMap["GoToTerrain"](targetTerrain=targetTerrain)
+
         return ([quest], None)
 
     def generateTextDescription(self):

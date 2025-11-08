@@ -307,9 +307,16 @@ class Quest:
         self.paused = False
 
     """
+    helperfunction to trigger a quest fail from within a solver
+    """
+    def _solver_trigger_fail(self,dryRun,reason=None):
+        if not dryRun:
+            self.fail(reason)
+        return (None,("+",f"abort quest\n({reason})"))
+
+    """
     handle a failure to resolve te quest
     """
-
     def fail(self,reason=None):
         self.changed("failed",{"reason":reason,"quest":self})
         if reason and self.character:

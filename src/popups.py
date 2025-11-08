@@ -25,7 +25,8 @@ class Popup(ABC):
         if self.conditionMet(params):
             self.character.delListener(self.onEvent, self.subscribedEvent())
 
-            self.open_Popup(self.character, self.text(), self)
+            if self.text():
+                self.open_Popup(self.character, self.text(), self)
 
     @staticmethod
     def open_Popup(character, text, container=None):

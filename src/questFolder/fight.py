@@ -81,8 +81,9 @@ So if an enemy is to directly east of you:
         character.personality["autoFlee"] = False
 
         if not character.getNearbyEnemies():
-            self.postHandler()
-            return (None,None)
+            if not dryRun:
+                self.postHandler()
+            return (None,("+","end quest"))
 
         if character.health < character.maxHealth//2 and character.canHeal():
             return (None,("Jh","heal"))
@@ -92,8 +93,10 @@ So if an enemy is to directly east of you:
         except:
             self.suicidal = False
         if (not self.suicidal) and (character.health < character.maxHealth//5):
-            self.fail()
-            return (None,None)
+            abort_reason = "low health"
+            if not dryRun:
+                self.fail(abort_reason)
+            return (None,("+",f"abort quest ({abort_reason})"))
 
         if not ignoreCommands:
             submenue = character.macroState.get("submenue")
@@ -236,7 +239,7 @@ So if an enemy is to directly east of you:
                 command = "Kwl"
 
         if command is None:
-            return (None,None)
+            return (None,(".","stand around confused"))
 
         return (None,(command,"approach enemy"))
 

@@ -54,5 +54,13 @@ class ShieldBug(src.characters.characterMap["Insect"]):
     def lootTable():
         return [(None, 1), (src.items.itemMap["ChitinPlates"], 1)]
 
+    def getLoreDescription(self):
+        return f"You see a ShieldBug. It slowly moves dragging its enourmous weight through the mud.\nThe oldest ShieldBugs have ChitinPlates almost unpenetrable by a normal blade."
+
+    def getFunctionalDescription(self):
+        return f"Shieldbugs have good armor, some are stronger than others."
+
+    def description(self):
+        return self.getLoreDescription()+"\n\n---- "+self.getFunctionalDescription()
 
 src.characters.add_character(ShieldBug)

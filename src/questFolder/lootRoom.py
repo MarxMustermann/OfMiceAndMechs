@@ -154,6 +154,8 @@ Remove all items that are not bolted down."""
 
             foundItems = []
             for item in items:
+                if item.type in ("Scrap","MetalBars","MoldFeed",):
+                    continue
                 if item.bolted:
                     break
                 if item.type == "Bolt" and character.getFreeInventorySpace() <= 1:
@@ -165,8 +167,49 @@ Remove all items that are not bolted down."""
                 break
 
         if not character.getFreeInventorySpace() > 0:
+            dropCommand = "l"
+
+            isValidDropSpot = True
+            items = character.container.getItemByPosition(character.getPosition())
+            if len(items) > 15:
+                isValidDropSpot = False
+            for item in items:
+                if not item.walkable:
+                    isValidDropSpot = False
+                    break
+                if item.type in ("Scrap","MetalBars","MoldFeed",):
+                    continue
+                if item.type in ["Bolt"]:
+                    continue
+                isValidDropSpot = False
+                break
+            if not isValidDropSpot:
+                offsets = [(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]
+                random.shuffle(offsets)
+                for offset in offsets:
+                    isValidDropSpot = True
+                    items = character.container.getItemByPosition(character.getPosition())
+                    if len(items) > 15:
+                        isValidDropSpot = False
+                    for item in items:
+                        if not item.walkable:
+                            isValidDropSpot = False
+                            break
+                    
+                    if isValidDropSpot:
+                        dropCommand = "L"
+                        match offset:
+                            case (1,0,0):
+                                dropCommand += "d"
+                            case (-1,0,0):
+                                dropCommand += "a"
+                            case (0,1,0):
+                                dropCommand += "s"
+                            case (0,-1,0):
+                                dropCommand += "w"
+
             if character.inventory[-1].type == "Bolt":
-                return (None,("l","drop item"))
+                return (None,(dropCommand,"drop item"))
 
             index = 0
             for item in character.inventory:
@@ -178,7 +221,7 @@ Remove all items that are not bolted down."""
                 if not dryRun:
                     self.fail(abort_reason)
                 return (None,("+","abort quest\n("+abort_reason+")"))
-            return (None,("i"+"s"*index+"l","drop item"))
+            return (None,("i"+"s"*index+dropCommand,"drop item"))
 
         if foundOffset:
             if foundOffset == (0,0,0):

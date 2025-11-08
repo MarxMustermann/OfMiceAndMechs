@@ -4331,9 +4331,9 @@ def renderGameDisplay(renderChar=None):
             if isinstance(item, str):
                 outData += item
             if isinstance(item, ActionMeta):
-                outData += item.content
+                outData += stringifyUrwid(item.content)
             if isinstance(item, CharacterMeta):
-                outData += item.content
+                outData += stringifyUrwid(item.content)
         return outData
 
     # render the game

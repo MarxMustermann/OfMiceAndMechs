@@ -163,10 +163,7 @@ class Adventure(src.quests.MetaQuestSequence):
                 candidates.remove(homeCoordinate)
 
         if not len(candidates):
-            abort_reason = "no candidates"
-            if dryRun:
-                self.fail(abort_reason)
-            return (None, ("+","abort quest\n({abort_reason})"))
+            self._solver_trigger_fail("no candidates")
 
         # sort weighted with slight random
         random.shuffle(candidates)

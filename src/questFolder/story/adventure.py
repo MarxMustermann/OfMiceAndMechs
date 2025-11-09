@@ -245,7 +245,7 @@ track:
         self.startWatching(character,self.handleChangedTerrain, "changedTerrain")
         super().assignToCharacter(character)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         '''
         check and end quest if completed
         '''
@@ -261,7 +261,8 @@ track:
         if not character.getFreeInventorySpace(ignoreTypes=["Bolt"]) < 2:
             return False
 
-        self.postHandler()
+        if not dryRun:
+            self.postHandler()
         return True
 
 # register the quest type

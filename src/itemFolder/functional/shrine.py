@@ -416,7 +416,8 @@ class Shrine(src.items.Item):
             cost *= glassHeartRebate
             if character.attackSpeed > 0.5:
                 options.append(("upgrade attack speed",f"({cost}) upgrade attack speed"))
-            options.append(("upgrade movement speed",f"({cost}) upgrade movement speed"))
+            if character.movementSpeed > 0.5:
+                options.append(("upgrade movement speed",f"({cost}) upgrade movement speed"))
 
         elif self.god == 5:
             foundArmor = None

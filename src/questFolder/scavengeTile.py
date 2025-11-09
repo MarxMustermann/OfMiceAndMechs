@@ -57,8 +57,12 @@ This quest will end when the target tile has no items left."""
 
         if not self.subQuests:
             if character.getNearbyEnemies():
-                quest = src.quests.questMap["Fight"]()
-                return ([quest],None)
+                if character.health > character.maxHealth//3:
+                    quest = src.quests.questMap["Fight"]()
+                    return ([quest],None)
+                else:
+                    quest = src.quests.questMap["Heal"]()
+                    return ([quest],None)
                 
             hasIdleSubordinate = False
             for subordinate in character.subordinates:

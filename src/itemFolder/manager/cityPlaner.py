@@ -1226,7 +1226,7 @@ class CityPlaner(src.items.Item):
             mapContent[forest[1]][forest[0]] = "ff"
 
         for room in terrain.rooms:
-            if not (len(room.itemsOnFloor) > 13+13+11+11 or room.floorPlan or room.storageSlots or len(room.walkingSpace) > 4 or room.inputSlots):
+            if not (len(room.itemsOnFloor) > 13+13+11+11 or room.floorPlan or room.storageSlots or len(room.walkingSpace) > 4 or room.inputSlots or room.buildSites):
                 mapContent[room.yPosition][room.xPosition] = "EE"
                 functionMap[(room.xPosition,room.yPosition)] = {}
                 functionMap[(room.xPosition,room.yPosition)]["f"] = {

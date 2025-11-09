@@ -178,11 +178,12 @@ class Adventure(src.quests.MetaQuestSequence):
         targetTerrain = candidates[0]
 
         # move to the actual target terrain
-        if character.getFreeInventorySpace() and (targetTerrain != homeCoordinate):
+        if character.getFreeInventorySpace(ignoreTypes=["Bolt"]) and (targetTerrain != homeCoordinate):
             quest = src.quests.questMap["AdventureOnTerrain"](targetTerrain=targetTerrain,terrainsWeight = extraWeight)
         else:
             quest = src.quests.questMap["GoToTerrain"](targetTerrain=targetTerrain)
 
+        print(quest)
         return ([quest], None)
 
     def generateTextDescription(self):

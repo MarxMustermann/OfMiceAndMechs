@@ -484,17 +484,11 @@ def spawnTempleRoom(terrain, coordinate, faction, doors="0,6 6,0 6,12 12,6"):
         item.walkable = False
     throneRoom.priority = 5
 
-    for x in (
-        2,
-        10,
-    ):
+    for x in (2,10):
         for y in range(1, 12):
             throneRoom.walkingSpace.add((x, y, 0))
     for x in range(3, 10):
-        for y in (
-            3,
-            6,
-        ):
+        for y in (3,6):
             throneRoom.walkingSpace.add((x, y, 0))
     for x in range(5, 8):
         for y in range(7, 12):

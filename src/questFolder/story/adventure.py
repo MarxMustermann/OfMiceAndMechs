@@ -183,7 +183,6 @@ class Adventure(src.quests.MetaQuestSequence):
         else:
             quest = src.quests.questMap["GoToTerrain"](targetTerrain=targetTerrain)
 
-        print(quest)
         return ([quest], None)
 
     def generateTextDescription(self):

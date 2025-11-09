@@ -332,11 +332,6 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
             character.macroState["submenue"].followUp = {"container":self,"method":"scheduleProduction","params":params}
             return
 
-        # validate type
-        if params.get("type") in self.reserved_manufactured_items:
-            character.addMessage("cannot produce item type")
-            return
-
         # show UI to set the amount that should be produced
         if "amount" not in params:
             options = []

@@ -68,10 +68,6 @@ class Adventure(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["Equip"](tryHard=True)
             return ([quest],None)
 
-        try:
-            character.lastMapSync
-        except:
-            character.lastMapSync = None
         if character.getTerrain() == character.getHomeTerrain():
             if (not character.lastMapSync) or src.gamestate.gamestate.tick-character.lastMapSync > 100:
                 quest = src.quests.questMap["DoMapSync"]()

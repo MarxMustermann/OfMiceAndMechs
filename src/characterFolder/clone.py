@@ -43,5 +43,14 @@ class Clone(src.characters.Character):
         self.container.addItem(src.items.itemMap["Implant"](), self.getPosition())
         super().die(reason=reason, addCorpse=addCorpse, killer=killer)
 
+    def getLoreDescription(self):
+        return f"You see a Clone. A humanoid figure, all Clones look slightly different but look kind of the same"
+
+    def getFunctionalDescription(self):
+        return f"Clones are the normal player and NPC characters.\nClone vary widly in skills, behaviour, equipment and stats."
+
+    def description(self):
+        return self.getLoreDescription()+"\n\n---- "+self.getFunctionalDescription()
+
 # register the creature type
 src.characters.add_character(Clone)

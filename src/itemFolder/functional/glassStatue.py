@@ -323,8 +323,6 @@ class GlassStatue(src.items.Item):
         '''
         add the glass to this item
         '''
-        self.getTerrain().mana += 10
-
         glassHeart = None
         hasHeart = False
         for item in character.inventory:
@@ -348,6 +346,8 @@ class GlassStatue(src.items.Item):
             character.addMessage("the heart stpped beating and shatters. Transer the heart faster next time.")
             character.removeItemFromInventory(glassHeart)
             return
+
+        self.getTerrain().mana += 10
 
         self.hasItem = True
         character.removeItemFromInventory(glassHeart)

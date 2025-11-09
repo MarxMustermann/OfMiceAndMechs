@@ -16,6 +16,7 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
         self.targetTerrain = targetTerrain
         self.donePointsOfInterest = []
         self.terrainsWeight = terrainsWeight
+
     def getRemainingPointsOfInterests(self):
         result = []
 

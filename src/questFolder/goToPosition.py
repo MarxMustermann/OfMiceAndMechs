@@ -99,10 +99,10 @@ Close this menu by pressing esc and follow the instructions on the left hand men
         if self.path and self.path[0] == convertedDirection:
             self.path = self.path[1:]
             if not self.path:
-                self.triggerCompletionCheck(extraInfo[0])
+                self.triggerCompletionCheck(extraInfo[0],dryRun=False)
                 return
             if self.ignoreEndBlocked and len(self.path) == 1:
-                self.triggerCompletionCheck(extraInfo[0])
+                self.triggerCompletionCheck(extraInfo[0],dryRun=False)
                 return
 
             if not self.isPathSane(extraInfo[0]):
@@ -153,7 +153,7 @@ Close this menu by pressing esc and follow the instructions on the left hand men
 
         super().assignToCharacter(character)
 
-    def triggerCompletionCheck(self, character=None):
+    def triggerCompletionCheck(self, character=None, dryRun=True):
         if not self.targetPosition:
             return False
         if not character:
@@ -196,7 +196,7 @@ Close this menu by pressing esc and follow the instructions on the left hand men
         return super().setParameters(parameters)
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
-        if self.triggerCompletionCheck(character):
+        if self.triggerCompletionCheck(character,dryRun=dryRun):
             return (None,None)
 
         if not self.path:

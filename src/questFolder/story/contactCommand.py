@@ -127,7 +127,7 @@ Comtact the bases leader to get further instrucions.
 
         self.postHandler()
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None, dryRun=True):
         if not character:
             return False
         return False

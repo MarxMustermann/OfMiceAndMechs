@@ -57,12 +57,13 @@ this quest has sub quests. Press d to show subquest.
 
         super().assignToCharacter(character)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return None
 
         if character.rank <= 2:
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
         return False
 

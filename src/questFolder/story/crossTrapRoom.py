@@ -103,15 +103,17 @@ During that time you can step onto the TriggerPlate without getting harmed.
         if not self.active:
             return
 
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
         if character.getBigPosition() == (5,7,0):
             return False
 
-        self.postHandler()
+        if not dryRun:
+            self.postHandler()
+        return True
 
 src.quests.addType(CrossTrapRoom)

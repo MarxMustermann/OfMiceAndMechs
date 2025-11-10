@@ -21,12 +21,14 @@ class ActivateRegenerator(src.quests.MetaQuestSequence):
 
         return super().assignToCharacter(character)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
         if self.regenerator and self.regenerator.activated:
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
+            return True
         
         return False
 

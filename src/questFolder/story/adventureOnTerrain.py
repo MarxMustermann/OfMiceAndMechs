@@ -39,6 +39,9 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
         return result
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
+        if self.triggerCompletionCheck(dryRun=dryRun):
+            return (None,("+","end quest"))
+
         if self.subQuests:
             return (None,None)
 
@@ -126,7 +129,6 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
             if invalidStack:
                 continue
 
-            print(character.getBigPosition())
             quest = src.quests.questMap["LootRoom"](targetPosition=character.getBigPosition(),endWhenFull=True)
             return ([quest],None)
 

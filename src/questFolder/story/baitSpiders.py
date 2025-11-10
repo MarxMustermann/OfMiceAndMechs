@@ -140,9 +140,9 @@ Guard the arena behind the trap room to ensure no spider slips through.
         if not self.active:
             return
 
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
@@ -154,11 +154,13 @@ Guard the arena behind the trap room to ensure no spider slips through.
                 foundEnemy = True
                 break
             if not foundEnemy:
-                self.postHandler()
+                if not dryRun:
+                    self.postHandler()
                 return True
 
         if self.phase == "end" and not self.subQuests:
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
 
         return False

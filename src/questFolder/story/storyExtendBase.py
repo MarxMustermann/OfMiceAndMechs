@@ -1,9 +1,6 @@
 import src
 import random
 
-import src.helpers
-
-
 class StoryExtendBase(src.quests.MetaQuestSequence):
     type = "StoryExtendBase"
 

@@ -208,7 +208,7 @@ Your goal is to reach {self.targetNumGods} unlocked GlassStatues.
     def wrapedTriggerCompletionCheck(self,character=None):
         pass
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
@@ -227,11 +227,13 @@ Your goal is to reach {self.targetNumGods} unlocked GlassStatues.
 
         if self.targetNumGods:
             if self.targetNumGods <= numGlassStatues:
-                self.postHandler()
+                if not dryRun:
+                    self.postHandler()
                 return True
         else:
             if numGlassStatues:
-                self.postHandler()
+                if not dryRun:
+                    self.postHandler()
                 return True
         return False
 

@@ -39,7 +39,7 @@ So if an enemy is to directly east of you:
 * press D to do a special attack
 """]
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         '''
         check and end the quest if completed
         '''
@@ -47,7 +47,8 @@ So if an enemy is to directly east of you:
             return None
 
         if not character.getNearbyEnemies():
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
 
         return None

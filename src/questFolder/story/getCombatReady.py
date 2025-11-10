@@ -109,9 +109,9 @@ Get yourself a Sword and a piece of Armor.
         if not self.active:
             return
 
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
         
@@ -131,6 +131,9 @@ Get yourself a Sword and a piece of Armor.
                     if not item.getMoldFeed(character):
                         continue
                     return False
-        self.postHandler()
+
+        if not dryRun:
+            self.postHandler()
+        return True
 
 src.quests.addType(GetCombatReady)

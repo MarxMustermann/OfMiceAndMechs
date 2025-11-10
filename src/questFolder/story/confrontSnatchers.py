@@ -178,7 +178,7 @@ Rest and heal and repeat until all Snatchers are dead.
 """]
         return result
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         '''
         check and end the quest when completed
         '''
@@ -195,7 +195,8 @@ Rest and heal and repeat until all Snatchers are dead.
         if numSnatchers:
             return False
 
-        self.postHandler()
+        if not dryRun:
+            self.postHandler()
         return True
 
 # register the quest type

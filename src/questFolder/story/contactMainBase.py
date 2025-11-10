@@ -122,7 +122,7 @@ Comtact main command to get reregistered as colony.
 
         self.postHandler()
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
         return False

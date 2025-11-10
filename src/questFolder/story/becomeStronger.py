@@ -220,14 +220,15 @@ Get some upgrades to be stronger.
             text += f"""\nlifetime: {self.lifetimeEvent.tick - src.gamestate.gamestate.tick} / {self.lifetime}\n"""
         return text
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None, dryRun=True):
         if not character:
             return False
 
         if character.getStrengthSelfEstimate() < self.targetStrength:
             return False
 
-        self.postHandler()
+        if not dryRun:
+            self.postHandler()
         return True
 
 src.quests.addType(BecomeStronger)

@@ -14,6 +14,8 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
         self.room_building_streak_length = 0
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
+        3/0
+
         if self.subQuests:
             return (None,None)
 
@@ -357,9 +359,9 @@ So apease the gods and obtain their GlassHearts.
         if not self.active:
             return
 
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
@@ -369,7 +371,9 @@ So apease the gods and obtain their GlassHearts.
 
             return False
 
-        self.postHandler()
+        if not dryRun:
+            self.postHandler()
+        return True
 
     def handleQuestFailure(self,extraParam):
         if extraParam["reason"] == "no job":

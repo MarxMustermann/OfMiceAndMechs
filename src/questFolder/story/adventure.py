@@ -19,7 +19,6 @@ class Adventure(src.quests.MetaQuestSequence):
         generate the next step towards solving this quest
         '''
 
-
         if self.subQuests:
             return (None,None)
 

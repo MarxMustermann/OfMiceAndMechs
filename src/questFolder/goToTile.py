@@ -75,7 +75,7 @@ class GoToTile(src.quests.MetaQuestSequence):
                 self.expectedPosition = None
                 self.path = self.path[1:]
                 if not self.path:
-                    self.triggerCompletionCheck(self.character)
+                    self.triggerCompletionCheck(self.character, dryRun=False)
                 return
             else:
                 self.path = None
@@ -168,7 +168,7 @@ The target tile is {direction[4:]}
             text += "Be paranoid."
         return text
 
-    def triggerCompletionCheck(self, character=None):
+    def triggerCompletionCheck(self, character=None, dryRun=True):
         '''
         check if the quest is completed and end it
         '''
@@ -182,12 +182,14 @@ The target tile is {direction[4:]}
         shouldBeWithinRoom = character.getTerrain().getRoomByPosition(self.targetPosition)
         if isinstance(character.container,src.rooms.Room):
             if character.container.xPosition == self.targetPosition[0] and character.container.yPosition == self.targetPosition[1]:
-                self.postHandler()
+                if not dryRun:
+                    self.postHandler()
                 return True
         elif character.xPosition//15 == self.targetPosition[0] and character.yPosition//15 == self.targetPosition[1]:
             if shouldBeWithinRoom:
                 return False
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
         return False
 

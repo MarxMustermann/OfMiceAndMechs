@@ -42,9 +42,9 @@ Remove all items that are not bolted down."""
         super().assignToCharacter(character)
 
     def wrapedTriggerCompletionCheck(self,extraInfo=None):
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
 
         if not character:
             return False
@@ -53,11 +53,13 @@ Remove all items that are not bolted down."""
             return False
 
         if self.endWhenFull and character.getFreeInventorySpace(ignoreTypes=["Bolt"]) == 0:
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
         
         if not self.getLeftoverItems(character):
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
 
         return False

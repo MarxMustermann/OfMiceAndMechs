@@ -144,7 +144,7 @@ Go out and adventure on tile {self.targetTerrain}.
 {self.donePointsOfInterest}
 """]
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
@@ -154,15 +154,17 @@ Go out and adventure on tile {self.targetTerrain}.
             return False
 
         if not character.getFreeInventorySpace(ignoreTypes=["Bolt"]):
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
 
         if currentTerrain.tag == "ruin":
             if self.getRemainingPointsOfInterests():
                 return False
 
-        character.terrainInfo[currentTerrain.getPosition()]["looted"] = True
-        self.postHandler()
+        if not dryRun:
+            character.terrainInfo[currentTerrain.getPosition()]["looted"] = True
+            self.postHandler()
         return True
 
     def wrapedTriggerCompletionCheck(self,test=None):

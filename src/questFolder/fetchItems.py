@@ -82,7 +82,7 @@ Press d to move the cursor and show the subquests description.
         return out
 
     def pickedUpItem(self,extraInfo):
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
     def assignToCharacter(self, character):
         if self.character:
@@ -106,13 +106,14 @@ Press d to move the cursor and show the subquests description.
         parameters.append({"name":"toCollect","type":"itemType"})
         return parameters
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
 
         if not character:
-            return
+            return False
 
         if character.getNearbyEnemies():
-            self.fail("enemies nearby")
+            if not dryRun:
+                self.fail("enemies nearby")
             return True
 
         if self.amount:
@@ -129,18 +130,19 @@ Press d to move the cursor and show the subquests description.
                 self.collectedItems = True
 
         if self.collectedItems:
-            self.postHandler()
-            return
+            if not dryRun:
+                self.postHandler()
+            return True
 
         if isinstance(character.container,src.rooms.Room):
             outputSlots = character.container.getNonEmptyOutputslots(itemType=self.toCollect)
             random.shuffle(outputSlots)
             if outputSlots:
-                return
+                return False
 
             if self.getSource():
-                return
-        return
+                return False
+        return False
 
     def getSource(self):
         if not isinstance(self.character.container,src.rooms.Room):

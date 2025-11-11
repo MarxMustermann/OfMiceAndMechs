@@ -45,7 +45,7 @@ Press control-d to stop your character from moving.
 """
         return text
 
-    def triggerCompletionCheck(self, character=None):
+    def triggerCompletionCheck(self, character=None, dryRun=True):
         '''
         check if the quest is completed
         '''
@@ -58,11 +58,13 @@ Press control-d to stop your character from moving.
         homeRoom = character.getHomeRoom()
         if homeRoom:
             if character.container == homeRoom:
-                self.postHandler()
+                if not dryRun:
+                    self.postHandler()
                 return True
         else:
             if character.container.isRoom:
-                self.postHandler()
+                if not dryRun:
+                    self.postHandler()
                 return True
         return False
 
@@ -74,7 +76,7 @@ Press control-d to stop your character from moving.
             return
         self.reroll()
 
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
     def assignToCharacter(self, character):
         '''

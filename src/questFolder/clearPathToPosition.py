@@ -28,14 +28,15 @@ Pick up and unbolt items that are in the way.
 
         return text
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return None
 
         pos = character.getPosition()
         pos = (pos[0]%15,pos[1]%15,pos[2]%15)
         if pos[0] == self.targetPosition[0] and pos[1] == self.targetPosition[1]:
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
         return None
 

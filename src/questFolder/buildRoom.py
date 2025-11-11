@@ -253,14 +253,16 @@ Press d to move the cursor and show the subquests description.
         quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
         return ([quest], None)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
         if character.getNearbyEnemies() and not self.tryHard:
-            self.fail("enemies nearby")
+            if not dryRun:
+                self.fail("enemies nearby")
             return True
         if character.getTerrain().getRoomByPosition(self.targetPosition):
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
         return False
 

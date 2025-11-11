@@ -23,11 +23,11 @@ but has no purpose on its own.
 
 So just complete the quest and don't think about it too much."""
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         '''
         never complete
         '''
-        return
+        return False
 
     def enteredRoom(self,character=None):
         '''

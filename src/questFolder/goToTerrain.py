@@ -195,7 +195,7 @@ class GoToTerrain(src.quests.MetaQuestSequence):
         if character.getBigPosition()[1] == 14:
             return (None, ("w","enter the terrain"))
 
-        return (None,None)
+        return (None,(".","wait"))
 
     def handleChangedTerrain(self,extraInfo):
         self.triggerCompletionCheck(extraInfo["character"],dryRun=False)

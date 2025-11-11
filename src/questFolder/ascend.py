@@ -51,7 +51,7 @@ Rule the world and put an end to those attacks!
 """]
         return text
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None, dryRun=True):
         '''
         check and end the quest if done
         '''
@@ -61,7 +61,9 @@ Rule the world and put an end to those attacks!
         if character.rank != 1:
             return False
 
-        self.postHandler()
+        if not dryRun:
+            self.postHandler()
+        return True
 
     def getNextStep(self,character,ignoreCommands=False,dryRun=True):
         '''

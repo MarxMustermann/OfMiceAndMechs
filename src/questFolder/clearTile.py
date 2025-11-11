@@ -74,9 +74,9 @@ Remove all items from the walkways that are not bolted down."""
         '''
         indirection to call the actual funtion with converted parameters
         '''
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         '''
         check and end the quest if completed
         '''
@@ -84,7 +84,8 @@ Remove all items from the walkways that are not bolted down."""
             return False
 
         if not self.getLeftoverItems(character):
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
 
         return False

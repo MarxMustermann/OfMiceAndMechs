@@ -15,19 +15,20 @@ class FillFlask(src.quests.MetaQuestSequence):
         if not self.active:
             return
 
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
-            return
+            return False
 
         if not character.searchInventory("Flask"):
-            self.postHandler()
-            return
-        return
+            if not dryRun:
+                self.postHandler()
+            return True
+        return False
 
     def handleFlaskFilled(self,extraInfo=None):
-        self.triggerCompletionCheck()
+        self.triggerCompletionCheck(dryRun=False)
 
     def assignToCharacter(self, character):
         if self.character:
@@ -46,7 +47,7 @@ class FillFlask(src.quests.MetaQuestSequence):
             self.generateSubquests(self.character)
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
-        if self.triggerCompletionCheck(character):
+        if self.triggerCompletionCheck(character,dryRun=dryRun):
             return (None,None)
 
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:

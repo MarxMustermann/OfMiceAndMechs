@@ -40,7 +40,7 @@ Draw a floor plan assigned to a room{reason}.
 """
         return out
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         '''
         never complete this way
         '''

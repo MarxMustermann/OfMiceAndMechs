@@ -53,7 +53,7 @@ Swords can range from 10 to 25 damage per hit.
         if not self.active:
             return
 
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
     def handleMoved(self,extraInfo=None):
         '''
@@ -104,32 +104,33 @@ Swords can range from 10 to 25 damage per hit.
             bestSword = None
         return (bestSword,bestArmor)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         '''
         check and end the quest when done
         '''
         if not character:
-            return
+            return False
 
         (bestSword,bestArmor) = self.findBestEquipment(character)
 
         if bestSword and not character.weapon:
-            return
+            return False
 
         if bestArmor and not character.armor:
-            return
+            return False
 
         if bestSword and character.weapon and bestSword.baseDamage > character.weapon.baseDamage:
-            return
+            return False
 
         if bestArmor and character.armor and bestArmor.armorValue > character.armor.armorValue:
-            return
+            return False
 
         if ("metal working" in character.duties or self.tryHard) and (not character.weapon or not character.armor):
-            return
+            return False
 
-        self.postHandler()
-        return
+        if dryRun:
+            self.postHandler()
+        return True
 
     def clearCompletedSubquest(self):
         '''

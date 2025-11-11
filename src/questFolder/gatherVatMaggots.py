@@ -22,7 +22,7 @@ class GatherVatMaggots(src.quests.MetaQuestSequence):
         if not self.active:
             return
 
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
     def setParameters(self,parameters):
         if "targetPosition" in parameters and "targetPosition" in parameters:
@@ -41,20 +41,22 @@ class GatherVatMaggots(src.quests.MetaQuestSequence):
         self.startWatching(character,self.wrapedTriggerCompletionCheck, "moved")
         super().assignToCharacter(character)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if self.completed:
-            return
+            return False
 
         if not character:
-            return
+            return False
 
         if not character.getFreeInventorySpace() < 1:
-            return
+            return False
 
         if character.inventory[-1].type != "VatMaggot":
-            return
+            return False
 
-        self.postHandler()
+        if not dryRun:
+            self.postHandler()
+        return True
 
     def getNextStep(self, character=None, ignoreCommands=False, dryRun = True):
 

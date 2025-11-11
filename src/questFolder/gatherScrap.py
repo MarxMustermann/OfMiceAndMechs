@@ -39,7 +39,7 @@ Scrapfields are shown on the minimap as white ss"""]
         if not self.active:
             return
 
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
     def setParameters(self,parameters):
         if "targetPosition" in parameters and "targetPosition" in parameters:
@@ -59,20 +59,22 @@ Scrapfields are shown on the minimap as white ss"""]
         self.startWatching(character,self.wrapedTriggerCompletionCheck, "itemPickedUp")
         super().assignToCharacter(character)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if self.completed:
-            return
+            return False
 
         if not character:
-            return
+            return False
 
         if not character.getFreeInventorySpace() < 1:
-            return
+            return False
 
         if character.inventory[-1].type != "Scrap":
-            return
+            return False
 
-        self.postHandler()
+        if not dryRun:
+            self.postHandler()
+        return True
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
 

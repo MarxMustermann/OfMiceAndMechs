@@ -56,7 +56,7 @@ After fetching the glass heart return the glass heart to your base and set it in
 
         return super().assignToCharacter(character)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None, dryRun=True):
         return False
 
     def getNextStep(self,character,ignoreCommands=False,dryRun=True):

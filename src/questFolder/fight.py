@@ -44,14 +44,14 @@ So if an enemy is to directly east of you:
         check and end the quest if completed
         '''
         if not character:
-            return None
+            return False
 
         if not character.getNearbyEnemies():
             if not dryRun:
                 self.postHandler()
             return True
 
-        return None
+        return False
 
     def getQuestMarkersSmall(self,character,renderForTile=False):
         '''

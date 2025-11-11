@@ -48,7 +48,7 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
         '''
         self.fail(extraParam["reason"])
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         '''
         check if the quest is completed and end it
         '''
@@ -146,7 +146,7 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
         '''
         check if quest is completed 
         '''
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
     def assignToCharacter(self, character):
         '''

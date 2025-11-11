@@ -11,7 +11,7 @@ class ConfigureSiegeManager(src.quests.MetaQuestSequence):
         super().__init__(questList, creator=creator)
         self.metaDescription = description
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         '''
         check if the quest can be considered completed and end the quest if is can be considered completed
         '''
@@ -49,7 +49,8 @@ class ConfigureSiegeManager(src.quests.MetaQuestSequence):
             return False
 
         # end the quest
-        self.postHandler()
+        if not dryRun:
+            self.postHandler()
         return True
 
     def getNextStep(self,character,ignoreCommands=False,dryRun=True):

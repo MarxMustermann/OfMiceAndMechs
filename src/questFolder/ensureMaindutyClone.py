@@ -12,7 +12,7 @@ class EnsureMaindutyClone(src.quests.MetaQuestSequence):
         self.metaDescription = description
         self.dutyType = dutyType
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         '''
         check if the quest can be considered completed and end the quest if is can be considered completed
         '''
@@ -38,7 +38,8 @@ class EnsureMaindutyClone(src.quests.MetaQuestSequence):
             return False
 
         # end the quest
-        self.postHandler()
+        if not dryRun:
+            self.postHandler()
         return True
 
     def getNextStep(self,character,ignoreCommands=False,dryRun=True):

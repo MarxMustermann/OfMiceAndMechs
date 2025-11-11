@@ -159,14 +159,16 @@ Close this menu by pressing esc and follow the instructions on the left hand men
         if not character:
             return False
         if not self.active:
-            return None
+            return False
 
         if character.xPosition%15 == self.targetPosition[0] and character.yPosition%15 == self.targetPosition[1]:
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
         if self.ignoreEndBlocked:
             if abs(character.xPosition%15-self.targetPosition[0])+abs(character.yPosition%15-self.targetPosition[1]) == 1:
-                self.postHandler()
+                if not dryRun:
+                    self.postHandler()
                 return True
         return False
 

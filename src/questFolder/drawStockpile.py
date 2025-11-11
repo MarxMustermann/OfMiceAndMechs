@@ -36,7 +36,7 @@ class DrawStockpile(src.quests.MetaQuestSequence):
         else:
             self.extraInfo = extraInfo
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         '''
         check for quest completion and end quest
         '''
@@ -50,17 +50,20 @@ class DrawStockpile(src.quests.MetaQuestSequence):
         if self.stockpileType == "i":
             for inputSlot in room.inputSlots:
                 if inputSlot[0] == self.targetPosition and inputSlot[1] == self.itemType:
-                    self.postHandler()
+                    if not dryRun:
+                        self.postHandler()
                     return True
         if self.stockpileType == "o":
             for outputSlot in room.outputSlots:
                 if outputSlot[0] == self.targetPosition and outputSlot[1] == self.itemType:
-                    self.postHandler()
+                    if not dryRun:
+                        self.postHandler()
                     return True
         if self.stockpileType == "s":
             for storageSlot in room.storageSlots:
                 if storageSlot[0] == self.targetPosition and storageSlot[1] == self.itemType:
-                    self.postHandler()
+                    if not dryRun:
+                        self.postHandler()
                     return True
 
         # continue working otherwise
@@ -363,7 +366,7 @@ Try as hard as you can to achieve this.
         if self.completed:
             1/0
 
-        self.triggerCompletionCheck(self.character)
+        self.triggerCompletionCheck(self.character,dryRun=False)
 
     def assignToCharacter(self, character):
         if self.character:

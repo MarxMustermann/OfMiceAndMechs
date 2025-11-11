@@ -18,7 +18,7 @@ class Eat(src.quests.MetaQuestSequence):
         if not self.active:
             return
 
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
     def handleMoved(self,extraInfo=None):
         self.subQuestCompleted()
@@ -30,14 +30,16 @@ class Eat(src.quests.MetaQuestSequence):
         self.startWatching(character,self.handleMoved, "moved")
         super().assignToCharacter(character)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
-            return
+            return False
 
         if character.satiation > 800:
-            self.postHandler()
-            return
-        return
+            if not dryRun:
+                self.postHandler()
+            return True
+
+        return False
 
     def clearCompletedSubquest(self):
         while self.subQuests and self.subQuests[0].completed:

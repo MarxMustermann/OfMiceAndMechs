@@ -146,7 +146,7 @@ Set the floor plan: {self.floorPlanType}
     """
     never complete
     """
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None, dryRun=True):
         if not character:
             return None
 
@@ -154,7 +154,8 @@ Set the floor plan: {self.floorPlanType}
         room = terrain.getRoomByPosition(self.roomPosition)[0]
 
         if room.floorPlan:
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
         return None
 
@@ -166,7 +167,7 @@ Set the floor plan: {self.floorPlanType}
 
 
     def handleAssignFloorPlan(self,extraParams):
-        self.triggerCompletionCheck(extraParams["character"])
+        self.triggerCompletionCheck(extraParams["character"],dryRun=False)
 
     def getQuestMarkersTile(self,character):
         result = super().getQuestMarkersTile(character)

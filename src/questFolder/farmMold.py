@@ -34,17 +34,19 @@ farm mold"""
         out.append(text)
         return out
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None, dryRun=True):
         '''
         check if the quest is completed
         '''
         if not character:
             return False
         if not character.getFreeInventorySpace():
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
         if character.getTerrain().alarm and not self.tryHard:
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
         return False
 

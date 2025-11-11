@@ -29,20 +29,22 @@ farm mold on the tile {self.targetPosition}"""
         out.append(text)
         return out
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
 
         if not character:
-            return
+            return False
 
         if self.endOnFullInventory and not character.getFreeInventorySpace() > 0:
-            self.postHandler()
-            return
+            if not dryRun:
+                self.postHandler()
+            return True
 
         if not self.getLeftoverItems(character):
-            self.postHandler()
-            return
+            if not dryRun:
+                self.postHandler()
+            return True
 
-        return
+        return False
 
     def getNextStep(self,character,ignoreCommands=False, dryRun = True):
         if not character:
@@ -129,7 +131,7 @@ farm mold on the tile {self.targetPosition}"""
         return leftOverItems
 
     def pickedUpItem(self,extraInfo):
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
     def assignToCharacter(self, character):
         if self.character:

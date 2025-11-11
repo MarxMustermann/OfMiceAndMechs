@@ -16,7 +16,7 @@ class DeleteMarking(src.quests.MetaQuestSequence):
 
         self.metaDescription = description
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return None
 
@@ -24,7 +24,8 @@ class DeleteMarking(src.quests.MetaQuestSequence):
 
         checkRoom = terrain.getRoomByPosition(self.targetPositionBig)[0]
         if not checkRoom.getPaintedByPosition(self.targetPosition):
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
         return None
 
@@ -117,7 +118,7 @@ class DeleteMarking(src.quests.MetaQuestSequence):
         if self.completed:
             1/0
 
-        self.triggerCompletionCheck(self.character)
+        self.triggerCompletionCheck(self.character,dryRun=False)
 
     def assignToCharacter(self, character):
         if self.character:

@@ -21,7 +21,7 @@ class DrawBuildSite(src.quests.MetaQuestSequence):
             self.extraInfo = extraInfo
         self.reason = reason
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         '''
         check for quest completion and end quest
         '''
@@ -34,7 +34,8 @@ class DrawBuildSite(src.quests.MetaQuestSequence):
         room = character.getTerrain().getRoomByPosition(self.targetPositionBig)[0]
         for buildSite in room.buildSites:
             if buildSite[0] == self.targetPosition:
-                self.postHandler()
+                if not dryRun:
+                    self.postHandler()
                 return True
         return False
 
@@ -299,7 +300,7 @@ Try as hard as you can to achieve this.
         if self.completed:
             1/0
 
-        self.triggerCompletionCheck(self.character)
+        self.triggerCompletionCheck(self.character,dryRun=False)
 
     def assignToCharacter(self, character):
         '''

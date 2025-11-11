@@ -177,7 +177,7 @@ The target tile is {direction[4:]}
         if not character:
             return False
         if not self.active:
-            return None
+            return False
 
         shouldBeWithinRoom = character.getTerrain().getRoomByPosition(self.targetPosition)
         if isinstance(character.container,src.rooms.Room):

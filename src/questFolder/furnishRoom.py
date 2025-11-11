@@ -41,7 +41,7 @@ the buildsites indicate what needs to be built.
 """
         return out
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         '''
         check if quest completed and end it
 
@@ -58,7 +58,8 @@ the buildsites indicate what needs to be built.
             return False
         
         # end the quest if nothing is left to do
-        self.postHandler()
+        if not dryRun:
+            self.postHandler()
         return True
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):

@@ -40,14 +40,15 @@ Use the Promotor to do this.
         self.startWatching(character,self.handleGotPromotion, "got promotion")
         super().assignToCharacter(character)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         '''
         check and complete the quest when done
         '''
         if not character:
-            return None
+            return False
         if character.rank <= self.targetRank:
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
         return False
 

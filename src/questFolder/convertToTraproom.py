@@ -133,7 +133,7 @@ Use a CityPlaner to do this.
         quest = src.quests.questMap["GoToPosition"](targetPosition=cityPlaner.getPosition(), description="go to CityPlaner",ignoreEndBlocked=True, reason="go to the CityPlaner")
         return ([quest],None)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         '''
         check and end a quest if it is completed
 
@@ -168,7 +168,7 @@ Use a CityPlaner to do this.
             1/0
         if not self.active:
             return
-        self.triggerCompletionCheck(self.character)
+        self.triggerCompletionCheck(self.character,dryRun=False)
 
     def assignToCharacter(self, character):
         '''

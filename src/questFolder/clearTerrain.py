@@ -22,7 +22,7 @@ Just clear the whole terrain tile for tile.
 """]
         return text
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return None
         if not character.container:
@@ -57,7 +57,8 @@ Just clear the whole terrain tile for tile.
                         continue
                     return False
 
-        self.postHandler()
+        if not dryRun:
+            self.postHandler()
         return True
 
 

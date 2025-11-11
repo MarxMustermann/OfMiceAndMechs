@@ -46,13 +46,13 @@ To see your items open the your inventory by pressing i."""
         '''
         handle the character having dropped an item
         '''
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
     def handleTileChange(self):
         '''
         hande the character having moved
         '''
-        self.triggerCompletionCheck(self.character)
+        self.triggerCompletionCheck(self.character,dryRun=False)
 
     def activate(self):
         '''
@@ -61,7 +61,7 @@ To see your items open the your inventory by pressing i."""
         if self.character:
             if self.returnToTile and not self.tileToReturnTo:
                 self.tileToReturnTo = self.character.getBigPosition()
-            self.triggerCompletionCheck(self.character)
+            self.triggerCompletionCheck(self.character,dryRun=False)
         super().activate()
 
     def assignToCharacter(self, character):
@@ -77,10 +77,10 @@ To see your items open the your inventory by pressing i."""
         if self.active:
             if self.returnToTile and not self.tileToReturnTo:
                 self.tileToReturnTo = character.getBigPosition()
-            self.triggerCompletionCheck(character)
+            self.triggerCompletionCheck(character,dryRun=False)
         return super().assignToCharacter(character)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         '''
         check if this quest is completed
         '''

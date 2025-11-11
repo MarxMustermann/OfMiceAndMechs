@@ -24,17 +24,19 @@ Cosume a potion of the type {self.potionType} from your inventory{reason}.
 """
         return text
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
         if character.searchInventory(self.potionType):
             return False
-        self.postHandler()
+
+        if not dryRun:
+            self.postHandler()
         return True
 
     def droppedItem(self, extraInfo):
-        self.triggerCompletionCheck(self.character)
+        self.triggerCompletionCheck(self.character,dryRun=False)
 
     def assignToCharacter(self, character):
         if self.character:

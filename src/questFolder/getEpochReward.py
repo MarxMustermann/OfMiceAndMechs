@@ -212,7 +212,7 @@ This will allow you to focus on other tasks.
     """
     never complete
     """
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         return False
 
     @staticmethod

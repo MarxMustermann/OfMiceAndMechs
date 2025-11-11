@@ -39,7 +39,7 @@ Use the MapTable to do this.
         self.startWatching(character,self.handleSyncedMap, "synced map")
         super().assignToCharacter(character)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         '''
         check and complete the quest when done
         '''

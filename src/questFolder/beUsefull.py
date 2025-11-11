@@ -271,7 +271,7 @@ Press d to move the cursor and show the subquests description.
         self.startWatching(character,self.handleOperatedMachine, "operated machine")
         super().assignToCharacter(character)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         return
 
     def setParameters(self,parameters):

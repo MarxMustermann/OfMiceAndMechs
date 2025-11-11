@@ -33,7 +33,7 @@ class GoToTerrain(src.quests.MetaQuestSequence):
         self.reason = reason
         self.terrainsWeight = terrainsWeight
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if character is None:
             return False
         if len(self.targetTerrain) < 3:
@@ -49,7 +49,8 @@ class GoToTerrain(src.quests.MetaQuestSequence):
             return False
 
         if self.targetTerrain == character.getTerrainPosition():
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
         return False
 
@@ -197,10 +198,10 @@ class GoToTerrain(src.quests.MetaQuestSequence):
         return (None,None)
 
     def handleChangedTerrain(self,extraInfo):
-        self.triggerCompletionCheck(extraInfo["character"])
+        self.triggerCompletionCheck(extraInfo["character"],dryRun=False)
 
     def handleChangedTile(self,extraInfo=None):
-        self.triggerCompletionCheck(self.character)
+        self.triggerCompletionCheck(self.character,dryRun=False)
 
     def assignToCharacter(self, character):
         if self.character:

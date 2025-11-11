@@ -29,11 +29,12 @@ This quest will end when your inventory is empty."""
         out.append(text)
         return out
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
         if not character.inventory:
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
         return False
 
@@ -63,7 +64,7 @@ This quest will end when your inventory is empty."""
         return ([quest],None)
 
     def droppedItem(self,extraInfo):
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
     def assignToCharacter(self, character):
         if self.character:

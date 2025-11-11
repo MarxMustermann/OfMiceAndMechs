@@ -28,7 +28,7 @@ class Flee(src.quests.MetaQuestSequence):
 run,run,run!!!
 """]
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         '''
         check and end the quest if completed
         '''
@@ -48,7 +48,8 @@ run,run,run!!!
             homePos = character.getHomeRoomCord()
             if self.returnHome and bigPos != homePos:
                 return False
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
 
         return False

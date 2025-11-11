@@ -16,7 +16,7 @@ class DrawWalkingSpace(src.quests.MetaQuestSequence):
         self.painterPos = None
         self.reason = reason
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         '''
         check for quest completion and end quest
         '''
@@ -28,7 +28,8 @@ class DrawWalkingSpace(src.quests.MetaQuestSequence):
         # end quest if thw walkingspace is drawn
         room = character.getTerrain().getRoomByPosition(self.targetPositionBig)[0]
         if self.targetPosition in room.walkingSpace:
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
 
         # continue working otherwise
@@ -151,7 +152,7 @@ Try as hard as you can to achieve this.
         if self.completed:
             1/0
 
-        self.triggerCompletionCheck(self.character)
+        self.triggerCompletionCheck(self.character,dryRun=False)
 
     def assignToCharacter(self, character):
         if self.character:

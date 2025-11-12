@@ -51,9 +51,7 @@ So just complete the quest and don't think about it too much."""
             return (None,("w","enter room"))
         
         # fail
-        if not dryRun:
-            self.fail("unexpected position")
-        return (None,("+","abort quest"))
+        return self._solver_trigger_fail(dryRun,"unexpected position")
 
     def assignToCharacter(self, character):
         '''

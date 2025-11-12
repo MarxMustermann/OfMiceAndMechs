@@ -108,7 +108,7 @@ class DeleteMarking(src.quests.MetaQuestSequence):
             else:
                 return (None,("il"+"s"*painterIndex+"j","drop the Painter"))
 
-        return (None,(".","stand around confused")
+        return (None,(".","stand around confused"))
 
     def handleDeletedMarking(self,extraInfo):
         if not self.active:

@@ -827,7 +827,7 @@ class MetaQuestSequence(Quest,ABC):
     forward solver from first subquest
     """
     def solver(self, character):
-        if self.triggerCompletionCheck(character):
+        if self.triggerCompletionCheck(character, dryRun=False):
             return
 
         while len(self.subQuests):
@@ -871,7 +871,7 @@ class MetaQuestSequence(Quest,ABC):
         pass
     
     def getSolvingCommandString(self, character, dryRun=True):
-        if self.triggerCompletionCheck(character):
+        if self.triggerCompletionCheck(character,dryRun=dryRun):
             return None
         nextStep = self.getNextStep(character,dryRun= dryRun)
         if nextStep is None or nextStep == (None, None):

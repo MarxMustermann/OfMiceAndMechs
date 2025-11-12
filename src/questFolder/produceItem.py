@@ -200,7 +200,7 @@ If you don't find a {self.itemType} machine needed, build it.
             return (None,None)
         return (None,None)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         return False
 
 src.quests.addType(ProduceItem)

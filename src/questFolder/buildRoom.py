@@ -119,9 +119,7 @@ Press d to move the cursor and show the subquests description.
         # abort if there is an alarm going on
         terrain = character.getTerrain()
         if terrain.alarm and not self.tryHard and not self.ignoreAlarm:
-            if not dryRun:
-                self.fail("alarm")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"alarm")
 
         # wait for subquests
         if self.subQuests:

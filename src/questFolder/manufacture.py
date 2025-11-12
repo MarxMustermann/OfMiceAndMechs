@@ -42,7 +42,7 @@ class Manufacture(src.quests.MetaQuestSequence):
 use the manufacturing table on {self.targetPosition}{reason}.
 """
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
@@ -50,12 +50,14 @@ use the manufacturing table on {self.targetPosition}{reason}.
             return False
 
         if not character.container.isRoom:
-            self.fail()
+            if not dryRun:
+                self.fail()
             return True
 
         items = character.container.getItemByPosition(self.targetPosition)
         if not items or items[0].type not in ("ManufacturingTable",):
-            self.fail()
+            if not dryRun:
+                self.fail()
             return True
 
         return False

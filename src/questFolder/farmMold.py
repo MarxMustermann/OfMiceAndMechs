@@ -100,9 +100,7 @@ farm mold"""
             return ([quest],None)
 
         # abort when nothing to do
-        if not dryRun:
-            self.fail("no field")
-        return (None,None)
+        return self._solver_trigger_fail(dryRun,"no field")
 
     def pickedUpItem(self,test=None):
         '''

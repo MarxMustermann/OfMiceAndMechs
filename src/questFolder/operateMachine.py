@@ -39,7 +39,7 @@ class OperateMachine(src.quests.MetaQuestSequence):
 operate the machine on {self.targetPosition}{reason}.
 """
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
@@ -47,12 +47,14 @@ operate the machine on {self.targetPosition}{reason}.
             return False
 
         if not character.container.isRoom:
-            self.fail()
+            if not dryRun:
+                self.fail()
             return True
 
         items = character.container.getItemByPosition(self.targetPosition)
         if not items or items[0].type not in ("Machine","ScrapCompactor","MaggotFermenter","BioPress","GooProducer","Electrifier","BloomShredder","CorpseShredder"):
-            self.fail()
+            if not dryRun:
+                self.fail()
             return True
 
         return False

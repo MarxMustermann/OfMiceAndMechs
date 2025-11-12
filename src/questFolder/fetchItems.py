@@ -116,6 +116,7 @@ Press d to move the cursor and show the subquests description.
                 self.fail("enemies nearby")
             return True
 
+        collectedItems = self.collectedItems
         if self.amount:
             numItems = 0
             for item in reversed(character.inventory):
@@ -124,12 +125,14 @@ Press d to move the cursor and show the subquests description.
                 numItems += 1
 
             if numItems >= self.amount:
-                self.collectedItems = True
+                collectedItems = True
         else:
             if character.getFreeInventorySpace() <= 0 and character.inventory[-1].type == self.toCollect:
-                self.collectedItems = True
+                collectedItems = True
 
-        if self.collectedItems:
+        if not dryRun:
+            self.collectedItems = collectedItems
+        if collectedItems:
             if not dryRun:
                 self.postHandler()
             return True

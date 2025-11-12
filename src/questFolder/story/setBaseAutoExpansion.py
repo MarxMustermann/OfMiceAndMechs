@@ -12,7 +12,7 @@ class SetBaseAutoExpansion(src.quests.MetaQuestSequence):
         self.metaDescription = description
         self.targetLevel = targetLevel
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None, dryRun=True):
         '''
         check and end quest if completed
         '''
@@ -29,7 +29,8 @@ class SetBaseAutoExpansion(src.quests.MetaQuestSequence):
 
         if foundCityPlaner:
             if foundCityPlaner.autoExtensionThreashold:
-                self.postHandler()
+                if not dryRun:
+                    self.postHandler()
                 return True
         
         return False

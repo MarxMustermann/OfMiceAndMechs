@@ -271,9 +271,7 @@ Try as hard as you can to achieve this.
                 return (None,([".", "enter"],"remove the offset from the painter"))
         rooms = character.getTerrain().getRoomByPosition(self.targetPositionBig)
         if not rooms:
-            if not dryRun:
-                self.fail("target room missing")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"target room missing")
         room = rooms[0]
 
         if self.stockpileType == "i":
@@ -281,19 +279,19 @@ Try as hard as you can to achieve this.
                 if inputSlot[0] == self.targetPosition and inputSlot[1] == self.itemType:
                     if not dryRun:
                         self.postHandler()
-                    return (None,None)
+                    return (None,("+","end quest"))
         if self.stockpileType == "o":
             for outputSlot in room.outputSlots:
                 if outputSlot[0] == self.targetPosition and outputSlot[1] == self.itemType:
                     if not dryRun:
                         self.postHandler()
-                    return (None,None)
+                    return (None,("+","end quest"))
         if self.stockpileType == "s":
             for storageSlot in room.storageSlots:
                 if storageSlot[0] == self.targetPosition and storageSlot[1] == self.itemType:
                     if not dryRun:
                         self.postHandler()
-                    return (None,None)
+                    return (None,("+","end quest"))
 
         if not character.inventory or character.inventory[-1].type != "Painter":
             quest = src.quests.questMap["FetchItems"](toCollect="Painter",amount=1)

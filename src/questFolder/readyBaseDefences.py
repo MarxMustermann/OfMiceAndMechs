@@ -9,7 +9,7 @@ class ReadyBaseDefences(src.quests.MetaQuestSequence):
         super().__init__(questList, creator=creator)
         self.metaDescription = description
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
@@ -24,7 +24,8 @@ class ReadyBaseDefences(src.quests.MetaQuestSequence):
                 continue
             return False
 
-        self.postHandler()
+        if not dryRun:
+            self.postHandler()
         return True
 
     def getNextStep(self,character,ignoreCommands=False,dryRun=True):

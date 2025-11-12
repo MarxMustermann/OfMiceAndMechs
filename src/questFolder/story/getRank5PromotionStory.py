@@ -60,7 +60,7 @@ The base has a Promoter, use that to get promoted.
 
         super().assignToCharacter(character)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         '''
         check and end the quest if done
         '''
@@ -68,7 +68,8 @@ The base has a Promoter, use that to get promoted.
             return None
 
         if character.rank <= 5:
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
         return False
 

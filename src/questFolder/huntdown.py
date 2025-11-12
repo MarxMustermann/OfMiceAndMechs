@@ -11,22 +11,23 @@ class Huntdown(src.quests.MetaQuestSequence):
         self.target = target
         self.alwaysfollow = alwaysfollow
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
         if self.target:
             if self.target.dead:
-                self.postHandler()
+                if not dryRun:
+                    self.postHandler()
                 return True
             if self.target.faction == character.faction:
-                self.postHandler()
+                if not dryRun:
+                    self.postHandler()
                 return True
         return False
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
-        if not dryRun:
-            self.triggerCompletionCheck()
+        self.triggerCompletionCheck(dryRun=dryRun)
 
         if self.subQuests:
             return (None,None)

@@ -184,9 +184,7 @@ class ConfigureSiegeManager(src.quests.MetaQuestSequence):
 
         # do nothing if no siege manager was found
         if not siegeManager:
-            if not dryRun:
-                self.fail("no siege manager")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"no siege manager")
 
         # go to the tile the siege manager is on
         if character.getBigPosition() != siegeManager.container.getPosition():

@@ -303,7 +303,7 @@ Press d to move the cursor and show the subquests description.
         if (pos[0],pos[1]+1,pos[2]) == targetPosition:
             return (None,("scb","bolt down item"))
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
@@ -317,7 +317,8 @@ Press d to move the cursor and show the subquests description.
             return False
 
         if items[-1].type == self.itemType and (not self.boltDown or items[-1].bolted):
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
         return False
 

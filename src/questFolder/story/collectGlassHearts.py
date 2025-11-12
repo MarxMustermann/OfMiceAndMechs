@@ -14,7 +14,6 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
         self.room_building_streak_length = 0
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
-        3/0
 
         if self.subQuests:
             return (None,None)

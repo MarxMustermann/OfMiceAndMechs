@@ -134,14 +134,15 @@ Press JH to auto heal.
             self.fail("no way to heal")
         return (None,("+","abort quest"))
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
         if character.health < character.adjustedMaxHealth:
             return False
 
-        self.postHandler()
+        if not dryRun:
+            self.postHandler()
         return True
 
 
@@ -158,7 +159,7 @@ Press JH to auto heal.
         if not self.active:
             return
     
-        self.triggerCompletionCheck(self.character)
+        self.triggerCompletionCheck(self.character,dryRun=False)
 
     def getQuestMarkersSmall(self,character,renderForTile=False):
         '''

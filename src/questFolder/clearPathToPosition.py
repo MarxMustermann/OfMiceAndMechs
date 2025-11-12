@@ -64,7 +64,7 @@ Pick up and unbolt items that are in the way.
                     self.path = path
 
             if not path:
-                return (None,None)
+                return (None,(".","stand around confused"))
 
             path = path[:]
 
@@ -90,7 +90,7 @@ Pick up and unbolt items that are in the way.
             if not offset:
                 if not dryRun:
                     self.path = None
-                return (None,None)
+                return (None,(".","stand around confused"))
 
             if not character.container.getPositionWalkable(character.getPosition(offset=offset)):
                 if not character.getFreeInventorySpace():
@@ -145,9 +145,9 @@ Pick up and unbolt items that are in the way.
             if offset == ( 0, 1,0):
                 return (None,("s","move to next spot"))
 
-            return (None,None)
+            return (None,(".","stand around confused"))
 
-        return (None,None)
+        return (None,(".","stand around confused"))
 
     def handleChangedTile(self, extraInfo = None):
         self.fail("left terrain")

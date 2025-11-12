@@ -140,7 +140,7 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
                         interactionCommand = ""
                     return (None, (interactionCommand+direction,"pick up item"))
 
-        return (None,None)
+        return (None,(".","stand around confused"))
 
     def pickedUpItem(self,extraInfo):
         '''

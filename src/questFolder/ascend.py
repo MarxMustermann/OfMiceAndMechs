@@ -131,7 +131,7 @@ Rule the world and put an end to those attacks!
                 return (None,(interactionCommand+"w","activate the Throne"))
             if (pos[0],pos[1]+1,pos[2]) == targetPosition:
                 return (None,(interactionCommand+"s","activate the Throne"))
-            return (None,None)
+            return (None,(".","stand around confused"))
 
         terrain = character.getTerrain()
         for room in terrain.rooms:
@@ -140,9 +140,7 @@ Rule the world and put an end to those attacks!
                 break
 
         if not throne:
-            if not dryRun:
-                self.fail("no throne")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"no throne")
 
         if character.container != throne.container:
             quest = src.quests.questMap["GoToTile"](targetPosition=throne.container.getPosition(),reason="get to the temple", description="go to temple")

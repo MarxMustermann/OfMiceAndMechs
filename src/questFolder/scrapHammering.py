@@ -24,7 +24,7 @@ Do some scrap hammering{reason}.
 Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
 """
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None, dryRun=True):
         if not character:
             return False
 

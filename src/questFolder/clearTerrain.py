@@ -116,6 +116,6 @@ Just clear the whole terrain tile for tile.
                         quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition(),endWhenCleared=True)
                         return ([quest],None)
 
-        return (None,None)
+        return (None,(".","stand around confused"))
 
 src.quests.addType(ClearTerrain)

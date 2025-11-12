@@ -114,9 +114,7 @@ Remove all items from the walkways that are not bolted down."""
 
         # abort if threatended
         if character.getNearbyEnemies():
-            if not dryRun:
-                self.fail("nearby enemies")
-            return (None,("+","abort quest"))
+            return self._solver_trigger_fail(dryRun,"nearby enemies")
 
         # close menus
         if not ignoreCommands and character.macroState.get("submenue"):
@@ -192,7 +190,7 @@ Remove all items from the walkways that are not bolted down."""
         # complete when done
         if dryRun:
             self.postHandler()
-        return (None,None)
+        return (None,("+","end quest"))
 
     def getLeftoverItems(self,character):
         '''

@@ -230,7 +230,7 @@ Spawn a clone to have a backup in case of emergencies.
 
         self.postHandler()
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         '''
         never complete without event
         '''

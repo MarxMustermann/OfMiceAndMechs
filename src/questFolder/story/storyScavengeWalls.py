@@ -29,12 +29,13 @@ class StoryScavengeWalls(src.quests.MetaQuestSequence):
         return ["""
 """]
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None, dryRun=True):
         if not character:
             return False
 
         if character.getFreeInventorySpace() <= 0:
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
 
         numWallsMissing = 0
@@ -53,7 +54,8 @@ class StoryScavengeWalls(src.quests.MetaQuestSequence):
                 numWallsMissing += 1
 
         if numWallsMissing <= len(character.searchInventory("Wall")):
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
 
         print("numWallsMissing")
@@ -70,9 +72,9 @@ class StoryScavengeWalls(src.quests.MetaQuestSequence):
         return super().assignToCharacter(character)
 
     def pickedUpItem(self,extraInfo):
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
     def droppedItem(self,extraInfo):
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
 src.quests.addType(StoryScavengeWalls)

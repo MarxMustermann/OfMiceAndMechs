@@ -57,12 +57,12 @@ Place the items in the correct input or storage stockpile.
             self.allowAny = parameters["allowAny"]
         return super().setParameters(parameters)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
-            return None
+            return False
 
         if self.targetPositionBig and character.getBigPosition() != self.targetPositionBig:
-            return None
+            return False
 
         if isinstance(character.container,src.rooms.Room):
             room = character.container
@@ -70,8 +70,9 @@ Place the items in the correct input or storage stockpile.
             foundNeighbour = None
             inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny)
             if not inputSlots:
-                self.postHandler()
-                return None
+                if not dryRun:
+                    self.postHandler()
+                return True
 
             for slot in inputSlots:
                 if self.targetPosition and self.targetPosition != slot[0]:
@@ -93,13 +94,16 @@ Place the items in the correct input or storage stockpile.
 
             if not foundNeighbour:
                 character.addMessage("no neighbour")
-                self.postHandler()
+                if not dryRun:
+                    self.postHandler()
                 return True
 
         if not self.getNumDrops(character):
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
-        return None
+
+        return False
 
     def getNumDrops(self,character):
         numDrops = 0
@@ -110,7 +114,7 @@ Place the items in the correct input or storage stockpile.
         return numDrops
 
     def droppedItem(self, extraInfo):
-        self.triggerCompletionCheck(self.character)
+        self.triggerCompletionCheck(self.character,dryRun=False)
 
     def assignToCharacter(self, character):
         if self.character:

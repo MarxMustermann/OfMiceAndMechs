@@ -53,14 +53,10 @@ farm mold on the tile {self.targetPosition}"""
             return (None,None)
 
         if character.getTerrain().alarm and not self.tryHard:
-            if not dryRun:
-                self.fail("alarm")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"alarm")
 
         if character.getTerrain().getRoomByPosition(self.targetPosition):
-            if not dryRun:
-                self.fail("blocked by room")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"blocked by room")
 
         if character.getBigPosition() != (self.targetPosition[0], self.targetPosition[1], 0):
             quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition,reason="go to target tile")
@@ -77,7 +73,7 @@ farm mold on the tile {self.targetPosition}"""
                     return ([quest],None)
 
         if not self.stimulateMoldGrowth:
-            return (None,None)
+            return (None,(".","stand around confused"))
 
         offsets = [(0,0,0),(1,0,0),(0,1,0),(-1,0,0),(0,-1,0)]
         foundOffset = None
@@ -110,7 +106,8 @@ farm mold on the tile {self.targetPosition}"""
 
         items = self.getLeftoverItems(character)
         if not items:
-            return (None,None)
+            return (None,(".","stand around confused"))
+
         item = random.choice(items)
         quest = src.quests.questMap["GoToPosition"](targetPosition=item.getSmallPosition(),ignoreEndBlocked=True)
         return ([quest],None)

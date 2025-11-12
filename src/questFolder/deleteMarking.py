@@ -33,9 +33,7 @@ class DeleteMarking(src.quests.MetaQuestSequence):
         if not self.subQuests:
             rooms = character.getTerrain().getRoomByPosition(self.targetPositionBig)
             if not rooms:
-                if not dryRun:
-                    self.fail("target room missing")
-                return (None,None)
+                return self._solver_trigger_fail(dryRun,"target room missing")
             room = rooms[0]
 
             if character.getBigPosition() != self.targetPositionBig:
@@ -110,7 +108,7 @@ class DeleteMarking(src.quests.MetaQuestSequence):
             else:
                 return (None,("il"+"s"*painterIndex+"j","drop the Painter"))
 
-        return (None,None)
+        return (None,(".","stand around confused")
 
     def handleDeletedMarking(self,extraInfo):
         if not self.active:

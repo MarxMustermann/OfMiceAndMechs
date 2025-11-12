@@ -192,9 +192,9 @@ Strengthen the base defences
             return
 
         # call the function
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         '''
         checks if the quest is completed
         '''
@@ -214,7 +214,8 @@ Strengthen the base defences
             return False
 
         # end the quest
-        self.postHandler()
+        if not dryRun:
+            self.postHandler()
         return True
 
 # register quest

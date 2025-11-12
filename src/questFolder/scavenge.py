@@ -46,14 +46,15 @@ done tiles: {self.doneTiles}"""
         out.append(text)
         return out
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         '''
         check and end if the quest is completed
         '''
         if not character:
             return False
         if not character.getFreeInventorySpace():
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
         return False
 
@@ -230,7 +231,7 @@ done tiles: {self.doneTiles}"""
         '''
         check for completion when picking up stuff
         '''
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
     def assignToCharacter(self, character):
         '''

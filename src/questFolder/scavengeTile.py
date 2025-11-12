@@ -37,23 +37,25 @@ This quest will end when the target tile has no items left."""
         out.append(text)
         return out
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
 
         if not character:
-            return
+            return False
 
         if self.endOnFullInventory and not character.getFreeInventorySpace() > 0:
-            self.postHandler()
-            return
+            if not dryRun:
+                self.postHandler()
+            return True
 
         if not self.getLeftoverItems(character):
-            self.postHandler()
-            return
+            if not dryRun:
+                self.postHandler()
+            return True
 
-        return
+        return False
 
     def getNextStep(self,character,ignoreCommands=False, dryRun = True):
-        self.triggerCompletionCheck(character=character)
+        self.triggerCompletionCheck(character=character,dryRun=dryRun)
 
         if not self.subQuests:
             if character.getNearbyEnemies():
@@ -113,7 +115,7 @@ This quest will end when the target tile has no items left."""
         return leftOverItems
 
     def pickedUpItem(self,extraInfo):
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
     def assignToCharacter(self, character):
         if self.character:

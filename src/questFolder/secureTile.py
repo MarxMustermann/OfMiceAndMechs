@@ -49,12 +49,12 @@ Try luring enemies into landmines or detonating some bombs."""
     def wrapedTriggerCompletionCheck2(self, extraInfo):
         if not self.active:
             return
-        self.triggerCompletionCheck(extraInfo["character"])
+        self.triggerCompletionCheck(extraInfo["character"],dryRun=False)
 
     def handleTileChange2(self):
         if not self.active:
             return
-        self.triggerCompletionCheck(self.character)
+        self.triggerCompletionCheck(self.character,dryRun=False)
 
     def assignToCharacter(self, character):
         if self.character:
@@ -74,7 +74,7 @@ Try luring enemies into landmines or detonating some bombs."""
             character.awardReputation(amount=50, reason=text)
         super().postHandler()
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
 
         if not character:
             return False
@@ -85,12 +85,14 @@ Try luring enemies into landmines or detonating some bombs."""
         if isinstance(character.container,src.rooms.Room):
             if character.container.xPosition == self.targetPosition[0] and character.container.yPosition == self.targetPosition[1]:
                 if not character.getNearbyEnemies():
-                    self.postHandler(character)
+                    if not dryRun:
+                        self.postHandler(character)
                     return True
         else:
             if character.xPosition//15 == self.targetPosition[0] and character.yPosition//15 == self.targetPosition[1]:
                 if not character.getNearbyEnemies():
-                    self.postHandler(character)
+                    if not dryRun:
+                        self.postHandler(character)
                     return True
 
         return False

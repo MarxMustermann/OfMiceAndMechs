@@ -127,7 +127,7 @@ Use a CityPlaner to do this.
         quest = src.quests.questMap["GoToPosition"](targetPosition=cityPlaner.getPosition(), description="go to CityPlaner",ignoreEndBlocked=True, reason="go to the CityPlaner")
         return ([quest],None)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         '''
         check and end a quest if it is completed
         '''
@@ -148,7 +148,8 @@ Use a CityPlaner to do this.
 
         # end the quest if room was planned
         if self.roomPosition in cityPlaner.plannedRooms:
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
 
         # continue working

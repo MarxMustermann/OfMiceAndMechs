@@ -189,7 +189,7 @@ Try as hard as you can to achieve this.
             if buildSite[0] == self.targetPosition:
                 if not dryRun:
                     self.postHandler()
-                return (None,None)
+                return (None,("+","end quest"))
 
         # check for painters next to the target
         offsets = ((0,0,0),(0,1,0),(1,0,0),(0,-1,0),(-1,0,0))

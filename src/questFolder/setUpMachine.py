@@ -313,7 +313,7 @@ If you don't find a {self.itemType} blueprint, research it.
             return (None,None)
         return (None,None)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
@@ -325,7 +325,8 @@ If you don't find a {self.itemType} blueprint, research it.
 
         rooms = character.getTerrain().getRoomByPosition(self.targetPositionBig)
         if not rooms:
-            self.fail("targetroom gone")
+            if not dryRun:
+                self.fail("targetroom gone")
             return True
 
         room = rooms[-1]
@@ -334,7 +335,8 @@ If you don't find a {self.itemType} blueprint, research it.
             return False
 
         if items[-1].type == "Machine" and items[-1].toProduce == self.itemType and items[-1].bolted:
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
 
         return False
@@ -364,7 +366,7 @@ If you don't find a {self.itemType} blueprint, research it.
         super().assignToCharacter(character)
 
     def boltedItem(self,extraInfo):
-        self.triggerCompletionCheck(self.character)
+        self.triggerCompletionCheck(self.character,dryRun=False)
 
     def getQuestMarkersTile(self,character):
         result = super().getQuestMarkersTile(character)

@@ -9,8 +9,8 @@ class ReachOutStory(src.quests.MetaQuestSequence):
         super().__init__(creator=creator)
         self.metaDescription = description
 
-    def triggerCompletionCheck(self,character=None):
-        return
+    def triggerCompletionCheck(self,character=None,dryRun=True):
+        return False
 
     def handleQuestsOpened(self,extraInfo=None):
         self.postHandler()

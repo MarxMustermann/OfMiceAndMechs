@@ -130,10 +130,7 @@ Use the MapTable to do this.
                 quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),description="go to command centre")
                 return ([quest],None)
 
-        # fail 
-        if not dryRun:
-            self.fail("no Map Table")
-        return (None,("+","abort the quest"))
+        return self._solver_trigger_fail(dryRun,"no MapTable")
 
     def getQuestMarkersSmall(self,character,renderForTile=False):
         '''

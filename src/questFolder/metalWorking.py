@@ -48,12 +48,13 @@ Press d to move the cursor and show the subquests description.
 """))
         return out
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None, dryRun=True):
         if not character:
             return False
 
         if character.getNearbyEnemies():
-            self.fail("enemies nearby")
+            if not dryRun:
+                self.fail("enemies nearby")
             return True
 
         return False

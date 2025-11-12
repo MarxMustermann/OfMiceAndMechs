@@ -9,7 +9,7 @@ class SpawnGhul(src.quests.MetaQuestSequence):
         super().__init__(questList, creator=creator)
         self.metaDescription = description
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
@@ -26,7 +26,8 @@ class SpawnGhul(src.quests.MetaQuestSequence):
                 numGhuls += 1
 
         if numGhuls:
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
         
         return False

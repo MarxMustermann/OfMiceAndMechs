@@ -220,7 +220,7 @@ Swords can range from 10 to 25 damage per hit.
                 quests.append(quest)
                 return (quests,None)
 
-        return (None,None)
+        return (None,(".","stand around confused"))
 
 # register the quest type
 src.quests.addType(Equip)

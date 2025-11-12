@@ -18,7 +18,7 @@ class RefillPersonalFlask(src.quests.MetaQuestSequence):
         if not self.active:
             return
 
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
     def handleMoved(self,extraInfo=None):
         self.subQuestCompleted()
@@ -30,12 +30,13 @@ class RefillPersonalFlask(src.quests.MetaQuestSequence):
         self.startWatching(character,self.handleMoved, "moved")
         super().assignToCharacter(character)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
         if character.flask and character.flask.uses > 80:
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
         return False
 

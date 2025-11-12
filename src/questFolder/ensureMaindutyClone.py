@@ -103,19 +103,14 @@ class EnsureMaindutyClone(src.quests.MetaQuestSequence):
                         return (None,(command,"move cursor right"))
                     break
 
-                # fail on error
-                if not dryRun:
-                    self.fail("duty not found")
-                return (None,("+","abort quest"))
+                return self._solver_trigger_fail(dryRun,"duty not found")
 
             # close generic menues
             return (None,(["esc"],"to close menu"))
 
         # do nothing if no duty artwork was found
         if not dutyArtwork:
-            if not dryRun:
-                self.fail("no duty artwork")
-            return (None,("+","abort quest"))
+            return self._solver_trigger_fail(dryRun,"no duty artwork")
 
         # go to the tile the duty artwork is on
         if character.getBigPosition() != dutyArtwork.container.getPosition():

@@ -129,9 +129,9 @@ For now ignore the options below and press esc to continue.
         if not self.active:
             return
     
-        self.triggerCompletionCheck(self.character)
+        self.triggerCompletionCheck(self.character,dryRun=False)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
@@ -141,13 +141,15 @@ For now ignore the options below and press esc to continue.
                 return False
 
         if not character.getFreeInventorySpace():
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
         hasTileVial = self.getTileVials(character)
         if hasTileVial:
             return False
 
-        self.postHandler()
+        if not dryRun:
+            self.postHandler()
         return True
 
 src.quests.addType(TreatWounds)

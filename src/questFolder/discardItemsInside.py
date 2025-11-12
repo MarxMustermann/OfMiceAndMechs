@@ -63,9 +63,7 @@ This quest will end when your inventory is empty."""
                 quest = src.quests.questMap["GoToPosition"](targetPosition=dropPosition)
                 return ([quest],None)
 
-        if dryRun:
-            self.fail("no drop spot")
-        return (None,None)
+        return self._solver_trigger_fail(dryRun,"no drop spot")
 
     def droppedItem(self,extraInfo):
         self.triggerCompletionCheck(extraInfo[0],dryRun=False)

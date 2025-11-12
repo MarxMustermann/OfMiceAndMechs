@@ -79,9 +79,7 @@ Use the CityPlaner to designate the room.
                 return (None,(command,"remove old construction site marker"))
 
             if self.roomPosition not in cityPlaner.getAvailableRoomPositions():
-                if not dryRun:
-                    self.fail(reason="room position already taken")
-                return (None,None)
+                return self._solver_trigger_fail(dryRun,"room position already taken")
 
             if self.roomType == "generalPurposeRoom":
                 command += "g"

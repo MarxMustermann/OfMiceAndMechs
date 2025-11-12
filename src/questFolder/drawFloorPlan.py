@@ -77,15 +77,11 @@ Draw a floor plan assigned to a room{reason}.
             return ([quest],None)
 
         if character.container.alarm:
-            if not dryRun:
-                self.fail("alarm")
-            return (None,("+","abort quest"))
+            return self._solver_trigger_fail(dryRun,"alarm")
 
         # fail on weird state
         if not character.container.floorPlan:
-            if not dryRun:
-                self.fail()
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"weird state")
 
         if self.onlyDrawOneBatch:
             if self.drewOneBatch:
@@ -355,7 +351,7 @@ Draw a floor plan assigned to a room{reason}.
         # complete the quest. (should be somewhere else)
         if not dryRun:
             self.postHandler()
-        return (None,None)
+        return (None,("+","end quest"))
 
     def handleQuestFailure(self,extraParam):
         '''

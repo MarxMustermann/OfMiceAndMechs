@@ -20,13 +20,14 @@ class LiftOutsideRestrictions(src.quests.MetaQuestSequence):
 
         return super().assignToCharacter(character)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
         terrain = character.getTerrain()
         if not terrain.alarm:
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
         
         return False

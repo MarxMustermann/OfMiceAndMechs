@@ -11,9 +11,10 @@ class MachinePlacing(src.quests.MetaQuestSequence):
         self.shortCode = "d"
         self.targetPosition = targetPosition
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
-            return
+            return False
+        return False
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
         if not self.subQuests:

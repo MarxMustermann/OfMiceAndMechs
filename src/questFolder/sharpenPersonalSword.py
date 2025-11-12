@@ -30,7 +30,7 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
         self.startWatching(character,self.handleSwordSharpened, "sharpened sword")
         super().assignToCharacter(character)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         '''
         check if the quest completed and end it
         '''
@@ -42,7 +42,8 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
             return False
 
         if character.weapon.baseDamage >= 30:
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):

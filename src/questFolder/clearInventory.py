@@ -106,9 +106,7 @@ To see your items open the your inventory by pressing i."""
             return (None,None)
 
         if character.getNearbyEnemies():
-            if not dryRun:
-                self.fail("nearby enemies")
-            return (None,("+","abort quest"))
+            return self._solver_trigger_fail(dryRun, "nearby enemies")
 
         # close other menus
         if not ignoreCommands and character.macroState.get("submenue"):
@@ -139,17 +137,13 @@ To see your items open the your inventory by pressing i."""
                 return ([quest],None)
 
         if "HOMEx" not in character.registers:
-            if not dryRun:
-                self.fail(reason="no home")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"no home")
 
         if character.inventory:
             homeRoom = character.getHomeRoom()
 
             if not homeRoom:
-                if not dryRun:
-                    self.fail(reason="no home")
-                return (None,None)
+                return self._solver_trigger_fail(dryRun,"no home")
 
             if hasattr(homeRoom,"storageRooms") and homeRoom.storageRooms:
                 quest = src.quests.questMap["GoToTile"](targetPosition=(homeRoom.storageRooms[0].xPosition,homeRoom.storageRooms[0].yPosition,0),reason="go to a storage room")
@@ -168,10 +162,7 @@ To see your items open the your inventory by pressing i."""
             else:
                 quest = src.quests.questMap["DiscardItemsInside"]()
                 return ([quest],None)
-            if not dryRun:
-                character.takeTime(1,"failed quest")
-                self.fail(reason="no storage available")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"no storage available")
 
         if self.returnToTile and character.getBigPosition() != self.returnToTile:
             quest = src.quests.questMap["GoToTile"](description="return to tile",targetPosition=self.tileToReturnTo,reason="get back where your inventory was filled up")
@@ -179,7 +170,7 @@ To see your items open the your inventory by pressing i."""
 
         if not dryRun:
             self.postHandler()
-        return (None,None)
+        return (None,("+","end quest"))
 
     def setParameters(self,parameters):
         '''

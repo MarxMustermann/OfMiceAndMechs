@@ -36,12 +36,13 @@ good luck!
             self.command = parameters["command"]
         return super().setParameters(parameters)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None, dryRun=True):
         if self.ranCommand:
-            self.postHandler()
-            return
+            if not dryRun:
+                self.postHandler()
+            return True
 
-        return
+        return False
 
     def getNextStep(self,character,ignoreCommands=False, dryRun = True):
         if not dryRun:

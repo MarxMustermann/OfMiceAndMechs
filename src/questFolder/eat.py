@@ -121,8 +121,8 @@ class Eat(src.quests.MetaQuestSequence):
                     description = "go to forest"
                     quest = src.quests.questMap["GoToTile"](targetPosition=forest,description=description)
                     return ([quest],None)                
-                self.fail(reason="no source for food")
-                return (None,None)
+
+                return self._solver_trigger_fail(dryRun,"no source for food")
 
             description="go to food source "
 
@@ -147,6 +147,7 @@ class Eat(src.quests.MetaQuestSequence):
         
         quest = src.quests.questMap["GoToPosition"](targetPosition=sourceSlots[0][0],description="go to "+itemType,ignoreEndBlocked=True)
         return ([quest],None)
+
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
         if character.satiation < 200:
@@ -154,4 +155,5 @@ class Eat(src.quests.MetaQuestSequence):
                 beUsefull.idleCounter = 0
             return ([src.quests.questMap["Eat"]()],None)
         return (None,None)
+
 src.quests.addType(Eat)

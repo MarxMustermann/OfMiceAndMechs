@@ -21,7 +21,7 @@ class ReinforcePersonalArmor(src.quests.MetaQuestSequence):
         self.startWatching(character,self.handleArmorImproved, "improved armor")
         super().assignToCharacter(character)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
         return False

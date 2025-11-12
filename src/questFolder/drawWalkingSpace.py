@@ -71,9 +71,7 @@ Try as hard as you can to achieve this.
         # get the room
         rooms = character.getTerrain().getRoomByPosition(self.targetPositionBig)
         if not rooms:
-            if dryRun:
-                self.fail("target room missing")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"target room missing")
         room = rooms[0]
 
         # do an extra completion check
@@ -81,7 +79,7 @@ Try as hard as you can to achieve this.
             if pos == self.targetPosition:
                 if not dryRun:
                     self.postHandler()
-                return (None,None)
+                return (None,("+","end quest"))
 
         # navigate the painter menu
         submenue = character.macroState.get("submenue")

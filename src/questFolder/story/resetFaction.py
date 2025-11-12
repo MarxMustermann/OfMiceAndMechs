@@ -93,15 +93,17 @@ Use it to reset your faction marker.
         if not self.active:
             return
 
-        self.triggerCompletionCheck(self.character)
+        self.triggerCompletionCheck(self.character,dryRun=False)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
         if not character.faction == "city #1":
             return False
 
-        self.postHandler()
+        if not dryRun:
+            self.postHandler()
+        return True
 
 src.quests.addType(ResetFaction)

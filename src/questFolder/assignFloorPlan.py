@@ -50,9 +50,7 @@ Set the floor plan: {self.floorPlanType}
                 return (None,(command,"remove old construction site marker"))
 
             if self.roomPosition not in cityPlaner.getAvailableRoomPositions():
-                if not dryRun:
-                    self.fail("room already registered")
-                return (None,None)
+                return self._solver_trigger_fail(dryRun,"room already registered")
 
             command += "f"
             return (None,(command,"set a floor plan"))
@@ -114,12 +112,10 @@ Set the floor plan: {self.floorPlanType}
                 quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),description="go to command centre",reason="go to command centre")
                 return ([quest],None)
 
-            if not dryRun:
-                self.fail("no planer")
-            return (None,("+","abort the quest"))
+            return self._solver_trigger_fail(dryRun,"no planer")
 
         if not character.container.isRoom:
-            return (None,None)
+            return (None,(".","stand around confused"))
 
         cityPlaner = character.container.getItemsByType("CityPlaner")[0]
         command = None

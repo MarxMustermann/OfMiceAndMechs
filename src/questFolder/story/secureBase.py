@@ -75,9 +75,9 @@ To make things easier this quest splits into subquests.
         if not self.active:
             return
 
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
@@ -90,6 +90,8 @@ To make things easier this quest splits into subquests.
         if character.getNearbyEnemies():
             return False
 
-        self.postHandler()
+        if not dryRun:
+            self.postHandler()
+        return True
 
 src.quests.addType(SecureBase)

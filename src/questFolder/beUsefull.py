@@ -356,8 +356,7 @@ Press d to move the cursor and show the subquests description.
         if not character.registers.get("HOMETx") or not character.registers.get("HOMETy"):
             if not dryRun:
                 logger.error("Character without home")
-                self.fail("no home")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"no home")
         if terrain.xPosition != character.registers["HOMETx"] or terrain.yPosition != character.registers["HOMETy"]:
             quest = src.quests.questMap["GoHome"]()
             return ([quest],None)
@@ -442,7 +441,7 @@ Press d to move the cursor and show the subquests description.
         if self.numTasksToDo and self.numTasksDone > self.numTasksToDo:
             if not dryRun:
                 self.postHandler()
-            return (None,None)
+            return (None,("+","end quest"))
 
         room = character.container
         for duty in character.getRandomProtisedDuties():
@@ -519,15 +518,13 @@ Press d to move the cursor and show the subquests description.
         if self.endOnIdle:
             if not dryRun:
                 self.postHandler()
-            return (None,None)
+            return (None,("+","end quest"))
         try:
             self.failOnIdle
         except:
             self.failOnIdle = False
         if self.failOnIdle:
-            if not dryRun:
-                self.fail("no job")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"no job")
 
         for room in character.getTerrain().rooms:
             if room.tag == "temple":

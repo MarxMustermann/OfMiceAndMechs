@@ -107,9 +107,7 @@ Use a CityPlaner to do this.
                 quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),description="go to command centre",reason="go to command centre")
                 return ([quest],None)
 
-            if not dryRun:
-                self.fail("no planer")
-            return (None,("+","abort the quest"))
+            return self._solver_trigger_fail(dryRun,"no planer")
 
         # start using the city planer
         command = None

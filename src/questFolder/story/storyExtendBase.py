@@ -285,9 +285,9 @@ Remember that the base provides you with important ressources and healing.
         if not self.active:
             return
 
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
@@ -295,7 +295,8 @@ Remember that the base provides you with important ressources and healing.
         if len(terrain.rooms) < 7:
             return False
 
-        self.postHandler()
+        if not dryRun:
+            self.postHandler()
         return True
 
 src.quests.addType(StoryExtendBase)

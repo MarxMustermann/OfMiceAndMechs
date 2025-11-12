@@ -248,9 +248,7 @@ After fetching the glass heart return the glass heart to your base and set it in
                     else:
                         return (None,(directionCommand+"jssj","eject GlassHeart"))
 
-                if not dryRun:
-                    self.fail("no GlassStatue found")
-                return (None,None)
+                return self._solver_trigger_fail(dryRun,"no GlassStatue found")
 
             if character.getPosition() != foundGlassHeart.getPosition():
                 quest = src.quests.questMap["GoToPosition"](targetPosition=foundGlassHeart.getPosition(),description="go to GlassHeart",reason="be able to pick up the GlassHeart")
@@ -277,8 +275,7 @@ After fetching the glass heart return the glass heart to your base and set it in
                 break
 
         if not foundGlassStatue:
-            self.fail(reason="no glass statues found")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"no GlassStatue found")
 
         if not terrain.alarm:
             quest = src.quests.questMap["ReadyBaseDefences"]()
@@ -347,7 +344,6 @@ The implant interrupts. This dungeon is too hard for you.
 Become stronger and return."""
             character.macroState["submenue"] = src.menuFolder.textMenu.TextMenu(text)
 
-            self.fail("dungeon too tough")
-        return (None,None)
+        return self._solver_trigger_fail(dryRun,"dungeon too tough")
 
 src.quests.addType(DelveDungeon)

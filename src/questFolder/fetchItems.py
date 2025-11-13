@@ -321,12 +321,9 @@ Press d to move the cursor and show the subquests description.
                             newQuest = src.quests.questMap["MetalWorking"](toProduce=self.toCollect,amount=1,reason="produce a item you do not have",produceToInventory=True,tryHard=self.tryHard)
                             return ([newQuest],None)
 
-                if not dryRun:
-                    self.fail(reason=f"no source for item {self.toCollect}")
-                return (None,("+","abort quest"))
+                return self._solver_trigger_fail(dryRun,f"no source for item {self.toCollect}")
 
-        # hang up AI :-P
-        return (None,None)
+        return (None,(".","stand around confused"))
 
     def getQuestMarkersSmall(self,character,renderForTile=False):
         '''

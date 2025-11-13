@@ -144,8 +144,7 @@ Scrapfields are shown on the minimap as white ss"""]
                         break
 
             if source is None and not character.getTerrain().scrapFields:
-                self.fail(reason="no scrap source found")
-                return (None,None)
+                return self._solver_trigger_fail(dryRun,"no scrap source found")
 
             if source is None:
                 terrain = character.getTerrain()
@@ -166,8 +165,7 @@ Scrapfields are shown on the minimap as white ss"""]
                             quest = src.quests.questMap["GetEpochReward"](rewardType="spawn scrap",reason="ensure enough scrap is available")
                             return ([quest],None)
 
-                    self.fail(reason="no scrap source")
-                    return (None,None)
+                    return self._solver_trigger_fail(dryRun,"no scrap source")
 
                 targetPos = random.choice(scrapFields)
             else:

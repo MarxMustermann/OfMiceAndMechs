@@ -2712,7 +2712,8 @@ press any other key to attack normally"""
             return
 
         self.implantLoad = 0
-        self.autoExpandCounter = 0
+        if self.autoExpandCounter > 0:
+            self.autoExpandCounter -= 1
 
         if advanceMacros:
             src.interaction.advanceChar(self,[])

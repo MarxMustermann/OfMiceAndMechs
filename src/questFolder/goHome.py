@@ -222,9 +222,7 @@ Press control-d to stop your character from moving.
             if currentTerrain.rooms:
                 homeRoom = random.choice(currentTerrain.rooms)
             else:
-                if not dryRun:
-                    self.fail("no home")
-                return (None, None)
+                return self._solver_trigger_fail(dryRun,"no home")
 
         # make character go into the home room
         if character.getBigPosition() != homeRoom.getPosition():
@@ -246,7 +244,7 @@ Press control-d to stop your character from moving.
         if move != "":
             return (None, (move, "move into room"))
 
-        return (None, None)
+        return (None, (".","stand around confused"))
 
     def getQuestMarkersTile(self, character):
         '''

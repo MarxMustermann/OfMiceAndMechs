@@ -199,7 +199,7 @@ Close this menu by pressing esc and follow the instructions on the left hand men
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
         if self.triggerCompletionCheck(character,dryRun=dryRun):
-            return (None,None)
+            return (None,(".","stand around confused"))
 
         if not self.path:
             self.generatePath(character,dryRun=dryRun)
@@ -207,10 +207,8 @@ Close this menu by pressing esc and follow the instructions on the left hand men
         if not self.isPathSane(character):
             self.generatePath(character,dryRun=dryRun)
             if not self.path:
-                if not dryRun:
-                    character.addMessage("moving failed - no path found (solver)")
-                    self.fail("no path found")
-                return (None,("+","abort quest"))
+                return self._solver_trigger_fail(dryRun,"moving failed - no path found (solver)")
+
         if not ignoreCommands and character.macroState.get("submenue"):
             return (None,(["esc"],"exit submenu"))
         
@@ -226,7 +224,7 @@ Close this menu by pressing esc and follow the instructions on the left hand men
             return (None,(".12..","wait"))
 
         if self.ignoreEndBlocked and len(self.path) == 1:
-            return (None,None)
+            return (None,(".","stand around confused"))
 
         command  = ""
         movementMap = {(1,0):"d",(-1,0):"a",(0,1):"s",(0,-1):"w"}

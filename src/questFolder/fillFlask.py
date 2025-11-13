@@ -123,10 +123,7 @@ class FillFlask(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),description="go to goo source")
             return ([quest],None)
 
-        character.addMessage("found no source for goo")
-        if not dryRun:
-            self.fail()
-        return (None,None)
+        return self._solver_trigger_fail(dryRun,"found no source for goo")
 
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):

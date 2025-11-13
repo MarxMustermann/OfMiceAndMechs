@@ -115,9 +115,7 @@ Use the Promotor to do this.
                 quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),description="go to command centre")
                 return ([quest],None)
 
-        if not dryRun:
-            self.fail("no Promoter")
-        return (None,None)
+        return self._solver_trigger_fail(dryRun,"no Promoter")
 
     def getQuestMarkersSmall(self,character,renderForTile=False):
         '''

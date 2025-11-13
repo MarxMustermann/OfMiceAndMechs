@@ -127,8 +127,7 @@ class GatherVatMaggots(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["GoToPosition"](targetPosition=treeFound.getSmallPosition(),ignoreEndBlocked=True)
             return ([quest],None)
 
-        self.fail(reason="no tree")
-        return (None,None)
+        return self._solver_trigger_fail(dryRun,"no tree")
 
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):

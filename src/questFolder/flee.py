@@ -80,7 +80,7 @@ run,run,run!!!
                 return ([quest],None)
             if not dryRun:
                 self.postHandler()
-            return (None,None)
+            return (None,("+","end quest"))
 
         # heal
         if character.health < character.maxHealth//5 and character.canHeal():
@@ -146,7 +146,7 @@ run,run,run!!!
 
         # hang up AI at invalid direction :-P
         if command is None:
-            return (None,None)
+            return (None,(".","stand around confused"))
 
         # run the command
         return (None,(command,"flee"))

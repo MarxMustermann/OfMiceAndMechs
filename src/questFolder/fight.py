@@ -94,10 +94,7 @@ So if an enemy is to directly east of you:
         except:
             self.suicidal = False
         if (not self.suicidal) and (character.health < character.maxHealth//5):
-            abort_reason = "low health"
-            if not dryRun:
-                self.fail(abort_reason)
-            return (None,("+",f"abort quest ({abort_reason})"))
+            return self._solver_trigger_fail(dryRun,"low health")
 
         if not ignoreCommands:
             submenue = character.macroState.get("submenue")

@@ -93,22 +93,18 @@ the buildsites indicate what needs to be built.
         # set up helper variables
         targetRoom = character.getTerrain().getRoomByPosition(self.targetPositionBig)
         if not targetRoom:
-            if not dryRun:
-                self.fail("no room found")
-            return (None,("+","abort quest"))
+            return self._solver_trigger_fail(dryRun,"no room found")
         targetRoom = targetRoom[0]
 
         # abort on rooms not fully painted
         if targetRoom.floorPlan:
-            if not dryRun:
-                self.fail("room not fully painted yet")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"room not fully painted yet")
             
         # end if no more buildsites left
         if not targetRoom.buildSites:
             if not dryRun:
                 self.postHandler()
-            return (None,None)
+            return (None,("+","end quest"))
 
         # place items on buildsites
         checkedMaterial = set()
@@ -224,9 +220,7 @@ the buildsites indicate what needs to be built.
             return ([quest],None)
 
         # fail on weird state
-        if not dryRun:
-            self.fail("no known path to solution. missing machine?")
-        return (None,None)
+        return self._solver_trigger_fail(dryRun,"no known path to solution. missing machine?")
             
     def handleQuestFailure(self,extraParam):
         '''

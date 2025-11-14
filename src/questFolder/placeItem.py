@@ -175,9 +175,7 @@ Press d to move the cursor and show the subquests description.
             if rooms:
                 container = rooms[0]
                 if container.alarm and not self.tryHard:
-                    if not dryRun:
-                        self.fail("alarm")
-                    return (None,None)
+                    return _solver_trigger_fail(dryRun,"alarm")
         if character.getNearbyEnemies():
             quest = src.quests.questMap["Fight"]()
             return ([quest],None)
@@ -302,6 +300,8 @@ Press d to move the cursor and show the subquests description.
             return (None,("wcb","bolt sown item"))
         if (pos[0],pos[1]+1,pos[2]) == targetPosition:
             return (None,("scb","bolt down item"))
+
+        return (None,(".","stand around confused"))
 
     def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:

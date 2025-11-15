@@ -155,7 +155,7 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),description="go to a room having a SwordSharpener")
                 return ([quest],None)
 
-        return (None,None)
+        return (None,(".","stand around confused"))
 
     def getQuestMarkersSmall(self,character,renderForTile=False):
         '''

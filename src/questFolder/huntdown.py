@@ -46,7 +46,7 @@ class Huntdown(src.quests.MetaQuestSequence):
             targetPos = (self.target.xPosition//15,self.target.yPosition//15,0)
 
         if targetPos == (0,0,0):
-            return (None,None)
+            return (None,(".","stand around confused"))
 
         if character.yPosition%15 == 0:
             return (None,("s","move toward target"))

@@ -75,9 +75,7 @@ class ReadyBaseDefences(src.quests.MetaQuestSequence):
             siegeManager = item
 
         if not siegeManager:
-            if not dryRun:
-                self.fail("no siege manager")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"no siege manager")
 
         if character.getBigPosition() != siegeManager.container.getPosition():
             quest = src.quests.questMap["GoToTile"](targetPosition=siegeManager.container.getPosition(),description="go to the command centre",reason="to reach the SiegeManager")
@@ -104,8 +102,7 @@ class ReadyBaseDefences(src.quests.MetaQuestSequence):
             interactionCommand = ""
         if terrain.alarm == False:
             return (None,(interactionCommand+direction+"j","enable the outside restrictions"))
-        else:
-            return (None,(interactionCommand+direction+"ssj","sound the alarms"))
+        return (None,(interactionCommand+direction+"ssj","sound the alarms"))
 
     def generateTextDescription(self):
         text = ["""

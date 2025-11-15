@@ -75,14 +75,13 @@ This quest will end when the target tile has no items left."""
                 return (None,("Hjsssssj","make subordinate scavenge"))
 
             if character.getTerrain().alarm and not self.tryHard and not self.ignoreAlarm:
-                if not dryRun:
-                    self.fail("alarm")
-                return (None,None)
+                return self._solver_trigger_fail(dryRun,"alarm")
 
             if not character.getFreeInventorySpace() > 0:
                 if self.endOnFullInventory:
-                    self.postHandler()
-                    return (None,None)
+                    if not dryRun:
+                        self.postHandler()
+                    return (None,("+","end quest"))
                 quest = src.quests.questMap["ClearInventory"](reason="be able to pick up more items")
                 return ([quest],None)
 
@@ -97,7 +96,8 @@ This quest will end when the target tile has no items left."""
                 if len(path) or item.getPosition() == character.getPosition():
                     quest = src.quests.questMap["CleanSpace"](targetPosition=item.getSmallPosition(),targetPositionBig=self.targetPosition,reason="pick up the items")
                     return ([quest],None)
-        return (None,None)
+
+        return (None,(".","stand around confused"))
     
     def getLeftoverItems(self,character):
         terrain = character.getTerrain()

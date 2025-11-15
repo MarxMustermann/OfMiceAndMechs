@@ -189,9 +189,7 @@ Press d to move the cursor and show the subquests description.
                         continue
                     quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),reason="go to a room with a MetalWorkingBench")
                     return ([quest],None)
-            if not dryRun:
-                self.fail("no metal bench available")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"no metal bench available")
 
         # use bench next to the character
         for bench in benches:

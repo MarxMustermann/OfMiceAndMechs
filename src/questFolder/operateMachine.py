@@ -82,7 +82,7 @@ operate the machine on {self.targetPosition}{reason}.
             return (None,("Jw","activate machine"))
         if (pos[0],pos[1]+1,pos[2]) == self.targetPosition:
             return (None,("Js","activate machine"))
-        return None
+        return (None,(".","stand around confused"))
 
     def getQuestMarkersTile(self,character):
         result = super().getQuestMarkersTile(character)

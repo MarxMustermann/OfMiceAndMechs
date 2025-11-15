@@ -138,9 +138,7 @@ Place the items in the correct input or storage stockpile.
                 return (None,(["esc"],"close the menu"))
 
         if character.getNearbyEnemies():
-            if not dryRun:
-                self.fail("nearby enemies")
-            return (None,("+","abort quest"))
+            return self._solver_trigger_fail(dryRun,"nearby enemies")
 
         if self.targetPositionBig and character.getBigPosition() != self.targetPositionBig:
             quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig)
@@ -150,12 +148,10 @@ Place the items in the correct input or storage stockpile.
             room = character.container
 
             if not hasattr(room,"inputSlots"):
-                if not dryRun:
-                    self.fail(reason="no input slot attribute")
-                return (None,None)
+                return self._solver_trigger_fail(dryRun,"no input slot attribute")
 
             if not character.inventory:
-                return (None,None)
+                return (None,(".","stand around confused"))
 
             fullyEmpty = not character.inventory[-1].walkable
             inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny,allowStorage=False,fullyEmpty=fullyEmpty)
@@ -293,9 +289,7 @@ Place the items in the correct input or storage stockpile.
                         break
 
             if not foundNeighbour:
-                if not dryRun:
-                    self.fail(reason="no dropoff found")
-                return (None,None)
+                return self._solver_trigger_fail(dryRun,"no dropoff found")
 
             quest = src.quests.questMap["GoToPosition"](reason="get to the stockpile and be able to fill it")
             quest.setParameters({"targetPosition":foundNeighbour[0]})
@@ -311,9 +305,7 @@ Place the items in the correct input or storage stockpile.
         if charPos == (14,7,0):
             return (None,("a","enter tile"))
 
-        if not dryRun:
-            self.fail()
-        return (None,None)
+        return self._solver_trigger_fail(dryRun,"unknown reason")
 
     def getQuestMarkersTile(self,character):
         result = super().getQuestMarkersTile(character)

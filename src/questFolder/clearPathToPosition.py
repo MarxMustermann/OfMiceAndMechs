@@ -38,7 +38,7 @@ Pick up and unbolt items that are in the way.
             if not dryRun:
                 self.postHandler()
             return True
-        return None
+        return False
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
         if not self.subQuests:
@@ -150,13 +150,37 @@ Pick up and unbolt items that are in the way.
         return (None,(".","stand around confused"))
 
     def handleChangedTile(self, extraInfo = None):
+        if not self.active:
+            return
+        if not self.character:
+            return
+        if self.completed:
+            1/0
+
         self.fail("left terrain")
+
+    def handleMoved(self, extraInfo):
+        if not self.active:
+            return
+        if not self.character:
+            return
+        if self.completed:
+            1/0
+
+        x = self.character.xPosition%15
+        y = self.character.yPosition%15
+
+        if self.path and self.path[0] == (x,y,0):
+            self.path.remove((x,y,0))
+        else:
+            self.path = []
 
     def assignToCharacter(self, character):
         if self.character:
             return
 
         self.startWatching(character,self.handleChangedTile, "changedTile")
+        self.startWatching(character,self.handleMoved, "moved")
 
         super().assignToCharacter(character)
 

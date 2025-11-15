@@ -127,9 +127,8 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
                         continue
                     quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),reason="go to a room with a Anvil")
                     return ([quest],None)
-            if not dryRun:
-                self.fail("no anvil available")
-            return (None,None)
+
+            return self._solver_trigger_fail(dryRun,"no anvil available")
 
         # get anvils right next to the character
         anvilNearBy = None
@@ -163,11 +162,8 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
         if (pos[0],pos[1]+1,pos[2]) == anvilPos:
             return (None,("sj"+activationCommand,"hammer some scrap"))
 
-        # hang up the AI, lol
-        if not dryRun:
-            self.fail("impossible state")
-        return (None,None)
-
+        # fail
+        return self._solver_trigger_fail(dryRun,"impossible state")
 
     def handleQuestFailure(self,extraParam):
         if extraParam["quest"] not in self.subQuests:

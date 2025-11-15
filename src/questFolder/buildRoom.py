@@ -110,7 +110,7 @@ Press d to move the cursor and show the subquests description.
                 self.startWatching(newQuest,self.handleQuestFailure,"failed")
                 return
 
-        if reason.startswith("moving failed - no path found"):
+        if reason and reason.startswith("moving failed - no path found"):
             quest = extraParam["quest"]
             newQuest = src.quests.questMap["ClearPathToPosition"](targetPosition=quest.targetPosition)
             self.addQuest(newQuest)

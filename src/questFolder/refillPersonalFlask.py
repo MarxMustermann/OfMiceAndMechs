@@ -99,7 +99,6 @@ class RefillPersonalFlask(src.quests.MetaQuestSequence):
                     if offset == (0,-1,0):
                         return (None,("Jwj","refill"))
 
-
             for item in character.container.itemsOnFloor:
                 if not character.container.getItemByPosition(item.getPosition()):
                     continue
@@ -109,7 +108,6 @@ class RefillPersonalFlask(src.quests.MetaQuestSequence):
                 if item.type == "GooFlask" and item.uses:
                     quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),description="go to goo flask",ignoreEndBlocked=True)
                     return ([quest],None)
-
 
         room = None
         for roomCandidate in character.getTerrain().rooms:
@@ -123,10 +121,8 @@ class RefillPersonalFlask(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),description="go to goo source")
             return ([quest],None)
 
-        character.addMessage("found no source for goo")
-        if not dryRun:
-            self.fail()
-        return (None,None)
+        return self._solver_trigger_fail(dryRun,"found no source for goo")
+
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
         if character.flask and character.flask.uses < 3:
@@ -134,4 +130,5 @@ class RefillPersonalFlask(src.quests.MetaQuestSequence):
                 beUsefull.idleCounter = 0
             return ([src.quests.questMap["RefillPersonalFlask"]()],None)
         return (None,None)
+
 src.quests.addType(RefillPersonalFlask)

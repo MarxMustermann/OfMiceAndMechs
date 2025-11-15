@@ -119,8 +119,7 @@ Press d to move the cursor and show the subquests description.
 
         if not benchNearBy:
             if not benches:
-                self.fail("no bench found")
-                return (None,None)
+                return self._solver_trigger_fail(dryRun,"no bench found")
             quest = src.quests.questMap["GoToPosition"](targetPosition=benches[0].getPosition(),ignoreEndBlocked=True,reason="go to a MetalWorkingBench")
             return ([quest],None)
 
@@ -137,7 +136,7 @@ Press d to move the cursor and show the subquests description.
         if (pos[0],pos[1]+1,pos[2]) == benchPos:
             return (None,("sjj","start producing machine"))
 
-        return (None,None)
+        return (None,(".","stand around confused"))
 
     def handleQuestFailure(self,extraParam):
         if extraParam["quest"] not in self.subQuests:
@@ -194,6 +193,7 @@ Press d to move the cursor and show the subquests description.
         self.startWatching(character,self.handleNoMetalBars, "no metalBars error")
 
         return super().assignToCharacter(character)
+
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
         for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
@@ -237,4 +237,5 @@ Press d to move the cursor and show the subquests description.
                           src.quests.questMap["Machining"](toProduce=itemType,amount=1,produceToInventory=False)]
                 return (quests,None)
         return (None,None)
+
 src.quests.addType(Machining)

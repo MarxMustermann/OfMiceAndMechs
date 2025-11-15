@@ -45,13 +45,13 @@ class BaitSpiders(src.quests.MetaQuestSequence):
                     phase = "run"
                     if not dryRun:
                         self.phase = phase
-                    return (None,None)
+                    return (None,(".","stand around confused"))
 
         if phase == "wait":
             if not self.character.getNearbyEnemies():
                 if not dryRun:
                     self.postHandler()
-                return (None,None)
+                return (None,("+","end quest"))
 
             if not character.container.isRoom:
                 if character.xPosition%15 == 0:
@@ -82,7 +82,7 @@ class BaitSpiders(src.quests.MetaQuestSequence):
                 if not dryRun:
                     self.phase = phase
                 return ([quest],None)
-        return (None,None)
+        return (None,(".","stand around confused"))
 
     def generateTextDescription(self):
         triggerPlate = src.items.itemMap["TriggerPlate"]()

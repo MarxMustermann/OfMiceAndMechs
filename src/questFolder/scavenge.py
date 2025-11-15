@@ -70,9 +70,7 @@ done tiles: {self.doneTiles}"""
         # abort quest when there is an alarm
         self.tryHard = False
         if character.getTerrain().alarm and not self.tryHard and not self.ignoreAlarm:
-            if not dryRun:
-                self.fail("alarm")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"alarm")
 
         # scavenge all item on the current tile
         terrain = character.getTerrain()

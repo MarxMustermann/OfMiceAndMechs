@@ -312,6 +312,7 @@ class Quest:
     def _solver_trigger_fail(self,dryRun,reason=None):
         if not dryRun:
             self.fail(reason)
+            return (None,None)
         return (None,("+",f"abort quest\n({reason})"))
 
     """
@@ -835,13 +836,16 @@ class MetaQuestSequence(Quest,ABC):
                 quest = self.subQuests.pop(0)
                 self.stopWatchingTarget(quest)
                 continue
+            if not self.subQuests[0].active:
+                self.subQuests[0].activate()
             break
 
         if len(self.subQuests):
-            self.subQuests[0].triggerCompletionCheck(character)
-            if len(self.subQuests):
-                self.subQuests[0].solver(character)
+            if self.subQuests[0].triggerCompletionCheck(character,dryRun=False):
+                return
+            self.subQuests[0].solver(character)
             return
+
         nextStep = self.getNextStep(character, dryRun=False)
         if nextStep is not None:
             try:

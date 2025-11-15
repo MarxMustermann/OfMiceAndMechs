@@ -109,7 +109,7 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
 
             if not dryRun:
                 self.postHandler()
-            return (None,None)
+            return (None,("+","end quest"))
 
         # retreat when too many enemies 
         numDirectNeighbours = 0

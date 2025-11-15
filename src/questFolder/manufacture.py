@@ -85,7 +85,7 @@ use the manufacturing table on {self.targetPosition}{reason}.
             return (None,("Jwj","manufacture item"))
         if (pos[0],pos[1]+1,pos[2]) == self.targetPosition:
             return (None,("Jsj","manufacture item"))
-        return None
+        return (None,(".","stand around confused"))
 
     def getQuestMarkersTile(self,character):
         result = super().getQuestMarkersTile(character)

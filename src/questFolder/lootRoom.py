@@ -268,10 +268,7 @@ Remove all items that are not bolted down."""
             quest = src.quests.questMap["GoToPosition"](targetPosition=item_pos,ignoreEndBlocked=True)
             return ([quest],None)
 
-        abort_reason = "uknown reason"
-        if not dryRun:
-            self.fail(abort_reason)
-        return (None,("+","abort quest\n("+abort_reason+")"))
+        return self._solver_trigger_fail(dryRun,"unknown reason")
 
     def getLeftoverItems(self,character):
 

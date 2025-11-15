@@ -167,7 +167,6 @@ class AppeaseAGod(src.quests.MetaQuestSequence):
             return (None,("...........","wait for the wave of enemies"))
         return (None,("...........","wait for something to happen"))
 
-
     def generateTextDescription(self):
         text = """
 Apease a god, to gain access to gain quick access to its GlassHeart.

@@ -45,15 +45,15 @@ class Monk(src.monster.Monster):
         self.specialDisplay = (src.interaction.urwid.AttrSpec((100,100,255),"black"),"mo")
 
         
-        self.health = 100
-        self.baseDamage = 10
-        self.maxHealth = 100
+        self.health = 200
+        self.baseDamage = 20
+        self.maxHealth = 200
         self.godMode = True
         self.movementSpeed = 1.2
         if src.gamestate.gamestate.difficulty == "difficult":
-            self.health = 300
-            self.baseDamage = 70
-            self.maxHealth = 300
+            self.health = 600
+            self.baseDamage = 140
+            self.maxHealth = 600
             self.godMode = True
             self.movementSpeed = 0.8
 

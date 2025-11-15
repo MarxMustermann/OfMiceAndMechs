@@ -438,6 +438,7 @@ The target tile is {direction[4:]}
 
             # fail if path was invalid
             return self._solver_trigger_fail(dryRun,"invalid step in tile path")
+        return (None,(".","stand around confused"))
 
     def generatePath(self,character):
         '''

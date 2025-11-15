@@ -85,14 +85,14 @@ To see your items open the your inventory by pressing i."""
         check if this quest is completed
         '''
         if not character:
-            return
+            return False
 
         if not character.inventory:
             if self.returnToTile and character.getBigPosition() != self.tileToReturnTo:
-                return
+                return False
             self.postHandler()
-            return
-        return
+            return True
+        return False
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
         '''

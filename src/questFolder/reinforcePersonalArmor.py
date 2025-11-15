@@ -133,6 +133,6 @@ class ReinforcePersonalArmor(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),description="go to a room having a ArmorReinforcer")
                 return ([quest],None)
 
-        return (None,None)
+        return (None,(".","stand around confused"))
 
 src.quests.addType(ReinforcePersonalArmor)

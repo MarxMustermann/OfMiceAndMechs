@@ -58,9 +58,7 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
         currentTerrain = character.getTerrain()
 
         if self.targetTerrain[0] == character.registers["HOMETx"] and self.targetTerrain[1] == character.registers["HOMETy"]:
-            if not dryRun:
-                self.fail("home is target")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"home is target")
 
         if not (currentTerrain.xPosition == self.targetTerrain[0] and currentTerrain.yPosition == self.targetTerrain[1]):
             quest = src.quests.questMap["GoToTerrain"](targetTerrain=self.targetTerrain,terrainsWeight= self.terrainsWeight)
@@ -87,9 +85,7 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
 
         pointsOfInterest = self.getRemainingPointsOfInterests()
         if not pointsOfInterest:
-            if not dryRun:
-                self.fail("no POI found to explore")
-            return (None,("+","abort the quest"))
+            return self._solver_trigger_fail("no POI found to explore")
 
         char_big_pos = character.getBigPosition()
 

@@ -175,7 +175,7 @@ Press d to move the cursor and show the subquests description.
             if rooms:
                 container = rooms[0]
                 if container.alarm and not self.tryHard:
-                    return _solver_trigger_fail(dryRun,"alarm")
+                    return self._solver_trigger_fail(dryRun,"alarm")
         if character.getNearbyEnemies():
             quest = src.quests.questMap["Fight"]()
             return ([quest],None)

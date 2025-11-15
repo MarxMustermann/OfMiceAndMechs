@@ -44,6 +44,7 @@ class Monk(src.monster.Monster):
         self.charType = "Monk"
         self.specialDisplay = (src.interaction.urwid.AttrSpec((100,100,255),"black"),"mo")
 
+        self.hasMagic = True
         
         self.health = 200
         self.baseDamage = 20

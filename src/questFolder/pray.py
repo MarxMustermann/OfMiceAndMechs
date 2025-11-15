@@ -117,7 +117,7 @@ pray on {self.targetPosition}{reason}.
             return (None,(interactionCommand+"w"+activationCommand,description))
         if (pos[0],pos[1]+1,pos[2]) == self.targetPosition:
             return (None,(interactionCommand+"s"+activationCommand,description))
-        return None
+        return (None,(".","stand around confused"))
 
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):

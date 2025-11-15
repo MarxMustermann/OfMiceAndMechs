@@ -355,6 +355,7 @@ class CityPlaner(src.items.Item):
             options = []
             options.append(("storage","storage"))
             options.append(("wallManufacturing","wall manufacturing"))
+            options.append(("basicMaterialsManufacturing","basic material manufacturing"))
             #options.append(("wallProduction","wall production"))
             #options.append(("basicMaterialsProduction","basic material production"))
             #options.append(("caseProduction","case production"))
@@ -403,7 +404,11 @@ class CityPlaner(src.items.Item):
 
         # generate prefab for building basic materials with machines
         # TODO: should be capsuled
-        if floorPlanType == "basicMaterialsProduction":
+        if floorPlanType in ("basicMaterialsProduction","basicMaterialsManufacturing"):
+            producerType = "Machine"
+            if floorPlanType == "basicMaterialsManufacturing":
+                producerType = "ManufacturingTable"
+
             for y in (1,4,6,8,11,):
                 for x in range(1,12):
                     walkingSpaces.append((x,y,0))
@@ -426,7 +431,7 @@ class CityPlaner(src.items.Item):
                 if y == 10:
                     itemType = "Mount"
 
-                buildSites.append(((5,y,0),"Machine",{"toProduce":itemType}))
+                buildSites.append(((5,y,0),producerType,{"toProduce":itemType}))
                 storageSlots.append(((6,y,0),itemType,{}))
 
                 if y == 2:
@@ -442,7 +447,7 @@ class CityPlaner(src.items.Item):
                 if y == 10:
                     itemType = "Connector"
 
-                buildSites.append(((7,y,0),"Machine",{"toProduce":itemType}))
+                buildSites.append(((7,y,0),producerType,{"toProduce":itemType}))
                 storageSlots.append(((8,y,0),itemType,{}))
 
                 if y == 2:
@@ -459,7 +464,7 @@ class CityPlaner(src.items.Item):
                     itemType = "MemoryCell"
 
                 if itemType:
-                    buildSites.append(((9,y,0),"Machine",{"toProduce":itemType}))
+                    buildSites.append(((9,y,0),producerType,{"toProduce":itemType}))
                     storageSlots.append(((10,y,0),itemType,{}))
 
                 walkingSpaces.append((11,y,0))

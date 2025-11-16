@@ -74,9 +74,7 @@ class LiftOutsideRestrictions(src.quests.MetaQuestSequence):
             siegeManager = item
 
         if not siegeManager:
-            if not dryRun:
-                self.fail("no siege manager")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"no siege manager")
 
         if character.getBigPosition() != siegeManager.container.getPosition():
             quest = src.quests.questMap["GoToTile"](targetPosition=siegeManager.container.getPosition(),description="go to the command centre",reason="to reach the SiegeManager")

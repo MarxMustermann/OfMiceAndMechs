@@ -74,9 +74,7 @@ class SetBaseAutoExpansion(src.quests.MetaQuestSequence):
             break
 
         if not cityPlaner:
-            if not dryRun:
-                self.fail("no city planer")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"no city planer")
 
         if character.getBigPosition() != cityPlaner.container.getPosition():
             quest = src.quests.questMap["GoToTile"](targetPosition=cityPlaner.container.getPosition(),description="go to the command centre",reason="to reach the CityPlaner")

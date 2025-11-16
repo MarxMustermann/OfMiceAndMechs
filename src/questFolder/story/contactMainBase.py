@@ -66,12 +66,11 @@ class ContactMainBase(src.quests.MetaQuestSequence):
             return ([quest],None)
 
         if not character.container.isRoom:
-            return (None,None)
+            return (None,(".","stand around confused"))
 
         communicator = character.container.getItemByType("Communicator")
         if not communicator:
-            self.fail(reason="no communicator found")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"no communicator found")
 
         itemPos = communicator.getPosition()
         if character.getDistance(itemPos) > 1:

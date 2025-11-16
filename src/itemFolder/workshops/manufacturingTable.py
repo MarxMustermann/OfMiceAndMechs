@@ -422,7 +422,6 @@ numUsed: {self.numUsed}
         color = "#fff"
         if self.priority > 0:
             color = "#ff"+hex(15-self.priority)[2]
-            print(color)
 
         display = (src.interaction.urwid.AttrSpec(color, "black"), characters)
         return display

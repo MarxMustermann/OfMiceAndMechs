@@ -60,7 +60,7 @@ class GetCombatReady(src.quests.MetaQuestSequence):
                     validCoalBurners.append(item)
 
                 if len(validCoalBurners) == 0:
-                    return (None,None)
+                    return (None,(".","stand around confused"))
 
                 for item in validCoalBurners:
                     if character.getDistance(item.getPosition()) > 1:
@@ -80,7 +80,7 @@ class GetCombatReady(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["GoToPosition"](targetPosition=validCoalBurners[0].getPosition(),reason="be able to heal",description="go to a coal burner",ignoreEndBlocked=True)
                 return ([quest],None)
 
-        return (None,None)
+        return (None,(".","stand around confused"))
 
     def generateTextDescription(self):
         return ["""

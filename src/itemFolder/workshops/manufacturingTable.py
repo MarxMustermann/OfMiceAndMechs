@@ -406,13 +406,26 @@ numUsed: {self.numUsed}
         return text
 
     def render(self):
+        characters = "Mt"
         if self.disabled or self.toProduce == None or self.bolted == False:
-            return "mT"
-        if self.inUse:
-            return "mt"
-        if self.readyToUse():
-            return "MT"
-        else:
-            return "Mt"
+            characters = "mT"
+        elif self.inUse:
+            characters = "mt"
+        elif self.readyToUse():
+            characters = "MT"
+
+        try:
+            self.priority
+        except:
+            self.priority = 0
+
+        color = "#fff"
+        if self.priority > 0:
+            color = "#ff"+hex(15-self.priority)[2]
+            print(color)
+
+        display = (src.interaction.urwid.AttrSpec(color, "black"), characters)
+        return display
+        
 
 src.items.addType(ManufacturingTable)

@@ -49,9 +49,7 @@ class SpawnGhul(src.quests.MetaQuestSequence):
         # get target CorpseAnimator
         rooms = character.getTerrain().getRoomByPosition(targetPosBig)
         if not rooms:
-            if dryRun:
-                self.fail("targetRoom not found")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"targetRoom not found")
         items = rooms[0].getItemByPosition(targetPos)
         corpseAnimator = None
         for item in items:
@@ -61,9 +59,7 @@ class SpawnGhul(src.quests.MetaQuestSequence):
 
         # fail if CorpseAnimator is missing
         if not corpseAnimator:
-            if dryRun:
-                self.fail("CorpseAnimator missing")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"CorpseAnimator missing")
         
         # spawn Ghul if CorpseAnimator is ready
         if corpseAnimator.filled:
@@ -82,9 +78,7 @@ class SpawnGhul(src.quests.MetaQuestSequence):
                     return (None,("w","enter room"))
                 if pos == (7,0,0):
                     return (None,("s","enter room"))
-                if dryRun:
-                    self.fail("unable to enter room")
-                return (None,None)
+                return self._solver_trigger_fail(dryRun,"unable to enter room")
             
             if character.getDistance(targetPos) > 1:
                 quest = src.quests.questMap["GoToPosition"](targetPosition=targetPos,ignoreEndBlocked=True,description="go to the CorpseAnimator",reason="be able to spawn a Ghul")
@@ -127,9 +121,7 @@ class SpawnGhul(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["CleanSpace"](description="grab enemy remains", targetPositionBig=room.getPosition(), targetPosition=corpse.getPosition(), reason="have a corpse to reanimate", abortOnfullInventory=True)
                 return ([quest],None)
             
-            if dryRun:
-                self.fail("no ghul")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"no ghul")
         
         if character.getBigPosition() != targetPosBig:
             quest = src.quests.questMap["GoToTile"](targetPosition=targetPosBig,description="go to a CorpseAnimator",reason="be able to spawn a Ghul")
@@ -145,9 +137,7 @@ class SpawnGhul(src.quests.MetaQuestSequence):
                 return (None,("w","enter room"))
             if pos == (7,0,0):
                 return (None,("s","enter room"))
-            if dryRun:
-                self.fail("unable to enter room")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"unable to enter room")
         
         if character.getDistance(targetPos) > 1:
             quest = src.quests.questMap["GoToPosition"](targetPosition=targetPos,ignoreEndBlocked=True,description="go to the CorpseAnimator",reason="be able to spawn a Ghul")

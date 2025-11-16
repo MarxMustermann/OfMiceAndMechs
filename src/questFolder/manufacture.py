@@ -115,6 +115,7 @@ use the manufacturing table on {self.targetPosition}{reason}.
         for checkRoom in beUsefull.getRandomPriotisedRooms(character,currentRoom):
             items = checkRoom.itemsOnFloor[:]
             random.shuffle(items)
+            candidates = []
             for item in items:
                 if not item.bolted:
                     continue
@@ -125,16 +126,28 @@ use the manufacturing table on {self.targetPosition}{reason}.
                 if not item.isOutputEmpty():
                     continue
 
-                if checkRoom == character.container:
-                    quest = src.quests.questMap["Manufacture"](targetPosition=item.getPosition())
-                    if not dryRun:
-                        beUsefull.idleCounter = 0
-                    return ([quest],None)
-                else:
-                    quest = src.quests.questMap["GoToTile"](targetPosition=checkRoom.getPosition(),reason="go to a machine room")
-                    if not dryRun:
-                        beUsefull.idleCounter = 0
-                    return ([quest],None)
+                candidates.append(item)
+
+            if not candidates:
+                continue
+
+            bestCandidate = candidates[0]
+            for candidate in candidates:
+                if candidate.priority <= bestCandidate.priority:
+                    continue
+                bestCandidate = candidate
+
+            if checkRoom == character.container:
+                quest = src.quests.questMap["Manufacture"](targetPosition=bestCandidate.getPosition())
+                if not dryRun:
+                    beUsefull.idleCounter = 0
+                return ([quest],None)
+            else:
+                quest = src.quests.questMap["GoToTile"](targetPosition=checkRoom.getPosition(),reason="go to a machine room")
+                if not dryRun:
+                    beUsefull.idleCounter = 0
+                return ([quest],None)
+
         for checkRoom in beUsefull.getRandomPriotisedRooms(character,currentRoom):
             items = checkRoom.itemsOnFloor[:]
             random.shuffle(items)
@@ -146,16 +159,27 @@ use the manufacturing table on {self.targetPosition}{reason}.
                 if not item.readyToUse():
                     continue
 
-                if checkRoom == character.container:
-                    quest = src.quests.questMap["Manufacture"](targetPosition=item.getPosition())
-                    if not dryRun:
-                        beUsefull.idleCounter = 0
-                    return ([quest],None)
-                else:
-                    quest = src.quests.questMap["GoToTile"](targetPosition=checkRoom.getPosition(),reason="go to a machine room")
-                    if not dryRun:
-                        beUsefull.idleCounter = 0
-                    return ([quest],None)
+                candidates.append(item)
+
+            if not candidates:
+                continue
+
+            bestCandidate = candidates[0]
+            for candidate in candidates:
+                if candidate.priority <= bestCandidate.priority:
+                    continue
+                bestCandidate = candidate
+
+            if checkRoom == character.container:
+                quest = src.quests.questMap["Manufacture"](targetPosition=bestCandidate.getPosition())
+                if not dryRun:
+                    beUsefull.idleCounter = 0
+                return ([quest],None)
+            else:
+                quest = src.quests.questMap["GoToTile"](targetPosition=checkRoom.getPosition(),reason="go to a machine room")
+                if not dryRun:
+                    beUsefull.idleCounter = 0
+                return ([quest],None)
         return (None,None)    
 
 

@@ -39,12 +39,11 @@ class ResetFaction(src.quests.MetaQuestSequence):
             return ([quest],None)
 
         if not character.container.isRoom:
-            return (None,None)
+            return (None,(".","stand around confused"))
 
         factionSetter = character.container.getItemByType("FactionSetter")
         if not factionSetter:
-            self.fail(reason="no faction setter found")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"no faction setter found")
 
         itemPos = factionSetter.getPosition()
         if character.getDistance(itemPos) > 1:

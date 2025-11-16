@@ -148,8 +148,7 @@ class SpawnClone(src.quests.MetaQuestSequence):
 
         growthTank = character.container.getItemByType("GrowthTank")
         if not growthTank:
-            self.fail(reason="no growth tank found")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"no growth tank found")
 
         if len(growthTank.container.getItemByPosition(growthTank.getPosition(offset=(1,0,0)))) > 1:
             quest = src.quests.questMap["CleanSpace"](targetPosition=growthTank.getPosition(offset=(1,0,0)),targetPositionBig=growthTank.getBigPosition(),abortOnfullInventory=False)
@@ -185,8 +184,8 @@ class SpawnClone(src.quests.MetaQuestSequence):
 
         if growthTank.filled:
             return (None,(direction+"j","spawn clone"))
-        else:
-            return (None,(direction+"j","refill growth tank"))
+
+        return (None,(direction+"j","refill growth tank"))
 
     def generateTextDescription(self):
         '''

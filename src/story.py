@@ -2171,19 +2171,19 @@ but they are likely to explode when disturbed.
         # overwrite sacrifice requirement on easy
         if self.difficulty == "easy":
             if itemID == 1:
-                sacrificeRequirement = ("Scrap",1)
+                sacrificeRequirement = ("Scrap",5)
             if itemID == 2:
-                sacrificeRequirement = ("MetalBars",1)
+                sacrificeRequirement = ("MetalBars",5)
             if itemID == 3:
-                sacrificeRequirement = ("Rod",1)
+                sacrificeRequirement = ("Rod",5)
             if itemID == 4:
-                sacrificeRequirement = ("Frame",1)
+                sacrificeRequirement = ("Tank",5)
             if itemID == 5:
-                sacrificeRequirement = ("MoldFeed",1)
+                sacrificeRequirement = ("MoldFeed",5)
             if itemID == 6:
-                sacrificeRequirement = ("Bolt",1)
+                sacrificeRequirement = ("Bolt",5)
             if itemID == 7:
-                sacrificeRequirement = ("Sword",1)
+                sacrificeRequirement = ("Sword",5)
 
         # create the god
         src.gamestate.gamestate.gods[itemID] = {

@@ -42,10 +42,9 @@ class ReachSafety(src.quests.MetaQuestSequence):
             if character.getNearbyEnemies():
                 quest = src.quests.questMap["Fight"](description="kill the last enemy")
                 return ([quest],None)
-            return (None,None)
+            return (None,(".","stand around confused"))
         quest = src.quests.questMap["GoToTileStory"](targetPosition=(5,7,0),reason="reach the base entrance",description="reach the base entrance",allowMapMenu=False)
         return ([quest],None)
-
 
     def generateTextDescription(self):
         door = src.items.itemMap["Door"]()

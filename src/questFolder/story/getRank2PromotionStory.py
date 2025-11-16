@@ -84,7 +84,7 @@ this quest has sub quests. Press d to show subquest.
             quest = src.quests.questMap["SecureTile"](toSecure=(5,6,0),endWhenCleared=False,reason="confront the Snatchers",story="You reach out to your implant and it answers:\n\nThe base itself is safe now, but there are Snatchers out there.\nThey will try to swarm and kill everyone that goes outside.",lifetime=100)
             return ([quest],None)
 
-        return (None,None)
+        return (None,(".","stand around confused"))
 
         room = character.container
 

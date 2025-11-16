@@ -38,6 +38,7 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
         self.numUsed = 0
         self.inUse = False
         self.disabled = False
+        self.priority = 0
 
     """
     auto generate stockpiles
@@ -347,7 +348,37 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
             options["d"] = ("enable", self.enable)
         else:
             options["d"] = ("disable", self.disable)
+        options["p"] = ("set priority", self.show_set_priority_ui)
         return options
+
+    def show_set_priority_ui(self,character):
+        try:
+            self.priority
+        except:
+            self.priority = 0
+        character.macroState["submenue"] = src.menuFolder.sliderMenu.SliderMenu(
+            query = "set the preferred max amount of damage to upgrade to",
+            defaultValue = self.priority,
+            minValue = 0,
+            maxValue = 15,
+            stepValue = 1,
+            targetParamName = "priority"
+        )
+        character.macroState["submenue"].followUp = {
+            "container": self,
+            "method": "set_priority",
+            "params": {"character": character},
+        }
+
+    def set_priority(self,params):
+        '''
+        actually do the sword sharpening
+        '''
+        to_set = int(params["priority"])
+        if to_set < 0 or to_set > 15:
+            return
+        
+        self.priority = to_set
 
     def enable(self,character):
         character.addMessage("you enable the Machine")

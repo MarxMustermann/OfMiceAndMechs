@@ -71,7 +71,7 @@ class ContactCommand(src.quests.MetaQuestSequence):
             return ([quest],None)
 
         if not character.container.isRoom:
-            return (None,None)
+            return (None,(".","stand around confused"))
 
         communicator = character.container.getItemByType("Communicator")
         if not communicator:

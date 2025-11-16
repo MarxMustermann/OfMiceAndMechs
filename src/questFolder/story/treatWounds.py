@@ -63,7 +63,7 @@ class TreatWounds(src.quests.MetaQuestSequence):
 
         tileVials = self.getTileVials(character)
         if not tileVials:
-            return (None,None)
+            return (None,(".","stand around confused"))
         random.shuffle(tileVials)
 
         characterPos = character.getPosition()

@@ -11,16 +11,16 @@ Download zip from  https://github.com/MarxMustermann/OfMiceAndMechs/releases/lat
 ## dependencies
 
 * install the dependencies
-  * sudo apt-get install python3
+  * `sudo apt-get install python3 python3-venv`
 
 * clone or download the game
-  * git clone https://github.com/MarxMustermann/OfMiceAndMechs.git
+  * `git clone https://github.com/MarxMustermann/OfMiceAndMechs.git`
   * or use the download as ZIP button and unzip
 
 * install the game with:
-  * cd into the OfMiceAndMechs folder
-  * python3 -m venv venvFolder # set up venv
-  * venvFolder/bin/python3 -m pip install -r requirements.txt # install dependencies
+  * `cd OfMiceAndMechs`
+  * `python3 -m venv venvFolder` set up venv
+  * `venvFolder/bin/python3 -m pip install -r requirements.txt` install dependencies
 
 * run the game with:
-  * venvFolder/bin/python3 executeMe.py
+  * `venvFolder/bin/python3 executeMe.py`

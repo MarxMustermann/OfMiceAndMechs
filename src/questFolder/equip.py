@@ -208,7 +208,7 @@ Swords can range from 10 to 25 damage per hit.
                 quests = []
                 quest = src.quests.questMap["ClearInventory"](returnToTile=False)
                 quests.append(quest)
-                quest = src.quests.questMap["MetalWorking"](amount=1,toProduce="Sword",produceToInventory=False)
+                quest = src.quests.questMap["MetalWorking"](amount=1,toProduce="Sword",produceToInventory=False,tryHard=True)
                 quests.append(quest)
                 return (quests,None)
 
@@ -216,7 +216,7 @@ Swords can range from 10 to 25 damage per hit.
                 quests = []
                 quest = src.quests.questMap["ClearInventory"](returnToTile=False)
                 quests.append(quest)
-                quest = src.quests.questMap["MetalWorking"](amount=1,toProduce="Armor",produceToInventory=False)
+                quest = src.quests.questMap["MetalWorking"](amount=1,toProduce="Armor",produceToInventory=False,tryHard=True)
                 quests.append(quest)
                 return (quests,None)
 

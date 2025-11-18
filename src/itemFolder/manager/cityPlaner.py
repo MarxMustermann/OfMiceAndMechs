@@ -569,7 +569,7 @@ class CityPlaner(src.items.Item):
             for pos in [(5,4),(7,4),(7,8),(5,8)]:
                 inputSlots.append(((pos[0],pos[1],0),"MoldFeed"))
             for pos in [(4,5),(8,5),(8,7),(4,7)]:
-                inputSlots.append(((pos[0],pos[1],0),"Coal"))
+                inputSlots.append(((pos[0],pos[1],0),"MoldFeed"))
 
             for y in (1,3,6,9,11):
                 for x in range(1,12):

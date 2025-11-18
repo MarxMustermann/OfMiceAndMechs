@@ -1,5 +1,6 @@
 import src
 
+import random
 
 class CityPlaner(src.items.Item):
     '''
@@ -356,6 +357,7 @@ class CityPlaner(src.items.Item):
             options.append(("storage","storage"))
             options.append(("wallManufacturing","wall manufacturing"))
             options.append(("basicMaterialsManufacturing","basic material manufacturing"))
+            options.append(("trapMaterialsManufacturing","trap material manufacturing"))
             #options.append(("wallProduction","wall production"))
             #options.append(("basicMaterialsProduction","basic material production"))
             #options.append(("caseProduction","case production"))
@@ -401,6 +403,28 @@ class CityPlaner(src.items.Item):
         inputSlots = []
         buildSites = []
         storageSlots = []
+
+        # generate prefab for building basic materials with machines
+        # TODO: should be capsuled
+        if floorPlanType in ("trapMaterialsManufacturing",):
+            for y in (1,4,6,8,11,):
+                for x in range(1,12):
+                    walkingSpaces.append((x,y,0))
+            for y in (2,3,5,7,9,10,):
+                walkingSpaces.append((1,y,0))
+                walkingSpaces.append((6,y,0))
+                walkingSpaces.append((11,y,0))
+
+            materials = ["TriggerPlate","BoltTower","RodTower","Bolt"]
+            random.shuffle(materials)
+            for x in (3,8,):
+                for y_group in ((2,3,5,),(7,9,10),):
+                    material = materials.pop()
+                    for y in y_group:
+                        inputSlots.append(((x-1,y,0),"MetalBars",{}))
+                        buildSites.append(((x,y,0),"ManufacturingTable",{"toProduce":material}))
+                        storageSlots.append(((x+1,y,0),material,{}))
+                        storageSlots.append(((x+2,y,0),material,{"desiredState":"filled"}))
 
         # generate prefab for building basic materials with machines
         # TODO: should be capsuled

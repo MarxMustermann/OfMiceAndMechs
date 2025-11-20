@@ -769,8 +769,9 @@ class CityPlaner(src.items.Item):
         # generate prefab for a scrap compacter room
         # TODO: should be capsuled
         if floorPlanType == "scrapCompactor":
-            #for y in (1,4,7,10,):
-            #        walkingSpaces.append((x,y,0))
+            for y in (1,4,7,10,):
+                for x in range(1,12):
+                    walkingSpaces.append((x,y,0))
             for y in (2,3,5,6,8,9,):
                 walkingSpaces.append((1,y,0))
                 for x in (3,6,9,):

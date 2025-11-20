@@ -30,7 +30,7 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
                 for item in character.container.itemsByBigCoordinate.get(character.getBigPosition(),[]):
                     if item.bolted:
                         continue
-                    if item.type in ("Wall","Scrap","MoldFeed"):
+                    if item.type in ("Wall","Scrap","MoldFeed","Bolt"):
                         continue
                     quest = src.quests.questMap["LootRoom"](targetPosition=character.getBigPosition(),endWhenFull=True)
                     return ([quest],None)

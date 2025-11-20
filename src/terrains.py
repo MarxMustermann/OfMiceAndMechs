@@ -171,6 +171,9 @@ class Terrain:
             result.append(room)
         return result
 
+    def getCharactersOnTile(self,position):
+        return self.charactersByTile.get(position,[])
+
     def getCharactersOnPosition(self,position):
         out = []
         for character in self.characters:

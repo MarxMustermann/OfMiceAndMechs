@@ -33,8 +33,17 @@ class SpawnClone(src.quests.MetaQuestSequence):
                 return
 
             for (coord,itemList) in self.character.getTerrain().itemsByBigCoordinate.items():
+
                 if self.character.getTerrain().getRoomByPosition(coord):
                     continue
+                is_guarded = False
+                for check_character in self.character.getTerrain().getCharactersOnTile(coord):
+                    if check_character.faction != self.character.faction:
+                        is_guarded = True
+                        continue
+                if is_guarded:
+                    continue
+
                 for item in itemList:
                     if not item.type == "GooFlask":
                         continue

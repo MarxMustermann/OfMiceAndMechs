@@ -2271,6 +2271,13 @@ press any other key to attack normally"""
             self.addMessage("*grown*")
         self.changed("woke up", self)
 
+    def is_low_health(self):
+        if self.health > self.maxHealth//2:
+            return False
+        if self.health > 100:
+            return False
+        return True
+
     def die(self, reason=None, killer = None, addCorpse=True, corpseType="Corpse"):
         '''
         kill the character and do a bit of extra stuff like placing corpses

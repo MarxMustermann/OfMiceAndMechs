@@ -32,6 +32,7 @@ class BeUsefull(src.quests.MetaQuestSequence):
         self.failOnIdle = failOnIdle
         
         self.dutySkipps = {}
+        self.reason = reason
 
     def generateTextDescription(self):
         '''

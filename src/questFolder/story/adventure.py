@@ -25,6 +25,9 @@ class Adventure(src.quests.MetaQuestSequence):
         if not character:
             return (None,None)
 
+        if character.is_low_health():
+            return self._solver_trigger_fail(dryRun,"low health")
+
         if character.getBigPosition()[0] == 0:
             return (None, ("d","enter the terrain"))
         if character.getBigPosition()[0] == 14:

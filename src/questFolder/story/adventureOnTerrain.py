@@ -48,6 +48,9 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
         if not character:
             return (None,None)
 
+        if character.is_low_health():
+            return self._solver_trigger_fail(dryRun,"low health")
+
         if character.macroState["submenue"]:
             return (None, (["esc"], "exit menu"))
 

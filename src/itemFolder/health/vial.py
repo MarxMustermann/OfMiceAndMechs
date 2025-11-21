@@ -27,7 +27,22 @@ class Vial(src.items.Item):
         # handle edge case
         if self.uses <= 0:
             if character.watched:
-                character.addMessage("you drink from your flask, but it is empty")
+                character.addMessage("you drink from your vial, but it is empty")
+
+            flask = src.items.itemMap["Flask"]()
+
+            if self in character.inventory:
+                character.removeItemFromInventory(self)
+                character.addToInventory(flask)
+            elif self.container:
+                pos = self.getPosition()
+                container = self.container
+
+                container.removeItem(self)
+                container.addItem(flask,pos)
+            elif character.flask == self:
+                character.flask = None
+                character.addToInventory(flask)
             return
 
         # print feedback

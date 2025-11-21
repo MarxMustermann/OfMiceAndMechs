@@ -108,15 +108,19 @@ class VialFiller(src.items.Item):
         filled = False
         chargesUsed = 0
 
-        for item in character.inventory:
-            if dispenser.charges and isinstance(item, src.items.itemMap["Vial"]) and not item.uses >= item.maxUses:
-                item.uses = 10
+        for item in character.inventory[:]:
+            if dispenser.charges and isinstance(item, src.items.itemMap["Flask"]):
+                new_item = src.items.itemMap["Vial"]()
+                new_item.uses = 10
                 dispenser.charges -= 1
                 filled = True
-                character.addMessage("you fill the vial")
+                character.addMessage("you fill the Flask and create a Vial")
+
+                character.inventory.remove(item)
+                character.inventory.append(new_item)
+                
                 break
         if filled:
-            character.addMessage("you fill vials in your inventory")
             character.addMessage(f"you used {chargesUsed} charges")
             if not dispenser.charges > 0:
                 character.addMessage("the GooDispenser is empty now")

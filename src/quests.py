@@ -590,6 +590,8 @@ class MetaQuestSequence(Quest,ABC):
     bad code: quest parameter does not work anymore and should be removed
     """
 
+    type = "MetaQuestSequence"
+
     def __init__(
         self,
         quests=None,
@@ -616,9 +618,6 @@ class MetaQuestSequence(Quest,ABC):
         # listen to subquests
         if len(self.subQuests):
             self.startWatching(self.subQuests[0], self.recalculate)
-
-        # save state and register
-        self.type = "MetaQuestSequence"
 
     def postHandler(self):
         for quest in self.subQuests:

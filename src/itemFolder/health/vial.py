@@ -24,10 +24,24 @@ class Vial(src.items.Item):
             character: the character trying to use the item
         '''
 
+        # print feedback
+        if character.watched:
+            if self.uses != 1:
+                character.addMessage("you drink from the vial")
+            else:
+                character.addMessage("you drink from the vial and empty it")
+
+        # change state
+        character.takeTime(1,"drank from vial")
+        self.uses -= 1
+        self.changed()
+        character.heal(10+min((character.adjustedMaxHealth-character.health)//10,10))
+        character.changed()
+
         # handle edge case
         if self.uses <= 0:
             if character.watched:
-                character.addMessage("you drink from your vial, but it is empty")
+                character.addMessage("you empty the vial")
 
             flask = src.items.itemMap["Flask"]()
 
@@ -43,21 +57,6 @@ class Vial(src.items.Item):
             elif character.flask == self:
                 character.flask = None
                 character.addToInventory(flask)
-            return
-
-        # print feedback
-        if character.watched:
-            if self.uses != 1:
-                character.addMessage("you drink from the vial")
-            else:
-                character.addMessage("you drink from the vial and empty it")
-
-        # change state
-        character.takeTime(1,"drank from vial")
-        self.uses -= 1
-        self.changed()
-        character.heal(10+min((character.adjustedMaxHealth-character.health)//10,10))
-        character.changed()
 
     def render(self):
         '''

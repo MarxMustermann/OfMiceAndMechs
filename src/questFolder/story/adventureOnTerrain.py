@@ -97,39 +97,40 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
         else:
             itemsOnFloor = character.container.getNearbyItems(character)
 
-        for item in itemsOnFloor:
-            if item.bolted or not item.walkable:
-                continue
-            if item.xPosition == None:
-                logger.error("found ghost item")
-                continue
-            item_pos =item.getSmallPosition()
-            if item_pos[0] == None:
-                logger.error("found ghost item")
-                continue
-            if item_pos[0] > 12:
-                continue
-            if character.container.isRoom and (item_pos[0] > 11 or item_pos[1] > 11 or item_pos[0] < 1 or item_pos[1] < 1):
-                continue
-
-            if item.type in ("Scrap","MetalBars","MoldFeed"):
-                continue
-
-            if item.type in ("Bolt",) and character.getFreeInventorySpace() <= 1:
-                continue
-
-            invalidStack = False
-            for stackedItem in character.container.getItemByPosition(item.getPosition()):
-                if stackedItem == item:
-                    break
-                if not stackedItem.bolted:
+        if not char_big_pos in self.donePointsOfInterest:
+            for item in itemsOnFloor:
+                if item.bolted or not item.walkable:
                     continue
-                invalidStack = True
-            if invalidStack:
-                continue
+                if item.xPosition == None:
+                    logger.error("found ghost item")
+                    continue
+                item_pos =item.getSmallPosition()
+                if item_pos[0] == None:
+                    logger.error("found ghost item")
+                    continue
+                if item_pos[0] > 12:
+                    continue
+                if character.container.isRoom and (item_pos[0] > 11 or item_pos[1] > 11 or item_pos[0] < 1 or item_pos[1] < 1):
+                    continue
 
-            quest = src.quests.questMap["LootRoom"](targetPosition=character.getBigPosition(),endWhenFull=True)
-            return ([quest],None)
+                if item.type in ("Scrap","MetalBars","MoldFeed"):
+                    continue
+
+                if item.type in ("Bolt",) and character.getFreeInventorySpace() <= 1:
+                    continue
+
+                invalidStack = False
+                for stackedItem in character.container.getItemByPosition(item.getPosition()):
+                    if stackedItem == item:
+                        break
+                    if not stackedItem.bolted:
+                        continue
+                    invalidStack = True
+                if invalidStack:
+                    continue
+
+                quest = src.quests.questMap["LootRoom"](targetPosition=character.getBigPosition(),endWhenFull=True)
+                return ([quest],None)
 
         if not dryRun:
             self.donePointsOfInterest.append(character.getBigPosition())
@@ -170,5 +171,10 @@ Go out and adventure on tile {self.targetTerrain}.
 
     def wrapedTriggerCompletionCheck(self,test=None):
         pass
+
+    def handleQuestFailure(self,extraInfo):
+        if extraInfo["quest"].type == "LootRoom":
+            self.donePointsOfInterest.append(extraInfo["quest"].targetPosition)
+            return
 
 src.quests.addType(AdventureOnTerrain)

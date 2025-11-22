@@ -343,6 +343,33 @@ class CityPlaner(src.items.Item):
             room.addRandomItems()
         return room
 
+    def get_available_floorplans(self):
+        options = []
+        options.append(("storage","storage"))
+        options.append(("wallManufacturing","wall manufacturing"))
+        options.append(("basicMaterialsManufacturing","basic material manufacturing"))
+        options.append(("trapMaterialsManufacturing","trap material manufacturing"))
+        #options.append(("wallProduction","wall production"))
+        #options.append(("basicMaterialsProduction","basic material production"))
+        #options.append(("caseProduction","case production"))
+        #options.append(("caseManufacturing","case manufacturing"))
+        #options.append(("scrapCompactorProduction","scrap compactor production"))
+        #options.append(("basicRoombuildingItemsProduction","basic room building items production"))
+        #options.append(("productionRoom","production room"))
+        options.append(("gooProcessing","goo processing"))
+        #options.append(("weaponProduction","weapon production"))
+        options.append(("weaponManufacturing","weapon manufacturing"))
+        options.append(("manufacturingHall","manufacturing hall"))
+        #options.append(("machineHall","machine hall"))
+        options.append(("electrifierHall","electrifier hall"))
+        options.append(("scrapCompactor","scrap compactor hall"))
+        #options.append(("boltProduction","bolt production"))
+        #options.append(("rodProduction","rod production"))
+        options.append(("smokingRoom","smoking room"))
+        options.append(("trapRoom","trap room"))
+        options.append(("temple","temple"))
+        return options
+
     def setFloorplanFromMap(self,params):
         '''
         callback to set a floorplan
@@ -353,30 +380,7 @@ class CityPlaner(src.items.Item):
 
         # get user input on what floorplan to set
         if "type" not in params:
-            options = []
-            options.append(("storage","storage"))
-            options.append(("wallManufacturing","wall manufacturing"))
-            options.append(("basicMaterialsManufacturing","basic material manufacturing"))
-            options.append(("trapMaterialsManufacturing","trap material manufacturing"))
-            #options.append(("wallProduction","wall production"))
-            #options.append(("basicMaterialsProduction","basic material production"))
-            #options.append(("caseProduction","case production"))
-            #options.append(("caseManufacturing","case manufacturing"))
-            #options.append(("scrapCompactorProduction","scrap compactor production"))
-            #options.append(("basicRoombuildingItemsProduction","basic room building items production"))
-            #options.append(("productionRoom","production room"))
-            options.append(("gooProcessing","goo processing"))
-            #options.append(("weaponProduction","weapon production"))
-            options.append(("weaponManufacturing","weapon manufacturing"))
-            options.append(("manufacturingHall","manufacturing hall"))
-            #options.append(("machineHall","machine hall"))
-            options.append(("electrifierHall","electrifier hall"))
-            options.append(("scrapCompactor","scrap compactor hall"))
-            #options.append(("boltProduction","bolt production"))
-            #options.append(("rodProduction","rod production"))
-            options.append(("smokingRoom","smoking room"))
-            options.append(("trapRoom","trap room"))
-            options.append(("temple","temple"))
+            options = self.get_available_floorplans()
             options.append(("exit","exit menu"))
             submenue = src.menuFolder.selectionMenu.SelectionMenu("what floorplan to use?",options,targetParamName="type")
             submenue.tag = "floorplanSelection"
@@ -1486,16 +1490,8 @@ scheduledFloorPlans: {self.scheduledFloorPlans}
         character = params["character"]
 
         if "type" not in params:
-            options = []
-            options.append(("delete","delete"))
-            options.append(("storage","storage"))
-            options.append(("wallProduction","wall production"))
-            options.append(("basicMaterialsProduction","basic material production"))
-            options.append(("caseProduction","case production"))
-            options.append(("scrapCompactor","scrap compactor"))
-            options.append(("scrapCompactorProduction","scrap compactor production"))
-            options.append(("basicRoombuildingItemsProduction","basic room building items production"))
-            options.append(("productionRoom","production room"))
+            options = self.get_available_floorplans()
+            options.insert(0,("delete","delete"))
             submenue = src.menuFolder.selectionMenu.SelectionMenu("what type of floor plan to schedule?",options,targetParamName="type")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"scheduleFloorplan","params":params}

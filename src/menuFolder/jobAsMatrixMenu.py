@@ -145,6 +145,11 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
                         color = "#333"
                     text.append((src.interaction.urwid.AttrSpec("default", color),"  "))
 
+                distancer = " "
+                if duty in npc.duties and npc.dutyPriorities.get(duty,1) > 9:
+                    distancer = ""
+                text.append((src.interaction.urwid.AttrSpec("default", color),distancer))
+
                 if duty in npc.duties:
                     text.append(str(npc.dutyPriorities.get(duty,1)))
                 else:

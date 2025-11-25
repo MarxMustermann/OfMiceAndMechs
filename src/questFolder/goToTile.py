@@ -283,9 +283,9 @@ The target tile is {direction[4:]}
         if not self.path:
             self.generatePath(character)
 
-        # do nothing on invalid path. (performance issue?)
+        # fail on invalid path
         if not self.path:
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"no path")
 
         # open map menu
         if not character.getNearbyEnemies() and self.allowMapMenu and len(self.path) > 3:

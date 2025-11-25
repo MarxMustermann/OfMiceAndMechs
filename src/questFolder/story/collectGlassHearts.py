@@ -220,7 +220,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                 if (random.random() < 0.5 or forceBuildRoom) and not forceAdventure:
                     if not dryRun:
                         self.room_building_streak_length += 1
-                    quest = src.quests.questMap["StrengthenBaseDefences"](numTrapRoomsBuild=numGlassHearts//2,numTrapRoomsPlanned=numGlassHearts//2+1,lifetime=200)
+                    quest = src.quests.questMap["StrengthenBaseDefences"](numTrapRoomsBuild=numGlassHearts//2,numTrapRoomsPlanned=numGlassHearts//2+1,lifetime=random.randint(100,500))
                     return ([quest],None)
                 else:
                     if not dryRun:
@@ -319,7 +319,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
 
         # unlock more statues
         if len(readyStatues) < 7:
-            quest = src.quests.questMap["AppeaseAGod"](targetNumGods=len(readyStatues)+1, lifetime=1000)
+            quest = src.quests.questMap["AppeaseAGod"](targetNumGods=len(readyStatues)+1, lifetime=random.randint(800,1500))
             return ([quest],None)
 
         # get stronger to be able to complete the unlocked dungeons

@@ -5,13 +5,15 @@ class GatherVatMaggots(src.quests.MetaQuestSequence):
     type = "GatherVatMaggots"
     lowLevel = True
 
-    def __init__(self, description="gather vat maggots", creator=None, targetPosition=None,lifetime=None):
+    def __init__(self, description="gather vat maggots", creator=None, targetPosition=None,lifetime=None,reason=None):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
 
         if targetPosition:
             self.setParameters({"targetPosition":targetPosition})
+
+        self.reason = reason
 
     def generateTextDescription(self):
         return """

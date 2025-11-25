@@ -316,6 +316,8 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
         return False
 
     def checkForDropSpotsFull(self):
+        if self.xPosition == None:
+            return True
 
         for output in self.outs:
             targetPos = (self.xPosition+output[0], self.yPosition+output[1], self.zPosition+output[2])

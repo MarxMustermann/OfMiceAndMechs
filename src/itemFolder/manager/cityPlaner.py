@@ -346,6 +346,7 @@ class CityPlaner(src.items.Item):
     def get_available_floorplans(self):
         options = []
         options.append(("storage","storage"))
+        options.append(("scrapStorage","scrap storage"))
         options.append(("wallManufacturing","wall manufacturing"))
         options.append(("basicMaterialsManufacturing","basic material manufacturing"))
         options.append(("trapMaterialsManufacturing","trap material manufacturing"))
@@ -981,6 +982,23 @@ class CityPlaner(src.items.Item):
                 if x > 6:
                     continue
                 storageSlots.append(((x,11,0),None,{}))
+
+        # generate prefab for a storage unit
+        # TODO: should be capsuled
+        if floorPlanType == "scrapStorage":
+            for y in range(1,12):
+                walkingSpaces.append((6,y,0))
+
+                if y in (1,3,5,7,9,11):
+                    for x in range(1,12):
+                        if x == 6:
+                            continue
+                        storageSlots.append(((x,y,0),"Scrap",{"desiredState":"filled"}))
+                else:
+                    for x in range(1,12):
+                        if x == 6:
+                            continue
+                        walkingSpaces.append((x,y,0))
 
         # generate prefab for producing weapons
         # TODO: should be capsuled

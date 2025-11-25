@@ -141,7 +141,7 @@ Press d to move the cursor and show the subquests description.
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
                 submenue = character.macroState["submenue"]
 
-                if not submenue.extraInfo.get("item"):
+                if not submenue.extraInfo.get("item") or not submenue.extraInfo.get("item").type == "MetalWorkingBench":
                     return (None,(["esc"],"exit submenu"))
 
                 menuEntry = "produce item"

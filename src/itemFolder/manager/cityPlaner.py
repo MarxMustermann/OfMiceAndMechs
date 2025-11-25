@@ -349,6 +349,7 @@ class CityPlaner(src.items.Item):
         options.append(("wallManufacturing","wall manufacturing"))
         options.append(("basicMaterialsManufacturing","basic material manufacturing"))
         options.append(("trapMaterialsManufacturing","trap material manufacturing"))
+        options.append(("basicRoombuildingItemsManufacturing","basic room building items manufacturing"))
         #options.append(("wallProduction","wall production"))
         #options.append(("basicMaterialsProduction","basic material production"))
         #options.append(("caseProduction","case production"))
@@ -639,20 +640,28 @@ class CityPlaner(src.items.Item):
 
         # generate prefab for producing bisic building items with machines
         # TODO: should be capsuled
-        if floorPlanType == "basicRoombuildingItemsProduction":
+        if floorPlanType in ("basicRoombuildingItemsProduction","basicRoombuildingItemsManufacturing",):
+            producerType = "Machine"
+            if floorPlanType == "basicRoombuildingItemsManufacturing":
+                producerType = "ManufacturingTable"
             for y in (3,6,10,):
                 for x in range(1,12):
                     if x == 6:
                         continue
                     walkingSpaces.append((x,y,0))
             for y in range(1,12):
+                if y in (7,8,9,):
+                    continue
                 walkingSpaces.append((6,y,0))
             walkingSpaces.append((6,11,0))
             walkingSpaces.append((1,7,0))
             walkingSpaces.append((1,8,0))
             walkingSpaces.append((1,9,0))
             walkingSpaces.append((2,8,0))
-            walkingSpaces.append((7,8,0))
+            walkingSpaces.append((3,8,0))
+            walkingSpaces.append((4,8,0))
+            walkingSpaces.append((5,8,0))
+            walkingSpaces.append((6,8,0))
             walkingSpaces.append((11,7,0))
             walkingSpaces.append((11,8,0))
             walkingSpaces.append((11,9,0))
@@ -660,51 +669,49 @@ class CityPlaner(src.items.Item):
             walkingSpaces.append((7,1,0))
             walkingSpaces.append((8,1,0))
             walkingSpaces.append((9,1,0))
+            walkingSpaces.append((9,9,0))
 
             inputSlots.append( (( 7,2,0),"Scrap",{}))
             buildSites.append( (( 8,2,0),"ScrapCompactor",{}))
             inputSlots.append( (( 9,2,0),"MetalBars",{}))
-            buildSites.append( ((10,2,0),"Machine",{"toProduce":"Door"}))
+            buildSites.append( ((10,2,0),producerType,{"toProduce":"Door"}))
             inputSlots.append( ((10,1,0),"Case",{}))
             storageSlots.append(((11,2,0),"Door",{}))
             inputSlots.append( (( 7,5,0),"Scrap",{}))
             buildSites.append( (( 8,5,0),"ScrapCompactor",{}))
             inputSlots.append( (( 9,5,0),"MetalBars",{}))
-            buildSites.append( ((10,5,0),"Machine",{"toProduce":"Door"}))
+            buildSites.append( ((10,5,0),producerType,{"toProduce":"Door"}))
             inputSlots.append( ((10,4,0),"Case",{}))
             storageSlots.append(((11,5,0),"Door",{}))
             inputSlots.append( (( 1,2,0),"Scrap",{}))
             buildSites.append( (( 2,2,0),"ScrapCompactor",{}))
             inputSlots.append( (( 3,2,0),"MetalBars",{}))
-            buildSites.append( (( 4,2,0),"Machine",{"toProduce":"Door"}))
+            buildSites.append( (( 4,2,0),producerType,{"toProduce":"Door"}))
             inputSlots.append( (( 4,1,0),"Case",{}))
             storageSlots.append((( 5,2,0),"Door",{}))
             inputSlots.append( (( 1,5,0),"Scrap",{}))
             buildSites.append( (( 2,5,0),"ScrapCompactor",{}))
             inputSlots.append( (( 3,5,0),"MetalBars",{}))
-            buildSites.append( (( 4,5,0),"Machine",{"toProduce":"Door"}))
+            buildSites.append( (( 4,5,0),producerType,{"toProduce":"Door"}))
             inputSlots.append( (( 4,4,0),"Case",{}))
             storageSlots.append((( 5,5,0),"Door",{}))
 
-            storageSlots.append((( 5,8,0),"RoomBuilder",{}))
-            buildSites.append( (( 4,8,0),"Machine",{"toProduce":"RoomBuilder"}))
-            inputSlots.append( (( 3,8,0),"Case",{}))
-            inputSlots.append( (( 4,7,0),"pusher",{}))
-            buildSites.append( (( 3,7,0),"Machine",{"toProduce":"pusher"}))
-            inputSlots.append( (( 2,7,0),"Stripe",{}))
-            inputSlots.append( (( 4,9,0),"puller",{}))
-            buildSites.append( (( 3,9,0),"Machine",{"toProduce":"puller"}))
-            inputSlots.append( (( 2,9,0),"Bolt",{}))
+            inputSlots.append( (( 3,7,0),"MetalBars",{}))
+            buildSites.append( (( 4,7,0),producerType,{"toProduce":"Stripe"}))
+            inputSlots.append( (( 5,7,0),"Stripe",{}))
+            buildSites.append( (( 6,7,0),producerType,{"toProduce":"pusher"}))
+            inputSlots.append( (( 7,7,0),"pusher",{}))
 
-            storageSlots.append(((10,8,0),"RoomBuilder",{}))
-            buildSites.append( (( 9,8,0),"Machine",{"toProduce":"RoomBuilder"}))
-            inputSlots.append( (( 8,8,0),"Case",{}))
-            inputSlots.append( (( 9,7,0),"pusher",{}))
-            buildSites.append( (( 8,7,0),"Machine",{"toProduce":"pusher"}))
-            inputSlots.append( (( 7,7,0),"Stripe",{}))
-            inputSlots.append( (( 9,9,0),"puller",{}))
-            buildSites.append( (( 8,9,0),"Machine",{"toProduce":"puller"}))
-            inputSlots.append( (( 7,9,0),"Bolt",{}))
+            inputSlots.append( (( 3,9,0),"MetalBars",{}))
+            buildSites.append( (( 4,9,0),producerType,{"toProduce":"Bolt"}))
+            inputSlots.append( (( 5,9,0),"Bolt",{}))
+            buildSites.append( (( 6,9,0),producerType,{"toProduce":"puller"}))
+            inputSlots.append( (( 7,9,0),"puller",{}))
+
+            buildSites.append( (( 7,8,0),"Merger",{}))
+            buildSites.append( (( 9,8,0),producerType,{"toProduce":"RoomBuilder"}))
+            inputSlots.append( (( 9,7,0),"Case",{}))
+            storageSlots.append((( 10,8,0),"RoomBuilder",{}))
 
         # generate prefab for producing basic building items with machines
         # TODO: should be capsuled

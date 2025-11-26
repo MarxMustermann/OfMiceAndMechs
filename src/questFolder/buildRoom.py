@@ -344,7 +344,7 @@ Press d to move the cursor and show the subquests description.
             baseNeighbours = []
             offsets = ((0,1,0),(1,0,0),(0,-1,0),(-1,0,0))
             for room in terrain.rooms:
-                if room.tag in ("shelter","traproom","entryRoom"):
+                if room.tag in ("shelter","trapRoom","entryRoom"):
                     continue
                 pos = room.getPosition()
                 for offset in offsets:

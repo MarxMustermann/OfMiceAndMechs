@@ -34,6 +34,7 @@ class DebugMenu(src.subMenu.SubMenu):
         "toggleCommandOnPlus",
         "change personality settings",
         "toggle SDL",
+        "fix room state",
     ]
 
     def __init__(self):
@@ -62,6 +63,11 @@ class DebugMenu(src.subMenu.SubMenu):
             text += debug
 
             match debug:
+                case "fix room state":
+                    if current_change:
+                        if character.container.isRoom:
+                            character.container.clear_broken_states()
+                        return True
                 case "change personality settings":
                     if current_change:
                         def getValue():
@@ -97,7 +103,6 @@ class DebugMenu(src.subMenu.SubMenu):
                         character.macroState["submenue"] = submenu2
                         character.macroState["submenue"].followUp = getValue
                         return True
-
                 case "toggleQuestExpanding":
                     if current_change:
                         character.autoExpandQuests = not character.autoExpandQuests

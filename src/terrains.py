@@ -246,6 +246,10 @@ class Terrain:
                 if character.getBigPosition() != coord:
                     characters.remove(character)
 
+    def clear_broken_states(self):
+        for room in self.rooms:
+            room.clear_broken_states()
+
     def advance(self):
         self.lastRender = None
 
@@ -260,6 +264,8 @@ class Terrain:
 
             # WORKAROUND: this should not be needed, but helps working around bugs that corrupt the pathfinding cache
             self.pathfinderCache = {}
+
+            self.clear_broken_states()
 
     def add_mana(self, amount):
         increaseAmount = min(amount,self.maxMana-self.mana)

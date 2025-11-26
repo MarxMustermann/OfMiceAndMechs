@@ -108,8 +108,11 @@ Try luring enemies into landmines or detonating some bombs."""
             return (None,("JH","heal"))
 
         if not self.strict:
-            self.huntdownCooldown -= 1
-            if self.huntdownCooldown < 0:
+            huntdownCooldown = self.huntdownCooldown
+            huntdownCooldown -= 1
+            if not dryRun:
+                self.huntdownCooldown = huntdownCooldown
+            if huntdownCooldown < 0:
                 enemies = character.getNearbyEnemies()
                 if enemies:
                     if self.alwaysHuntDown:

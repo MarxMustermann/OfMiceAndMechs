@@ -98,54 +98,56 @@ Try luring enemies into landmines or detonating some bombs."""
         return False
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
-        if not self.subQuests:
-            if character.macroState["submenue"] and character.macroState["submenue"].tag != "tileMovementmenu" and not ignoreCommands:
-               return (None,(["esc"],"exit the menu")) 
+        if self.subQuests:
+            return (None,None)
 
-            if character.health < character.maxHealth - 20 and character.canHeal():
-                return (None,("JH","heal"))
+        if character.macroState["submenue"] and character.macroState["submenue"].tag != "tileMovementmenu" and not ignoreCommands:
+           return (None,(["esc"],"exit the menu")) 
 
-            if not self.strict:
-                self.huntdownCooldown -= 1
-                if self.huntdownCooldown < 0:
-                    enemies = character.getNearbyEnemies()
-                    if enemies:
-                        if self.alwaysHuntDown:
-                            quest = src.quests.questMap["Huntdown"](target=random.choice(enemies))
-                            return ([quest],None)
-                        if not dryRun:
-                            self.huntdownCooldown = 100
-                        if random.random() < 0.3:
-                            quest = src.quests.questMap["Huntdown"](target=random.choice(enemies))
-                            return ([quest],None)
-                        else:
-                            quest = src.quests.questMap["Fight"]()
-                            return ([quest],None)
-            else:
+        if character.health < character.maxHealth - 20 and character.canHeal():
+            return (None,("JH","heal"))
+
+        if not self.strict:
+            self.huntdownCooldown -= 1
+            if self.huntdownCooldown < 0:
                 enemies = character.getNearbyEnemies()
                 if enemies:
-                    quest = src.quests.questMap["Fight"]()
-                    return ([quest],None)
-            if character.getBigPosition() == self.targetPosition:
-                pos = character.getSpacePosition()
-                if pos == (0,7,0):
-                    return (None, ("d","enter tile"))
-                if pos == (14,7,0):
-                    return (None, ("a","enter tile"))
-                if pos == (7,0,0):
-                    return (None, ("s","enter tile"))
-                if pos == (7,14,0):
-                    return (None, ("w","enter tile"))
+                    if self.alwaysHuntDown:
+                        quest = src.quests.questMap["Huntdown"](target=random.choice(enemies))
+                        return ([quest],None)
+                    if not dryRun:
+                        self.huntdownCooldown = 100
+                    if random.random() < 0.3:
+                        quest = src.quests.questMap["Huntdown"](target=random.choice(enemies))
+                        return ([quest],None)
+                    else:
+                        quest = src.quests.questMap["Fight"]()
+                        return ([quest],None)
+        else:
+            enemies = character.getNearbyEnemies()
+            if enemies:
+                quest = src.quests.questMap["Fight"]()
+                return ([quest],None)
+        if character.getBigPosition() == self.targetPosition:
+            pos = character.getSpacePosition()
+            if pos == (0,7,0):
+                return (None, ("d","enter tile"))
+            if pos == (14,7,0):
+                return (None, ("a","enter tile"))
+            if pos == (7,0,0):
+                return (None, ("s","enter tile"))
+            if pos == (7,14,0):
+                return (None, ("w","enter tile"))
 
-                enemies = character.getNearbyEnemies()
-                if not enemies and not self.endWhenCleared:
-                    if self.wandering and random.random() < 0.2:
-                        (x,y,_) = character.getSpacePosition()
-                        x= src.helpers.clamp(x+int(random.uniform(-3,3)),2,12)
-                        y= src.helpers.clamp(y+int(random.uniform(-3,3)),2,12)
-                        quest = src.quests.questMap["GoToPosition"](targetPosition = (x,y))
-                        return ([quest], None)
-                    return (None, (";","wait"))
+            enemies = character.getNearbyEnemies()
+            if not enemies and not self.endWhenCleared:
+                if self.wandering and random.random() < 0.2:
+                    (x,y,_) = character.getSpacePosition()
+                    x= src.helpers.clamp(x+int(random.uniform(-3,3)),2,12)
+                    y= src.helpers.clamp(y+int(random.uniform(-3,3)),2,12)
+                    quest = src.quests.questMap["GoToPosition"](targetPosition = (x,y))
+                    return ([quest], None)
+                return (None, (";","wait"))
 
         return super().getNextStep(character=character,ignoreCommands=ignoreCommands)
 

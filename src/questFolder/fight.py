@@ -237,7 +237,7 @@ So if an enemy is to directly east of you:
                 command = "Kwl"
 
         if command is None:
-            return (None,(".","stand around confused"))
+            return (None,(".","stand around confused (no command found)"))
 
         return (None,(command,"approach enemy"))
 

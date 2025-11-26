@@ -799,14 +799,23 @@ class Character:
                     self.hasOwnAction = 0
                     return "~"
 
-            self.waitForEnemyApproach -= 0.1
             if self.waitForEnemyApproach <= 0:
                 self.hasOwnAction = 0
             for enemy in self.getNearbyEnemies():
                 if self.getDistance(enemy.getPosition()) < 3:
+                    self.waitForEnemyApproach -= 0.1
                     return ":"
-            return "."
 
+            if self.waitForEnemyApproach > 1:
+                self.waitForEnemyApproach -= 1
+                return "."
+            elif self.waitForEnemyApproach > 0.1:
+                self.waitForEnemyApproach -= 0.1
+                return ":"
+            else:
+                self.waitForEnemyApproach = 0
+                self.hasOwnAction = 0
+                return "~"
 
         for character in self.container.characters:
             if character == self:

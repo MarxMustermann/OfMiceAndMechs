@@ -715,6 +715,14 @@ class Room:
 
         return self.itemByCoordinates.get(position,[])
 
+    def clear_broken_states(self):
+        for items_on_position in self.itemByCoordinates.values():
+            for item in items_on_position[:]:
+                position = item.getPosition()
+                if position[0] == None:
+                    logger.error("FOUND NON PLACED ITEM!!!")
+                    items_on_position.remove(item)
+
     # bad code: probably misnamed
     # bad code: should be in extra class
     def changed(self, tag="default", info=None):

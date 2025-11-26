@@ -230,6 +230,7 @@ class Character:
         self.gotMovementSchooling = False
         self.gotInteractionSchooling = False
         self.gotExamineSchooling = False
+
         self.faction = "player"
 
         self.personality["idleWaitTime"] = random.randint(2, 100)

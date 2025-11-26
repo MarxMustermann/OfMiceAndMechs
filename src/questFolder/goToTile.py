@@ -285,6 +285,12 @@ The target tile is {direction[4:]}
 
         # fail on invalid path
         if not self.path:
+            if character.getBigPosition() == self.targetPosition:
+                (x,y,_) = character.getSpacePosition()
+                x= src.helpers.clamp(x+int(random.uniform(-3,3)),2,12)
+                y= src.helpers.clamp(y+int(random.uniform(-3,3)),2,12)
+                quest = src.quests.questMap["GoToPosition"](targetPosition = (x,y))
+                return ([quest], None)
             return self._solver_trigger_fail(dryRun,"no path")
 
         # open map menu
@@ -328,7 +334,7 @@ The target tile is {direction[4:]}
             if not self.isPathSane(character):
                 self.generatePath(character)
                 if not self.path:
-                    return self._solver_trigger_fail(dryRun,"low path")
+                    return self._solver_trigger_fail(dryRun,"no path")
 
             # exit the room
             if self.path[0] == (0,1):

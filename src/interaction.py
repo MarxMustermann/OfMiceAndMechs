@@ -2894,12 +2894,11 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
 
         # examine an item
         if key in (commandChars.examine,):
-            # examine the marked item
             if charState["itemMarkedLast"]:
+                # examine an item on floor
                 char.examinePosition(charState["itemMarkedLast"].getPosition())
-
-            # examine an item on floor
             else:
+                # examine an item on floor
                 char.examinePosition(char.getPosition())
 
         # drop first item from inventory

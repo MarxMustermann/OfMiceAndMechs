@@ -163,8 +163,11 @@ Press d to move the cursor and show the subquests description.
         '''
         handle a subquest failing
         '''
+
+        # set up helper variables
         quest = extraParam.get("quest")
 
+        # register duty as failed
         failedDuty = None
         if quest.type == "BuildRoom":
             failedDuty = "room building"
@@ -174,14 +177,8 @@ Press d to move the cursor and show the subquests description.
             failedDuty = "painting"
         if quest.type == "SetUpMachine":
             failedDuty = "machine placing"
-
         if failedDuty:
             self.dutySkipps[failedDuty] = 3
-
-        try:
-            self.dutySkipps
-        except:
-            self.dutySkipps = {}
 
         super().handleQuestFailure(extraParam)
     

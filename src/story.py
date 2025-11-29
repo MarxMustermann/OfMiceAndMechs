@@ -2843,6 +2843,13 @@ but they are likely to explode when disturbed.
             return
         1/0
 
+    def addQuest(self,quest,mainChar):
+        quest.assignToCharacter(mainChar)
+        quest.activate()
+        mainChar.assignQuest(quest,active=True)
+        quest.endTrigger = {"container": self, "method": "reachImplant"}
+
+
     def openedQuestsStory(self):
         mainChar = self.activeStory["mainChar"]
         homeTerrain = src.gamestate.gamestate.terrainMap[mainChar.registers["HOMETy"]][mainChar.registers["HOMETx"]]
@@ -2850,19 +2857,13 @@ but they are likely to explode when disturbed.
         # go home when lost
         if not mainChar.getTerrain() == homeTerrain:
             quest = src.quests.questMap["GoHome"]()
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
             return
         
         # flee initial room
         if mainChar.container.tag == "sternslab":
             quest = src.quests.questMap["EscapeLab"]()
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
             return
 
         # heal
@@ -2880,20 +2881,14 @@ but they are likely to explode when disturbed.
                 if not item.uses:
                     continue
                 quest = src.quests.questMap["TreatWounds"]()
-                quest.assignToCharacter(mainChar)
-                quest.activate()
-                mainChar.assignQuest(quest,active=True)
-                quest.endTrigger = {"container": self, "method": "reachImplant"}
+                self.addQuest(quest,mainChar)
                 return
 
             # pick up nearby vials
             if mainChar.getFreeInventorySpace() > 0:
                 if src.quests.questMap["TreatWounds"].getTileVials(mainChar):
                     quest = src.quests.questMap["TreatWounds"]()
-                    quest.assignToCharacter(mainChar)
-                    quest.activate()
-                    mainChar.assignQuest(quest,active=True)
-                    quest.endTrigger = {"container": self, "method": "reachImplant"}
+                    self.addQuest(quest,mainChar)
                     return
 
         # assimilate into base
@@ -2928,36 +2923,24 @@ but they are likely to explode when disturbed.
                 # fight for vial from tile
                 if hasVial and hasEnemy:
                     quest = src.quests.questMap["SecureTile"](toSecure=vialTile,endWhenCleared=True,reason="be able to fetch the Vial from that tile",story="You reach out to your implant and it answers:\n\nThere is a Corpse and a Vial on the tile to the north.")
-                    quest.assignToCharacter(mainChar)
-                    quest.activate()
-                    mainChar.assignQuest(quest,active=True)
-                    quest.endTrigger = {"container": self, "method": "reachImplant"}
+                    self.addQuest(quest,mainChar)
                     return
 
                 # go to vial from tile
                 if hasVial:
                     quest = src.quests.questMap["GoToTile"](targetPosition=vialTile,reason="be able to fetch the Vial from that tile",story="You reach out to your implant and it answers:\n\nThere is a Vial on the tile to the north.")
-                    quest.assignToCharacter(mainChar)
-                    quest.activate()
-                    mainChar.assignQuest(quest,active=True)
-                    quest.endTrigger = {"container": self, "method": "reachImplant"}
+                    self.addQuest(quest,mainChar)
                     return
 
             # get to control room
             if not (mainChar.getBigPosition() in [(7,7,0),(7,8,0)]):
                 quest = src.quests.questMap["ReachSafety"]()
-                quest.assignToCharacter(mainChar)
-                quest.activate()
-                mainChar.assignQuest(quest,active=True)
-                quest.endTrigger = {"container": self, "method": "reachImplant"}
+                self.addQuest(quest,mainChar)
                 return
 
             # steal faction id
             quest = src.quests.questMap["ResetFaction"]()
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
             return
 
         # get the players environment
@@ -2968,20 +2951,14 @@ but they are likely to explode when disturbed.
             for room in terrain.rooms:
                 if room.getNonEmptyOutputslots(itemType="Armor",allowStorage=True,allowDesiredFilled=True):
                     quest = src.quests.questMap["Equip"](description="equip",reason="be able to defend yourself",story="You reach out to implant and it answers:\n")
-                    quest.assignToCharacter(mainChar)
-                    quest.activate()
-                    mainChar.assignQuest(quest,active=True)
-                    quest.endTrigger = {"container": self, "method": "reachImplant"}
+                    self.addQuest(quest,mainChar)
                     return
 
         if not mainChar.weapon:
             for room in terrain.rooms:
                 if room.getNonEmptyOutputslots(itemType="Sword",allowStorage=True,allowDesiredFilled=True):
                     quest = src.quests.questMap["Equip"](description="equip",reason="be able to defend yourself",story="You reach out to implant and it answers:\n")
-                    quest.assignToCharacter(mainChar)
-                    quest.activate()
-                    mainChar.assignQuest(quest,active=True)
-                    quest.endTrigger = {"container": self, "method": "reachImplant"}
+                    self.addQuest(quest,mainChar)
                     return
 
         # check for hunters
@@ -3013,10 +2990,7 @@ but they are likely to explode when disturbed.
                 if other_character.faction == character.faction:
                     continue
                 quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,lifetime=100,description="defend the arena",reason="ensure no attackers get into the base")
-                quest.assignToCharacter(mainChar)
-                quest.activate()
-                mainChar.assignQuest(quest,active=True)
-                quest.endTrigger = {"container": self, "method": "reachImplant"}
+                self.addQuest(quest,mainChar)
                 return
 
         # keep trap rooms clean
@@ -3038,10 +3012,7 @@ but they are likely to explode when disturbed.
                     if not hunterCount:
                         # spawn trap cleaning ghul
                         quest = src.quests.questMap["SpawnGhul"]()
-                        quest.assignToCharacter(mainChar)
-                        quest.activate()
-                        mainChar.assignQuest(quest,active=True)
-                        quest.endTrigger = {"container": self, "method": "reachImplant"}
+                        self.addQuest(quest,mainChar)
                         return
 
                     # clear room yourself
@@ -3052,64 +3023,43 @@ but they are likely to explode when disturbed.
                         hasEnemy = True
                     if not hasEnemy:
                         quest = src.quests.questMap["ClearTile"](description="clean up trap room",targetPosition=room.getPosition(),reason="clean the trap room.\n\nThe trap room relies on TriggerPlates to work.\nThose only work, if there are no items ontop of them.\nRestore the defence by removing the enemies remains.\nAvoid any enemies entering the trap room while you work",story="You reach out to your implant and it answers:\n\nThe main defence of the base is the trap room,\nit needs to be cleaned to ensure it works correctly.")
-                        quest.assignToCharacter(mainChar)
-                        quest.activate()
-                        mainChar.assignQuest(quest,active=True)
-                        quest.endTrigger = {"container": self, "method": "reachImplant"}
+                        self.addQuest(quest,mainChar)
                         return
 
         # try to contact base leader
         if not src.gamestate.gamestate.stern.get("failedContact1"):
             quest = src.quests.questMap["ContactCommand"]()
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
             return
 
         # get promoted to rank 5 to unlock Communicator
         if mainChar.rank > 5:
             quest = src.quests.questMap["GetRank5PromotionStory"]()
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
             return
 
         # try to contact base leader
         if not src.gamestate.gamestate.stern.get("failedContact2"):
             quest = src.quests.questMap["ContactCommand"]()
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
             return
 
         # try to contact main base
         if not src.gamestate.gamestate.stern.get("failedBaseContact1"):
             quest = src.quests.questMap["ContactMainBase"]()
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
             return
 
         # get promoted to rank 5 to unlock Communicator
         if mainChar.rank > 2:
             quest = src.quests.questMap["GetRank2PromotionStory"]()
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
             return
 
         # try to contact main base
         if not src.gamestate.gamestate.stern.get("failedBaseContact2"):
             quest = src.quests.questMap["ContactMainBase"]()
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
             return
 
         # count the number of enemies/allies
@@ -3137,10 +3087,7 @@ but they are likely to explode when disturbed.
         # kill snatchers (redundant to GetRank2Promotion)
         if snatcherCount:
             quest = src.quests.questMap["ConfrontSnatchers"]()
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
             return
 
         # ensure there is a backup NPC (redundant to GetRank5Promotion, but also triggers after respawn)
@@ -3154,10 +3101,7 @@ but they are likely to explode when disturbed.
                     continue
 
                 quest = src.quests.questMap["SpawnClone"]()
-                quest.assignToCharacter(mainChar)
-                quest.activate()
-                mainChar.assignQuest(quest,active=True)
-                quest.endTrigger = {"container": self, "method": "reachImplant"}
+                self.addQuest(quest,mainChar)
                 return
 
         # ensure healing for the clones
@@ -3166,10 +3110,7 @@ but they are likely to explode when disturbed.
             regenerator = room.getItemByType("Regenerator",needsBolted=True)
             if regenerator and not regenerator.activated:
                 quest = src.quests.questMap["ActivateRegenerator"]()
-                quest.assignToCharacter(mainChar)
-                quest.activate()
-                mainChar.assignQuest(quest,active=True)
-                quest.endTrigger = {"container": self, "method": "reachImplant"}
+                self.addQuest(quest,mainChar)
                 return
 
         # check for spider lairs
@@ -3199,10 +3140,7 @@ but they are likely to explode when disturbed.
             # clear first spider spot
             if specialSpiderBlockersFound:
                 quest = src.quests.questMap["BaitSpiders"](targetPositionBig=specialSpiderBlockersFound[0])
-                quest.assignToCharacter(mainChar)
-                quest.activate()
-                mainChar.assignQuest(quest,active=True)
-                quest.endTrigger = {"container": self, "method": "reachImplant"}
+                self.addQuest(quest,mainChar)
                 return
 
             # select target
@@ -3213,10 +3151,7 @@ but they are likely to explode when disturbed.
                 spider_lair_pos = target[1]
                     
                 quest = src.quests.questMap["BaitSpiders"](targetPositionBig=spider_lair_pos)
-                quest.assignToCharacter(mainChar)
-                quest.activate()
-                mainChar.assignQuest(quest,active=True)
-                quest.endTrigger = {"container": self, "method": "reachImplant"}
+                self.addQuest(quest,mainChar)
                 return
 
             # clear spiderlings
@@ -3224,73 +3159,49 @@ but they are likely to explode when disturbed.
                 spider_lair_pos = target[1]
                     
                 quest = src.quests.questMap["SecureTile"](toSecure=spider_lair_pos,endWhenCleared=True)
-                quest.assignToCharacter(mainChar)
-                quest.activate()
-                mainChar.assignQuest(quest,active=True)
-                quest.endTrigger = {"container": self, "method": "reachImplant"}
+                self.addQuest(quest,mainChar)
                 return
 
         # remove all enemies from terrain
         if enemyCount > 0:
             quest = src.quests.questMap["ClearTerrain"]()
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
             return
 
         # get promoted to base commander
         if mainChar.rank > 2:
             quest = src.quests.questMap["GetPromotion"](targetRank=mainChar.rank-1,reason="gain the rank of a base commmander")
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
             return
 
         # ascend to be supreme leader
         if not src.gamestate.gamestate.stern.get("failedAscend"):
             quest = src.quests.questMap["StoryAscendTry"]()
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
             return
 
         if not mainChar.weapon:
             for room in mainChar.getTerrain().rooms:
                 if room.getNonEmptyOutputslots("Sword"):
                     quest = src.quests.questMap["Equip"]()
-                    quest.assignToCharacter(mainChar)
-                    quest.activate()
-                    mainChar.assignQuest(quest,active=True)
-                    quest.endTrigger = {"container": self, "method": "reachImplant"}
+                    self.addQuest(quest,mainChar)
                     return
 
         if not mainChar.armor:
             for room in mainChar.getTerrain().rooms:
                 if room.getNonEmptyOutputslots("Armor"):
                     quest = src.quests.questMap["Equip"]()
-                    quest.assignToCharacter(mainChar)
-                    quest.activate()
-                    mainChar.assignQuest(quest,active=True)
-                    quest.endTrigger = {"container": self, "method": "reachImplant"}
+                    self.addQuest(quest,mainChar)
                     return
 
         if not mainChar.weapon:
             quest = src.quests.questMap["MetalWorking"](toProduce="Sword",amount=1,produceToInventory=False,tryHard=True)
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
             return
 
         if not mainChar.armor:
             quest = src.quests.questMap["MetalWorking"](toProduce="Armor",amount=1,produceToInventory=False,tryHard=True)
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
             return
                     
         # collect all glass heart
@@ -3299,18 +3210,13 @@ but they are likely to explode when disturbed.
                 continue
 
             quest = src.quests.questMap["CollectGlassHearts"]()
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
             return
 
         # ascend to be supreme leader
         if mainChar.rank != 1:
             quest = src.quests.questMap["Ascend"]()
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
+            self.addQuest(quest,mainChar)
             return
 
     def openedQuestsTravel(self):

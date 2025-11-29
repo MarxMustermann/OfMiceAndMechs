@@ -379,7 +379,7 @@ The room has to be a rectangle.
         oldTerrain.addRooms([room])
 
         # set up animations
-        for character_to_move in self.getTerrain().getCharactersOnTile(self.getBigPosition()):
+        for character_to_move in self.getTerrain().getCharactersOnTile(self.getBigPosition())[:]:
             xOffset = character_to_move.xPosition - self.xPosition
             yOffset = character_to_move.yPosition - self.yPosition
 

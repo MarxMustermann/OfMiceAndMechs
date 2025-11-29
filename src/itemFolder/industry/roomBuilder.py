@@ -375,16 +375,20 @@ The room has to be a rectangle.
                         continue
                     item.walkable = True
 
-        # set up animations
-        xOffset = character.xPosition - self.xPosition
-        yOffset = character.yPosition - self.yPosition
-
-        oldTerrain.removeCharacter(character)
+        # add newly generated room
         oldTerrain.addRooms([room])
-        character.xPosition = roomLeft + xOffset
-        character.yPosition = roomTop + yOffset
-        room.addCharacter(character, roomLeft + xOffset, roomTop + yOffset)
 
+        # set up animations
+        for character_to_move in self.getTerrain().getCharactersOnTile(self.getBigPosition()):
+            xOffset = character_to_move.xPosition - self.xPosition
+            yOffset = character_to_move.yPosition - self.yPosition
+
+            oldTerrain.removeCharacter(character_to_move)
+            character_to_move.xPosition = roomLeft + xOffset
+            character_to_move.yPosition = roomTop + yOffset
+            room.addCharacter(character_to_move, roomLeft + xOffset, roomTop + yOffset)
+
+        # move characters into the room
         basePos = character.getBigPosition()
         self.container.addAnimation((basePos[0]*15+7,basePos[1]*15+7,0),"showchar",35,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"RB")})
         self.container.addAnimation((basePos[0]*15+7,basePos[1]*15+7,0),"showchar",3,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"::")})

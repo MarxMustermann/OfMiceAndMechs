@@ -233,9 +233,9 @@ The room has to be a rectangle.
         bigPos = character.getBigPosition()
 
         # check if there is a neigbouring trap room
-        hasTraproomNeighbour = False
+        has_connected_traproom_neighbour = False
         traproomOffset = None
-        neigbourTraproom = None
+        connected_neigbour_traproom = None
         offsets = [(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]
         for offset in offsets:
             rooms = terrain.getRoomByPosition((bigPos[0]+offset[0],bigPos[1]+offset[1],0))
@@ -246,23 +246,23 @@ The room has to be a rectangle.
 
             if offset == (1,0,0):
                 if rooms[0].getPositionWalkable((0,6,0)):
-                    hasTraproomNeighbour = True
+                    has_connected_traproom_neighbour = True
             if offset == (-1,0,0):
                 if rooms[0].getPositionWalkable((12,6,0)):
-                    hasTraproomNeighbour = True
+                    has_connected_traproom_neighbour = True
             if offset == (0,1,0):
                 if rooms[0].getPositionWalkable((6,0,0)):
-                    hasTraproomNeighbour = True
+                    has_connected_traproom_neighbour = True
             if offset == (0,-1,0):
                 if rooms[0].getPositionWalkable((6,12,0)):
-                    hasTraproomNeighbour = True
+                    has_connected_traproom_neighbour = True
 
-            if hasTraproomNeighbour:
+            if has_connected_traproom_neighbour:
                 traproomOffset = offset
-                neigbourTraproom = rooms[0]
+                connected_neigbour_traproom = rooms[0]
                 break
 
-        if hasTraproomNeighbour:
+        if has_connected_traproom_neighbour:
             # open new trap room doors
             offsets = [(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]
             for offset in offsets:
@@ -293,7 +293,7 @@ The room has to be a rectangle.
                         item.walkable = True
 
             # close old traprooms doors
-            neigbourTraproomPos = neigbourTraproom.getPosition()
+            neigbourTraproomPos = connected_neigbour_traproom.getPosition()
             offsets = [(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]
             for offset in offsets:
                 rooms = terrain.getRoomByPosition((neigbourTraproomPos[0]+offset[0],neigbourTraproomPos[1]+offset[1],0))
@@ -304,22 +304,22 @@ The room has to be a rectangle.
                     continue
 
                 if offset == (1,0,0):
-                    for item in neigbourTraproom.getItemByPosition((12,6,0)):
+                    for item in connected_neigbour_traproom.getItemByPosition((12,6,0)):
                         if item.type != "Door":
                             continue
                         item.walkable = False
                 if offset == (-1,0,0):
-                    for item in neigbourTraproom.getItemByPosition((0,6,0)):
+                    for item in connected_neigbour_traproom.getItemByPosition((0,6,0)):
                         if item.type != "Door":
                             continue
                         item.walkable = False
                 if offset == (0,1,0):
-                    for item in neigbourTraproom.getItemByPosition((6,12,0)):
+                    for item in connected_neigbour_traproom.getItemByPosition((6,12,0)):
                         if item.type != "Door":
                             continue
                         item.walkable = False
                 if offset == (0,-1,0):
-                    for item in neigbourTraproom.getItemByPosition((6,0,0)):
+                    for item in connected_neigbour_traproom.getItemByPosition((6,0,0)):
                         if item.type != "Door":
                             continue
                         item.walkable = False
@@ -333,7 +333,7 @@ The room has to be a rectangle.
             room.alarm = True
 
 
-        if not hasTraproomNeighbour:
+        if not has_connected_traproom_neighbour:
             westNeighbours = terrain.getRoomByPosition((bigPos[0]-1,bigPos[1],0))
             if westNeighbours and not (westNeighbours[0].tag and (westNeighbours[0].tag.lower() == "traproom" or westNeighbours[0].tag.lower() == "entryroom")):
                 for item in room.getItemByPosition((0,6,0)):

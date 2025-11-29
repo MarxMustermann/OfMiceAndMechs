@@ -1,6 +1,6 @@
 import src
-import src.rooms
 
+import random
 
 class RoomBuilder(src.items.Item):
     """
@@ -236,6 +236,7 @@ The room has to be a rectangle.
         has_connected_traproom_neighbour = False
         traproomOffset = None
         connected_neigbour_traproom = None
+        neigbour_traprooms = []
         offsets = [(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]
         for offset in offsets:
             rooms = terrain.getRoomByPosition((bigPos[0]+offset[0],bigPos[1]+offset[1],0))
@@ -243,6 +244,8 @@ The room has to be a rectangle.
                 continue
             if not rooms[0].tag or not (rooms[0].tag.lower() == "traproom" or rooms[0].tag.lower() == "entryroom"):
                 continue
+
+            neigbour_traprooms.append(rooms[0])
 
             if offset == (1,0,0):
                 if rooms[0].getPositionWalkable((0,6,0)):
@@ -326,6 +329,7 @@ The room has to be a rectangle.
 
             # set new room as entry room
             room.tag = "entryRoom"
+
             # add alarm bell
             alarmBell = src.items.itemMap["AlarmBell"]()
             alarmBell.bolted = True 
@@ -334,46 +338,85 @@ The room has to be a rectangle.
 
 
         if not has_connected_traproom_neighbour:
-            westNeighbours = terrain.getRoomByPosition((bigPos[0]-1,bigPos[1],0))
-            if westNeighbours and not (westNeighbours[0].tag and (westNeighbours[0].tag.lower() == "traproom" or westNeighbours[0].tag.lower() == "entryroom")):
-                for item in room.getItemByPosition((0,6,0)):
-                    if item.type != "Door":
-                        continue
-                    item.walkable = True
-                for item in westNeighbours[0].getItemByPosition((12,6,0)):
-                    if item.type != "Door":
-                        continue
-                    item.walkable = True
-            eastNeighbours = terrain.getRoomByPosition((bigPos[0]+1,bigPos[1],0))
-            if eastNeighbours and not (eastNeighbours[0].tag and (eastNeighbours[0].tag.lower() == "traproom" or eastNeighbours[0].tag.lower() == "entryroom")):
-                for item in room.getItemByPosition((12,6,0)):
-                    if item.type != "Door":
-                        continue
-                    item.walkable = True
-                for item in eastNeighbours[0].getItemByPosition((0,6,0)):
-                    if item.type != "Door":
-                        continue
-                    item.walkable = True
-            northNeighbours = terrain.getRoomByPosition((bigPos[0],bigPos[1]-1,0))
-            if northNeighbours and not (northNeighbours[0].tag and (northNeighbours[0].tag.lower() == "traproom" or northNeighbours[0].tag.lower() == "entryroom")):
-                for item in room.getItemByPosition((6,0,0)):
-                    if item.type != "Door":
-                        continue
-                    item.walkable = True
-                for item in northNeighbours[0].getItemByPosition((6,12,0)):
-                    if item.type != "Door":
-                        continue
-                    item.walkable = True
-            southNeighbours = terrain.getRoomByPosition((bigPos[0],bigPos[1]+1,0))
-            if southNeighbours and not (southNeighbours[0].tag and (southNeighbours[0].tag.lower() == "traproom" or southNeighbours[0].tag.lower() == "entryroom")):
-                for item in room.getItemByPosition((6,12,0)):
-                    if item.type != "Door":
-                        continue
-                    item.walkable = True
-                for item in southNeighbours[0].getItemByPosition((6,0,0)):
-                    if item.type != "Door":
-                        continue
-                    item.walkable = True
+            if not neigbour_traprooms:
+                westNeighbours = terrain.getRoomByPosition((bigPos[0]-1,bigPos[1],0))
+                if westNeighbours and not (westNeighbours[0].tag and (westNeighbours[0].tag.lower() == "traproom" or westNeighbours[0].tag.lower() == "entryroom")):
+                    for item in room.getItemByPosition((0,6,0)):
+                        if item.type != "Door":
+                            continue
+                        item.walkable = True
+                    for item in westNeighbours[0].getItemByPosition((12,6,0)):
+                        if item.type != "Door":
+                            continue
+                        item.walkable = True
+                eastNeighbours = terrain.getRoomByPosition((bigPos[0]+1,bigPos[1],0))
+                if eastNeighbours and not (eastNeighbours[0].tag and (eastNeighbours[0].tag.lower() == "traproom" or eastNeighbours[0].tag.lower() == "entryroom")):
+                    for item in room.getItemByPosition((12,6,0)):
+                        if item.type != "Door":
+                            continue
+                        item.walkable = True
+                    for item in eastNeighbours[0].getItemByPosition((0,6,0)):
+                        if item.type != "Door":
+                            continue
+                        item.walkable = True
+                northNeighbours = terrain.getRoomByPosition((bigPos[0],bigPos[1]-1,0))
+                if northNeighbours and not (northNeighbours[0].tag and (northNeighbours[0].tag.lower() == "traproom" or northNeighbours[0].tag.lower() == "entryroom")):
+                    for item in room.getItemByPosition((6,0,0)):
+                        if item.type != "Door":
+                            continue
+                        item.walkable = True
+                    for item in northNeighbours[0].getItemByPosition((6,12,0)):
+                        if item.type != "Door":
+                            continue
+                        item.walkable = True
+                southNeighbours = terrain.getRoomByPosition((bigPos[0],bigPos[1]+1,0))
+                if southNeighbours and not (southNeighbours[0].tag and (southNeighbours[0].tag.lower() == "traproom" or southNeighbours[0].tag.lower() == "entryroom")):
+                    for item in room.getItemByPosition((6,12,0)):
+                        if item.type != "Door":
+                            continue
+                        item.walkable = True
+                    for item in southNeighbours[0].getItemByPosition((6,0,0)):
+                        if item.type != "Door":
+                            continue
+                        item.walkable = True
+            else:
+                neighbour = random.choice(neigbour_traprooms)
+                if neighbour.xPosition < room.xPosition:
+                    for item in room.getItemByPosition((0,6,0)):
+                        if item.type != "Door":
+                            continue
+                        item.walkable = True
+                    for item in neighbour.getItemByPosition((12,6,0)):
+                        if item.type != "Door":
+                            continue
+                        item.walkable = True
+                if neighbour.xPosition > room.xPosition:
+                    for item in room.getItemByPosition((12,6,0)):
+                        if item.type != "Door":
+                            continue
+                        item.walkable = True
+                    for item in neighbour.getItemByPosition((0,6,0)):
+                        if item.type != "Door":
+                            continue
+                        item.walkable = True
+                if neighbour.yPosition < room.yPosition:
+                    for item in room.getItemByPosition((6,0,0)):
+                        if item.type != "Door":
+                            continue
+                        item.walkable = True
+                    for item in neighbour.getItemByPosition((6,12,0)):
+                        if item.type != "Door":
+                            continue
+                        item.walkable = True
+                if neighbour.yPosition > room.yPosition:
+                    for item in room.getItemByPosition((6,12,0)):
+                        if item.type != "Door":
+                            continue
+                        item.walkable = True
+                    for item in neighbour.getItemByPosition((6,0,0)):
+                        if item.type != "Door":
+                            continue
+                        item.walkable = True
 
         # add newly generated room
         oldTerrain.addRooms([room])

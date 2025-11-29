@@ -166,6 +166,7 @@ Press d to move the cursor and show the subquests description.
 
         # set up helper variables
         quest = extraParam.get("quest")
+        reason = extraParam.get("reason")
 
         # register duty as failed
         failedDuty = None
@@ -179,6 +180,13 @@ Press d to move the cursor and show the subquests description.
             failedDuty = "machine placing"
         if failedDuty:
             self.dutySkipps[failedDuty] = 3
+
+        if reason:
+            if reason == "no path":
+                newQuest = src.quests.questMap["WaitQuest"](lifetime=10)
+                self.addQuest(newQuest)
+                self.startWatching(newQuest,self.handleQuestFailure,"failed")
+                return
 
         super().handleQuestFailure(extraParam)
     

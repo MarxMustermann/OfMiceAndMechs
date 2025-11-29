@@ -332,7 +332,7 @@ The room has to be a rectangle.
 
             # add alarm bell
             alarmBell = src.items.itemMap["AlarmBell"]()
-            alarmBell.bolted = True 
+            alarmBell.bolted = True
             room.addItem(alarmBell,(3,3,0))
             room.alarm = True
 
@@ -419,6 +419,12 @@ The room has to be a rectangle.
                         item.walkable = True
 
                 room.tag = "trapSupport"
+
+                # add alarm bell
+                alarmBell = src.items.itemMap["AlarmBell"]()
+                alarmBell.bolted = True
+                room.addItem(alarmBell,(3,3,0))
+                room.alarm = True
 
         # add newly generated room
         oldTerrain.addRooms([room])

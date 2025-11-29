@@ -222,5 +222,21 @@ Swords can range from 10 to 25 damage per hit.
 
         return (None,(".","stand around confused"))
 
+    def handleQuestFailure(self,extraParam):
+        '''
+        handle a subquest failing
+        '''
+
+        # set up helper variables
+        quest = extraParam.get("quest")
+        reason = extraParam.get("reason")
+
+        if reason:
+            if reason == "no path":
+                self.fail(reason=reason)
+                return
+
+        super().handleQuestFailure(extraParam)
+
 # register the quest type
 src.quests.addType(Equip)

@@ -69,3 +69,4 @@ import src.questFolder.discardItemsInside
 import src.questFolder.furnishRoom
 import src.questFolder.doMapSync
 import src.questFolder.ensureMaindutyClone
+import src.questFolder.unblockDoor

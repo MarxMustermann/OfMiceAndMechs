@@ -898,6 +898,9 @@ class Character:
         '''
         temporary (lol) structure for performance test
         '''
+        if not self.container:
+            return
+
         if self.container.isRoom:
             if offset:
                 return (self.container.xPosition+offset[0],self.container.yPosition+offset[1],offset[2])

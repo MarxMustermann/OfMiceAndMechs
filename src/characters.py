@@ -724,6 +724,15 @@ class Character:
             return None
         return (self.registers["HOMEx"], self.registers["HOMEy"], 0)
 
+    def is_in_home_room(self):
+        '''
+        check if the character is in the home room
+        '''
+        home_room = self.getHomeRoom()
+        if self.container == home_room:
+            return True
+        return False
+
     def getRoom(self):
         '''
         get the room the character is in

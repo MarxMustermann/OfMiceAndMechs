@@ -6,6 +6,7 @@ import src.questFolder.buildRoom
 import src.questFolder.cleanSpace
 import src.questFolder.clearInventory
 import src.questFolder.clearPathToPosition
+import src.questFolder.clearPathToTile
 import src.questFolder.clearTerrain
 import src.questFolder.clearTile
 import src.questFolder.deleteMarking

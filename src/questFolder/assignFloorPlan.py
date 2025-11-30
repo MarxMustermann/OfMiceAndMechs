@@ -109,7 +109,7 @@ Set the floor plan: {self.floorPlanType}
             for room in character.getTerrain().rooms:
                 if not room.getItemByType("CityPlaner"):
                     continue
-                quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),description="go to command centre",reason="go to command centre")
+                quest = src.quests.questMap["GoToTile"](targetPosition=cityPlaner.getBigPosition(),description="go to command centre",reason="go to command centre")
                 return ([quest],None)
 
             return self._solver_trigger_fail(dryRun,"no planer")
@@ -206,8 +206,19 @@ Set the floor plan: {self.floorPlanType}
             return (None,None)
 
         terrain = character.getTerrain()
-        cityCore = terrain.getRoomByPosition(character.getHomeRoomCord())[0]
-        cityPlaner = cityCore.getItemByType("CityPlaner",needsBolted=True)
+        cityPlaner = None
+        cityPlaners = []
+        for room in terrain.rooms:
+            items = room.getItemsByType("CityPlaner",needsBolted=True)
+            if items:
+                cityPlaners.extend(items)
+
+        if cityPlaners:
+            cityPlaner = cityPlaners[0]
+
+        if len(cityPlaners) > 1:
+            quest = src.quests.questMap["CleanSpace"](reason="remove duplicate CityPlaner",targetPositionBig=cityPlaner.getBigPosition(),targetPosition=cityPlaner.getPosition(),abortOnfullInventory=False,pickUpBolted=True)
+            return ([quest],None)
 
         # do inventory of scrap fields
         numItemsScrapfield = 0

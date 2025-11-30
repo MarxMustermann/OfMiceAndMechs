@@ -115,10 +115,6 @@ class Guardian(src.monster.Monster):
         super().die(reason, addCorpse=True, killer=killer)
 
     def lootTable(self):
-        try:
-            self.modifier
-        except:
-            self.modifier = 1
         return [([src.items.itemMap["ManaCrystal"]]*self.modifier, 1)]
 
     def render(self):

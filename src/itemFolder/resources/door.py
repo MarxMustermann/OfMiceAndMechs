@@ -42,9 +42,11 @@ class Door(src.items.Item):
         return options
 
     def blockDoor(self,character):
+        character.changed("blockedDoor",{"character":character,"item":self})
         self.walkable = False
 
     def unblockDoor(self,character):
+        character.changed("unblockedDoor",{"character":character,"item":self})
         self.walkable = True
 
     def boltAction(self,character):

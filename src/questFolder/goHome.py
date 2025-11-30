@@ -254,5 +254,21 @@ Press control-d to stop your character from moving.
         result.append(((self.getCityLocation()[0],self.getCityLocation()[1]),"target"))
         return result
 
+    def handleQuestFailure(self,extraParam):
+        '''
+        handle a subquest failing
+        '''
+
+        # set up helper variables
+        quest = extraParam.get("quest")
+        reason = extraParam.get("reason")
+
+        if reason:
+            if reason == "no path":
+                self.fail(reason)
+                return
+
+        super().handleQuestFailure(extraParam)
+
 # register the quest type
 src.quests.addType(GoHome)

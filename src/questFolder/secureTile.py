@@ -153,6 +153,6 @@ Try luring enemies into landmines or detonating some bombs."""
                     return ([quest], None)
                 return (None, (";","wait"))
 
-        return super().getNextStep(character=character,ignoreCommands=ignoreCommands)
+        return super().getNextStep(character=character,ignoreCommands=ignoreCommands,dryRun=dryRun)
 
 src.quests.addType(SecureTile)

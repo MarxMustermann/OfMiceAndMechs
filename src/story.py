@@ -1246,8 +1246,7 @@ class MainGame(BasicPhase):
 
         self.numRounds = 1
         self.startRound()
-
-
+        self.doMaintenance()
 
         containerQuest = src.quests.questMap["ReachOutStory"]()
         containerQuest.assignToCharacter(src.gamestate.gamestate.mainChar)
@@ -3328,6 +3327,18 @@ Once you understand things try to find better solutions.
         containerQuest.assignToCharacter(src.gamestate.gamestate.mainChar)
         src.gamestate.gamestate.mainChar.addMessage("reach out to implant by pressing q")
         containerQuest.endTrigger = {"container": self, "method": "openedQuests"}
+
+    def doMaintenance(self):
+
+        main_char = self.activeStory["mainChar"]
+        if not main_char.quests:
+            self.reachImplant()
+
+        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
+        event.setCallback({"container": self, "method": "doMaintenance"})
+
+        terrain = src.gamestate.gamestate.terrainMap[7][7]
+        terrain.addEvent(event)
 
     def startRound(self):
 

@@ -164,7 +164,7 @@ class AppeaseAGod(src.quests.MetaQuestSequence):
             if src.gamestate.gamestate.tick%(15*15*15) < 2000 and src.gamestate.gamestate.tick%(15*15*15) > 10:
                 quest = src.quests.questMap["LiftOutsideRestrictions"]()
                 return ([quest],None)
-            return (None,("...........","wait for the wave of enemies"))
+            return (None,(";","wait for the wave of enemies"))
         return (None,("...........","wait for something to happen"))
 
     def generateTextDescription(self):

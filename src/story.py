@@ -988,6 +988,8 @@ class MainGame(BasicPhase):
         """
 
         self.preselection = preselection
+        self.listeners = {"default": []}
+        self.watched = []
         super().__init__("MainGame", seed=seed)
 
     def get_free_position(self,tag):
@@ -2846,9 +2848,63 @@ but they are likely to explode when disturbed.
     def addQuest(self,quest,mainChar):
         quest.assignToCharacter(mainChar)
         quest.activate()
+        quest.addListener(self.handle_quest_failure, "failed")
         mainChar.assignQuest(quest,active=True)
         quest.endTrigger = {"container": self, "method": "reachImplant"}
 
+    def handle_quest_failure(self,extraInfo=None):
+        reason = extraInfo.get("reason")
+        old_quest = extraInfo.get("quest")
+        main_char = self.activeStory["mainChar"]
+
+        if reason == "no path":
+            if old_quest.type == "GoHome":
+                quest = src.quests.questMap["ClearPathToTile"](targetPositionBig=main_char.getHomeRoomCord())
+                self.addQuest(quest,main_char)
+                return
+            if not main_char.is_in_home_room():
+                quest = src.quests.questMap["GoHome"]()
+                self.addQuest(quest,main_char)
+                return
+
+    def stopWatching(self, target, callback, tag=""):
+        """
+        deregister callback from being notified if an event occurs
+
+        Parameters:
+            target: the thing that is watching
+            callback: the callback to call
+            tag: the type of event to listen for
+        """
+
+        if tag == "":
+            1/0
+
+        target.delListener(callback, tag)
+        self.watched.remove((target, callback, tag))
+
+    def stopWatchingTarget(self, target):
+        try:
+            self.watched
+        except:
+            self.watched = []
+        for (otherTarget, callback, tag) in self.watched[:]:
+            target.delListener(callback, tag)
+            if (target, callback, tag) in self.watched:
+                self.watched.remove((target, callback, tag))
+
+    def disableAllListeners(self):
+        toDisable = []
+        for listeners in self.listeners.values():
+            for listener in listeners:
+                toDisable.append(listener)
+        
+        for listener in toDisable:
+            listener.__self__.stopWatchingTarget(self)
+
+    def stopWatchingAll(self):
+        for listenItem in self.watched[:]:
+            self.stopWatching(listenItem[0], listenItem[1], listenItem[2])
 
     def openedQuestsStory(self):
         mainChar = self.activeStory["mainChar"]
@@ -3264,6 +3320,8 @@ Once you understand things try to find better solutions.
             quest.endTrigger = {"container": self, "method": "reachImplant"}
 
     def reachImplant(self):
+        main_char = self.activeStory["mainChar"]
+
         containerQuest = src.quests.questMap["ReachOutStory"]()
         src.gamestate.gamestate.mainChar.quests.append(containerQuest)
         containerQuest.activate()
@@ -3271,10 +3329,13 @@ Once you understand things try to find better solutions.
         src.gamestate.gamestate.mainChar.addMessage("reach out to implant by pressing q")
         containerQuest.endTrigger = {"container": self, "method": "openedQuests"}
 
-
     def startRound(self):
 
         self.numRounds += 1
+
+        main_char = self.activeStory["mainChar"]
+        if not main_char.quests:
+            self.reachImplant()
 
         event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + self.epochLength)
         event.setCallback({"container": self, "method": "startRound"})

@@ -2191,7 +2191,7 @@ class Terrain:
         for x in range(1,14):
             for y in range(1,14):
                 foundEnemy = False
-                otherCharacters = self.charactersByTile.get((x,y,0),[])
+                otherCharacters = self.getCharactersOnTile((x,y,0))
                 rooms = self.getRoomByPosition((x,y,0))
                 if rooms:
                     otherCharacters = rooms[0].characters

@@ -337,6 +337,9 @@ Press d to move the cursor and show the subquests description.
         return source
 
     def getNextStep(self, character=None, ignoreCommands=False, dryRun = True):
+        if self.subQuests:
+            return (None,None)
+
         if not self.subQuests:
             submenue = character.macroState.get("submenue")
             if submenue:

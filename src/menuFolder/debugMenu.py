@@ -35,6 +35,7 @@ class DebugMenu(src.subMenu.SubMenu):
         "change personality settings",
         "toggle SDL",
         "fix room state",
+        "fix terrain state",
     ]
 
     def __init__(self):
@@ -63,6 +64,11 @@ class DebugMenu(src.subMenu.SubMenu):
             text += debug
 
             match debug:
+                case "fix terrain state":
+                    if current_change:
+                        terrain = character.getTerrain()
+                        terrain.clear_broken_states()
+                        return True
                 case "fix room state":
                     if current_change:
                         if character.container.isRoom:

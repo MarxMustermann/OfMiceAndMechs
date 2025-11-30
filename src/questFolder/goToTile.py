@@ -471,7 +471,7 @@ The target tile is {direction[4:]}
             self.startWatching(quest,self.handleQuestFailure,"failed")
             return
 
-        # call superclass
+        # fail recursively
         self.fail(extraParam["reason"])
 
 # register quest

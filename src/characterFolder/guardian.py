@@ -1,5 +1,7 @@
 import src
 
+import random
+
 class Guardian(src.monster.Monster):
     """
     the class for animated statues
@@ -115,7 +117,14 @@ class Guardian(src.monster.Monster):
         super().die(reason, addCorpse=True, killer=killer)
 
     def lootTable(self):
-        return [([src.items.itemMap["ManaCrystal"]]*self.modifier, 1)]
+        num_ManaCrystal = 0
+        num_MemoryFragment = 0
+        for _i in range(0,self.modifier): 
+            if random.random() < 0.5:
+                num_ManaCrystal += 1
+            else:
+                num_MemoryFragment += 1
+        return [([src.items.itemMap["MemoryFragment"]]*num_ManaCrystal+[src.items.itemMap["ManaCrystal"]]*num_MemoryFragment, 1)]
 
     def render(self):
         """

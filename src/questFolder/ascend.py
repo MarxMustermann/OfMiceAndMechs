@@ -72,6 +72,9 @@ Rule the world and put an end to those attacks!
         if self.subQuests:
             return (None,None)
 
+        if character.macroState["submenue"] and not ignoreCommands:
+            return (None,(["esc"],"close menu"))
+
         if not character.container.isRoom:
             if character.xPosition%15 == 0:
                 return (None,("d","enter room"))

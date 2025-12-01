@@ -1155,7 +1155,7 @@ class MainGame(BasicPhase):
                     ]
 
                     npc.faction = c_faction
-                    controlRoom.addCharacter(npc, random.randint(1, 13), random.randint(1, 13))
+                    controlRoom.addCharacter(npc, random.randint(1, 11), random.randint(1, 11))
                     npc.flask = src.items.itemMap["GooFlask"]()
                     npc.flask.uses = 100
 

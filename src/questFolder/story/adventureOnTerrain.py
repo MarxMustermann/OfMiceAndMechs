@@ -165,7 +165,8 @@ Go out and adventure on tile {self.targetTerrain}.
                 return False
 
         if not dryRun:
-            character.terrainInfo[currentTerrain.getPosition()]["looted"] = True
+            if currentTerrain.tag == "ruin":
+                character.terrainInfo[currentTerrain.getPosition()]["looted"] = True
             self.postHandler()
         return True
 

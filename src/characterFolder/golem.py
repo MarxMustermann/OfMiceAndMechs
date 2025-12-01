@@ -55,6 +55,7 @@ class Golem(src.monster.Monster):
         self.godMode = True
         self.movementSpeed = 1.3
         self.movementSpeed -= self.movementSpeed * 0.5 * self.multiplier_range(multiplier)
+        self.waitLength = 20
 
     def changed(self, tag="default", info=None):
         if tag == "pickup bolted fail":

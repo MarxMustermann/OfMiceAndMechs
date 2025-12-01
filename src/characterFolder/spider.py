@@ -58,6 +58,7 @@ class Spider(src.monster.Monster):
         if mutated:
             self.mutate()
 
+        self.waitLength = 10
 
     def mutate(self):
         if self.mutated:

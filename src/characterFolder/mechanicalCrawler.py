@@ -44,7 +44,7 @@ class Mechanical_Crawler(src.monster.Monster):
         self.godMode = True
         self.movementSpeed = 1.0
         self.movementSpeed -= self.movementSpeed * 0.5 * self.multiplier_range(multiplier)
-
+        self.waitLength = 15
 
     def changed(self, tag="default", info=None):
         if tag == "pickup bolted fail":

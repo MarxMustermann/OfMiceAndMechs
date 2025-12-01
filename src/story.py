@@ -3060,7 +3060,7 @@ but they are likely to explode when disturbed.
                         if room.getItemByType("Corpse"):
                             foundCorpse = True
 
-                    if not hunterCount:
+                    if not hunterCount and foundCorpse:
                         # spawn trap cleaning ghul
                         quest = src.quests.questMap["SpawnGhul"]()
                         self.addQuest(quest,mainChar)

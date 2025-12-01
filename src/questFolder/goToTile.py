@@ -46,6 +46,10 @@ class GoToTile(src.quests.MetaQuestSequence):
         self.abortOnDanger = abortOnDanger
         self.ignoreEnemies = ignoreEnemies
 
+    def handleEnteredRoom(self,extraInfo):
+        character = extraInfo[0]
+        self.triggerCompletionCheck(dryRun=False,character=character)
+
     def handleChangedTile(self):
         '''
         handle the charactar having moved from tile to tile
@@ -123,6 +127,7 @@ class GoToTile(src.quests.MetaQuestSequence):
         if self.character:
             return None
 
+        self.startWatching(character,self.handleEnteredRoom, "entered room")
         self.startWatching(character,self.handleChangedTile, "changedTile")
         self.startWatching(character,self.handleMoved, "moved")
 

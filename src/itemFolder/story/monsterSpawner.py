@@ -31,11 +31,16 @@ class MonsterSpawner(src.items.Item):
         except:
             self.strength = random.randint(1,10)
 
+        if character.xPosition > self.xPosition:
+            character.addMessage("you cannot use this machine from the east")
+            return
+
         # spawn the monster
         pos = self.getPosition()
         room = self.container
         enemy = src.characters.characterMap["Guardian"](modifier=self.strength)
-        room.addCharacter(enemy,pos[0],pos[1])
+        enemy.runCommandString("..ddd10.")
+        room.addCharacter(enemy,pos[0]+1,pos[1])
 
         # make monster kill
         quest = src.quests.questMap["ClearTerrain"]()

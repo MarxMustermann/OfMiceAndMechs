@@ -722,6 +722,9 @@ class Room:
                 if position[0] == None:
                     logger.error("FOUND NON PLACED ITEM!!!")
                     items_on_position.remove(item)
+        for character in self.characters[:]:
+            if character.xPosition < 0 or character.xPosition > 12 or character.yPosition < 0 or character.yPosition > 12:
+                character.die("beeing in the void")
 
     # bad code: probably misnamed
     # bad code: should be in extra class

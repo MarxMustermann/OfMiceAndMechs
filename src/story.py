@@ -3320,6 +3320,8 @@ Once you understand things try to find better solutions.
 
     def reachImplant(self):
         main_char = self.activeStory["mainChar"]
+        if main_char.quests:
+            return
 
         containerQuest = src.quests.questMap["ReachOutStory"]()
         src.gamestate.gamestate.mainChar.quests.append(containerQuest)

@@ -1248,11 +1248,7 @@ class MainGame(BasicPhase):
         self.startRound()
         self.doMaintenance()
 
-        containerQuest = src.quests.questMap["ReachOutStory"]()
-        containerQuest.assignToCharacter(src.gamestate.gamestate.mainChar)
-        containerQuest.activate()
-        containerQuest.endTrigger = {"container": self, "method": "openedQuests"}
-        src.gamestate.gamestate.mainChar.quests.append(containerQuest)
+        self.reachImplant()
 
         src.gamestate.gamestate.mainChar.messages = []
         src.gamestate.gamestate.story = self

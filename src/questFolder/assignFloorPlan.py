@@ -107,7 +107,8 @@ Set the floor plan: {self.floorPlanType}
         cityPlaner = character.container.getItemByType("CityPlaner")
         if not cityPlaner:
             for room in character.getTerrain().rooms:
-                if not room.getItemByType("CityPlaner"):
+                cityPlaner = room.getItemByType("CityPlaner")
+                if not cityPlaner:
                     continue
                 quest = src.quests.questMap["GoToTile"](targetPosition=cityPlaner.getBigPosition(),description="go to command centre",reason="go to command centre")
                 return ([quest],None)

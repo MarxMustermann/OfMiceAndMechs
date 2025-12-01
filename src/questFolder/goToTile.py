@@ -214,7 +214,6 @@ The target tile is {direction[4:]}
         '''
         generate the next step towards solving the quest
         '''
-
         # do nothing on weird state
         if character is None:
             return (None,None)
@@ -291,7 +290,7 @@ The target tile is {direction[4:]}
                 y= src.helpers.clamp(y+int(random.uniform(-3,3)),2,12)
                 quest = src.quests.questMap["GoToPosition"](targetPosition = (x,y))
                 return ([quest], None)
-            return self._solver_trigger_fail(dryRun,"no path")
+            return self._solver_trigger_fail(dryRun,"no tile path")
 
         # open map menu
         if not character.getNearbyEnemies() and self.allowMapMenu and len(self.path) > 3:
@@ -334,7 +333,7 @@ The target tile is {direction[4:]}
             if not self.isPathSane(character):
                 self.generatePath(character)
                 if not self.path:
-                    return self._solver_trigger_fail(dryRun,"no path")
+                    return self._solver_trigger_fail(dryRun,"no tile path")
 
             # exit the room
             if self.path[0] == (0,1):
@@ -393,7 +392,7 @@ The target tile is {direction[4:]}
             if not self.isPathSane(character):
                 self.generatePath(character)
                 if not self.path:
-                    return self._solver_trigger_fail(dryRun,"no path")
+                    return self._solver_trigger_fail(dryRun,"no tile path")
 
             # go to tile edge
             terrain = character.getTerrain()

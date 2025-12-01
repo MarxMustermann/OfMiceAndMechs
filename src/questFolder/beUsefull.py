@@ -182,7 +182,7 @@ Press d to move the cursor and show the subquests description.
             self.dutySkipps[failedDuty] = 3
 
         if reason:
-            if reason == "no path":
+            if reason == "no tile path":
                 newQuest = src.quests.questMap["WaitQuest"](lifetime=10)
                 self.addQuest(newQuest)
                 self.startWatching(newQuest,self.handleQuestFailure,"failed")

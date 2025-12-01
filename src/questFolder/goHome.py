@@ -264,7 +264,7 @@ Press control-d to stop your character from moving.
         reason = extraParam.get("reason")
 
         if reason:
-            if reason == "no path":
+            if reason == "no tile path":
                 self.fail(reason)
                 return
 

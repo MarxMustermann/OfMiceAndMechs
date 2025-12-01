@@ -232,7 +232,7 @@ Swords can range from 10 to 25 damage per hit.
         reason = extraParam.get("reason")
 
         if reason:
-            if reason == "no path":
+            if reason == "no tile path":
                 self.fail(reason=reason)
                 return
 

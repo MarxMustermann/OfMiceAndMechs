@@ -368,7 +368,7 @@ def setUpTcod():
             flags=tcod.lib.SDL_WINDOW_RESIZABLE | tcod.lib.SDL_WINDOW_MAXIMIZED,
             title="OfMiceAndMechs"
         )
-    sdl_renderer2 = tcod.sdl.render.new_renderer(sdl_window, target_textures=True)
+    sdl_renderer2 = tcod.sdl.render.new_renderer(sdl_window)
     atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset)
     console_render = tcod.render.SDLConsoleRender(atlas)
 

@@ -121,7 +121,7 @@ class SpawnGhul(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["CleanSpace"](description="grab enemy remains", targetPositionBig=room.getPosition(), targetPosition=corpse.getPosition(), reason="have a corpse to reanimate", abortOnfullInventory=True)
                 return ([quest],None)
             
-            return self._solver_trigger_fail(dryRun,"no ghul")
+            return self._solver_trigger_fail(dryRun,"no Corpse")
         
         if character.getBigPosition() != targetPosBig:
             quest = src.quests.questMap["GoToTile"](targetPosition=targetPosBig,description="go to a CorpseAnimator",reason="be able to spawn a Ghul")

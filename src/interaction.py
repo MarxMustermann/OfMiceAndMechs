@@ -249,9 +249,10 @@ sdl_cache = []
 
 def playSound(soundName,channelName,loop=False):
     if settings["sound"] != 0:
-        channel = src.interaction.tcodMixer.get_channel(channelName)
-        if not channel.busy:
-            channel.play(sounds[soundName], volume = settings["sound"]/32)
+        if src.interaction.tcodMixer:
+            channel = src.interaction.tcodMixer.get_channel(channelName)
+            if not channel.busy:
+                channel.play(sounds[soundName], volume = settings["sound"]/32)
 
 zoom = 0
 window_width = None
@@ -467,9 +468,14 @@ def setUpTcod():
 
     global tcodMixer
     global tcodAudioDevice
-    device = src.interaction.tcodAudio.open(samples = 12000)
+    try:
+        device = src.interaction.tcodAudio.open(samples = 12000)
+        mixer = src.interaction.tcodAudio.BasicMixer(device)
+    except:
+        device = None
+        mixer = None
+
     tcodAudioDevice = device
-    mixer = src.interaction.tcodAudio.BasicMixer(device)
     tcodMixer = mixer
 
     """
@@ -483,7 +489,8 @@ def setUpTcod():
         0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
     )
     """
-    tcodMixer.get_channel("background").play(sound = sounds["loop1_start"],volume = settings["sound"]/ 32.0,on_end = sound_loop)
+    if tcodMixer:
+        tcodMixer.get_channel("background").play(sound = sounds["loop1_start"],volume = settings["sound"]/ 32.0,on_end = sound_loop)
 
 def sound_loop(ch):
     if random.random() < 0.5:
@@ -492,8 +499,9 @@ def sound_loop(ch):
         ch.play(sound = sounds["loop2"],volume = settings["sound"]/32.0,on_end = sound_loop)
 
 def changeVolume():
-    channel = tcodMixer.get_channel("background")
-    channel.volume = settings["sound"]/ 32.0
+    if tcodMixer:
+        channel = tcodMixer.get_channel("background")
+        channel.volume = settings["sound"]/ 32.0
     
 footer = None
 main = None
@@ -2565,7 +2573,8 @@ def handlePriorityActions(params):
     if key in (commandChars.quit_normal, commandChars.quit_instant):
         if hasattr(urwid,"ExitMainLoop"):
             raise urwid.ExitMainLoop()
-        src.interaction.tcodMixer.close()
+        if src.interaction.tcodMixer:
+            src.interaction.tcodMixer.close()
         raise SystemExit()
 
     return (1,key)
@@ -3873,13 +3882,15 @@ def getTcodEvents():
         for event in events:
             foundEvent = True
             if isinstance(event, tcod.event.Quit):
-                src.interaction.tcodMixer.close()
+                if src.interaction.tcodMixer:
+                    src.interaction.tcodMixer.close()
                 raise SystemExit()
             if isinstance(event, tcod.event.WindowResized):
                 checkResetWindowSize(event.width,event.height)
             if isinstance(event, tcod.event.WindowEvent):
                 if event.type == "WINDOWCLOSE":
-                    src.interaction.tcodMixer.close()
+                    if src.interaction.tcodMixer:
+                        src.interaction.tcodMixer.close()
                     raise SystemExit()
                 if event.type == "WINDOWEXPOSED":
                     renderGameDisplay()
@@ -5739,18 +5750,21 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                     if isinstance(event, tcod.event.KeyDown):
                         key = event.sym
                         if key in (tcod.event.KeySym.RETURN, tcod.event.KeySym.y):
-                            src.interaction.tcodMixer.close()
+                            if src.interaction.tcodMixer:
+                                src.interaction.tcodMixer.close()
                             raise SystemExit()
                         submenu.pop()
 
                 case _:
                     if isinstance(event, tcod.event.Quit):
-                        src.interaction.tcodMixer.close()
+                        if src.interaction.tcodMixer:
+                            src.interaction.tcodMixer.close()
                         raise SystemExit()
                     if isinstance(event, tcod.event.WindowResized):
                         checkResetWindowSize(event.width, event.height)
                     if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
-                        src.interaction.tcodMixer.close()
+                        if src.interaction.tcodMixer:
+                            src.interaction.tcodMixer.close()
                         raise SystemExit()
                     if isinstance(event, tcod.event.KeyDown):
                         key = event.sym
@@ -5796,12 +5810,14 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                                 if not canLoad:
                                     submenu.append("difficulty")
             if isinstance(event, tcod.event.Quit):
-                src.interaction.tcodMixer.close()
+                if src.interaction.tcodMixer:
+                    src.interaction.tcodMixer.close()
                 raise SystemExit()
             if isinstance(event, tcod.event.WindowResized):
                 checkResetWindowSize(event.width, event.height)
             if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
-                src.interaction.tcodMixer.close()
+                if src.interaction.tcodMixer:
+                    src.interaction.tcodMixer.close()
                 raise SystemExit()
 
 def showInterruptChoice(text,options):
@@ -5815,12 +5831,14 @@ def showInterruptChoice(text,options):
         events = tcod.event.get()
         for event in events:
             if isinstance(event, tcod.event.Quit):
-                src.interaction.tcodMixer.close()
+                if src.interaction.tcodMixer:
+                    src.interaction.tcodMixer.close()
                 raise SystemExit()
             if isinstance(event, tcod.event.WindowResized):
                 checkResetWindowSize(event.width,event.height)
             if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
-                src.interaction.tcodMixer.close()
+                if src.interaction.tcodMixer:
+                    src.interaction.tcodMixer.close()
                 raise SystemExit()
 
             if isinstance(event,tcod.event.TextInput):
@@ -5844,12 +5862,14 @@ def showInterruptText(text):
         events = tcod.event.get()
         for event in events:
             if isinstance(event, tcod.event.Quit):
-                src.interaction.tcodMixer.close()
+                if src.interaction.tcodMixer:
+                    src.interaction.tcodMixer.close()
                 raise SystemExit()
             if isinstance(event, tcod.event.WindowResized):
                 checkResetWindowSize(event.width,event.height)
             if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
-                src.interaction.tcodMixer.close()
+                if src.interaction.tcodMixer:
+                    src.interaction.tcodMixer.close()
                 raise SystemExit()
             if isinstance(event,tcod.event.KeyDown):
                 key = event.sym
@@ -6550,12 +6570,14 @@ FOLLOW YOUR ORDERS
         events = tcod.event.get()
         for event in events:
             if isinstance(event, tcod.event.Quit):
-                src.interaction.tcodMixer.close()
+                if src.interaction.tcodMixer:
+                    src.interaction.tcodMixer.close()
                 raise SystemExit()
             if isinstance(event, tcod.event.WindowResized):
                 checkResetWindowSize(event.width,event.height)
             if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
-                src.interaction.tcodMixer.close()
+                if src.interaction.tcodMixer:
+                    src.interaction.tcodMixer.close()
                 raise SystemExit()
             if isinstance(event,tcod.event.KeyDown):
                 key = event.sym
@@ -6819,12 +6841,14 @@ press enter to continue playing"""]
         events = tcod.event.get()
         for event in events:
             if isinstance(event, tcod.event.Quit):
-                src.interaction.tcodMixer.close()
+                if src.interaction.tcodMixer:
+                    src.interaction.tcodMixer.close()
                 raise SystemExit()
             if isinstance(event, tcod.event.WindowResized):
                 checkResetWindowSize(event.width,event.height)
             if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
-                src.interaction.tcodMixer.close()
+                if src.interaction.tcodMixer:
+                    src.interaction.tcodMixer.close()
                 raise SystemExit()
             if isinstance(event,tcod.event.KeyDown):
                 key = event.sym
@@ -7257,12 +7281,14 @@ to remember"""
         events = tcod.event.get()
         for event in events:
             if isinstance(event, tcod.event.Quit):
-                src.interaction.tcodMixer.close()
+                if src.interaction.tcodMixer:
+                    src.interaction.tcodMixer.close()
                 raise SystemExit()
             if isinstance(event, tcod.event.WindowResized):
                 checkResetWindowSize(event.width,event.height)
             if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
-                src.interaction.tcodMixer.close()
+                if src.interaction.tcodMixer:
+                    src.interaction.tcodMixer.close()
                 raise SystemExit()
             if isinstance(event,tcod.event.KeyDown):
                 key = event.sym

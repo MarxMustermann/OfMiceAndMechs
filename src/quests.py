@@ -311,7 +311,7 @@ class Quest:
     """
     def _solver_trigger_fail(self,dryRun,reason=None):
         if not dryRun:
-            self.character.addMessage("triggered fail for {reason}")
+            self.character.addMessage(f"triggered fail for {reason}")
             self.fail(reason)
             return (None,None)
         return (None,("+",f"abort quest\n({reason})"))

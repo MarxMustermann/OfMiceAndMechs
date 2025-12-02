@@ -21,7 +21,7 @@ class InventoryMenu(src.subMenu.SubMenu):
         """
 
         self.subMenu = None
-        self.skipKeypress = False
+        self.skipKeypress = True
         self.activate = False
         self.drop = False
         self.char = char
@@ -76,7 +76,7 @@ class InventoryMenu(src.subMenu.SubMenu):
             self.skipKeypress = False
         else:
             # exit the submenu
-            if key == "esc":
+            if key in ("esc","i"):
                 return True
             if key in (
                 "ESC",

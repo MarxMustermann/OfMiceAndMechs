@@ -164,11 +164,11 @@ Open doors and break walls that are in the way.
         if not dryRun:
             self.path = path
 
+        quests = []
         if not (character.getBigPosition() == step[1]):
-            quest = src.quests.questMap["GoToTile"](targetPosition=step[1])
-            return ([quest],None)
-        quest = src.quests.questMap["UnblockDoor"](targetPositionBig=step[1],targetPosition=step[2])
-        return ([quest],None)
+            quests.append(src.quests.questMap["GoToTile"](targetPosition=step[1]))
+        quests.append(src.quests.questMap["UnblockDoor"](targetPositionBig=step[1],targetPosition=step[2]))
+        return (reversed(quests),None)
         
     def handleChangedTile(self, extraInfo = None):
         if not self.active:

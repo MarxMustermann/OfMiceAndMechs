@@ -21,6 +21,9 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
         if not character:
             return (None,None)
 
+        if character.macroState["submenue"] and not ignoreCommands:
+            return (None,(["esc"],"close menu"))
+
         if not character.container.isRoom:
             pos = character.getSpacePosition()
             if pos == (14,7,0):

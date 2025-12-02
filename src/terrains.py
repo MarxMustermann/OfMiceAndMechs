@@ -249,6 +249,14 @@ class Terrain:
         for room in self.rooms:
             room.clear_broken_states()
 
+        for (pos,characters) in self.charactersByTile.items():
+            if not self.getRoomByPosition(pos):
+                continue
+            for character in characters:
+                if character.xPosition%15 in (0,14,) or character.yPosition%15 in (0,14,):
+                    continue
+                character.die("beeing underneeth a room")
+
         self.clearGhosts()
 
     def advance(self):

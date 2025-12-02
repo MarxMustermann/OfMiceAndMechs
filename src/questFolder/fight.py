@@ -185,6 +185,23 @@ So if an enemy is to directly east of you:
                 if step == (0,1):
                     command = "s"
 
+                if command == "d":
+                    pos = character.getPosition()
+                    if not character.container.getPositionWalkable((pos[0]+1,pos[1],pos[2]),character=character):
+                        command = "Kdl"
+                elif command == "a":
+                    pos = character.getPosition()
+                    if not character.container.getPositionWalkable((pos[0]-1,pos[1],pos[2]),character=character):
+                        command = "Kal"
+                elif command == "s":
+                    pos = character.getPosition()
+                    if not character.container.getPositionWalkable((pos[0],pos[1]+1,pos[2]),character=character):
+                        command = "Ksl"
+                elif command == "w":
+                    pos = character.getPosition()
+                    if not character.container.getPositionWalkable((pos[0],pos[1]-1,pos[2]),character=character):
+                        command = "Kwl"
+
                 if command:
                     return (None,(command,"approach enemy"))
 

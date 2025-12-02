@@ -325,4 +325,23 @@ Remember that the base provides you with important ressources and healing.
             self.postHandler()
         return True
 
+    def handleQuestFailure(self,extraParam):
+        '''
+        handle a subquest failing
+        '''
+
+        super().handleQuestFailure(extraParam)
+
+        # set up helper variables
+        quest = extraParam.get("quest")
+        reason = extraParam.get("reason")
+
+        if reason:
+            if reason == "no tile path":
+                if quest.type == "SecureTile":
+                    newQuest = src.quests.questMap["ClearPathToTile"](targetPositionBig=quest.targetPosition, reason="be able to reach the enemy")
+                    self.addQuest(newQuest)
+                    self.startWatching(newQuest,self.handleQuestFailure,"failed")
+                    return
+
 src.quests.addType(StoryClearTerrain)

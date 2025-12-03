@@ -92,7 +92,10 @@ class DebugMenu(src.subMenu.SubMenu):
                                     else:
                                         value = False
                                 else:
-                                    value = int(value)
+                                    try:
+                                        value = int(value)
+                                    except:
+                                        return
                                 character.personality[settingName] = value
 
                             if settingName is None:

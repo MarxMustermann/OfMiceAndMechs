@@ -59,6 +59,11 @@ class QuestMenu(src.subMenu.SubMenu):
             returns True when done
         '''
 
+        try:
+            self.skipKeypress
+        except:
+            self.skipKeypress = False
+
         if self.skipKeypress:
             self.skipKeypress = False
             key = "~"

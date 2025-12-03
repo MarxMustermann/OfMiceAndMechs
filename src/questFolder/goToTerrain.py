@@ -100,6 +100,19 @@ class GoToTerrain(src.quests.MetaQuestSequence):
                 movementCommand += "d"*(targetTerrain[0]-submenue.cursor[0])
                 movementCommand += "a"*(submenue.cursor[0]-targetTerrain[0])
                 return (None,(movementCommand+"j","start the auto movement"))
+            if submenue.tag == "tileMovementmenu":
+                if character.getTerrain().yPosition > targetTerrain[1]:
+                    if character.getBigPosition() not in ((7,1,0),(7,0,0)) and not (character.getBigPosition()[0] in (0,14,) or character.getBigPosition()[1] in (0,14,)):
+                        return (None,("W","go to north tile edge"))
+                if character.getTerrain().yPosition < targetTerrain[1]:
+                    if character.getBigPosition() not in ((7,13,0),(7,14,0)) and not (character.getBigPosition()[0] in (0,14,) or character.getBigPosition()[1] in (0,14,)):
+                        return (None,("S","go to south tile edge"))
+                if character.getTerrain().xPosition > targetTerrain[0]:
+                    if character.getBigPosition() not in ((1,7,0),(0,7,0)) and not (character.getBigPosition()[0] in (0,14,) or character.getBigPosition()[1] in (0,14,)):
+                        return (None,("A","go to west tile edge"))
+                if character.getTerrain().xPosition < targetTerrain[0]:
+                    if character.getBigPosition() not in ((13,7,0),(14,7,0)) and not (character.getBigPosition()[0] in (0,14,) or character.getBigPosition()[1] in (0,14,)):
+                        return (None,("D","go to east tile edge"))
             return (None,(["esc"],"close the menu"))
 
         try:
@@ -124,6 +137,10 @@ class GoToTerrain(src.quests.MetaQuestSequence):
 
             return (None,(menuCommand+"M"+movementCommand+"j","auto move to terrain"))
 
+        menu_command = "g"
+        if "runaction" in character.interactionState:
+            menu_command = ""
+
         if character.getTerrain().yPosition > targetTerrain[1]:
             if character.getBigPosition()[0] == 0:
                 return (None, ("d","enter the terrain"))
@@ -133,7 +150,7 @@ class GoToTerrain(src.quests.MetaQuestSequence):
                 return (None, ("w","enter the terrain"))
             
             if character.getBigPosition() not in ((7,1,0),(7,0,0)) and not (character.getBigPosition()[0] in (0,14,) or character.getBigPosition()[1] in (0,14,)):
-                return (None,("gmW","go to north tile edge"))
+                return (None,(menu_command+"mW","go to north tile edge"))
             if character.getPosition() != (7 * 15 + 7, 15 * 1 + 1, 0) and character.getBigPosition() not in ((7,0,0),):
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(7,1,0))
                 return ([quest],None)
@@ -148,7 +165,7 @@ class GoToTerrain(src.quests.MetaQuestSequence):
                 return (None, ("s","enter the terrain"))
             
             if character.getBigPosition() not in ((7,13,0),(7,14,0)) and not (character.getBigPosition()[0] in (0,14,) or character.getBigPosition()[1] in (0,14,)):
-                return (None,("gmS","go to south tile edge"))
+                return (None,(menu_command+"mS","go to south tile edge"))
             if character.getPosition() != (7 * 15 + 7, 15 * 13 + 13, 0) and character.getBigPosition() not in ((7,14,0),):
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(7,13,0))
                 return ([quest],None)
@@ -163,7 +180,7 @@ class GoToTerrain(src.quests.MetaQuestSequence):
                 return (None, ("w","enter the terrain"))
             
             if character.getBigPosition() not in ((1,7,0),(0,7,0)) and not (character.getBigPosition()[0] in (0,14,) or character.getBigPosition()[1] in (0,14,)):
-                return (None,("gmA","go to west tile edge"))
+                return (None,(menu_command+"mA","go to west tile edge"))
             if character.getPosition() != (1 * 15 + 1, 15 * 7 + 7, 0) and character.getBigPosition() not in ((0,7,0),):
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(1,7,0))
                 return ([quest],None)
@@ -178,7 +195,7 @@ class GoToTerrain(src.quests.MetaQuestSequence):
                 return (None, ("w","enter the terrain"))
             
             if character.getBigPosition() not in ((13,7,0),(14,7,0)) and not (character.getBigPosition()[0] in (0,14,) or character.getBigPosition()[1] in (0,14,)):
-                return (None,("gmD","go to east tile edge"))
+                return (None,(menu_command+"mD","go to east tile edge"))
             if character.getPosition() != (13 * 15 + 13, 15 * 7 + 7, 0) and character.getBigPosition() not in ((14,7,0),):
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(13,7,0))
                 return ([quest],None)

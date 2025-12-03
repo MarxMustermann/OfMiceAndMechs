@@ -11,6 +11,7 @@ class MessagesMenu(src.subMenu.SubMenu):
     def __init__(self, char=None):
         self.char = char
         self.scrollIndex = 0
+        self.skipKeypress = True
         super().__init__()
 
     def handleKey(self, key, noRender=False, character = None):
@@ -24,12 +25,12 @@ class MessagesMenu(src.subMenu.SubMenu):
             returns True when done
         """
 
+        if self.skipKeypress:
+            self.skipKeypress = False
+            key = "~"
+
         # exit the submenu
-        if key == "a" and self.scrollIndex > 0:
-            self.scrollIndex -= 1
-        if key == "d":
-            self.scrollIndex += 1
-        if key == "esc":
+        if key in ("esc","x"):
             character.changed("closedMessages")
             return True
         if key in ("ESC","lESC",):
@@ -38,6 +39,10 @@ class MessagesMenu(src.subMenu.SubMenu):
         if key in ("rESC",):
             self.char.rememberedMenu2.append(self)
             return True
+        if key == "a" and self.scrollIndex > 0:
+            self.scrollIndex -= 1
+        if key == "d":
+            self.scrollIndex += 1
 
         char = self.char
 

@@ -276,11 +276,10 @@ Press d to move the cursor and show the subquests description.
                     offsets = [(0,0,0),(1,0,0),(0,1,0),(-1,0,0),(0,-1,0)]
                     foundDirection = None
                     for item in candidates:
-                        if character.getDistance(item.getPosition()) < 2:
+                        if item.container == character.container and character.getDistance(item.getPosition()) < 2:
                             for offset in offsets:
                                 if character.getPosition(offset=offset) == item.getPosition():
-                                    if item.container == character.container:
-                                        foundDirection = offset
+                                    foundDirection = offset
 
                     if foundDirection:
                         interactionCommand = "K"

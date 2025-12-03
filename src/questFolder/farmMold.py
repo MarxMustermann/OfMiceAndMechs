@@ -122,6 +122,12 @@ farm mold"""
         if terrain.alarm:
             return (None,None)
 
+        if not character.getFreeInventorySpace():
+            quest = src.quests.questMap["ClearInventory"]()
+            if not dryRun:
+                beUsefull.idleCounter = 0
+            return ([quest],None)
+
         quest = src.quests.questMap["FarmMold"](lifetime=1000)
         if not dryRun:
             beUsefull.idleCounter = 0

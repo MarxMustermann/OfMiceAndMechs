@@ -262,13 +262,13 @@ Press d to move the cursor and show the subquests description.
 
                 if character.container.isRoom:
                     for item in character.container.itemsOnFloor:
-                        if item.bolted is False and item.type == self.toCollect:
+                        if item.bolted is False and item.type == self.toCollect and not item.is_bolted_over():
                             candidates.append(item)
 
                 if not candidates:
                     for room in character.getTerrain().rooms:
                         for item in room.itemsOnFloor:
-                            if item.bolted is False and item.type == self.toCollect:
+                            if item.bolted is False and item.type == self.toCollect and not item.is_bolted_over():
                                 candidates.append(item)
 
                 if candidates:

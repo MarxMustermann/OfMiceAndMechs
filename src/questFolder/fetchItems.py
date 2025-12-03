@@ -236,18 +236,22 @@ Press d to move the cursor and show the subquests description.
 
                 if foundDirection:
                     interactionCommand = "K"
+                    direction_command = None
                     if "advancedPickup" in character.interactionState:
                         interactionCommand = ""
                     if foundDirection == (0,0,0):
-                        return (None,(interactionCommand+".","pick up item"))
+                        direction_command = "."
                     if foundDirection == (1,0,0):
-                        return (None,(interactionCommand+"d","pick up item"))
+                        direction_command = "d"
                     if foundDirection == (-1,0,0):
-                        return (None,(interactionCommand+"a","pick up item"))
+                        direction_command = "a"
                     if foundDirection == (0,1,0):
-                        return (None,(interactionCommand+"s","pick up item"))
+                        direction_command = "s"
                     if foundDirection == (0,-1,0):
-                        return (None,(interactionCommand+"w","pick up item"))
+                        direction_command = "w"
+
+                    if direction_command:
+                        return (None,(interactionCommand+direction_command,"pick up item"))
 
                 outputSlot = random.choice(outputSlots)
                 quest = src.quests.questMap["GoToPosition"](targetPosition=outputSlot[0],ignoreEndBlocked=True,description="go to "+self.toCollect,reason=f"be able to pick up the {self.toCollect}")
@@ -280,18 +284,22 @@ Press d to move the cursor and show the subquests description.
 
                     if foundDirection:
                         interactionCommand = "K"
+                        direction_command = None
                         if "advancedPickup" in character.interactionState:
                             interactionCommand = ""
                         if foundDirection == (0,0,0):
-                            return (None,(interactionCommand+".","pick up item"))
+                            direction_command = "."
                         if foundDirection == (1,0,0):
-                            return (None,(interactionCommand+"d","pick up item"))
+                            direction_command = "d"
                         if foundDirection == (-1,0,0):
-                            return (None,(interactionCommand+"a","pick up item"))
+                            direction_command = "a"
                         if foundDirection == (0,1,0):
-                            return (None,(interactionCommand+"s","pick up item"))
+                            direction_command = "s"
                         if foundDirection == (0,-1,0):
-                            return (None,(interactionCommand+"w","pick up item"))
+                            direction_command = "w"
+
+                        if direction_command:
+                            return (None,(interactionCommand+direction_command,"pick up item"))
 
                     item = random.choice(candidates)
                     quests = []

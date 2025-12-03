@@ -454,6 +454,12 @@ class Item:
         else:
             return (self.xPosition//15+offset[0],self.yPosition//15+offset[1],offset[2])
 
+    def get_items_on_tile(self):
+        """
+        get the items on the same spot as this item
+        """
+        return self.container.getItemByPosition(self.getPosition())
+
     def getUsageInformation(self):
         return self.usageInfo
 

@@ -13,6 +13,7 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
 
     def __init__(self, char=None):
         self.char = char
+        self.skipKeypress = True
         super().__init__()
 
     def render(self,char):
@@ -164,15 +165,18 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
             submenue.handleKey("~", noRender=noRender, character=character)
             return True
 
-        # exit the submenu
-        if key == "esc":
-            return True
-        if key in ("ESC","lESC",):
-            self.char.rememberedMenu.append(self)
-            return True
-        if key in ("rESC",):
-            self.char.rememberedMenu2.append(self)
-            return True
+        if self.skipKeypress:
+            self.skipKeypress = False
+        else:
+            # exit the submenu
+            if key in ("esc","v"):
+                return True
+            if key in ("ESC","lESC",):
+                self.char.rememberedMenu.append(self)
+                return True
+            if key in ("rESC",):
+                self.char.rememberedMenu2.append(self)
+                return True
 
         char = self.char
 

@@ -3054,10 +3054,10 @@ but they are likely to explode when disturbed.
                         continue
 
                     foundCorpse = False
-                    for room in terrain.rooms:
-                        if room.tag == "shelter":
+                    for check_room in terrain.rooms:
+                        if check_room.tag == "shelter":
                             continue
-                        if room.getItemByType("Corpse"):
+                        if check_room.getItemByType("Corpse"):
                             foundCorpse = True
 
                     if not hunterCount and foundCorpse:

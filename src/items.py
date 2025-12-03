@@ -460,6 +460,18 @@ class Item:
         """
         return self.container.getItemByPosition(self.getPosition())
 
+    def is_bolted_over(self):
+        """
+        check if the item is bellow a bolted down item
+        """
+        for item in self.get_items_on_tile():
+            if item == self:
+                break
+            if not item.bolted:
+                continue
+            return True
+        return False
+
     def getUsageInformation(self):
         return self.usageInfo
 

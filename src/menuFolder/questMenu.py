@@ -15,6 +15,7 @@ class QuestMenu(src.subMenu.SubMenu):
         self.char = char
         self.offsetX = 0
         self.setCursorToCurrentQuest()
+        self.skipKeypress = True
 
         self.sidebared = False
         super().__init__()
@@ -58,8 +59,12 @@ class QuestMenu(src.subMenu.SubMenu):
             returns True when done
         '''
 
+        if self.skipKeypress:
+            self.skipKeypress = False
+            key = "~"
+
         # exit submenu
-        if key == "esc":
+        if key in ("esc","q"):
             return True
         if key in ("ESC","lESC",):
             self.char.rememberedMenu.append(self)

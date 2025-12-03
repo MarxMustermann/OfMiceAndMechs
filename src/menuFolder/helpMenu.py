@@ -28,7 +28,7 @@ class HelpMenu(src.subMenu.SubMenu):
             key = "~"
 
         # exit the submenu
-        if key in ("esc"," ","?"):
+        if key in ("esc"," ","?","z"):
             character.changed("closedHelp")
             return True
 

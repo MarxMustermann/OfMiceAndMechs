@@ -718,7 +718,7 @@ class MetaQuestSequence(Quest,ABC):
 
     def triggerCompletionCheck2(self,extraInfo):
         self.stopWatching(extraInfo[0],self.triggerCompletionCheck2,"completed")
-        self.triggerCompletionCheck()
+        self.triggerCompletionCheck(dryRun=False)
 
         if extraInfo[0] in self.subQuests:
             self.subQuests.remove(extraInfo[0])
@@ -732,13 +732,13 @@ class MetaQuestSequence(Quest,ABC):
                 subQuest.assignToCharacter(self.character)
                 return
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
 
         # smooth over impossible state
         if not self.active:
             return True
 
-        self.generateSubquests()
+        self.generateSubquests(dryRun=dryRun)
 
         # remove completed quests
         if self.subQuests and self.subQuests[0].completed:
@@ -746,7 +746,8 @@ class MetaQuestSequence(Quest,ABC):
 
         # wrap up when out of subquests
         if not len(self.subQuests):
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
         return False
 

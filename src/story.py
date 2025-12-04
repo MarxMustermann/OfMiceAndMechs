@@ -1984,7 +1984,7 @@ but they are likely to explode when disturbed.
                 if self.difficulty == "easy":
                     lifetime = 300
                 if self.difficulty == "medium":
-                    lifetime = 200
+                    lifetime = 250
                 if self.difficulty == "difficult":
                     lifetime = 20
                 quest = src.quests.questMap["SecureTile"](toSecure=snatcherNest,lifetime=lifetime, wandering=True, endWhenCleared=False)

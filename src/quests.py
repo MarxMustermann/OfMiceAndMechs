@@ -716,8 +716,8 @@ class MetaQuestSequence(Quest,ABC):
     check if there are quests left
     """
 
-    def triggerCompletionCheck2(self,extraInfo):
-        self.stopWatching(extraInfo[0],self.triggerCompletionCheck2,"completed")
+    def handle_completed_subquest(self,extraInfo):
+        self.stopWatching(extraInfo[0],self.handle_completed_subquest,"completed")
         self.triggerCompletionCheck(dryRun=False)
 
         if extraInfo[0] in self.subQuests:
@@ -801,7 +801,7 @@ class MetaQuestSequence(Quest,ABC):
             self.character.recalculatePath()
 
         # listen to subquest
-        self.startWatching(quest, self.triggerCompletionCheck2, "completed")
+        self.startWatching(quest, self.handle_completed_subquest, "completed")
 
         # deactivate last active quest
         if addFront and len(self.subQuests) > 1:

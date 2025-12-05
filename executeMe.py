@@ -220,11 +220,11 @@ if __name__ == '__main__':
                             events = tcod.event.get()
                             for event in events:
                                 if isinstance(event, tcod.event.KeyDown):
-                                    if event.sym == tcod.event.KeySym.Y:
+                                    if event.sym == tcod.event.KeySym.y:
                                         import webbrowser
                                         webbrowser.open_new_tab("https://discord.gg/wQAcXBDqk8")
                                         return
-                                    if event.sym == tcod.event.KeySym.N:
+                                    if event.sym == tcod.event.KeySym.n:
                                         return
 
                                 if isinstance(event, tcod.event.Quit):
@@ -241,7 +241,7 @@ if __name__ == '__main__':
                         events = tcod.event.get()
                         for event in events:
                             if isinstance(event, tcod.event.KeyDown):
-                                if event.sym == tcod.event.KeySym.Y:
+                                if event.sym == tcod.event.KeySym.y:
                                     def askForAdditionalInfo():
                                         import textwrap
 
@@ -322,7 +322,7 @@ if __name__ == '__main__':
                                         src.helpers.deal_with_window_events(e)
                                     askToOpenDiscordChannel()
                                     raise e
-                                elif event.sym == tcod.event.KeySym.N:
+                                elif event.sym == tcod.event.KeySym.n:
                                     t = Thread(target=lambda: time.sleep(3))
                                     interaction.tcodConsole.clear()
                                     text = "okay then, here is the trace copied to your clipboard in case you feel better writing me an email"

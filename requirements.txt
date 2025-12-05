@@ -1,4 +1,4 @@
-tcod
+tcod==16.2.3
 urwid
 soundfile
 requests

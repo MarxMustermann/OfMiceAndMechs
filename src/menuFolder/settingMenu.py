@@ -32,7 +32,7 @@ class SettingMenu(src.subMenu.SubMenu):
                     case "enable sound":
                         src.interaction.settings["sound"] = 32 if src.interaction.settings["sound"] == 0 else 0
                     case "set sound volume":
-                        src.interaction.settings["sound"] += -1 if key == "a" else +1
+                        src.interaction.settings["sound"] += -1 if key in ("a","left") else +1
                         src.interaction.settings["sound"] = src.helpers.clamp(src.interaction.settings["sound"], 0, 32)
                         src.interaction.changeVolume()
                     case "toggle fullscreen":

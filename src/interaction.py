@@ -252,7 +252,7 @@ def playSound(soundName,channelName,loop=False):
         if src.interaction.tcodMixer:
             channel = src.interaction.tcodMixer.get_channel(channelName)
             if not channel.busy:
-                channel.play(sounds[soundName], volume = settings["sound"]/32)
+                channel.play(sounds[soundName], volume = settings["sound"]/320.0)
 
 zoom = 0
 window_width = None
@@ -490,13 +490,13 @@ def setUpTcod():
     )
     """
     if tcodMixer:
-        tcodMixer.get_channel("background").play(sound = sounds["loop1_start"],volume = settings["sound"]/ 32.0,on_end = sound_loop)
+        tcodMixer.get_channel("background").play(sound = sounds["loop1_start"],volume = settings["sound"]/ 320.0,on_end = sound_loop)
 
 def sound_loop(ch):
     if random.random() < 0.5:
-        ch.play(sound = sounds["loop1"],volume = settings["sound"]/32.0,on_end = sound_loop)
+        ch.play(sound = sounds["loop1"],volume = settings["sound"]/320.0,on_end = sound_loop)
     else:
-        ch.play(sound = sounds["loop2"],volume = settings["sound"]/32.0,on_end = sound_loop)
+        ch.play(sound = sounds["loop2"],volume = settings["sound"]/320.0,on_end = sound_loop)
 
 def changeVolume():
     if tcodMixer:

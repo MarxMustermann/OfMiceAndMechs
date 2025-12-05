@@ -811,6 +811,9 @@ class MetaQuestSequence(Quest,ABC):
     activate self and first subquest
     """
 
+    def triggerCompletionCheck2(self, ignoreme=None):
+        pass
+
     def activate(self):
         if len(self.subQuests) and not self.subQuests[0].active:
             self.subQuests[0].activate()

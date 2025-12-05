@@ -501,7 +501,7 @@ def sound_loop(ch):
 def changeVolume():
     if tcodMixer:
         channel = tcodMixer.get_channel("background")
-        channel.volume = settings["sound"]/ 32.0
+        channel.volume = settings["sound"]/ 320.0
     
 footer = None
 main = None

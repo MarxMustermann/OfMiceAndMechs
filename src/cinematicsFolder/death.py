@@ -182,7 +182,7 @@ def Death(extraParam):
                 event = events.pop(0)
             else:
                 event = None
-            if not pre and isinstance(event, tcod.event.KeyDown) and event.sym == tcod.event.KeySym.s:
+            if not pre and isinstance(event, tcod.event.KeyDown) and event.sym == tcod.event.KeySym.S:
                 current_content = src.interaction.tcodConsole.rgba.copy()
                 show_Stats(original_window_content, character)
                 numpy.copyto(src.interaction.tcodConsole.rgba, current_content)
@@ -248,7 +248,7 @@ def show_Stats(original_window_content, character):
             if isinstance(event, tcod.event.KeyDown) and event.sym in (
                 tcod.event.KeySym.RETURN,
                 tcod.event.KeySym.ESCAPE,
-                tcod.event.KeySym.j,
+                tcod.event.KeySym.J,
             ):
                 return
 

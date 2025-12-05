@@ -5573,34 +5573,34 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                             sdl_window.fullscreen = not sdl_window.fullscreen
                         if key == tcod.event.KeySym.ESCAPE:
                             submenu.pop()
-                        if key == tcod.event.KeySym.M:
+                        if key == tcod.event.KeySym.m:
                             convertedKey = "m"
-                        if key == tcod.event.KeySym.H:
+                        if key == tcod.event.KeySym.h:
                             if event.mod & tcod.event.Modifier.SHIFT:
                                 convertedKey = "H"
                             else:
                                 convertedKey = "h"
-                        if key == tcod.event.KeySym.T:
+                        if key == tcod.event.KeySym.t:
                             if event.mod & tcod.event.Modifier.SHIFT:
                                 convertedKey = "T"
                             else:
                                 convertedKey = "t"
-                        if key == tcod.event.KeySym.P:
+                        if key == tcod.event.KeySym.p:
                             convertedKey = "p"
-                        if key == tcod.event.KeySym.B:
+                        if key == tcod.event.KeySym.b:
                             convertedKey = "b"
-                        if key == tcod.event.KeySym.R:
+                        if key == tcod.event.KeySym.r:
                             convertedKey = "r"
-                        if key == tcod.event.KeySym.S:
+                        if key == tcod.event.KeySym.s:
                             if event.mod & tcod.event.Modifier.SHIFT:
                                 convertedKey = "S"
                             else:
                                 convertedKey = "s"
-                        if key == tcod.event.KeySym.C:
+                        if key == tcod.event.KeySym.c:
                             convertedKey = "c"
-                        if key == tcod.event.KeySym.D:
+                        if key == tcod.event.KeySym.d:
                             convertedKey = "d"
-                        if key == tcod.event.KeySym.X:
+                        if key == tcod.event.KeySym.x:
                             if event.mod & tcod.event.Modifier.SHIFT:
                                 convertedKey = "X"
                             else:
@@ -5618,28 +5618,28 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                             sdl_window.fullscreen = not sdl_window.fullscreen
                         if key == tcod.event.KeySym.ESCAPE:
                             submenu.pop()
-                        if key == tcod.event.KeySym.E:
+                        if key == tcod.event.KeySym.e:
                             difficulty = "easy"
                             difficultyMap = global_difficultyMap[difficulty]
                             if event.mod & tcod.event.Modifier.SHIFT:
                                 prepereCustomDiff()
                             else:
                                 submenu.pop()
-                        if key == tcod.event.KeySym.M:
+                        if key == tcod.event.KeySym.m:
                             difficulty = "medium"
                             difficultyMap = global_difficultyMap[difficulty]
                             if event.mod & tcod.event.Modifier.SHIFT:
                                 prepereCustomDiff()
                             else:
                                 submenu.pop()
-                        if key == tcod.event.KeySym.D:
+                        if key == tcod.event.KeySym.d:
                             difficulty = "difficult"
                             difficultyMap = global_difficultyMap[difficulty]
                             if event.mod & tcod.event.Modifier.SHIFT:
                                 prepereCustomDiff()
                             else:
                                 submenu.pop()
-                        if key == tcod.event.KeySym.C:
+                        if key == tcod.event.KeySym.c:
                             difficultyMap = global_difficultyMap["custom"]
                             prepereCustomDiff()
                     if isinstance(event, tcod.event.TextInput):
@@ -5685,31 +5685,31 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                             submenu.pop()
                             submenu.pop()
 
-                        if key in (tcod.event.KeySym.LEFT, tcod.event.KeySym.A):
+                        if key in (tcod.event.KeySym.LEFT, tcod.event.KeySym.a):
                             slider[choosen_slider][2] = src.helpers.clamp(
                                 slider[choosen_slider][2] - slider[choosen_slider][3]["step"],
                                 slider[choosen_slider][3]["min"],
                                 slider[choosen_slider][3]["max"],
                             )
 
-                        if key in (tcod.event.KeySym.RIGHT, tcod.event.KeySym.D):
+                        if key in (tcod.event.KeySym.RIGHT, tcod.event.KeySym.d):
                             slider[choosen_slider][2] = src.helpers.clamp(
                                 slider[choosen_slider][2] + slider[choosen_slider][3]["step"],
                                 slider[choosen_slider][3]["min"],
                                 slider[choosen_slider][3]["max"],
                             )
 
-                        if key in (tcod.event.KeySym.UP, tcod.event.KeySym.W):
+                        if key in (tcod.event.KeySym.UP, tcod.event.KeySym.w):
                             choosen_slider = src.helpers.clamp(choosen_slider - 1, 0, len(slider) - 1)
-                        if key in (tcod.event.KeySym.DOWN, tcod.event.KeySym.S):
+                        if key in (tcod.event.KeySym.DOWN, tcod.event.KeySym.s):
                             choosen_slider = src.helpers.clamp(choosen_slider + 1, 0, len(slider) - 1)
 
-                        if key == tcod.event.KeySym.E and len(slider[choosen_slider][4]):
+                        if key == tcod.event.KeySym.e and len(slider[choosen_slider][4]):
                             slider_stack = slider.copy()
                             slider = slider[choosen_slider][4]
                             choosen_slider = 0
 
-                        if key == tcod.event.KeySym.Q:
+                        if key == tcod.event.KeySym.q:
                             submenu.append("difficulty name input")
                 case "difficulty name input":
                     if isinstance(event, tcod.event.KeyDown):
@@ -5728,7 +5728,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
                         if key == tcod.event.KeySym.F11:
                             sdl_window.fullscreen = not sdl_window.fullscreen
-                        if key == tcod.event.KeySym.Y:
+                        if key == tcod.event.KeySym.y:
                             try:
                                 # register the save
                                 with open("gamestate/globalInfo.json") as globalInfoFile:
@@ -5749,7 +5749,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 case "confirmQuit":
                     if isinstance(event, tcod.event.KeyDown):
                         key = event.sym
-                        if key in (tcod.event.KeySym.RETURN, tcod.event.KeySym.Y):
+                        if key in (tcod.event.KeySym.RETURN, tcod.event.KeySym.y):
                             if src.interaction.tcodMixer:
                                 src.interaction.tcodMixer.close()
                             raise SystemExit()
@@ -5768,13 +5768,13 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                         raise SystemExit()
                     if isinstance(event, tcod.event.KeyDown):
                         key = event.sym
-                        if key == tcod.event.KeySym.Z:
+                        if key == tcod.event.KeySym.z:
                             import webbrowser
                             webbrowser.open_new_tab("https://discord.gg/wQAcXBDqk8")
-                        if key == tcod.event.KeySym.X:
+                        if key == tcod.event.KeySym.x:
                             import webbrowser
                             webbrowser.open_new_tab("http://ofmiceandmechs.com/")
-                        if key == tcod.event.KeySym.C:
+                        if key == tcod.event.KeySym.c:
                             import webbrowser
                             webbrowser.open_new_tab("https://github.com/MarxMustermann/OfMiceAndMechs")
                             
@@ -5782,7 +5782,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                             sdl_window.fullscreen = not sdl_window.fullscreen
                         if key == tcod.event.KeySym.ESCAPE:
                             submenu.append("confirmQuit")
-                        if key == tcod.event.KeySym.P:
+                        if key == tcod.event.KeySym.p:
                             try:
                                 # register the save
                                 with open("gamestate/globalInfo.json") as globalInfoFile:
@@ -5798,12 +5798,12 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                             with open("gamestate/globalInfo.json", "w") as globalInfoFile:
                                 json.dump(rawState, globalInfoFile)
                             startGame = True
-                        if key == tcod.event.KeySym.G:
+                        if key == tcod.event.KeySym.g:
                             submenu.append("gameslot")
-                        if key == tcod.event.KeySym.S:
+                        if key == tcod.event.KeySym.s:
                             if not canLoad:
                                 submenu.append("scenario")
-                        if key == tcod.event.KeySym.D:
+                        if key == tcod.event.KeySym.d:
                             if event.mod & tcod.event.Modifier.SHIFT:
                                 submenu.append("delete")
                             else:

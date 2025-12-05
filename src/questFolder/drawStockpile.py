@@ -2,8 +2,10 @@ import src
 
 
 class DrawStockpile(src.quests.MetaQuestSequence):
+    '''
+    quest to draw a stockpile
+    '''
     type = "DrawStockpile"
-
     def __init__(self, description=None, creator=None, targetPosition=None, targetPositionBig=None,itemType=None,stockpileType=None,tryHard=False,reason=None,extraInfo=None):
         questList = []
         super().__init__(questList, creator=creator)
@@ -27,37 +29,50 @@ class DrawStockpile(src.quests.MetaQuestSequence):
             itemTypeName = ""
             if itemType:
                 itemTypeName = f" for {itemType}"
-            self.metaDescription = f"draw {stockpileTypeName}stockpile{itemTypeName}"
+            self.metaDescription = f"draw {stockpileTypeName} stockpile{itemTypeName}"
 
         if not extraInfo:
             self.extraInfo = {}
         else:
             self.extraInfo = extraInfo
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
+        '''
+        check for quest completion and end quest
+        '''
+
+        # abort on weird state
         if not character:
             return None
 
+        # end quest if stockpile is drawn
         room = character.getTerrain().getRoomByPosition(self.targetPositionBig)[0]
         if self.stockpileType == "i":
             for inputSlot in room.inputSlots:
                 if inputSlot[0] == self.targetPosition and inputSlot[1] == self.itemType:
-                    self.postHandler()
+                    if not dryRun:
+                        self.postHandler()
                     return True
         if self.stockpileType == "o":
             for outputSlot in room.outputSlots:
                 if outputSlot[0] == self.targetPosition and outputSlot[1] == self.itemType:
-                    self.postHandler()
+                    if not dryRun:
+                        self.postHandler()
                     return True
         if self.stockpileType == "s":
             for storageSlot in room.storageSlots:
                 if storageSlot[0] == self.targetPosition and storageSlot[1] == self.itemType:
-                    self.postHandler()
+                    if not dryRun:
+                        self.postHandler()
                     return True
-            return None
-        return None
+
+        # continue working otherwise
+        return False
 
     def generateTextDescription(self):
+        '''
+        generate a text description of the quest
+        '''
         reason = ""
         if self.reason:
             reason = f",\nto {self.reason}"
@@ -115,170 +130,212 @@ Try as hard as you can to achieve this.
         return text
 
     def unhandledSubQuestFail(self,extraParam):
+        '''
+        fail on subquest fail
+        '''
         self.fail(extraParam["reason"])
 
     def handleQuestFailure(self,extraParam):
+        '''
+        recursve failure
+        '''
         super().handleQuestFailure(extraParam)
         self.fail(extraParam["reason"])
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
-        if not self.subQuests:
-            submenue = character.macroState.get("submenue")
-            if submenue:
-                if submenue.tag == "paintModeSelection":
-                    if submenue.text == "":
-                        if self.stockpileType == "i":
-                            return (None,(["i"],"configure the painter to input stockpile"))
-                        if self.stockpileType == "o":
-                            return (None,(["o"],"configure the painter to output stockpile"))
-                        if self.stockpileType == "s":
-                            return (None,(["s"],"configure the painter to storage stockpile"))
-                    elif self.stockpileType == submenue.text:
-                        if self.stockpileType == "i":
-                            return (None,(["enter"],"configure the painter to input stockpile"))
-                        if self.stockpileType == "o":
-                            return (None,(["enter"],"configure the painter to output stockpile"))
-                        if self.stockpileType == "s":
-                            return (None,(["enter"],"configure the painter to storage stockpile"))
-                    else:
-                        return (None,(["backspace"],"delete input"))
+        '''
+        get the next step towards solving the quest
+        '''
+        if self.subQuests:
+            return (None,None)
 
-                if submenue.tag == "paintTypeSelection":
-                    itemType = self.itemType
-                    if not itemType:
-                        itemType = ""
-
-                    if itemType == submenue.text:
-                        if self.stockpileType == "i":
-                            return (None,(["enter"],"configure the painter to input stockpile"))
-                        if self.stockpileType == "o":
-                            return (None,(["enter"],"configure the painter to output stockpile"))
-                        if self.stockpileType == "s":
-                            return (None,(["enter"],"configure the painter to storage stockpile"))
-
-                    correctIndex = 0
-                    while correctIndex < len(itemType) and correctIndex < len(submenue.text):
-                        if itemType[correctIndex] != submenue.text[correctIndex]:
-                            break
-                        correctIndex += 1
-
-                    if correctIndex < len(submenue.text):
-                        return (None,(["backspace"],"delete input"))
-
-                    return (None,(itemType[correctIndex:],"enter type"))
-
-                if submenue.tag == "paintExtraParamName":
-                    nameToSet = ""
-                    for (key,value) in self.extraInfo.items():
-                        if (key not in submenue.extraInfo["item"].paintExtraInfo) or (value != submenue.extraInfo["item"].paintExtraInfo[key]):
-                            nameToSet = key
-
-                    if nameToSet == submenue.text:
-                        return (None,(["enter"],"set the name of the extra parameter"))
-
-                    correctIndex = 0
-                    while correctIndex < len(nameToSet) and correctIndex < len(submenue.text):
-                        if nameToSet[correctIndex] != submenue.text[correctIndex]:
-                            break
-                        correctIndex += 1
-
-                    if correctIndex < len(submenue.text):
-                        return (None,(["backspace"],"delete input"))
-
-                    return (None,(nameToSet[correctIndex:],"enter name of the extra parameter"))
-
-                if submenue.tag == "paintExtraParamValue":
-                    #BUG: ordering is not actually checked
-                    valueToSet = ""
-                    for (key,value) in self.extraInfo.items():
-                        if (key not in submenue.extraInfo["item"].paintExtraInfo) or (value != submenue.extraInfo["item"].paintExtraInfo[key]):
-                            valueToSet = value
-
-                    if valueToSet == submenue.text:
-                        return (None,(["enter"],"set the value of the extra parameter"))
-
-                    correctIndex = 0
-                    while correctIndex < len(valueToSet) and correctIndex < len(submenue.text):
-                        if valueToSet[correctIndex] != submenue.text[correctIndex]:
-                            break
-                        correctIndex += 1
-
-                    if correctIndex < len(submenue.text):
-                        return (None,(["backspace"],"delete input"))
-
-                    return (None,(valueToSet[correctIndex:],"enter value of the extra parameter"))
-
-            rooms = character.getTerrain().getRoomByPosition(self.targetPositionBig)
-            if not rooms:
-                if not dryRun:
-                    self.fail("target room missing")
-                return (None,None)
-            room = rooms[0]
-
-            if self.stockpileType == "i":
-                for inputSlot in room.inputSlots:
-                    if inputSlot[0] == self.targetPosition and inputSlot[1] == self.itemType:
-                        if not dryRun:
-                            self.postHandler()
-                        return (None,None)
-            if self.stockpileType == "o":
-                for outputSlot in room.outputSlots:
-                    if outputSlot[0] == self.targetPosition and outputSlot[1] == self.itemType:
-                        if not dryRun:
-                            self.postHandler()
-                        return (None,None)
-            if self.stockpileType == "s":
-                for storageSlot in room.storageSlots:
-                    if storageSlot[0] == self.targetPosition and storageSlot[1] == self.itemType:
-                        if not dryRun:
-                            self.postHandler()
-                        return (None,None)
-
+        if "advancedConfigure" in character.interactionState:
             if not character.inventory or character.inventory[-1].type != "Painter":
-                quest = src.quests.questMap["FetchItems"](toCollect="Painter",amount=1)
-                return ([quest],None)
+                return (None,(".","clear interaction state"))
+            return (None,("i","activate Painter"))
 
-            item = character.inventory[-1]
+        submenue = character.macroState.get("submenue")
+        if submenue:
+            if submenue.tag == "PainterActivitySelection":
+                item = submenue.extraInfo["item"]
+                if self.stockpileType == "i" and item.paintMode != "inputSlot":
+                    return (None,(["m","i","enter"],"configure the painter to input stockpile"))
+                if self.stockpileType == "o" and item.paintMode != "outputSlot":
+                    return (None,(["m","o","enter"],"configure the painter to output stockpile"))
+                if self.stockpileType == "s" and item.paintMode != "storageSlot":
+                    return (None,(["m","s","enter"],"configure the painter to storage stockpile"))
+                if self.itemType != item.paintType:
+                    if self.itemType:
+                        return (None,(["t", *list(self.itemType), "enter"],"configure the item type for the stockpile"))
+                    else:
+                        return (None,(["t", "enter"],"remove the item type for the stockpile"))
+                for (key,_value) in item.paintExtraInfo.items():
+                    if key not in self.extraInfo:
+                        return (None,(["c"],"clear the painters extra info"))
 
-            if self.targetPositionBig != character.getBigPosition():
-                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="go to the tile the stockpile should be drawn on")
-                return ([quest],None)
-            if character.getDistance(self.targetPosition) > 0:
-                quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,reason="get to the drawing spot")
-                return ([quest],None)
+                for (key,value) in self.extraInfo.items():
+                    if (key not in item.paintExtraInfo) or (value != item.paintExtraInfo[key]):
+                        return (None,(["e",key,"enter",value,"enter"],"clear the painters extra info"))
 
-            offsets = ((0,0,0),(0,1,0),(1,0,0),(0,-1,0),(-1,0,0))
-            foundOffset = None
-            for offset in offsets:
-                if character.getPosition(offset=offset) == self.targetPosition:
-                    foundOffset = offset
+                if item.offset != (0, 0, 0):
+                    return (None,(["d", ".", "enter"],"remove the offset from the painter"))
 
-            if self.stockpileType == "i" and item.paintMode != "inputSlot":
-                return (None,(["C","i","m","i","enter"],"configure the painter to input stockpile"))
-            if self.stockpileType == "o" and item.paintMode != "outputSlot":
-                return (None,(["C","i","m","o","enter"],"configure the painter to output stockpile"))
-            if self.stockpileType == "s" and item.paintMode != "storageSlot":
-                return (None,(["C","i","m","s","enter"],"configure the painter to storage stockpile"))
-            if self.itemType != item.paintType:
-                if self.itemType:
-                    return (None,(["C", "i", "t", *list(self.itemType), "enter"],"configure the item type for the stockpile"))
+            if submenue.tag == "paintModeSelection":
+                if submenue.text == "":
+                    if self.stockpileType == "i":
+                        return (None,(["i"],"configure the painter to input stockpile"))
+                    if self.stockpileType == "o":
+                        return (None,(["o"],"configure the painter to output stockpile"))
+                    if self.stockpileType == "s":
+                        return (None,(["s"],"configure the painter to storage stockpile"))
+                elif self.stockpileType == submenue.text:
+                    if self.stockpileType == "i":
+                        return (None,(["enter"],"configure the painter to input stockpile"))
+                    if self.stockpileType == "o":
+                        return (None,(["enter"],"configure the painter to output stockpile"))
+                    if self.stockpileType == "s":
+                        return (None,(["enter"],"configure the painter to storage stockpile"))
                 else:
-                    return (None,(["C", "i", "t", "enter"],"remove the item type for the stockpile"))
+                    return (None,(["backspace"],"delete input"))
 
-            for (key,_value) in item.paintExtraInfo.items():
-                if key not in self.extraInfo:
-                    return (None,(["C","i","c"],"clear the painters extra info"))
+            if submenue.tag == "paintTypeSelection":
+                itemType = self.itemType
+                if not itemType:
+                    itemType = ""
 
-            for (key,value) in self.extraInfo.items():
-                if (key not in item.paintExtraInfo) or (value != item.paintExtraInfo[key]):
-                    return (None,(["C","i","e",key,"enter",value,"enter"],"clear the painters extra info"))
+                if itemType == submenue.text:
+                    if self.stockpileType == "i":
+                        return (None,(["enter"],"configure the painter to input stockpile"))
+                    if self.stockpileType == "o":
+                        return (None,(["enter"],"configure the painter to output stockpile"))
+                    if self.stockpileType == "s":
+                        return (None,(["enter"],"configure the painter to storage stockpile"))
 
-            if item.offset != (0, 0, 0):
-                return (None,(["C", "i", "d", ".", "enter"],"remove the offset from the painter"))
+                correctIndex = 0
+                while correctIndex < len(itemType) and correctIndex < len(submenue.text):
+                    if itemType[correctIndex] != submenue.text[correctIndex]:
+                        break
+                    correctIndex += 1
 
-            return (None,("Ji","draw to stockpile"))
+                if correctIndex < len(submenue.text):
+                    return (None,(["backspace"],"delete input"))
 
-        return (None,None)
+                return (None,(itemType[correctIndex:],"enter type"))
+
+            if submenue.tag == "paintExtraParamName":
+                nameToSet = ""
+                for (key,value) in self.extraInfo.items():
+                    if (key not in submenue.extraInfo["item"].paintExtraInfo) or (value != submenue.extraInfo["item"].paintExtraInfo[key]):
+                        nameToSet = key
+
+                if nameToSet == submenue.text:
+                    return (None,(["enter"],"set the name of the extra parameter"))
+
+                correctIndex = 0
+                while correctIndex < len(nameToSet) and correctIndex < len(submenue.text):
+                    if nameToSet[correctIndex] != submenue.text[correctIndex]:
+                        break
+                    correctIndex += 1
+
+                if correctIndex < len(submenue.text):
+                    return (None,(["backspace"],"delete input"))
+
+                return (None,(nameToSet[correctIndex:],"enter name of the extra parameter"))
+
+            if submenue.tag == "paintExtraParamValue":
+                #BUG: ordering is not actually checked
+                valueToSet = ""
+                for (key,value) in self.extraInfo.items():
+                    if (key not in submenue.extraInfo["item"].paintExtraInfo) or (value != submenue.extraInfo["item"].paintExtraInfo[key]):
+                        valueToSet = value
+
+                if valueToSet == submenue.text:
+                    return (None,(["enter"],"set the value of the extra parameter"))
+
+                correctIndex = 0
+                while correctIndex < len(valueToSet) and correctIndex < len(submenue.text):
+                    if valueToSet[correctIndex] != submenue.text[correctIndex]:
+                        break
+                    correctIndex += 1
+
+                if correctIndex < len(submenue.text):
+                    return (None,(["backspace"],"delete input"))
+
+                return (None,(valueToSet[correctIndex:],"enter value of the extra parameter"))
+
+            if submenue.tag == "paintDirectionSelection":
+                if submenue.text == ".":
+                    return (None,(["enter"],"remove the offset from the painter"))
+                if submenue.text != "":
+                    return (None,(["backspace"],"remove mistyped characters"))
+                return (None,([".", "enter"],"remove the offset from the painter"))
+        rooms = character.getTerrain().getRoomByPosition(self.targetPositionBig)
+        if not rooms:
+            return self._solver_trigger_fail(dryRun,"target room missing")
+        room = rooms[0]
+
+        if self.stockpileType == "i":
+            for inputSlot in room.inputSlots:
+                if inputSlot[0] == self.targetPosition and inputSlot[1] == self.itemType:
+                    if not dryRun:
+                        self.postHandler()
+                    return (None,("+","end quest"))
+        if self.stockpileType == "o":
+            for outputSlot in room.outputSlots:
+                if outputSlot[0] == self.targetPosition and outputSlot[1] == self.itemType:
+                    if not dryRun:
+                        self.postHandler()
+                    return (None,("+","end quest"))
+        if self.stockpileType == "s":
+            for storageSlot in room.storageSlots:
+                if storageSlot[0] == self.targetPosition and storageSlot[1] == self.itemType:
+                    if not dryRun:
+                        self.postHandler()
+                    return (None,("+","end quest"))
+
+        if not character.inventory or character.inventory[-1].type != "Painter":
+            quest = src.quests.questMap["FetchItems"](toCollect="Painter",amount=1)
+            return ([quest],None)
+
+        item = character.inventory[-1]
+
+        if self.targetPositionBig != character.getBigPosition():
+            quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="go to the tile the stockpile should be drawn on")
+            return ([quest],None)
+        if character.getDistance(self.targetPosition) > 0:
+            quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,reason="get to the drawing spot")
+            return ([quest],None)
+
+        offsets = ((0,0,0),(0,1,0),(1,0,0),(0,-1,0),(-1,0,0))
+        foundOffset = None
+        for offset in offsets:
+            if character.getPosition(offset=offset) == self.targetPosition:
+                foundOffset = offset
+
+        if self.stockpileType == "i" and item.paintMode != "inputSlot":
+            return (None,(["C","i","m","i","enter"],"configure the painter to input stockpile"))
+        if self.stockpileType == "o" and item.paintMode != "outputSlot":
+            return (None,(["C","i","m","o","enter"],"configure the painter to output stockpile"))
+        if self.stockpileType == "s" and item.paintMode != "storageSlot":
+            return (None,(["C","i","m","s","enter"],"configure the painter to storage stockpile"))
+        if self.itemType != item.paintType:
+            if self.itemType:
+                return (None,(["C", "i", "t", *list(self.itemType), "enter"],"configure the item type for the stockpile"))
+            else:
+                return (None,(["C", "i", "t", "enter"],"remove the item type for the stockpile"))
+
+        for (key,_value) in item.paintExtraInfo.items():
+            if key not in self.extraInfo:
+                return (None,(["C","i","c"],"clear the painters extra info"))
+
+        for (key,value) in self.extraInfo.items():
+            if (key not in item.paintExtraInfo) or (value != item.paintExtraInfo[key]):
+                return (None,(["C","i","e",key,"enter",value,"enter"],"clear the painters extra info"))
+
+        if item.offset != (0, 0, 0):
+            return (None,(["C", "i", "d", ".", "enter"],"remove the offset from the painter"))
+
+        return (None,("Ji","draw to stockpile"))
 
     def getQuestMarkersTile(self,character):
         result = super().getQuestMarkersTile(character)
@@ -307,7 +364,7 @@ Try as hard as you can to achieve this.
         if self.completed:
             1/0
 
-        self.triggerCompletionCheck(self.character)
+        self.triggerCompletionCheck(self.character,dryRun=False)
 
     def assignToCharacter(self, character):
         if self.character:

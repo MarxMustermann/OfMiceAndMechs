@@ -42,6 +42,9 @@ class GlassStatue(src.items.Item):
         self.numTeleportsDone = 0
 
     def handleItemRequirements(self,removeItems=False,character=None):
+        '''
+        remove the items needed for charging the glass statue
+        '''
         # determine what items are needed
         if self.itemID == None:
             return
@@ -119,6 +122,9 @@ class GlassStatue(src.items.Item):
         return (completed,text)
 
     def pray(self,character):
+        '''
+        saccrifice item to charge up the statue
+        '''
         character.changed("prayed",{})
 
         if self.charges >= 9:
@@ -149,6 +155,9 @@ class GlassStatue(src.items.Item):
         character.addMessage(text)
 
     def render(self):
+        '''
+        generate how the itme should be shown on the UI
+        '''
         color = self.color(self.itemID)
         displaychars = "GG"
 
@@ -177,6 +186,9 @@ class GlassStatue(src.items.Item):
 
     @staticmethod
     def color(itemID):
+        '''
+        calculate the color for this item
+        '''
         color = "#888"
         if itemID == 1:
             color = "#f00"
@@ -195,6 +207,9 @@ class GlassStatue(src.items.Item):
         return color
 
     def handleEpochChange(self):
+        '''
+        change state every epoch
+        '''
         if self.stable:
             return
         if not self.container:
@@ -211,34 +226,24 @@ class GlassStatue(src.items.Item):
 
 
     def teleport(self,character):
+        '''
+        teleport the character to the approprate dungeon
+        '''
         if self.charges < 5:
             character.addMessage(f"not enough charges ({self.charges}/5)")
             return
-        character.addMessage(str(src.gamestate.gamestate.gods[self.itemID]["lastHeartPos"]))
 
-        (x,y) = src.gamestate.gamestate.gods[self.itemID]["lastHeartPos"]
-        newTerrain = src.gamestate.gamestate.terrainMap[y][x]
-
-        candidates = []
-        for x in range(1,14):
-            for y in range(1,14):
-                if newTerrain.getRoomByPosition((x,y,0)):
-                    continue
-                candidates.append((x,y,0))
-        bigPos = random.choice(candidates)
-
-        character.container.removeCharacter(character)
-        newTerrain.addCharacter(character,15*bigPos[0]+13,15*bigPos[1]+7)
+        terrain_position = src.gamestate.gamestate.gods[self.itemID]["lastHeartPos"]
+        src.magic.teleportToTerrain(character, terrain_position, spawnOutside=True)
 
         self.charges -= 1
         self.numTeleportsDone += 1
-
         character.changed("glass statue used",{})
-        character.changed("changedTerrain",{"character":character})
-
-        character.interactionState["itemMarkedLast"] = None
 
     def showInfo(self,character):
+        '''
+        show an overview of information about this item
+        '''
         character.addMessage(f"mana: {self.getTerrain().mana}\ncharges: {self.charges}")
 
         if self.itemID:
@@ -262,13 +267,12 @@ class GlassStatue(src.items.Item):
             character.addMessage("this god can improve your base damage")
 
     def getConfigurationOptions(self, character):
-        """
+        '''
         register the configuration options with superclass
 
         Parameters:
             character: the character trying to conigure the machine
-        """
-
+        '''
         options = super().getConfigurationOptions(character)
         if self.bolted:
             options["b"] = ("unbolt", self.unboltAction)
@@ -282,6 +286,9 @@ class GlassStatue(src.items.Item):
         return options
 
     def getSetHeart(self,character):
+        '''
+        either remove or set a glass heart to this item
+        '''
         if self.hasItem:
             self.removeGlassHeart(character)
         else:
@@ -289,27 +296,33 @@ class GlassStatue(src.items.Item):
             self.stable = True
 
     def releaseGlassHeart(self,character):
+        '''
+        make the glass heart return to its home dungeon
+        '''
         if self.hasItem:
             src.gamestate.gamestate.gods[self.itemID]["lastHeartPos"] = src.gamestate.gamestate.gods[self.itemID]["home"]
-            print(src.gamestate.gamestate.gods[self.itemID])
             self.hasItem = False
 
     def removeGlassHeart(self,character):
+        '''
+        remove glass heart from this item
+        '''
         newItem = src.items.itemMap["SpecialItem"](epoch=src.gamestate.gamestate.tick//(15*15*15))
         newItem.itemID = self.itemID
         if not character.getFreeInventorySpace() > 0:
             self.container.addItem(newItem,character.getPosition())
 
-            src.popups.Popup.open_Popup(character, "the GlassHeart drops to the ground after you rip it")
+            src.popups.Popup.open_Popup(character, "the GlassHeart drops to the ground after you rip it out of the GlassStatue")
         else:
-            character.inventory.append(newItem)
-            src.popups.Popup.open_Popup(character, "you rip the GlassHeart and take it")
+            character.addToInventory(newItem)
+            src.popups.Popup.open_Popup(character, "you rip the Heart from the GlassStatue and take it")
 
         self.hasItem = False
 
     def setGlassHeart(self,character):
-        self.getTerrain().mana += 10
-
+        '''
+        add the glass to this item
+        '''
         glassHeart = None
         hasHeart = False
         for item in character.inventory:
@@ -331,11 +344,13 @@ class GlassStatue(src.items.Item):
 
         if glassHeart.epoch < src.gamestate.gamestate.tick//(15*15*15):
             character.addMessage("the heart stpped beating and shatters. Transer the heart faster next time.")
-            character.inventory.remove(glassHeart)
+            character.removeItemFromInventory(glassHeart)
             return
 
+        self.getTerrain().mana += 10
+
         self.hasItem = True
-        character.inventory.remove(glassHeart)
+        character.removeItemFromInventory(glassHeart)
         src.gamestate.gamestate.gods[self.itemID]["lastHeartPos"] = (character.getTerrain().xPosition,character.getTerrain().yPosition)
         character.changed("deliveredSpecialItem",{"itemID":self.itemID})
 
@@ -351,16 +366,25 @@ A wave of enemies is approaching to steal the GlassHeart.
         src.magic.spawnWaves()
 
     def boltAction(self,character):
+        '''
+        bolt the item down
+        '''
         self.bolted = True
         character.addMessage("you bolt down the Statue")
         character.changed("boltedItem",{"character":character,"item":self})
 
     def unboltAction(self,character):
+        '''
+        unbolt the item
+        '''
         self.bolted = False
         character.addMessage("you unbolt the Statue")
         character.changed("unboltedItem",{"character":character,"item":self})
 
     def getLongInfo(self):
+        '''
+        generate a text description to show on the UI
+        '''
         if not self.itemID:
             return f"""no god set"""
         godName = src.gamestate.gamestate.gods[self.itemID]["name"]
@@ -383,4 +407,5 @@ Currently the GlassStatue has {self.charges} charges.
 This GlassStatue was used teleported {self.numTeleportsDone} times.
 """
 
+# register item type
 src.items.addType(GlassStatue)

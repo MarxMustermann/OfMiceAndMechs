@@ -2,19 +2,27 @@ import src
 import random
 
 class CollectGlassHearts(src.quests.MetaQuestSequence):
+    '''
+    quest to collect glass hearts
+    '''
     type = "CollectGlassHearts"
 
     def __init__(self, description="collect glass hearts", creator=None, lifetime=None):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
+        self.room_building_streak_length = 0
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
+
         if self.subQuests:
             return (None,None)
 
         if not character:
             return (None,None)
+
+        if character.macroState["submenue"] and not ignoreCommands:
+            return (None,(["esc"],"close menu"))
 
         if not character.container.isRoom:
             pos = character.getSpacePosition()
@@ -99,8 +107,34 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,lifetime=100,description="defend the arena",reason="ensure no attackers get into the base")
             return ([quest],None)
 
+
+        terrain = character.getTerrain()
+        scrapFields = terrain.scrapFields[:]
+        for scrapField in scrapFields[:]:
+            foundScrap = False
+            for item in terrain.itemsByBigCoordinate.get(scrapField,[]):
+                if item.type == "Scrap":
+                    foundScrap = True
+                    break
+            if not foundScrap:
+                scrapFields.remove(scrapField)
+
+        if not scrapFields:
+            terrain = character.getTerrain()
+            if terrain.mana >= 20:
+                quest = src.quests.questMap["GetEpochReward"](rewardType="spawn scrap",reason="ensure enough scrap is available")
+                return ([quest],None)
+
+        if len(character.terrainInfo) < numGlassHearts*3:
+            if character.getFreeInventorySpace() < 3:
+                quest = src.quests.questMap["ClearInventory"](returnToTile=False)
+                return ([quest],None)
+
+            quest = src.quests.questMap["Adventure"]()
+            return ([quest],None)
+
         # ensure there is a backup NPC
-        if npcCount < numGlassHearts+2:
+        if npcCount < numGlassHearts+4:
             hasDispenserCharges = 0
             for room in terrain.rooms:
                 for item in room.getItemsByType("GooDispenser",needsBolted=True):
@@ -119,9 +153,8 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                         quest = src.quests.questMap["ClearTile"](targetPosition=room.getPosition())
                         return ([quest],None)
 
-            if npcCount < 2 or hasDispenserCharges > 2:
-                quest = src.quests.questMap["SpawnClone"]()
-                return ([quest],None)
+            quest = src.quests.questMap["SpawnClone"]()
+            return ([quest],None)
 
         # ensure the siege manager is configured
         if terrain.alarm:
@@ -137,23 +170,84 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
 
             if siegeManager:
                 existingActions = []
-                for actionDefintion in siegeManager.schedule.values():
-                    existingActions.append(actionDefintion["type"])
+                for scheduledAction in siegeManager.getActionList():
+                    existingActions.append(scheduledAction[2]["type"])
 
                 if "restrict outside" not in existingActions or "sound alarms" not in existingActions or "unrestrict outside" not in existingActions or "silence alarms" not in existingActions:
                     quest = src.quests.questMap["ConfigureSiegeManager"]()
                     return ([quest],None)
 
+        # ensure there is enough trap rooms
         if numGlassHearts:
 
+            # count trap rooms
             numTrapRooms = 0
             for room in character.getTerrain().rooms:
-                if room.tag == "traproom":
+                if room.tag == "trapRoom":
                     numTrapRooms += 1
 
+            # ensure an appropriate number of trap rooms
             if numTrapRooms < numGlassHearts//2:
-                quest = src.quests.questMap["StrengthenBaseDefences"](numTrapRoomsBuild=numGlassHearts//2,numTrapRoomsPlanned=numGlassHearts//2+1,lifetime=1000)
-                return ([quest],None)
+
+                # check to continue building open buildsite when convinent
+                forceBuildRoom = False
+                for room in terrain.rooms:
+                    
+                    # ignore non trap rooms
+                    if not room.tag in ("traproom","entryRoom",):
+                        continue
+
+                    # check for neighbouring buildsites
+                    offsets = [(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]
+                    roomBuilders = []
+                    for offset in offsets:
+
+                        # get room builder
+                        roomPos = room.getPosition()
+                        checkPos = (roomPos[0]+offset[0], roomPos[1]+offset[1], 0)
+                        items = terrain.getItemByPosition((checkPos[0]*15+7,checkPos[1]*15+7,0))
+                        if not len(items) == 1 or not items[0].type == "RoomBuilder":
+                            continue
+                        roomBuilder = items[0]
+
+                        # set flad to force building, if the needed items are in inventory
+                        missingItems = roomBuilder.get_missing_items()
+                        for (itemType,position) in missingItems:
+                            if character.searchInventory(itemType):
+                                forceBuildRoom = True
+
+                # either actively build base defences or pass time
+                forceAdventure = False
+                if self.room_building_streak_length >= 3:
+                    forceAdventure = True
+                if (random.random() < 0.5 or forceBuildRoom) and not forceAdventure:
+                    if not dryRun:
+                        self.room_building_streak_length += 1
+                    quest = src.quests.questMap["StrengthenBaseDefences"](numTrapRoomsBuild=numGlassHearts//2,numTrapRoomsPlanned=numGlassHearts//2+1,lifetime=random.randint(100,500))
+                    return ([quest],None)
+                else:
+                    if not dryRun:
+                        self.room_building_streak_length = 0
+
+                    # ensure at least one Clone has Room building as highest prio
+                    foundClone = False
+                    for candidate in terrain.getAllCharacters():
+                        if not candidate.faction == character.faction:
+                            continue
+                        if candidate == character:
+                            continue
+                        if not candidate.getRandomProtisedDuties():
+                            continue
+                        if not candidate.getRandomProtisedDuties()[0] == "room building":
+                            continue
+                        foundClone = True
+                    if not foundClone:
+                        quest = src.quests.questMap["EnsureMaindutyClone"](dutyType="room building")
+                        return ([quest],None)
+
+                    # beat people up for fun .... erh to gather ressources
+                    quest = src.quests.questMap["Adventure"]()
+                    return ([quest],None)
 
         # ensure the base is set to auto expand
         foundCityPlaner = None
@@ -168,6 +262,25 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
             if not foundCityPlaner.autoExtensionThreashold:
                 quest = src.quests.questMap["SetBaseAutoExpansion"](targetLevel=2)
                 return ([quest],None)
+
+        # fill empty rooms with life
+        if foundCityPlaner:
+            rooms = foundCityPlaner.getAvailableRooms()
+            random.shuffle(rooms)
+            if rooms:
+                room = rooms[0]
+
+                candidates = ["manufacturingHall","electrifierHall","smokingRoom"]
+                random.shuffle(candidates)
+                candidates.insert(0,"wallManufacturing")
+                candidates.insert(0,"storage")
+                for checkRoom in terrain.rooms:
+                    if checkRoom.tag in candidates:
+                        candidates.remove(checkRoom.tag)
+                
+                if candidates:
+                    quest = src.quests.questMap["AssignFloorPlan"](floorPlanType=candidates[0],roomPosition=room.getPosition())
+                    return ([quest],None)
 
         # get statues ready for teleport
         strengthRating = character.getStrengthSelfEstimate()
@@ -209,7 +322,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
 
         # unlock more statues
         if len(readyStatues) < 7:
-            quest = src.quests.questMap["AppeaseAGod"](targetNumGods=len(readyStatues)+1, lifetime=1000)
+            quest = src.quests.questMap["AppeaseAGod"](targetNumGods=len(readyStatues)+1, lifetime=random.randint(800,1500))
             return ([quest],None)
 
         # get stronger to be able to complete the unlocked dungeons
@@ -217,6 +330,10 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
         return ([quest],None)
 
     def generateTextDescription(self):
+        try:
+             self.room_building_streak_length
+        except:
+             self.room_building_streak_length = 0
         text = ["""
 You reach out to your implant and it answers:
 
@@ -244,9 +361,9 @@ So apease the gods and obtain their GlassHearts.
         if not self.active:
             return
 
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
@@ -256,7 +373,9 @@ So apease the gods and obtain their GlassHearts.
 
             return False
 
-        self.postHandler()
+        if not dryRun:
+            self.postHandler()
+        return True
 
     def handleQuestFailure(self,extraParam):
         if extraParam["reason"] == "no job":

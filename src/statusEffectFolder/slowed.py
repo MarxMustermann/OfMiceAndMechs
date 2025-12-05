@@ -11,6 +11,11 @@ class Slowed(src.statusEffects.MovementBuff):
     def modMovement(self, speed):
         return speed * (1+self.slowDown)
 
+    def getLoreDescription(self):
+        text = ""
+        text += f"You move slower than usual and are easy to catch."
+        return text
+
     def getShortCode(self):
         return "SLW"
 

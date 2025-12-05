@@ -142,3 +142,34 @@ def clockwiseangle_and_distance(origin, point):
 
 def percentage_chance(p):
     return random.random() < p
+
+
+def deal_with_window_events(exception=None):
+    for event in tcod.event.get():
+        if isinstance(event, tcod.event.Quit):
+            raise SystemExit()
+        if isinstance(event, tcod.event.WindowEvent):
+            match event.type:
+                case "WINDOWCLOSE":
+                    if exception:
+                        raise exception
+                    raise SystemExit()
+                case "WindowHidden":
+                    pass
+                case _:
+                    src.interaction.tcodPresent()
+
+
+def power_distribution(low: int | float, high: int | float, power=2.0) -> float:
+    """
+    return random values between low and high while preferring **lower** values according to skewed curve/distribution
+    """
+    u = random.random() ** power
+    return low + (high - low) * u
+
+def reversed_power_dist(low: int | float, high: int | float, power=2.0) -> float:
+    """
+    return random values between low and high while preferring **higher** values according to skewed curve/distribution
+    """
+    u = 1 - random.random() ** power
+    return low + (high - low) * u

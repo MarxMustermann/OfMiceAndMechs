@@ -37,12 +37,12 @@ class VialFiller(src.items.Item):
 
     def boltAction(self,character):
         self.bolted = True
-        character.addMessage("you bolt down the ScrapCompactor")
+        character.addMessage("you bolt down the VialFiller")
         character.changed("boltedItem",{"character":character,"item":self})
 
     def unboltAction(self,character):
         self.bolted = False
-        character.addMessage("you unbolt the ScrapCompactor")
+        character.addMessage("you unbolt the VialFiller")
         character.changed("unboltedItem",{"character":character,"item":self})
 
     def render(self):
@@ -53,6 +53,8 @@ class VialFiller(src.items.Item):
 
     def getDispenser(self):
         if not self.container:
+            return None
+        if isinstance(self.container,src.characters.characterMap["Clone"]):
             return None
 
         fallBackItem = None
@@ -106,15 +108,19 @@ class VialFiller(src.items.Item):
         filled = False
         chargesUsed = 0
 
-        for item in character.inventory:
-            if dispenser.charges and isinstance(item, src.items.itemMap["Vial"]) and not item.uses >= item.maxUses:
-                item.uses = 10
+        for item in character.inventory[:]:
+            if dispenser.charges and isinstance(item, src.items.itemMap["Flask"]):
+                new_item = src.items.itemMap["Vial"]()
+                new_item.uses = 10
                 dispenser.charges -= 1
                 filled = True
-                character.addMessage("you fill the vial")
+                character.addMessage("you fill the Flask and create a Vial")
+
+                character.inventory.remove(item)
+                character.inventory.append(new_item)
+                
                 break
         if filled:
-            character.addMessage("you fill vials in your inventory")
             character.addMessage(f"you used {chargesUsed} charges")
             if not dispenser.charges > 0:
                 character.addMessage("the GooDispenser is empty now")

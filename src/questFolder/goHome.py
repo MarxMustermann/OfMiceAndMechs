@@ -1,9 +1,12 @@
 import src
 
+import random
 
 class GoHome(src.quests.MetaQuestSequence):
+    '''
+    quest to go home
+    '''
     type = "GoHome"
-
     def __init__(self, description="go home", creator=None, paranoid=False,reason=None):
         questList = []
         super().__init__(questList, creator=creator)
@@ -16,6 +19,9 @@ class GoHome(src.quests.MetaQuestSequence):
         self.reason = reason
 
     def generateTextDescription(self):
+        '''
+        generate a textual description of this quest
+        '''
         reason = ""
         if self.reason:
             reason = f", to {self.reason}"
@@ -39,23 +45,43 @@ Press control-d to stop your character from moving.
 """
         return text
 
-    def triggerCompletionCheck(self, character=None):
+    def triggerCompletionCheck(self, character=None, dryRun=True):
+        '''
+        check if the quest is completed
+        '''
         if not character:
-            return None
+            return False
 
-        if character.getTerrainPosition() == self.getHomeLocation() and character.getBigPosition() == self.getCityLocation():
-            self.postHandler()
-            return True
+        if character.getTerrainPosition() != self.getHomeLocation():
+            return False
+
+        homeRoom = character.getHomeRoom()
+        if homeRoom:
+            if character.container == homeRoom:
+                if not dryRun:
+                    self.postHandler()
+                return True
+        else:
+            if character.container.isRoom:
+                if not dryRun:
+                    self.postHandler()
+                return True
         return False
 
     def wrapedTriggerCompletionCheck(self, extraInfo):
+        '''
+        indirection to call the actual fuction
+        '''
         if not self.active:
             return
         self.reroll()
 
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
     def assignToCharacter(self, character):
+        '''
+        assign this quest to a character
+        '''
         if self.character:
             return
 
@@ -66,18 +92,30 @@ Press control-d to stop your character from moving.
         super().assignToCharacter(character)
 
     def getCityLocation(self):
+        '''
+        get the coordinate of where the city should be
+        '''
         return (self.character.registers["HOMEx"],self.character.registers["HOMEy"],0)
 
     def getHomeLocation(self):
+        '''
+        get the coordinate of where the home terrain should be
+        '''
         return (self.character.registers["HOMETx"],self.character.registers["HOMETy"],0)
 
     def recalcDescription(self):
+        '''
+        reset the description
+        '''
         if self.character:
             cityLocation = self.getCityLocation()
             terrainLocation = self.getHomeLocation()
             self.metaDescription = self.baseDescription+f" {cityLocation[0]}/{cityLocation[1]} on {terrainLocation[0]}/{terrainLocation[1]}"
 
     def getNextStep(self, character=None, ignoreCommands=False, dryRun=True):
+        '''
+        get the next step towards solving the quest
+        '''
         if self.subQuests:
             return (None,None)
 
@@ -85,6 +123,10 @@ Press control-d to stop your character from moving.
             return (None,None)
 
         if not character.container.isRoom:
+            submenue = character.macroState["submenue"]
+            if submenue:
+                return (None,(["esc"],"close menu"))
+
             pos = character.getSpacePosition()
             if pos == (14,7,0):
                 return (None,("a","enter room"))
@@ -149,7 +191,7 @@ Press control-d to stop your character from moving.
                             interactionCommand = "J"
                             if "advancedInteraction" in character.interactionState:
                                 interactionCommand = ""
-                            return (None, (interactionCommand + direction + "sssj", "activate the Shrine"))
+                            return (None, (interactionCommand + direction + "ssj", "activate the Shrine"))
                     foundShrine = items[0]
                     quest = src.quests.questMap["GoToPosition"](
                         targetPosition=foundShrine.getPosition(), reason="get to a shrine", ignoreEndBlocked=True
@@ -174,9 +216,18 @@ Press control-d to stop your character from moving.
                 quest = src.quests.questMap["GoToTerrain"](targetTerrain=self.getHomeLocation())
                 return ([quest], None)
 
-        if character.getBigPosition() != self.getCityLocation():
+        # workaround missing home rooms
+        homeRoom = character.getHomeRoom()
+        if not homeRoom:
+            if currentTerrain.rooms:
+                homeRoom = random.choice(currentTerrain.rooms)
+            else:
+                return self._solver_trigger_fail(dryRun,"no home")
+
+        # make character go into the home room
+        if character.getBigPosition() != homeRoom.getPosition():
             quest = src.quests.questMap["GoToTile"](
-                paranoid=self.paranoid, targetPosition=self.getCityLocation(), reason="go to the command center"
+                paranoid=self.paranoid, targetPosition=homeRoom.getPosition(), reason="go to the command center"
             )
             return ([quest], None)
 
@@ -193,11 +244,31 @@ Press control-d to stop your character from moving.
         if move != "":
             return (None, (move, "move into room"))
 
-        return (None, None)
+        return (None, (".","stand around confused"))
 
     def getQuestMarkersTile(self, character):
+        '''
+        generate quest markers for this quest
+        '''
         result = super().getQuestMarkersTile(character)
         result.append(((self.getCityLocation()[0],self.getCityLocation()[1]),"target"))
         return result
 
+    def handleQuestFailure(self,extraParam):
+        '''
+        handle a subquest failing
+        '''
+
+        # set up helper variables
+        quest = extraParam.get("quest")
+        reason = extraParam.get("reason")
+
+        if reason:
+            if reason == "no tile path":
+                self.fail(reason)
+                return
+
+        super().handleQuestFailure(extraParam)
+
+# register the quest type
 src.quests.addType(GoHome)

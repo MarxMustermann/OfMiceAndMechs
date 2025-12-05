@@ -2,8 +2,19 @@ import src
 import random
 
 class MetalWorking(src.quests.MetaQuestSequence):
-    type = "MetalWorking"
+    '''
+    quest to produce ingame item using metal working
 
+    Parameters:
+        description: the description of the quest to show in the UI
+        creator: the entity creating the object (obsolete?)
+        reason: the reason for assigning the quest to be shown in the UI
+        toProduce: the item type to produce
+        amount: the amount of items to produce
+        produceToInventory: prefer to put the produced Item into your inventory
+        tryHard: try eveerythin possible to complete this quest
+    '''
+    type = "MetalWorking"
     def __init__(self, description="metal working", creator=None, reason=None, toProduce=None, amount=None, produceToInventory=False,tryHard=False):
         questList = []
         super().__init__(questList, creator=creator)
@@ -37,20 +48,24 @@ Press d to move the cursor and show the subquests description.
 """))
         return out
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None, dryRun=True):
         if not character:
             return False
 
         if character.getNearbyEnemies():
-            self.fail("enemies nearby")
+            if not dryRun:
+                self.fail("enemies nearby")
             return True
 
         return False
 
     def getNextStep(self,character,ignoreCommands=False,dryRun=True):
+
+        # let subquest do their thing
         if self.subQuests:
             return (None,None)
 
+        # enter tile properly
         if not character.container.isRoom:
             pos = character.getSpacePosition()
             if pos == (14,7,0):
@@ -62,73 +77,71 @@ Press d to move the cursor and show the subquests description.
             if pos == (7,0,0):
                 return (None,("s","enter room"))
 
+        # use the menu to set the name to produce
         if character.macroState["submenue"] and character.macroState["submenue"].tag == "metalWorkingProductInput":
             submenue = character.macroState["submenue"]
             if self.toProduce == submenue.text:
                 return (None,(["enter"],"set the name of the item to produce"))
-
             correctIndex = 0
             while correctIndex < len(self.toProduce) and correctIndex < len(submenue.text):
                 if self.toProduce[correctIndex] != submenue.text[correctIndex]:
                     break
                 correctIndex += 1
-
             if correctIndex < len(submenue.text):
                 return (None,(["backspace"],"delete input"))
-
             return (None,(self.toProduce[correctIndex:],"enter name of the tem to produce"))
 
+        # use the menu to set how much to produce
         if character.macroState["submenue"] and character.macroState["submenue"].tag == "metalWorkingAmountInput":
             submenue = character.macroState["submenue"]
             targetAmount = str(self.amount - self.amountDone)
             if submenue.text == targetAmount:
                 return (None,(["enter"],"set how many of the item to produce"))
-
             correctIndex = 0
             while correctIndex < len(targetAmount) and correctIndex < len(submenue.text):
                 if targetAmount[correctIndex] != submenue.text[correctIndex]:
                     break
                 correctIndex += 1
-
             if correctIndex < len(submenue.text):
                 return (None,(["backspace"],"delete input"))
-
             return (None,(targetAmount[correctIndex:],"enter name of the tem to produce"))
 
-        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
+        # use menu to select what type of item to produce
+        if character.macroState["submenue"] and character.macroState["submenue"].tag == "metalWorkingProductSelection":
             submenue = character.macroState["submenue"]
-            if submenue.tag == "metalWorkingProductSelection":
-                index = None
-                counter = 1
-                for option in submenue.options.items():
-                    if option[1] == self.toProduce:
-                        index = counter
-                        break
-                    counter += 1
+            index = None
+            counter = 1
+            for option in submenue.options.items():
+                if option[1] == self.toProduce:
+                    index = counter
+                    break
+                counter += 1
 
-                if index is None:
-                    index = counter-1
+            if index is None:
+                index = counter-1
 
-                if self.produceToInventory:
-                    activationCommand = "j"
-                else:
-                    activationCommand = "k"
-
-                if self.amount - self.amountDone > 1:
-                    activationCommand = activationCommand.upper()
-
-                offset = index-submenue.selectionIndex
-                command = ""
-                if offset > 0:
-                    command += "s"*offset
-                else:
-                    command += "w"*(-offset)
-                command += activationCommand
-                return (None,(command,"produce item"))
+            if self.produceToInventory:
+                activationCommand = "j"
             else:
+                activationCommand = "k"
+
+            if self.amount - self.amountDone > 1:
+                activationCommand = activationCommand.upper()
+
+            offset = index-submenue.selectionIndex
+            command = ""
+            if offset > 0:
+                command += "s"*offset
+            else:
+                command += "w"*(-offset)
+            command += activationCommand
+            return (None,(command,"produce item"))
+
+        # use menu to start producing an item
+        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
                 submenue = character.macroState["submenue"]
 
-                if not submenue.extraInfo.get("item"):
+                if not submenue.extraInfo.get("item") or not submenue.extraInfo.get("item").type == "MetalWorkingBench":
                     return (None,(["esc"],"exit submenu"))
 
                 menuEntry = "produce item"
@@ -152,52 +165,52 @@ Press d to move the cursor and show the subquests description.
                     command += "j"
                 return (None,(command,"start producing items"))
 
+        # close other menus
         if character.macroState["submenue"] and not ignoreCommands:
             return (None,(["esc"],"exit submenu"))
 
+        # activate production item when marked
         if character.macroState.get("itemMarkedLast"):
             if character.macroState["itemMarkedLast"].type == "MetalWorkingBench":
                 return (None,("j","activate metal working bench"))
             else:
                 return (None,(".","undo selection"))
 
-        if character.getBigPosition() != character.getHomeRoomCord():
-            quest = src.quests.questMap["GoToTile"](targetPosition=character.getHomeRoomCord(),reason="go to anvil")
-            return ([quest],None)
-
+        # find local metal benches
         benches = []
         if character.container.isRoom:
             benches.extend(character.container.getItemsByType("MetalWorkingBench"))
 
-        benchNearBy = None
+        # go to room with benches
+        if not benches:
+            for room in character.getTerrain().rooms:
+                for item in room.getItemsByType("MetalWorkingBench"):
+                    if not item.bolted:
+                        continue
+                    quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),reason="go to a room with a MetalWorkingBench")
+                    return ([quest],None)
+            return self._solver_trigger_fail(dryRun,"no metal bench available")
+
+        # use bench next to the character
         for bench in benches:
-            if not character.getDistance(bench.getPosition()) > 1:
-                benchNearBy = bench
-                break
+            if character.getDistance(bench.getPosition()) > 1:
+                continue
+            pos = character.getPosition()
+            benchPos = bench.getPosition()
+            if (pos[0],pos[1],pos[2]) == benchPos:
+                return (None,("j","start metal working"))
+            if (pos[0]-1,pos[1],pos[2]) == benchPos:
+                return (None,("aj","start metal working"))
+            if (pos[0]+1,pos[1],pos[2]) == benchPos:
+                return (None,("dj","start metal working"))
+            if (pos[0],pos[1]-1,pos[2]) == benchPos:
+                return (None,("wj","start metal working"))
+            if (pos[0],pos[1]+1,pos[2]) == benchPos:
+                return (None,("sj","start metal working"))
 
-        if not benchNearBy:
-            if not benches:
-                if not dryRun:
-                    self.fail("no metal bench available")
-                return (None,None)
-            quest = src.quests.questMap["GoToPosition"](targetPosition=benches[0].getPosition(),ignoreEndBlocked=True,reason="go to a MetalWorkingBench")
-            return ([quest],None)
-
-        pos = character.getPosition()
-        benchPos = benchNearBy.getPosition()
-
-        if (pos[0],pos[1],pos[2]) == benchPos:
-            return (None,("j","start metal working"))
-        if (pos[0]-1,pos[1],pos[2]) == benchPos:
-            return (None,("aj","start metal working"))
-        if (pos[0]+1,pos[1],pos[2]) == benchPos:
-            return (None,("dj","start metal working"))
-        if (pos[0],pos[1]-1,pos[2]) == benchPos:
-            return (None,("wj","start metal working"))
-        if (pos[0],pos[1]+1,pos[2]) == benchPos:
-            return (None,("sj","start metal working"))
-
-        return (None,None)
+        # go to a bench
+        quest = src.quests.questMap["GoToPosition"](targetPosition=random.choice(benches).getPosition(),ignoreEndBlocked=True,reason="go to a MetalWorkingBench")
+        return ([quest],None)
 
     def handleQuestFailure(self,extraParam):
         if extraParam["quest"] not in self.subQuests:
@@ -259,6 +272,26 @@ Press d to move the cursor and show the subquests description.
 
         return super().assignToCharacter(character)
 
+    def getQuestMarkersSmall(self,character,renderForTile=False):
+        '''
+        return the quest markers for the normal map
+        '''
+        if isinstance(character.container,src.rooms.Room):
+            if renderForTile:
+                return []
+        else:
+            if not renderForTile:
+                return []
+
+        result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
+        if not renderForTile:
+            if isinstance(character.container,src.rooms.Room):
+                for metalWorkingBench in character.container.getItemsByType("MetalWorkingBench"):
+                    if not metalWorkingBench.readyToUse():
+                        continue
+                    result.append((metalWorkingBench.getPosition(),"target"))
+        return result
+
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
         freeMetalWorkingBenches = []
@@ -308,7 +341,7 @@ Press d to move the cursor and show the subquests description.
                               src.quests.questMap["MetalWorking"](toProduce=buildSite[1],amount=1,produceToInventory=False)]
                     return (quests,None)
 
-            checkItems = [("RoomBuilder",1,1),("Door",1,1),("Wall",1,1),("Painter",1,1),("ScrapCompactor",1,1),("Case",1,1),("Frame",1,1),("Rod",1,1),("MaggotFermenter",1,1),("Sword",1,1),("Armor",1,1),("Bolt",10,5),("Vial",1,1),("CoalBurner",1,1),("BioPress",1,1),("GooProducer",1,1),("GooDispenser",1,1),("VialFiller",1,1),("Door",4,1),("Painter",2,1),("Wall",10,3),("ScrapCompactor",2,1)]
+            checkItems = [("RoomBuilder",1,1),("Door",1,1),("Wall",1,1),("Painter",1,1),("ScrapCompactor",1,1),("Case",1,1),("Frame",1,1),("Rod",1,1),("MaggotFermenter",1,1),("Sword",1,1),("Armor",1,1),("Bolt",10,5),("CoalBurner",1,1),("BioPress",1,1),("GooProducer",1,1),("GooDispenser",1,1),("VialFiller",1,1),("Door",4,1),("Painter",2,1),("Wall",10,3),("ScrapCompactor",2,1)]
             for checkItem in checkItems:
                 if itemsInStorage.get(checkItem[0],0) < checkItem[1]:
                     quests = [src.quests.questMap["ClearInventory"](returnToTile=False),

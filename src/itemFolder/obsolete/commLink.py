@@ -36,7 +36,7 @@ class Commlink(src.items.Item):
 
             character.addMessage("you need to delivered %s scraps" % (len(toRemove)))
             for item in toRemove:
-                character.inventory.remove(item)
+                character.removeItemFromInventory(item)
 
         if self.scrapToDeliver > 0:
             character.addMessage(

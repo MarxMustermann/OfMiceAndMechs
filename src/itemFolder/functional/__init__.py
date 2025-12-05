@@ -13,3 +13,4 @@ import src.itemFolder.functional.stasisTank
 import src.itemFolder.functional.suicideBooth
 import src.itemFolder.functional.throne
 import src.itemFolder.functional.voider
+import src.itemFolder.functional.glassThrone

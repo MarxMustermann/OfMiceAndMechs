@@ -29,7 +29,7 @@ def test_check_scraphammering_duty_anvil_and_scrap(character_room):
     (character,room) = character_room
 
     scrap = src.items.itemMap["Scrap"]()
-    character.inventory.append(scrap)
+    character.addToInventory(scrap)
 
     anvil = src.items.itemMap["Anvil"]()
     room.addItem(anvil,(6,6,0))
@@ -45,7 +45,7 @@ def test_check_scraphammering_duty_anvil_and_scrap_and_stockpile(character_room)
     room.addStorageSlot((8,8,0),None)
 
     scrap = src.items.itemMap["Scrap"]()
-    character.inventory.append(scrap)
+    character.addToInventory(scrap)
 
     anvil = src.items.itemMap["Anvil"]()
     room.addItem(anvil,(6,6,0))
@@ -59,7 +59,7 @@ def test_check_scraphammering_duty_anvil_and_scrap_and_schedule(character_room):
     (character,room) = character_room
 
     scrap = src.items.itemMap["Scrap"]()
-    character.inventory.append(scrap)
+    character.addToInventory(scrap)
 
     anvil = src.items.itemMap["Anvil"]()
     anvil.scheduledAmount = 2

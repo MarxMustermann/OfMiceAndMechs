@@ -46,11 +46,11 @@ This item shocks enemies when stepped on.
         """
         if self.active:
             character.addMessage("you defuse the landmine, that takes 30 ticks")
-            character.timeTaken += 30
+            character.takeTime(30,"defused")
             self.active = False
         else:
             character.addMessage("you fuse the landmine again, that takes 50 ticks")
-            character.timeTaken += 50
+            character.takeTime(50,"fused")
             self.active = True
         """
 

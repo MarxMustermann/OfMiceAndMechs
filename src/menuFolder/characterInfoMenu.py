@@ -13,6 +13,7 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
 
     def __init__(self, char=None):
         self.char = char
+        self.skipKeypress = True
         super().__init__()
 
     def render(self,char):
@@ -27,6 +28,8 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
         weaponBaseDamage = None
         if char.weapon:
             weaponBaseDamage = char.weapon.baseDamage
+
+        print(char.registers)
 
         text += "name:       %s\n" % char.name
         text += "\n"
@@ -58,11 +61,60 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
         if not statusEffectString == "":
             statusEffectString = statusEffectString[:-2]
         text += f"status effects: %s\npress e to view a detailed buff list"%(statusEffectString,)
+        
+        try:
+            char.hasSwapAttack
+        except:
+            char.hasSwapAttack = False
+        try:
+            char.hasRun
+        except:
+            char.hasRun = False
+        try:
+            char.hasJump
+        except:
+            char.hasJump = False
+        try:
+            char.hasLineShot
+        except:
+            char.hasLineShot = False
+        try:
+            char.hasRandomShot
+        except:
+            char.hasRandomShot = False
+        try:
+            char.hasMovementSpeedBoost
+        except:
+            char.hasMovementSpeedBoost = False
+        try:
+            char.hasMaxHealthBoost
+        except:
+            char.hasMaxHealthBoost = False
+        try:
+            char.hasMagic
+        except:
+            char.hasMagic = False
+        try:
+            char.lastMapSync
+        except:
+            char.lastMapSync = None
 
         text += "\n"
-        text += f"movementSpeed:  {char.movementSpeed}\n"
+        text += f"movementSpeed:  {char.adjustedMovementSpeed}\n"
         text += f"attackSpeed:    {char.attackSpeed}\n"
+        text += "\n"
         text += f"hasSpecialAttacks: {char.hasSpecialAttacks}\n"
+        text += f"hasSwapAttack: {char.hasSwapAttack}\n"
+        text += f"hasRun: {char.hasRun}\n"
+        text += f"hasJump: {char.hasJump}\n"
+        text += f"hasLineShot: {char.hasLineShot}\n"
+        text += f"hasRandomShot: {char.hasRandomShot}\n"
+        text += f"hasMovementSpeedBoost: {char.hasMovementSpeedBoost}\n"
+        text += f"hasMaxHealthBoost: {char.hasMaxHealthBoost}\n"
+        text += f"hasMagic: {char.hasMagic}\n"
+        text += "\n"
+        if char.lastMapSync:
+            text += f"lastMapSync: {src.gamestate.gamestate.tick-char.lastMapSync}\n"
         text += "\n"
         for jobOrder in char.jobOrders:
             text += str(jobOrder.taskName)
@@ -79,7 +131,6 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
         text += f"big position: {char.getBigPosition()}\n"
         text += f"terrain position: {char.getTerrainPosition()}\n"
         text += f"grievances: {char.grievances}\n"
-        text += f"registers: {char.registers}\n"
         text += f"terrainName: %s\n" % char.getTerrain().tag
         text += f"disableCommandsOnPlus: %s\n" % char.disableCommandsOnPlus
         text += f"autoExpandQuests: %s\n" % char.autoExpandQuests
@@ -87,6 +138,8 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
         text += f"burnedIn: %s\n" % char.burnedIn
         text += f"tool: %s\n" % char.tool
 
+        text += "\npress e to view the status effect on the character"
+        text += "\npress s to view the character statistics"
         return text
 
     def handleKey(self, key, noRender=False, character = None):
@@ -106,15 +159,24 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
             submenue.handleKey("~", noRender=noRender,character=character)
             return True
 
-        # exit the submenu
-        if key == "esc":
+        if key == "s":
+            submenue = src.menuFolder.characterStatsMenu.CharacterStatsMenu()
+            character.macroState["submenue"] = submenue
+            submenue.handleKey("~", noRender=noRender, character=character)
             return True
-        if key in ("ESC","lESC",):
-            self.char.rememberedMenu.append(self)
-            return True
-        if key in ("rESC",):
-            self.char.rememberedMenu2.append(self)
-            return True
+
+        if self.skipKeypress:
+            self.skipKeypress = False
+        else:
+            # exit the submenu
+            if key in ("esc","v"):
+                return True
+            if key in ("ESC","lESC",):
+                self.char.rememberedMenu.append(self)
+                return True
+            if key in ("rESC",):
+                self.char.rememberedMenu2.append(self)
+                return True
 
         char = self.char
 

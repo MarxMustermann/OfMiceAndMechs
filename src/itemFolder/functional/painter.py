@@ -5,16 +5,10 @@ import src
 
 
 class Painter(src.items.Item):
-    """
-    ingame item ment to be placed by characters and to mark things with
-    """
-
+    '''
+    ingame item ment to be an ingame way to draw stock and buildsites
+    '''
     type = "Painter"
-
-    """
-    call superclass constructor with modified paramters and set some state
-    """
-
     def __init__(self):
         self.activated = False
         super().__init__(src.canvas.displayChars.markerBean_inactive)
@@ -33,6 +27,9 @@ A painter. it can be used to draw markers on the floor
         self.offset = (0,0,0)
 
     def getUsageInformation(self):
+        '''
+        generate text on how to use this item
+        '''
         return """
 Place the Painter on the floor and activate it to draw.
 
@@ -56,12 +53,12 @@ This should be used in cases where you can not place the Painter on the position
 """
 
     def render(self):
-        """
-        render the marker as animation if active
+        '''
+        render the marker depending on the mode set
 
         Returns:
             how the item should currently be rendered
-        """
+        '''
         if self.paintMode == "inputSlot":
             return "xi"
         if self.paintMode == "outputSlot":
@@ -79,14 +76,22 @@ This should be used in cases where you can not place the Painter on the position
         return "x?"
 
     def configure(self, character):
+        '''
+        show UI to select what type of setting to set
+        '''
         submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(
                "what do you want to do?\n\nm: set painting mode\nt: set type\ne: set extra info\nc: clear extra info\nd: set direction"
                                        )
+        submenue.tag = "PainterActivitySelection"
+        submenue.extraInfo["item"] = self
         character.macroState["submenue"] = submenue
         character.macroState["submenue"].followUp = {"container":self,"method":"configure2","params":{"character":character}}
         character.runCommandString("~",nativeKey=True)
 
     def configure2(self,extraInfo):
+        '''
+        show the UIs to set individual settings
+        '''
         character = extraInfo["character"]
         keyPressed = extraInfo["keyPressed"]
 
@@ -99,6 +104,7 @@ This should be used in cases where you can not place the Painter on the position
                "type in the direction to set\n\n"+
                "(w,a,s,d)"
                )
+           submenue.tag = "paintDirectionSelection"
            character.macroState["submenue"] = submenue
            character.macroState["submenue"].followUp = {"container":self,"method":"setDirection","params":{"character":character}}
            return
@@ -106,7 +112,7 @@ This should be used in cases where you can not place the Painter on the position
         if keyPressed == "m":
            submenue = src.menuFolder.inputMenu.InputMenu(
                "type in the mode you want to set\n\n"+
-               "inputSlot, outputSlot, storageSlot, walkingSpace, buildSite, delete (i,o,s,w,b,d)"
+               "inputSlot, outputSlot, storageSlot, walkingSpace, buildSite, delete, trap (i,o,s,w,b,d,t)"
                )
            submenue.tag = "paintModeSelection"
            character.macroState["submenue"] = submenue
@@ -134,6 +140,9 @@ This should be used in cases where you can not place the Painter on the position
            return
 
     def addExtraInfo1(self,extraInfo):
+        '''
+        show UI to set the extra parameters name
+        '''
         character = extraInfo["character"]
         submenue = src.menuFolder.inputMenu.InputMenu(
                "type in the type of the extra parameter you want to set (empty for string)",
@@ -143,6 +152,9 @@ This should be used in cases where you can not place the Painter on the position
         character.macroState["submenue"].followUp = {"container":self,"method":"addExtraInfo2","params":extraInfo}
 
     def addExtraInfo2(self,extraInfo):
+        '''
+        show UI to set the extra parameters value
+        '''
         character = extraInfo["character"]
 
         submenue = src.menuFolder.inputMenu.InputMenu(
@@ -153,9 +165,13 @@ This should be used in cases where you can not place the Painter on the position
         character.macroState["submenue"] = submenue
         submenue.tag = "paintExtraParamValue"
         submenue.extraInfo["item"] = self
+        submenue.extraInfo["name"] = extraInfo["name"]
         character.macroState["submenue"].followUp = {"container":self,"method":"addExtraInfo3","params":extraInfo}
 
     def addExtraInfo3(self,extraInfo):
+        '''
+        show UI to set the extra parameters type
+        '''
         extraInfo["type"] = None
         value = extraInfo["value"]
         if extraInfo["type"] in ("int","integer"):
@@ -165,6 +181,9 @@ This should be used in cases where you can not place the Painter on the position
         self.paintExtraInfo[extraInfo["name"]] = value
 
     def setDirection(self,extraInfo):
+        '''
+        actually set the direction the painter should work in
+        '''
         mode = extraInfo.get("text")
         offset = (0,0,0)
         if mode == "w":
@@ -179,6 +198,9 @@ This should be used in cases where you can not place the Painter on the position
         extraInfo["character"].addMessage(f"you set the offset to {self.offset}")
 
     def setMode(self,extraInfo):
+        '''
+        set what type of markers the painter should paint
+        '''
         character = extraInfo["character"]
 
         mode = extraInfo.get("text")
@@ -201,6 +223,9 @@ This should be used in cases where you can not place the Painter on the position
         character.addMessage(f"you set the mode to {self.paintMode}")
 
     def setType(self,extraInfo):
+        '''
+        set the item type the drawn marker should apply to
+        '''
         if extraInfo.get("text") in ("","None",None):
             self.paintType = None
         else:
@@ -208,13 +233,12 @@ This should be used in cases where you can not place the Painter on the position
         extraInfo["character"].addMessage(f"you set the type to {self.paintType}")
 
     def apply(self, character):
-        """
-        activate the marker bean
+        '''
+        handle getting activated by a character by painting a marker
 
         Parameters:
             character: the character activating the marker bean
-        """
-
+        '''
         super().apply(character)
         if isinstance(character.container,src.rooms.Room):
 
@@ -291,6 +315,9 @@ This should be used in cases where you can not place the Painter on the position
                               (center[0]  ,center[1]+1,center[2]),
                               (center[0]  ,center[1]-1,center[2]),
                              ]
+                for neighnour in neighbours[:]:
+                    if neighnour[0] < 1 or neighnour[0] > 11 or neighnour[1] < 1 or neighnour[1] > 11:
+                        neighbours.remove(neighnour)
 
                 if deletedBuildSite and deletedBuildSite[1] == "TriggerPlate": # override existing drawings
                     room.addBuildSite(center,"RodTower")
@@ -367,12 +394,12 @@ This should be used in cases where you can not place the Painter on the position
         character.addMessage((self.paintMode,self.paintType,str(self.paintExtraInfo)))
 
     def getLongInfo(self):
-        """
+        '''
         generate simple text description
 
         Returns:
             the decription text
-        """
+        '''
 
         text = super().getLongInfo()
         text += f"""
@@ -385,4 +412,5 @@ offset: {self.offset}
 
         return text
 
+# register the item type
 src.items.addType(Painter)

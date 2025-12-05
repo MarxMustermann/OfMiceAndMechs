@@ -57,12 +57,12 @@ Place the items in the correct input or storage stockpile.
             self.allowAny = parameters["allowAny"]
         return super().setParameters(parameters)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
-            return None
+            return False
 
         if self.targetPositionBig and character.getBigPosition() != self.targetPositionBig:
-            return None
+            return False
 
         if isinstance(character.container,src.rooms.Room):
             room = character.container
@@ -70,8 +70,9 @@ Place the items in the correct input or storage stockpile.
             foundNeighbour = None
             inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny)
             if not inputSlots:
-                self.postHandler()
-                return None
+                if not dryRun:
+                    self.postHandler()
+                return True
 
             for slot in inputSlots:
                 if self.targetPosition and self.targetPosition != slot[0]:
@@ -93,13 +94,16 @@ Place the items in the correct input or storage stockpile.
 
             if not foundNeighbour:
                 character.addMessage("no neighbour")
-                self.postHandler()
+                if not dryRun:
+                    self.postHandler()
                 return True
 
         if not self.getNumDrops(character):
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
-        return None
+
+        return False
 
     def getNumDrops(self,character):
         numDrops = 0
@@ -110,7 +114,7 @@ Place the items in the correct input or storage stockpile.
         return numDrops
 
     def droppedItem(self, extraInfo):
-        self.triggerCompletionCheck(self.character)
+        self.triggerCompletionCheck(self.character,dryRun=False)
 
     def assignToCharacter(self, character):
         if self.character:
@@ -133,6 +137,9 @@ Place the items in the correct input or storage stockpile.
             if not isinstance(character.macroState["submenue"],src.menuFolder.inventoryMenu.InventoryMenu):
                 return (None,(["esc"],"close the menu"))
 
+        if character.getNearbyEnemies():
+            return self._solver_trigger_fail(dryRun,"nearby enemies")
+
         if self.targetPositionBig and character.getBigPosition() != self.targetPositionBig:
             quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig)
             return ([quest],None)
@@ -141,12 +148,10 @@ Place the items in the correct input or storage stockpile.
             room = character.container
 
             if not hasattr(room,"inputSlots"):
-                if not dryRun:
-                    self.fail(reason="no input slot attribute")
-                return (None,None)
+                return self._solver_trigger_fail(dryRun,"no input slot attribute")
 
             if not character.inventory:
-                return (None,None)
+                return (None,(".","stand around confused"))
 
             fullyEmpty = not character.inventory[-1].walkable
             inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny,allowStorage=False,fullyEmpty=fullyEmpty)
@@ -167,13 +172,16 @@ Place the items in the correct input or storage stockpile.
             for direction in ((-1,0),(1,0),(0,-1),(0,1),(0,0)):
                 neighbour = (character.xPosition+direction[0],character.yPosition+direction[1],character.zPosition)
                 for inputSlot in inputSlots:
-                    if neighbour[0] == inputSlot[0][0] and neighbour[1] == inputSlot[0][1]:
-                        foundDirectDrop = (neighbour,direction,inputSlot)
-                        break
+                    if neighbour[0] != inputSlot[0][0]:
+                        continue
+                    if neighbour[1] != inputSlot[0][1]:
+                        continue
+                    foundDirectDrop = (neighbour,direction,inputSlot)
+                    break
 
             if character.inventory and foundDirectDrop:
                 dropContent = room.getItemByPosition(foundDirectDrop[0])
-                if not dropContent or dropContent[0].type != "Scrap":
+                if not dropContent or self.toRestock != "Scrap" or dropContent[0].type != "Scrap":
                     maxSpace = foundDirectDrop[2][2].get("maxAmount")
                     if not maxSpace:
                         if (dropContent and dropContent[0].walkable == False) or character.inventory[-1].walkable == False:
@@ -217,13 +225,13 @@ Place the items in the correct input or storage stockpile.
                                 interactionCommand = ""
 
                         if foundDirectDrop[1] == (-1,0):
-                            return (None,((inventoryCommand+interactionCommand+"a")*numToDrop,"store an item"))
+                            return (None,((interactionCommand+"A")*numToDrop,"store an item"))
                         if foundDirectDrop[1] == (1,0):
-                            return (None,((inventoryCommand+interactionCommand+"d")*numToDrop,"store an item"))
+                            return (None,((interactionCommand+"D")*numToDrop,"store an item"))
                         if foundDirectDrop[1] == (0,-1):
-                            return (None,((inventoryCommand+interactionCommand+"w")*numToDrop,"store an item"))
+                            return (None,((interactionCommand+"W")*numToDrop,"store an item"))
                         if foundDirectDrop[1] == (0,1):
-                            return (None,((inventoryCommand+interactionCommand+"s")*numToDrop,"store an item"))
+                            return (None,((interactionCommand+"S")*numToDrop,"store an item"))
                         if foundDirectDrop[1] == (0,0):
                             return (None,((inventoryCommand+"l")*numToDrop,"store an item"))
                 else:
@@ -254,6 +262,7 @@ Place the items in the correct input or storage stockpile.
             for slot in inputSlots:
                 if len(slot[0]) < 3:
                     slot = ((slot[0][0],slot[0][1],0),slot[1],slot[2])
+
                 for direction in ((-1,0),(1,0),(0,-1),(0,1)):
                     neighbour = (slot[0][0]-direction[0],slot[0][1]-direction[1],slot[0][2])
                     if neighbour not in room.walkingSpace:
@@ -269,6 +278,7 @@ Place the items in the correct input or storage stockpile.
                 for slot in inputSlots:
                     if len(slot[0]) < 3:
                         slot = ((slot[0][0],slot[0][1],0),slot[1],slot[2])
+
                     for direction in ((-1,0),(1,0),(0,-1),(0,1)):
                         neighbour = (slot[0][0]-direction[0],slot[0][1]-direction[1],slot[0][2])
                         if not room.getPositionWalkable(neighbour):
@@ -279,9 +289,7 @@ Place the items in the correct input or storage stockpile.
                         break
 
             if not foundNeighbour:
-                if not dryRun:
-                    self.fail(reason="no dropoff found")
-                return (None,None)
+                return self._solver_trigger_fail(dryRun,"no dropoff found")
 
             quest = src.quests.questMap["GoToPosition"](reason="get to the stockpile and be able to fill it")
             quest.setParameters({"targetPosition":foundNeighbour[0]})
@@ -297,14 +305,32 @@ Place the items in the correct input or storage stockpile.
         if charPos == (14,7,0):
             return (None,("a","enter tile"))
 
-        if not dryRun:
-            self.fail()
-        return (None,None)
+        return self._solver_trigger_fail(dryRun,"unknown reason")
 
     def getQuestMarkersTile(self,character):
         result = super().getQuestMarkersTile(character)
         if self.targetPositionBig:
             result.append(((self.targetPositionBig[0],self.targetPositionBig[1]),"target"))
+        return result
+
+    def getQuestMarkersSmall(self,character,renderForTile=False):
+        '''
+        return the quest markers for the normal map
+        '''
+        if isinstance(character.container,src.rooms.Room):
+            if renderForTile:
+                return []
+        else:
+            if not renderForTile:
+                return []
+
+        result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
+        if not renderForTile:
+            if isinstance(character.container,src.rooms.Room):
+                room = character.container
+                inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny,allowStorage=True)
+                for inputSlot in inputSlots:
+                    result.append((inputSlot[0],"target"))
         return result
 
     @staticmethod
@@ -340,29 +366,30 @@ Place the items in the correct input or storage stockpile.
                             if not sources:
                                 continue
 
-                        reason = "finish hauling"
+                        reason = "finish hauling (duty: hauling)"
                         quests = []
                         if inputSlot[1]:
                             quests.append(src.quests.questMap["RestockRoom"](toRestock=inputSlot[1],allowAny=True,reason=reason,targetPosition=inputSlot[0]))
                             if character.container != room:
-                                quests.append(src.quests.questMap["GoToTile"](targetPosition=room.getPosition()))
+                                quests.append(src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),reason="get to the room to work in (duty: hauling)"))
                         else:
                             if hasItem:
                                 quests.append(src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type,allowAny=True,reason=reason,targetPosition=inputSlot[0]))
                                 if character.container != room:
-                                    quests.append(src.quests.questMap["GoToTile"](targetPosition=room.getPosition()))
+                                    quests.append(src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),reason="get to the room to work in (duty: hauling)"))
                                 if not dryRun:
                                     beUsefull.idleCounter = 0
                                 return (quests,None)
 
                         if not hasItem:
+                            reason = "have items to drop (duty: hauling)"
                             if trueInput:
-                                quests.append(src.quests.questMap["FetchItems"](toCollect=inputSlot[1]))
+                                quests.append(src.quests.questMap["FetchItems"](toCollect=inputSlot[1],reason=reason))
                                 if not dryRun:
                                     beUsefull.idleCounter = 0
                                 return (quests,None)
                             else:
-                                quests.append(src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=sources[0][0]))
+                                quests.append(src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=sources[0][0],reason=reason))
                                 if not dryRun:
                                     beUsefull.idleCounter = 0
                                 return (quests,None)
@@ -390,7 +417,7 @@ Place the items in the correct input or storage stockpile.
                             if not sources:
                                 continue
 
-                        reason = "finish hauling"
+                        reason = "finish hauling (duty: hauling)"
                         quests = []
                         if inputSlot[1]:
                             quests.append(src.quests.questMap["RestockRoom"](toRestock=inputSlot[1],allowAny=True,reason=reason))
@@ -403,13 +430,14 @@ Place the items in the correct input or storage stockpile.
 
 
                         if not hasItem:
+                            reason = "to have items to store (duty: hauling)"
                             if trueInput:
-                                quests.append(src.quests.questMap["FetchItems"](toCollect=inputSlot[1]))
+                                quests.append(src.quests.questMap["FetchItems"](toCollect=inputSlot[1],reason=reason))
                                 if not dryRun:
                                     beUsefull.idleCounter = 0
                                 return (quests,None)
                             else:
-                                quests.append(src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=sources[0][0]))
+                                quests.append(src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=sources[0][0],reason=reason))
                                 if not dryRun:
                                     beUsefull.idleCounter = 0
                                 return (quests,None)
@@ -433,8 +461,8 @@ Place the items in the correct input or storage stockpile.
                         if not items or items[0].type != storageSlot[1] or not items[0].walkable:
                             continue
 
-                        quests = [src.quests.questMap["RestockRoom"](targetPositionBig=room.getPosition(),targetPosition=storageSlot[0],allowAny=True,toRestock=items[0].type,reason="fill a storage stockpile designated to be filled")
-                                 ,src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=checkStorageSlot[0],reason="to get the items to fill a storage stockpile designated to be filled",abortOnfullInventory=True)]
+                        quests = [src.quests.questMap["RestockRoom"](targetPositionBig=room.getPosition(),targetPosition=storageSlot[0],allowAny=True,toRestock=items[0].type,reason="fill a storage stockpile designated to be filled (duty: hauling)")
+                                 ,src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=checkStorageSlot[0],reason="to get the items to fill a storage stockpile designated to be filled (duty: hauling)",abortOnfullInventory=True)]
                         if not dryRun:
                             beUsefull.idleCounter = 0
                         return (quests,None)

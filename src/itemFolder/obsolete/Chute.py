@@ -16,7 +16,7 @@ class Chute(src.items.Item):
 
         if character.inventory:
             item = character.inventory[-1]
-            character.inventory.remove(item)
+            character.removeItemFromInventory(item)
             item.xPosition = self.xPosition + 1
             item.yPosition = self.yPosition
 

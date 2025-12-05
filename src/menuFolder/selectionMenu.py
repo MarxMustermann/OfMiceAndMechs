@@ -2,21 +2,15 @@ import src
 
 # bad code: this does nothing the Submenu doesn't do
 class SelectionMenu(src.subMenu.SubMenu):
-    """
+    '''
     does a simple selection and terminates
-    """
-
+    Parameters:
+        text: the text to show next to the selection
+        options: the options to select from
+        default: the default value
+        targetParamName: name of the parameter the selection should be stored in
+    '''
     def __init__(self, text="", options=None, default=None, targetParamName="selection",extraDescriptions=None, selected=None):
-        """
-        set up the selection
-
-        Parameters:
-            text: the text to show next to the selection
-            options: the options to select from
-            default: the default value
-            targetParamName: name of the parameter the selection should be stored in
-        """
-
         if not options:
             options = []
 
@@ -34,7 +28,7 @@ class SelectionMenu(src.subMenu.SubMenu):
         self.extraDescriptions = extraDescriptions
 
     def handleKey(self, key, noRender=False, character = None):
-        """
+        '''
         handles a keypress
 
         Parameters:
@@ -42,7 +36,7 @@ class SelectionMenu(src.subMenu.SubMenu):
             noRender: flag for skipping rendering
         Returns:
             returns True when done
-        """
+        '''
 
         # exit submenu
         if key == "esc":

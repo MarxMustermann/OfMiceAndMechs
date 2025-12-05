@@ -5,6 +5,7 @@ import src
 
 class GatherScrap(src.quests.MetaQuestSequence):
     type = "GatherScrap"
+    lowLevel = True
 
     def __init__(self, description="gather scrap", creator=None, targetPosition=None,lifetime=None,reason=None,amount=None,tryHard=False):
         questList = []
@@ -38,7 +39,7 @@ Scrapfields are shown on the minimap as white ss"""]
         if not self.active:
             return
 
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
     def setParameters(self,parameters):
         if "targetPosition" in parameters and "targetPosition" in parameters:
@@ -58,20 +59,22 @@ Scrapfields are shown on the minimap as white ss"""]
         self.startWatching(character,self.wrapedTriggerCompletionCheck, "itemPickedUp")
         super().assignToCharacter(character)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if self.completed:
-            return
+            return False
 
         if not character:
-            return
+            return False
 
         if not character.getFreeInventorySpace() < 1:
-            return
+            return False
 
         if character.inventory[-1].type != "Scrap":
-            return
+            return False
 
-        self.postHandler()
+        if not dryRun:
+            self.postHandler()
+        return True
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
 
@@ -141,8 +144,7 @@ Scrapfields are shown on the minimap as white ss"""]
                         break
 
             if source is None and not character.getTerrain().scrapFields:
-                self.fail(reason="no scrap source found")
-                return (None,None)
+                return self._solver_trigger_fail(dryRun,"no scrap source found")
 
             if source is None:
                 terrain = character.getTerrain()
@@ -157,8 +159,13 @@ Scrapfields are shown on the minimap as white ss"""]
                         scrapFields.remove(scrapField)
 
                 if not scrapFields:
-                    self.fail(reason="no scrap source")
-                    return (None,None)
+                    if self.tryHard:
+                        terrain = character.getTerrain()
+                        if terrain.mana >= 20:
+                            quest = src.quests.questMap["GetEpochReward"](rewardType="spawn scrap",reason="ensure enough scrap is available")
+                            return ([quest],None)
+
+                    return self._solver_trigger_fail(dryRun,"no scrap source")
 
                 targetPos = random.choice(scrapFields)
             else:

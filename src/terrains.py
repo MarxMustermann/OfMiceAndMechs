@@ -137,14 +137,23 @@ class Terrain:
     def getPosition(self):
         return (self.xPosition,self.yPosition,0)
 
-    def addAnimation(self,coordinate,animationType,duration,extraInfo):
+    def addAnimation(self,coordinate,animationType,duration,extraInfo,addFront=False):
+        # discard animations that are not needed
         if not src.gamestate.gamestate.mainChar:
+            3/0
             return
         if self != src.gamestate.gamestate.mainChar.getTerrain():
             return
         if src.interaction.noFlicker:
+            5/0
             return
-        self.animations.append([coordinate,animationType,duration,extraInfo])
+
+        # add the actual animation
+        animation = [coordinate,animationType,duration,extraInfo]
+        if not addFront:
+            self.animations.append([coordinate,animationType,duration,extraInfo])
+        else:
+            self.animations.insert(0,[coordinate,animationType,duration,extraInfo])
 
     def getRoomsByTag(self,tag):
         result = []
@@ -161,6 +170,9 @@ class Terrain:
                 continue
             result.append(room)
         return result
+
+    def getCharactersOnTile(self,position):
+        return self.charactersByTile.get(position,[])
 
     def getCharactersOnPosition(self,position):
         out = []
@@ -224,6 +236,29 @@ class Terrain:
             event.handleEvent()
             self.events.remove(event)
 
+    def clearGhosts(self):
+        for (coord,characters) in self.charactersByTile.items():
+            for character in characters[:]:
+                if not character.container == self:
+                    characters.remove(character)
+                    continue
+                if character.getBigPosition() != coord:
+                    characters.remove(character)
+
+    def clear_broken_states(self):
+        for room in self.rooms:
+            room.clear_broken_states()
+
+        for (pos,characters) in self.charactersByTile.items():
+            if not self.getRoomByPosition(pos):
+                continue
+            for character in characters:
+                if character.xPosition%15 in (0,14,) or character.yPosition%15 in (0,14,):
+                    continue
+                character.die("beeing underneeth a room")
+
+        self.clearGhosts()
+
     def advance(self):
         self.lastRender = None
 
@@ -237,6 +272,8 @@ class Terrain:
 
             # WORKAROUND: this should not be needed, but helps working around bugs that corrupt the pathfinding cache
             self.pathfinderCache = {}
+
+            self.clear_broken_states()
 
     def add_mana(self, amount):
         increaseAmount = min(amount,self.maxMana-self.mana)
@@ -431,12 +468,8 @@ class Terrain:
                     # handle collisions
                     if not char.getItemWalkable(item):
                         # print some info
-                        if isinstance(item, src.items.itemMap["Door"]):
-                            char.addMessage("you need to open the door first")
-                            char.hurt(20,"getting stuck between rooms")
-                        else:
-                            char.addMessage("the entry is blocked")
-                            char.hurt(20,"getting stuck between rooms")
+                        char.addMessage("the entry is blocked")
+                        char.hurt(5,"getting stuck between rooms")
                         # char.addMessage("press "+commandChars.activate+" to apply")
                         # if noAdvanceGame == False:
                         #    header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
@@ -446,19 +479,20 @@ class Terrain:
 
                 if len(room.itemByCoordinates[localisedEntry]) > 15:
                     char.addMessage("the entry is blocked by items.")
-                    char.hurt(20,"getting stuck between rooms")
+                    char.hurt(5,"getting stuck between rooms")
                     # char.addMessage("press "+commandChars.activate+" to apply")
                     # if noAdvanceGame == False:
                     #    header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
                     return room.itemByCoordinates[localisedEntry][0]
 
+            char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
             char.changed("moved", (char, direction))
 
             multiplier = 1
             if char.exhaustion:
                 char.exhaustion -= 1
                 multiplier = 1.2
-            char.timeTaken += char.adjustedMovementSpeed*multiplier
+            char.takeTime(char.adjustedMovementSpeed*multiplier,"moved")
 
             # teleport the character into the room
             room.addCharacter(char, localisedEntry[0], localisedEntry[1])
@@ -506,9 +540,6 @@ class Terrain:
                 char.yPosition += 1
                 return None
 
-        if dash and char.exhaustion >= 10:
-            dash = False
-
         if not char.terrain:
             return None
         if not (char.xPosition and char.yPosition):
@@ -535,13 +566,13 @@ class Terrain:
                         else:
                             char.runCommandString("aa")
                         char.container.addAnimation(char.getPosition(offset=(-2,0,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
-                        pass
+                        char.stats["steps taken"] = char.stats.get("steps taken", 0) + 2
                 char.container.addAnimation(char.getPosition(offset=(-1,0,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
 
             if char.xPosition % 15 == 14:
                 char.changed("changedTile")
                 self.removeItems(self.getItemByPosition((char.xPosition-1,char.yPosition,char.zPosition)))
-
+                char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
             if char.xPosition % 15 == 0:
                 oldBigPos = char.getBigPosition()
                 if char in self.charactersByTile[oldBigPos]:
@@ -550,6 +581,7 @@ class Terrain:
                 if bigPos not in self.charactersByTile:
                     self.charactersByTile[bigPos] = []
                 self.charactersByTile[bigPos].append(char)
+                char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
         elif direction == "east":
             if char.yPosition % 15 == 0 or char.yPosition % 15 == 14:
                 return None
@@ -570,12 +602,12 @@ class Terrain:
                         else:
                             char.runCommandString("dd")
                         char.container.addAnimation(char.getPosition(offset=(2,0,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
-                        pass
+                        char.stats["steps taken"] = char.stats.get("steps taken", 0) + 2
                 char.container.addAnimation(char.getPosition(offset=(1,0,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
             if char.xPosition % 15 == 0:
                 char.changed("changedTile")
                 self.removeItems(self.getItemByPosition((char.xPosition+1,char.yPosition,char.zPosition)))
-
+                char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
             if char.xPosition % 15 == 14:
                 oldBigPos = char.getBigPosition()
                 try:
@@ -587,6 +619,7 @@ class Terrain:
                 if bigPos not in self.charactersByTile:
                     self.charactersByTile[bigPos] = []
                 self.charactersByTile[bigPos].append(char)
+                char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
         elif direction == "north":
             if char.xPosition % 15 == 0 or char.xPosition % 15 == 14:
                 return None
@@ -607,12 +640,12 @@ class Terrain:
                         else:
                             char.runCommandString("ww")
                         char.container.addAnimation(char.getPosition(offset=(0,-2,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
-                        pass
+                        char.stats["steps taken"] = char.stats.get("steps taken", 0) + 2
                 char.container.addAnimation(char.getPosition(offset=(0,-1,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
             if char.yPosition % 15 == 14:
                 char.changed("changedTile")
                 self.removeItems(self.getItemByPosition((char.xPosition,char.yPosition-1,char.zPosition)))
-
+                char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
             if char.yPosition % 15 == 0:
                 oldBigPos = char.getBigPosition()
                 if char in self.charactersByTile[oldBigPos]:
@@ -622,6 +655,7 @@ class Terrain:
                     self.charactersByTile[bigPos] = []
 
                 self.charactersByTile[bigPos].append(char)
+                char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
         elif direction == "south":
             if char.xPosition % 15 == 0 or char.xPosition % 15 == 14:
                 return None
@@ -642,12 +676,12 @@ class Terrain:
                         else:
                             char.runCommandString("ss")
                         char.container.addAnimation(char.getPosition(offset=(0,2,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
-                        pass
+                        char.stats["steps taken"] = char.stats.get("steps taken", 0) + 2
                 char.container.addAnimation(char.getPosition(offset=(0,1,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
             if char.yPosition % 15 == 0:
                 char.changed("changedTile")
                 self.removeItems(self.getItemByPosition((char.xPosition,char.yPosition+1,char.zPosition)))
-
+                char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
             if char.yPosition % 15 == 14:
                 oldBigPos = char.getBigPosition()
                 if char in self.charactersByTile[oldBigPos]:
@@ -656,6 +690,7 @@ class Terrain:
                 if bigPos not in self.charactersByTile:
                     self.charactersByTile[bigPos] = []
                 self.charactersByTile[bigPos].append(char)
+                char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
 
         """
         if char.xPosition % 15 in (0, 14) and direction in ("north", "south"):
@@ -754,6 +789,14 @@ class Terrain:
             if hadRoomInteraction:
                 item = self.enterLocalised(char, room, localisedEntry, direction)
                 if item:
+                    if direction == "west":
+                        char.runCommandString("dd")
+                    if direction == "east":
+                        char.runCommandString("aa")
+                    if direction == "north":
+                        char.runCommandString("ss")
+                    if direction == "south":
+                        char.runCommandString("ww")
                     return item
 
                 break
@@ -858,7 +901,7 @@ class Terrain:
                     char.addMessage(f"you moved from terrain {pos[0]}/{pos[1]} to terrain {pos[0]}/{pos[1]-1}")
 
                     self.removeCharacter(char)
-                    newTerrain.addCharacter(char,char.xPosition,15*15-2)
+                    newTerrain.addCharacter(char,char.xPosition,14*15)
                     char.changed("changedTerrain",{"character":char})
 
                     if char == src.gamestate.gamestate.mainChar:
@@ -883,7 +926,7 @@ class Terrain:
                     char.addMessage(f"you moved from terrain {pos[0]}/{pos[1]} to terrain {pos[0]}/{pos[1]+1}")
 
                     self.removeCharacter(char)
-                    newTerrain.addCharacter(char,char.xPosition,2)
+                    newTerrain.addCharacter(char,char.xPosition,15)
                     char.changed("changedTerrain",{"character":char})
 
                     if char == src.gamestate.gamestate.mainChar:
@@ -908,7 +951,7 @@ class Terrain:
                     char.addMessage(f"you moved from terrain {pos[0]}/{pos[1]} to terrain {pos[0]-1}/{pos[1]}")
 
                     self.removeCharacter(char)
-                    newTerrain.addCharacter(char,15*15-2,char.yPosition)
+                    newTerrain.addCharacter(char,14*15,char.yPosition)
                     char.changed("changedTerrain",{"character":char})
 
                     if char == src.gamestate.gamestate.mainChar:
@@ -933,24 +976,29 @@ class Terrain:
                     char.addMessage(f"you moved from terrain {pos[0]}/{pos[1]} to terrain {pos[0]+1}/{pos[1]}")
 
                     self.removeCharacter(char)
-                    newTerrain.addCharacter(char,2,char.yPosition)
+                    newTerrain.addCharacter(char,15,char.yPosition)
                     char.changed("changedTerrain",{"character":char})
 
                     if char == src.gamestate.gamestate.mainChar:
                         src.gamestate.gamestate.terrain = newTerrain
-
+                char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
                 char.changed("moved", (char, direction))
-                if not dash:
-                    multiplier = 1
-                    if char.exhaustion:
-                        char.exhaustion -= 1
-                        multiplier = 1.2
-                    char.timeTaken += char.adjustedMovementSpeed*multiplier
+
+                if not dash or char.exhaustion >= 10:
+                    char.takeTime(char.adjustedMovementSpeed,"moved 1")
+                    if not dash:
+                        if char.exhaustion > 0:
+                            char.exhaustion -= min(1,char.exhaustion)
+                            char.takeTime(char.adjustedMovementSpeed,"moved 2")
                 else:
-                    char.timeTaken += char.adjustedMovementSpeed/2
-                    char.exhaustion += 5
-                for item in stepOnActiveItems:
-                    item.doStepOnAction(char)
+                    if char.hasJump:
+                        char.takeTime(char.adjustedMovementSpeed/2,"moved 3")
+                        char.exhaustion += 5
+                    elif char.hasRun:
+                        char.takeTime(char.adjustedMovementSpeed*0.80,"moved 4")
+                        char.exhaustion += 1
+                    else:
+                        char.takeTime(char.adjustedMovementSpeed,"moved")
 
             return foundItem
         return None
@@ -967,7 +1015,7 @@ class Terrain:
             return "..."
         return command
 
-    def getPath(self,startPos,targetPos,localRandom=None,tryHard=False,character=None,avoidEnemies=True):
+    def getPath(self,startPos,targetPos,localRandom=None,tryHard=False,character=None,avoidEnemies=True,outsideOnly=False):
         if startPos == targetPos:
             return []
 
@@ -994,7 +1042,10 @@ class Terrain:
         tileMap[7*2+1][14*2+1] = 1
 
         for room in self.rooms:
-            tileMap[room.xPosition*2+1][room.yPosition*2+1] = "9"
+            if not outsideOnly:
+                tileMap[room.xPosition*2+1][room.yPosition*2+1] = "9"
+            else:
+                tileMap[room.xPosition*2+1][room.yPosition*2+1] = "0"
             if not room.getPositionWalkable((0,6,0)):
                 tileMap[room.xPosition*2+0][room.yPosition*2+1] = "0"
             if not room.getPositionWalkable((12,6,0)):
@@ -1005,8 +1056,8 @@ class Terrain:
                 tileMap[room.xPosition*2+1][room.yPosition*2+2] = "0"
 
         if character and avoidEnemies:
-            for x in range(1,13):
-                for y in range(1,13):
+            for x in range(1,14):
+                for y in range(1,14):
                     if self.getEnemiesOnTile(character,(x,y,0)):
                         tileMap[x*2+1][y*2+1] = 10000
 
@@ -1017,8 +1068,8 @@ class Terrain:
         for forest in self.forests:
             tileMap[forest[0]*2+1][forest[1]*2+1] = 2000
 
-        for x in range(1,13):
-            for y in range(1,13):
+        for x in range(1,14):
+            for y in range(1,14):
                 items = self.getItemByPosition((15*x+7,15*y+7,0))
                 if items and items[0].type == "RoomBuilder":
                     tileMap[x*2+1][y*2+1] = 2000
@@ -1253,6 +1304,8 @@ class Terrain:
                     items = self.getItemByPosition((x+15*tilePos[0],y+15*tilePos[1],0))
                     if items:
                         tileMap[x][y] = 20
+                    if len(items) == 1 and items[0].type == "Paving":
+                        tileMap[x][y] = 1
 
             for y in range(1,14):
                 for x in range(1,14):
@@ -1289,7 +1342,16 @@ class Terrain:
 
         return moves
 
-    def getPathTile(self,tilePos,startPos,targetPos,tryHard=False,avoidItems=None,localRandom=None,ignoreEndBlocked=None,character=None):
+    def getAllCharacters(self):
+        '''
+        get all characters somewhere on the terrain
+        '''
+        characters = self.characters[:]
+        for room in self.rooms:
+            characters.extend(room.characters)
+        return characters
+
+    def getPathTile(self,tilePos,startPos,targetPos,tryHard=False,avoidItems=None,localRandom=None,ignoreEndBlocked=None,character=None,ignoreUnbolted=False):
         """
         path = self.pathCache.get((tilePos,startPos,targetPos))
         if path:
@@ -1327,10 +1389,23 @@ class Terrain:
 
         for y in range(1,14):
             for x in range(1,14):
-                 if ignoreEndBlocked and (x,y,0) == targetPos:
-                    tileMap[x][y] = 1
-                 elif not self.getPositionWalkable((x+15*tilePos[0],y+15*tilePos[1],0),character=character):
-                    tileMap[x][y] = 0
+                if ignoreEndBlocked and (x,y,0) == targetPos:
+                     tileMap[x][y] = 1
+                elif not self.getPositionWalkable((x+15*tilePos[0],y+15*tilePos[1],0),character=character):
+                    if not ignoreUnbolted:
+                        tileMap[x][y] = 0
+                    else:
+                        tileMap[x][y] = 100
+                        smallItemCounter = 0
+                        for item in self.getItemByPosition((x,y,0)):
+                            if item.bolted and not item.walkable:
+                                tileMap[x][y] = 0
+                                break
+                            if item.bolted and item.walkable:
+                                smallItemCounter += 1
+                                continue
+                        if smallItemCounter > 15:
+                            tileMap[x][y] = 0
 
         for y in range(1,14):
             for x in range(1,14):
@@ -1478,6 +1553,7 @@ class Terrain:
         self.charactersByTile[bigPos].append(character)
 
         character.changed("entered terrain")
+        character.stats["terrains visited"] += 1
         self.changed("entered terrain", character)
 
     def addRooms(self, rooms):
@@ -1910,11 +1986,14 @@ class Terrain:
                 )
 
             #for quest in src.gamestate.gamestate.mainChar.getActiveQuests():
-            quest = src.gamestate.gamestate.mainChar.getActiveQuest()
-            if quest:
+            quests = src.gamestate.gamestate.mainChar.getActiveQuests()
+            blockedPositions = []
+            for quest in quests:
                 for marker in quest.getQuestMarkersSmall(src.gamestate.gamestate.mainChar,renderForTile=True):
                     pos = marker[0]
                     pos = (pos[0]-coordinateOffset[1],pos[1]-coordinateOffset[0])
+                    if pos in blockedPositions:
+                        continue
                     if pos[0] < 0:
                         continue
                     if pos[1] < 0:
@@ -1925,8 +2004,19 @@ class Terrain:
                     except:
                         continue
 
+                    color = "#555"
+                    if marker[1] == "target":
+                        blockedPositions.append(pos)
+                        if src.gamestate.gamestate.tick %10 > 5:
+                            color = "#999"
+                        else:
+                            color = "#880"
+
                     actionMeta = None
                     if isinstance(display,src.interaction.ActionMeta):
+                        actionMeta = display
+                        display = display.content
+                    if isinstance(display,src.interaction.CharacterMeta):
                         actionMeta = display
                         display = display.content
 
@@ -1939,9 +2029,9 @@ class Terrain:
                         continue
 
                     if hasattr(display[0],"fg"):
-                        display = (src.interaction.urwid.AttrSpec(display[0].fg,"#555"),display[1])
+                        display = (src.interaction.urwid.AttrSpec(display[0].fg,color),display[1])
                     else:
-                        display = (src.interaction.urwid.AttrSpec(display[0].foreground,"#555"),display[1])
+                        display = (src.interaction.urwid.AttrSpec(display[0].foreground,color),display[1])
 
                     if actionMeta:
                         actionMeta.content = display
@@ -1976,6 +2066,11 @@ class Terrain:
                     display = ".x"
                 else:
                     display = ".."
+
+                oldDisplay = chars[pos[1]][pos[0]]
+                if isinstance(oldDisplay,src.interaction.CharacterMeta):
+                    oldDisplay.content = display
+                    display = oldDisplay
                 chars[pos[1]][pos[0]] = display
 
                 if duration > 10:
@@ -1988,6 +2083,11 @@ class Terrain:
                     display = (src.interaction.urwid.AttrSpec("#fff","#f00"),display)
                 if animationType == "shielded":
                     display = (src.interaction.urwid.AttrSpec("#fff","#555"),display)
+
+                oldDisplay = chars[pos[1]][pos[0]]
+                if isinstance(oldDisplay,src.interaction.CharacterMeta):
+                    oldDisplay.content = display
+                    display = oldDisplay
                 chars[pos[1]][pos[0]] = display
 
                 if duration > 10:
@@ -2099,7 +2199,7 @@ class Terrain:
         for x in range(1,14):
             for y in range(1,14):
                 foundEnemy = False
-                otherCharacters = self.charactersByTile.get((x,y,0),[])
+                otherCharacters = self.getCharactersOnTile((x,y,0))
                 rooms = self.getRoomByPosition((x,y,0))
                 if rooms:
                     otherCharacters = rooms[0].characters
@@ -2398,36 +2498,28 @@ class Terrain:
 
         if room.xPosition < 0:
             src.gamestate.gamestate.mainChar.addMessage("switch to")
-            terrain = src.gamestate.gamestate.terrainMap[self.yPosition][
-                self.xPosition - 1
-            ]
+            terrain = src.gamestate.gamestate.terrainMap[self.yPosition][self.xPosition-1]
             room.terrain = terrain
             self.removeRoom(room)
             terrain.addRoom(room)
             room.xPosition = 15
         if room.yPosition < 0:
             src.gamestate.gamestate.mainChar.addMessage("switch to")
-            terrain = src.gamestate.gamestate.terrainMap[self.yPosition - 1][
-                self.xPosition
-            ]
+            terrain = src.gamestate.gamestate.terrainMap[self.yPosition-1][self.xPosition]
             room.terrain = terrain
             self.removeRoom(room)
             terrain.addRoom(room)
             room.yPosition = 15
         if room.xPosition > 15:
             src.gamestate.gamestate.mainChar.addMessage("switch to")
-            terrain = src.gamestate.gamestate.terrainMap[self.yPosition][
-                self.xPosition + 1
-            ]
+            terrain = src.gamestate.gamestate.terrainMap[self.yPosition][self.xPosition + 1]
             room.terrain = terrain
             self.removeRoom(room)
             terrain.addRoom(room)
             room.xPosition = 0
         if room.yPosition > 15:
             src.gamestate.gamestate.mainChar.addMessage("switch to")
-            terrain = src.gamestate.gamestate.terrainMap[self.yPosition + 1][
-                self.xPosition
-            ]
+            terrain = src.gamestate.gamestate.terrainMap[self.yPosition + 1][self.xPosition]
             room.terrain = terrain
             self.removeRoom(room)
             terrain.addRoom(room)

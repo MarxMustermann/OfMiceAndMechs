@@ -28,7 +28,7 @@ class ShieldBug(src.characters.characterMap["Insect"]):
             characterId=characterId,
         )
         self.charType = "Insect"
-        self.specialDisplay = (src.interaction.urwid.AttrSpec((46, 99, 67), "black"), "/>")
+        self.specialDisplay = (*self.color_for_multiplier(multiplier, start=(0, 66, 46), end=(33, 255, 101)), "/>")
 
         self.baseDamage = 5
         self.baseDamage = int(self.baseDamage * (1 - runModifier))
@@ -54,5 +54,13 @@ class ShieldBug(src.characters.characterMap["Insect"]):
     def lootTable():
         return [(None, 1), (src.items.itemMap["ChitinPlates"], 1)]
 
+    def getLoreDescription(self):
+        return f"You see a ShieldBug. It slowly moves dragging its enourmous weight through the mud.\nThe oldest ShieldBugs have ChitinPlates almost unpenetrable by a normal blade."
+
+    def getFunctionalDescription(self):
+        return f"Shieldbugs have a lot of HP and are slow. Some are stronger than others."
+
+    def description(self):
+        return self.getLoreDescription()+"\n\n---- "+self.getFunctionalDescription()
 
 src.characters.add_character(ShieldBug)

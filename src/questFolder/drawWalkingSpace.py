@@ -2,8 +2,10 @@ import src
 
 
 class DrawWalkingSpace(src.quests.MetaQuestSequence):
+    '''
+    quest to draw walkingspaces
+    '''
     type = "DrawWalkingSpace"
-
     def __init__(self, description="draw walking space", creator=None, targetPosition=None, targetPositionBig=None,tryHard=False,reason=None):
         questList = []
         super().__init__(questList, creator=creator)
@@ -14,17 +16,29 @@ class DrawWalkingSpace(src.quests.MetaQuestSequence):
         self.painterPos = None
         self.reason = reason
 
-    def triggerCompletionCheck(self,character=None):
-        if not character:
-            return None
+    def triggerCompletionCheck(self,character=None,dryRun=True):
+        '''
+        check for quest completion and end quest
+        '''
 
+        # abort on weird state
+        if not character:
+            return False
+
+        # end quest if thw walkingspace is drawn
         room = character.getTerrain().getRoomByPosition(self.targetPositionBig)[0]
         if self.targetPosition in room.walkingSpace:
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
-        return None
+
+        # continue working otherwise
+        return False
 
     def generateTextDescription(self):
+        '''
+        generate a text description
+        '''
         reason = ""
         if self.reason:
             reason = f", to {self.reason}"
@@ -46,57 +60,89 @@ Try as hard as you can to achieve this.
         return text
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun=True):
-        if not self.subQuests:
-            rooms = character.getTerrain().getRoomByPosition(self.targetPositionBig)
-            if not rooms:
-                if dryRun:
-                    self.fail("target room missing")
-                return (None,None)
-            room = rooms[0]
+        '''
+        generate the next step to solve the quest
+        '''
 
-            for pos in room.walkingSpace:
-                if pos == self.targetPosition:
-                    if not dryRun:
-                        self.postHandler()
-                    return (None,None)
+        # do nothing if there is no subquest
+        if self.subQuests:
+            return (None,None)
 
-            offsets = ((0,0,0),(0,1,0),(1,0,0),(0,-1,0),(-1,0,0))
-            foundOffset = None
-            for offset in offsets:
-                items = room.getItemByPosition((self.targetPosition[0]+offset[0],self.targetPosition[1]+offset[1],self.targetPosition[2]+offset[2]))
-                if not items or items[0].type != "Painter":
-                    continue
+        # get the room
+        rooms = character.getTerrain().getRoomByPosition(self.targetPositionBig)
+        if not rooms:
+            return self._solver_trigger_fail(dryRun,"target room missing")
+        room = rooms[0]
 
-                foundOffset = (offset,items[0])
-            if foundOffset:
-                item = foundOffset[1]
-                if character.getDistance(item.getPosition()) > 0:
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),reason="get to the painter")
-                    return ([quest],None)
+        # do an extra completion check
+        for pos in room.walkingSpace:
+            if pos == self.targetPosition:
+                if not dryRun:
+                    self.postHandler()
+                return (None,("+","end quest"))
 
-                if item.paintMode != "walkingSpace":
-                    return (None,(["c","m","w","enter"],"configure the painter to walking space"))
-                if item.offset != (0, 0, 0):
-                    return (None,(["c", "d", ".", "enter"],"remove the offset from the painter"))
+        # navigate the painter menu
+        submenue = character.macroState.get("submenue")
+        if submenue:
+            # select the right paint mode
+            if submenue.tag == "PainterActivitySelection":
+                return (None,("m","selwct painter mode"))
+            if submenue.tag == "paintModeSelection":
+                if submenue.text == "":
+                    return (None,(["w"],"configure the painter to walking space"))
+                elif submenue.text == "w":
+                    return (None,(["enter"],"configure the painter to walking space"))
+                else:
+                    return (None,(["backspace"],"delete input"))
+            return (None,(["esc"],"close menu"))
+
+        # search for a painter near the target
+        offsets = ((0,0,0),(0,1,0),(1,0,0),(0,-1,0),(-1,0,0))
+        foundOffset = None
+        for offset in offsets:
+            items = room.getItemByPosition((self.targetPosition[0]+offset[0],self.targetPosition[1]+offset[1],self.targetPosition[2]+offset[2]))
+            if not items or items[0].type != "Painter":
+                continue
+
+            foundOffset = (offset,items[0])
+
+        # use the painter to draw
+        if foundOffset:
+            item = foundOffset[1]
+            if character.getDistance(item.getPosition()) > 0:
+                quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),reason="get to the painter")
+                return ([quest],None)
+
+            if item.paintMode != "walkingSpace":
+                return (None,(["c","m","w","enter"],"configure the painter to walking space"))
+            if item.offset != (0, 0, 0):
+                return (None,(["c", "d", ".", "enter"],"remove the offset from the painter"))
+            if character.getDistance(self.targetPosition) == 0:
                 return (None,("jk","draw the walkingspace"))
+            return (None,("k","pick up painter"))
 
-            if not self.painterPos:
-                if not character.inventory or character.inventory[-1].type != "Painter":
-                    quest = src.quests.questMap["FetchItems"](toCollect="Painter",amount=1,reason="be able to draw a stockpile")
-                    return ([quest],None)
-                painter = character.inventory[-1]
-
-            if character.getBigPosition() != self.targetPositionBig:
-                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="get nearby to the drawing spot")
+        # ensure player has a painter
+        if not self.painterPos:
+            if not character.inventory or character.inventory[-1].type != "Painter":
+                quest = src.quests.questMap["FetchItems"](toCollect="Painter",amount=1,reason="be able to draw a stockpile")
                 return ([quest],None)
+            painter = character.inventory[-1]
 
-            if character.getDistance(self.targetPosition) > 0:
-                quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,reason="get to the drawing spot")
-                return ([quest],None)
+        # go to drawing spot
+        if character.getBigPosition() != self.targetPositionBig:
+            quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="get nearby to the drawing spot")
+            return ([quest],None)
+        if character.getDistance(self.targetPosition) > 0:
+            quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,reason="get to the drawing spot")
+            return ([quest],None)
 
-            return (None,("l","drop the Painter"))
+        # clear spot
+        if character.container.getItemByPosition(self.targetPosition):
+            quest = src.quests.questMap["CleanSpace"](targetPosition=self.targetPosition,reason="unclutter the drawing spot",targetPositionBig=self.targetPositionBig,pickUpBolted=True,abortOnfullInventory=False)
+            return ([quest],None)
 
-        return (None,None)
+        # drop the painter next to the target
+        return (None,("l","drop the Painter"))
 
     def handleDrewMarking(self,extraInfo):
         if not self.active:
@@ -104,7 +150,7 @@ Try as hard as you can to achieve this.
         if self.completed:
             1/0
 
-        self.triggerCompletionCheck(self.character)
+        self.triggerCompletionCheck(self.character,dryRun=False)
 
     def assignToCharacter(self, character):
         if self.character:

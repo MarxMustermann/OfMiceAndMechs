@@ -56,7 +56,7 @@ After fetching the glass heart return the glass heart to your base and set it in
 
         return super().assignToCharacter(character)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None, dryRun=True):
         return False
 
     def getNextStep(self,character,ignoreCommands=False,dryRun=True):
@@ -101,6 +101,10 @@ After fetching the glass heart return the glass heart to your base and set it in
             command += "j"
             return (None,(command,"get/set glass heart"))
 
+        # close other menus
+        if not ignoreCommands and character.macroState.get("submenue"):
+            return (None,(["esc"],"exit submenu"))
+
         # check if the character has the glass heart
         hasSpecialItem = None
         for item in character.inventory:
@@ -132,6 +136,53 @@ After fetching the glass heart return the glass heart to your base and set it in
                 #if not dryRun:
                 #    self.fail("too hurt")
                 #return (None,None)
+
+            # kill direct threats
+            if character.getNearbyEnemies():
+                quest = src.quests.questMap["Fight"](suicidal=True)
+                return ([quest],None)
+
+            currentTerrain = character.getTerrain()
+            if currentTerrain == character.getHomeTerrain():
+                for room in character.getTerrain().rooms:
+                    for item in room.getItemsByType("SwordSharpener"):
+                        if item.readyToBeUsedByCharacter(character):
+                            quest = src.quests.questMap["SharpenPersonalSword"]()
+                            return ([quest],None)
+
+                for room in character.getTerrain().rooms:
+                    for item in room.getItemsByType("ArmorReinforcer"):
+                        if item.readyToBeUsedByCharacter(character):
+                            quest = src.quests.questMap["ReinforcePersonalArmor"]()
+                            return ([quest],None)
+
+                if character.health < character.adjustedMaxHealth:
+                    readyCoalBurner = False
+                    for room in currentTerrain.rooms:
+                        for coalBurner in room.getItemsByType("CoalBurner"):
+                            if not coalBurner.getMoldFeed(character):
+                                continue
+                            readyCoalBurner = True
+                    if readyCoalBurner:
+                        quest = src.quests.questMap["Heal"](noWaitHeal=True,noVialHeal=True)
+                        return ([quest],None)
+
+                for item in character.inventory:
+                    if item.walkable == False:
+                        quest = src.quests.questMap["ClearInventory"](returnToTile=False)
+                        return ([quest],None)
+
+                if not character.weapon or not character.armor:
+                    quest = src.quests.questMap["Equip"](tryHard=True)
+                    return ([quest],None)
+
+            if currentTerrain != character.getHomeTerrain():
+                if character.container.isRoom and character.getFreeInventorySpace() and isinstance(character,src.characters.characterMap["Clone"]):
+                    for item in character.container.itemsOnFloor:
+                        if not item.type in ("GooFlask","Vial","Bolt","Grindstone","Implant","Corpse","MemoryFragment","ChitinPlates",):
+                            continue
+                        quest = src.quests.questMap["LootRoom"](targetPosition=character.container.getPosition(),endWhenFull=True)
+                        return ([quest],None)
 
             # get to the terrain the dungeon is on
             if terrain.xPosition != self.targetTerrain[0] or terrain.yPosition != self.targetTerrain[1]:
@@ -197,9 +248,7 @@ After fetching the glass heart return the glass heart to your base and set it in
                     else:
                         return (None,(directionCommand+"jssj","eject GlassHeart"))
 
-                if not dryRun:
-                    self.fail("no GlassStatue found")
-                return (None,None)
+                return self._solver_trigger_fail(dryRun,"no GlassStatue found")
 
             if character.getPosition() != foundGlassHeart.getPosition():
                 quest = src.quests.questMap["GoToPosition"](targetPosition=foundGlassHeart.getPosition(),description="go to GlassHeart",reason="be able to pick up the GlassHeart")
@@ -226,8 +275,7 @@ After fetching the glass heart return the glass heart to your base and set it in
                 break
 
         if not foundGlassStatue:
-            self.fail(reason="no glass statues found")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"no GlassStatue found")
 
         if not terrain.alarm:
             quest = src.quests.questMap["ReadyBaseDefences"]()
@@ -254,7 +302,12 @@ After fetching the glass heart return the glass heart to your base and set it in
         return (None,(directionCommand+"jssj","insert glass heart"))
 
     def delveToRoomIfSafe(self,character,path,dryRun=True):
-        new_pos = (path[0][0] + character.getBigPosition()[0], path[0][1] + character.getBigPosition()[1])
+        new_pos = character.getBigPosition()
+        for direction in path:
+            new_pos = (new_pos[0]+direction[0], new_pos[1]+direction[1], 0)
+            rooms = character.getTerrain().getRoomByPosition(new_pos)
+            if rooms:
+                break
 
         tryNextTile = False
         if self.suicidal:
@@ -291,7 +344,6 @@ The implant interrupts. This dungeon is too hard for you.
 Become stronger and return."""
             character.macroState["submenue"] = src.menuFolder.textMenu.TextMenu(text)
 
-            self.fail("dungeon too tough")
-        return (None,None)
+        return self._solver_trigger_fail(dryRun,"dungeon too tough")
 
 src.quests.addType(DelveDungeon)

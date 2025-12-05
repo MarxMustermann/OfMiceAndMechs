@@ -53,6 +53,8 @@ class TriggerPlate(src.items.Item):
         Parameters:
             character: the character trying to use the item
         """
+        if not self.bolted:
+            return
 
         if checkFaction and self.faction == character.faction:
             return
@@ -129,16 +131,16 @@ class TriggerPlate(src.items.Item):
                     self.targets.remove(cursor)
                 else:
                     self.targets.append(cursor)
-            if key == "w":
+            if key == "w" and cursor[1] > 1:
                 cursor = (cursor[0],cursor[1]-1,0)
                 params["cursor"] = cursor
-            if key == "a":
+            if key == "a" and cursor[0] > 1:
                 cursor = (cursor[0]-1,cursor[1],0)
                 params["cursor"] = cursor
-            if key == "s":
+            if key == "s" and cursor[1] < 11:
                 cursor = (cursor[0],cursor[1]+1,0)
                 params["cursor"] = cursor
-            if key == "d":
+            if key == "d" and cursor[0] < 11:
                 cursor = (cursor[0]+1,cursor[1],0)
                 params["cursor"] = cursor
 

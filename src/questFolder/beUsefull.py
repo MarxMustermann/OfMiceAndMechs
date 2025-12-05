@@ -6,6 +6,9 @@ import src
 logger = logging.getLogger(__name__)
 
 class BeUsefull(src.quests.MetaQuestSequence):
+    '''
+    the main quest containing the stuff NPCs do on the bases
+    '''
     type = "BeUsefull"
 
     def __init__(self, description="be useful", creator=None, targetPosition=None, strict=False, reason=None, endOnIdle=False,numTasksToDo=None,failOnIdle=False):
@@ -29,8 +32,12 @@ class BeUsefull(src.quests.MetaQuestSequence):
         self.failOnIdle = failOnIdle
         
         self.dutySkipps = {}
+        self.reason = reason
 
     def generateTextDescription(self):
+        '''
+        generate a textual description of the quest
+        '''
         try:
             self.dutySkipps
         except:
@@ -112,6 +119,9 @@ Press d to move the cursor and show the subquests description.
 
 
     def awardnearbyKillReputation(self,extraInfo):
+        '''
+        handle somebody nearby getting killed
+        '''
         if extraInfo["deadChar"].faction != self.character.faction:
             if "Questing" in self.character.duties:
                 amount = 5*self.character.rank
@@ -130,6 +140,9 @@ Press d to move the cursor and show the subquests description.
             self.character.revokeReputation(amount,reason="an ally dying nearby")
 
     def handleMovement(self, extraInfo):
+        '''
+        handle the character moving
+        '''
         toRemove = []
         for quest in self.subQuests:
             if quest.completed:
@@ -139,13 +152,23 @@ Press d to move the cursor and show the subquests description.
             self.subQuests.remove(quest)
 
     def handleChangedDuties(self,character=None):
+        '''
+        handle a duty change
+        '''
         for quest in self.subQuests[:]:
             quest.fail()
         self.handleMovement(None)
 
     def handleQuestFailure(self,extraParam):
-        quest = extraParam.get("quest")
+        '''
+        handle a subquest failing
+        '''
 
+        # set up helper variables
+        quest = extraParam.get("quest")
+        reason = extraParam.get("reason")
+
+        # register duty as failed
         failedDuty = None
         if quest.type == "BuildRoom":
             failedDuty = "room building"
@@ -155,23 +178,31 @@ Press d to move the cursor and show the subquests description.
             failedDuty = "painting"
         if quest.type == "SetUpMachine":
             failedDuty = "machine placing"
-
         if failedDuty:
             self.dutySkipps[failedDuty] = 3
 
-        try:
-            self.dutySkipps
-        except:
-            self.dutySkipps = {}
+        if reason:
+            if reason == "no tile path":
+                newQuest = src.quests.questMap["WaitQuest"](lifetime=10)
+                self.addQuest(newQuest)
+                self.startWatching(newQuest,self.handleQuestFailure,"failed")
+                return
 
         super().handleQuestFailure(extraParam)
     
     def handleChargedTrapRoom(self,extraInfo):
+        '''
+        (obsolete)
+        handle having worked on a trap room
+        '''
         # reload trap room
         if "trap setting" in self.character.duties:
             self.character.awardReputation(10, reason="charging a trap room")
 
     def handleDroppedItem(self,extraInfo):
+        '''
+        handle the character dropping an item
+        '''
         if isinstance(self.character.container,src.terrains.Terrain):
             self.character.revokeReputation(2, reason="discarding an item")
             return
@@ -205,6 +236,9 @@ Press d to move the cursor and show the subquests description.
                         self.character.revokeReputation(50, reason="putting a wrong item into an output stockpile")
 
     def handleOperatedMachine(self,extraInfo):
+        '''
+        handle the character having operated a machine
+        '''
         if "machine operation" in self.character.duties:
             if extraInfo["machine"].type == "ScrapCompactor":
                 self.character.awardReputation(5, reason="operating a scrap compactor")
@@ -212,6 +246,9 @@ Press d to move the cursor and show the subquests description.
                 self.character.awardReputation(10, reason="operating a machine")
 
     def pickedUpItem(self,extraInfo):
+        '''
+        handle the character having picked up an item
+        '''
         if self.character != src.gamestate.gamestate.mainChar:
             return
 
@@ -240,7 +277,7 @@ Press d to move the cursor and show the subquests description.
         self.startWatching(character,self.handleOperatedMachine, "operated machine")
         super().assignToCharacter(character)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         return
 
     def setParameters(self,parameters):
@@ -299,8 +336,10 @@ Press d to move the cursor and show the subquests description.
 
         return source
 
-
     def getNextStep(self, character=None, ignoreCommands=False, dryRun = True):
+        if self.subQuests:
+            return (None,None)
+
         if not self.subQuests:
             submenue = character.macroState.get("submenue")
             if submenue:
@@ -308,6 +347,11 @@ Press d to move the cursor and show the subquests description.
                     return (None,(["esc"],"exit submenu"))
                 return (None,(["esc"],"exit submenu"))
 
+        if character.getNearbyEnemies():
+            if character.container.isRoom:
+                if character.container.tag in ["entryRoom","trapRoom"]:
+                    quest = src.quests.questMap["GoHome"]()
+                    return ([quest],None)
         if character.health > character.maxHealth//5:
             if (not len(self.subQuests) or not isinstance(self.subQuests[0],src.quests.questMap["Fight"])) and character.getNearbyEnemies():
                 quest = src.quests.questMap["Fight"]()
@@ -321,14 +365,14 @@ Press d to move the cursor and show the subquests description.
         if not character.registers.get("HOMETx") or not character.registers.get("HOMETy"):
             if not dryRun:
                 logger.error("Character without home")
-                self.fail("no home")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"no home")
         if terrain.xPosition != character.registers["HOMETx"] or terrain.yPosition != character.registers["HOMETy"]:
             quest = src.quests.questMap["GoHome"]()
             return ([quest],None)
 
         if not character.container:
-            return (None,None)
+            quest = src.quests.questMap["GoHome"]()
+            return ([quest],None)
 
         if not isinstance(character.container,src.rooms.Room):
             if character.yPosition%15 == 14:
@@ -379,7 +423,7 @@ Press d to move the cursor and show the subquests description.
             return step
         step = src.quests.questMap["Eat"].generateDutyQuest(self,character,room,dryRun)
         if step != (None,None):
-                        return step
+            return step
 
         terrain = character.getTerrain()
         for checkRoom in terrain.rooms:
@@ -406,7 +450,7 @@ Press d to move the cursor and show the subquests description.
         if self.numTasksToDo and self.numTasksDone > self.numTasksToDo:
             if not dryRun:
                 self.postHandler()
-            return (None,None)
+            return (None,("+","end quest"))
 
         room = character.container
         for duty in character.getRandomProtisedDuties():
@@ -470,20 +514,26 @@ Press d to move the cursor and show the subquests description.
             if step != (None,None) and not (not step[0] and not step[1]):
                 if not dryRun:
                     self.numTasksDone += 1
+
+                if step[0]:
+                    for quest in step[0]:
+                        if quest.reason:
+                            quest.reason += f"({duty})"
+                        else:
+                            quest.reason = f"({duty})"
+
                 return step
 
         if self.endOnIdle:
             if not dryRun:
                 self.postHandler()
-            return (None,None)
+            return (None,("+","end quest"))
         try:
             self.failOnIdle
         except:
             self.failOnIdle = False
         if self.failOnIdle:
-            if not dryRun:
-                self.fail("no job")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"no job")
 
         for room in character.getTerrain().rooms:
             if room.tag == "temple":
@@ -495,20 +545,22 @@ Press d to move the cursor and show the subquests description.
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(random.randint(1,11),random.randint(1,11),0),description="wait for something to happen",reason="ensure nothing exciting will happening")
                 if not dryRun:
                     self.idleCounter += 1
-                character.timeTaken += self.idleCounter
+                character.takeTime(self.idleCounter,"was idle")
                 return ([quest],None)
 
-        room = character.getTerrain().getRoomByPosition(character.getHomeRoomCord())[0]
-        if room != character.container:
-            quest = src.quests.questMap["GoToTile"](targetPosition=character.getHomeRoomCord(),description="go to meeting hall")
-            if not dryRun:
-                self.idleCounter += 1
-            return ([quest],None)
+        homePos = character.getHomeRoomCord()
+        if homePos:
+            room = character.getTerrain().getRoomByPosition(character.getHomeRoomCord())[0]
+            if room != character.container:
+                quest = src.quests.questMap["GoToTile"](targetPosition=homePos,description="go to meeting hall")
+                if not dryRun:
+                    self.idleCounter += 1
+                return ([quest],None)
         quest = src.quests.questMap["GoToPosition"](targetPosition=(random.randint(1,11),random.randint(1,11),0),description="wait for something to happen",reason="ensure nothing exciting will happening")
         if not dryRun:
             self.idleCounter += 1
         if not dryRun:
-            character.timeTaken += self.idleCounter
+            character.takeTime(self.idleCounter,"was idle")
         return ([quest],None)
 
 src.quests.addType(BeUsefull)

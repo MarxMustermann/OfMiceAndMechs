@@ -29,18 +29,21 @@ class TeleporterManufacturer(src.items.itemMap["WorkShop"]):
             character.addMessage("can't create teleporter because of missing components")
             return
 
-        params["productionTime"] = 100
-        params["doneProductionTime"] = 0
-        params["hitCounter"] = character.numAttackedWithoutResponse
-        self.produceItem_wait(params)
+        params["delayTime"] = 100
+        params["action"]= "output_produced_item"
+        self.delayedAction(params)
 
-    def produceItem_done(self, params):
+    def output_produced_item(self,params):
         character = params["character"]
 
         character.addMessage("You produce a teleporter")
-        character.addMessage("It took you {} turns to do that".format(params["doneProductionTime"]))
+        character.addMessage("It took you {} turns to do that".format(params["doneTime"]))
 
-        character.inventory.append(src.items.itemMap["DimensionTeleporter"]())
+        character.stats["items produced"]["DimensionTeleporter"] = (
+            self.stats["items produced"].get("DimensionTeleporter", 0) + 1
+        )
+
+        character.addToInventory(src.items.itemMap["DimensionTeleporter"]())
 
 
 src.items.addType(TeleporterManufacturer, nonManufactured=True)

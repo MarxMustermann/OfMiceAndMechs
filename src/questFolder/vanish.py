@@ -15,11 +15,11 @@ class Vanish(src.quests.MetaQuestSequence):
             return (None,None)
 
         if character.container:
-            character.container.removeCharacter(character)
-            self.postHandler()
-            return (None,None)
+            if not dryRun:
+                character.container.removeCharacter(character)
+                self.postHandler()
+            return (None,(".","stand around confused"))
 
-        return (None,None)
-
+        return (None,(".","stand around confused"))
 
 src.quests.addType(Vanish)

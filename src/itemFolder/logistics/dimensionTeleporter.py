@@ -4,20 +4,21 @@ from functools import partial
 import src
 
 class DimensionTeleporter(src.items.Item):
+    '''
+    ingame item to teleport items around
+    '''
     type = "DimensionTeleporter"
     name = "Dimension Teleporter"
-
-    ReceiverMode = 1
-    SenderMode = 0
-
+    receiverMode = 1
+    senderMode = 0
     default_offsets = [(0, 1, 0), (0, -1, 0), (1, 0, 0), (-1, 0, 0)]
-
     def __init__(self):
         super().__init__(display="DH", name=self.name)
-        self.mode = self.SenderMode
+        self.mode = self.senderMode
         self.group = None
         self.bolted = False
         self.direction = None
+        self.broken = True
 
         self.charges = 100
         self.chargePerLightingRod = 100
@@ -40,19 +41,31 @@ class DimensionTeleporter(src.items.Item):
         }
 
     def d_change(self, offset):
+        '''
+        set a direction the teleporter should work in
+        '''
         self.direction = offset
 
     def changeInputDirection(self, character):
+        '''
+        show UI to set the teleporter direction
+        '''
         character.macroState["submenue"] = src.menuFolder.directionMenu.DirectionMenu(
             "choose input direction", self.direction, self.d_change
         )
 
     def changeOutputDirection(self, character):
+        '''
+        show UI to set the teleporter direction
+        '''
         character.macroState["submenue"] = src.menuFolder.directionMenu.DirectionMenu(
             "choose output direction", self.direction, self.d_change
         )
 
     def getConfigurationOptions(self, character):
+        '''
+        show option to bolt item down
+        '''
         options = super().getConfigurationOptions(character)
         if self.bolted:
             options["b"] = ("unbolt", self.unboltAction)
@@ -61,6 +74,9 @@ class DimensionTeleporter(src.items.Item):
         return options
 
     def boltAction(self, character):
+        '''
+        bolt the item down
+        '''
         self.bolted = True
         if character:
             character.addMessage("you bolt down the " + self.name + " and activate it")
@@ -72,6 +88,9 @@ class DimensionTeleporter(src.items.Item):
             self.addToGroup()
 
     def unboltAction(self, character):
+        '''
+        unbolt the item
+        '''
         self.bolted = False
         if character:
             character.addMessage("you unbolt the " + self.name)
@@ -82,32 +101,63 @@ class DimensionTeleporter(src.items.Item):
         self.removeFromGroup()
 
     def removeFromGroup(self):
+        '''
+        remove this teleporter from the high level implementation
+        '''
         if self.group:
-            src.gamestate.gamestate.teleporterGroups[self.group][self.mode].remove(self)
+            if self in src.gamestate.gamestate.teleporterGroups[self.group][self.mode]:
+                src.gamestate.gamestate.teleporterGroups[self.group][self.mode].remove(self)
 
     def addToGroup(self):
+        '''
+        add this teleporter from the high level implementation
+        '''
         if self.group not in src.gamestate.gamestate.teleporterGroups:
             src.gamestate.gamestate.teleporterGroups[self.group] = ([], [])
         src.gamestate.gamestate.teleporterGroups[self.group][self.mode].append(self)
 
     def changeGroup(self, character):
+        '''
+        show UI to change the teleporter group
+        '''
+        if character:
+            character.addMessage("broken")
+        return
         character.macroState["submenue"] = src.menuFolder.teleporterGroupMenu.TeleporterGroupMenu(self)
 
+    def setMode(self, mode, character=None):
+        '''
+        set the sender/reciever mode
+        '''
+        if self.mode != mode:
+            self.changeMode(character)
+
     def changeMode(self, character):
+        if character:
+            character.addMessage("broken")
+        return
+        '''
+        toggle the sender/reciever mode
+        '''
         if self.group:
+            if self.group not in src.gamestate.gamestate.teleporterGroups:
+                src.gamestate.gamestate.teleporterGroups[self.group] = ([], [])
             if self in src.gamestate.gamestate.teleporterGroups[self.group][self.mode]:
                 src.gamestate.gamestate.teleporterGroups[self.group][self.mode].remove(self)
 
-            if self.mode == self.SenderMode:
-                self.mode = self.ReceiverMode
+            if self.mode == self.senderMode:
+                self.mode = self.receiverMode
                 self.applyOptions[2] = ("change to sender", "change to sender")
             else:
-                self.mode = self.SenderMode
+                self.mode = self.senderMode
                 self.applyOptions[2] = ("change to receiver", "change to receiver")
 
             src.gamestate.gamestate.teleporterGroups[self.group][self.mode].append(self)
 
     def getInputItems(self):
+        '''
+        get all items available to process
+        '''
         result = []
 
         offset_to_check = [self.direction] if self.direction else self.default_offsets
@@ -121,9 +171,16 @@ class DimensionTeleporter(src.items.Item):
                 result.append((item, offset))
         return result
 
-    def TeleportItem(self, item_offset):
-        item, offset = item_offset
+    def teleportRecieve(self, item, offset):
+        '''
+        teleport an item to a an reciever station
+        '''
 
+        # abort on weird state
+        if not self.xPosition:
+            return False
+
+        # get the position of the output spot
         if self.direction:
             pos = (
                 self.xPosition + self.direction[0],
@@ -133,6 +190,7 @@ class DimensionTeleporter(src.items.Item):
         else:
             pos = (self.xPosition + offset[0], self.yPosition + offset[1], self.zPosition + offset[2])
 
+        # refuse invalid coordinates
         for i in range(2):
             if isinstance(self.container, src.rooms.Room):
                 if not (pos[i] >= 1 and pos[i] <= 14):
@@ -140,27 +198,39 @@ class DimensionTeleporter(src.items.Item):
             elif not (pos[i] % 15 >= 1 and pos[i] % 15 <= 14):
                 return False
 
-        if any(item.bolted for item in self.container.getItemByPosition(pos)):
+        # refuse blocked target
+        targetSpotItems = self.container.getItemByPosition(pos)
+        if item.walkable == False and targetSpotItems:
+            return False
+        if len(targetSpotItems) > 10:
+            return False
+        if any(targetSpotItem.bolted for targetSpotItem in targetSpotItems):
             return False
 
+        # teleport the item
         item.container.removeItem(item)
-
         self.container.addItem(item, pos)
         return True
 
     def tick(self):
+        '''
+        handle a tick passing
+        '''
         if self.charges:
             items = self.getInputItems()
             if len(items):
-                (_senders, receivers) = src.gamestate.gamestate.teleporterGroups[self.group]
+                (_senders, recievers) = src.gamestate.gamestate.teleporterGroups[self.group]
+
                 sending_tries = 0
-                if len(receivers):
-                    while sending_tries != len(receivers):
-                        random_receiver: DimensionTeleporter = random.choice(receivers)
+                if len(recievers):
+                    while sending_tries != len(recievers) and items:
+                        random_reciever: DimensionTeleporter = random.choice(recievers)
                         random_item = items.pop(random.randint(0, len(items) - 1))
-                        if not random_receiver.TeleportItem(random_item):
+                        if not random_reciever.teleportRecieve(random_item[0],random_item[1]):
+                            # handle fail
                             sending_tries += 1
                         else:
+                            # handle success
                             self.charges -= 1
                             self.numUsed += 1
                             return
@@ -169,15 +239,19 @@ class DimensionTeleporter(src.items.Item):
                 for item in self.container.getItemByPosition(
                     (self.xPosition + offset[0], self.yPosition + offset[1], self.zPosition + offset[2])
                 ):
-                    if item.type == "Rod":
+                    if item.type == "LighntingRod":
                         item.container.removeItem(item)
                         self.charges = self.chargePerLightingRod
                         return
 
     def showProperties(self, character):
+        '''
+        show a UI to view the items state with
+        '''
         network = ""
         if self.group:
-            g = src.gamestate.gamestate.teleporterGroups[self.group]
+            teleporterGroup = src.gamestate.gamestate.teleporterGroups[self.group]
+            print(teleporterGroup)
             mapContent = []
             for x in range(15):
                 mapContent.append([])
@@ -193,57 +267,81 @@ class DimensionTeleporter(src.items.Item):
             for pos in character.terrainInfo:
                 mapContent[pos[1]][pos[0]] = "  "
 
-            def show(li, code):
-                for t in li:
-                    pos = t.getTerrainPosition()
-                    if pos in character.terrainInfo:
-                        mapContent[pos[1]][pos[0]] = code
+            def show(teleporters, code):
+                for teleporter in teleporters:
+                    if not teleporter.bolted:
+                        continue
+                    position = teleporter.getTerrainPosition()
+                    if position in character.terrainInfo:
+                        mapContent[position[1]][position[0]] = code
                     else:
                         r = range(-1, 2)
-                        # pos = (pos[0] + random.choice(r), pos[1] + random.choice(r), 0)
                         for dx in r:
                             for dy in r:
-                                new_pos_x = src.helpers.clamp(pos[0] + dx, 1, 13)
-                                new_pos_y = src.helpers.clamp(pos[1] + dy, 1, 13)
+                                new_pos_x = src.helpers.clamp(position[0] + dx, 1, 13)
+                                new_pos_y = src.helpers.clamp(position[1] + dy, 1, 13)
                                 if (new_pos_x, new_pos_y, 0) not in character.terrainInfo:
-                                    mapContent[new_pos_y][new_pos_x] = " ?"
+                                    mapContent[new_pos_y][new_pos_x] = "??"
 
-            show(g[self.SenderMode], "SE")
-            show(g[self.ReceiverMode], "RE")
+            show(teleporterGroup[self.senderMode], "SE")
+            show(teleporterGroup[self.receiverMode], "RE")
 
             network = "\n".join(["".join(x) for x in mapContent])
-            network += "\n? Indicate possible teleporter place\nRE indicate a receiver\nSE indicate a sender"
-        character.macroState["submenue"] = src.menuFolder.warningMenu.WarningMenu(
-            self.getLongInfo() + f"\nCharges: {self.charges}\n\n{network}"
+            network += "\n?? indicates a possible teleporter place\nRE indicates a receiver\nSE indicates a sender"
+
+        if network == "":
+            network == "no netwrok is connected to the teleporter"
+
+        character.macroState["submenue"] = src.menuFolder.textMenu.TextMenu(
+            self.getLongInfo() + f"\ncharges: {self.charges}\n\n{network}"
         )
 
     def getLongInfo(self):
-        text = "Operation Mode:"
+        '''
+        generate string with information
+        '''
+        text = "operation mode:"
         if self.group:
-            text += " Sender" if self.mode == self.SenderMode else " Receiver"
+            text += " sender" if self.mode == self.senderMode else " receiver"
         else:
             text += "OFF"
         text += "\n"
 
-        code = "Input Direction:" if self.mode == self.SenderMode else "Output Direction:"
+        code = "input direction:" if self.mode == self.senderMode else "output direction:"
 
         if self.direction:
-            cases = {(0, -1, 0): "North", (-1, 0, 0): "West", (1, 0, 0): "East", (0, 1, 0): "South"}
+            cases = {(0, -1, 0): "north", (-1, 0, 0): "west", (1, 0, 0): "east", (0, 1, 0): "south"}
 
             text += code + " " + cases[self.direction]
         else:
-            if self.mode == self.SenderMode:
-                text += code + " From all Directions"
+            if self.mode == self.senderMode:
+                text += code + " from all directions"
             else:
-                text += code + " To all Directions"
+                text += code + " to all directions"
 
         f_text = str(self.group) if self.group else "Not Set"
-        text += "\nFrequency: " + f_text
+        text += "\nfrequency: " + f_text
 
         if self.group:
             g = src.gamestate.gamestate.teleporterGroups[self.group]
             network_size = len(g[0]) + len(g[1])
-            text += f"\nNetwork Size: {network_size}"
+            text += f"\nnetwork size: {network_size}"
         return text
 
+    def render(self):
+        '''
+        return how the item should look like
+        '''
+        if self.mode == self.senderMode:
+            char = "TS"
+        else:
+            char = "TR"
+
+        if self.bolted:
+            color = "#fff"
+        else:
+            color = "#aac"
+        return (src.interaction.urwid.AttrSpec(color, "black"), char)
+
+# register item
 src.items.addType(DimensionTeleporter, nonManufactured=True)

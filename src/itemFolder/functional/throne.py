@@ -2,16 +2,10 @@ import src
 import random
 
 class Throne(src.items.Item):
-    """
-    ingame item ment to be placed by characters and to mark things with
-    """
-
+    '''
+    ingame item repesesenting the starting point to ascend to world leader
+    '''
     type = "Throne"
-
-    """
-    call superclass constructor with modified paramters and set some state
-    """
-
     def __init__(self):
         self.activated = False
         super().__init__("TT")
@@ -19,12 +13,31 @@ class Throne(src.items.Item):
         self.bolted = False
         self.name = "throne"
         self.description = """
-A throne. Take control over the throne to win the game.
+A throne. A symbol of power.
 """
         self.wavesSpawned = 0
         self.lastWave = None
 
     def apply(self,character):
+        '''
+        handly a character trying to get a promotion
+        '''
+        if character == src.gamestate.gamestate.mainChar:
+            src.gamestate.gamestate.stern["failedAscend"] = True
+
+        if not character.rank or character.rank > 2:
+
+            submenu = src.menuFolder.textMenu.TextMenu("""
+You touch the throne and a shock runns through you.
+
+You need to be rank 2 to interact with the throne.
+""")
+            character.macroState["submenue"] = submenu
+            character.runCommandString("~",nativeKey=True)
+            character.hurt(40,reason="touching the throne")
+            return
+
+
         hasAllSpecialItems = True
         currentTerrain = character.getTerrain()
 
@@ -45,33 +58,84 @@ You need to collect all GlassHarts to be accepted as supreme leader.
             character.macroState["submenue"] = submenu
             character.runCommandString("~",nativeKey=True)
 
-            if character == src.gamestate.gamestate.mainChar:
-                src.gamestate.gamestate.stern["failedAscend"] = True
-
             character.changed("missing glass heart",{})
 
             character.addMessage("you need to control all GlassHearts")
             return
 
-        if character == src.gamestate.gamestate.mainChar:
-            if src.gamestate.gamestate.stern.get("fixedImplant",False):
-                endingType = "good"
-            else:
-                endingType = "bad"
-            src.interaction.showRunOutro()
+        noSeekerStatus = True
+        for statusEffect in character.statusEffects:
+            if not statusEffect.type == "ThroneSeeker":
+                continue
+            noSeekerStatus = False
+
+        if noSeekerStatus:
+            newEffect = src.statusEffects.statusEffectMap["ThroneSeeker"]()
+            character.addStatusEffect(newEffect)
+
             text = f"""
-You won the game! congratulations
+You sit on the Throne and tendril connect to you body.
+They dig through your flesh and reach you implant.
 
-You got the {endingType} ending.
-
-Feel free to continue building your base.
-I'll try to keep things interesting, but you reached official end of content now.
+It unlocks something inside you implant.
+Something you did not know about.
 
 = press enter to continue =
 """
-            src.interaction.showInterruptText(text)
-            character.rank = 1
-            character.changed("ascended")
+            submenu = src.menuFolder.textMenu.TextMenu(text)
+            submenu.followUp = {"container":self,"method":"doMagicUpgrade","params":{"character":character}}
+            character.macroState["submenue"] = submenu
+            character.runCommandString("~",nativeKey=True)
+        else:
+            self.offerTeleport({"character":character})
+
+        character.changed("told to ascend")
+
+    def doMagicUpgrade(self,extraInfo):
+        character = extraInfo["character"]
+        character.hasMagic = True
+
+        text = f"""
+You feel a strange new power.
+
+You can cast spells now.
+press P to cast a spell.
+press p ro recast the last spell you cast.
+
+The spells consume mana from the local terrain.
+The amount of mana available on the current terrain should be shown on you HUD now.
+
+= press enter to continue =
+"""
+        submenu = src.menuFolder.textMenu.TextMenu(text)
+        submenu.followUp = {"container":self,"method":"offerTeleport","params":{"character":character}}
+        character.macroState["submenue"] = submenu
+        character.runCommandString("~",nativeKey=True)
+
+    def offerTeleport(self,extraInfo):
+        character = extraInfo["character"]
+
+        text = f"""
+You need to visit the true Throne on the terrain (7,7,0) to reach rank 1.
+
+Do you you want to teleport there now?
+
+"""
+        options = [("yes","yes"),("no","no")]
+        submenu = src.menuFolder.selectionMenu.SelectionMenu(text,options)
+        submenu.followUp = {"container":self,"method":"teleport","params":{"character":character}}
+        character.macroState["submenue"] = submenu
+        character.runCommandString("~",nativeKey=True)
+
+        character.changed("told to ascend")
+
+    def teleport(self,extraInfo):
+        if extraInfo.get("selection") != "yes":
+            return
+
+        character = extraInfo["character"]
+        target_terrain_position = (7,7)
+        src.magic.teleportToTerrain(character, target_terrain_position, spawnOutside=True)
 
     def getConfigurationOptions(self, character):
         """

@@ -58,6 +58,7 @@ class Spider(src.monster.Monster):
         if mutated:
             self.mutate()
 
+        self.waitLength = 10
 
     def mutate(self):
         if self.mutated:
@@ -86,11 +87,22 @@ class Spider(src.monster.Monster):
         return super().generateQuests()
 
     def applyNativeMeleeAttackEffects(self,target):
-        target.statusEffects.append(src.statusEffects.statusEffectMap["Slowed"](duration=2,slowDown=0.1,reason="You were bitten by a Spider"))
+        target.addStatusEffect(
+            src.statusEffects.statusEffectMap["Slowed"](duration=2, slowDown=0.1, reason="You were bitten by a Spider")
+        )
         super().applyNativeMeleeAttackEffects(target)
 
     @staticmethod
     def lootTable():
         return [(None, 9),(src.items.itemMap["SpiderEye"], 1)]
+
+    def getLoreDescription(self):
+        return f"You see a Spider. Poission is dripping from its fangs.\nIt seems to be as persistent as it is patient."
+
+    def getFunctionalDescription(self):
+        return f"Spiders are somewhat dangerous in a fight and are about as fast as a Clone.\nThe main risk fighting them is that they can slow you down, preventing an escape.\nSpiders will always chase after you, you can abuse that behaviour."
+
+    def description(self):
+        return self.getLoreDescription()+"\n\n---- "+self.getFunctionalDescription()
 
 src.characters.add_character(Spider)

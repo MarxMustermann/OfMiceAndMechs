@@ -14,6 +14,7 @@ class ChatPartnerselection(src.subMenu.SubMenu):
 
         self.type = "ChatPartnerselection"
         self.subMenu = None
+        self.skipKeypress = True
         super().__init__()
 
     def handleKey(self, key, noRender=False, character = None):
@@ -27,13 +28,17 @@ class ChatPartnerselection(src.subMenu.SubMenu):
         Returns:
             returns True when done
         """
+        
+        if self.skipKeypress:
+            self.skipKeypress = False
+            key = "~"
 
         # wrap around the chat menu
         if self.subMenu:
             return self.subMenu.handleKey(key, noRender=noRender, character=character)
 
         # exit the submenu
-        if key == "esc":
+        if key in ("esc","h",):
             return True
 
         # set title

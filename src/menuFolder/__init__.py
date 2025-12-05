@@ -21,6 +21,7 @@ import src.menuFolder.questMenu
 import src.menuFolder.roomDutyMenu
 import src.menuFolder.roomMenu
 import src.menuFolder.roomSourceMenu
+import src.menuFolder.roomTagMenu
 import src.menuFolder.selectionMenu
 import src.menuFolder.setNPCDutiesMenu
 import src.menuFolder.settingMenu
@@ -33,5 +34,6 @@ import src.menuFolder.sliderMenu
 import src.menuFolder.teleporterGroupMenu
 import src.menuFolder.confirmMenu
 import src.menuFolder.directionMenu
-import src.menuFolder.TerrainMenu
+import src.menuFolder.terrainMenu
 import src.menuFolder.shoutMenu
+import src.menuFolder.characterStatsMenu

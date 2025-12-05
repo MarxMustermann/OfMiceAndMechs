@@ -9,18 +9,23 @@ import os
 import random
 import time
 import gzip
-
+import inspect
 
 import src.canvas
+import src.characters
 import src.chats
 import src.gamestate
+import src.helpers
 import src.menuFolder
+import src.monster
 import src.quests
 import src.rooms
 import src.terrains
 from config import commandChars
 from src import cinematics
 from multiprocessing import Process
+from queue import PriorityQueue
+from heapq import heappush, heappop
 
 ################################################################################
 #
@@ -48,62 +53,100 @@ def advanceGame():
     """
     advance the game
     """
-    global multi_chars
 
-    mainCharTerrain = src.gamestate.gamestate.mainChar.getTerrain()
-    multi_chars = set()
-    for row in src.gamestate.gamestate.terrainMap:
-        for specificTerrain in row:
-            for character in specificTerrain.characters:
-                multi_chars.add(character)
-            for room in specificTerrain.rooms:
-                for character in room.characters:
+    # initialize new turn
+    if not src.gamestate.gamestate.savedThisTurn:
+
+        # collect the characters that need to be advanced
+        global multi_chars
+        mainCharTerrain = src.gamestate.gamestate.mainChar.getTerrain()
+        multi_chars = set()
+        for row in src.gamestate.gamestate.terrainMap:
+            for specificTerrain in row:
+                for character in specificTerrain.characters:
                     multi_chars.add(character)
-            specificTerrain.advance()
-            if specificTerrain != mainCharTerrain:
-                specificTerrain.animations = []
                 for room in specificTerrain.rooms:
-                    room.animations = []
+                    for character in room.characters:
+                        multi_chars.add(character)
+                specificTerrain.advance()
+                if specificTerrain != mainCharTerrain:
+                    specificTerrain.animations = []
+                    for room in specificTerrain.rooms:
+                        room.animations = []
+        for extraRoot in src.gamestate.gamestate.extraRoots:
+            for character in extraRoot.characters:
+                multi_chars.add(character)
 
-    for extraRoot in src.gamestate.gamestate.extraRoots:
-        for character in extraRoot.characters:
-            multi_chars.add(character)
+        # change the actual games
+        src.gamestate.gamestate.multi_chars = multi_chars
+        src.gamestate.gamestate.tick += 1
+        logger.info("Tick %d", src.gamestate.gamestate.tick)
 
-    src.gamestate.gamestate.multi_chars = multi_chars
-    src.gamestate.gamestate.tick += 1
-    logger.info("Tick %d", src.gamestate.gamestate.tick)
+        # give every character time to act this round
+        for character in multi_chars:
+            character.timeTaken -= 1
 
-    for character in multi_chars:
-        character.timeTaken -= 1
+        # prepare an optimized data sturcture to hold the characters to advance
+        character_queue = []
+        counter = 1
+        for character in multi_chars:
+            counter += 1
 
-    for character in multi_chars:
-        advanceChar(character)
+            heappush(character_queue,(character.timeTaken, counter, character))
 
+        # preserve some data in gamestate so it will be available after loading
+        src.gamestate.gamestate.mainLoop["counter"] = counter
+        src.gamestate.gamestate.mainLoop["character_queue"] = character_queue
+
+    # preserve some data from gamestate in case the game was loaded
+    counter = src.gamestate.gamestate.mainLoop["counter"]
+    character_queue = src.gamestate.gamestate.mainLoop["character_queue"]
+
+    # advance all characters in order of initiative
+    while character_queue:
+        character = character_queue[0][2]
+        advanceChar(character, singleStep=True)
+        heappop(character_queue)
+
+        if character.timeTaken < 1 and not character.dead:
+            counter += 1
+            heappush(character_queue,(character.timeTaken, counter, character))
+
+        src.gamestate.gamestate.mainLoop["counter"] = counter
+        src.gamestate.gamestate.mainLoop["character_queue"] = character_queue
+
+    # workaroud for backwards compability
+    # TODO: removeme
     try:
         src.gamestate.gamestate.itemToUpdatePerTick
     except:
         src.gamestate.gamestate.itemToUpdatePerTick = []
-
     try:
         src.gamestate.gamestate.teleporterGroups
     except:
         src.gamestate.gamestate.teleporterGroups = {}
 
+    # update the items that actually do time based things
     for item in src.gamestate.gamestate.itemToUpdatePerTick:
         item.tick()
 
+    # make the teleporters teleport
     for group in src.gamestate.gamestate.teleporterGroups:
         (senders, receivers) = src.gamestate.gamestate.teleporterGroups[group]
         if len(receivers):
             for sender in senders:
                 sender.tick()
 
+    # handle god effects for this turn
     if src.gamestate.gamestate.tick%(15*15*15) == 0:
+
+        # give the gods new mana
         for god in src.gamestate.gamestate.gods.values():
             if "mana" not in god:
                 god["mana"] = 0
             god["mana"] += 10
 
+        # respawn lost glass hearts
         for (godId,god) in src.gamestate.gamestate.gods.items():
             terrain = src.gamestate.gamestate.terrainMap[god["lastHeartPos"][1]][god["lastHeartPos"][0]]
             foundEmptyGlassStatue = None
@@ -118,21 +161,35 @@ def advanceGame():
                         hasItem = True
                     else:
                         foundEmptyGlassStatue = glassStatue
-
             if not hasItem and foundEmptyGlassStatue:
                 foundEmptyGlassStatue.hasItem = True
 
+        # give out mana bonus for controlling glass hearts
         for god in src.gamestate.gamestate.gods.values():
             terrain = src.gamestate.gamestate.terrainMap[god["lastHeartPos"][1]][god["lastHeartPos"][0]]
             increaseAmount = min(1,terrain.maxMana-terrain.mana)
             terrain.mana += increaseAmount
 
-        if not src.gamestate.gamestate.difficulty == "tutorial":
-            src.magic.spawnWaves()
+        # spawn enemy waves
+        src.magic.spawnWaves()
+
+    # auto save
     if settings.get("auto save"):
         if src.gamestate.gamestate.tick % 150 == 0:
             src.gamestate.gamestate.save()
             src.gamestate.gamestate.mainChar.addMessage("auto saved")
+
+    # mark completion of the round as it should be
+    src.gamestate.gamestate.savedThisTurn = False
+
+    try:
+        src.gamestate.gamestate.saveAtTheTurnEnd
+    except:
+        src.gamestate.gamestate.saveAtTheTurnEnd = False
+        
+    if src.gamestate.gamestate.saveAtTheTurnEnd:
+        src.gamestate.gamestate.saveAtTheTurnEnd = False
+        src.gamestate.gamestate.save()
 
 def advanceGame_disabled():
     """
@@ -181,7 +238,6 @@ class AbstractedDisplay:
         pass
 
 tcodConsole = None
-tcodContext = None
 tcod = None
 soundloader = None
 tcodAudio = None
@@ -189,33 +245,70 @@ tcodAudioDevice = None
 tcodMixer = None
 sounds = {}
 settings = None
+sdl_cache = []
 
 def playSound(soundName,channelName,loop=False):
     if settings["sound"] != 0:
-        channel = src.interaction.tcodMixer.get_channel(channelName)
-        if not channel.busy:
-            channel.play(sounds[soundName], volume = settings["sound"]/32)
+        if src.interaction.tcodMixer:
+            channel = src.interaction.tcodMixer.get_channel(channelName)
+            if not channel.busy:
+                channel.play(sounds[soundName], volume = settings["sound"]/32)
 
-def checkResetWindowSize(width,height):
+zoom = 0
+window_width = None
+window_height = None
+window_charwidth = None
+window_charheight = None
+tileHeight = None
+tileWidth = None
+def checkResetWindowSize(width=None,height=None):
+    global tileHeight
+    global tileWidth
+    global window_width
+    if width is None:
+        width = window_width
+    else:
+        window_width = width
+    global window_height
+    if height is None:
+        height = window_height
+    else:
+        window_height = height
+
     tileHeight = height//51//2*2
+    tileHeight += zoom*2
+
     if tileHeight < 6:
         tileHeight = 6
-    if tileHeight > 20:
-        tileHeight = 20
+    if tileHeight > 28:
+        tileHeight = 28
+    tileWidth = tileHeight//2
 
+    global tileset
     newHeight = height//tileHeight
     newWidth  = (width//tileHeight)*2
     tileset = tcod.tileset.load_tilesheet(
         f"scaled_{tileHeight//2}x{tileHeight}.png", 16, 16, tcod.tileset.CHARMAP_CP437
     )
-    tcodContext.change_tileset(tileset)
 
     global tcodConsole
     root_console = tcod.console.Console(newWidth, newHeight, order="F")
     tcodConsole = root_console
 
+    global window_charwidth
+    global window_charheight
+    window_charwidth = newWidth
+    window_charheight = newHeight
+
+sdl_renderer2 = None
+tileset = None
+atlas = None
+sdl_window = None
 def setUpTcod():
     global settings
+    global tileset
+    global atlas
+
     if os.path.isfile("config/globalSettings.json"):
                 with open("config/globalSettings.json") as f:
                     settings = json.loads(f.read())
@@ -249,6 +342,43 @@ def setUpTcod():
     tileset =  tcod.tileset.load_truetype_font("./config/font/dejavu-sans-mono-fonts-ttf-2.35/ttf/DejaVuSansMono.ttf",48,24)
     """
 
+    global tcodConsole
+    global sdl_renderer2
+    global sdl_window
+
+    global window_charwidth
+    global window_charheight
+    window_charwidth = 200
+    window_charheight = 50
+
+    global tileHeight
+    global tileWidth
+    tileHeight = 100
+    tileWidth = 30
+
+    global window_width
+    global window_height
+    window_width = window_charwidth*tileWidth
+    window_height = window_charheight*tileHeight
+
+    tcodConsole = tcod.console.Console(window_charwidth,window_charheight, order="F")
+    tcodConsole.print(x=1,y=1,string="loading game")
+    sdl_window = tcod.sdl.video.new_window(
+            500,
+            500,
+            flags=tcod.lib.SDL_WINDOW_RESIZABLE | tcod.lib.SDL_WINDOW_MAXIMIZED,
+            title="OfMiceAndMechs"
+        )
+    sdl_renderer2 = tcod.sdl.render.new_renderer(sdl_window)
+    atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset)
+    console_render = tcod.render.SDLConsoleRender(atlas)
+
+    #if settings["fullscreen"]:
+    #    sdl_window.fullscreen = True
+
+    checkResetWindowSize(width=sdl_window.size[0],height=sdl_window.size[1])
+
+    """
     context = tcod.context.new_terminal(
             None,
             None,
@@ -256,6 +386,17 @@ def setUpTcod():
             title="OfMiceAndMechs",
             vsync=True,
             sdl_window_flags=tcod.lib.SDL_WINDOW_RESIZABLE | tcod.lib.SDL_WINDOW_MAXIMIZED,
+                )
+    """
+
+    """
+    context = tcod.context.new_terminal(
+            None,
+            None,
+            tileset=tileset,
+            title="OfMiceAndMechs",
+            vsync=True,
+            sdl_window_flags=tcod.lib.SDL_WINDOW_RESIZABLE,
                 )
     size = context.recommended_console_size()
 
@@ -274,6 +415,7 @@ def setUpTcod():
         tcodContext.sdl_window_p,
         tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP if settings["fullscreen"] else 0,
     )
+    """
     
     import soundfile as sf
     import tcod.sdl.audio as audio
@@ -326,9 +468,14 @@ def setUpTcod():
 
     global tcodMixer
     global tcodAudioDevice
-    device = src.interaction.tcodAudio.open(samples = 12000)
+    try:
+        device = src.interaction.tcodAudio.open(samples = 12000)
+        mixer = src.interaction.tcodAudio.BasicMixer(device)
+    except:
+        device = None
+        mixer = None
+
     tcodAudioDevice = device
-    mixer = src.interaction.tcodAudio.BasicMixer(device)
     tcodMixer = mixer
 
     """
@@ -342,7 +489,8 @@ def setUpTcod():
         0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
     )
     """
-    tcodMixer.get_channel("background").play(sound = sounds["loop1_start"],volume = settings["sound"]/ 32.0,on_end = sound_loop)
+    if tcodMixer:
+        tcodMixer.get_channel("background").play(sound = sounds["loop1_start"],volume = settings["sound"]/ 32.0,on_end = sound_loop)
 
 def sound_loop(ch):
     if random.random() < 0.5:
@@ -351,8 +499,9 @@ def sound_loop(ch):
         ch.play(sound = sounds["loop2"],volume = settings["sound"]/32.0,on_end = sound_loop)
 
 def changeVolume():
-    channel = tcodMixer.get_channel("background")
-    channel.volume = settings["sound"]/ 32.0
+    if tcodMixer:
+        channel = tcodMixer.get_channel("background")
+        channel.volume = settings["sound"]/ 32.0
     
 footer = None
 main = None
@@ -624,7 +773,7 @@ def handleActivitySelection(key,char):
         terrain = char.getTerrain()
 
         # render empty map
-        mapContent = src.menuFolder.TerrainMenu.TerrainMenu.renderZoneInfo(char)
+        mapContent = src.menuFolder.terrainMenu.TerrainMenu.renderZoneInfo(char)
         functionMap = {}
         extraText = "test"
 
@@ -713,6 +862,13 @@ def handleActivitySelection(key,char):
                         "params":{"targetCoordinate":(13,7,0)},
                     },
                     "description":"move to east crossing",
+                }
+                functionMap[(x,y)]["q"] = {
+                    "function": {
+                        "container":char,
+                        "method":"triggerAutoMoveQuestTarget",
+                    },
+                    "description":"move to a quest target"
                 }
 
         for scrapField in terrain.scrapFields:
@@ -959,35 +1115,35 @@ def doAdvancedInteraction(params):
         )
         if items:
             items[0].apply(char)
-            char.timeTaken += char.movementSpeed
+            char.takeTime(char.movementSpeed,"advanced interaction m")
     elif key == "s":
         items = char.container.getItemByPosition(
             (char.xPosition, char.yPosition + 1, char.zPosition)
         )
         if items:
             items[0].apply(char)
-            char.timeTaken += char.movementSpeed
+            char.takeTime(char.movementSpeed,"advanced interaction m")
     elif key == "d":
         items = char.container.getItemByPosition(
             (char.xPosition + 1, char.yPosition, char.zPosition)
         )
         if items:
             items[0].apply(char)
-            char.timeTaken += char.movementSpeed
+            char.takeTime(char.movementSpeed,"advanced interaction m")
     elif key == "a":
         items = char.container.getItemByPosition(
             (char.xPosition - 1, char.yPosition, char.zPosition)
         )
         if items:
             items[0].apply(char)
-            char.timeTaken += char.movementSpeed
+            char.takeTime(char.movementSpeed,"advanced interaction m")
     elif key == ".":
         items = char.container.getItemByPosition(
             (char.xPosition, char.yPosition, char.zPosition)
         )
         if items:
             items[0].apply(char)
-            char.timeTaken += char.movementSpeed
+            char.takeTime(char.movementSpeed,"advanced interaction m")
     elif key == "i":
         if char.inventory:
             char.inventory[-1].apply(char)
@@ -1020,7 +1176,7 @@ def doAdvancedInteraction(params):
                 isinstance(item, src.items.itemMap["BioMass"]) or isinstance(item,src.items.itemMap["Bloom"]) or isinstance(item,src.items.itemMap["PressCake"]) or isinstance(item,src.items.itemMap["SickBloom"])
             ):
                 item.apply(character)
-                character.inventory.remove(item)
+                character.removeItemFromInventory(item)
                 break
             if isinstance(item, src.items.itemMap["Corpse"]):
                 item.apply(character)
@@ -1033,7 +1189,7 @@ def doAdvancedInteraction(params):
                     item.apply(character)
                     break
 
-                while item.uses and character.health < character.maxHealth:
+                while item.uses and character.health < character.adjustedMaxHealth:
                     item.apply(character)
     del char.interactionState["advancedInteraction"]
 
@@ -1048,7 +1204,7 @@ def doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags):
         if items:
             items[0].configure(char)
             char.runCommandString("~",nativeKey=True)
-            char.timeTaken += char.movementSpeed
+            char.takeTime(char.movementSpeed,"advanced configuration m")
     elif key == "s":
         items = char.container.getItemByPosition(
             (char.xPosition, char.yPosition + 1, char.zPosition)
@@ -1056,7 +1212,7 @@ def doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags):
         if items:
             items[0].configure(char)
             char.runCommandString("~",nativeKey=True)
-            char.timeTaken += char.movementSpeed
+            char.takeTime(char.movementSpeed,"advanced configuration m")
     elif key == "d":
         items = char.container.getItemByPosition(
             (char.xPosition + 1, char.yPosition, char.zPosition)
@@ -1064,7 +1220,7 @@ def doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags):
         if items:
             items[0].configure(char)
             char.runCommandString("~",nativeKey=True)
-            char.timeTaken += char.movementSpeed
+            char.takeTime(char.movementSpeed,"advanced configuration m")
     elif key == "a":
         items = char.container.getItemByPosition(
             (char.xPosition - 1, char.yPosition, char.zPosition)
@@ -1072,7 +1228,7 @@ def doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags):
         if items:
             items[0].configure(char)
             char.runCommandString("~",nativeKey=True)
-            char.timeTaken += char.movementSpeed
+            char.takeTime(char.movementSpeed,"advanced configuration m")
     elif key == ".":
         items = char.container.getItemByPosition(
             (char.xPosition, char.yPosition, char.zPosition)
@@ -1080,7 +1236,7 @@ def doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags):
         if items:
             items[0].configure(char)
             char.runCommandString("~",nativeKey=True)
-            char.timeTaken += char.movementSpeed
+            char.takeTime(char.movementSpeed,"advanced configuration m")
     elif key == "i" and char.inventory:
         char.inventory[-1].configure(char)
     del char.interactionState["advancedConfigure"]
@@ -1099,7 +1255,7 @@ def doAdvancedPickup(params):
         del char.interactionState["advancedPickup"]
         return
 
-    char.timeTaken += char.movementSpeed
+    char.takeTime(char.movementSpeed,"advanced pickup")
     if len(char.inventory) >= 10:
         if key == "w":
             char.container.addAnimation(char.getPosition(offset=(0,-1,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
@@ -1221,7 +1377,7 @@ def doAdvancedDrop(params):
     footer = params[6]
     urwid = params[7]
 
-    char.timeTaken += char.movementSpeed
+    char.takeTime(char.movementSpeed,"advanced drop")
     pos = None
     if key == "w":
         pos = (char.xPosition, char.yPosition - 1, char.zPosition)
@@ -1280,7 +1436,7 @@ def doAdvancedDrop(params):
                         if char.inventory:
                             dropType = char.inventory[-1].type
                     else:
-                        dropType = items[-1].type
+                        dropType = items[0].type
 
             foundOutputSlot = None
             for checkOutputSlot in room.outputSlots:
@@ -2417,7 +2573,8 @@ def handlePriorityActions(params):
     if key in (commandChars.quit_normal, commandChars.quit_instant):
         if hasattr(urwid,"ExitMainLoop"):
             raise urwid.ExitMainLoop()
-        src.interaction.tcodMixer.close()
+        if src.interaction.tcodMixer:
+            src.interaction.tcodMixer.close()
         raise SystemExit()
 
     return (1,key)
@@ -2442,53 +2599,16 @@ def doDockRight(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame)
         char.specialRender = True
 
 def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
-    options = [("save", "save"), ("main menu","save and back to main menu"),("quit", "save and quit"),("help","help"),
-               ("toggleQuestExpanding", "toggleQuestExpanding"),
-               ("toggleQuestExpanding2", "toggleQuestExpanding2"),
-               ("toggleExpandQ", "toggleExpandQ"),
-               ("toggleCommandOnPlus", "toggleCommandOnPlus"),
-               ("change personality settings", "change personality settings"),
+    options = [("save", "save"),
+               ("main menu","save and back to main menu"),
+               ("quit", "save and quit"),
+               ("help","help"),
                ("change setting", "change setting")]
     submenu = src.menuFolder.selectionMenu.SelectionMenu("What do you want to do?", options)
     char.macroState["submenue"] = submenu
 
     def trigger():
         selection = submenu.getSelection()
-        if selection == "change personality settings":
-
-            def getValue():
-                settingName = char.macroState["submenue"].selection
-
-                def setValue():
-                    value = char.macroState["submenue"].text
-                    if settingName in (
-                        "autoCounterAttack",
-                        "autoFlee",
-                        "abortMacrosOnAttack",
-                        "attacksEnemiesOnContact",
-                    ):
-                        if value == "True":
-                            value = True
-                        else:
-                            value = False
-                    else:
-                        value = int(value)
-                    char.personality[settingName] = value
-
-                if settingName is None:
-                    return
-                submenu3 = src.menuFolder.inputMenu.InputMenu("input value")
-                char.macroState["submenue"] = submenu3
-                char.macroState["submenue"].followUp = setValue
-                return
-
-            options = []
-            for (key, value) in char.personality.items():
-                options.append((key, f"{key}: {value}"))
-            submenu2 = src.menuFolder.selectionMenu.SelectionMenu("select personality setting", options)
-            char.macroState["submenue"] = submenu2
-            char.macroState["submenue"].followUp = getValue
-            return
         if selection == "save":
             tmp = char.macroState["submenue"]
             char.macroState["submenue"] = None
@@ -2500,28 +2620,8 @@ def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
             src.gamestate.gamestate.save()
             # src.interaction.tcodMixer.close()
             raise SystemExit() #HACK: workaround for bug that causes memory leak
-        elif selection == "actions":
-            pass
-        elif selection == "macros":
-            pass
-        elif selection == "toggleQuestExpanding":
-            char.autoExpandQuests = not char.autoExpandQuests
-        elif selection == "toggleQuestExpanding2":
-            char.autoExpandQuests2 = not char.autoExpandQuests2
-        elif selection == "toggleExpandQ":
-            char.autoExpandQ = not char.autoExpandQ
-        elif selection == "toggleCommandOnPlus":
-            char.disableCommandsOnPlus = not char.disableCommandsOnPlus
-        elif selection == "changeFaction":
-            if char.faction == "player":
-                char.faction = "monster"
-            else:
-                char.faction = "player"
-            pass
         elif selection == "help":
             charState["submenue"] = src.menuFolder.helpMenu.HelpMenu()
-        elif selection == "keybinding":
-            pass
         elif selection == "change setting":
             charState["submenue"] = src.menuFolder.settingMenu.SettingMenu() 
         elif selection == "main menu":
@@ -2619,8 +2719,14 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
         move the player into a direction
         """
         # move the player
+        if key in (":",):
+            char.takeTime(0.1,"short wait")
+        if key in (",",):
+            char.startWaitForEnemyApproach(10)
+        if key in (";",):
+            char.startWaitForEnemy(100)
         if key in (commandChars.wait):
-            char.timeTaken += 1
+            char.takeTime(1,"wait")
             if char.exhaustion > 1:
                 char.exhaustion = max(1,char.exhaustion-10)
             else:
@@ -2660,7 +2766,10 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
             charPos = char.getPosition()
             for enemy in char.getNearbyEnemies():
                 if enemy.getPosition(offset=offset) == charPos:
-                    char.selectSpecialAttack(enemy)
+                    if char.hasSpecialAttacks:
+                        char.selectSpecialAttack(enemy)
+                    elif char.hasSwapAttack:
+                        char.attack(enemy,swap=True)
                     return None
 
             if char.tool:
@@ -2690,37 +2799,21 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
                 charState["itemMarkedLast"] = moveCharacter("north",char,noAdvanceGame,header,urwid,dash=True)
                 if charState["itemMarkedLast"]:
                     handleCollision(char,charState)
-                if char.exhaustion < 10:
-                    charState["itemMarkedLast"] = moveCharacter("north",char,noAdvanceGame,header,urwid,dash=True)
-                    if charState["itemMarkedLast"]:
-                        handleCollision(char,charState)
                 return None
             if key in ("S",):
                 charState["itemMarkedLast"] = moveCharacter("south",char,noAdvanceGame,header,urwid,dash=True)
                 if charState["itemMarkedLast"]:
                     handleCollision(char,charState)
-                if char.exhaustion < 10:
-                    charState["itemMarkedLast"] = moveCharacter("south",char,noAdvanceGame,header,urwid,dash=True)
-                    if charState["itemMarkedLast"]:
-                        handleCollision(char,charState)
                 return None
             if key in ("D",):
                 charState["itemMarkedLast"] = moveCharacter("east",char,noAdvanceGame,header,urwid,dash=True)
                 if charState["itemMarkedLast"]:
                     handleCollision(char,charState)
-                if char.exhaustion < 10:
-                    charState["itemMarkedLast"] = moveCharacter("east",char,noAdvanceGame,header,urwid,dash=True)
-                    if charState["itemMarkedLast"]:
-                        handleCollision(char,charState)
                 return None
             if key in ("A",):
                 charState["itemMarkedLast"] = moveCharacter("west",char,noAdvanceGame,header,urwid,dash=True)
                 if charState["itemMarkedLast"]:
                     handleCollision(char,charState)
-                if char.exhaustion < 10:
-                    charState["itemMarkedLast"] = moveCharacter("west",char,noAdvanceGame,header,urwid,dash=True)
-                    if charState["itemMarkedLast"]:
-                        handleCollision(char,charState)
                 return None
 
         """
@@ -2786,7 +2879,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
                     return None
 
                 charState["itemMarkedLast"].apply(char)
-                char.timeTaken += char.movementSpeed
+                char.takeTime(char.movementSpeed,"activate item marked")
 
             # activate an item on floor
             else:
@@ -2806,22 +2899,21 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
 
                     if entry:
                         entry[0].apply(char)
-                        char.timeTaken += char.movementSpeed
+                        char.takeTime(char.movementSpeed,"activate item not marked")
 
         # examine an item
         if key in (commandChars.examine,):
-            # examine the marked item
             if charState["itemMarkedLast"]:
+                # examine an item on floor
                 char.examinePosition(charState["itemMarkedLast"].getPosition())
-
-            # examine an item on floor
             else:
+                # examine an item on floor
                 char.examinePosition(char.getPosition())
 
         # drop first item from inventory
         # bad pattern: the user has to have the choice for what item to drop
         if key in (commandChars.drop,):
-            char.timeTaken += char.movementSpeed
+            char.takeTime(char.movementSpeed,"drop item")
             if "NaiveDropQuest" not in char.solvers and not char.godMode:
                 char.addMessage("you do not have the nessecary solver yet (drop)")
             else:
@@ -2894,9 +2986,40 @@ press key for the configuration interaction
             handleActivityKeypress(char, header, main, footer, flags)
             return None
 
+        if key in ("p",):
+            if char.hasMagic:
+                char.repeatLastCast()
+            else:
+                char.showTextMenu("""
+You have a strange feeling, but nothing happens.
+""")
+        if key in ("P",):
+            try:
+                char.hasMagic
+            except:
+                char.hasMagic = False
+
+            if char.hasMagic:
+                char.selectCastMagic()
+            else:
+                char.showTextMenu("""
+You have a strange feeling, but nothing happens.
+""")
+            return None
+
         if key in ("f",):
-            if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-                text = """
+            try:
+                char.hasLineShot
+            except:
+                char.hasLineShot = False
+            try:
+                char.hasRandomShot
+            except:
+                char.hasRandomShot = False
+
+            if char.hasLineShot:
+                if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
+                    text = """
 
 press key to set fire direction
 
@@ -2907,16 +3030,19 @@ press key to set fire direction
 
 """
 
-                header.set_text(
-                    (urwid.AttrSpec("default", "default"), "fire menu")
-                )
-                main.set_text((urwid.AttrSpec("default", "default"), text))
-                footer.set_text((urwid.AttrSpec("default", "default"), ""))
-                char.specialRender = True
+                    header.set_text(
+                        (urwid.AttrSpec("default", "default"), "fire menu")
+                    )
+                    main.set_text((urwid.AttrSpec("default", "default"), text))
+                    footer.set_text((urwid.AttrSpec("default", "default"), ""))
+                    char.specialRender = True
 
-            char.interactionState["fireDirection"] = {}
-            return None
-
+                char.interactionState["fireDirection"] = {}
+                return None
+            elif char.hasRandomShot:
+                char.doRandomRanged()
+            else:
+                char.addMessage("no ranged attack")
         if key in ("K",):
             if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
                 text = """
@@ -2983,7 +3109,7 @@ press key for advanced drop
         # pick up items
         # bad code: picking up should happen in character
         if key in (commandChars.pickUp,):
-            char.timeTaken += char.movementSpeed
+            char.takeTime(char.movementSpeed,"pick up item")
             if len(char.inventory) >= 10:
                 char.container.addAnimation(char.getPosition(offset=(0,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
                 char.addMessage("you cannot carry more items")
@@ -3081,8 +3207,8 @@ press key for advanced drop
     if key in (commandChars.show_help,):
         char.specialRender = True
 
-    if key == "t":
-        charState["submenue"] = src.menuFolder.shoutMenu.ShoutMenu()
+    #if key == "t":
+    #    charState["submenue"] = src.menuFolder.shoutMenu.ShoutMenu()
 
     return (1,key)
 
@@ -3102,8 +3228,8 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
     """
     char.implantLoad += 1
 
-    if char.implantLoad > 100:
-        char.timeTaken += 1
+    if char.implantLoad > 20:
+        char.takeTime(1,"implant load")
         char.implantLoad = 0
 
     if char.dead:
@@ -3210,6 +3336,8 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
     # repeat autoadvance keystrokes
     # bad code: keystrokes are abused here, a timer would be more appropriate
     if key in (commandChars.autoAdvance,):
+        if char.disableCommandsOnPlus:
+            return
         if not charState["ignoreNextAutomated"]:
             char.runCommandString(commandChars.autoAdvance)
             char.runCommandString(commandChars.advance)
@@ -3431,7 +3559,7 @@ def render(char):
         lastCenterY = centerY
 
     # set size of the window into the world
-    viewsize = 44
+    viewsize = window_charheight-5
     halfviewsite = (viewsize - 1) // 2
 
     # calculate the windows position
@@ -3450,13 +3578,14 @@ def render(char):
     )
 
     # render the map
+    renderHeight = window_charheight-5
     if (
         char.room
         and not char.room.xPosition
     ):
         chars = char.room.render()
     else:
-        chars = thisTerrain.render(size=(viewsize, viewsize),coordinateOffset=(centerY - halfviewsite -1, centerX - halfviewsite-1))
+        chars = thisTerrain.render(size=(renderHeight,renderHeight),coordinateOffset=(centerY - renderHeight//2 -1, centerX - renderHeight//2 -1))
         miniMapChars = []
 
         '''
@@ -3511,7 +3640,7 @@ def render(char):
 
     # place rendering in screen
     canvas = src.canvas.Canvas(
-        size=(viewsize+1, viewsize+20),
+        size=(renderHeight, renderHeight),
         chars=chars,
         coordinateOffset=(0,0),
         shift=shift,
@@ -3549,11 +3678,14 @@ def keyboardListener(key, targetCharacter=None):
     global continousOperation
     continousOperation = -1
 
+    global zoom
+
     if not multi_currentChar:
         multi_currentChar = char
     state = char.macroState
 
     if key == "ctrl d":
+        char.autoAdvance = False
         char.clearCommandString()
         state["loop"] = []
         state["replay"].clear()
@@ -3581,6 +3713,15 @@ def keyboardListener(key, targetCharacter=None):
             src.gamestate.gamestate.gameHalted = False
         else:
             src.gamestate.gamestate.gameHalted = True
+
+    elif key == "ctrl +":
+        #zoom in
+        zoom += 1
+        checkResetWindowSize()
+    elif key == "ctrl -":
+        #zoom out
+        zoom -= 1
+        checkResetWindowSize()
 
     elif key == "ctrl p":
         if not char.macroStateBackup:
@@ -3737,19 +3878,23 @@ def getTcodEvents():
 
     if lastcheck < time.time()-0.01:
         events = tcod.event.get()
+        ignoreNext = False
         for event in events:
             foundEvent = True
             if isinstance(event, tcod.event.Quit):
-                src.interaction.tcodMixer.close()
+                if src.interaction.tcodMixer:
+                    src.interaction.tcodMixer.close()
                 raise SystemExit()
             if isinstance(event, tcod.event.WindowResized):
                 checkResetWindowSize(event.width,event.height)
             if isinstance(event, tcod.event.WindowEvent):
                 if event.type == "WINDOWCLOSE":
-                    src.interaction.tcodMixer.close()
+                    if src.interaction.tcodMixer:
+                        src.interaction.tcodMixer.close()
                     raise SystemExit()
                 if event.type == "WINDOWEXPOSED":
                     renderGameDisplay()
+            """
             if isinstance(event,tcod.event.MouseButtonDown):# or isinstance(event,tcod.event.MouseButtonUp):
                 tcodContext.convert_event(event)
                 clickPos = (event.tile.x,event.tile.y)
@@ -3770,6 +3915,7 @@ def getTcodEvents():
 
                 if isinstance(event,tcod.event.MouseButtonUp):
                     src.gamestate.gamestate.dragState = None
+            """
 
             if isinstance(event,tcod.event.KeyDown):
                 key = event.sym
@@ -3800,55 +3946,13 @@ def getTcodEvents():
                         translatedKey = "ESC"
                     else:
                         translatedKey = "esc"
-                """
-                if key == tcod.event.KeySym.N1:
-                    translatedKey = "1"
-                if key == tcod.event.KeySym.N2:
-                    translatedKey = "2"
-                if key == tcod.event.KeySym.N3:
-                    translatedKey = "3"
-                if key == tcod.event.KeySym.N4:
-                    translatedKey = "4"
-                if key == tcod.event.KeySym.N5:
-                    translatedKey = "5"
-                if key == tcod.event.KeySym.N6:
-                    translatedKey = "6"
-                if key == tcod.event.KeySym.N7:
-                    translatedKey = "7"
-                if key == tcod.event.KeySym.N8:
-                    translatedKey = "8"
-                if key == tcod.event.KeySym.N9:
-                    translatedKey = "9"
-                if key == tcod.event.KeySym.N0:
-                    translatedKey = "0"
-                if key == tcod.event.KeySym.COMMA:
-                    if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,4097,4098):
-                        translatedKey = ";"
-                    else:
-                        translatedKey = ","
-                if key == tcod.event.KeySym.MINUS:
-                    if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,4097,4098):
-                        translatedKey = "_"
-                    else:
-                        translatedKey = "-"
+
+                if key in (tcod.event.KeySym.MINUS,tcod.event.KeySym.KP_MINUS):
+                    if event.mod & tcod.event.Modifier.CTRL:
+                        translatedKey = "ctrl -"
                 if key == tcod.event.KeySym.PLUS or key == tcod.event.KeySym.KP_PLUS:
-                    if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,4097,4098):
-                        translatedKey = "*"
-                    else:
-                        translatedKey = "+"
-                if key == tcod.event.KeySym.a:
-                    if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,4161,4224,):
-                        translatedKey = "ctrl a"
-                    elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,4097,4098):
-                        translatedKey = "A"
-                    else:
-                        translatedKey = "a"
-                if key == tcod.event.KeySym.b:
-                    if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,4097,4098):
-                        translatedKey = "B"
-                    else:
-                        translatedKey = "b"
-                """
+                    if event.mod & tcod.event.Modifier.CTRL:
+                        translatedKey = "ctrl +"
                 if key == tcod.event.KeySym.c:
                     if event.mod & tcod.event.Modifier.CTRL:
                         translatedKey = "ctrl c"
@@ -3963,8 +4067,6 @@ def getTcodEvents():
                 if key == tcod.event.KeySym.v:
                     if event.mod & tcod.event.Modifier.CTRL:
                         translatedKey = "ctrl v"
-                    else:
-                        translatedKey = "v"
 
                 if key == tcod.event.KeySym.w:
                     if event.mod & tcod.event.Modifier.CTRL:
@@ -3990,14 +4092,6 @@ def getTcodEvents():
                     else:
                         translatedKey = "z"
                 """
-                if key == tcod.event.KeySym.F11:
-                    fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
-                        tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
-                    )
-                    tcod.lib.SDL_SetWindowFullscreen(
-                        tcodContext.sdl_window_p,
-                        0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
-                    )
                 if key == tcod.event.KeySym.RIGHT:
                     if not (event.mod & tcod.event.Modifier.CTRL or event.mod & tcod.event.Modifier.SHIFT):
                          translatedKey = "right"
@@ -4010,12 +4104,20 @@ def getTcodEvents():
                 if key == tcod.event.KeySym.DOWN:
                     if not (event.mod & tcod.event.Modifier.CTRL or event.mod & tcod.event.Modifier.SHIFT):
                         translatedKey = "down"
+                if key == tcod.event.KeySym.F11:
+                    sdl_window.fullscreen = not sdl_window.fullscreen
+
                 if translatedKey is None:
                     continue
 
                 keyboardListener(translatedKey)
+                ignoreNext = True
 
             if isinstance(event,tcod.event.TextInput):
+                if ignoreNext:
+                    ignoreNext = False
+                    continue
+
                 translatedKey = event.text
 
                 if translatedKey is None:
@@ -4035,6 +4137,26 @@ class ActionMeta:
     def __init__(self, payload=None,content=None):
         self.payload = payload
         self.content = content
+
+class CharacterMeta:
+    def __init__(self, character ,content=None):
+        self.character = character
+        self.content = content
+
+def tcodPresent():
+    atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset)
+    console_render = tcod.render.SDLConsoleRender(atlas)
+
+    sdl_renderer2.draw_color = (0,0,0,255)
+    sdl_renderer2.clear()
+    renderedToTexture = console_render.render(tcodConsole)
+    #sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.height,renderedToTexture.width),(0,0,sdl_window.size[0]*2,sdl_window.size[1]*2))
+    #sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(0,0,sdl_window.size[0]//2,sdl_window.size[1]//2))
+    sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(0,0,renderedToTexture.width,renderedToTexture.height),)
+
+    draw_sdl()
+
+    sdl_renderer2.present()
 
 def printUrwidToTcod(inData,offset,color=None,internalOffset=None,size=None, actionMeta=None, explecitConsole=None):
     if explecitConsole:
@@ -4094,6 +4216,9 @@ def printUrwidToTcod(inData,offset,color=None,internalOffset=None,size=None, act
 
     if isinstance(inData, ActionMeta):
         printUrwidToTcod(inData.content,offset,color,internalOffset,size,inData.payload,explecitConsole = tcodConsole_local)
+
+    if isinstance(inData, CharacterMeta):
+        printUrwidToTcod(inData.content,offset,color,internalOffset,size,actionMeta,explecitConsole = tcodConsole_local)
 
     #footertext = stringifyUrwid(inData)
 
@@ -4159,7 +4284,24 @@ def printUrwidToDummy(dummy,inData,offset,color=None,internalOffset=None,size=No
     if isinstance(inData, ActionMeta):
         printUrwidToDummy(dummy,inData.content,offset,color,internalOffset,size,inData.payload)
 
+    if isinstance(inData, CharacterMeta):
+        printUrwidToDummy(dummy,inData.content,offset,color,internalOffset,size,actionMeta)
     #footertext = stringifyUrwid(inData)
+
+allow_sdl = False
+def draw_sdl():
+    global sdl_cache
+    #if not allow_sdl:
+    #    return None
+
+    for element in sdl_cache:
+        if element[0] == "line":
+            sdl_renderer2.draw_color = element[3]
+            sdl_renderer2.draw_line(element[1],element[2])
+        if element[0] == "rect":
+            sdl_renderer2.draw_color = element[2]
+            sdl_renderer2.fill_rect(element[1])
+    sdl_cache = []
 
 def renderGameDisplay(renderChar=None):
     pseudoDisplay = []
@@ -4199,7 +4341,9 @@ def renderGameDisplay(renderChar=None):
             if isinstance(item, str):
                 outData += item
             if isinstance(item, ActionMeta):
-                outData += item.content
+                outData += stringifyUrwid(item.content)
+            if isinstance(item, CharacterMeta):
+                outData += stringifyUrwid(item.content)
         return outData
 
     # render the game
@@ -4304,7 +4448,7 @@ def renderGameDisplay(renderChar=None):
                 uiElements = []
                 assumedScreenWidth = tcodConsole.width
 
-                mapWidth = 88
+                mapWidth = (window_charheight-5)*2
                 if assumedScreenWidth < mapWidth:
                     assumedScreenWidth = mapWidth
                 uiElements.append({"type":"gameMap","offset":[(assumedScreenWidth-mapWidth)//4,6]})
@@ -4319,8 +4463,21 @@ def renderGameDisplay(renderChar=None):
 
                 uiElements.append({"type":"healthInfo","offset":[(assumedScreenWidth-mapWidth)//2,1],"width":mapWidth})
                 uiElements.append({"type":"indicators","offset":[(assumedScreenWidth-mapWidth)//2,2],"width":mapWidth})
-                uiElements.append({"type":"text","offset":[(assumedScreenWidth-mapWidth)//2+37,3], "text":[src.interaction.ActionMeta(content="press ? for help",payload="z")]})
-                uiElements.append({"type":"time","offset":[(assumedScreenWidth-mapWidth)//2+35,4]})
+                try:
+                    char.hasMagic
+                except:
+                    char.hasMagic = False
+
+                if not char.hasMagic:
+                    displayString = "press ? for help"
+                    displayWidth = len(displayString)
+                    uiElements.append({"type":"text","offset":[(assumedScreenWidth-mapWidth)//2+(mapWidth-displayWidth)//2,3], "text":[src.interaction.ActionMeta(content=displayString,payload="z")]})
+                else:
+                    terrain = char.getTerrain()
+                    displayString = f" mana: {round(terrain.mana,2)}/{terrain.maxMana}"
+                    displayWidth = len(displayString)
+                    uiElements.append({"type":"text","offset":[(assumedScreenWidth-mapWidth)//2+(mapWidth-displayWidth)//2,3],"width":mapWidth,"text":displayString})
+                uiElements.append({"type":"time","offset":[(assumedScreenWidth//2)-10,4]})
 
                 if tcodConsole.width > mapWidth + 15*4:
                     uiElements.append({"type":"rememberedMenu","offset":[2,18],"size":(max(0,(assumedScreenWidth-mapWidth)//2-4),tcodConsole.height-18)})
@@ -4353,7 +4510,7 @@ def renderGameDisplay(renderChar=None):
                             printUrwidToTcod(position_string,(2*uiElement["offset"][0]+2,uiElement["offset"][1]))
 
                     if uiElement["type"] == "zoneMap":
-                        miniMapChars = src.menuFolder.TerrainMenu.TerrainMenu.renderZoneInfo(src.gamestate.gamestate.mainChar)
+                        miniMapChars = src.menuFolder.terrainMenu.TerrainMenu.renderZoneInfo(src.gamestate.gamestate.mainChar)
                         canvas = src.canvas.Canvas(
                             size=(15, 15),
                             chars=miniMapChars,
@@ -4375,19 +4532,85 @@ def renderGameDisplay(renderChar=None):
                         if not footer:
                             continue
 
-                        stepSize = char.maxHealth/15
+                        if char.adjustedMaxHealth < 50:
+                            bar_width = 5
+                        elif char.adjustedMaxHealth < 60:
+                            bar_width = 6
+                        elif char.adjustedMaxHealth < 70:
+                            bar_width = 7
+                        elif char.adjustedMaxHealth < 80:
+                            bar_width = 8
+                        elif char.adjustedMaxHealth < 90:
+                            bar_width = 9
+                        elif char.adjustedMaxHealth < 100:
+                            bar_width = 10
+                        elif char.adjustedMaxHealth < 150:
+                            bar_width = 11
+                        elif char.adjustedMaxHealth < 200:
+                            bar_width = 12
+                        elif char.adjustedMaxHealth < 300:
+                            bar_width = 13
+                        elif char.adjustedMaxHealth < 400:
+                            bar_width = 14
+                        elif char.adjustedMaxHealth < 500:
+                            bar_width = 15
+                        elif char.adjustedMaxHealth < 600:
+                            bar_width = 16
+                        elif char.adjustedMaxHealth < 700:
+                            bar_width = 17
+                        elif char.adjustedMaxHealth < 800:
+                            bar_width = 18
+                        elif char.adjustedMaxHealth < 900:
+                            bar_width = 19
+                        elif char.adjustedMaxHealth < 1000:
+                            bar_width = 20
+
+                        stepSize = char.adjustedMaxHealth/bar_width
                         if stepSize == 0:
                             stepSize = 1
                         healthRate = int(char.health/stepSize)
+                        if char.health == char.adjustedMaxHealth:
+                            healthRate = bar_width
 
-                        if char.health == 0:
-                            healthDisplay = "---------------"
+                        if char.health%stepSize == 0 or healthRate == bar_width:
+                            health_end = None
+                        elif char.health%stepSize < stepSize/3:
+                            health_end = "."
+                        elif char.health%stepSize < (stepSize/3)*2:
+                            health_end = "x"
                         else:
-                            healthDisplay = [(urwid.AttrSpec("#f00", "default"),"x"*healthRate),(urwid.AttrSpec("#444", "default"),"."*(15-healthRate))]
+                            health_end = "X"
 
-                        flaskInfo = "-"
-                        if char.flask:
-                            flaskInfo = str(char.flask.uses)
+                        healthDisplay = []
+                        health_string = str(int(char.health))
+                        max_health_string = str(int(char.adjustedMaxHealth))
+                        healthDisplay.append(" "*(len(max_health_string)-len(health_string))+health_string+"/"+max_health_string)
+                        healthDisplay.append(" [")
+                        if char.health == 0:
+                            healthDisplay.append("-"*bar_width)
+                        else:
+                            healthDisplay.append((urwid.AttrSpec("#f00", "default"),"X"*(healthRate)))
+                            empty_length = bar_width-healthRate
+                            if health_end:
+                                healthDisplay.append((urwid.AttrSpec("#f00", "default"),health_end))
+                                empty_length -= 1
+                            healthDisplay.append((urwid.AttrSpec("#444", "default"),"."*empty_length))
+                        healthDisplay.append("]")
+
+                        exhaustionDisplay = []
+                        for i in range(0,int(char.exhaustion)):
+                            color = "#fff"
+                            if i > 4:
+                                color = "#f90"
+                            if i > 8:
+                                color = "#f50"
+                            if i > 9:
+                                color = "#f00"
+                            exhaustionDisplay.append((urwid.AttrSpec(color, "default"),"X"))
+                        if int(char.exhaustion) < 10:
+                            color = "#222"
+                            for i in range(0,10-int(char.exhaustion)):
+                                exhaustionDisplay.append((urwid.AttrSpec(color, "default"),"X"))
 
                         statusEffectDisplay = ""
                         status = {}
@@ -4404,6 +4627,7 @@ def renderGameDisplay(renderChar=None):
 
                         text = [
                             "health: " , healthDisplay ,
+                            " exhaustion: ", exhaustionDisplay,
                             "  effects: " , statusEffectDisplay
                         ]
 
@@ -4439,7 +4663,12 @@ def renderGameDisplay(renderChar=None):
 
                             autoIndicator = ActionMeta(content=(urwid.AttrSpec("#f00", "default"),"*"),payload=test)
                             """
+
                         indicators = [ActionMeta(content="x",payload="x~")," ",ActionMeta(content="q",payload="q~")," ",ActionMeta(content="v",payload="v~")," ",autoIndicator," ",ActionMeta(content="t",payload="t~")]
+                        if tcod.event.get_modifier_state() & tcod.event.Modifier.CAPS:
+                            cap_warning = (src.pseudoUrwid.AttrSpec((255, 68, 51), (0, 0, 0)),"CAPS")
+                            indicators.append(" ")
+                            indicators.append(cap_warning)
 
                         x = max(uiElement["offset"][0]+uiElement["width"]//2-len(indicators)//2,0)
                         y = uiElement["offset"][1]
@@ -4451,7 +4680,7 @@ def renderGameDisplay(renderChar=None):
                         printUrwidToTcod(uiElement["text"],uiElement["offset"])
                         printUrwidToDummy(pseudoDisplay,uiElement["text"],uiElement["offset"])
                     if uiElement["type"] == "time":
-                        text = f"epoch: {src.gamestate.gamestate.tick//(15*15*15)} tick: {src.gamestate.gamestate.tick%(15*15*15)}"
+                        text = f"epoch: {src.gamestate.gamestate.tick//(15*15*15)} tick: {src.gamestate.gamestate.tick%(15*15*15)} {char.timeTaken}"
                         printUrwidToTcod(text,uiElement["offset"],((255, 68, 51),(0,0,0)) if src.gamestate.gamestate.mainChar.timeTaken > 1 else None)
                         printUrwidToDummy(pseudoDisplay,text,uiElement["offset"])
                     if uiElement["type"] == "rememberedMenu" and char.rememberedMenu:
@@ -4477,7 +4706,8 @@ def renderGameDisplay(renderChar=None):
                         printUrwidToDummy(pseudoDisplay,chars,offset,size=size)
 
                 if not char.specialRender:
-                    tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+                    tcodPresent()
+                    draw_sdl()
             if not useTiles and not tcodConsole:
                 main.set_text(
                     (
@@ -4570,7 +4800,7 @@ def renderGameDisplay(renderChar=None):
             #printUrwidToTcod(main.get_text(),(offsetLeft+2,offsetTop+2),size=(width,height))
             if not renderChar:
                 printUrwidToTcod(main.get_text(),(offsetLeft+2,offsetTop+2))
-                tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+                tcodPresent()
             else:
                 printUrwidToDummy(pseudoDisplay, main.get_text(),(offsetLeft+2,offsetTop+2))
 
@@ -4612,7 +4842,17 @@ def showMainMenu(args=None):
     ]
 
     selectedScenario = "mainGame"
+
+    with open("data/difficultyMap.json", "r") as file:
+        global_difficultyMap = json.load(file)
+
+    custom_difficultyMap = []
+    if os.path.exists("config/customDifficultyMap.json"):
+        with open("config/customDifficultyMap.json", "r") as file:
+            custom_difficultyMap = json.load(file)
+
     difficulty = "easy"
+    difficultyMap = global_difficultyMap[difficulty]
 
     def fixRoomRender(render):
         for row in render:
@@ -4754,8 +4994,64 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
             terrain.addCharacter(golem, pos[0] + x * 15, pos[1] + y * 15)
 
     lastStep = time.time()
-    submenu = None
+    submenu = ["default"]
+    slider_stack = []
+    slider = []
+    choosen_slider = 0
+    custom_diff_name = ""
 
+    def prepereCustomDiff():
+        submenu.append("custom_difficulty")
+        slider.clear()
+        slider.append(
+            [
+                "Difficulty Modifier",
+                "difficultyModifier",
+                difficultyMap["difficultyModifier"],
+                {"min": 0.5, "max": 2, "step": 0.1},
+                [],
+            ]
+        )
+        slider.append(
+            [
+                "Difficulty increase Per Dungoen",
+                "diff_increase_per_dungeon",
+                difficultyMap["diff_increase_per_dungeon"],
+                {"min": 0.5, "max": 2, "step": 0.1},
+                [],
+            ]
+        )
+        slider.append(
+            ["Shuffle Gods order", "shuffle_gods", difficultyMap["shuffle_gods"], {"min": 0, "max": 1, "step": 1}, []]
+        )
+
+        monster_diffs = []
+        for key, value in src.characters.characterMap.items():
+            if issubclass(value, src.monster.Monster) and value != src.monster.Monster:
+                init = value.__init__
+                sig = inspect.signature(init)
+                params = sig.parameters
+                if "multiplier" in params:
+                    instence = value()
+                    monster_diffs.append(
+                        [
+                            f"{instence.name} Difficulty",
+                            f"monster_difficulty.{instence.name}",
+                            0.5,
+                            {"min": 0.1, "max": 1, "step": 0.1},
+                            [],
+                        ]
+                    )
+
+        slider.append(
+            [
+                "Monsters Difficulty",
+                "monster_difficulty.default",
+                0.5,
+                {"min": 0.1, "max": 1, "step": 0.1},
+                monster_diffs,
+            ]
+        )
     while 1:
         tcodConsole.clear()
         time.sleep(0.1)
@@ -4784,13 +5080,17 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 printUrwidToTcod("+--------------+",(offsetX+3+16,offsetY+13))
                 printUrwidToTcod("| loading game |",(offsetX+3+16,offsetY+14))
                 printUrwidToTcod("+--------------+",(offsetX+3+16,offsetY+15))
-                tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+                tcodPresent()
 
             def doLoad():
                 if canLoad:
                     src.gamestate.gamestate = src.gamestate.gamestate.loadP(gameIndex)
                     setUpNoUrwid()
-                    src.gamestate.gamestate.mainChar.runCommandString("~")
+
+                    if tcod.event.get_modifier_state() & tcod.event.Modifier.CAPS:
+                        src.gamestate.gamestate.mainChar.showTextMenu("warning: caps lock is enabled\nIt is recommended to play without capslock")
+                    else:
+                        src.gamestate.gamestate.mainChar.runCommandString("~")
                 else:
                     seed = 0
                     src.gamestate.setup(gameIndex)
@@ -4857,8 +5157,6 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                         src.gamestate.gamestate.terrainType = src.terrains.Nothingness
                     elif terrain and terrain == "test":
                         src.gamestate.gamestate.terrainType = src.terrains.GameplayTest
-                    elif terrain and terrain == "tutorial":
-                        src.gamestate.gamestate.terrainType = src.terrains.TutorialTerrain
                     elif terrain and terrain == "desert":
                         src.gamestate.gamestate.terrainType = src.terrains.Desert
                     else:
@@ -4889,10 +5187,15 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
             doLoad()
 
             if loadingControl["needsStart"] is True:
-                src.gamestate.gamestate.currentPhase.start(seed=None,difficulty=difficulty)
+                src.gamestate.gamestate.currentPhase.start(
+                    seed=None, difficulty=difficulty, difficultyMap=difficultyMap
+                )
                 terrain = src.gamestate.gamestate.terrainMap[7][7]
 
-                src.gamestate.gamestate.mainChar.runCommandString("~")
+                if tcod.event.get_modifier_state() & tcod.event.Modifier.CAPS:
+                    src.gamestate.gamestate.mainChar.showTextMenu("warning: caps lock is enabled\nIt is recommended to play without capslock")
+                else:
+                    src.gamestate.gamestate.mainChar.runCommandString("~")
 
                 global lastTerrain
                 lastTerrain = terrain
@@ -4917,7 +5220,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
         height = 10
         width = 46
 
-        printUrwidToTcod(fixRoomRender(terrain.render(coordinateOffset=(15*5,15*5),size=(50,126))),(0,0))
+        printUrwidToTcod(fixRoomRender(terrain.render(coordinateOffset=(15*5,15*5),size=(tcodConsole.height,tcodConsole.width//2))),(0,0))
 
         offsetX = int(tcodConsole.width / 2) - 23
         offsetY = 10
@@ -4952,253 +5255,570 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
         printUrwidToTcod((src.interaction.urwid.AttrSpec(color, "black"),f"(s)cenario   - {selectedScenario}"),(offsetX+3,offsetY+24))
         printUrwidToTcod(f"(g)ameslot   - {gameIndex}",(offsetX+3,offsetY+25))
 
-        if submenu == "gameslot":
-            printUrwidToTcod("+----------------------+",(offsetX+3+16,offsetY+23))
-            printUrwidToTcod("| choose the gameslot: |",(offsetX+3+16,offsetY+24))
-            for i in range(10):
-                if saves[i]:
-                    printUrwidToTcod(f"| {i}: load game         |",(offsetX+3+16,offsetY+25+i))
-                else:
-                    printUrwidToTcod(f"| {i}: new game          |",(offsetX+3+16,offsetY+25+i))
-            printUrwidToTcod("+----------------------+",(offsetX+3+16,offsetY+35))
+        for menu in submenu:
+            match menu:
+                case "gameslot":
+                    printUrwidToTcod("+----------------------+", (offsetX + 3 + 16, offsetY + 23))
+                    printUrwidToTcod("| choose the gameslot: |", (offsetX + 3 + 16, offsetY + 24))
+                    for i in range(10):
+                        if saves[i]:
+                            printUrwidToTcod(f"| {i}: load game         |", (offsetX + 3 + 16, offsetY + 25 + i))
+                        else:
+                            printUrwidToTcod(f"| {i}: new game          |", (offsetX + 3 + 16, offsetY + 25 + i))
+                    printUrwidToTcod("+----------------------+", (offsetX + 3 + 16, offsetY + 35))
+                case "scenario":
+                    maxLength = 0
+                    for scenario in scenarios:
+                        maxLength = max(maxLength, len(scenario[1]))
 
-        if submenu == "scenario":
-            maxLength = 0
-            for scenario in scenarios:
-                maxLength = max(maxLength,len(scenario[1]))
+                    printUrwidToTcod("+" + "-" * (maxLength + 5) + "+", (offsetX + 3 + 16, offsetY + 22))
+                    i = 0
+                    for scenario in scenarios:
+                        printUrwidToTcod(
+                            ("| %s: %s " + " " * (maxLength - len(scenario[1])) + "|")
+                            % (
+                                scenario[2],
+                                scenario[1],
+                            ),
+                            (offsetX + 3 + 16, offsetY + 23 + i),
+                        )
+                        i += 1
+                    printUrwidToTcod("+" + "-" * (maxLength + 5) + "+", (offsetX + 3 + 16, offsetY + 23 + i))
 
-            printUrwidToTcod("+"+"-"*(maxLength+5)+"+",(offsetX+3+16,offsetY+22))
-            i = 0
-            for scenario in scenarios:
-                printUrwidToTcod(("| %s: %s "+" "*(maxLength-len(scenario[1]))+"|")%(scenario[2],scenario[1],),(offsetX+3+16,offsetY+23+i))
-                i += 1
-            printUrwidToTcod("+"+"-"*(maxLength+5)+"+",(offsetX+3+16,offsetY+23+i))
+                case "difficulty":
+                    printUrwidToTcod(
+                        "+-------------------------------------------------------------------+",
+                        (offsetX + 3 + 16, offsetY + 21),
+                    )
+                    printUrwidToTcod(
+                        "| (e)asy                                                            |",
+                        (offsetX + 3 + 16, offsetY + 22),
+                    )
+                    printUrwidToTcod(
+                        "| easy is easy. Recommended to start with.                          |",
+                        (offsetX + 3 + 16, offsetY + 23),
+                    )
+                    printUrwidToTcod(
+                        "| This mode should teach you how the game works.                    |",
+                        (offsetX + 3 + 16, offsetY + 24),
+                    )
+                    printUrwidToTcod(
+                        "|                                                                   |",
+                        (offsetX + 3 + 16, offsetY + 25),
+                    )
+                    printUrwidToTcod(
+                        "| (m)edium                                                          |",
+                        (offsetX + 3 + 16, offsetY + 26),
+                    )
+                    printUrwidToTcod(
+                        "| medium is pretty hard. Recommended after winning an easy run.     |",
+                        (offsetX + 3 + 16, offsetY + 27),
+                    )
+                    printUrwidToTcod(
+                        "| Balanced to be challenging after mastering one game mechanic      |",
+                        (offsetX + 3 + 16, offsetY + 28),
+                    )
+                    printUrwidToTcod(
+                        "|                                                                   |",
+                        (offsetX + 3 + 16, offsetY + 29),
+                    )
+                    printUrwidToTcod(
+                        "| (d)ifficult                                                       |",
+                        (offsetX + 3 + 16, offsetY + 30),
+                    )
+                    printUrwidToTcod(
+                        "| difficult is really hard. not recomended                          |",
+                        (offsetX + 3 + 16, offsetY + 31),
+                    )
+                    printUrwidToTcod(
+                        "| Should be a challenging with full meta knowledge                  |",
+                        (offsetX + 3 + 16, offsetY + 32),
+                    )
+                    printUrwidToTcod(
+                        "|                                                                   |",
+                        (offsetX + 3 + 16, offsetY + 33),
+                    )
+                    printUrwidToTcod(
+                        "| (c)ustom                                                          |",
+                        (offsetX + 3 + 16, offsetY + 34),
+                    )
+                    printUrwidToTcod(
+                        "| custom difficulty settings                                        |",
+                        (offsetX + 3 + 16, offsetY + 35),
+                    )
+                    printUrwidToTcod(
+                        "|                                                                   |",
+                        (offsetX + 3 + 16, offsetY + 36),
+                    )
+                    printUrwidToTcod(
+                        "| press shift and difficulty button to edit it                      |",
+                        (offsetX + 3 + 16, offsetY + 37),
+                    )
+                    if not len(custom_difficultyMap):
+                        printUrwidToTcod(
+                            "+-------------------------------------------------------------------+",
+                            (offsetX + 3 + 16, offsetY + 38),
+                        )
+                    else:
+                        printUrwidToTcod(
+                            "|-------------------saved custom difficulties-----------------------|",
+                            (offsetX + 3 + 16, offsetY + 38),
+                        )
+                        start_y = offsetY + 39
 
+                        for i, d in enumerate(custom_difficultyMap):
+                            name = d["name"]
+                            label = f"{i+1}- {name}"
+                            space = (66 - len(label)) * " "
+                            label = "| " + label + space + "|"
+                            printUrwidToTcod(
+                                label,
+                                (offsetX + 3 + 16, start_y),
+                            )
+                            start_y += 1
 
-        if submenu == "difficulty":
-            printUrwidToTcod("+-------------------------------------------------------------------+",(offsetX+3+16,offsetY+21))
-            printUrwidToTcod("| (e)asy                                                            |",(offsetX+3+16,offsetY+22))
-            printUrwidToTcod("| easy is easy. Recommended to start with.                          |",(offsetX+3+16,offsetY+23))
-            printUrwidToTcod("| This mode should teach you how the game works.                    |",(offsetX+3+16,offsetY+24))
-            printUrwidToTcod("|                                                                   |",(offsetX+3+16,offsetY+25))
-            printUrwidToTcod("| (m)edium                                                          |",(offsetX+3+16,offsetY+26))
-            printUrwidToTcod("| medium is pretty hard. Recommended after winning an easy run.     |",(offsetX+3+16,offsetY+27))
-            printUrwidToTcod("| Balanced to be challenging after mastering one game mechanic      |",(offsetX+3+16,offsetY+28))
-            printUrwidToTcod("|                                                                   |",(offsetX+3+16,offsetY+29))
-            printUrwidToTcod("| (d)ifficult                                                       |",(offsetX+3+16,offsetY+30))
-            printUrwidToTcod("| difficult is really hard. not recomended                          |",(offsetX+3+16,offsetY+31))
-            printUrwidToTcod("| Should be a challenging with full meta knowledge                  |",(offsetX+3+16,offsetY+32))
-            printUrwidToTcod("+-------------------------------------------------------------------+",(offsetX+3+16,offsetY+33))
+                        printUrwidToTcod(
+                            "|                                                                   |",
+                            (offsetX + 3 + 16, start_y),
+                        )
+                        printUrwidToTcod(
+                            "| select a custom difficulty by entering its number                 |",
+                            (offsetX + 3 + 16, start_y + 1),
+                        )
+                        printUrwidToTcod(
+                            "+-------------------------------------------------------------------+",
+                            (offsetX + 3 + 16, start_y + 2),
+                        )
 
-        if submenu == "delete":
-            printUrwidToTcod((src.interaction.urwid.AttrSpec("#f00", "black"),"+---------------------------------------+"),(offsetX+2,offsetY+21))
-            printUrwidToTcod((src.interaction.urwid.AttrSpec("#f00", "black"),"| this will delete your game state      |"),(offsetX+2,offsetY+22))
-            printUrwidToTcod((src.interaction.urwid.AttrSpec("#f00", "black"),"| press y to confirm                    |"),(offsetX+2,offsetY+23))
-            printUrwidToTcod((src.interaction.urwid.AttrSpec("#f00", "black"),"+---------------------------------------+"),(offsetX+2,offsetY+24))
+                case "delete":
+                    printUrwidToTcod(
+                        (src.interaction.urwid.AttrSpec("#f00", "black"), "+---------------------------------------+"),
+                        (offsetX + 2, offsetY + 21),
+                    )
+                    printUrwidToTcod(
+                        (src.interaction.urwid.AttrSpec("#f00", "black"), "| this will delete your game state      |"),
+                        (offsetX + 2, offsetY + 22),
+                    )
+                    printUrwidToTcod(
+                        (src.interaction.urwid.AttrSpec("#f00", "black"), "| press y to confirm                    |"),
+                        (offsetX + 2, offsetY + 23),
+                    )
+                    printUrwidToTcod(
+                        (src.interaction.urwid.AttrSpec("#f00", "black"), "+---------------------------------------+"),
+                        (offsetX + 2, offsetY + 24),
+                    )
 
-        if submenu == "confirmQuit":
-            printUrwidToTcod((src.interaction.urwid.AttrSpec("#fff", "black"),"+-----------------------------+"),(offsetX+2,offsetY+21))
-            printUrwidToTcod((src.interaction.urwid.AttrSpec("#fff", "black"),"| Do you really want to quit? |"),(offsetX+2,offsetY+22))
-            printUrwidToTcod((src.interaction.urwid.AttrSpec("#fff", "black"),"| press y/enter to confirm    |"),(offsetX+2,offsetY+23))
-            printUrwidToTcod((src.interaction.urwid.AttrSpec("#fff", "black"),"+-----------------------------+"),(offsetX+2,offsetY+24))
+                case "confirmQuit":
+                    printUrwidToTcod(
+                        (src.interaction.urwid.AttrSpec("#fff", "black"), "+-----------------------------+"),
+                        (offsetX + 2, offsetY + 21),
+                    )
+                    printUrwidToTcod(
+                        (src.interaction.urwid.AttrSpec("#fff", "black"), "| Do you really want to quit? |"),
+                        (offsetX + 2, offsetY + 22),
+                    )
+                    printUrwidToTcod(
+                        (src.interaction.urwid.AttrSpec("#fff", "black"), "| press y/enter to confirm    |"),
+                        (offsetX + 2, offsetY + 23),
+                    )
+                    printUrwidToTcod(
+                        (src.interaction.urwid.AttrSpec("#fff", "black"), "+-----------------------------+"),
+                        (offsetX + 2, offsetY + 24),
+                    )
 
-        tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+                case "custom_difficulty":
+                    start_x = offsetX + 70
+                    printUrwidToTcod(
+                        "+-------------------------------------+",
+                        (start_x, offsetY + 21),
+                    )
+                    start_y = offsetY + 22
+                    for i, (title, key, current_value, range_values, sub_slider) in enumerate(slider):
+                        percantage = (current_value - range_values["min"]) / (range_values["max"] - range_values["min"])
+                        amount = int(percantage * 35) * "║"
+                        amount = amount + (35 - int(percantage * 35)) * "|"
+                        show = "| " + amount + " |"
+                        title_end = ((35 - len(title)) * " ") + " |"
+                        title_adjusted = "| " + title + title_end
+                        if i == choosen_slider:
+                            printUrwidToTcod(
+                                (src.interaction.urwid.AttrSpec("black", "#fff"), title_adjusted),
+                                (start_x, start_y),
+                            )
+                        else:
+                            printUrwidToTcod(
+                                title_adjusted,
+                                (start_x, start_y),
+                            )
+                        printUrwidToTcod(
+                            show,
+                            (start_x, start_y + 1),
+                        )
+                        val = "| " + str(current_value) + ((35 - len(str(current_value))) * " ") + " |"
+                        printUrwidToTcod(
+                            val,
+                            (start_x, start_y + 2),
+                        )
+                        start_y += 3
+
+                    printUrwidToTcod(
+                        "|  press w or s to choose the slider  |",
+                        (start_x, start_y),
+                    )
+                    printUrwidToTcod(
+                        "|  press a or d to adjust the value   |",
+                        (start_x, start_y + 1),
+                    )
+                    if len(slider[choosen_slider][4]):
+                        printUrwidToTcod(
+                            "|    press e to adjust sub values     |",
+                            (start_x, start_y + 2),
+                        )
+                        start_y += 1
+                    if len(slider_stack):
+                        printUrwidToTcod(
+                            "|      press enter to return back     |",
+                            (start_x, start_y + 2),
+                        )
+                        start_y += 1
+                    printUrwidToTcod(
+                        "|     press q to save the settings    |",
+                        (start_x, start_y + 2),
+                    )
+                    printUrwidToTcod(
+                        "+-------------------------------------+",
+                        (start_x, start_y + 3),
+                    )
+                case "difficulty name input":
+                    start_x = offsetX + 80
+                    printUrwidToTcod(
+                        "+-------------------------------------+",
+                        (start_x, start_y + 1),
+                    )
+                    space = int(39 / 2 - len(custom_diff_name) / 2)
+                    label = " " * space
+                    label = "|" + label + custom_diff_name + label + "|"
+                    printUrwidToTcod(
+                        label,
+                        (start_x, start_y + 2),
+                    )
+                    printUrwidToTcod(
+                        "+-------------------------------------+",
+                        (start_x, start_y + 3),
+                    )
+        
+        items = ["press z for discord", "press x for website", "press c for github"]
+        widthForItem = (tcodConsole.width-3)//len(items)
+        emptySpace =(tcodConsole.width-3) - widthForItem*len(items)
+    
+        itemsText = " "*emptySpace
+        for item in items:
+            space = int(widthForItem/2 - len(item)/2)
+            itemsText+= space * " " + item + space * " "
+
+        printUrwidToTcod(
+            "+"+ ("-" *len(itemsText)) +"+\n"+
+            f"|{itemsText}|"
+            ,(1, tcodConsole.height-2)
+        )
+        tcodPresent()
 
         events = tcod.event.get()
+        current_submenu = submenu[-1] if len(submenu) else ""
         for event in events:
-            if submenu == "gameslot":
-                if isinstance(event,tcod.event.KeyDown):
-                    key = event.sym
-                    if key == tcod.event.KeySym.ESCAPE:
-                        submenu = None
-                    if key == tcod.event.KeySym.F11:
-                        fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
-                            tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
-                        )
-                        tcod.lib.SDL_SetWindowFullscreen(
-                            tcodContext.sdl_window_p,
-                            0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
-                        )
-                    if key == tcod.event.KeySym.N0:
-                        gameIndex = 0
-                        submenu = None
-                    if key == tcod.event.KeySym.N1:
-                        gameIndex = 1
-                        submenu = None
-                    if key == tcod.event.KeySym.N2:
-                        gameIndex = 2
-                        submenu = None
-                    if key == tcod.event.KeySym.N3:
-                        gameIndex = 3
-                        submenu = None
-                    if key == tcod.event.KeySym.N4:
-                        gameIndex = 4
-                        submenu = None
-                    if key == tcod.event.KeySym.N5:
-                        gameIndex = 5
-                        submenu = None
-                    if key == tcod.event.KeySym.N6:
-                        gameIndex = 6
-                        submenu = None
-                    if key == tcod.event.KeySym.N7:
-                        gameIndex = 7
-                        submenu = None
-                    if key == tcod.event.KeySym.N8:
-                        gameIndex = 8
-                        submenu = None
-                    if key == tcod.event.KeySym.N9:
-                        gameIndex = 9
-                        submenu = None
-            elif submenu == "scenario":
-                if isinstance(event,tcod.event.KeyDown):
-                    key = event.sym
-                    convertedKey = None
-                    if key == tcod.event.KeySym.F11:
-                        fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
-                            tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
-                        )
-                        tcod.lib.SDL_SetWindowFullscreen(
-                            tcodContext.sdl_window_p,
-                            0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
-                        )
-                    if key == tcod.event.KeySym.ESCAPE:
-                        submenu = None
-                    if key == tcod.event.KeySym.m:
-                        convertedKey = "m"
-                    if key == tcod.event.KeySym.h:
-                        if event.mod & tcod.event.Modifier.SHIFT:
-                            convertedKey = "H"
-                        else:
-                            convertedKey = "h"
-                    if key == tcod.event.KeySym.t:
-                        if event.mod & tcod.event.Modifier.SHIFT:
-                            convertedKey = "T"
-                        else:
-                            convertedKey = "t"
-                    if key == tcod.event.KeySym.p:
-                        convertedKey = "p"
-                    if key == tcod.event.KeySym.b:
-                        convertedKey = "b"
-                    if key == tcod.event.KeySym.r:
-                        convertedKey = "r"
-                    if key == tcod.event.KeySym.s:
-                        if event.mod & tcod.event.Modifier.SHIFT:
-                            convertedKey = "S"
-                        else:
-                            convertedKey = "s"
-                    if key == tcod.event.KeySym.c:
-                        convertedKey = "c"
-                    if key == tcod.event.KeySym.d:
-                        convertedKey = "d"
-                    if key == tcod.event.KeySym.x:
-                        if event.mod & tcod.event.Modifier.SHIFT:
-                            convertedKey = "X"
-                        else:
-                            convertedKey = "x"
+            match current_submenu:
+                case "gameslot":
+                    if isinstance(event, tcod.event.KeyDown):
+                        key = event.sym
+                        if key == tcod.event.KeySym.ESCAPE:
+                            submenu.pop()
+                        if key == tcod.event.KeySym.F11:
+                            sdl_window.fullscreen = not sdl_window.fullscreen
+                        if key in (tcod.event.KeySym.N0, tcod.event.KeySym.KP_0):
+                            gameIndex = 0
+                            submenu.pop()
+                        if key in (tcod.event.KeySym.N1, tcod.event.KeySym.KP_1):
+                            gameIndex = 1
+                            submenu.pop()
+                        if key in (tcod.event.KeySym.N2, tcod.event.KeySym.KP_2):
+                            gameIndex = 2
+                            submenu.pop()
+                        if key in (tcod.event.KeySym.N3, tcod.event.KeySym.KP_3):
+                            gameIndex = 3
+                            submenu.pop()
+                        if key in (tcod.event.KeySym.N4, tcod.event.KeySym.KP_4):
+                            gameIndex = 4
+                            submenu.pop()
+                        if key in (tcod.event.KeySym.N5, tcod.event.KeySym.KP_5):
+                            gameIndex = 5
+                            submenu.pop()
+                        if key in (tcod.event.KeySym.N6, tcod.event.KeySym.KP_6):
+                            gameIndex = 6
+                            submenu.pop()
+                        if key in (tcod.event.KeySym.N7, tcod.event.KeySym.KP_7):
+                            gameIndex = 7
+                            submenu.pop()
+                        if key in (tcod.event.KeySym.N8, tcod.event.KeySym.KP_8):
+                            gameIndex = 8
+                            submenu.pop()
+                        if key in (tcod.event.KeySym.N9, tcod.event.KeySym.KP_9):
+                            gameIndex = 9
+                            submenu.pop()
 
-                    for scenario in scenarios:
-                        if scenario[2] == convertedKey:
-                            selectedScenario = scenario[0]
-                            submenu = None
+                case "scenario":
+                    if isinstance(event, tcod.event.KeyDown):
+                        key = event.sym
+                        convertedKey = None
+                        if key == tcod.event.KeySym.F11:
+                            sdl_window.fullscreen = not sdl_window.fullscreen
+                        if key == tcod.event.KeySym.ESCAPE:
+                            submenu.pop()
+                        if key == tcod.event.KeySym.m:
+                            convertedKey = "m"
+                        if key == tcod.event.KeySym.h:
+                            if event.mod & tcod.event.Modifier.SHIFT:
+                                convertedKey = "H"
+                            else:
+                                convertedKey = "h"
+                        if key == tcod.event.KeySym.t:
+                            if event.mod & tcod.event.Modifier.SHIFT:
+                                convertedKey = "T"
+                            else:
+                                convertedKey = "t"
+                        if key == tcod.event.KeySym.p:
+                            convertedKey = "p"
+                        if key == tcod.event.KeySym.b:
+                            convertedKey = "b"
+                        if key == tcod.event.KeySym.r:
+                            convertedKey = "r"
+                        if key == tcod.event.KeySym.s:
+                            if event.mod & tcod.event.Modifier.SHIFT:
+                                convertedKey = "S"
+                            else:
+                                convertedKey = "s"
+                        if key == tcod.event.KeySym.c:
+                            convertedKey = "c"
+                        if key == tcod.event.KeySym.d:
+                            convertedKey = "d"
+                        if key == tcod.event.KeySym.x:
+                            if event.mod & tcod.event.Modifier.SHIFT:
+                                convertedKey = "X"
+                            else:
+                                convertedKey = "x"
 
-            elif submenu == "difficulty":
-                if isinstance(event,tcod.event.KeyDown):
-                    key = event.sym
-                    if key == tcod.event.KeySym.F11:
-                        fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
-                            tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
-                        )
-                        tcod.lib.SDL_SetWindowFullscreen(
-                            tcodContext.sdl_window_p,
-                            0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
-                        )
-                    if key == tcod.event.KeySym.ESCAPE:
-                        submenu = None
-                    if key == tcod.event.KeySym.e:
-                        difficulty = "easy"
-                        submenu = None
-                    if key == tcod.event.KeySym.m:
-                        difficulty = "medium"
-                        submenu = None
-                    if key == tcod.event.KeySym.d:
-                        difficulty = "difficult"
-                        submenu = None
-            elif submenu == "delete":
-                if isinstance(event,tcod.event.KeyDown):
-                    key = event.sym
+                        for scenario in scenarios:
+                            if scenario[2] == convertedKey:
+                                selectedScenario = scenario[0]
+                                submenu.pop()
 
-                    if key == tcod.event.KeySym.F11:
-                        fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
-                            tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
-                        )
-                        tcod.lib.SDL_SetWindowFullscreen(
-                            tcodContext.sdl_window_p,
-                            0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
-                        )
-                    if key == tcod.event.KeySym.y:
-                        try:
-                            # register the save
-                            with open("gamestate/globalInfo.json") as globalInfoFile:
-                                rawState = json.loads(globalInfoFile.read())
-                        except:
-                            rawState = {"saves": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"customPrefabs":[],"lastGameIndex":0}
+                case "difficulty":
+                    if isinstance(event, tcod.event.KeyDown):
+                        key = event.sym
+                        if key == tcod.event.KeySym.F11:
+                            sdl_window.fullscreen = not sdl_window.fullscreen
+                        if key == tcod.event.KeySym.ESCAPE:
+                            submenu.pop()
+                        if key == tcod.event.KeySym.e:
+                            difficulty = "easy"
+                            difficultyMap = global_difficultyMap[difficulty]
+                            if event.mod & tcod.event.Modifier.SHIFT:
+                                prepereCustomDiff()
+                            else:
+                                submenu.pop()
+                        if key == tcod.event.KeySym.m:
+                            difficulty = "medium"
+                            difficultyMap = global_difficultyMap[difficulty]
+                            if event.mod & tcod.event.Modifier.SHIFT:
+                                prepereCustomDiff()
+                            else:
+                                submenu.pop()
+                        if key == tcod.event.KeySym.d:
+                            difficulty = "difficult"
+                            difficultyMap = global_difficultyMap[difficulty]
+                            if event.mod & tcod.event.Modifier.SHIFT:
+                                prepereCustomDiff()
+                            else:
+                                submenu.pop()
+                        if key == tcod.event.KeySym.c:
+                            difficultyMap = global_difficultyMap["custom"]
+                            prepereCustomDiff()
+                    if isinstance(event, tcod.event.TextInput):
+                        for i, v in enumerate(custom_difficultyMap):
+                            if str(i + 1) == event.text:
+                                difficulty = "custom"
+                                difficultyMap = v["map"]
+                                submenu.pop()
 
-                        rawState["saves"][gameIndex] = 0
-                        with open("gamestate/globalInfo.json", "w") as globalInfoFile:
-                            json.dump(rawState,globalInfoFile)
 
-                    submenu = None
-            elif submenu == "confirmQuit":
-                if isinstance(event,tcod.event.KeyDown):
-                    key = event.sym
-                    if key in (tcod.event.KeySym.RETURN,tcod.event.KeySym.y):
-                        src.interaction.tcodMixer.close()
+                case "custom_difficulty":
+                    if isinstance(event, tcod.event.KeyDown):
+                        key = event.sym
+                        if key == tcod.event.KeySym.RETURN:
+
+                            def SetKey(key, v):
+                                if "." in key:
+                                    current_key = difficultyMap
+                                    path = key.split(".")
+                                    for k in path[:-1]:
+                                        current_key = current_key[k]
+                                    current_key[path[-1]] = v
+                                else:
+                                    difficultyMap[key] = v
+
+                            if len(slider_stack):
+                                slider = slider_stack.copy()
+                                choosen_slider = 0
+                                slider_stack.clear()
+                                continue
+
+                            difficulty = "custom"
+                            for _, key, v, _, sub_slider in slider:
+                                SetKey(key, v)
+                                for _, key, v, _, sub_slider in sub_slider:
+                                    SetKey(key, v)
+
+                            if len(custom_diff_name):
+                                custom_difficultyMap.append({"name": custom_diff_name, "map": difficultyMap})
+                                with open("config/customDifficultyMap.json", "w") as file:
+                                    json.dump(custom_difficultyMap, file, indent=4)
+
+                            submenu.pop()
+                            submenu.pop()
+
+                        if key in (tcod.event.KeySym.LEFT, tcod.event.KeySym.a):
+                            slider[choosen_slider][2] = src.helpers.clamp(
+                                slider[choosen_slider][2] - slider[choosen_slider][3]["step"],
+                                slider[choosen_slider][3]["min"],
+                                slider[choosen_slider][3]["max"],
+                            )
+
+                        if key in (tcod.event.KeySym.RIGHT, tcod.event.KeySym.d):
+                            slider[choosen_slider][2] = src.helpers.clamp(
+                                slider[choosen_slider][2] + slider[choosen_slider][3]["step"],
+                                slider[choosen_slider][3]["min"],
+                                slider[choosen_slider][3]["max"],
+                            )
+
+                        if key in (tcod.event.KeySym.UP, tcod.event.KeySym.w):
+                            choosen_slider = src.helpers.clamp(choosen_slider - 1, 0, len(slider) - 1)
+                        if key in (tcod.event.KeySym.DOWN, tcod.event.KeySym.s):
+                            choosen_slider = src.helpers.clamp(choosen_slider + 1, 0, len(slider) - 1)
+
+                        if key == tcod.event.KeySym.e and len(slider[choosen_slider][4]):
+                            slider_stack = slider.copy()
+                            slider = slider[choosen_slider][4]
+                            choosen_slider = 0
+
+                        if key == tcod.event.KeySym.q:
+                            submenu.append("difficulty name input")
+                case "difficulty name input":
+                    if isinstance(event, tcod.event.KeyDown):
+                        key = event.sym
+
+                        if key in (tcod.event.KeySym.ESCAPE, tcod.event.KeySym.RETURN):
+                            submenu.pop()
+                        if key == tcod.event.KeySym.BACKSPACE:
+                            custom_diff_name = custom_diff_name[:-1]
+                    if isinstance(event, tcod.event.TextInput):
+                        custom_diff_name += event.text
+
+                case "delete":
+                    if isinstance(event, tcod.event.KeyDown):
+                        key = event.sym
+
+                        if key == tcod.event.KeySym.F11:
+                            sdl_window.fullscreen = not sdl_window.fullscreen
+                        if key == tcod.event.KeySym.y:
+                            try:
+                                # register the save
+                                with open("gamestate/globalInfo.json") as globalInfoFile:
+                                    rawState = json.loads(globalInfoFile.read())
+                            except:
+                                rawState = {
+                                    "saves": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                    "customPrefabs": [],
+                                    "lastGameIndex": 0,
+                                }
+
+                            rawState["saves"][gameIndex] = 0
+                            with open("gamestate/globalInfo.json", "w") as globalInfoFile:
+                                json.dump(rawState, globalInfoFile)
+
+                        submenu.pop()
+
+                case "confirmQuit":
+                    if isinstance(event, tcod.event.KeyDown):
+                        key = event.sym
+                        if key in (tcod.event.KeySym.RETURN, tcod.event.KeySym.y):
+                            if src.interaction.tcodMixer:
+                                src.interaction.tcodMixer.close()
+                            raise SystemExit()
+                        submenu.pop()
+
+                case _:
+                    if isinstance(event, tcod.event.Quit):
+                        if src.interaction.tcodMixer:
+                            src.interaction.tcodMixer.close()
                         raise SystemExit()
-                    submenu = None
-            else:
-                if isinstance(event, tcod.event.Quit):
-                    src.interaction.tcodMixer.close()
-                    raise SystemExit()
-                if isinstance(event, tcod.event.WindowResized):
-                    checkResetWindowSize(event.width,event.height)
-                if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
-                    src.interaction.tcodMixer.close()
-                    raise SystemExit()
-                if isinstance(event,tcod.event.KeyDown):
-                    key = event.sym
-                    if key == tcod.event.KeySym.F11:
-                        fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
-                            tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
-                        )
-                        tcod.lib.SDL_SetWindowFullscreen(
-                            tcodContext.sdl_window_p,
-                            0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
-                        )
-                    if key == tcod.event.KeySym.ESCAPE:
-                        submenu = "confirmQuit"
-                    if key == tcod.event.KeySym.p:
-                        try:
-                            # register the save
-                            with open("gamestate/globalInfo.json") as globalInfoFile:
-                                rawState = json.loads(globalInfoFile.read())
-                        except:
-                            rawState = {"saves": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"customPrefabs":[],"lastGameIndex":0}
+                    if isinstance(event, tcod.event.WindowResized):
+                        checkResetWindowSize(event.width, event.height)
+                    if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
+                        if src.interaction.tcodMixer:
+                            src.interaction.tcodMixer.close()
+                        raise SystemExit()
+                    if isinstance(event, tcod.event.KeyDown):
+                        key = event.sym
+                        if key == tcod.event.KeySym.z:
+                            import webbrowser
+                            webbrowser.open_new_tab("https://discord.gg/wQAcXBDqk8")
+                        if key == tcod.event.KeySym.x:
+                            import webbrowser
+                            webbrowser.open_new_tab("http://ofmiceandmechs.com/")
+                        if key == tcod.event.KeySym.c:
+                            import webbrowser
+                            webbrowser.open_new_tab("https://github.com/MarxMustermann/OfMiceAndMechs")
+                            
+                        if key == tcod.event.KeySym.F11:
+                            sdl_window.fullscreen = not sdl_window.fullscreen
+                        if key == tcod.event.KeySym.ESCAPE:
+                            submenu.append("confirmQuit")
+                        if key == tcod.event.KeySym.p:
+                            try:
+                                # register the save
+                                with open("gamestate/globalInfo.json") as globalInfoFile:
+                                    rawState = json.loads(globalInfoFile.read())
+                            except:
+                                rawState = {
+                                    "saves": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                    "customPrefabs": [],
+                                    "lastGameIndex": 0,
+                                }
 
-                        rawState["lastGameIndex"] = gameIndex
-                        with open("gamestate/globalInfo.json", "w") as globalInfoFile:
-                            json.dump(rawState,globalInfoFile)
-                        startGame = True
-                    if key == tcod.event.KeySym.g:
-                        submenu = "gameslot"
-                    if key == tcod.event.KeySym.s:
-                        if not canLoad:
-                            submenu = "scenario"
-                    if key == tcod.event.KeySym.d:
-                        if event.mod & tcod.event.Modifier.SHIFT:
-                            submenu = "delete"
-                        else:
+                            rawState["lastGameIndex"] = gameIndex
+                            with open("gamestate/globalInfo.json", "w") as globalInfoFile:
+                                json.dump(rawState, globalInfoFile)
+                            startGame = True
+                        if key == tcod.event.KeySym.g:
+                            submenu.append("gameslot")
+                        if key == tcod.event.KeySym.s:
                             if not canLoad:
-                                submenu = "difficulty"
+                                submenu.append("scenario")
+                        if key == tcod.event.KeySym.d:
+                            if event.mod & tcod.event.Modifier.SHIFT:
+                                submenu.append("delete")
+                            else:
+                                if not canLoad:
+                                    submenu.append("difficulty")
+            if isinstance(event, tcod.event.Quit):
+                if src.interaction.tcodMixer:
+                    src.interaction.tcodMixer.close()
+                raise SystemExit()
+            if isinstance(event, tcod.event.WindowResized):
+                checkResetWindowSize(event.width, event.height)
+            if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
+                if src.interaction.tcodMixer:
+                    src.interaction.tcodMixer.close()
+                raise SystemExit()
 
 def showInterruptChoice(text,options):
     tcod.event.get()
@@ -5206,17 +5826,19 @@ def showInterruptChoice(text,options):
     while 1:
         tcodConsole.clear()
         printUrwidToTcod(text,(0,0))
-        tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+        tcodPresent()
 
         events = tcod.event.get()
         for event in events:
             if isinstance(event, tcod.event.Quit):
-                src.interaction.tcodMixer.close()
+                if src.interaction.tcodMixer:
+                    src.interaction.tcodMixer.close()
                 raise SystemExit()
             if isinstance(event, tcod.event.WindowResized):
                 checkResetWindowSize(event.width,event.height)
             if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
-                src.interaction.tcodMixer.close()
+                if src.interaction.tcodMixer:
+                    src.interaction.tcodMixer.close()
                 raise SystemExit()
 
             if isinstance(event,tcod.event.TextInput):
@@ -5235,17 +5857,19 @@ def showInterruptText(text):
     while 1:
         tcodConsole.clear()
         printUrwidToTcod(text,(0,0))
-        tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+        tcodPresent()
 
         events = tcod.event.get()
         for event in events:
             if isinstance(event, tcod.event.Quit):
-                src.interaction.tcodMixer.close()
+                if src.interaction.tcodMixer:
+                    src.interaction.tcodMixer.close()
                 raise SystemExit()
             if isinstance(event, tcod.event.WindowResized):
                 checkResetWindowSize(event.width,event.height)
             if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
-                src.interaction.tcodMixer.close()
+                if src.interaction.tcodMixer:
+                    src.interaction.tcodMixer.close()
                 raise SystemExit()
             if isinstance(event,tcod.event.KeyDown):
                 key = event.sym
@@ -5289,7 +5913,7 @@ You """+"."*stageState["substep"]+"""
 """
                 printUrwidToTcod(text, (64 + c_offset - int(len(text) / 2), 24))
                 printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "), (63 + c_offset, 27))
-                tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+                tcodPresent()
 
             if time.time()-stageState["lastChange"] > 1 or skip:
                 stageState["substep"] += 1
@@ -5396,7 +6020,7 @@ You """+"."*stageState["substep"]+"""
                     )
                 else:
                     printUrwidToTcod(text, (40 + c_offset - int(len(text) / 2), 2))
-                tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+                tcodPresent()
 
             if stageState["substep"] == 4 and (time.time()-stageState["lastChange"] > 0.2 or skip) and stageState["animationStep"] < 17:
                 stageState["animationStep"] += 1
@@ -5683,7 +6307,7 @@ You """+"."*stageState["substep"]+"""
                 terrainRender[22][22] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
                 printUrwidToTcod(text, (38 + c_offset, 2))
                 printUrwidToTcod(terrainRender, (19 + c_offset, 5))
-                tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+                tcodPresent()
 
             if stageState["walkingSpaces"] and stageState["subStep"] > 1:
                 stageState["lastChange"] = time.time()
@@ -5778,7 +6402,7 @@ You """+"."*stageState["substep"]+"""
                 printUrwidToTcod(text2, (42 + c_offset, 3))
                 printUrwidToTcod(terrainRender, (19 + c_offset, 5))
 
-                tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+                tcodPresent()
 
             if time.time()-stageState["lastChange"] > 2 or skip:
                 stageState = None
@@ -5846,7 +6470,7 @@ You """+"."*stageState["substep"]+"""
                     printUrwidToTcod("press space to stop watching", (47 + c_offset, 4))
                 else:
                     printUrwidToTcod("press space to continue watching", (46 + c_offset, 4))
-            tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+            tcodPresent()
 
             if stageState["substep"] < 1 and time.time()-stageState["lastChange"] > 0:
                 stageState["lastChange"] = time.time()
@@ -5888,7 +6512,7 @@ You """+"."*stageState["substep"]+"""
                     printUrwidToTcod(terrainRender, (19 + 2 * offset + c_offset, 5 + offset))
                 printUrwidToTcod(text1, (38 + c_offset, 2 + offset))
                 printUrwidToTcod(text2, (42 + c_offset, 3 + offset))
-                tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+                tcodPresent()
 
             if time.time()-stageState["lastChange"] > 0.3:
                 stageState["lastChange"] = time.time()
@@ -5920,7 +6544,7 @@ FOLLOW YOUR ORDERS
                 printUrwidToTcod(text2, (44 + c_offset, 23))
             if stageState["substep"] > 3:
                 printUrwidToTcod(src.urwidSpecials.makeRusty(text3)[: stageState["animationStep"]], (55 + c_offset, 25))
-            tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+            tcodPresent()
 
             if stageState["substep"] == 4 and stageState["animationStep"] < len(text3):
                 if time.time()-stageState["lastChange"] > 0.1:
@@ -5946,23 +6570,19 @@ FOLLOW YOUR ORDERS
         events = tcod.event.get()
         for event in events:
             if isinstance(event, tcod.event.Quit):
-                src.interaction.tcodMixer.close()
+                if src.interaction.tcodMixer:
+                    src.interaction.tcodMixer.close()
                 raise SystemExit()
             if isinstance(event, tcod.event.WindowResized):
                 checkResetWindowSize(event.width,event.height)
             if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
-                src.interaction.tcodMixer.close()
+                if src.interaction.tcodMixer:
+                    src.interaction.tcodMixer.close()
                 raise SystemExit()
             if isinstance(event,tcod.event.KeyDown):
                 key = event.sym
                 if key == tcod.event.KeySym.F11:
-                    fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
-                        tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
-                    )
-                    tcod.lib.SDL_SetWindowFullscreen(
-                        tcodContext.sdl_window_p,
-                        0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
-                    )
+                    sdl_window.fullscreen = not sdl_window.fullscreen
                 if key == tcod.event.KeySym.RETURN:
                     skip = True
                 if key == tcod.event.KeySym.SPACE and stage == 4:
@@ -5976,13 +6596,14 @@ FOLLOW YOUR ORDERS
         if not stageState:
             stage += 1
 
-def showRunOutro():
+def showRunOutro(endingType="bad"):
 
     def fixRoomRender(render):
         for row in render:
             row.append("\n")
         return render
 
+    numStruggled = 0
     stage = 0
     stageState = None
     room = None
@@ -6033,7 +6654,7 @@ It connects and is ready to merge with you.
 
             if not subStep2 < len(textBase[-1]):
                 printUrwidToTcod("press enter to merge with the throne",(45,27))
-            tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+            tcodPresent()
             if subStep < len(textBase)-1:
                 time.sleep(0.5)
                 subStep += 1
@@ -6067,19 +6688,31 @@ It connects and is ready to merge with you.
 
 """
             printUrwidToTcod(text,(40,14))
-            textBase = ["""
+            if endingType == "bad":
+                textBase = ["""
 You merge with the Throne.
-The gods bow and
+You feel the power of the world flowing though you.
+You try to reach out to it, but you can't move.
 
-        you rule the world now."""]
+
+"""]
+            else:
+                textBase = ["""
+You merge with the Throne.
+You rule the world now and you feel it.
+You feel that the power of the world flowing though you.
+You grab hold onto it and harness it."""]
             text = "".join(textBase[0:subStep])
             if not subStep < len(textBase)-1:
                 text += textBase[-1][0:subStep2]
             printUrwidToTcod(text,(45,17))
 
             if not subStep2 < len(textBase[-1]):
-                printUrwidToTcod("press enter to reach out to implant",(45,27))
-            tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+                if endingType == "bad":
+                    printUrwidToTcod("press enter to reach out to implant",(45,27))
+                else:
+                    printUrwidToTcod("press enter to continue",(45,27))
+            tcodPresent()
             if subStep < len(textBase)-1:
                 time.sleep(0.5)
                 subStep += 1
@@ -6088,7 +6721,7 @@ The gods bow and
                 time.sleep(0.05)
             else:
                 time.sleep(0.1)
-        elif stage == 2:
+        elif endingType == "bad":
             if stageState is None:
                 stageState = {"substep":1,"lastChange":time.time()}
             text = """
@@ -6113,32 +6746,46 @@ The gods bow and
 
 """
             printUrwidToTcod(text,(40,14))
-            textBase = ["""
-You reach out to your implant and it answers:
+            
+            '''
+            (src.interaction.urwid.AttrSpec(painColor, "black"), painChar), (painPos[0] + c_offset, painPos[1])
+            '''
 
-No advice can be rendered to a true leader.
-You rule this world now and your responsibility.
+            color_step = numStruggled
+            if color_step > 15:
+                color_step = 15
 
+            color1 = "#"+(hex(15-color_step)[-1])*3
+            color2 = "#"+(hex(color_step)[-1])*3
 
+            textBase = [(src.interaction.urwid.AttrSpec(color1, "black"),"""
+The implant answers:
 
+You served me well, but you served your purpose."""),(src.interaction.urwid.AttrSpec(color2, "black"),"""
+credits:"""),(src.interaction.urwid.AttrSpec(color1, "black"),"""
+You rule the world now, but i control you."""),(src.interaction.urwid.AttrSpec(color2, "black"),"""
+MarxMustermann
+"""),(src.interaction.urwid.AttrSpec(color2, "black"),"""
 
+press esc to end the game"""),(src.interaction.urwid.AttrSpec(color1, "black"),"""
+press enter to fight for control""")]
 
-press enter to run credits"""]
-            text = "".join(textBase[0:subStep])
-            if not subStep < len(textBase)-1:
-                text += textBase[-1][0:subStep2]
+            text = []
+            maxCursor = subStep2
+            for subtext in textBase:
+                text.append((subtext[0],subtext[1][0:maxCursor]))
+                maxCursor -= len(subtext[1])
+
+                if maxCursor <= 0:
+                    break
             printUrwidToTcod(text,(45,17))
 
-            tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
-            if subStep < len(textBase)-1:
-                time.sleep(0.5)
-                subStep += 1
-            elif subStep2 < len(textBase[-1]):
-                subStep2 += 1
-                time.sleep(0.05)
-            else:
-                time.sleep(0.1)
-        elif stage == 3:
+            tcodPresent()
+
+            subStep2 += 1
+            time.sleep(0.05)
+
+        elif stage == 2:
             if stageState is None:
                 stageState = {"substep":1,"lastChange":time.time()}
             text = """
@@ -6173,13 +6820,13 @@ MarxMustermann
 
 
 
-press enter"""]
+press enter to continue playing"""]
             text = "".join(textBase[0:subStep])
             if not subStep < len(textBase)-1:
                 text += textBase[-1][0:subStep2]
             printUrwidToTcod(text,(45,17))
 
-            tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+            tcodPresent()
             if subStep < len(textBase)-1:
                 time.sleep(0.5)
                 subStep += 1
@@ -6194,28 +6841,34 @@ press enter"""]
         events = tcod.event.get()
         for event in events:
             if isinstance(event, tcod.event.Quit):
-                src.interaction.tcodMixer.close()
+                if src.interaction.tcodMixer:
+                    src.interaction.tcodMixer.close()
                 raise SystemExit()
             if isinstance(event, tcod.event.WindowResized):
                 checkResetWindowSize(event.width,event.height)
             if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
-                src.interaction.tcodMixer.close()
+                if src.interaction.tcodMixer:
+                    src.interaction.tcodMixer.close()
                 raise SystemExit()
             if isinstance(event,tcod.event.KeyDown):
                 key = event.sym
                 if key == tcod.event.KeySym.F11:
-                    fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
-                        tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
-                    )
-                    tcod.lib.SDL_SetWindowFullscreen(
-                        tcodContext.sdl_window_p,
-                        0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
-                    )
+                    sdl_window.fullscreen = not sdl_window.fullscreen
                 if key == tcod.event.KeySym.ESCAPE:
                     stage = 7
+                    if endingType == "bad":
+                        if stage > 1:
+                            src.gamestate.gamestate = None
+                            raise EndGame("the game was won")
+
                 if key == tcod.event.KeySym.RETURN:
-                    stage += 1
-                    subStep = 0
+                    if endingType == "bad" and stage == 2 and subStep2 > 200:
+                        numStruggled += 1
+                    if not endingType == "bad" or stage < 2:
+                        stage += 1
+                        subStep = 0
+                        subStep2 = 0
+                        
 
 def showRunIntro():
 
@@ -6277,7 +6930,7 @@ starts to burn your flesh.                                                \n\
             if not subStep < len(textBase)-1:
                 text += textBase[-1][0:subStep2]
             printUrwidToTcod(text, (45 + c_offset, 17))
-            tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+            tcodPresent()
             if subStep < len(textBase)-1:
                 time.sleep(0.5)
                 subStep += 1
@@ -6333,7 +6986,7 @@ grows and grows and grows and grows
 """.split(" ")
             text = " ".join(textBase[0:subStep])
             printUrwidToTcod(text, (45 + c_offset, 17))
-            tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+            tcodPresent()
             for _i in range(100):
                 pos = (random.randint(1,199),random.randint(1,50))
                 if pos[0] > 37 and pos[0] < 121 and pos[1] > 13 and pos[1] < 34:
@@ -6530,7 +7183,7 @@ suggested action:
 press enter to continue
 """
             printUrwidToTcod(text, (45 + c_offset, 17))
-            tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+            tcodPresent()
             time.sleep(0.2)
             subStep += 1
         elif stage ==  3:
@@ -6620,7 +7273,7 @@ to remember"""
 
             offset = src.gamestate.gamestate.mainChar.getPosition()
             printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "), (76 + 6 + c_offset, 22 + 6))
-            tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+            tcodPresent()
             time.sleep(0.1)
         else:
             break
@@ -6628,23 +7281,19 @@ to remember"""
         events = tcod.event.get()
         for event in events:
             if isinstance(event, tcod.event.Quit):
-                src.interaction.tcodMixer.close()
+                if src.interaction.tcodMixer:
+                    src.interaction.tcodMixer.close()
                 raise SystemExit()
             if isinstance(event, tcod.event.WindowResized):
                 checkResetWindowSize(event.width,event.height)
             if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
-                src.interaction.tcodMixer.close()
+                if src.interaction.tcodMixer:
+                    src.interaction.tcodMixer.close()
                 raise SystemExit()
             if isinstance(event,tcod.event.KeyDown):
                 key = event.sym
                 if key == tcod.event.KeySym.F11:
-                    fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
-                        tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
-                    )
-                    tcod.lib.SDL_SetWindowFullscreen(
-                        tcodContext.sdl_window_p,
-                        0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
-                    )
+                    sdl_window.fullscreen = not sdl_window.fullscreen
                 if key == tcod.event.KeySym.ESCAPE:
                     stage = 7
                 if key == tcod.event.KeySym.RETURN:
@@ -6864,7 +7513,7 @@ def clearMessages(char):
 
 skipNextRender = False
 lastRender = None
-def advanceChar(char,render=True, pull_events = True):
+def advanceChar(char,render=True, pull_events = True, singleStep=False):
     global skipNextRender
 
     state = char.macroState
@@ -6888,7 +7537,12 @@ def advanceChar(char,render=True, pull_events = True):
                     skipedRenders = 0
                     renderGameDisplay()
                 """
-                if src.gamestate.gamestate.tick%3 == 0:
+                automated = False
+                for quest in char.getActiveQuests():
+                    if not quest.autoSolve:
+                        continue
+                    automated = True
+                if not automated or src.gamestate.gamestate.tick%5 == 0:
                     renderGameDisplay()
             lastRender = time.time()
             rerender = False
@@ -6925,6 +7579,11 @@ def advanceChar(char,render=True, pull_events = True):
                 continue
             hasAutosolveQuest = True
 
+        try:
+            char.autoExpandCounter
+        except:
+            char.autoExpandCounter = 0
+
         if char.huntkilling:
             processInput(
                 (char.doHuntKill(),["norecord"]),
@@ -6949,17 +7608,24 @@ def advanceChar(char,render=True, pull_events = True):
             )
             rerender = True
             skipNextRender = False
+
+            if singleStep:
+                break
         elif char.autoAdvance:
             char.runCommandString("+")
-            char.timeTaken += 1
+            #char.timeTaken += 1
         elif hasAutosolveQuest:
             rerender = True
             char.runCommandString("+")
             skipNextRender = False
-        elif char.autoExpandQuests2 and char.getActiveQuest() and not (char.getActiveQuest().getSolvingCommandString(char)):
+        elif char.autoExpandQuests2 and char.autoExpandCounter < 5 and char.getActiveQuest() and not (char.getActiveQuest().getSolvingCommandString(char)):
+            char.autoExpandCounter += 1
             char.getActiveQuest().generateSubquests(char,dryRun=False)
             char.runCommandString("~",nativeKey=True)
         elif char.autoExpandQuests and char.getActiveQuest() and not (char.getActiveQuest().getSolvingCommandString(char)):
+            char.runCommandString("+",nativeKey=True)
+        elif char.autoExpandQuests2 and char.autoExpandCounter < 5 and char.getActiveQuest() and char.getActiveQuest().getSolvingCommandString(char) == "+":
+            char.autoExpandCounter += 1
             char.runCommandString("+",nativeKey=True)
         else:
             if (char == src.gamestate.gamestate.mainChar):

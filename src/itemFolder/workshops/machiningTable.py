@@ -79,19 +79,18 @@ class MachiningTable(src.items.itemMap["WorkShop"]):
         metalBar = metalBarsFound[-1]
 
         if metalBar in character.inventory:
-            character.inventory.remove(metalBar)
+            character.removeItemFromInventory(metalBar)
         else:
             self.container.removeItem(metalBar)
 
         if params["type"] in self.scheduledItems:
             self.scheduledItems.remove(params["type"])
 
-        params["productionTime"] = 1000
-        params["doneProductionTime"] = 0
-        params["hitCounter"] = character.numAttackedWithoutResponse
-        self.produceItem_wait(params)
+        params["delayTime"] = 1000
+        params["action"]= "output_produced_item"
+        self.delayedAction(params)
 
-    def produceItem_done(self,params):
+    def output_produced_item(self,params):
         character = params["character"]
 
         preferInventoryOut = True
@@ -112,7 +111,7 @@ class MachiningTable(src.items.itemMap["WorkShop"]):
         character.addMessage("It takes you 1000 turns to do that")
 
         if (dropsSpotsFull or preferInventoryOut) and character.getFreeInventorySpace() > 0:
-            character.inventory.append(new)
+            character.addToInventory(new)
         elif dropsSpotsFull:
             character.addMessage("you failed to produce since both your inventory and the dropspots are full.")
         else:
@@ -130,7 +129,7 @@ class MachiningTable(src.items.itemMap["WorkShop"]):
                 if not targetFull:
                     self.container.addItem(new,targetPos)
                     break
-
+        character.stats["items produced"][params["type"]] = character.stats["items produced"].get(params["type"], 0) + 1
         character.changed("constructed machine",{})
 
     def getInputItems(self):

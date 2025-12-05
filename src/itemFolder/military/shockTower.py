@@ -61,9 +61,9 @@ class ShockTower(src.items.Item):
             if key == "r":
                 extraText = self.loadNearbyAmmo()
             if key == ".":
-                character.timeTaken += 1
+                character.takeTime(1,"waited")
             if key == "j":
-                character.timeTaken += 1
+                character.takeTime(1,"used shock tower")
                 extraText = self.shock(pos,character)
         params["pos"] = pos
 
@@ -142,7 +142,7 @@ press . to wait"""]
 
         self.charges += 1
         character.addMessage("you charge the ShockTower")
-        character.inventory.remove(compressorFound)
+        character.removeItemFromInventory(compressorFound)
 
     def render(self):
         return (src.interaction.urwid.AttrSpec("#fff", "#000"), "ST")

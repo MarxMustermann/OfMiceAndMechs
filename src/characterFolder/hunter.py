@@ -16,4 +16,13 @@ class Hunter(src.monster.Monster):
 
         self.charType = "Hunter"
 
+    def getLoreDescription(self):
+        return f"The Hunters needle like teeth stand in contrast to his thick four legs.\nEach step taken sends waves rippling over his reflective smooth white skin.";
+
+    def getFunctionalDescription(self):
+        return f"Hunters are slow, but can be a danger to weaker Clones."
+
+    def description(self):
+        return self.getLoreDescription()+"\n\n---- "+self.getFunctionalDescription()
+
 src.characters.add_character(Hunter)

@@ -60,5 +60,14 @@ class Exploder(src.monster.Monster):
 
         super().die(reason=reason, addCorpse=False, killer=killer)
 
+    def getLoreDescription(self):
+        return f"You see an Exploder. It looks anxious and weak.\nIt swollen organs and full of explosive gas indicate it is not a victim, though."
+
+    def getFunctionalDescription(self):
+        return f"Exploders explode when killed, so be careful with that"
+
+    def description(self):
+        return self.getLoreDescription()+"\n\n---- "+self.getFunctionalDescription()
+
 
 src.characters.add_character(Exploder)

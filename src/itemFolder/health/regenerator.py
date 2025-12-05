@@ -1,46 +1,123 @@
 import src
 
-
 class Regenerator(src.items.Item):
+    '''
+    Ingame item that heals all characters in the room
+    '''
     type = "Regenerator"
-    description = "Gives healing vibes to all characters"
+    description = "heals all characters in the room"
     name = "regenerator"
-
     healing_amount = 25
-
+    mana_charges = 100
     def __init__(self):
         self.bolted = True
         self.activated = False
         super().__init__(display="()")
 
     def addTickingEvent(self):
+        '''
+        sets up a loop of events that do the actual healing
+        '''
+
+        # add event    
         event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 15)
         event.setCallback({"container": self, "method": "handleTicking"})
         self.container.addEvent(event)
 
     def apply(self, character):
-        if not self.activated:
-            self.addTickingEvent()
-            character.addMessage("You activated the regenerator")
-            submenue = src.menuFolder.textMenu.TextMenu(
-                f"You activated the Regenerator.\nIt will heal every creature in this room when it pulses.\nIt pulses every 15 ticks"
-            )
+        '''
+        start triggering a loop of healing events on user activation
+
+        Args:
+            character: the entity that used the regenerator
+        '''
+
+        # do nothing when already running
+        if self.activated:
+            text = "your place your hand on the Regenerator" 
+            if character.health >= character.adjustedMaxHealth:
+                text += ", but you do not need healing."
+            elif not self.mana_charges:
+                text += ", but the Regenerator has no charges left."
+            else:
+                heal_amount = min(self.healing_amount*self.mana_charges,character.adjustedMaxHealth-character.health)
+                character.heal(heal_amount, reason="the Regenerator heals you")
+                text += f" and it heals you for {heal_amount} HP."
+                self.mana_charges -= heal_amount//self.healing_amount
+                if heal_amount%self.healing_amount:
+                    self.mana_charges -= 1
+                text += f"\nThe regenerator now has {self.mana_charges} charges left."
+            submenue = src.menuFolder.textMenu.TextMenu(text)
             character.macroState["submenue"] = submenue
             character.runCommandString("~",nativeKey=True)
-            self.activated = True
-            character.changed("regenerator activated",{})
+            return
+
+        # trigger the loop of healing events
+        self.addTickingEvent()
+
+        # show user feedback
+        character.addMessage("You activated the regenerator")
+        text = f"""You activated the Regenerator.
+It will heal every creature in this room when it pulses.
+It pulses every 15 ticks
+
+To heal faster you can use the Regenerator directly."""
+        submenue = src.menuFolder.textMenu.TextMenu(text)
+        character.macroState["submenue"] = submenue
+        character.runCommandString("~",nativeKey=True)
+
+        # set internal state to activated
+        self.activated = True
+
+        # notify listerners about the state change
+        character.changed("regenerator activated",{})
 
     def handleTicking(self):
+        '''
+        a loop of events that does the actual healing. This event retriggers itself
+        '''
+
+        # set up trigger to be called back later and form a loop
         self.addTickingEvent()
+
+        # show activity indicator to user
         self.container.addAnimation(
             self.getPosition(), "showchar", 1, {"char": ")("}
         )
 
+        # heal all characters within the room
         for character in self.container.characters:
+            
+            # abort when running out of mana
+            if self.mana_charges < 1:
+                break
+
+            # only try healing wounded characters
+            if not character.maxHealth-character.health > 1:
+                continue
+
+            # do the actual healing
             character.heal(self.healing_amount, reason="by the regenerator")
             self.container.addAnimation(
                 character.getPosition(), "showchar", 1, {"char": [(src.interaction.urwid.AttrSpec("#f00", "#fff"), "^^")]}
             )
 
+            # pay mana cost
+            self.mana_charges -= 1
 
+    def getLongInfo(self):
+        '''
+        generate simple text description
+
+        Returns:
+            the description text
+        '''
+        text = super().getLongInfo()
+        text += f"""
+
+charges: {self.mana_charges}
+"""
+        return text
+
+# registers class
 src.items.addType(Regenerator)

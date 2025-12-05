@@ -21,7 +21,7 @@ class ReinforcePersonalArmor(src.quests.MetaQuestSequence):
         self.startWatching(character,self.handleArmorImproved, "improved armor")
         super().assignToCharacter(character)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
         return False
@@ -46,6 +46,12 @@ class ReinforcePersonalArmor(src.quests.MetaQuestSequence):
 
         if character.macroState.get("submenue"):
             submenue = character.macroState.get("submenue")
+            if submenue.tag == "applyOptionSelection" and submenue.extraInfo.get("item").type == "ArmorReinforcer":
+                return (None,("j","use ArmorReinforcer"))
+            if submenue.tag == "ArmorReinforceerSelection":
+                return (None,("j","selct reeinforcing the armor"))
+            if submenue.tag == "ArmorReinforcerSlider":
+                return (None,("j","reinforce the armor"))
             if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu):
                 foundOption = False
                 rewardIndex = 0
@@ -127,6 +133,6 @@ class ReinforcePersonalArmor(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),description="go to a room having a ArmorReinforcer")
                 return ([quest],None)
 
-        return (None,None)
+        return (None,(".","stand around confused"))
 
 src.quests.addType(ReinforcePersonalArmor)

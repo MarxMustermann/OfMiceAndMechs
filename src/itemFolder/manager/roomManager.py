@@ -450,7 +450,7 @@ class RoomManager(src.items.Item):
                 return
             item = src.items.itemMap[task["type"]]()
 
-            character.inventory.append(item)
+            character.addToInventory(item)
 
             jobOrder = src.items.itemMap["JobOrder"]()
             tasks = []
@@ -578,7 +578,7 @@ class RoomManager(src.items.Item):
             machine = src.items.itemMap["CityBuilder"]()
             if not self.cityBuilderPos:
                 self.cityBuilderPos = itemSlot
-            character.inventory.append(machine)
+            character.addToInventory(machine)
             self.characterDropMachine(character, itemSlot)
             self.itemSlotUsage[tuple(itemSlot)] = task
 
@@ -635,7 +635,7 @@ class RoomManager(src.items.Item):
             machine = src.items.items["BluePrintingArtwork"]()
             if not self.bluePrintingArtworkPos:
                 self.bluePrintingArtworkPos = itemSlot
-            character.inventory.append(machine)
+            character.addToInventory(machine)
             self.characterDropMachine(character, itemSlot)
             self.itemSlotUsage[tuple(itemSlot)] = task
         if task["task"] == "add machine machine":
@@ -655,7 +655,7 @@ class RoomManager(src.items.Item):
             machine = src.items.MachineMachine(None, None)
             self.machineMachinePos = itemSlot
 
-            character.inventory.append(machine)
+            character.addToInventory(machine)
             self.characterDropMachine(character, itemSlot)
             self.itemSlotUsage[tuple(itemSlot)] = task
 
@@ -667,7 +667,7 @@ class RoomManager(src.items.Item):
                 self.resourceTerminalPositions["MetalBars"] = []
             self.resourceTerminalPositions["MetalBars"].append(itemSlot)
 
-            character.inventory.append(machine)
+            character.addToInventory(machine)
             self.characterDropMachine(character, itemSlot)
             self.itemSlotUsage[tuple(itemSlot)] = task
 

@@ -21,12 +21,14 @@ class ActivateRegenerator(src.quests.MetaQuestSequence):
 
         return super().assignToCharacter(character)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
         if self.regenerator and self.regenerator.activated:
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
+            return True
         
         return False
 
@@ -92,5 +94,26 @@ Activate it so you and the other clones heal while waiting in the temple.
 """]
         return text
 
+    def getQuestMarkersSmall(self,character,renderForTile=False):
+        '''
+        return the quest markers for the normal map
+        '''
+        if isinstance(character.container,src.rooms.Room):
+            if renderForTile:
+                return []
+        else:
+            if not renderForTile:
+                return []
+
+        result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
+        if not renderForTile:
+            if isinstance(character.container,src.rooms.Room):
+                for item in character.container.itemsOnFloor:
+                    if not item.type == "Regenerator":
+                        continue
+                    if not item.bolted:
+                        continue
+                    result.append((item.getPosition(),"target"))
+        return result
 
 src.quests.addType(ActivateRegenerator)

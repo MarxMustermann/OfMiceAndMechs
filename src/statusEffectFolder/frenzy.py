@@ -15,7 +15,7 @@ class Frenzy(src.statusEffects.AttackSpeedEffect):
 
     def getLoreDescription(self):
         text = ""
-        text += f"Increases the damage you deal for some time."
+        text += f"You are in a frenzy and are thirsting to bash a face in fast."
         return text
 
     def buildStatListDescription(self,description = ""):

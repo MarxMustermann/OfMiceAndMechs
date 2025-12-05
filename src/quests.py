@@ -307,13 +307,22 @@ class Quest:
         self.paused = False
 
     """
+    helperfunction to trigger a quest fail from within a solver
+    """
+    def _solver_trigger_fail(self,dryRun,reason=None):
+        if not dryRun:
+            self.character.addMessage(f"triggered fail for {reason}")
+            self.fail(reason)
+            return (None,None)
+        return (None,("+",f"abort quest\n({reason})"))
+
+    """
     handle a failure to resolve te quest
     """
-
     def fail(self,reason=None):
         self.changed("failed",{"reason":reason,"quest":self})
         if reason and self.character:
-            self.character.addMessage(f"failed quest {self.description} because of {reason}")
+            self.character.addMessage(f"failed quest {self.description},\nbecause of {reason}")
         if self.failTrigger:
             self.failTrigger()
         if self.reputationReward:
@@ -582,6 +591,8 @@ class MetaQuestSequence(Quest,ABC):
     bad code: quest parameter does not work anymore and should be removed
     """
 
+    type = "MetaQuestSequence"
+
     def __init__(
         self,
         quests=None,
@@ -608,9 +619,6 @@ class MetaQuestSequence(Quest,ABC):
         # listen to subquests
         if len(self.subQuests):
             self.startWatching(self.subQuests[0], self.recalculate)
-
-        # save state and register
-        self.type = "MetaQuestSequence"
 
     def postHandler(self):
         for quest in self.subQuests:
@@ -708,9 +716,9 @@ class MetaQuestSequence(Quest,ABC):
     check if there are quests left
     """
 
-    def triggerCompletionCheck2(self,extraInfo):
-        self.stopWatching(extraInfo[0],self.triggerCompletionCheck2,"completed")
-        self.triggerCompletionCheck()
+    def handle_completed_subquest(self,extraInfo):
+        self.stopWatching(extraInfo[0],self.handle_completed_subquest,"completed")
+        self.triggerCompletionCheck(dryRun=False)
 
         if extraInfo[0] in self.subQuests:
             self.subQuests.remove(extraInfo[0])
@@ -724,13 +732,13 @@ class MetaQuestSequence(Quest,ABC):
                 subQuest.assignToCharacter(self.character)
                 return
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
 
         # smooth over impossible state
         if not self.active:
             return True
 
-        self.generateSubquests()
+        self.generateSubquests(dryRun=dryRun)
 
         # remove completed quests
         if self.subQuests and self.subQuests[0].completed:
@@ -738,7 +746,8 @@ class MetaQuestSequence(Quest,ABC):
 
         # wrap up when out of subquests
         if not len(self.subQuests):
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
         return False
 
@@ -792,7 +801,7 @@ class MetaQuestSequence(Quest,ABC):
             self.character.recalculatePath()
 
         # listen to subquest
-        self.startWatching(quest, self.triggerCompletionCheck2, "completed")
+        self.startWatching(quest, self.handle_completed_subquest, "completed")
 
         # deactivate last active quest
         if addFront and len(self.subQuests) > 1:
@@ -820,7 +829,7 @@ class MetaQuestSequence(Quest,ABC):
     forward solver from first subquest
     """
     def solver(self, character):
-        if self.triggerCompletionCheck(character):
+        if self.triggerCompletionCheck(character, dryRun=False):
             return
 
         while len(self.subQuests):
@@ -828,20 +837,23 @@ class MetaQuestSequence(Quest,ABC):
                 quest = self.subQuests.pop(0)
                 self.stopWatchingTarget(quest)
                 continue
+            if not self.subQuests[0].active:
+                self.subQuests[0].activate()
             break
 
         if len(self.subQuests):
-            self.subQuests[0].triggerCompletionCheck(character)
-            if len(self.subQuests):
-                self.subQuests[0].solver(character)
+            if self.subQuests[0].triggerCompletionCheck(character,dryRun=False):
+                return
+            self.subQuests[0].solver(character)
             return
+
         nextStep = self.getNextStep(character, dryRun=False)
         if nextStep is not None:
             try:
                 (nextQuests, nextCommand) = nextStep
             except:
                 print(self)
-                print(NextStep)
+                print(nextStep)
                 1/0
             if nextQuests:
                 for quest in nextQuests:
@@ -852,7 +864,7 @@ class MetaQuestSequence(Quest,ABC):
             if nextCommand:
                 character.runCommandString(nextCommand[0])
 
-            character.timeTaken += 0.01
+            character.takeTime(0.01,"thinking")
 
     @abstractmethod
     def getNextStep(self, character=None, ignoreCommands=False, dryRun = True): ...
@@ -864,7 +876,7 @@ class MetaQuestSequence(Quest,ABC):
         pass
     
     def getSolvingCommandString(self, character, dryRun=True):
-        if self.triggerCompletionCheck(character):
+        if self.triggerCompletionCheck(character,dryRun=dryRun):
             return None
         nextStep = self.getNextStep(character,dryRun= dryRun)
         if nextStep is None or nextStep == (None, None):

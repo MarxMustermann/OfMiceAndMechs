@@ -3,8 +3,10 @@ import random
 import src
 
 class Adventure(src.quests.MetaQuestSequence):
+    '''
+    quest to adventure and collect cool stuff
+    '''
     type = "Adventure"
-
     def __init__(self, description="adventure", creator=None, lifetime=None, reason=None):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
@@ -13,12 +15,18 @@ class Adventure(src.quests.MetaQuestSequence):
         self.track = []
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
+        '''
+        generate the next step towards solving this quest
+        '''
 
         if self.subQuests:
             return (None,None)
 
         if not character:
             return (None,None)
+
+        if character.is_low_health():
+            return self._solver_trigger_fail(dryRun,"low health")
 
         if character.getBigPosition()[0] == 0:
             return (None, ("d","enter the terrain"))
@@ -28,8 +36,49 @@ class Adventure(src.quests.MetaQuestSequence):
             return (None, ("s","enter the terrain"))
         if character.getBigPosition()[1] == 14:
             return (None, ("w","enter the terrain"))
+
+        if character.searchInventory("MemoryFragment"):
+            quest = src.quests.questMap["ConsumePotion"](potionType="MemoryFragment")
+            return ([quest],None)
         
         currentTerrain = character.getTerrain()
+        if currentTerrain == character.getHomeTerrain():
+            for room in character.getTerrain().rooms:
+                for item in room.getItemsByType("SwordSharpener"):
+                    if item.readyToBeUsedByCharacter(character):
+                        quest = src.quests.questMap["SharpenPersonalSword"]()
+                        return ([quest],None)
+
+            for room in character.getTerrain().rooms:
+                for item in room.getItemsByType("ArmorReinforcer"):
+                    if item.readyToBeUsedByCharacter(character):
+                        quest = src.quests.questMap["ReinforcePersonalArmor"]()
+                        return ([quest],None)
+
+            if character.health < character.adjustedMaxHealth:
+                readyCoalBurner = False
+                for room in currentTerrain.rooms:
+                    for coalBurner in room.getItemsByType("CoalBurner"):
+                        if not coalBurner.getMoldFeed(character):
+                            continue
+                        readyCoalBurner = True
+                if readyCoalBurner:
+                    quest = src.quests.questMap["Heal"](noWaitHeal=True,noVialHeal=True)
+                    return ([quest],None)
+
+        if not character.weapon or not character.armor:
+            quest = src.quests.questMap["Equip"](tryHard=True)
+            return ([quest],None)
+
+        if character.getTerrain() == character.getHomeTerrain():
+            if (not character.lastMapSync) or src.gamestate.gamestate.tick-character.lastMapSync > 100:
+                quest = src.quests.questMap["DoMapSync"]()
+                return ([quest],None)
+            for item in character.inventory:
+                if item.walkable:
+                    continue
+                quest = src.quests.questMap["ClearInventory"](returnToTile=False)
+                return ([quest],None)
 
         if currentTerrain.tag == "shrine":
             # go home directly
@@ -90,11 +139,11 @@ class Adventure(src.quests.MetaQuestSequence):
         for x in range(1,14):
             for y in range(1,14):
                 coordinate = (x, y, 0)
-                extraWeight[coordinate] = 0
+                extraWeight[coordinate] = 5
                 if coordinate in character.terrainInfo:
                     info = character.terrainInfo[coordinate]
-                    if character.getFreeInventorySpace() < 2:
-                        extraWeight[coordinate] = 2
+                    if character.getFreeInventorySpace(ignoreTypes=["Bolt"]) < 2:
+                        extraWeight[coordinate] = 1
                         if not info.get("tag") == "shrine":
                             continue
                     else:
@@ -102,40 +151,44 @@ class Adventure(src.quests.MetaQuestSequence):
                             continue
                         if info.get("looted"):
                             continue
+                if coordinate == (7,7,0): # avoid endgame dungeon
+                    extraWeight[coordinate] = 32000
                 candidates.append(coordinate)
 
         # do special handling of the characters home
         homeCoordinate = (character.registers["HOMETx"], character.registers["HOMETy"], 0)
-        if character.getFreeInventorySpace() < 2:
+        if character.getFreeInventorySpace(ignoreTypes=["Bolt"]) < 2:
             candidates.append(homeCoordinate)
-            extraWeight[coordinate] = 3
+            extraWeight[coordinate] = 1
         else:
             if homeCoordinate in candidates:
                 candidates.remove(homeCoordinate)
 
         if not len(candidates):
-            if dryRun:
-                self.fail()
-            return (None, None)
+            self._solver_trigger_fail("no candidates")
 
         # sort weighted with slight random
         random.shuffle(candidates)
-        candidates.sort(key=lambda x: src.helpers.distance_between_points(character.getTerrainPosition(), x)+random.random()-extraWeight[x])
+        candidates.sort(key=lambda x: src.helpers.distance_between_points(character.getTerrainPosition(), x)+random.random()+extraWeight[x])
         targetTerrain = candidates[0]
 
         # move to the actual target terrain
-        if character.getFreeInventorySpace() and (targetTerrain != homeCoordinate):
-            quest = src.quests.questMap["AdventureOnTerrain"](targetTerrain=targetTerrain)
+        if character.getFreeInventorySpace(ignoreTypes=["Bolt"]) and (targetTerrain != homeCoordinate):
+            quest = src.quests.questMap["AdventureOnTerrain"](targetTerrain=targetTerrain,terrainsWeight = extraWeight)
         else:
             quest = src.quests.questMap["GoToTerrain"](targetTerrain=targetTerrain)
+
         return ([quest], None)
 
     def generateTextDescription(self):
+        '''
+        generate a textual description to be shown on the UI
+        '''
         reason = ""
         if self.reason:
             reason = f", to {self.reason}"
         
-        text = ["""
+        text = [f"""
 Go out and adventure{reason}.
 
 track:
@@ -168,19 +221,28 @@ track:
         return text
 
     def handleChangedTerrain(self,extraInfo):
+        '''
+        keep track of the trail of terrain the character visited
+        '''
         terrain = extraInfo["character"].getTerrain()
         pos = terrain.getPosition()
         tag = terrain.tag
         self.track.append({"pos":pos,"tag":tag})
 
     def assignToCharacter(self, character):
+        '''
+        listen to the character changing the terrain
+        '''
         if self.character:
             return
 
         self.startWatching(character,self.handleChangedTerrain, "changedTerrain")
         super().assignToCharacter(character)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
+        '''
+        check and end quest if completed
+        '''
         if not character:
             return False
 
@@ -190,10 +252,12 @@ track:
         if not currentTerrain.yPosition == character.registers["HOMETy"]:
             return False
 
-        if not character.getFreeInventorySpace() < 2:
+        if not character.getFreeInventorySpace(ignoreTypes=["Bolt"]) < 2:
             return False
 
-        self.postHandler()
+        if not dryRun:
+            self.postHandler()
         return True
 
+# register the quest type
 src.quests.addType(Adventure)

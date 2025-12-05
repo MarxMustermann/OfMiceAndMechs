@@ -69,7 +69,7 @@ class Cocoon(src.items.Item):
         ]
 
         character.faction = 'mold_'+("".join(random.choice(string.ascii_letters) for _ in range(1,10)))
-        character.timeTaken = 5
+        character.takeTime(5,"born")
 
         if self.container:
             self.container.addCharacter(character, self.xPosition, self.yPosition)

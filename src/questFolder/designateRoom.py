@@ -79,9 +79,7 @@ Use the CityPlaner to designate the room.
                 return (None,(command,"remove old construction site marker"))
 
             if self.roomPosition not in cityPlaner.getAvailableRoomPositions():
-                if not dryRun:
-                    self.fail(reason="room position already taken")
-                return (None,None)
+                return self._solver_trigger_fail(dryRun,"room position already taken")
 
             if self.roomType == "generalPurposeRoom":
                 command += "g"
@@ -170,7 +168,7 @@ Use the CityPlaner to designate the room.
     """
     never complete
     """
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return None
 
@@ -179,11 +177,13 @@ Use the CityPlaner to designate the room.
         cityPlaner = room.getItemsByType("CityPlaner")[0]
 
         if self.roomType == "specialPurposeRoom" and self.roomPosition in cityPlaner.specialPurposeRooms:
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
 
         if self.roomType == "generalPurposeRoom" and self.roomPosition in cityPlaner.generalPurposeRooms:
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
 
         if self.roomType == "undesignate":
@@ -191,13 +191,14 @@ Use the CityPlaner to designate the room.
                 return None
             if self.roomPosition in cityPlaner.specialPurposeRooms:
                 return None
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
-        return None
+        return False
 
 
     def handleDesignatedRoom(self,extraParams):
-        self.triggerCompletionCheck(extraParams["character"])
+        self.triggerCompletionCheck(extraParams["character"],dryRun=False)
 
     def getQuestMarkersTile(self,character):
         result = super().getQuestMarkersTile(character)

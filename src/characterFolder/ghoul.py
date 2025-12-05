@@ -54,4 +54,16 @@ class Ghoul(src.characters.Character):
         """
         super().hurt(max(1,damage//2),reason=reason,actor=actor)
 
+    def die(self, reason=None, killer = None, addCorpse=True, corpseType="MoldFeed"):
+        return super().die(reason=reason,killer=killer,addCorpse=addCorpse,corpseType=corpseType)
+
+    def getLoreDescription(self):
+        return f"You see an Ghul. They have the form of a Clone, but you can see no humanity in their eyes.\nTheir food habits also make every room they are in smell like Corpse."
+
+    def getFunctionalDescription(self):
+        return f"Ghuls are great workforce when their automation system has been set up properly"
+
+    def description(self):
+        return self.getLoreDescription()+"\n\n---- "+self.getFunctionalDescription()
+
 src.characters.add_character(Ghoul)

@@ -4,8 +4,11 @@ import src
 
 
 class Fight(src.quests.MetaQuestSequence):
+    '''
+    quest for fighting within a tile
+    '''
     type = "Fight"
-
+    lowLevel = True
     def __init__(self, description="fight", creator=None, command=None, lifetime=None, weaponOnly=False, reason=None, suicidal=False):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
@@ -17,6 +20,9 @@ class Fight(src.quests.MetaQuestSequence):
         self.shortCode = "f"
 
     def generateTextDescription(self):
+        '''
+        generate a description text to show on the UI
+        '''
         reasonString = ""
         if self.reason:
             reasonString = ", to "+self.reason
@@ -33,17 +39,42 @@ So if an enemy is to directly east of you:
 * press D to do a special attack
 """]
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
+        '''
+        check and end the quest if completed
+        '''
         if not character:
-            return None
+            return False
 
         if not character.getNearbyEnemies():
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
 
-        return None
+        return False
+
+    def getQuestMarkersSmall(self,character,renderForTile=False):
+        '''
+        return the quest markers for the normal map
+        '''
+        if isinstance(character.container,src.rooms.Room):
+            if renderForTile:
+                return []
+        else:
+            if not renderForTile:
+                return []
+
+        result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
+        if not renderForTile:
+            if isinstance(character.container,src.rooms.Room):
+                for enemy in character.getNearbyEnemies():
+                    result.append((enemy.getPosition(),"target"))
+        return result
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
+        '''
+        generate next step towards solving this quest
+        '''
         if self.subQuests:
             return (None,None)
 
@@ -51,8 +82,9 @@ So if an enemy is to directly east of you:
         character.personality["autoFlee"] = False
 
         if not character.getNearbyEnemies():
-            self.postHandler()
-            return (None,None)
+            if not dryRun:
+                self.postHandler()
+            return (None,("+","end quest"))
 
         if character.health < character.maxHealth//2 and character.canHeal():
             return (None,("Jh","heal"))
@@ -62,8 +94,7 @@ So if an enemy is to directly east of you:
         except:
             self.suicidal = False
         if (not self.suicidal) and (character.health < character.maxHealth//5):
-            self.fail()
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"low health")
 
         if not ignoreCommands:
             submenue = character.macroState.get("submenue")
@@ -98,7 +129,7 @@ So if an enemy is to directly east of you:
             specialAttack = None
             if character.exhaustion == 0:
                 specialAttack = "k"
-            elif character.exhaustion < 10:
+            elif character.exhaustion <= 7:
                 specialAttack = "h"
             if not specialAttack:
                 return (None,(directionCommand,"attack enemy"))
@@ -121,7 +152,7 @@ So if an enemy is to directly east of you:
             return (None,(".","catch breath"))
 
         # move toward enemies (smarter)
-        if character.rank:
+        if isinstance(character,src.characters.characterMap["Clone"]):
             shortestPath = None
             for enemy in character.getNearbyEnemies():
                 if character.container.isRoom:
@@ -129,8 +160,19 @@ So if an enemy is to directly east of you:
                 else:
                     path = character.container.getPathTile(character.getBigPosition(),character.getSpacePosition(),enemy.getSpacePosition(),ignoreEndBlocked=True,character=character)
 
-                if shortestPath == None or len(shortestPath) > len(path):
+                if path and (shortestPath == None or len(shortestPath) > len(path)):
                     shortestPath = path
+
+            if not shortestPath:
+                for enemy in character.getNearbyEnemies():
+                    if character.container.isRoom:
+                        path = character.container.getPathTile(character.getPosition(),enemy.getPosition(),ignoreEndBlocked=True,character=character,ignoreUnbolted=True)
+                    else:
+                        path = character.container.getPathTile(character.getBigPosition(),character.getSpacePosition(),enemy.getSpacePosition(),ignoreEndBlocked=True,character=character,ignoreUnbolted=True)
+
+                    if path and (shortestPath == None or len(shortestPath) > len(path)):
+                        shortestPath = path
+
             if shortestPath:
                 command = None
                 step = shortestPath[0]
@@ -142,6 +184,23 @@ So if an enemy is to directly east of you:
                     command = "w"
                 if step == (0,1):
                     command = "s"
+
+                if command == "d":
+                    pos = character.getPosition()
+                    if not character.container.getPositionWalkable((pos[0]+1,pos[1],pos[2]),character=character):
+                        command = "Kdl"
+                elif command == "a":
+                    pos = character.getPosition()
+                    if not character.container.getPositionWalkable((pos[0]-1,pos[1],pos[2]),character=character):
+                        command = "Kal"
+                elif command == "s":
+                    pos = character.getPosition()
+                    if not character.container.getPositionWalkable((pos[0],pos[1]+1,pos[2]),character=character):
+                        command = "Ksl"
+                elif command == "w":
+                    pos = character.getPosition()
+                    if not character.container.getPositionWalkable((pos[0],pos[1]-1,pos[2]),character=character):
+                        command = "Kwl"
 
                 if command:
                     return (None,(command,"approach enemy"))
@@ -195,8 +254,9 @@ So if an enemy is to directly east of you:
                 command = "Kwl"
 
         if command is None:
-            return (None,None)
+            return (None,(".","stand around confused (no command found)"))
 
         return (None,(command,"approach enemy"))
 
+# register the quest type
 src.quests.addType(Fight)

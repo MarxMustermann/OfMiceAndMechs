@@ -13,7 +13,6 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
         self.metaDescription = description
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
-
         if self.subQuests:
             return (None,None)
 
@@ -31,9 +30,9 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
                 for item in character.container.itemsByBigCoordinate.get(character.getBigPosition(),[]):
                     if item.bolted:
                         continue
-                    if item.type in ("Wall","Scrap",):
+                    if item.type in ("Wall","Scrap","MoldFeed","Bolt"):
                         continue
-                    quest = src.quests.questMap["LootRoom"](targetPosition=character.getBigPosition())
+                    quest = src.quests.questMap["LootRoom"](targetPosition=character.getBigPosition(),endWhenFull=True)
                     return ([quest],None)
 
         # ensure healing for the clones
@@ -185,12 +184,24 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
                 for position in [(8,6,0),(8,8,0)]:
                     if not foundCityPlaner.plannedRooms:
                         rooms = terrain.getRoomByPosition(position)
+                        if rooms:
+                            continue
                         quest = src.quests.questMap["ScheduleRoomBuilding"](roomPosition=position)
                         return ([quest],None)
 
-        if not character.getFreeInventorySpace():
-            quest = src.quests.questMap["ClearInventory"](returnToTile=False)
-            return ([quest],None)
+        for room in character.getTerrain().rooms:
+            for item in room.getItemsByType("SwordSharpener"):
+                if item.readyToBeUsedByCharacter(character,extraIncrease=1):
+                    quest1 = src.quests.questMap["SharpenPersonalSword"]()
+                    quest2 = src.quests.questMap["ClearInventory"](returnToTile=False)
+                    return ([quest2,quest1],None)
+
+        for room in character.getTerrain().rooms:
+            for item in room.getItemsByType("ArmorReinforcer"):
+                if item.readyToBeUsedByCharacter(character,extraIncrease=1):
+                    quest1 = src.quests.questMap["ReinforcePersonalArmor"]()
+                    quest2 = src.quests.questMap["ClearInventory"](returnToTile=False)
+                    return ([quest2,quest1],None)
 
         # check for spider lairs
         targets_found = []
@@ -293,9 +304,9 @@ Remember that the base provides you with important ressources and healing.
         if not self.active:
             return
 
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
@@ -304,7 +315,33 @@ Remember that the base provides you with important ressources and healing.
             if otherChar.faction == character.faction:
                 continue
             return False
+        for room in terrain.rooms:
+            for otherChar in room.characters:
+                if otherChar.faction == character.faction:
+                    continue
+                return False
 
-        self.postHandler()
+        if not dryRun:
+            self.postHandler()
+        return True
+
+    def handleQuestFailure(self,extraParam):
+        '''
+        handle a subquest failing
+        '''
+
+        super().handleQuestFailure(extraParam)
+
+        # set up helper variables
+        quest = extraParam.get("quest")
+        reason = extraParam.get("reason")
+
+        if reason:
+            if reason == "no tile path":
+                if quest.type == "SecureTile":
+                    newQuest = src.quests.questMap["ClearPathToTile"](targetPositionBig=quest.targetPosition, reason="be able to reach the enemy")
+                    self.addQuest(newQuest)
+                    self.startWatching(newQuest,self.handleQuestFailure,"failed")
+                    return
 
 src.quests.addType(StoryClearTerrain)

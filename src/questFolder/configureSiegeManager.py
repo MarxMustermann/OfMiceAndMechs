@@ -2,33 +2,43 @@ import src
 
 
 class ConfigureSiegeManager(src.quests.MetaQuestSequence):
+    '''
+    a quest to configure the siege manager with a typical configuration
+    '''
     type = "ConfigureSiegeManager"
-
     def __init__(self, description="configure siege manager", creator=None):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
+        '''
+        check if the quest can be considered completed and end the quest if is can be considered completed
+        '''
+
+        # abort on weird states
         if not character:
             return False
         
+        # get siege manager
         terrain = character.getTerrain()
         siegeManager = None
         for room in terrain.rooms:
             item = room.getItemByType("SiegeManager",needsBolted=True)
             if not item:
                 continue
-            
             siegeManager = item
 
+        # abort if no siege manager was found
         if not siegeManager:
             return False
 
+        # get the actions already scheduled
         existingActions = []
-        for actionDefintion in siegeManager.schedule.values():
-            existingActions.append(actionDefintion["type"])
+        for scheduledAction in siegeManager.getActionList():
+            existingActions.append(scheduledAction[2]["type"])
 
+        # check if the needed actions were scheduled
         if "restrict outside" not in existingActions:
             return False
         if "sound alarms" not in existingActions:
@@ -38,25 +48,35 @@ class ConfigureSiegeManager(src.quests.MetaQuestSequence):
         if "silence alarms" not in existingActions:
             return False
 
-        self.postHandler()
+        # end the quest
+        if not dryRun:
+            self.postHandler()
         return True
 
     def getNextStep(self,character,ignoreCommands=False,dryRun=True):
+        '''
+        calculate the next step to do to solve this quest
+        '''
+
+        # do nothing if there is a subquest
         if self.subQuests:
             return (None,None)
         
+        # get siege manager
         terrain = character.getTerrain()
         siegeManager = None
         for room in terrain.rooms:
             item = room.getItemByType("SiegeManager",needsBolted=True)
             if not item:
                 continue
-            
             siegeManager = item
 
+        # handle open menues
         submenue = character.macroState.get("submenue")
         if submenue:
-            if submenue.tag == None:
+
+            # open the scheduling menu
+            if submenue.tag == "applyOptionSelection":
                 menuEntry = "setSchedule"
                 counter = 1
                 for option in submenue.options.values():
@@ -72,26 +92,69 @@ class ConfigureSiegeManager(src.quests.MetaQuestSequence):
                 command += "j"
                 return (None,(command,"open the scheduling menu"))
 
+            # navigate the scheduling menu
             if submenue.tag == "configure siege manager main":
-                menuEntry = "add"
-                counter = 1
-                for option in submenue.options.values():
-                    if option == menuEntry:
-                        index = counter
-                        break
-                    counter += 1
-                command = ""
-                if submenue.selectionIndex > counter:
-                    command += "w"*(submenue.selectionIndex-counter)
-                if submenue.selectionIndex < counter:
-                    command += "s"*(counter-submenue.selectionIndex)
-                command += "j"
+                actionList = siegeManager.getActionList()
+                if actionList:
+
+                    # get the basic data
+                    scheduledAction = actionList[submenue.followUp["params"]["cursor"]]
+                    upperTarget = 2800
+                    lowerTarget = 1500
+                    tick = scheduledAction[1]
+                    command = None
+
+                    # determine where to move the cursor to
+                    target = None
+                    if scheduledAction[2]["type"] == "restrict outside":
+                        target = upperTarget
+                    if scheduledAction[2]["type"] == "sound alarms":
+                        target = upperTarget
+                    if scheduledAction[2]["type"] == "unrestrict outside":
+                        target = lowerTarget
+                    if scheduledAction[2]["type"] == "silence alarms":
+                        target = lowerTarget
+
+                    # get keystrokes to move slider to the right place
+                    if target:
+                        if tick <= target-250:
+                            jommand = "D"
+                            description = "move the event left 250 ticks"
+                        elif tick <= target-100:
+                            command = "E"
+                            description = "move the event left 100 ticks"
+                        elif tick <= target-10:
+                            command = "e"
+                            description = "move the event left 10 ticks"
+                        elif tick <= target-1:
+                            command = "d"
+                            description = "move the event left 1 ticks"
+                        if tick >= target+250:
+                            command = "A"
+                            description = "move the event right 250 ticks"
+                        elif tick >= target+100:
+                            command = "Q"
+                            description = "move the event right 100 ticks"
+                        elif tick >= target+10:
+                            command = "q"
+                            description = "move the event right 10 ticks"
+                        elif tick >= target+1:
+                            command = "a"
+                            description = "move the event right 1 ticks"
+
+                    # run the keystrokes to move slider to the right place
+                    if command:
+                        return (None,(command,description))
+
+                # open the menu to schedule a new action
+                command = "c"
                 return (None,(command,"add a new action"))
 
+            # select the action to configure
             if submenue.tag == "configure siege manager task selection":
                 existingActions = []
-                for actionDefintion in siegeManager.schedule.values():
-                    existingActions.append(actionDefintion["type"])
+                for scheduledAction in siegeManager.getActionList():
+                    existingActions.append(scheduledAction[2]["type"])
 
                 desiredActions = ["restrict outside","sound alarms","unrestrict outside","silence alarms"]
 
@@ -115,45 +178,25 @@ class ConfigureSiegeManager(src.quests.MetaQuestSequence):
                     command += "s"*(counter-submenue.selectionIndex)
                 command += "j"
                 return (None,(command,"add "+toSelect+" action"))
-            if submenue.tag == "configure siege manager time selection":
-                targetValue = 0
-                if submenue.followUp["params"].get("actionType") == "restrict outside":
-                    targetValue = 2800
-                if submenue.followUp["params"].get("actionType") == "sound alarms":
-                    targetValue = 2801
-                if submenue.followUp["params"].get("actionType") == "unrestrict outside":
-                    targetValue = 1500
-                if submenue.followUp["params"].get("actionType") == "silence alarms":
-                    targetValue = 1501
-                
-                if submenue.value <= targetValue-100:
-                    return (None,( "D",f"move the slider to tick {targetValue}"))
-                if submenue.value <= targetValue-10:
-                    return (None,( "d",f"move the slider to tick {targetValue}"))
-                if submenue.value <= targetValue-1:
-                    return (None,( ["right"],f"move the slider to tick {targetValue}"))
-                if submenue.value >= targetValue+100:
-                    return (None,( "A",f"move the slider to tick {targetValue}"))
-                if submenue.value >= targetValue+10:
-                    return (None,( "a",f"move the slider to tick {targetValue}"))
-                if submenue.value >= targetValue+1:
-                    return (None,( ["left"],f"move the slider to tick {targetValue}"))
-                return (None,( ["enter"],"actually schedule the action"))
+
+            # close generic menues
             return (None,(["esc"],"to close menu"))
 
+        # do nothing if no siege manager was found
         if not siegeManager:
-            if not dryRun:
-                self.fail("no siege manager")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"no siege manager")
 
+        # go to the tile the siege manager is on
         if character.getBigPosition() != siegeManager.container.getPosition():
             quest = src.quests.questMap["GoToTile"](targetPosition=siegeManager.container.getPosition(),description="go to the command centre",reason="to reach the SiegeManager")
             return ([quest],None)
 
+        # go to the siege manager
         if character.getDistance(siegeManager.getPosition()) > 1:
             quest = src.quests.questMap["GoToPosition"](targetPosition=siegeManager.getPosition(),ignoreEndBlocked=True,description="go to the SiegeManager",reason="to be able to activate the SiegeManager")
             return ([quest],None)
         
+        # get the direction the siege manager is in
         target_pos = siegeManager.getPosition()
         pos = character.getPosition()
         direction = "."
@@ -166,16 +209,53 @@ class ConfigureSiegeManager(src.quests.MetaQuestSequence):
         if (pos[0],pos[1]+1,pos[2]) == target_pos:
             direction = "s"
 
+        # generate the actual command to start using the siege manager
         interactionCommand = "J"
         if "advancedInteraction" in character.interactionState:
             interactionCommand = ""
         return (None,(interactionCommand+direction+"sssssj","open the configuration menu"))
 
     def generateTextDescription(self):
+        '''
+        generate text description
+        '''
         text = ["""
-configure the siege manager
+Waves of enemies appear at the start of each epoch.
+Handling those repeating waves can be automated.
+
+The siege manager allows to do actions at certain points in time.
+
+For example the alarms can always be rang 1000 ticks before the epoch ends.
+That should ensure all Clones are safe when the waves comes ate the end of the epoch.
+The alarms can automatically turned off 1000 ticks into the epoch.
+At that point the wave should be dead and the NPC are safe to go outside.
+
+Configure the siege manager to defend against the waves.
+You can set any trigger times for the actions as long the actions scheduled.
 """]
         return text
 
+    def getQuestMarkersSmall(self,character,renderForTile=False):
+        '''
+        return the quest markers for the normal map
+        '''
+        if isinstance(character.container,src.rooms.Room):
+            if renderForTile:
+                return []
+        else:
+            if not renderForTile:
+                return []
 
+        result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
+        if not renderForTile:
+            if isinstance(character.container,src.rooms.Room):
+                for item in character.container.itemsOnFloor:
+                    if not item.type == "SiegeManager":
+                        continue
+                    if not item.bolted:
+                        continue
+                    result.append((item.getPosition(),"target"))
+        return result
+
+# register the quest
 src.quests.addType(ConfigureSiegeManager)

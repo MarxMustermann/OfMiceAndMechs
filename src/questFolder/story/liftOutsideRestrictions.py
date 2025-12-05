@@ -20,13 +20,14 @@ class LiftOutsideRestrictions(src.quests.MetaQuestSequence):
 
         return super().assignToCharacter(character)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
         terrain = character.getTerrain()
         if not terrain.alarm:
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
         
         return False
@@ -73,9 +74,7 @@ class LiftOutsideRestrictions(src.quests.MetaQuestSequence):
             siegeManager = item
 
         if not siegeManager:
-            if not dryRun:
-                self.fail("no siege manager")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"no siege manager")
 
         if character.getBigPosition() != siegeManager.container.getPosition():
             quest = src.quests.questMap["GoToTile"](targetPosition=siegeManager.container.getPosition(),description="go to the command centre",reason="to reach the SiegeManager")
@@ -114,5 +113,26 @@ Once you do that, your clone will start to gather scrap and to produce items.
 """]
         return text
 
+    def getQuestMarkersSmall(self,character,renderForTile=False):
+        '''
+        return the quest markers for the normal map
+        '''
+        if isinstance(character.container,src.rooms.Room):
+            if renderForTile:
+                return []
+        else:
+            if not renderForTile:
+                return []
+
+        result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
+        if not renderForTile:
+            if isinstance(character.container,src.rooms.Room):
+                for item in character.container.itemsOnFloor:
+                    if not item.type == "SiegeManager":
+                        continue
+                    if not item.bolted:
+                        continue
+                    result.append((item.getPosition(),"target"))
+        return result
 
 src.quests.addType(LiftOutsideRestrictions)

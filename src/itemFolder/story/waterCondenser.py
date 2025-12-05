@@ -86,7 +86,7 @@ class WaterCondenser(src.items.Item):
                         f"you insert a rod into the water condenser increasing its output to {self.rods + 1 + 5} per 100 ticks"
                     )
                     self.rods += 1
-                    self.character.inventory.remove(item)
+                    self.character.removeItemFromInventory(item)
                     self.lastUsage = src.gamestate.gamestate.tick
                     return
             self.character.addMessage("you have no rods in your inventory")

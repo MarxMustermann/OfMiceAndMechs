@@ -197,7 +197,7 @@ There is {self.amount} in this pile
                 character.addMessage(
                     f"you add a piece of scrap there pile contains {self.amount} scrap now."
                 )
-                character.inventory.remove(item)
+                character.removeItemFromInventory(item)
                 character.changed("dropped",(character,self))
 
         if self.container:

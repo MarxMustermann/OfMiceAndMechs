@@ -37,11 +37,7 @@ class SettingMenu(src.subMenu.SubMenu):
                         src.interaction.changeVolume()
                     case "toggle fullscreen":
                         src.interaction.settings["fullscreen"] = not src.interaction.settings["fullscreen"]
-                        import tcod
-                        tcod.lib.SDL_SetWindowFullscreen(
-                            src.interaction.tcodContext.sdl_window_p,
-                            tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP if src.interaction.settings["fullscreen"] else 0,
-                        )
+                        src.interaction.sdl_window.fullscreen = not src.interaction.sdl_window.fullscreen
                     case "auto save":
                         src.interaction.settings["auto save"] = not src.interaction.settings.get("auto save",False)
 

@@ -70,8 +70,7 @@ If you don't find a {self.itemType} machine needed, build it.
                         break
 
                 if not foundRoom:
-                    self.fail("missing machine ScrapCompactor")
-                    return None
+                    return self._solver_trigger_fail(dryRun,"missing machine ScrapCompactor")
 
                 if character.getBigPosition() != room.getPosition():
                     quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition())
@@ -196,11 +195,10 @@ If you don't find a {self.itemType} machine needed, build it.
                 self.startWatching(quest,self.unhandledSubQuestFail,"failed")
                 return ([quest], None)
 
-            self.fail("no machine for "+self.itemType)
-            return (None,None)
-        return (None,None)
+            return self._solver_trigger_fail(dryRun,"no machine for "+self.itemType)
+        return (None,(".","stand around confused"))
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         return False
 
 src.quests.addType(ProduceItem)

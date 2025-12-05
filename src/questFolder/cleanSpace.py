@@ -2,6 +2,19 @@ import src
 import random
 
 class CleanSpace(src.quests.MetaQuestSequence):
+    '''
+    quest to clean up a specific spot
+
+    Params:
+        description: the description to be shown in the UI
+        creator: the entity creating this object. (obsolete?)
+        targetPositionBig: the position of the room the spot is in
+        targetPosition: the position of the spot to clear
+        reason: the reason fore assigning the quest to be shown in the UI
+        abortOnfullInventory: stop when character ha a full inventory
+        pickUpBolted: pick up items that are bolted down
+        tryHard: try to complete the quest in any way possible
+    '''
     type = "CleanSpace"
 
     def __init__(self, description="clean space", creator=None, targetPositionBig=None, targetPosition=None, reason=None, abortOnfullInventory=True,pickUpBolted=False,tryHard=False):
@@ -18,6 +31,9 @@ class CleanSpace(src.quests.MetaQuestSequence):
         self.tryHard = tryHard
 
     def generateTextDescription(self):
+        '''
+        generate a text description
+        '''
         reason = ""
         if self.reason:
             reason = f",\nto {self.reason}"
@@ -27,9 +43,15 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
         return text
 
     def unhandledSubQuestFail(self,extraParam):
+        '''
+        fail recursively
+        '''
         self.fail(extraParam["reason"])
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
+        '''
+        check if the quest is completed and end it
+        '''
         if not character:
             return False
         terrain = character.getTerrain()
@@ -48,6 +70,9 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
         return None
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
+        '''
+        generate the next step towards solving the quest
+        '''
         if self.subQuests:
             return (None,None)
 
@@ -63,7 +88,7 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
             if self.abortOnfullInventory:
                 if not dryRun:
                     self.fail("full inventory")
-                return (None,None)
+                return (None,("+","abort quest"))
             quest = src.quests.questMap["ClearInventory"](reason="be able to pick up more items",returnToTile=False)
             return ([quest],None)
 
@@ -77,13 +102,13 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
             if not items or ((not self.pickUpBolted) and items[0].bolted):
                 if not dryRun:
                     self.postHandler()
-                return (None,None)
+                return (None,("+","end quest"))
         else:
             items = terrain.getItemByPosition((self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0))
             if not items or ((not self.pickUpBolted) and items[0].bolted):
                 if not dryRun:
                     self.postHandler()
-                return (None,None)
+                return (None,("+","end quest"))
 
         if character.container.isRoom:
             if character.getDistance(self.targetPosition) > 1:
@@ -115,12 +140,18 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
                         interactionCommand = ""
                     return (None, (interactionCommand+direction,"pick up item"))
 
-        return (None,None)
+        return (None,(".","stand around confused"))
 
     def pickedUpItem(self,extraInfo):
-        self.triggerCompletionCheck(extraInfo[0])
+        '''
+        check if quest is completed 
+        '''
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
     def assignToCharacter(self, character):
+        '''
+        assign the quest to a character
+        '''
         if self.character:
             return None
 
@@ -128,11 +159,17 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
         return super().assignToCharacter(character)
 
     def getQuestMarkersTile(self,character):
+        '''
+        return the quest markers for the minimap
+        '''
         result = super().getQuestMarkersTile(character)
         result.append(((self.targetPositionBig[0],self.targetPositionBig[1]),"target"))
         return result
 
     def getQuestMarkersSmall(self,character,renderForTile=False):
+        '''
+        return the quest markers for the normal map
+        '''
         if isinstance(character.container,src.rooms.Room):
             if renderForTile:
                 return []
@@ -150,8 +187,11 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
 
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
+        '''
+        generate the quest to complete a duty
+        '''
         if len(character.inventory):
-            quest = src.quests.questMap["ClearInventory"]()
+            quest = src.quests.questMap["ClearInventory"](reason="have space to pick up items (duty: clean)")
             if not dryRun:
                 beUsefull.idleCounter = 0
             return ([quest],None)
@@ -175,10 +215,10 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
                         continue
 
                     if character.getFreeInventorySpace() <= 0:
-                        quest = src.quests.questMap["ClearInventory"]()
+                        quest = src.quests.questMap["ClearInventory"](reason="have space to pick up items (duty: clean)")
                         beUsefull.idleCounter = 0
                         return ([quest],None)
-                    quest = src.quests.questMap["ClearTile"](targetPosition=room.getPosition())
+                    quest = src.quests.questMap["ClearTile"](targetPosition=room.getPosition(),reason="tidy up the room (duty: clean)")
                     if not dryRun:
                         beUsefull.idleCounter = 0
                     return ([quest],None)
@@ -209,13 +249,17 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
                 if not misplacmentFound:
                     continue
 
-                quest = src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=slot[0])
+                quest = src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=slot[0], reason="tidy up the spot (duty: clean)")
                 if not dryRun:
                     beUsefull.idleCounter = 0
                 return ([quest],None)
         return (None,None)
 
     def handleQuestFailure(self, extraParam):
+        '''
+        fail recursively
+        '''
         self.fail()
 
+# reister the quest
 src.quests.addType(CleanSpace)

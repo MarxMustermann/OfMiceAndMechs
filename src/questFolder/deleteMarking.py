@@ -3,6 +3,7 @@ import src
 
 class DeleteMarking(src.quests.MetaQuestSequence):
     type = "DeleteMarking"
+    lowLevel = True
 
     def __init__(self, description="delete marking", creator=None, targetPosition=None, targetPositionBig=None,tryHard=False,reason=None):
         questList = []
@@ -15,7 +16,7 @@ class DeleteMarking(src.quests.MetaQuestSequence):
 
         self.metaDescription = description
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return None
 
@@ -23,7 +24,8 @@ class DeleteMarking(src.quests.MetaQuestSequence):
 
         checkRoom = terrain.getRoomByPosition(self.targetPositionBig)[0]
         if not checkRoom.getPaintedByPosition(self.targetPosition):
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
         return None
 
@@ -31,9 +33,7 @@ class DeleteMarking(src.quests.MetaQuestSequence):
         if not self.subQuests:
             rooms = character.getTerrain().getRoomByPosition(self.targetPositionBig)
             if not rooms:
-                if not dryRun:
-                    self.fail("target room missing")
-                return (None,None)
+                return self._solver_trigger_fail(dryRun,"target room missing")
             room = rooms[0]
 
             if character.getBigPosition() != self.targetPositionBig:
@@ -108,7 +108,7 @@ class DeleteMarking(src.quests.MetaQuestSequence):
             else:
                 return (None,("il"+"s"*painterIndex+"j","drop the Painter"))
 
-        return (None,None)
+        return (None,(".","stand around confused"))
 
     def handleDeletedMarking(self,extraInfo):
         if not self.active:
@@ -116,7 +116,7 @@ class DeleteMarking(src.quests.MetaQuestSequence):
         if self.completed:
             1/0
 
-        self.triggerCompletionCheck(self.character)
+        self.triggerCompletionCheck(self.character,dryRun=False)
 
     def assignToCharacter(self, character):
         if self.character:

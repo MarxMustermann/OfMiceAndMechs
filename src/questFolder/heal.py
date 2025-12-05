@@ -3,6 +3,7 @@ import random
 
 class Heal(src.quests.MetaQuestSequence):
     type = "Heal"
+    lowLevel = True
 
     def __init__(self, description="heal",noWaitHeal=False,noVialHeal=False):
         super().__init__()
@@ -101,25 +102,45 @@ Press JH to auto heal.
 
         if not self.noWaitHeal:
             if character.container.isRoom and character.container.tag == "temple":
-                return (None,("..........","wait to heal"))
+                regenerator = character.container.getItemByType("Regenerator",needsBolted=True)
+                if regenerator and regenerator.mana_charges:
+                    direction = None
+                    if character.getPosition(offset=(1,0,0)) == regenerator.getPosition():
+                        direction = "d"
+                    if character.getPosition(offset=(-1,0,0)) == regenerator.getPosition():
+                        direction = "a"
+                    if character.getPosition(offset=(0,1,0)) == regenerator.getPosition():
+                        direction = "s"
+                    if character.getPosition(offset=(0,-1,0)) == regenerator.getPosition():
+                        direction = "w"
+
+                    if direction:
+                        interactionCommand = "J"
+                        if "advancedInteraction" in character.interactionState:
+                            interactionCommand = ""
+                        return (None,(interactionCommand+direction,"activate the regenerator"))
+                    else:
+                        quest = src.quests.questMap["GoToPosition"](targetPosition=regenerator.getPosition(),ignoreEndBlocked=True)
+                        return ([quest],None)
+                else:
+                    return (None,("..........","wait to heal"))
 
             for room in rooms:
                 if room.tag == "temple":
                     quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition())
                     return ([quest],None)
 
-        if dryRun:
-            self.fail("no way to heal")
-        return (None,None)
+        return self._solver_trigger_fail(dryRun,"no way to heal")
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
-        if character.health < character.maxHealth:
+        if character.health < character.adjustedMaxHealth:
             return False
 
-        self.postHandler()
+        if not dryRun:
+            self.postHandler()
         return True
 
 
@@ -136,6 +157,29 @@ Press JH to auto heal.
         if not self.active:
             return
     
-        self.triggerCompletionCheck(self.character)
+        self.triggerCompletionCheck(self.character,dryRun=False)
+
+    def getQuestMarkersSmall(self,character,renderForTile=False):
+        '''
+        return the quest markers for the normal map
+        '''
+        if isinstance(character.container,src.rooms.Room):
+            if renderForTile:
+                return []
+        else:
+            if not renderForTile:
+                return []
+
+        result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
+        if not renderForTile:
+            if isinstance(character.container,src.rooms.Room):
+                room = character.container
+                items = room.getItemsByType("CoalBurner",needsBolted=True)
+                foundBurners = []
+                for item in items:
+                    if not item.getMoldFeed(character):
+                        continue
+                    result.append((item.getPosition(),"target"))
+        return result
 
 src.quests.addType(Heal)

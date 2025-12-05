@@ -42,7 +42,7 @@ class Manufacture(src.quests.MetaQuestSequence):
 use the manufacturing table on {self.targetPosition}{reason}.
 """
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
@@ -50,12 +50,14 @@ use the manufacturing table on {self.targetPosition}{reason}.
             return False
 
         if not character.container.isRoom:
-            self.fail()
+            if not dryRun:
+                self.fail()
             return True
 
         items = character.container.getItemByPosition(self.targetPosition)
         if not items or items[0].type not in ("ManufacturingTable",):
-            self.fail()
+            if not dryRun:
+                self.fail()
             return True
 
         return False
@@ -83,7 +85,7 @@ use the manufacturing table on {self.targetPosition}{reason}.
             return (None,("Jwj","manufacture item"))
         if (pos[0],pos[1]+1,pos[2]) == self.targetPosition:
             return (None,("Jsj","manufacture item"))
-        return None
+        return (None,(".","stand around confused"))
 
     def getQuestMarkersTile(self,character):
         result = super().getQuestMarkersTile(character)
@@ -113,6 +115,7 @@ use the manufacturing table on {self.targetPosition}{reason}.
         for checkRoom in beUsefull.getRandomPriotisedRooms(character,currentRoom):
             items = checkRoom.itemsOnFloor[:]
             random.shuffle(items)
+            candidates = []
             for item in items:
                 if not item.bolted:
                     continue
@@ -123,16 +126,28 @@ use the manufacturing table on {self.targetPosition}{reason}.
                 if not item.isOutputEmpty():
                     continue
 
-                if checkRoom == character.container:
-                    quest = src.quests.questMap["Manufacture"](targetPosition=item.getPosition())
-                    if not dryRun:
-                        beUsefull.idleCounter = 0
-                    return ([quest],None)
-                else:
-                    quest = src.quests.questMap["GoToTile"](targetPosition=checkRoom.getPosition(),reason="go to a machine room")
-                    if not dryRun:
-                        beUsefull.idleCounter = 0
-                    return ([quest],None)
+                candidates.append(item)
+
+            if not candidates:
+                continue
+
+            bestCandidate = candidates[0]
+            for candidate in candidates:
+                if candidate.priority <= bestCandidate.priority:
+                    continue
+                bestCandidate = candidate
+
+            if checkRoom == character.container:
+                quest = src.quests.questMap["Manufacture"](targetPosition=bestCandidate.getPosition())
+                if not dryRun:
+                    beUsefull.idleCounter = 0
+                return ([quest],None)
+            else:
+                quest = src.quests.questMap["GoToTile"](targetPosition=checkRoom.getPosition(),reason="go to a machine room")
+                if not dryRun:
+                    beUsefull.idleCounter = 0
+                return ([quest],None)
+
         for checkRoom in beUsefull.getRandomPriotisedRooms(character,currentRoom):
             items = checkRoom.itemsOnFloor[:]
             random.shuffle(items)
@@ -144,16 +159,27 @@ use the manufacturing table on {self.targetPosition}{reason}.
                 if not item.readyToUse():
                     continue
 
-                if checkRoom == character.container:
-                    quest = src.quests.questMap["Manufacture"](targetPosition=item.getPosition())
-                    if not dryRun:
-                        beUsefull.idleCounter = 0
-                    return ([quest],None)
-                else:
-                    quest = src.quests.questMap["GoToTile"](targetPosition=checkRoom.getPosition(),reason="go to a machine room")
-                    if not dryRun:
-                        beUsefull.idleCounter = 0
-                    return ([quest],None)
+                candidates.append(item)
+
+            if not candidates:
+                continue
+
+            bestCandidate = candidates[0]
+            for candidate in candidates:
+                if candidate.priority <= bestCandidate.priority:
+                    continue
+                bestCandidate = candidate
+
+            if checkRoom == character.container:
+                quest = src.quests.questMap["Manufacture"](targetPosition=bestCandidate.getPosition())
+                if not dryRun:
+                    beUsefull.idleCounter = 0
+                return ([quest],None)
+            else:
+                quest = src.quests.questMap["GoToTile"](targetPosition=checkRoom.getPosition(),reason="go to a machine room")
+                if not dryRun:
+                    beUsefull.idleCounter = 0
+                return ([quest],None)
         return (None,None)    
 
 

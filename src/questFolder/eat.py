@@ -5,6 +5,7 @@ import src
 
 class Eat(src.quests.MetaQuestSequence):
     type = "Eat"
+    lowLevel = True
 
     def __init__(self, description="eat", creator=None, command=None, lifetime=None):
         questList = []
@@ -17,7 +18,7 @@ class Eat(src.quests.MetaQuestSequence):
         if not self.active:
             return
 
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
     def handleMoved(self,extraInfo=None):
         self.subQuestCompleted()
@@ -29,14 +30,16 @@ class Eat(src.quests.MetaQuestSequence):
         self.startWatching(character,self.handleMoved, "moved")
         super().assignToCharacter(character)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
-            return
+            return False
 
         if character.satiation > 800:
-            self.postHandler()
-            return
-        return
+            if not dryRun:
+                self.postHandler()
+            return True
+
+        return False
 
     def clearCompletedSubquest(self):
         while self.subQuests and self.subQuests[0].completed:
@@ -118,8 +121,8 @@ class Eat(src.quests.MetaQuestSequence):
                     description = "go to forest"
                     quest = src.quests.questMap["GoToTile"](targetPosition=forest,description=description)
                     return ([quest],None)                
-                self.fail(reason="no source for food")
-                return (None,None)
+
+                return self._solver_trigger_fail(dryRun,"no source for food")
 
             description="go to food source "
 
@@ -144,6 +147,7 @@ class Eat(src.quests.MetaQuestSequence):
         
         quest = src.quests.questMap["GoToPosition"](targetPosition=sourceSlots[0][0],description="go to "+itemType,ignoreEndBlocked=True)
         return ([quest],None)
+
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
         if character.satiation < 200:
@@ -151,4 +155,5 @@ class Eat(src.quests.MetaQuestSequence):
                 beUsefull.idleCounter = 0
             return ([src.quests.questMap["Eat"]()],None)
         return (None,None)
+
 src.quests.addType(Eat)

@@ -34,7 +34,7 @@ class ViewNPCsMenu(src.subMenu.SubMenu):
             return None
 
         if key in (".",):
-            character.timeTaken += 1
+            character.takeTime(1,"waiting")
 
         if key in ("w","a","up","left"):
             if self.index > 0:

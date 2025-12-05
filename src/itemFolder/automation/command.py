@@ -1,4 +1,5 @@
 import src
+import src.menuFolder.oneKeystrokeMenu
 
 
 class Command(src.items.Item):
@@ -35,6 +36,15 @@ class Command(src.items.Item):
         """
 
         if isinstance(character, src.characters.characterMap["Monster"]):
+                return
+
+        character.macroState["submenue"] = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu("press j to confirm the activation of the commands")
+        character.macroState["submenue"].followUp = {"container":self,"method":"activate","params":{"character":character}}
+
+    def activate(self,params):
+        character = params["character"]
+
+        if params["keyPressed"] != "j":
             return
 
         if self.level == 1:
@@ -123,7 +133,7 @@ class Command(src.items.Item):
         """
 
         if self.repeat:
-            character.runCommandString("j")
+            character.runCommandString("jj")
         character.runCommandString(self.command)
 
     def setPayload(self, command):

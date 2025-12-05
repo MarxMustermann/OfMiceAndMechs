@@ -42,9 +42,9 @@ Remove all items that are not bolted down."""
         super().assignToCharacter(character)
 
     def wrapedTriggerCompletionCheck(self,extraInfo=None):
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
 
         if not character:
             return False
@@ -52,12 +52,14 @@ Remove all items that are not bolted down."""
         if character.getBigPosition() != (self.targetPosition[0], self.targetPosition[1], 0):
             return False
 
-        if self.endWhenFull and character.getFreeInventorySpace() == 0:
-            self.postHandler()
+        if self.endWhenFull and character.getFreeInventorySpace(ignoreTypes=["Bolt"]) == 0:
+            if not dryRun:
+                self.postHandler()
             return True
         
         if not self.getLeftoverItems(character):
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
 
         return False
@@ -75,11 +77,33 @@ Remove all items that are not bolted down."""
         if not character:
             return (None,None)
 
+        if not ignoreCommands:
+            submenue = character.macroState.get("submenue")
+
+            if submenue:
+                if isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu) and character.getFreeInventorySpace() <= 1:
+                    targetIndex = 0
+                    for item in character.inventory:
+                        if item.type == "Bolt":
+                            break
+                        targetIndex += 1
+
+                    if targetIndex >= len(character.inventory):
+                        return (None,(["esc"],"exit the menu"))
+
+                    inventoryCommand = ""
+                    inventoryCommand += "s"*(targetIndex-submenue.cursor)
+                    inventoryCommand += "w"*(submenue.cursor-targetIndex)
+                    inventoryCommand += "l"
+                    return (None,(inventoryCommand,"drop the item"))
+
+                return (None,(["esc"],"exit the menu"))
+
         if character.getNearbyEnemies():
             quest = src.quests.questMap["Fight"]()
             return ([quest],None)
 
-        if not character.getFreeInventorySpace() > 0:
+        if not character.getFreeInventorySpace(ignoreTypes=["Bolt"]) > 0:
             quest = src.quests.questMap["ClearInventory"](reason="have inventory space to pick up more items",returnToTile=False)
             return ([quest],None)
         if not isinstance(character.container,src.rooms.Room):
@@ -112,7 +136,7 @@ Remove all items that are not bolted down."""
 
             foundValuableItem = False
             for item in items:
-                if item.type in ("Scrap","MetalBars"):
+                if item.type in ("Scrap","MetalBars","MoldFeed",):
                     continue
                 if item.walkable == False:
                     continue
@@ -130,18 +154,80 @@ Remove all items that are not bolted down."""
             if invalidStack:
                 continue
 
-            foundOffset = offset
-
             foundItems = []
             for item in items:
+                if item.type in ("Scrap","MetalBars","MoldFeed",):
+                    continue
                 if item.bolted:
                     break
+                if item.type == "Bolt" and character.getFreeInventorySpace() <= 1:
+                    continue
                 foundItems.append(item)
-            break
+
+            if foundItems:
+                foundOffset = offset
+                break
+
+        if not character.getFreeInventorySpace() > 0:
+            dropCommand = "l"
+
+            isValidDropSpot = True
+            items = character.container.getItemByPosition(character.getPosition())
+            if len(items) > 15:
+                isValidDropSpot = False
+            for item in items:
+                if not item.walkable:
+                    isValidDropSpot = False
+                    break
+                if item.type in ("Scrap","MetalBars","MoldFeed",):
+                    continue
+                if item.type in ["Bolt"]:
+                    continue
+                isValidDropSpot = False
+                break
+            if not isValidDropSpot:
+                offsets = [(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]
+                random.shuffle(offsets)
+                for offset in offsets:
+                    isValidDropSpot = True
+                    items = character.container.getItemByPosition(character.getPosition())
+                    if len(items) > 15:
+                        isValidDropSpot = False
+                    for item in items:
+                        if not item.walkable:
+                            isValidDropSpot = False
+                            break
+                    
+                    if isValidDropSpot:
+                        dropCommand = "L"
+                        match offset:
+                            case (1,0,0):
+                                dropCommand += "d"
+                            case (-1,0,0):
+                                dropCommand += "a"
+                            case (0,1,0):
+                                dropCommand += "s"
+                            case (0,-1,0):
+                                dropCommand += "w"
+
+            if character.inventory[-1].type == "Bolt":
+                return (None,(dropCommand,"drop item"))
+
+            index = 0
+            for item in character.inventory:
+                if item.type in ["Bolt"]:
+                    break
+                index += 1
+            else:
+                abort_reason = "no item type to drop"
+                if not dryRun:
+                    self.fail(abort_reason)
+                return (None,("+","abort quest\n("+abort_reason+")"))
+            return (None,("i"+"s"*index+dropCommand,"drop item"))
 
         if foundOffset:
             if foundOffset == (0,0,0):
-                command = "k"
+                command = "k"*len(foundItems)
             elif foundOffset == (1,0,0):
                 command = "Kd"
             elif foundOffset == (-1,0,0):
@@ -151,7 +237,16 @@ Remove all items that are not bolted down."""
             elif foundOffset == (0,-1,0):
                 command = "Kw"
 
-            return (None,(command*len(foundItems),"clear spot"))
+            if len(items) > 1 and command[0] == "K":
+                hasAvoidItem = False 
+                for item in items:
+                    if not item.type in ("Scrap","MetalBars","MoldFeed",):
+                        continue
+                    hasAvoidItem = True
+                if not hasAvoidItem:
+                    command = command.upper()
+
+            return (None,(command,"clear spot"))
 
         items = self.getLeftoverItems(character)
         random.shuffle(items)
@@ -167,11 +262,13 @@ Remove all items that are not bolted down."""
                 continue
             if item.walkable == False:
                 continue
+            if item.type in ["Bolt"] and character.getFreeInventorySpace() <= 1:
+                continue
 
             quest = src.quests.questMap["GoToPosition"](targetPosition=item_pos,ignoreEndBlocked=True)
             return ([quest],None)
 
-        return (None,None)
+        return self._solver_trigger_fail(dryRun,"unknown reason")
 
     def getLeftoverItems(self,character):
 
@@ -187,6 +284,8 @@ Remove all items that are not bolted down."""
             room = None
             if rooms:
                 room = rooms[0]
+            else:
+                return []
 
             if room.floorPlan:
                 return []
@@ -207,7 +306,11 @@ Remove all items that are not bolted down."""
                 continue
             if item_pos[0] > 13:
                 continue
-            if item.type in ("Scrap","MetalBars"):
+            if character.container.isRoom and (item_pos[0] > 11 or item_pos[1] > 11 or item_pos[0] < 1 or item_pos[1] < 1):
+                continue
+            if item.type in ("Scrap","MetalBars","MoldFeed",):
+                continue
+            if item.type == "Bolt" and character.getFreeInventorySpace() <= 1:
                 continue
             if item.walkable == False:
                 continue
@@ -225,6 +328,25 @@ Remove all items that are not bolted down."""
             foundItems.append(item)
 
         return foundItems
+
+    def getQuestMarkersSmall(self,character,renderForTile=False):
+        '''
+        return the quest markers for the normal map
+        '''
+        if isinstance(character.container,src.rooms.Room):
+            if renderForTile:
+                return []
+        else:
+            if not renderForTile:
+                return []
+
+        result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
+        if not renderForTile:
+            if isinstance(character.container,src.rooms.Room):
+                if not character.getNearbyEnemies():
+                    for item in self.getLeftoverItems(character):
+                        result.append((item.getPosition(),"target"))
+        return result
     
     def handleQuestFailure(self,extraInfo):
         if extraInfo["reason"] == "no path found":
@@ -233,5 +355,10 @@ Remove all items that are not bolted down."""
             self.startWatching(newQuest,self.handleQuestFailure,"failed")
             return
         self.fail(extraInfo["reason"])
+
+    def getRequiredParameters(self):
+        parameters = super().getRequiredParameters()
+        parameters.append({"name":"targetPosition","type":"coordinate"})
+        return parameters
 
 src.quests.addType(LootRoom)

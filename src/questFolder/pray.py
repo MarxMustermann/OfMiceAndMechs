@@ -38,7 +38,7 @@ class Pray(src.quests.MetaQuestSequence):
 pray on {self.targetPosition}{reason}.
 """
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
@@ -46,7 +46,8 @@ pray on {self.targetPosition}{reason}.
             return False
 
         if not character.container.isRoom:
-            self.fail()
+            if not dryRun:
+                self.fail()
             return True
 
         return False
@@ -116,7 +117,7 @@ pray on {self.targetPosition}{reason}.
             return (None,(interactionCommand+"w"+activationCommand,description))
         if (pos[0],pos[1]+1,pos[2]) == self.targetPosition:
             return (None,(interactionCommand+"s"+activationCommand,description))
-        return None
+        return (None,(".","stand around confused"))
 
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
@@ -138,6 +139,7 @@ pray on {self.targetPosition}{reason}.
                 beUsefull.idleCounter = 0
             return ([quest],None)
 
+        """
         for checkRoom in beUsefull.getRandomPriotisedRooms(character,currentRoom):
             shrines = checkRoom.getItemsByType("Shrine")
             foundShrine = None
@@ -153,6 +155,7 @@ pray on {self.targetPosition}{reason}.
             if not dryRun:
                 beUsefull.idleCounter = 0
             return ([quest],None)
+        """
         return (None,None)
 
 src.quests.addType(Pray)

@@ -39,12 +39,11 @@ class ResetFaction(src.quests.MetaQuestSequence):
             return ([quest],None)
 
         if not character.container.isRoom:
-            return (None,None)
+            return (None,(".","stand around confused"))
 
         factionSetter = character.container.getItemByType("FactionSetter")
         if not factionSetter:
-            self.fail(reason="no faction setter found")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"no faction setter found")
 
         itemPos = factionSetter.getPosition()
         if character.getDistance(itemPos) > 1:
@@ -87,21 +86,23 @@ Use it to reset your faction marker.
         self.startWatching(character,self.wrapedTriggerCompletionCheck, "set faction")
         super().assignToCharacter(character)
 
-    def wrapedTriggerCompletionCheck(self):
+    def wrapedTriggerCompletionCheck(self, extraInfo):
         if self.completed:
             1/0
         if not self.active:
             return
 
-        self.triggerCompletionCheck(self.character)
+        self.triggerCompletionCheck(self.character,dryRun=False)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
         if not character.faction == "city #1":
             return False
 
-        self.postHandler()
+        if not dryRun:
+            self.postHandler()
+        return True
 
 src.quests.addType(ResetFaction)

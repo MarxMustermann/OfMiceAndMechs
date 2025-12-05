@@ -89,6 +89,8 @@ class TerrainMenu(src.subMenu.SubMenu):
                 rawMap[pos[1]][pos[0]] = (src.interaction.urwid.AttrSpec("#550", "black"), ".`")
             elif info["tag"] == "shrine":
                 color = "#999"
+                if info.get("looted"):
+                    color = "#752"
                 rawMap[pos[1]][pos[0]] = (src.interaction.urwid.AttrSpec(color, "black"), "\\/")
             elif info["tag"] == "ruin":
                 color = "#666"
@@ -105,12 +107,22 @@ class TerrainMenu(src.subMenu.SubMenu):
                         if god["lastHeartPos"][0] == pos[0] and god["lastHeartPos"][1] == pos[1]:
                             HaveGlassHeart = True
                 color = src.items.itemMap["GlassStatue"].color(ItemID)
+                if info.get("looted"):
+                    color = "#550"
                 text = "DU" if HaveGlassHeart else "du"
                 rawMap[pos[1]][pos[0]] = (src.interaction.urwid.AttrSpec(color, "black"), text)
             else:
-                rawMap[pos[1]][pos[0]] = info["tag"][:2]
+                text = info["tag"][:2]
+                color = "#ddd"
+                if info.get("looted"):
+                    color = "#752"
+                rawMap[pos[1]][pos[0]] = (src.interaction.urwid.AttrSpec(color, "black"), text)
         if homeCoordinate:
             rawMap[homeCoordinate[1]][homeCoordinate[0]] = "HH"
-        rawMap[characterCoordinate[1]][characterCoordinate[0]] = "@@"
+        color = "#ff3"
+        terrainInfo = character.terrainInfo.get(characterCoordinate)
+        if terrainInfo and terrainInfo.get("looted"):
+            color = "#863"
+        rawMap[characterCoordinate[1]][characterCoordinate[0]] = (src.interaction.urwid.AttrSpec(color, "black"), "@@")
 
         return rawMap

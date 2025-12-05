@@ -67,9 +67,9 @@ For now ignore the options below and press esc to continue.
         if not self.active:
             return
 
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
@@ -81,6 +81,8 @@ For now ignore the options below and press esc to continue.
         if character.yPosition%15 in (0,14):
             return False
 
-        self.postHandler()
+        if not dryRun:
+            self.postHandler()
+        return True
 
 src.quests.addType(EscapeLab)

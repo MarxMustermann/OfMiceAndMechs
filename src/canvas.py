@@ -6,6 +6,7 @@ bad code: drawstuff is everywhere
 import logging
 
 import src.gamestate
+import src.helpers
 import src.interaction
 
 logger = logging.getLogger(__name__)
@@ -425,6 +426,110 @@ class Canvas:
                 if isinstance(char, src.interaction.ActionMeta):
                     actionMeta = char.payload
                     char = char.content
+                if isinstance(char, src.interaction.CharacterMeta):
+                    character = char.character
+
+                    if not src.gamestate.gamestate.mainChar.specialRender and (character.health != character.adjustedMaxHealth or character.exhaustion != 0):
+                        if character.dead or character.health <= 0:
+                            basePos = (x*src.interaction.tileWidth*2,y*src.interaction.tileHeight)
+                            src.interaction.sdl_cache.append(("line",
+                                                                basePos,
+                                                                (basePos[0]+src.interaction.tileHeight,basePos[1]+2*src.interaction.tileWidth),
+                                                                (255,0,0,255)
+                                                             ))
+                            src.interaction.sdl_cache.append(("line",
+                                                                (basePos[0]+1,basePos[1]),
+                                                                (basePos[0]+src.interaction.tileHeight,basePos[1]+2*src.interaction.tileWidth-1),
+                                                                (255,0,0,255)
+                                                             ))
+                            src.interaction.sdl_cache.append(("line",
+                                                                (basePos[0],basePos[1]+1),
+                                                                (basePos[0]+src.interaction.tileHeight-1,basePos[1]+2*src.interaction.tileWidth),
+                                                                (255,0,0,255)
+                                                             ))
+                            src.interaction.sdl_cache.append(("line",
+                                                                (basePos[0],basePos[1]+2*src.interaction.tileWidth),
+                                                                (basePos[0]+src.interaction.tileHeight,basePos[1]),
+                                                                (255,0,0,255)
+                                                             ))
+                            src.interaction.sdl_cache.append(("line",
+                                                                (basePos[0]+1,basePos[1]+2*src.interaction.tileWidth),
+                                                                (basePos[0]+src.interaction.tileHeight,basePos[1]-1),
+                                                                (255,0,0,255)
+                                                             ))
+                            src.interaction.sdl_cache.append(("line",
+                                                                (basePos[0],basePos[1]+2*src.interaction.tileWidth-1),
+                                                                (basePos[0]+src.interaction.tileHeight-1,basePos[1]),
+                                                                (255,0,0,255)
+                                                             ))
+                        else:
+                            basePos = (x*src.interaction.tileWidth*2,y*src.interaction.tileHeight)
+                            barHeight = src.interaction.tileHeight//8
+                            if barHeight:
+                                offsetTop = src.interaction.tileHeight//8
+
+                                borderWidth = 1
+                                if src.interaction.tileHeight < 20:
+                                    borderWidth = 0
+                                
+                                if character.health != character.adjustedMaxHealth:
+                                    basePos = (basePos[0],basePos[1]+offsetTop)
+
+                                    src.interaction.sdl_cache.append(("rect",(
+                                                                                basePos[0],
+                                                                                basePos[1],
+                                                                                src.interaction.tileWidth*2,
+                                                                                barHeight+2*borderWidth
+                                                                                     ) ,(255,255,255,255)))
+                                    src.interaction.sdl_cache.append(("rect",(
+                                                                                basePos[0]+borderWidth,
+                                                                                basePos[1]+borderWidth,
+                                                                                src.interaction.tileWidth*2-2*borderWidth,
+                                                                                barHeight
+                                                                                    ),(0,0,0,255)))
+
+                                    barwidth = int((src.interaction.tileWidth*2-borderWidth*2)*(character.health/character.adjustedMaxHealth))
+                                    src.interaction.sdl_cache.append(("rect",(
+                                                                                basePos[0]+borderWidth,
+                                                                                basePos[1]+borderWidth,
+                                                                                barwidth,
+                                                                                barHeight
+                                                                                    ),(255,0,0,255)))
+                                if character.exhaustion != 0:
+                                    basePos = (basePos[0],basePos[1]+src.interaction.tileHeight-offsetTop-barHeight-2*borderWidth)
+
+                                    color = (255,255,255,255)
+                                    borderColor = (255,255,255,255)
+                                    if character.exhaustion-1 > 4:
+                                        color = (255,153,0,255)
+                                    if character.exhaustion-1 > 8:
+                                        color = (255,85,0,255)
+                                    if character.exhaustion-1 > 9:
+                                        color = (255,0,0,255)
+                                        borderColor = (255,0,0,255)
+
+                                    src.interaction.sdl_cache.append(("rect",(
+                                                                                basePos[0],
+                                                                                basePos[1],
+                                                                                src.interaction.tileWidth*2,
+                                                                                barHeight+2*borderWidth
+                                                                                    ),borderColor))
+                                    src.interaction.sdl_cache.append(("rect",(
+                                                                                basePos[0]+borderWidth,
+                                                                                basePos[1]+borderWidth,
+                                                                                src.interaction.tileWidth*2-2*borderWidth,
+                                                                                barHeight
+                                                                                    ),(0,0,0,255)))
+
+                                    barwidth = int((src.interaction.tileWidth*2-borderWidth*2)*src.helpers.clamp(character.exhaustion/10,0,1))
+                                    src.interaction.sdl_cache.append(("rect",(
+                                                                                basePos[0]+borderWidth,
+                                                                                basePos[1]+borderWidth,
+                                                                                barwidth,
+                                                                                barHeight
+                                                                                    ),color))
+
+                    char = char.content
 
                 if isinstance(char, int):
                     mapped = self.displayChars.indexedMapping[char]
@@ -448,6 +553,7 @@ class Canvas:
                         logger.error("error drawing stuff")
                         logger.error(item)
                         logger.error(tcodPrepared)
+                        logger.error(char)
                         continue
                     text = text.replace("ò","o")
                     text = text.replace("＠","@ ")

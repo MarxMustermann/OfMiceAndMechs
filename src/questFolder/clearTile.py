@@ -4,8 +4,11 @@ import src
 
 
 class ClearTile(src.quests.MetaQuestSequence):
+    '''
+    quest to make NPC tidy up a room
+    '''
     type = "ClearTile"
-
+    lowLevel = True
     def __init__(self, description="clean tile", creator=None, targetPosition=None, noDelegate=False, reason=None, story=None):
         questList = []
         super().__init__(questList, creator=creator)
@@ -22,6 +25,9 @@ class ClearTile(src.quests.MetaQuestSequence):
         self.noDelegate = noDelegate
 
     def generateTextDescription(self):
+        '''
+        generate a long text description to be shown on the UI
+        '''
         reasonString = ""
         if self.reason:
             reasonString = ", to "+self.reason
@@ -55,6 +61,9 @@ Remove all items from the walkways that are not bolted down."""
         return text
 
     def assignToCharacter(self, character):
+        '''
+        handle assigning the quest to a character
+        '''
         if self.character:
             return
 
@@ -62,35 +71,61 @@ Remove all items from the walkways that are not bolted down."""
         super().assignToCharacter(character)
 
     def wrapedTriggerCompletionCheck(self,extraInfo=None):
-        self.triggerCompletionCheck(extraInfo[0])
+        '''
+        indirection to call the actual funtion with converted parameters
+        '''
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
-    def triggerCompletionCheck(self,character=None):
-
+    def triggerCompletionCheck(self,character=None,dryRun=True):
+        '''
+        check and end the quest if completed
+        '''
         if not character:
             return False
 
         if not self.getLeftoverItems(character):
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
 
         return False
 
     def setParameters(self,parameters):
+        '''
+        set the parameters ina indirect way (obsolete)
+        '''
         if "targetPosition" in parameters and "targetPosition" in parameters:
             self.targetPosition = parameters["targetPosition"]
             self.metaDescription = self.baseDescription+" "+str(self.targetPosition)
         return super().setParameters(parameters)
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
+        '''
+        calculate the next step towards solving the quest
+        '''
+
+        # wait for subquests to complete
         if self.subQuests:
             return (None,None)
 
+        # abort on weird states
         if not character:
             return (None,None)
 
+        # abort if threatended
+        if character.getNearbyEnemies():
+            return self._solver_trigger_fail(dryRun,"nearby enemies")
+
+        # close menus
+        if not ignoreCommands and character.macroState.get("submenue"):
+            return (None,(["esc"],"exit submenu"))
+
+        # ensure inventory space
         if not character.getFreeInventorySpace() > 0:
             quest = src.quests.questMap["ClearInventory"](reason="have inventory space to pick up more items",returnToTile=False)
             return ([quest],None)
+
+        # enter rooms properly
         if not isinstance(character.container,src.rooms.Room):
             if character.yPosition%15 == 14:
                 return (None,("w","enter tile"))
@@ -101,12 +136,13 @@ Remove all items from the walkways that are not bolted down."""
             if character.xPosition%15 == 0:
                 return (None,("d","enter tile"))
 
+        # go to the tile to clean up
         if character.getBigPosition() != (self.targetPosition[0], self.targetPosition[1], 0):
             quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
             return ([quest],None)
 
+        # check for items to pick up directly next to the character
         charPos = character.getPosition()
-
         offsets = [(0,0,0),(1,0,0),(0,1,0),(-1,0,0),(0,-1,0)]
         foundOffset = None
         foundItems = None
@@ -117,12 +153,9 @@ Remove all items from the walkways that are not bolted down."""
             items = character.container.getItemByPosition(checkPos)
             if not items:
                 continue
-
             if items[0].bolted:
                 continue
-
             foundOffset = offset
-
             foundItems = []
             for item in items:
                 if item.bolted:
@@ -130,11 +163,11 @@ Remove all items from the walkways that are not bolted down."""
                 foundItems.append(item)
             break
 
+        # clear items directly next to the character
         if foundOffset:
             interactionCommand = "K"
             if "advancedPickup" in character.interactionState:
                 interactionCommand = ""
-
             if foundOffset == (0,0,0):
                 command = "k"
             if foundOffset == (1,0,0):
@@ -145,20 +178,24 @@ Remove all items from the walkways that are not bolted down."""
                 command = interactionCommand+"s"
             if foundOffset == (0,-1,0):
                 command = interactionCommand+"w"
-
             return (None,(command*len(foundItems),"clear spot"))
 
+        # go to an item to pick up
         items = self.getLeftoverItems(character)
         if items:
             item = random.choice(items)
-
             quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True)
             return ([quest],None)
 
-        return (None,None)
+        # complete when done
+        if dryRun:
+            self.postHandler()
+        return (None,("+","end quest"))
 
     def getLeftoverItems(self,character):
-
+        '''
+        get a list of items that still needs to be cleaned up
+        '''
         if isinstance(character.container,src.rooms.Room):
             terrain = character.container.container
         else:
@@ -185,4 +222,10 @@ Remove all items from the walkways that are not bolted down."""
 
         return foundItems
 
+    def getRequiredParameters(self):
+        parameters = super().getRequiredParameters()
+        parameters.append({"name":"targetPosition","type":"coordinate"})
+        return parameters
+
+# register quest type
 src.quests.addType(ClearTile)

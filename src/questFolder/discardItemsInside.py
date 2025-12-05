@@ -4,6 +4,7 @@ import src
 
 class DiscardItemsInside(src.quests.MetaQuestSequence):
     type = "DiscardItemsInside"
+    lowLevel = True
 
     def __init__(self, description="discard items inside", creator=None, toCollect=None, lifetime=None, reason=None):
         self.lastMoveDirection = None
@@ -29,11 +30,12 @@ This quest will end when your inventory is empty."""
         out.append(text)
         return out
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
         if not character.inventory:
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
         return False
 
@@ -61,12 +63,10 @@ This quest will end when your inventory is empty."""
                 quest = src.quests.questMap["GoToPosition"](targetPosition=dropPosition)
                 return ([quest],None)
 
-        if dryRun:
-            self.fail("no drop spot")
-        return (None,None)
+        return self._solver_trigger_fail(dryRun,"no drop spot")
 
     def droppedItem(self,extraInfo):
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
     def assignToCharacter(self, character):
         if self.character:

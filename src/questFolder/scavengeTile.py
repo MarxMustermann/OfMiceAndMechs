@@ -6,7 +6,7 @@ import src
 class ScavengeTile(src.quests.MetaQuestSequence):
     type = "ScavengeTile"
 
-    def __init__(self, description="scavenge tile", creator=None, targetPosition=None,toCollect=None, reason=None, endOnFullInventory=False,tryHard=False,lifetime=None):
+    def __init__(self, description="scavenge tile", creator=None, targetPosition=None,toCollect=None, reason=None, endOnFullInventory=False,tryHard=False,lifetime=None,ignoreAlarm=False):
         questList = []
         super().__init__(questList, creator=creator,lifetime=None)
         self.metaDescription = description+" "+str(targetPosition)
@@ -17,6 +17,7 @@ class ScavengeTile(src.quests.MetaQuestSequence):
 
         self.targetPosition = targetPosition
         self.tryHard = tryHard
+        self.ignoreAlarm = ignoreAlarm
 
     def generateTextDescription(self):
         out = []
@@ -36,28 +37,34 @@ This quest will end when the target tile has no items left."""
         out.append(text)
         return out
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
 
         if not character:
-            return
+            return False
 
         if self.endOnFullInventory and not character.getFreeInventorySpace() > 0:
-            self.postHandler()
-            return
+            if not dryRun:
+                self.postHandler()
+            return True
 
         if not self.getLeftoverItems(character):
-            self.postHandler()
-            return
+            if not dryRun:
+                self.postHandler()
+            return True
 
-        return
+        return False
 
     def getNextStep(self,character,ignoreCommands=False, dryRun = True):
-        self.triggerCompletionCheck(character=character)
+        self.triggerCompletionCheck(character=character,dryRun=dryRun)
 
         if not self.subQuests:
             if character.getNearbyEnemies():
-                quest = src.quests.questMap["Fight"]()
-                return ([quest],None)
+                if character.health > character.maxHealth//3:
+                    quest = src.quests.questMap["Fight"]()
+                    return ([quest],None)
+                else:
+                    quest = src.quests.questMap["Heal"]()
+                    return ([quest],None)
                 
             hasIdleSubordinate = False
             for subordinate in character.subordinates:
@@ -67,15 +74,14 @@ This quest will end when the target tile has no items left."""
             if hasIdleSubordinate:
                 return (None,("Hjsssssj","make subordinate scavenge"))
 
-            if character.getTerrain().alarm and not self.tryHard:
-                if not dryRun:
-                    self.fail("alarm")
-                return (None,None)
+            if character.getTerrain().alarm and not self.tryHard and not self.ignoreAlarm:
+                return self._solver_trigger_fail(dryRun,"alarm")
 
             if not character.getFreeInventorySpace() > 0:
                 if self.endOnFullInventory:
-                    self.postHandler()
-                    return (None,None)
+                    if not dryRun:
+                        self.postHandler()
+                    return (None,("+","end quest"))
                 quest = src.quests.questMap["ClearInventory"](reason="be able to pick up more items")
                 return ([quest],None)
 
@@ -90,7 +96,8 @@ This quest will end when the target tile has no items left."""
                 if len(path) or item.getPosition() == character.getPosition():
                     quest = src.quests.questMap["CleanSpace"](targetPosition=item.getSmallPosition(),targetPositionBig=self.targetPosition,reason="pick up the items")
                     return ([quest],None)
-        return (None,None)
+
+        return (None,(".","stand around confused"))
     
     def getLeftoverItems(self,character):
         terrain = character.getTerrain()
@@ -99,8 +106,6 @@ This quest will end when the target tile has no items left."""
         items = items[:]
         random.shuffle(items)
         for item in items:
-            #if item.type == "Scrap":
-            #    continue
             if self.toCollect and item.type != self.toCollect:
                 continue
             if item.bolted:
@@ -110,7 +115,7 @@ This quest will end when the target tile has no items left."""
         return leftOverItems
 
     def pickedUpItem(self,extraInfo):
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
     def assignToCharacter(self, character):
         if self.character:

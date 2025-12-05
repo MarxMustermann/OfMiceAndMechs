@@ -48,7 +48,7 @@ class PerformanceTester(src.items.Item):
 
         params = {"character":character}
 
-        character.timeTaken += count
+        character.takeTime(count,"acting performance")
         submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu("testing",targetParamName="abortKey")
         character.macroState["submenue"] = submenue
         character.macroState["submenue"].followUp = {"container":self,"method":"test_end","params":params}

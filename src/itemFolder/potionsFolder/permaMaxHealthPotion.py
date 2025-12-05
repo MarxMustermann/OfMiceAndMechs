@@ -11,7 +11,7 @@ class PermaMaxHealthPotion(src.items.itemMap["Potion"]):
 
     def apply(self, character):
         if character.maxHealth >= 500:
-            character.addMessage("you can't improve your health further.\nYour ")
+            character.addMessage("you can't improve your health further.")
             return
 
         increaseValue = 20
@@ -23,9 +23,9 @@ class PermaMaxHealthPotion(src.items.itemMap["Potion"]):
         super().apply(character)
 
     def getLongInfo(self):
-        return f"This Potion heals you for {self.healingamount}"
+        return f"This Potion increases your max health by {self.healingamount}"
 
-    def Ingredients():
+    def ingredients():
         return [src.items.itemMap["Bloom"],src.items.itemMap["ManaCrystal"]]
 
 src.items.addType(PermaMaxHealthPotion,potion=True)

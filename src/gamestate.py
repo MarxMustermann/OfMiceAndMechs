@@ -35,6 +35,7 @@ class GameState:
         self.gameOver = False
         self.gameOverText = ""
         self.savedThisTurn = False
+        self.saveAtTheTurnEnd = False
         self.waitedForInputThisTurn = False
         self.stern = {}
         self.gods = {}
@@ -42,6 +43,8 @@ class GameState:
                 "throneTaken":False
                     }
         self.difficulty = None
+        self.difficultyMap = None
+        self.mainLoop = {}
 
         self.multi_chars = set()
         self.header = None
@@ -137,47 +140,51 @@ class GameState:
         terrain.yPosition = pos[1]
 
     def save(self):
+        '''
+        save the game state to disc
+        '''
+
+        # note that the game was saved (obsolete?)
         self.savedThisTurn = True
+
+        # get context for drawing stuff
         tcodConsole = src.interaction.tcodConsole
-        tcodContext = src.interaction.tcodContext
         printUrwidToTcod = src.interaction.printUrwidToTcod
 
+        # draw an info that saving is in progress
         offsetX = 51
         offsetY = 10
-
-        tcodConsole.clear()
         printUrwidToTcod("+-------------+",(offsetX+3+16,offsetY+13))
         printUrwidToTcod("| saving game |",(offsetX+3+16,offsetY+14))
         printUrwidToTcod("+-------------+",(offsetX+3+16,offsetY+15))
-        tcodContext.present(tcodConsole)
+        src.interaction.tcodPresent()
 
-        """
-        save the game state to disc
-        """
-
+        # import stuff. (should not be within a function -_-)
         import os
         import pickle
         import shutil
 
+        # draw an info that saving is in progress
         if not os.path.exists("gamestate/"):
             os.makedirs("gamestate/")
 
+        # store a backup of the savegame
         try:
             shutil.copyfile(f"gamestate/gamestate_{self.gameIndex}", f"gamestate/gamestate_{self.gameIndex}_backup")
         except:
             pass
 
+        # create the actual save file
         with open(f"gamestate/gamestate_{self.gameIndex}", 'wb') as file:
             compressed = zlib.compress(pickle.dumps(self),9)
             file.write(compressed)
 
+        # register the save
         try:
-            # register the save
             with open("gamestate/globalInfo.json") as globalInfoFile:
                 rawState = json.loads(globalInfoFile.read())
         except:
             rawState = {"saves": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"customPrefabs":[],"lastGameIndex":0}
-
         saves = rawState["saves"]
         saves[self.gameIndex] =  {"difficulty":10,"scenario":"test"}
         rawState["lastGameIndex"] = self.gameIndex
@@ -186,25 +193,27 @@ class GameState:
 
 
     def loadP(self,gameIndex):
-        """
+        '''
         load the gamestate from disc
+
+        Parameters:
+            gameIndex: the index of the gameslot to load
 
         Returns:
             bool: success indicator
-        """
+        '''
 
+        # update the metadata
         try:
-            # register the save
             with open("gamestate/globalInfo.json") as globalInfoFile:
                 rawState = json.loads(globalInfoFile.read())
         except:
             rawState = {"saves": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"customPrefabs":[],"lastGameIndex":0}
-
         rawState["lastGameIndex"] = gameIndex
         with open("gamestate/globalInfo.json", "w") as globalInfoFile:
             json.dump(rawState,globalInfoFile)
 
-
+        # load the actual gamefile
         import pickle
         with open(f"gamestate/gamestate_{gameIndex}", 'rb') as file:
             newSelf = pickle.loads(zlib.decompress(file.read()))

@@ -60,7 +60,7 @@ class GetCombatReady(src.quests.MetaQuestSequence):
                     validCoalBurners.append(item)
 
                 if len(validCoalBurners) == 0:
-                    return (None,None)
+                    return (None,(".","stand around confused"))
 
                 for item in validCoalBurners:
                     if character.getDistance(item.getPosition()) > 1:
@@ -80,7 +80,7 @@ class GetCombatReady(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["GoToPosition"](targetPosition=validCoalBurners[0].getPosition(),reason="be able to heal",description="go to a coal burner",ignoreEndBlocked=True)
                 return ([quest],None)
 
-        return (None,None)
+        return (None,(".","stand around confused"))
 
     def generateTextDescription(self):
         return ["""
@@ -109,9 +109,9 @@ Get yourself a Sword and a piece of Armor.
         if not self.active:
             return
 
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
         
@@ -131,6 +131,9 @@ Get yourself a Sword and a piece of Armor.
                     if not item.getMoldFeed(character):
                         continue
                     return False
-        self.postHandler()
+
+        if not dryRun:
+            self.postHandler()
+        return True
 
 src.quests.addType(GetCombatReady)

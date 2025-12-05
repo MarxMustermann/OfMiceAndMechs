@@ -37,8 +37,16 @@ this quest has sub quests. Press d to show subquest.
         for quest in self.subQuests[:]:
             quest.postHandler()
 
-        quest = src.quests.questMap["StoryClearTerrain"]()
-        self.addQuest(quest)
+        match extraInfo.get("reason"):
+            case "needs base with at least 6 rooms":
+                quest = src.quests.questMap["StoryExtendBase"]()
+                self.addQuest(quest)
+            case "terrain needs cleared from enemies":
+                quest = src.quests.questMap["StoryClearTerrain"]()
+                self.addQuest(quest)
+            case _:
+                quest = src.quests.questMap["SpawnClone"]()
+                self.addQuest(quest)
 
     def assignToCharacter(self, character):
         if self.character:
@@ -49,12 +57,13 @@ this quest has sub quests. Press d to show subquest.
 
         super().assignToCharacter(character)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return None
 
         if character.rank <= 2:
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
         return False
 
@@ -75,7 +84,7 @@ this quest has sub quests. Press d to show subquest.
             quest = src.quests.questMap["SecureTile"](toSecure=(5,6,0),endWhenCleared=False,reason="confront the Snatchers",story="You reach out to your implant and it answers:\n\nThe base itself is safe now, but there are Snatchers out there.\nThey will try to swarm and kill everyone that goes outside.",lifetime=100)
             return ([quest],None)
 
-        return (None,None)
+        return (None,(".","stand around confused"))
 
         room = character.container
 

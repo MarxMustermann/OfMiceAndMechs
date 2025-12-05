@@ -1,4 +1,5 @@
 import src
+import random
 
 
 class CorpseShredder(src.items.Item):
@@ -59,28 +60,18 @@ Activate the corpse shredder to produce mold feed/seeded mold feed.
             character: the character using the item
         """
 
+        character.changed("operated machine",{"character":character,"machine":self})
+
         corpse = None
         moldSpores = []
 
-        for item in self.container.getItemByPosition((self.xPosition - 1, self.yPosition, 0)):
-            if item.type == "Corpse":
-                corpse = item
-            if item.type == "MoldSpore":
-                moldSpores.append(item)
-
         # refuse to produce without resources
+        corpse,moldSpores = self.checkForInputs()
         if not corpse:
             character.addMessage("no corpse")
             return
 
-        targetFull = False
-        items = self.container.getItemByPosition((self.xPosition + 1, self.yPosition,0))
-        if len(items) > 15:
-            targetFull = True
-        for item in items:
-            if item.walkable is False:
-                targetFull = True
-
+        targetFull = self.checkTargetFull()
         if targetFull:
             character.addMessage(
                 "the target area is full, the machine does not produce anything"
@@ -90,13 +81,106 @@ Activate the corpse shredder to produce mold feed/seeded mold feed.
         # remove resources
         self.container.removeItem(corpse)
 
+        # spawn chunks
         for _i in range(corpse.charges // 100):
+            # generate the chunk
             if moldSpores:
                 self.container.removeItem(moldSpores.pop())
                 new = src.items.itemMap["SeededMoldFeed"]()
             else:
-                # spawn the new item
                 new = src.items.itemMap["MoldFeed"]()
-            self.container.addItem(new,( self.xPosition + 1,self.yPosition,self.zPosition))
+
+            # splatter some chunks around
+            pos = ( self.xPosition + 1,self.yPosition,self.zPosition)
+            if random.random() < 0.3:
+                pos = (random.randint(1,12),random.randint(1,12),0) 
+                if not self.container.getPositionWalkable(pos):
+                    continue
+            
+            # actually add the item
+            self.container.addItem(new,pos)
+
+        # show splatter animation
+        center = self.getPosition()
+        for tick in range(1,6):
+            for offset_x in range(-2,3):
+                for offset_y in range(-1,2):
+                    offset = (offset_x,offset_y)
+                    pos = (center[0]+offset_x,center[1]+offset_y)
+                    if tick == 1:
+                        if offset == (-1,0):
+                            self.container.addAnimation(pos,"splatter",1,{})
+                        else:
+                            self.container.addAnimation(pos,"showchar",1,{"char":None})
+                    elif tick == 2:
+                        if offset_x < 1:
+                            self.container.addAnimation(pos,"splatter",1,{})
+                        else:
+                            self.container.addAnimation(pos,"showchar",1,{"char":None})
+                    elif tick == 3:
+                        if offset_x < 2 and offset_x > -2:
+                            self.container.addAnimation(pos,"splatter",1,{})
+                        else:
+                            self.container.addAnimation(pos,"showchar",1,{"char":None})
+                    elif tick == 4:
+                        if offset_x > -1:
+                            self.container.addAnimation(pos,"splatter",1,{})
+                        else:
+                            self.container.addAnimation(pos,"showchar",1,{"char":None})
+                    elif tick == 5:
+                        if offset == (1,0):
+                            self.container.addAnimation(pos,"splatter",1,{})
+                        else:
+                            self.container.addAnimation(pos,"showchar",1,{"char":None})
+                    else:
+                        self.container.addAnimation(pos,"splatter",1,{})
+        for i in range(1,32):
+            pos = (random.randint(0,12),random.randint(0,12),0)
+            self.container.addAnimation(pos,"showchar",i//5,{"char":None})
+            for j in range(i//4,6):
+                self.container.addAnimation(pos,"splatter",1,{})
+
+    def checkTargetFull(self):
+        targetFull = False
+        items = self.container.getItemByPosition((self.xPosition + 1, self.yPosition,0))
+        if len(items) > 15:
+            targetFull = True
+        for item in items:
+            if item.walkable is False:
+                targetFull = True
+        return targetFull
+
+    def render(self):
+        if self.readyToUse():
+            return "%>"
+        else:
+            return self.display
+
+    def checkForInputs(self):
+        corpse = None
+        moldSpores = []
+        for item in self.container.getItemByPosition((self.xPosition - 1, self.yPosition, 0)):
+            if item.type == "Corpse":
+                corpse = item
+            if item.type == "MoldSpore":
+                moldSpores.append(item)
+        return (corpse,moldSpores)
+
+    def readyToUse(self):
+        if not self.container:
+            return False
+
+        if not self.bolted:
+            return False
+
+        targetFull = self.checkTargetFull()
+        if targetFull:
+            return False
+
+        (corpse, _moldSpores) = self.checkForInputs()
+        if not corpse:
+            return False
+
+        return True
 
 src.items.addType(CorpseShredder)

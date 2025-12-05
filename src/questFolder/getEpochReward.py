@@ -150,8 +150,7 @@ This will allow you to focus on other tasks.
             roomPos = room.getPosition()
 
         if not roomPos:
-            self.fail("no temple found")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"no temple found")
 
         if pos == roomPos:
             if not character.container.isRoom:
@@ -167,8 +166,7 @@ This will allow you to focus on other tasks.
                     foundShrine = shrine
 
             if not foundShrine:
-                self.fail("no shrine found")
-                return (None,None)
+                return self._solver_trigger_fail(dryRun,"no shrine found")
 
             command = None
             if character.getPosition(offset=(1,0,0)) == foundShrine.getPosition():
@@ -212,7 +210,7 @@ This will allow you to focus on other tasks.
     """
     never complete
     """
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         return False
 
     @staticmethod

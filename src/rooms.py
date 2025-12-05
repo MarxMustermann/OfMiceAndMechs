@@ -267,6 +267,9 @@ class Room:
                 result.append(inputSlot)
                 continue
 
+            if items[0].walkable == False and itemType != "Scrap":
+                continue
+
             if fullyEmpty:
                 continue
 
@@ -303,6 +306,9 @@ class Room:
                     result.append(storageSlot)
                     continue
                 elif forceGenericStorage:
+                    continue
+
+                if items[0].walkable == False and itemType != "Scrap":
                     continue
 
                 if fullyEmpty:
@@ -350,7 +356,7 @@ class Room:
                 command += movementMap[offset]
         return (command,path)
 
-    def getRoomMap(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False,character=None,clearing=False):
+    def getRoomMap(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False,character=None,clearing=False,ignoreUnbolted=False):
 
         roomMap = []
         for x in range(13):
@@ -381,7 +387,20 @@ class Room:
                     if clearing and not (y == 0 or y == 12 or x == 0 or x == 12):
                         roomMap[x][y] = 100
                     else:
-                        roomMap[x][y] = 0
+                        if not ignoreUnbolted:
+                            roomMap[x][y] = 0
+                        else:
+                            roomMap[x][y] = 100
+                            smallItemCounter = 0
+                            for item in self.getItemByPosition((x,y,0)):
+                                if item.bolted and not item.walkable:
+                                    roomMap[x][y] = 0
+                                    break
+                                if item.bolted and item.walkable:
+                                    smallItemCounter += 1
+                                    continue
+                            if smallItemCounter > 15:
+                                roomMap[x][y] = 0
 
         roomMap[6][0] = 1
         roomMap[6][12] = 1
@@ -485,7 +504,7 @@ class Room:
 
         return moves
 
-    def getPathTile(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False,character=None):
+    def getPathTile(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False,character=None,clearing=False,ignoreUnbolted=False):
 
         """
         path = self.pathCache.get((startPos,targetPos))
@@ -503,7 +522,7 @@ class Room:
                 return path[:]
         """
 
-        roomMap = self.getRoomMap(startPos,targetPos,avoidItems,localRandom,tryHard,ignoreEndBlocked,character)
+        roomMap = self.getRoomMap(startPos,targetPos,avoidItems,localRandom,tryHard,ignoreEndBlocked,character,clearing=clearing,ignoreUnbolted=ignoreUnbolted)
         cost = self.convertRoomMap(roomMap)
 
         pathfinder = tcod.path.AStar(cost,diagonal = 0)
@@ -695,6 +714,17 @@ class Room:
         """
 
         return self.itemByCoordinates.get(position,[])
+
+    def clear_broken_states(self):
+        for items_on_position in self.itemByCoordinates.values():
+            for item in items_on_position[:]:
+                position = item.getPosition()
+                if position[0] == None:
+                    logger.error("FOUND NON PLACED ITEM!!!")
+                    items_on_position.remove(item)
+        for character in self.characters[:]:
+            if character.xPosition < 0 or character.xPosition > 12 or character.yPosition < 0 or character.yPosition > 12:
+                character.die("beeing in the void")
 
     # bad code: probably misnamed
     # bad code: should be in extra class
@@ -941,6 +971,69 @@ class Room:
                     logger.error(f"item placed outside of room {item.yPosition}/{item.xPosition}")
                     continue
 
+            foundMainchar = None
+            for character in self.characters:
+                if character == src.gamestate.gamestate.mainChar:
+                    foundMainchar = character
+
+            # draw quest markers
+            targetMarkers = {}
+            if foundMainchar:
+                activeQuests = foundMainchar.getActiveQuests()
+                blockedPositions = []
+                for activeQuest in activeQuests:
+                    for marker in activeQuest.getQuestMarkersSmall(foundMainchar):
+                        pos = marker[0]
+                        if len(pos) < 3:
+                            pos = (pos[0],pos[1],0)
+                        if pos in blockedPositions:
+                            continue
+                        try:
+                            display = chars[pos[1]][pos[0]]
+                        except IndexError:
+                            logger.error(f"drawing outside of room {pos}")
+                            continue
+
+                        if isinstance(display,list):
+                            displayList = display
+                        else:
+                            displayList = [display]
+
+                        color = "#555"
+                        if marker[1] == "target":
+                            blockedPositions.append(pos)
+                            targetMarkers[pos] = marker
+                            if src.gamestate.gamestate.tick %10 > 5:
+                                color = "#880"
+                            else:
+                                color = "#777"
+
+                        newDisplay = []
+                        for display in displayList:
+                            actionMeta = None
+                            if isinstance(display,src.interaction.ActionMeta):
+                                actionMeta = display
+                                display = display.content
+
+                            if isinstance(display,int):
+                                display = src.canvas.displayChars.indexedMapping[display]
+                            if isinstance(display,str):
+                                display = (src.interaction.urwid.AttrSpec("#fff","black"),display)
+
+                            if hasattr(display[0],"fg"):
+                                display = (src.interaction.urwid.AttrSpec(display[0].fg,color),display[1])
+                            else:
+                                if not isinstance(display[0],tuple):
+                                    display = (src.interaction.urwid.AttrSpec(display[0].foreground,color),display[1])
+
+                            if actionMeta:
+                                actionMeta.content = display
+                                display = actionMeta
+
+                            newDisplay.append(display)
+
+                        chars[pos[1]][pos[0]] = newDisplay
+
             # draw characters
             viewChar = "name"
             viewColour = "name"
@@ -948,34 +1041,40 @@ class Room:
                 viewChar = src.gamestate.gamestate.mainChar.personality["viewChar"]
                 viewColour = src.gamestate.gamestate.mainChar.personality["viewColour"]
 
-            foundMainchar = None
             for character in self.characters:
-                if character == src.gamestate.gamestate.mainChar:
-                    foundMainchar = character
                 if character.yPosition < len(chars) and character.xPosition < len(
                     chars[character.yPosition]
                 ):
                     if character.charType not in ("Character","Ghoul","Clone"):
-                        try:
-                            character.specialDisplay
-                        except:
-                            character.specialDisplay = None
 
-                        if character.specialDisplay:
-                            char = character.specialDisplay
-                        else:
-                            char = "<-"
+                        char = character.render()
 
                         if src.characters.Character.hasTimingBonus():
-                            bgColor = "#f33"
+                            if not character.getPosition() in targetMarkers:
+                                bgColor = "#f33"
+                            else:
+                                bgColor = "#ff3"
                         else:
-                            bgColor = "black"
+                            if not character.getPosition() in targetMarkers:
+                                bgColor = "black"
+                            else:
+                                bgColor = "#f55"
                             
                         if isinstance(char,tuple):
-                            chars[character.yPosition][character.xPosition] = (src.interaction.urwid.AttrSpec(char[0].fg, bgColor), char[1])
+                            fgColor = "#fff"
+                            try:
+                                fgColor = char[0].fg
+                            except:
+                                fgColor = char[0].foreground
+                            display = (src.interaction.urwid.AttrSpec(fgColor, bgColor), char[1])
                         else:
                             fgColor = "#fff"
-                            chars[character.yPosition][character.xPosition] = (src.interaction.urwid.AttrSpec(fgColor, bgColor), char)
+                            display = (src.interaction.urwid.AttrSpec(fgColor, bgColor), char)
+
+                        try:
+                            chars[character.yPosition][character.xPosition] = src.interaction.CharacterMeta(content=display,character=character)
+                        except Exception as e:
+                            logger.error("drawing error: "+str(e))
                     else:
                         if viewChar == "rank":
                             if not isinstance(character,src.characters.characterMap["Ghoul"]):
@@ -1163,12 +1262,13 @@ class Room:
                                 color = "#3f3"
 
                         bgColor = "#227"
-                        if character.faction != src.gamestate.gamestate.mainChar.faction:
+                        if src.gamestate.gamestate.mainChar and character.faction != src.gamestate.gamestate.mainChar.faction:
                             bgColor = "#722"
                             color = "#f00"
                             char = "EE"
 
-                        chars[character.yPosition][character.xPosition] = (src.interaction.urwid.AttrSpec(color, bgColor), char)
+                        display = (src.interaction.urwid.AttrSpec(color, bgColor), char)
+                        chars[character.yPosition][character.xPosition] = display
 
                         if character.timeTaken > 2:
                             chars[character.yPosition][character.xPosition][0].bg = "#553"
@@ -1181,50 +1281,13 @@ class Room:
                         if character.showGaveCommand:
                             chars[character.yPosition][character.xPosition][0].bg = "#855"
                             character.showGaveCommand = False
-                    if foundMainchar:
-                        activeQuest = foundMainchar.getActiveQuest()
-                        if activeQuest:
-                            for marker in activeQuest.getQuestMarkersSmall(foundMainchar):
-                                pos = marker[0]
-                                try:
-                                    display = chars[pos[1]][pos[0]]
-                                except IndexError:
-                                    logger.error(f"drawing outside of room {pos}")
-                                    continue
 
-                                if isinstance(display,list):
-                                    displayList = display
-                                else:
-                                    displayList = [display]
-
-                                newDisplay = []
-                                for display in displayList:
-                                    actionMeta = None
-                                    if isinstance(display,src.interaction.ActionMeta):
-                                        actionMeta = display
-                                        display = display.content
-
-                                    if isinstance(display,int):
-                                        display = src.canvas.displayChars.indexedMapping[display]
-                                    if isinstance(display,str):
-                                        display = (src.interaction.urwid.AttrSpec("#fff","black"),display)
-
-                                    if hasattr(display[0],"fg"):
-                                        display = (src.interaction.urwid.AttrSpec(display[0].fg,"#555"),display[1])
-                                    else:
-                                        if not isinstance(display[0],tuple):
-                                            display = (src.interaction.urwid.AttrSpec(display[0].foreground,"#555"),display[1])
-
-                                    if actionMeta:
-                                        actionMeta.content = display
-                                        display = actionMeta
-
-                                    newDisplay.append(display)
-
-                                chars[pos[1]][pos[0]] = newDisplay
+                        display = chars[character.yPosition][character.xPosition]
+                        chars[character.yPosition][character.xPosition] = src.interaction.CharacterMeta(content=display,character=character)
                 else:
                     logger.debug("character is rendered outside of room")
 
+            # indicate alarm
             try:
                 self.alarm
             except:
@@ -1249,10 +1312,12 @@ class Room:
                 ) and src.gamestate.gamestate.mainChar.xPosition < len(
                     chars[src.gamestate.gamestate.mainChar.yPosition]
                 ):
-                    chars[src.gamestate.gamestate.mainChar.yPosition][src.gamestate.gamestate.mainChar.xPosition] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
+                    display = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
+                    chars[src.gamestate.gamestate.mainChar.yPosition][src.gamestate.gamestate.mainChar.xPosition] = src.interaction.CharacterMeta(content=display,character=src.gamestate.gamestate.mainChar)
                 else:
                     logger.debug("character is rendered outside of room")
 
+            # show animations
             usedAnimationSlots = set()
             for animation in self.animations[:]:
                 (pos,animationType,duration,extraInfo) = animation
@@ -1278,6 +1343,11 @@ class Room:
                     else:
                         display = ".."
 
+                    oldDisplay = chars[pos[1]][pos[0]]
+                    if isinstance(oldDisplay,src.interaction.CharacterMeta):
+                        oldDisplay.content = display
+                        display = oldDisplay
+
                     try:
                         chars[pos[1]][pos[0]] = display
                     except:
@@ -1295,6 +1365,10 @@ class Room:
                     if animationType == "shielded":
                         display = (src.interaction.urwid.AttrSpec("#fff","#555"),display)
 
+                    oldDisplay = chars[pos[1]][pos[0]]
+                    if isinstance(oldDisplay,src.interaction.CharacterMeta):
+                        oldDisplay.content = display
+                        display = oldDisplay
                     try:
                         chars[pos[1]][pos[0]] = display
                     except:
@@ -1319,7 +1393,7 @@ class Room:
                         extraInfo["display"] = character
                     display = extraInfo["display"]
                     display = (src.interaction.urwid.AttrSpec("#000","#600"),display)
-                    if extraInfo["mainChar"]:
+                    if extraInfo.get("mainChar"):
                         display = "!!"
                         display = (src.interaction.urwid.AttrSpec("#fff","#f00"),display)
 
@@ -1368,7 +1442,8 @@ class Room:
                         continue
 
                     try:
-                        chars[pos[1]][pos[0]] = display
+                        if display:
+                            chars[pos[1]][pos[0]] = display
                     except:
                         pass
 
@@ -1381,7 +1456,8 @@ class Room:
                     display = extraInfo["chars"][len(extraInfo["chars"])-1-duration]
 
                     try:
-                        chars[pos[1]][pos[0]] = display
+                        if display:
+                            chars[pos[1]][pos[0]] = display
                     except:
                         pass
 
@@ -1473,7 +1549,8 @@ class Room:
 
         self.changed("left room", character)
         character.changed("left room", self)
-        self.characters.remove(character)
+        if character in self.characters:
+            self.characters.remove(character)
         character.room = None
 
     def addItem(self, item, pos, actor=None):
@@ -1539,15 +1616,12 @@ class Room:
                         item.duty = buildSite[2]["duty"]
                     if buildSite[1] == "TriggerPlate":
                         targets = buildSite[2].get("targets","[]")
+                        targets = targets.replace(" ","")
                         item.targets = []
                         if targets != "[]":
-                            print(targets)
                             targets = targets[2:-2]
-                            print(targets)
-                            for target in targets.split("), ("):
-                                print(target)
-                                target = target.split(", ")
-                                print(target)
+                            for target in targets.split("),("):
+                                target = target.split(",")
                                 item.targets.append((int(target[0]),int(target[1]),int(target[2])))
                         if buildSite[2].get("floor") == "walkingSpace":
                             self.walkingSpace.add(pos)
@@ -1765,14 +1839,31 @@ class Room:
                 return None
 
             if not dash or character.exhaustion >= 10:
-                character.timeTaken += character.adjustedMovementSpeed
+                character.takeTime(character.adjustedMovementSpeed,"moved 1")
                 if not dash:
                     if character.exhaustion > 0:
                         character.exhaustion -= min(1,character.exhaustion)
-                        character.timeTaken += 1
+                        character.takeTime(character.adjustedMovementSpeed,"moved 2")
             else:
-                character.timeTaken += character.adjustedMovementSpeed/2
-                character.exhaustion += 5
+                try:
+                    character.hasJump
+                except:
+                    character.hasJump = False
+                try:
+                    character.hasRun
+                except:
+                    character.hasRun = False
+
+                if character.hasJump:
+                    character.takeTime(character.adjustedMovementSpeed/2,"moved 3")
+                    character.exhaustion += 5
+                elif character.hasRun:
+                    character.takeTime(character.adjustedMovementSpeed*0.80,"moved 4")
+                    character.exhaustion += 1
+                else:
+                    character.takeTime(character.adjustedMovementSpeed,"moved")
+            character.stats["steps taken"] = character.stats.get("steps taken", 0) + 1
+
             return self.moveCharacter(character, tuple(newPosition))
 
         # move onto terrain
@@ -1818,11 +1909,12 @@ class Room:
             if character.exhaustion:
                 character.exhaustion -= 1
                 multiplier = 1.2
-            character.timeTaken += character.adjustedMovementSpeed*multiplier
+            character.takeTime(character.adjustedMovementSpeed*multiplier,"moved 4")
         else:
-            character.timeTaken += character.adjustedMovementSpeed/2
+            character.takeTime(character.adjustedMovementSpeed/2,"moved 5")
             character.exhaustion += 5
         self.terrain.addCharacter(character, newXPos, newYPos)
+        character.stats["steps taken"] = character.stats.get("steps taken", 0) + 1
         return None
 
     def moveCharacter(self, character, newPosition):

@@ -1,6 +1,7 @@
 """
 items and item related code belongs here
 """
+
 import logging
 
 import src
@@ -8,15 +9,14 @@ import src
 logger = logging.getLogger(__name__)
 
 class Item:
-    """
+    '''
     This is the base class for ingame items. It is intended to hold the common behaviour of items.
 
     Attributes:
         seed (int): rng seed intended to have predictable randomness
         container: references where the item is placed currently
 
-    """
-
+    '''
     type = "Item"
 
     # flags for traits
@@ -45,11 +45,13 @@ class Item:
     container = None
     name = "unknown"
 
-    def getTerrainPosition(self):
-        return self.getTerrain().getPosition()
+    description = "abstract base item should never be used directly"
 
-    def callInit(self):
-        super().__init__()
+    def getTerrainPosition(self):
+        '''
+        get the position of the terrain this item is on
+        '''
+        return self.getTerrain().getPosition()
 
     def __init__(self, display=None, name=None, seed=0, noId=False):
         """
@@ -61,8 +63,6 @@ class Item:
             seed: rng seed
             noId: flag to prevent generating useless ids (obsolete?)
         """
-        #super().__init__()
-
         self.commandOptions = []
         self.applyOptions = []
         self.ignoreAttributes = []
@@ -70,12 +70,8 @@ class Item:
         self.settings = {}
         self.charges = 0
         self.watched = []
+        super().__init__()
 
-        self.callInit()
-
-        self.doOwnInit(display=display,name=name,seed=seed,noId=noId)
-
-    def doOwnInit(self,display=None, name=None, seed=0, noId=False):
         if display:
             self.display = display
         else:
@@ -309,6 +305,7 @@ class Item:
             "what do you want to do?", options
         )
         submenu.extraInfo["item"] = self
+        submenu.tag = "applyOptionSelection"
         character.macroState["submenue"] = submenu
         character.macroState["submenue"].followUp = {
             "method": "handleApplyMenu",
@@ -363,7 +360,7 @@ class Item:
 
         # gather actions
         actions = self.gatherApplyActions(character)
-        character.timeTaken += 1
+        character.takeTime(1,"used item")
 
         # run actions
         if actions:
@@ -442,7 +439,7 @@ class Item:
         if not self.walkable:
             character.addListener(self.OnDropNonWalkable,"dropped")
             self.NonWalkableItemDeBuff = src.statusEffects.statusEffectMap["Slowed"](slowDown=0.1, duration = None,inventoryItem = self)
-            character.statusEffects.append(self.NonWalkableItemDeBuff)
+            character.addStatusEffect(self.NonWalkableItemDeBuff)
 
     def OnDropNonWalkable(self,params):
         (character,item) = params
@@ -456,6 +453,24 @@ class Item:
             return (self.container.xPosition+offset[0],self.container.yPosition+offset[1],offset[2])
         else:
             return (self.xPosition//15+offset[0],self.yPosition//15+offset[1],offset[2])
+
+    def get_items_on_tile(self):
+        """
+        get the items on the same spot as this item
+        """
+        return self.container.getItemByPosition(self.getPosition())
+
+    def is_bolted_over(self):
+        """
+        check if the item is bellow a bolted down item
+        """
+        for item in self.get_items_on_tile():
+            if item == self:
+                break
+            if not item.bolted:
+                continue
+            return True
+        return False
 
     def getUsageInformation(self):
         return self.usageInfo
@@ -971,12 +986,18 @@ class Item:
             generateScrap: a flag indication wether scrap should be left by the destruction
         """
 
+        # ensure container
         container = self.container
-
         if not container:
             return
 
-        pos = (self.xPosition, self.yPosition, self.zPosition)
+        # remember old position
+        if isinstance(container,src.characters.Character):
+            pos = (container.xPosition, container.yPosition, container.zPosition)
+            drop_container = container.container
+        else:
+            pos = (self.xPosition, self.yPosition, self.zPosition)
+            drop_container = container
 
         # remove item
         container.removeItem(self)
@@ -986,28 +1007,91 @@ class Item:
 
         # generate scrap
         if generateScrap:
+            # generate item
             amount = 1
             if not self.walkable:
                 amount = 20
             newItem = src.items.itemMap["Scrap"](amount=amount)
 
+            # merge with existing scrap piles
             toRemove = []
-            for item in container.getItemByPosition(pos):
+            for item in drop_container.getItemByPosition(pos):
                 toRemove.append(item)
                 if item.type != "Scrap":
                     newItem.amount += 1
                 else:
                     newItem.amount += item.amount
-            container.removeItems(toRemove)
+            drop_container.removeItems(toRemove)
             newItem.setWalkable()
 
             # place scrap
-            container.addItems([(newItem,pos)])
+            drop_container.addItems([(newItem,pos)])
 
     def constrain_within_room(self, pos):
         x = src.helpers.clamp(pos[0],1,11)
         y = src.helpers.clamp(pos[1],1,11)
         return x,y,pos[2]
+
+    def boltAction(self,character):
+        '''
+        bolt the odem down
+        '''
+        self.bolted = True
+        character.addMessage("you bolt down the item")
+        character.changed("boltedItem",{"character":character,"item":self})
+
+    def unboltAction(self,character):
+        '''
+        unbolt the item
+        '''
+        self.bolted = False
+        character.addMessage("you unbolt the item")
+        character.changed("unboltedItem",{"character":character,"item":self})
+
+    
+    def delayedAction(self, params):
+        character = params["character"]
+
+        if not "doneTime" in params:
+            params["doneTime"] = 0
+
+        if not "hitCounter" in params:
+            params["hitCounter"] = character.numAttackedWithoutResponse
+
+        if params["hitCounter"] != character.numAttackedWithoutResponse:
+            character.addMessage("You got hit while working")
+            return
+
+        ticksLeft = params["delayTime"] - params["doneTime"]
+        character.takeTime(1,"working")
+        params["doneTime"] += 1
+
+        barLength = params["delayTime"]//10
+        if params["delayTime"]%10:
+            barLength += 1
+        baseProgressbar = "X" * int(params["doneTime"] // 10) + "." * int(
+            barLength - (params["doneTime"] // 10)
+        )
+        progressBar = ""
+        while len(baseProgressbar) > 10:
+            progressBar += baseProgressbar[:10]+"\n"
+            baseProgressbar = baseProgressbar[10:]
+        progressBar += baseProgressbar
+
+        submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(progressBar, targetParamName="abortKey")
+        submenue.tag = "Wait"
+        character.macroState["submenue"] = submenue
+        character.macroState["submenue"].followUp = {
+            "container": self,
+            "method": params["action"] if ticksLeft <= 0 else "delayedAction",
+            "params": params,
+        }
+
+        character.runCommandString(".", nativeKey=True)
+        if ticksLeft % 10 != 9 and src.gamestate.gamestate.mainChar == character:
+            src.interaction.skipNextRender = True
+
+
 
 commons = [
     "MarkerBean",

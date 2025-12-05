@@ -22,7 +22,7 @@ class BrewPotion(src.quests.MetaQuestSequence):
         self.startWatching(character,self.handleBrewedPotions, "brewed potion")
         super().assignToCharacter(character)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
         return False
@@ -151,7 +151,7 @@ class BrewPotion(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),description="go to a room having a AlchemyTable")
                 return ([quest],None)
 
-        return (None,None)
+        return (None,(".","stand around confused"))
 
     def generateTextDescription(self):
         text = [f"""

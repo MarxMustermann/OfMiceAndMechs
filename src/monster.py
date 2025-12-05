@@ -1,6 +1,7 @@
 import random
 
 import src
+import src.helpers
 
 # bad code: there is very specific code in here, so it it stopped to be a generic class
 class Monster(src.characters.Character):
@@ -86,7 +87,11 @@ class Monster(src.characters.Character):
             lootTable = self.lootTable()
             loot = random.choices([item[0] for item in lootTable],[item[1] for item in lootTable])[0]
             if loot is not None:
-                self.container.addItem(loot(),self.getPosition())
+                if isinstance(loot, list):
+                    for itemtype in loot:
+                        self.container.addItem(itemtype(),self.getPosition())
+                else:
+                    self.container.addItem(loot(),self.getPosition())
 
         super().die(reason, addCorpse=False, killer=killer)
 
@@ -193,111 +198,51 @@ class Monster(src.characters.Character):
 
         super().changed(tag, info)
 
-    def render(self):
-        """
-        render the monster depending on the evelutionary state
-        """
+    def color_for_multiplier(self, multiplier, start=(255, 255, 255), end=(255, 16, 8)):
+        range = self.multiplier_range(multiplier)
 
-        if self.specialDisplay:
-            return self.specialDisplay
-
-        render = src.canvas.displayChars.monster_spore
-        if self.phase == 2:
-            render = src.canvas.displayChars.monster_feeder
-
-            if self.health > 150:
-                colorHealth = "#f80"
-            elif self.health > 140:
-                colorHealth = "#e80"
-            elif self.health > 130:
-                colorHealth = "#d80"
-            elif self.health > 120:
-                colorHealth = "#c80"
-            elif self.health > 110:
-                colorHealth = "#b80"
-            elif self.health > 100:
-                colorHealth = "#a80"
-            elif self.health > 90:
-                colorHealth = "#980"
-            elif self.health > 80:
-                colorHealth = "#880"
-            elif self.health > 70:
-                colorHealth = "#780"
-            elif self.health > 60:
-                colorHealth = "#680"
-            elif self.health > 50:
-                colorHealth = "#580"
-            elif self.health > 40:
-                colorHealth = "#480"
-            elif self.health > 30:
-                colorHealth = "#380"
-            elif self.health > 20:
-                colorHealth = "#280"
-            elif self.health > 10:
-                colorHealth = "#180"
-            else:
-                colorHealth = "#080"
-
-            if self.baseDamage > 15:
-                colorDamage = "#f80"
-            elif self.baseDamage > 14:
-                colorDamage = "#e80"
-            elif self.baseDamage > 13:
-                colorDamage = "#d80"
-            elif self.baseDamage > 12:
-                colorDamage = "#c80"
-            elif self.baseDamage > 11:
-                colorDamage = "#b80"
-            elif self.baseDamage > 10:
-                colorDamage = "#a80"
-            elif self.baseDamage > 9:
-                colorDamage = "#980"
-            elif self.baseDamage > 8:
-                colorDamage = "#880"
-            elif self.baseDamage > 7:
-                colorDamage = "#780"
-            elif self.baseDamage > 6:
-                colorDamage = "#680"
-            elif self.baseDamage > 5:
-                colorDamage = "#580"
-            elif self.baseDamage > 4:
-                colorDamage = "#480"
-            elif self.baseDamage > 3:
-                colorDamage = "#380"
-            elif self.baseDamage > 2:
-                colorDamage = "#280"
-            elif self.baseDamage > 1:
-                colorDamage = "#180"
-            else:
-                colorDamage = "#080"
-
-            render = [(src.characters.urwid.AttrSpec(colorHealth, "#444"), "🝆"),(src.characters.urwid.AttrSpec(colorDamage, "#444"), "-")]
-        elif self.phase == 3:
-            render = src.canvas.displayChars.monster_grazer
-        elif self.phase == 4:
-            render = src.canvas.displayChars.monster_corpseGrazer
-        elif self.phase == 5:
-            render = src.canvas.displayChars.monster_hunter
-
-        return render
-
-    def color_for_multiplier(self, multiplier):
-        match src.gamestate.gamestate.difficulty:
-            case "difficult":
-                range = multiplier / 2 / 7
-            case "medium":
-                range = multiplier / 1 / 4
-            case _:
-                range = multiplier / 0.5 / 4
-
-        return (
+        color = (
             src.interaction.urwid.AttrSpec(
-                src.interaction.urwid.AttrSpec.interpolate(
-                    (255, 255, 255), (255, 16, 8), src.helpers.clamp(range, 0.0, 1.0)
-                ),
+                src.interaction.urwid.AttrSpec.interpolate(start, end, src.helpers.clamp(range, 0.0, 1.0)),
                 "black",
             ),
         )
+        return color
 
+    @staticmethod
+    def get_random_multiplier(monster=None) -> float:
+        if src.gamestate.gamestate.difficulty == "custom":
+            percentage = src.gamestate.gamestate.difficultyMap["monster_difficulty"]["default"]
+
+            if monster and monster in src.gamestate.gamestate.difficultyMap["monster_difficulty"]:
+                monster_specific_percentage = src.gamestate.gamestate.difficultyMap["monster_difficulty"][monster]
+                percentage = percentage * (1 + ((monster_specific_percentage - 0.5) / 0.5))
+
+            d_range = 1.5
+            if "scale_power_curve" in src.gamestate.gamestate.difficultyMap:
+                d_range = src.gamestate.gamestate.difficultyMap["scale_power_curve"]
+
+            if percentage <= 0.5:
+                return src.helpers.power_distribution(1, 2 * 7, 1 + d_range * (1 - (percentage / 0.5)))
+
+            return src.helpers.reversed_power_dist(1, 2 * 7, 1 + d_range * ((percentage - 0.5) / 0.5))
+
+        return src.helpers.power_distribution(
+            1,
+            (
+                src.gamestate.gamestate.difficultyMap["difficultyModifier"]
+                * (1 + src.gamestate.gamestate.difficultyMap["diff_increase_per_dungeon"] * 6)
+            ),
+            src.gamestate.gamestate.difficultyMap["scale_power_curve"],
+        )
+
+    def multiplier_range(self, multiplier):
+        if src.gamestate.gamestate.difficultyMap:
+            return multiplier / (
+                src.gamestate.gamestate.difficultyMap["difficultyModifier"]
+                * (1 + src.gamestate.gamestate.difficultyMap["diff_increase_per_dungeon"] * 6)
+            )
+        else:
+            return multiplier / 4
 
 src.characters.add_character(Monster)

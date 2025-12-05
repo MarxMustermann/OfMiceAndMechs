@@ -38,6 +38,7 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
         self.numUsed = 0
         self.inUse = False
         self.disabled = False
+        self.priority = 0
 
     """
     auto generate stockpiles
@@ -172,7 +173,7 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
 
         itemsFound = []
         for material in materialsNeeded:
-            for item in self.getInputItems():
+            for item in self.getInputItems(character):
                 if item in itemsFound:
                     continue
                 if item.type == material:
@@ -180,7 +181,7 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
                     break
 
         if not len(materialsNeeded) == len(itemsFound):
-            character.addMessage(f"You need to put the raw items into the manufacturing tables input\nitems: {materialsNeeded}")
+            character.addMessage(f"You need to put the raw items into the manufacturing tables input or have them in your inventory\nitems: {materialsNeeded}")
             character.changed("failed manufacturing",{})
             return
 
@@ -191,26 +192,29 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
             return
 
         if not self.toProduce == "MetalBars" or itemsFound[0].amount == 1:
-            self.container.removeItems(itemsFound)
+            for item in itemsFound:
+                if item in character.inventory:
+                    character.removeItemFromInventory(item)
+                else:
+                    self.container.removeItem(item)
         else:
             itemsFound[0].amount -= 1
             itemsFound[0].setWalkable()
 
-        params["productionTime"] = 75-min(50,self.numUsed)
+        params["delayTime"] = 75-min(50,self.numUsed)
         if self.toProduce == "MetalBars":
-            params["productionTime"] = params["productionTime"]//10
-        params["doneProductionTime"] = 0
-        params["hitCounter"] = character.numAttackedWithoutResponse
-        self.produceItem_wait(params)
+            params["delayTime"] = params["delayTime"]//10
+        params["action"]= "output_produced_item"
+        self.delayedAction(params)
         self.numUsed += 1
         self.inUse = True
 
-    def produceItem_done(self,params):
+    def output_produced_item(self,params):
         character = params["character"]
         if not params["type"]:
             return
         character.addMessage("You produce a "+params["type"])
-        character.addMessage("It took you "+str(params["productionTime"])+" turns to do that")
+        character.addMessage("It took you "+str(params["delayTime"])+" turns to do that")
 
         badListed = ["Sword","Armor","Rod"]
         if params["type"] in badListed:
@@ -243,6 +247,7 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
                     self.container.addItem(new,targetPos)
                     break
 
+        character.stats["items produced"][params["type"]] = character.stats["items produced"].get(params["type"], 0) + 1
         character.changed("manufactured",{"item":new,"table":self})
         self.inUse = False
 
@@ -280,7 +285,7 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
 
         return True
 
-    def getInputItems(self):
+    def getInputItems(self, character = None):
 
         result = []
 
@@ -291,6 +296,11 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
                 if item.bolted:
                     continue
                 result.append(item)
+
+        if character:
+            for item in character.inventory:
+                result.append(item)
+
         return result
 
     def isOutputEmpty(self):
@@ -306,6 +316,8 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
         return False
 
     def checkForDropSpotsFull(self):
+        if self.xPosition == None:
+            return True
 
         for output in self.outs:
             targetPos = (self.xPosition+output[0], self.yPosition+output[1], self.zPosition+output[2])
@@ -338,7 +350,37 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
             options["d"] = ("enable", self.enable)
         else:
             options["d"] = ("disable", self.disable)
+        options["p"] = ("set priority", self.show_set_priority_ui)
         return options
+
+    def show_set_priority_ui(self,character):
+        try:
+            self.priority
+        except:
+            self.priority = 0
+        character.macroState["submenue"] = src.menuFolder.sliderMenu.SliderMenu(
+            query = "set the preferred max amount of damage to upgrade to",
+            defaultValue = self.priority,
+            minValue = 0,
+            maxValue = 15,
+            stepValue = 1,
+            targetParamName = "priority"
+        )
+        character.macroState["submenue"].followUp = {
+            "container": self,
+            "method": "set_priority",
+            "params": {"character": character},
+        }
+
+    def set_priority(self,params):
+        '''
+        actually do the sword sharpening
+        '''
+        to_set = int(params["priority"])
+        if to_set < 0 or to_set > 15:
+            return
+        
+        self.priority = to_set
 
     def enable(self,character):
         character.addMessage("you enable the Machine")
@@ -366,13 +408,25 @@ numUsed: {self.numUsed}
         return text
 
     def render(self):
+        characters = "Mt"
         if self.disabled or self.toProduce == None or self.bolted == False:
-            return "mT"
-        if self.inUse:
-            return "mt"
-        if self.readyToUse():
-            return "MT"
-        else:
-            return "Mt"
+            characters = "mT"
+        elif self.inUse:
+            characters = "mt"
+        elif self.readyToUse():
+            characters = "MT"
+
+        try:
+            self.priority
+        except:
+            self.priority = 0
+
+        color = "#fff"
+        if self.priority > 0:
+            color = "#ff"+hex(15-self.priority)[2]
+
+        display = (src.interaction.urwid.AttrSpec(color, "black"), characters)
+        return display
+        
 
 src.items.addType(ManufacturingTable)

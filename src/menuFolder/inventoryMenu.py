@@ -21,7 +21,7 @@ class InventoryMenu(src.subMenu.SubMenu):
         """
 
         self.subMenu = None
-        self.skipKeypress = False
+        self.skipKeypress = True
         self.activate = False
         self.drop = False
         self.char = char
@@ -43,6 +43,11 @@ class InventoryMenu(src.subMenu.SubMenu):
 
         if self.subMenu:
             self.subMenu.handleKey(key, noRender=noRender, character=character)
+            print(self.subMenu.done)
+            if not self.subMenu.done:
+                return False
+            key = "~"
+
             if self.drop:
                 direction = self.subMenu.keyPressed
                 if direction == "w":
@@ -59,20 +64,19 @@ class InventoryMenu(src.subMenu.SubMenu):
                 item = self.char.inventory[self.cursor]
                 self.char.addMessage(f"you drop a {item.type}")
                 self.char.drop(self.char.inventory[self.cursor], pos)
-                self.char.timeTaken += self.char.movementSpeed
+                self.char.takeTime(self.char.movementSpeed,"dropped item")
 
                 self.drop = False
                 self.subMenu = None
                 return True
+
             self.subMenu = None
-            self.skipKeypress = True
-            return False
 
         if self.skipKeypress:
             self.skipKeypress = False
         else:
             # exit the submenu
-            if key == "esc":
+            if key in ("esc","i"):
                 return True
             if key in (
                 "ESC",
@@ -93,19 +97,29 @@ class InventoryMenu(src.subMenu.SubMenu):
                 self.cursor = len(self.char.inventory) - 1
 
             if self.char.inventory:
+                # do examine
+                if key == "e":
+                    item = self.char.inventory[self.cursor]
+                    self.char.addMessage(f"you activate the {item.type}")
+
+                    item_info = item.getLongInfo()
+                    self.subMenu = src.menuFolder.textMenu.TextMenu(item_info)
+                    self.subMenu.handleKey("~", noRender=noRender, character=character)
+                    return False
+
                 # do activation
                 if key == "j":
                     item = self.char.inventory[self.cursor]
                     self.char.addMessage(f"you activate the {item.type}")
                     item.apply(self.char)
-                    self.char.timeTaken += self.char.movementSpeed
+                    self.char.takeTime(self.char.movementSpeed,"activated item")
 
                 # do drop
                 if key == "l":
                     item = self.char.inventory[self.cursor]
                     self.char.addMessage(f"you drop a {item.type}")
                     self.char.drop(item)
-                    self.char.timeTaken += self.char.movementSpeed
+                    self.char.takeTime(self.char.movementSpeed,"dropped item")
 
                 # equip as tool
                 if key == "t":
@@ -212,7 +226,7 @@ class InventoryMenu(src.subMenu.SubMenu):
                         )
             txt.append("\n")
             if not sidebared:
-                txt.append("press ws to move cursor\npress L to drop item nearby\npress l to drop item\n")
+                txt.append("press ws to move cursor\npress L to drop item nearby\npress l to drop item\npress j to activate item\npress e to examine item\n")
         else:
             txt.append("empty Inventory\n\n")
         return txt

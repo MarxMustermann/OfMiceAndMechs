@@ -53,8 +53,9 @@ class Golem(src.monster.Monster):
         self.maxHealth = int(self.maxHealth*(1+runModifier))
         self.health = self.maxHealth
         self.godMode = True
-        self.movementSpeed = 1.3-0.1*multiplier
-
+        self.movementSpeed = 1.3
+        self.movementSpeed -= self.movementSpeed * 0.5 * self.multiplier_range(multiplier)
+        self.waitLength = 20
 
     def changed(self, tag="default", info=None):
         if tag == "pickup bolted fail":
@@ -73,5 +74,14 @@ class Golem(src.monster.Monster):
     @staticmethod
     def lootTable():
         return [(None, 6),(src.items.itemMap["Grindstone"], 4)]
+
+    def getLoreDescription(self):
+        return f"You see a Golem. It moves with mechanical force.\nSome of the Golems are rusting hulks, but some are finely tuned killing machines"
+
+    def getFunctionalDescription(self):
+        return f"Some Golems are stronger than others, but are not special otherwise."
+
+    def description(self):
+        return self.getLoreDescription()+"\n\n---- "+self.getFunctionalDescription()
 
 src.characters.add_character(Golem)

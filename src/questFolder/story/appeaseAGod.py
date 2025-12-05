@@ -164,9 +164,8 @@ class AppeaseAGod(src.quests.MetaQuestSequence):
             if src.gamestate.gamestate.tick%(15*15*15) < 2000 and src.gamestate.gamestate.tick%(15*15*15) > 10:
                 quest = src.quests.questMap["LiftOutsideRestrictions"]()
                 return ([quest],None)
-            return (None,("...........","wait for the wave of enemies"))
+            return (None,(";","wait for the wave of enemies"))
         return (None,("...........","wait for something to happen"))
-
 
     def generateTextDescription(self):
         text = """
@@ -208,7 +207,7 @@ Your goal is to reach {self.targetNumGods} unlocked GlassStatues.
     def wrapedTriggerCompletionCheck(self,character=None):
         pass
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
@@ -227,11 +226,13 @@ Your goal is to reach {self.targetNumGods} unlocked GlassStatues.
 
         if self.targetNumGods:
             if self.targetNumGods <= numGlassStatues:
-                self.postHandler()
+                if not dryRun:
+                    self.postHandler()
                 return True
         else:
             if numGlassStatues:
-                self.postHandler()
+                if not dryRun:
+                    self.postHandler()
                 return True
         return False
 

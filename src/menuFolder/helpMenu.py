@@ -8,6 +8,10 @@ class HelpMenu(src.subMenu.SubMenu):
 
     type = "HelpMenu"
 
+    def __init__(self):
+        self.skipKeypress = True
+        super().__init__()
+
     def handleKey(self, key, noRender=False, character = None):
         """
         show the help text and ignore keypresses
@@ -19,8 +23,12 @@ class HelpMenu(src.subMenu.SubMenu):
             returns True when done
         """
 
+        if self.skipKeypress:
+            self.skipKeypress = False
+            key = "~"
+
         # exit the submenu
-        if key in ("esc"," "):
+        if key in ("esc"," ","?","z"):
             character.changed("closedHelp")
             return True
 

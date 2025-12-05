@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 class GoToPosition(src.quests.MetaQuestSequence):
     type = "GoToPosition"
 
-    def __init__(self, description="go to position", creator=None,targetPosition=None,ignoreEndBlocked=False,reason=None):
+    def __init__(self, description="go to position", creator=None,targetPosition=None,ignoreEndBlocked=False,reason=None,lifetime=None):
         if targetPosition:
             if targetPosition[0] < 0 or targetPosition[0] > 13:
                 raise ValueError(f"target position {targetPosition} out of range")
@@ -14,7 +14,7 @@ class GoToPosition(src.quests.MetaQuestSequence):
                 raise ValueError(f"target position {targetPosition} out of range")
 
         questList = []
-        super().__init__(questList, creator=creator)
+        super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
         self.baseDescription = description
         self.targetPosition = None
@@ -29,6 +29,7 @@ class GoToPosition(src.quests.MetaQuestSequence):
         self.shortCode = "g"
         self.smallPath = []
         self.path = []
+        self.lowLevel = True
 
     def generateTextDescription(self):
         reason = ""
@@ -98,10 +99,10 @@ Close this menu by pressing esc and follow the instructions on the left hand men
         if self.path and self.path[0] == convertedDirection:
             self.path = self.path[1:]
             if not self.path:
-                self.triggerCompletionCheck(extraInfo[0])
+                self.triggerCompletionCheck(extraInfo[0],dryRun=False)
                 return
             if self.ignoreEndBlocked and len(self.path) == 1:
-                self.triggerCompletionCheck(extraInfo[0])
+                self.triggerCompletionCheck(extraInfo[0],dryRun=False)
                 return
 
             if not self.isPathSane(extraInfo[0]):
@@ -152,20 +153,22 @@ Close this menu by pressing esc and follow the instructions on the left hand men
 
         super().assignToCharacter(character)
 
-    def triggerCompletionCheck(self, character=None):
+    def triggerCompletionCheck(self, character=None, dryRun=True):
         if not self.targetPosition:
             return False
         if not character:
             return False
         if not self.active:
-            return None
+            return False
 
         if character.xPosition%15 == self.targetPosition[0] and character.yPosition%15 == self.targetPosition[1]:
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
         if self.ignoreEndBlocked:
             if abs(character.xPosition%15-self.targetPosition[0])+abs(character.yPosition%15-self.targetPosition[1]) == 1:
-                self.postHandler()
+                if not dryRun:
+                    self.postHandler()
                 return True
         return False
 
@@ -195,8 +198,8 @@ Close this menu by pressing esc and follow the instructions on the left hand men
         return super().setParameters(parameters)
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
-        if self.triggerCompletionCheck(character):
-            return (None,None)
+        if self.triggerCompletionCheck(character,dryRun=dryRun):
+            return (None,(".","stand around confused"))
 
         if not self.path:
             self.generatePath(character,dryRun=dryRun)
@@ -204,10 +207,8 @@ Close this menu by pressing esc and follow the instructions on the left hand men
         if not self.isPathSane(character):
             self.generatePath(character,dryRun=dryRun)
             if not self.path:
-                if not dryRun:
-                    character.addMessage("moving failed - no path found (solver)")
-                    self.fail("no path found")
-                return (None,None)
+                return self._solver_trigger_fail(dryRun,"moving failed - no path found (solver)")
+
         if not ignoreCommands and character.macroState.get("submenue"):
             return (None,(["esc"],"exit submenu"))
         
@@ -223,7 +224,7 @@ Close this menu by pressing esc and follow the instructions on the left hand men
             return (None,(".12..","wait"))
 
         if self.ignoreEndBlocked and len(self.path) == 1:
-            return (None,None)
+            return (None,(".","stand around confused"))
 
         command  = ""
         movementMap = {(1,0):"d",(-1,0):"a",(0,1):"s",(0,-1):"w"}

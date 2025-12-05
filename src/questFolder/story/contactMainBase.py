@@ -66,12 +66,11 @@ class ContactMainBase(src.quests.MetaQuestSequence):
             return ([quest],None)
 
         if not character.container.isRoom:
-            return (None,None)
+            return (None,(".","stand around confused"))
 
         communicator = character.container.getItemByType("Communicator")
         if not communicator:
-            self.fail(reason="no communicator found")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"no communicator found")
 
         itemPos = communicator.getPosition()
         if character.getDistance(itemPos) > 1:
@@ -122,9 +121,31 @@ Comtact main command to get reregistered as colony.
 
         self.postHandler()
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
         return False
+
+    def getQuestMarkersSmall(self,character,renderForTile=False):
+        '''
+        return the quest markers for the normal map
+        '''
+        if isinstance(character.container,src.rooms.Room):
+            if renderForTile:
+                return []
+        else:
+            if not renderForTile:
+                return []
+
+        result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
+        if not renderForTile:
+            if isinstance(character.container,src.rooms.Room):
+                for item in character.container.itemsOnFloor:
+                    if not item.type == "Communicator":
+                        continue
+                    if not item.bolted:
+                        continue
+                    result.append((item.getPosition(),"target"))
+        return result
 
 src.quests.addType(ContactMainBase)

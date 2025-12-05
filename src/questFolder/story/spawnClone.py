@@ -1,8 +1,11 @@
 import src
+import random
 
 class SpawnClone(src.quests.MetaQuestSequence):
+    '''
+    quest for a NPC to spawn more NPcs
+    '''
     type = "SpawnClone"
-
     def __init__(self, description="spawn clone", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None,reason=None,tryHard=False):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
@@ -11,6 +14,9 @@ class SpawnClone(src.quests.MetaQuestSequence):
         self.tryHard = tryHard
 
     def handleQuestFailure(self,extraParam):
+        '''
+        try to fix the condition if the quest fails
+        '''
         if extraParam["quest"] not in self.subQuests:
             return
 
@@ -27,8 +33,17 @@ class SpawnClone(src.quests.MetaQuestSequence):
                 return
 
             for (coord,itemList) in self.character.getTerrain().itemsByBigCoordinate.items():
+
                 if self.character.getTerrain().getRoomByPosition(coord):
                     continue
+                is_guarded = False
+                for check_character in self.character.getTerrain().getCharactersOnTile(coord):
+                    if check_character.faction != self.character.faction:
+                        is_guarded = True
+                        continue
+                if is_guarded:
+                    continue
+
                 for item in itemList:
                     if not item.type == "GooFlask":
                         continue
@@ -92,15 +107,32 @@ class SpawnClone(src.quests.MetaQuestSequence):
                     self.startWatching(newQuest,self.handleQuestFailure,"failed")
                     return
 
-            # farm for blooms
-            newQuest = src.quests.questMap["FarmMold"](tryHard=True)
-            self.addQuest(newQuest)
-            self.startWatching(newQuest,self.handleQuestFailure,"failed")
-            return
+            hasClone = False
+            for other_character in self.character.getTerrain().getAllCharacters():
+                if other_character == self.character:
+                    continue
+                if other_character.faction != self.character.faction:
+                    continue
+                hasClone = True
+
+            if hasClone and random.random() < 0.5:
+                newQuest = src.quests.questMap["Adventure"](lifetime=3000)
+                self.addQuest(newQuest)
+                self.startWatching(newQuest,self.handleQuestFailure,"failed")
+                return
+            else: 
+                # farm for blooms
+                newQuest = src.quests.questMap["FarmMold"](tryHard=True,lifetime=1000)
+                self.addQuest(newQuest)
+                self.startWatching(newQuest,self.handleQuestFailure,"failed")
+                return
 
         self.fail(reason)
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
+        '''
+        generate the next step towards solving the quest
+        '''
 
         if self.subQuests:
             return (None,None)
@@ -125,8 +157,7 @@ class SpawnClone(src.quests.MetaQuestSequence):
 
         growthTank = character.container.getItemByType("GrowthTank")
         if not growthTank:
-            self.fail(reason="no growth tank found")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"no growth tank found")
 
         if len(growthTank.container.getItemByPosition(growthTank.getPosition(offset=(1,0,0)))) > 1:
             quest = src.quests.questMap["CleanSpace"](targetPosition=growthTank.getPosition(offset=(1,0,0)),targetPositionBig=growthTank.getBigPosition(),abortOnfullInventory=False)
@@ -162,10 +193,13 @@ class SpawnClone(src.quests.MetaQuestSequence):
 
         if growthTank.filled:
             return (None,(direction+"j","spawn clone"))
-        else:
-            return (None,(direction+"j","refill growth tank"))
+
+        return (None,(direction+"j","refill growth tank"))
 
     def generateTextDescription(self):
+        '''
+        generate a textual description to show on the UI
+        '''
         return ["""
 You reach out to your implant and it answers:
 
@@ -177,6 +211,9 @@ Spawn a clone to have a backup in case of emergencies.
 """]
 
     def assignToCharacter(self, character):
+        '''
+        start listening to events
+        '''
         if self.character:
             return
 
@@ -185,9 +222,15 @@ Spawn a clone to have a backup in case of emergencies.
         super().assignToCharacter(character)
 
     def noFlask(self,extraInfo=None):
+        '''
+        fail if there are no flasks
+        '''
         self.fail("no flask")
 
     def handleSpawn(self,extraInfo=None):
+        '''
+        end quest if a new character was spawned
+        '''
         if self.completed:
             1/0
         if not self.active:
@@ -195,10 +238,37 @@ Spawn a clone to have a backup in case of emergencies.
 
         self.postHandler()
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
+        '''
+        never complete without event
+        '''
         if not character:
             return False
 
         return False
 
+    def getQuestMarkersSmall(self,character,renderForTile=False):
+        '''
+        return the quest markers for the normal map
+        '''
+        if isinstance(character.container,src.rooms.Room):
+            if renderForTile:
+                return []
+        else:
+            if not renderForTile:
+                return []
+
+        result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
+        if not renderForTile:
+            if isinstance(character.container,src.rooms.Room):
+                for item in character.container.itemsOnFloor:
+                    if not item.type == "GrowthTank":
+                        continue
+                    if not item.bolted:
+                        continue
+                    result.append((item.getPosition(),"target"))
+        return result
+
+
+# register the quest type
 src.quests.addType(SpawnClone)

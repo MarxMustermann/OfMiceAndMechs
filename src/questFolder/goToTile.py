@@ -4,10 +4,25 @@ import src
 
 
 class GoToTile(src.quests.MetaQuestSequence):
+    '''
+    quest to go to a certain tile
+
+    Parameters:
+        description: the description to be shown in the UI
+        creator: the entitiy creating this quest (obsolete?)
+        targetPosition: the position to go to
+        lifetime: how long the quest will stay valid
+        paranoid: be very carful
+        showCoordinates: unclear (obsolete?)
+        reason: the reason for assigning the quest shown in the UI
+        abortHealthPercentage: abort quest on this threshold
+        story: optional story text for the description
+        allowMapMenu: allow solver to use the map menu
+    '''
     type = "GoToTile"
+    lowLevel = True
 
-    def __init__(self, description="go to tile", creator=None, targetPosition=None, lifetime=None, paranoid=False, showCoordinates=True,reason=None,abortHealthPercentage=0, story=None, allowMapMenu=True):
-
+    def __init__(self, description="go to tile", creator=None, targetPosition=None, lifetime=None, paranoid=False, showCoordinates=True,reason=None,abortHealthPercentage=0, story=None, allowMapMenu=True, abortOnDanger=False, ignoreEnemies=False):
         if targetPosition:
             if targetPosition[0] < 1 or targetPosition[0] > 13:
                 raise ValueError(f"target position {targetPosition} out of range")
@@ -28,8 +43,17 @@ class GoToTile(src.quests.MetaQuestSequence):
         self.abortHealthPercentage = abortHealthPercentage
         self.story = story
         self.allowMapMenu = allowMapMenu
+        self.abortOnDanger = abortOnDanger
+        self.ignoreEnemies = ignoreEnemies
+
+    def handleEnteredRoom(self,extraInfo):
+        character = extraInfo[0]
+        self.triggerCompletionCheck(dryRun=False,character=character)
 
     def handleChangedTile(self):
+        '''
+        handle the charactar having moved from tile to tile
+        '''
         if not self.active:
             return
 
@@ -55,7 +79,7 @@ class GoToTile(src.quests.MetaQuestSequence):
                 self.expectedPosition = None
                 self.path = self.path[1:]
                 if not self.path:
-                    self.triggerCompletionCheck(self.character)
+                    self.triggerCompletionCheck(self.character, dryRun=False)
                 return
             else:
                 self.path = None
@@ -64,6 +88,9 @@ class GoToTile(src.quests.MetaQuestSequence):
         return
 
     def handleMoved(self,extraInfo):
+        '''
+        handle the character having moved
+        '''
         if not self.active:
             return
 
@@ -76,10 +103,12 @@ class GoToTile(src.quests.MetaQuestSequence):
         #self.generateSubquests(self.character)
 
     def getQuestMarkersTile(self,character):
+        '''
+        return quest markers for the minimap
+        '''
         if self.character.xPosition%15 == 0 or  self.character.yPosition%15 == 0 or self.character.xPosition%15 == 14 or self.character.yPosition%15 == 14:
             return []
         result = super().getQuestMarkersTile(character)
-        self.getSolvingCommandString(character)
         if self.path:
             if isinstance(character.container,src.rooms.Room):
                 pos = (character.container.xPosition,character.container.yPosition)
@@ -92,15 +121,22 @@ class GoToTile(src.quests.MetaQuestSequence):
         return result
 
     def assignToCharacter(self, character):
+        '''
+        assign quest to character
+        '''
         if self.character:
             return None
 
+        self.startWatching(character,self.handleEnteredRoom, "entered room")
         self.startWatching(character,self.handleChangedTile, "changedTile")
         self.startWatching(character,self.handleMoved, "moved")
 
         return super().assignToCharacter(character)
 
     def generateTextDescription(self):
+        '''
+        generate a description of this quest
+        '''
         reason = ""
         if self.reason:
             reason = f", to {self.reason}"
@@ -133,25 +169,39 @@ You are on the target tile.
 
 The target tile is {direction[4:]}
 """
+        if self.paranoid:
+            text += "Be paranoid."
         return text
 
-    def triggerCompletionCheck(self, character=None):
+    def triggerCompletionCheck(self, character=None, dryRun=True):
+        '''
+        check if the quest is completed and end it
+        '''
         if not self.targetPosition:
             return False
         if not character:
             return False
         if not self.active:
-            return None
+            return False
+
+        shouldBeWithinRoom = character.getTerrain().getRoomByPosition(self.targetPosition)
         if isinstance(character.container,src.rooms.Room):
             if character.container.xPosition == self.targetPosition[0] and character.container.yPosition == self.targetPosition[1]:
-                self.postHandler()
+                if not dryRun:
+                    self.postHandler()
                 return True
         elif character.xPosition//15 == self.targetPosition[0] and character.yPosition//15 == self.targetPosition[1]:
-            self.postHandler()
+            if shouldBeWithinRoom:
+                return False
+            if not dryRun:
+                self.postHandler()
             return True
         return False
 
     def isPathSane(self,character):
+        '''
+        check if path is still ok
+        '''
         if not self.path:
             return False
 
@@ -166,23 +216,42 @@ The target tile is {direction[4:]}
         return False
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
+        '''
+        generate the next step towards solving the quest
+        '''
+        # do nothing on weird state
         if character is None:
             return (None,None)
 
-        if self.targetPosition[0] < 1 or self.targetPosition[0] > 13:
-            if not dryRun:
-                self.fail("target position out of range")
-            return (None,None)
-        if self.targetPosition[1] < 1 or self.targetPosition[1] > 13:
-            if not dryRun:
-                self.fail("target position out of range")
+        # do nothing if there is a suqbquest
+        if self.subQuests:
             return (None,None)
 
+        # validate the boundaries
+        if self.targetPosition[0] < 1 or self.targetPosition[0] > 13:
+            return self._solver_trigger_fail(dryRun,"target position out of range")
+        if self.targetPosition[1] < 1 or self.targetPosition[1] > 13:
+            return self._solver_trigger_fail(dryRun,"target position out of range")
+
+        try:
+            self.abortOnDanger
+        except:
+            self.abortOnDanger = False
+
+        if self.abortOnDanger and character.getNearbyEnemies():
+            return self._solver_trigger_fail(dryRun,"enemies nearby")
+
+        # move using the room menu
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.mapMenu.MapMenu) and not ignoreCommands:
             if self.targetPosition == (7,7,0):
                 return (None,("c","auto move to tile"))
 
+
             submenue = character.macroState["submenue"]
+
+            if abs(self.targetPosition[0]-submenue.cursor[0])+abs(self.targetPosition[1]-submenue.cursor[1]) > 4 and self.getQuestMarkersTile(character):
+                return (None,("q","use fast travel to current questmarker"))
+
             command = ""
             if submenue.cursor[0] > self.targetPosition[0]:
                 command += "a"*(submenue.cursor[0]-self.targetPosition[0])
@@ -195,14 +264,15 @@ The target tile is {direction[4:]}
             command += "j"
             return (None,(command,"auto move to tile"))
 
+        # close other menus
         if not ignoreCommands and character.macroState.get("submenue"):
             return (None,(["esc"],"exit submenu"))
 
+        # abort quest when too hurt
         if character.health < character.maxHealth*self.abortHealthPercentage:
-            if not dryRun:
-                self.fail("low health")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"low health")
 
+        # enter terrains properly
         bigPos = character.getBigPosition()
         if bigPos[0] == 0:
             return (None,("d","enter terrain"))
@@ -213,13 +283,22 @@ The target tile is {direction[4:]}
         if bigPos[1] == 14:
             return (None,("w","enter terrain"))
 
+        # generate path
         if not self.path:
             self.generatePath(character)
 
+        # fail on invalid path
         if not self.path:
-            return (None,None)
+            if character.getBigPosition() == self.targetPosition:
+                (x,y,_) = character.getSpacePosition()
+                x= src.helpers.clamp(x+int(random.uniform(-3,3)),2,12)
+                y= src.helpers.clamp(y+int(random.uniform(-3,3)),2,12)
+                quest = src.quests.questMap["GoToPosition"](targetPosition = (x,y))
+                return ([quest], None)
+            return self._solver_trigger_fail(dryRun,"no tile path")
 
-        if self.allowMapMenu and len(self.path) > 3:
+        # open map menu
+        if not character.getNearbyEnemies() and self.allowMapMenu and len(self.path) > 3:
             menuCommand = "g"
             if "runaction" in character.interactionState:
                 menuCommand = ""
@@ -228,66 +307,73 @@ The target tile is {direction[4:]}
                 return (None,(menuCommand+"mc","use fast travel to reach your destination"))
             currentPos = character.getBigPosition()
             offset = (self.targetPosition[0]-currentPos[0], self.targetPosition[1]-currentPos[1], 0)
+            if abs(offset[0])+abs(offset[1]) > 4 and self.getQuestMarkersTile(character):
+                return (None,(menuCommand+"mq","use fast travel to current questmarker"))
             return (None,(menuCommand+"m"+"d"*offset[0]+"a"*(-offset[0])+"s"*offset[1]+"w"*(-offset[1])+"j","use fast travel to reach your destination"))
 
-        if self.subQuests:
-            return (None,None)
+        try:
+            self.ignoreEnemies
+        except:
+            self.ignoreEnemies = False
 
+        # handle the actual movement
         if isinstance(character.container,src.rooms.Room):
             # TODO: reenable random
-            if not self.paranoid:
-                if random.random() < 1.5 and "fighting" in self.character.skills:
-                    for otherCharacter in character.container.characters:
-                        if otherCharacter.faction == character.faction:
-                            continue
-                        return (None,("gg","guard the room"))
 
-                for otherCharacter in character.container.characters:
-                    if otherCharacter.faction == character.faction:
-                        continue
-                    if character.health < character.maxHealth//5:
-                        quest = src.quests.questMap["Flee"]()
+            # fight nearby enemies
+            if not self.ignoreEnemies and character.getNearbyEnemies() and isinstance(character,src.characters.characterMap["Clone"]) and character.isOnHomeTerrain():
+                if character.container.isRoom:
+                    if character.container.tag in ["entryRoom","trapRoom"]:
+                        quest = src.quests.questMap["Flee"](returnHome=True,lifetime=100)
                         return ([quest],None)
-                    else:
-                        quest = src.quests.questMap["Fight"]()
-                        return ([quest],None)
+            if not self.ignoreEnemies and character.getNearbyEnemies() and isinstance(character,src.characters.characterMap["Clone"]):
+                if character.health < character.maxHealth//5 or self.paranoid:
+                    quest = src.quests.questMap["Flee"]()
+                    return ([quest],None)
+                else:
+                    quest = src.quests.questMap["Fight"]()
+                    return ([quest],None)
 
+            # check path and fail if appropriate
             if not self.isPathSane(character):
                 self.generatePath(character)
                 if not self.path:
-                    self.fail()
-                    return (None,None)
+                    return self._solver_trigger_fail(dryRun,"no tile path")
 
+            # exit the room
             if self.path[0] == (0,1):
                 if character.getPosition() == (6,12,0):
                     return (None,("ss","exit the room"))
-                quest = src.quests.questMap["GoToPosition"](targetPosition=(6,12,0),description="go to room exit",reason="reach the rooms exit")
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(6,12,0),description="go to room exit",reason="reach the rooms exit",lifetime=100)
                 quest.assignToCharacter(character)
                 quest.generatePath(character)
                 return ([quest],None)
             if self.path[0] == (0,-1):
                 if character.getPosition() == (6,0,0):
                     return (None,("ww","exit the room"))
-                quest = src.quests.questMap["GoToPosition"](targetPosition=(6,0,0),description="go to room exit",reason="reach the rooms exit")
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(6,0,0),description="go to room exit",reason="reach the rooms exit",lifetime=100)
                 quest.assignToCharacter(character)
                 quest.generatePath(character)
                 return ([quest],None)
             if self.path[0] == (1,0):
                 if character.getPosition() == (12,6,0):
                     return (None,("dd","exit the room"))
-                quest = src.quests.questMap["GoToPosition"](targetPosition=(12,6,0),description="go to room exit",reason="reach the rooms exit")
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(12,6,0),description="go to room exit",reason="reach the rooms exit",lifetime=100)
                 quest.assignToCharacter(character)
                 quest.generatePath(character)
                 return ([quest],None)
             if self.path[0] == (-1,0):
                 if character.getPosition() == (0,6,0):
                     return (None,("aa","exit the room"))
-                quest = src.quests.questMap["GoToPosition"](targetPosition=(0,6,0),description="go to room exit",reason="reach the rooms exit")
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(0,6,0),description="go to room exit",reason="reach the rooms exit",lifetime=100)
                 quest.assignToCharacter(character)
                 quest.generatePath(character)
                 return ([quest],None)
-            return None
+
+            # fail if path was invalid
+            return self._solver_trigger_fail(dryRun,"invalid step in tile path")
         else:
+            # actually enter the tile
             if character.xPosition%15 == 7 and character.yPosition%15 == 14:
                 return (None,("w","enter the tile"))
             if character.xPosition%15 == 7 and character.yPosition%15 == 0:
@@ -297,69 +383,100 @@ The target tile is {direction[4:]}
             if character.xPosition%15 == 0 and character.yPosition%15 == 7:
                 return (None,("d","enter the tile"))
 
+            # fight nearby enemies
             # TODO: reenable random
-            if not self.paranoid:
-                if random.random() < 1.5 and "fighting" in self.character.skills:
-                    if character.container.getEnemiesOnTile(character):
-                        return (None,("gg","guard the tile"))
+            if not self.ignoreEnemies and character.getNearbyEnemies() and isinstance(character,src.characters.characterMap["Clone"]):
+                if character.health < character.maxHealth//5 or self.paranoid:
+                    quest = src.quests.questMap["Flee"]()
+                    return ([quest],None)
+                else:
+                    quest = src.quests.questMap["Fight"]()
+                    return ([quest],None)
 
-                    if character.container.getEnemiesOnTile(character):
-                        if character.health < character.maxHealth//5:
-                            quest = src.quests.questMap["Flee"]()
-                            return ([quest],None)
-                        else:
-                            quest = src.quests.questMap["Fight"]()
-                            return ([quest],None)
-
+            # chack and regenerate path
             if not self.isPathSane(character):
                 self.generatePath(character)
                 if not self.path:
-                    self.fail()
-                    return (None,None)
+                    return self._solver_trigger_fail(dryRun,"no tile path")
 
+            # go to tile edge
+            terrain = character.getTerrain()
             if self.path[0] == (0,1):
+                rooms = terrain.getRoomByPosition(character.getBigPosition(offset=(0,1,0)))
+                if rooms:
+                    room = rooms[0]
+                    if not room.getPositionWalkable((6,0,0)):
+                        return self._solver_trigger_fail(dryRun,"path blocked by room")
                 if character.xPosition%15 == 7 and character.yPosition%15 == 13:
                     return (None,("s","exit the tile"))
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(7,13,0),description="go to tile edge",reason="reach the tiles edge")
                 quest.generatePath(character)
                 return ([quest],None)
             if self.path[0] == (0,-1):
+                rooms = terrain.getRoomByPosition(character.getBigPosition(offset=(0,-1,0)))
+                if rooms:
+                    room = rooms[0]
+                    if not room.getPositionWalkable((6,12,0)):
+                        return self._solver_trigger_fail(dryRun,"path blocked by room")
                 if character.xPosition%15 == 7 and character.yPosition%15 == 1:
                     return (None,("w","exit the tile"))
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(7,1,0),description="go to tile edge",reason="reach the tiles edge")
                 quest.generatePath(character)
                 return ([quest],None)
             if self.path[0] == (1,0):
+                rooms = terrain.getRoomByPosition(character.getBigPosition(offset=(1,0,0)))
+                if rooms:
+                    room = rooms[0]
+                    if not room.getPositionWalkable((0,6,0)):
+                        return self._solver_trigger_fail(dryRun,"path blocked by room")
                 if character.xPosition%15 == 13 and character.yPosition%15 == 7:
                     return (None,("d","exit the tile"))
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(13,7,0),description="go to tile edge",reason="reach the tiles edge")
                 quest.generatePath(character)
                 return ([quest],None)
             if self.path[0] == (-1,0):
+                rooms = terrain.getRoomByPosition(character.getBigPosition(offset=(-1,0,0)))
+                if rooms:
+                    room = rooms[0]
+                    if not room.getPositionWalkable((12,6,0)):
+                        return self._solver_trigger_fail(dryRun,"path blocked by room")
                 if character.xPosition%15 == 1 and character.yPosition%15 == 7:
                     return (None,("a","exit the tile"))
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(1,7,0),description="go to tile edge",reason="reach the tiles edge")
                 quest.generatePath(character)
                 return ([quest],None)
-            return None
 
+            # fail if path was invalid
+            return self._solver_trigger_fail(dryRun,"invalid step in tile path")
+        return (None,(".","stand around confused"))
 
     def generatePath(self,character):
-        self.path = character.getTerrain().getPath(character.getBigPosition(),self.targetPosition,character=character,avoidEnemies=True)
+        '''
+        generate a new path to the targets
+        '''
+        self.path = character.getTerrain().getPath(character.getBigPosition(),self.targetPosition,character=character,avoidEnemies=True,outsideOnly=character.outsideOnly)
 
     def handleQuestFailure(self,extraParam):
+        '''
+        react to a subquest failing
+        '''
+
+        # ensure the quest is actually active
         if extraParam["quest"] not in self.subQuests:
             return
 
+        # remove failed quest
         self.subQuests.remove(extraParam["quest"])
 
+        # clear the path to target
         if extraParam["reason"] and "no path found" in extraParam["reason"]:
             quest = src.quests.questMap["ClearPathToPosition"](targetPosition=extraParam["quest"].targetPosition)
             self.addQuest(quest)
             self.startWatching(quest,self.handleQuestFailure,"failed")
             return
 
+        # fail recursively
         self.fail(extraParam["reason"])
 
-
+# register quest
 src.quests.addType(GoToTile)

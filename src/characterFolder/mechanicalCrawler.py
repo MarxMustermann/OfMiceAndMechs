@@ -42,8 +42,9 @@ class Mechanical_Crawler(src.monster.Monster):
         self.maxHealth = int(self.maxHealth*(1-runModifier))
         self.health = self.maxHealth
         self.godMode = True
-        self.movementSpeed = 1.0*0.9**multiplier
-
+        self.movementSpeed = 1.0
+        self.movementSpeed -= self.movementSpeed * 0.5 * self.multiplier_range(multiplier)
+        self.waitLength = 15
 
     def changed(self, tag="default", info=None):
         if tag == "pickup bolted fail":

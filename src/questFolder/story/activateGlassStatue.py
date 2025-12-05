@@ -31,14 +31,16 @@ class ActivateGlassStatue(src.quests.MetaQuestSequence):
 
         return super().assignToCharacter(character)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
         if character.rank != 1:
             return False
 
-        self.postHandler()
+        if not dryRun:
+            self.postHandler()
+        return True
 
     def getNextStep(self,character,ignoreCommands=False,dryRun=True):
         if self.subQuests:

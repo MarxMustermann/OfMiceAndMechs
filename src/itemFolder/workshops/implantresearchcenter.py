@@ -41,14 +41,13 @@ class ImplantResearchCenter(src.items.itemMap["WorkShop"]):
             character.addMessage("You need to have implants in your inventory to research them")
             return
 
-        character.inventory.remove(implants[-1])
+        character.removeItemFromInventory(implants[-1])
 
-        params["productionTime"] = 10
-        params["doneProductionTime"] = 0
-        params["hitCounter"] = character.numAttackedWithoutResponse
-        self.produceItem_wait(params)
+        params["delayTime"] = 10
+        params["action"]= "output_produced_item"
+        self.delayedAction(params)
 
-    def produceItem_done(self, params):
+    def output_produced_item(self,params):
         character = params["character"]
 
         character.addMessage("You researched the implant")
@@ -61,19 +60,22 @@ class ImplantResearchCenter(src.items.itemMap["WorkShop"]):
             character.addMessage("you finally found a way to manipulate it")
             character.addMessage("you created an Implant Manipulator")
 
-            character.inventory.append(src.items.itemMap["ImplantManipulator"]())
+            character.stats["items produced"]["ImplantManipulator"] = (
+                self.stats["items produced"].get("ImplantManipulator", 0) + 1
+            )
+            character.addToInventory(src.items.itemMap["ImplantManipulator"]())
 
             character.changed("researched implant manipulator", {})
         else:
-            massages = [
+            messages = [
                 "you found a way to dissemble the outer shell",
                 "you know now how to get to the internals of it",
                 "you learnt how it works internally",
                 "you see a way to manipulate it but it doesn't work yet",
             ]
 
-            if self.research_level - 1 < len(massages):
-                character.addMessage(massages[self.research_level - 1])
+            if self.research_level - 1 < len(messages):
+                character.addMessage(messages[self.research_level - 1])
 
             character.changed("researched implant", {})
 

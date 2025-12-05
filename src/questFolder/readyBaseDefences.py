@@ -9,7 +9,7 @@ class ReadyBaseDefences(src.quests.MetaQuestSequence):
         super().__init__(questList, creator=creator)
         self.metaDescription = description
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
@@ -24,7 +24,8 @@ class ReadyBaseDefences(src.quests.MetaQuestSequence):
                 continue
             return False
 
-        self.postHandler()
+        if not dryRun:
+            self.postHandler()
         return True
 
     def getNextStep(self,character,ignoreCommands=False,dryRun=True):
@@ -74,9 +75,7 @@ class ReadyBaseDefences(src.quests.MetaQuestSequence):
             siegeManager = item
 
         if not siegeManager:
-            if not dryRun:
-                self.fail("no siege manager")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"no siege manager")
 
         if character.getBigPosition() != siegeManager.container.getPosition():
             quest = src.quests.questMap["GoToTile"](targetPosition=siegeManager.container.getPosition(),description="go to the command centre",reason="to reach the SiegeManager")
@@ -103,8 +102,7 @@ class ReadyBaseDefences(src.quests.MetaQuestSequence):
             interactionCommand = ""
         if terrain.alarm == False:
             return (None,(interactionCommand+direction+"j","enable the outside restrictions"))
-        else:
-            return (None,(interactionCommand+direction+"ssj","sound the alarms"))
+        return (None,(interactionCommand+direction+"ssj","sound the alarms"))
 
     def generateTextDescription(self):
         text = ["""
@@ -112,5 +110,26 @@ Prepare the base for an attack.
 """]
         return text
 
+    def getQuestMarkersSmall(self,character,renderForTile=False):
+        '''
+        return the quest markers for the normal map
+        '''
+        if isinstance(character.container,src.rooms.Room):
+            if renderForTile:
+                return []
+        else:
+            if not renderForTile:
+                return []
+
+        result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
+        if not renderForTile:
+            if isinstance(character.container,src.rooms.Room):
+                for item in character.container.itemsOnFloor:
+                    if not item.type == "SiegeManager":
+                        continue
+                    if not item.bolted:
+                        continue
+                    result.append((item.getPosition(),"target"))
+        return result
 
 src.quests.addType(ReadyBaseDefences)

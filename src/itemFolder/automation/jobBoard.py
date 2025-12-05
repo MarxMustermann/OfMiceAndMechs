@@ -115,7 +115,7 @@ class JobBoard(src.items.Item):
 
         # remove completed job orders
         if itemFound.done:
-            character.inventory.remove(itemFound)
+            character.removeItemFromInventory(itemFound)
             return
 
         # remove completed job orders

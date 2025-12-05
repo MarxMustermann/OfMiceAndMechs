@@ -2,30 +2,52 @@ import src
 import random
 
 class Promoter(src.items.Item):
-    """
-    """
-
+    '''
+    ingame item for marking official progress in the hierarchy
+    '''
     type = "Promoter"
-
     def __init__(self,):
-        """
-        configure the superclass
-        """
-
         super().__init__(display="PR")
         self.faction = None
-
         self.walkable = False
         self.bolted = True
 
     def apply(self,character):
+        '''
+        handle activation by trying to promote the user
+        '''
+
+        submenu = src.menuFolder.textMenu.TextMenu(f"""
+You put your head into the machine.
+
+Its tendrils reach out and touch your implant.
+
+""")
+        character.macroState["submenue"] = submenu
+        submenu.followUp = {
+            "container": self,
+            "method": "promotion_loop",
+            "params": {"character":character},
+        }
+        character.runCommandString("~",nativeKey=True)
+
+    def promotion_loop(self,extraInfo):
+        '''
+        handle activation by trying to promote the user
+        '''
+
+        # unpack parameters
+        character = extraInfo["character"]
+
+        # filter input
         if not character.rank:
             character.addMessage("you need a rank to use this machine")
             return
-
         if not self.faction:
             self.faction = character.faction
 
+        # check if promotion to rank 5 applies
+        highestAllowed = None
         if character.rank > 5:
             numCharacters = 0
             terrain = character.getTerrain()
@@ -48,34 +70,45 @@ class Promoter(src.items.Item):
                     numCharacters += 1
 
             if numCharacters < 2:
-                character.addMessage(f"promotions locked")
+                if not highestAllowed:
+                    character.addMessage(f"promotions locked")
 
-                submenu = src.menuFolder.textMenu.TextMenu("""
+                    submenu = src.menuFolder.textMenu.TextMenu("""
 Promotions to rank 5 are blocked.
 
 There need to be at least 1 clone besides you on the base to allow any promptions.
 """)
-                character.macroState["submenue"] = submenu
-                character.runCommandString("~",nativeKey=True)
+                    character.macroState["submenue"] = submenu
+                    character.runCommandString("~",nativeKey=True)
 
-                character.changed("promotion blocked",{"reason":"needs 2 clones on base"})
-                return
+                    character.changed("promotion blocked",{"reason":"needs 2 clones on base"})
+                    return
+            else:
+                highestAllowed = 5
 
-            character.rank = 5
-            character.hasSpecialAttacks = True
-            
-            character.addMessage(f"you were promoted to rank 5")
-            submenu = src.menuFolder.textMenu.TextMenu("""
-You put your head into the machine.
+        # check if promotion to rank 4 applies
+        if character.rank > 4:
+            terrain = character.getTerrain()
+            if len(terrain.rooms) < 7:
+                if not highestAllowed:
+                    character.addMessage(f"promotions locked")
 
-Its tendrils reach out and touch your implant.
+                    submenu = src.menuFolder.textMenu.TextMenu("""
+Promotions to rank 4 are blocked.
 
-It is upgraded to rank 5.
-This means you can do special attacks now.""")
-            character.macroState["submenue"] = submenu
-            character.runCommandString("~",nativeKey=True)
+The base needs to consist out of at least 6 rooms.
+Build more rooms.
+""")
+                    character.macroState["submenue"] = submenu
+                    character.runCommandString("~",nativeKey=True)
 
-        elif character.rank > 2:
+                    character.changed("promotion blocked",{"reason":"needs base with at least 6 rooms"})
+                    return
+            elif highestAllowed == 5 or character.rank == 5:
+                highestAllowed = 4
+
+        # check if promotion to rank 3 applies
+        if character.rank > 3:
             foundEnemies = []
             terrain = self.getTerrain()
             for otherChar in terrain.characters:
@@ -90,31 +123,340 @@ This means you can do special attacks now.""")
                     foundEnemies.append(otherChar)
 
             if foundEnemies:
-                character.addMessage(f"promotions locked")
+                if not highestAllowed:
+                    character.addMessage(f"promotions locked")
 
-                submenu = src.menuFolder.textMenu.TextMenu("""
-Promotions to rank 2 are blocked.
+                    submenu = src.menuFolder.textMenu.TextMenu("""
+Promotions to rank 3 are blocked.
 Enemies are nearby.
 
-Kill all enemies on this terrain, to unlock the promotions to rank 2.
+Kill all enemies on this terrain, to unlock the promotions to rank 3.
 """)
+                    character.macroState["submenue"] = submenu
+                    character.runCommandString("~",nativeKey=True)
+
+                    character.changed("promotion blocked",{"reason":"terrain needs cleared from enemies"})
+                    return
+            elif highestAllowed == 4 or character.rank == 4:
+                highestAllowed = 3
+
+        # check if promotion to rank 2 applies
+        if character.rank > 2:
+            numCharacters = 0
+            terrain = character.getTerrain()
+            for checkChar in terrain.characters:
+                if not checkChar.faction == character.faction:
+                    continue
+                if not checkChar.charType == "Clone":
+                    continue
+                if checkChar.burnedIn:
+                    continue
+                numCharacters += 1
+            for room in terrain.rooms:
+                for checkChar in room.characters:
+                    if not checkChar.faction == character.faction:
+                        continue
+                    if not checkChar.charType == "Clone":
+                        continue
+                    if checkChar.burnedIn:
+                        continue
+                    numCharacters += 1
+
+            if numCharacters < 4:
+                if not highestAllowed:
+                    character.addMessage(f"promotions locked")
+
+                    submenu = src.menuFolder.textMenu.TextMenu("""
+Promotions to rank 2 are blocked.
+
+There need to be at least 3 clones besides you on the base to allow any promptions.
+""")
+                    character.macroState["submenue"] = submenu
+                    character.runCommandString("~",nativeKey=True)
+
+                    character.changed("promotion blocked",{"reason":"needs 4 clones on base"})
+                    return
+            elif highestAllowed == 3 or character.rank == 3:
+                highestAllowed = 2
+
+        # abort if there is no update
+        if highestAllowed is None:
+            return
+
+        # do the actual promotions
+        extraInfo["highestAllowed"] = highestAllowed
+        self.do_promotions(extraInfo)
+
+    def do_promotions(self,extraInfo):
+        '''
+        show the UI for actually getting the promotions
+        '''
+
+        # unpack parameters
+        character = extraInfo["character"]
+        highestAllowed = extraInfo["highestAllowed"]
+
+        while character.rank > highestAllowed:
+            if character.rank == 6:
+                options = []
+                options.append(("special attacks","special attacks"))
+                options.append(("swap attacks","swap attacks"))
+                text = """
+As a a reward for reaching rank 5 you can select a close combat perk.
+
+You can only have one close combat perk
+"""
+                submenu = src.menuFolder.selectionMenu.SelectionMenu(
+                    text = text,
+                    options=options,
+                    targetParamName="rewardType"
+                )
+
                 character.macroState["submenue"] = submenu
+                submenu.followUp = {
+                    "container": self,
+                    "method": "get_rank_reward",
+                    "params": extraInfo,
+                }
                 character.runCommandString("~",nativeKey=True)
-
-                character.changed("promotion blocked",{"reason":"needs 2 clones on base"})
                 return
+            if character.rank == 5:
+                options = []
+                options.append(("endurance run","endurance run"))
+                options.append(("jump","jump"))
+                text = """
+As a a reward for reaching rank 4 you can select a special movement perk.
 
-            character.rank = 2
-            character.addMessage(f"you were promoted to base commander")
-            submenu = src.menuFolder.textMenu.TextMenu("""
-You put your head into the machine.
+You can only have one special movement perk 
+"""
+                submenu = src.menuFolder.selectionMenu.SelectionMenu(
+                    text = text,
+                    options=options,
+                    targetParamName="rewardType"
+                )
 
-Its tendrils reach out and touch your implant.
+                character.macroState["submenue"] = submenu
+                submenu.followUp = {
+                    "container": self,
+                    "method": "get_rank_reward",
+                    "params": extraInfo,
+                }
+                character.runCommandString("~",nativeKey=True)
+                return
+            if character.rank == 4:
+                options = []
+                options.append(("line shot","line shot"))
+                options.append(("ramdom target shot","ramdom target shot"))
+                text = """
+As a a reward for reaching rank 3 you can select a ranged attack perk.
 
-It is upgraded to rank 2.
+You can only have one ranged attack perk 
+"""
+                submenu = src.menuFolder.selectionMenu.SelectionMenu(
+                    text = text,
+                    options=options,
+                    targetParamName="rewardType"
+                )
+
+                character.macroState["submenue"] = submenu
+                submenu.followUp = {
+                    "container": self,
+                    "method": "get_rank_reward",
+                    "params": extraInfo,
+                }
+                character.runCommandString("~",nativeKey=True)
+                return
+            if character.rank == 3:
+                options = []
+                options.append(("max health boost","max health boost"))
+                options.append(("movement speed boost","movement speed boost"))
+                text = """
+As a a reward for reaching rank 2 you can select a attribute perk.
+
+You can only have one attribute perk 
+"""
+                submenu = src.menuFolder.selectionMenu.SelectionMenu(
+                    text = text,
+                    options=options,
+                    targetParamName="rewardType"
+                )
+
+                character.macroState["submenue"] = submenu
+                submenu.followUp = {
+                    "container": self,
+                    "method": "get_rank_reward",
+                    "params": extraInfo,
+                }
+                character.runCommandString("~",nativeKey=True)
+                return
+            self.do_promotion(extraInfo)
+
+        submenu = src.menuFolder.textMenu.TextMenu(f"""
+The tendrils retrive.
+
+You are rank {character.rank} now.
 """)
-            character.macroState["submenue"] = submenu
-            character.runCommandString("~",nativeKey=True)
+        character.macroState["submenue"] = submenu
+        character.runCommandString("~",nativeKey=True)
+
+    def get_rank_reward(self, extraInfo):
+        '''
+        dispense a reward for getting promoted
+        '''
+
+        # unpack parameters
+        character = extraInfo["character"]
+        rewardType = extraInfo["rewardType"]
+
+        if rewardType is None:
+            return
+
+        if rewardType == "special attacks":
+            character.hasSpecialAttacks = True
+        if rewardType == "swap attacks":
+            character.hasSwapAttack = True
+        if rewardType == "endurance run":
+            character.hasRun = True
+        if rewardType == "jump":
+            character.hasJump = True
+        if rewardType == "line shot":
+            character.hasLineShot = True
+        if rewardType == "ramdom target shot":
+            character.hasRandomShot = True
+        if rewardType == "max health boost":
+            character.hasMaxHealthBoost = True
+        if rewardType == "movement speed boost":
+            character.hasMovementSpeedBoost = True
+        self.do_promotion(extraInfo)
+
+    def do_promotion(self,extraInfo):
+        '''
+        do an individual rank upgrade
+        '''
+        # unpack parameters
+        character = extraInfo["character"]
+
+        character.rank -= 1
+        character.addMessage(f"you were promoted to rank {character.rank}")
         character.changed("got promotion",{})
 
+        rewardType = extraInfo.get("rewardType")
+        del extraInfo["rewardType"]
+
+        rewardText = None
+        specialAttackText = """
+You got a attack perk. 
+
+You can do an alternative attack by pressing shift when attacking.
+
+For example d will attack an enemy to the east normally and 
+pressing D will do an alternative attack to an enemy to the east.
+
+The alternative attacks usually cost exhaustion.
+If you have more than 10 exhaustion you will do much less damage.
+So try not to exeed 10 exhaustion.
+"""
+        if rewardType == "special attacks":
+            rewardText = specialAttackText + """
+You chose special attacks as alternate attack.
+
+You will be able to choose from a variety of attacks.
+Each attack has a different costs and advantages.
+You will figure it out.
+"""
+        if rewardType == "swap attacks":
+            rewardText = specialAttackText + """
+You chose a swap attack as alternate attack.
+
+This allows you to swap places with an enemy.
+This should allow you to get out of tricky situations
+"""
+
+        specialMomenemtText = """
+You got a special movement perk. 
+
+You can do special movements by pressing shift when walking.
+Bumping into enemies will not do a special movement!
+
+For example d will move you to the east normally and 
+pressing D will do a special movement towards the east.
+
+"""
+        if rewardType == "jump":
+            rewardText = specialMomenemtText + """
+You chose jump as special movement.
+
+This means you can move a fast a few times.
+
+You will move 50% faster, but each jump will cost you 5 exhaustion.
+You cannot jump, if you have 10 or more exhaustion.
+"""
+        if rewardType == "endurance run":
+            rewardText = specialMomenemtText + """
+You chose endurance run as special movement.
+
+This means you can move a bit faster but for a relatively long time.
+
+Each step you take will be 20% faster, but will cost you 1 exhaustion.
+You cannot run, if you have 10 or more exhaustion.
+"""
+
+        rangedCombatText = """
+You got a ranged combat perk. 
+
+You can do a ranged combat attack by pressing f.
+
+"""
+        if rewardType == "line shot":
+            rewardText = rangedCombatText + """
+You chose "line shot" as your ranged combat perk.
+
+This means you can shoot in a straight line from your character.
+This means you can target your shot, but only target a few spots.
+
+After pressing f you will be promteod for what direction you want to fire in,
+Each shot will cost you 1 Bolt.
+"""
+        if rewardType == "ramdom target shot":
+            rewardText = rangedCombatText + """
+You chose "random target shot" as your ranged combat perk.
+Simple, but not ineffective.
+
+You press f and somebody gets shot.
+A random enemy is targeted.
+Each shot will cost you 1 Bolt.
+"""
+
+        attributeBonusText = """
+You got an attribute bonus perk. 
+
+This is an improvement on one of your stats.
+You don't need to activate this perk.
+
+"""
+
+        if rewardType == "max health boost":
+            rewardText = attributeBonusText + """
+You have twice as much max HP now!
+"""
+        if rewardType == "movement speed boost":
+            rewardText = attributeBonusText + """
+You move twice as fast now.
+"""
+
+        if rewardText:
+            submenu = src.menuFolder.textMenu.TextMenu(rewardText)
+
+            character.macroState["submenue"] = submenu
+            submenu.followUp = {
+                "container": self,
+                "method": "do_promotions",
+                "params": extraInfo,
+            }
+            character.runCommandString("~",nativeKey=True)
+            return
+    
+        self.do_promotions(extraInfo)
+
+# register item type
 src.items.addType(Promoter)

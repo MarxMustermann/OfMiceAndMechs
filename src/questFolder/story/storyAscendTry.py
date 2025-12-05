@@ -10,7 +10,7 @@ class StoryAscendTry(src.quests.MetaQuestSequence):
         self.metaDescription = description
         self.reason = reason
 
-    def handleAscended(self):
+    def handleAscended(self,extraParam=None):
         if self.completed:
             1/0
         if not self.active:
@@ -22,7 +22,8 @@ class StoryAscendTry(src.quests.MetaQuestSequence):
         if self.character:
             return None
 
-        self.startWatching(character,self.handleAscended, "ascended")
+        self.startWatching(character,self.handleAscended, "told to ascend")
+        self.startWatching(character,self.handleAscended, "missing glass heart")
 
         return super().assignToCharacter(character)
 
@@ -38,14 +39,16 @@ Take the place of supreme leader and rule the world!
 """]
         return text
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
         if character.rank != 1:
             return False
 
-        self.postHandler()
+        if not dryRun:
+            self.postHandler()
+        return True
 
     def getNextStep(self,character,ignoreCommands=False,dryRun=True):
         if self.subQuests:
@@ -68,9 +71,7 @@ Take the place of supreme leader and rule the world!
                 break
 
         if not throne:
-            if not dryRun:
-                self.fail("no throne")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"no throne")
 
         if character.container != throne.container:
             quest = src.quests.questMap["GoToTile"](targetPosition=throne.container.getPosition(),reason="get to the temple", description="go to temple")
@@ -95,21 +96,6 @@ Take the place of supreme leader and rule the world!
             return (None,(interactionCommand+"w","activate the Throne"))
         if (pos[0],pos[1]+1,pos[2]) == targetPosition:
             return (None,(interactionCommand+"s","activate the Throne"))
-        return None
-
-    def assignToCharacter(self, character):
-        if self.character:
-            return
-
-        self.startWatching(character,self.handeMissingGlassHeart, "missing glass heart")
-        super().assignToCharacter(character)
-
-    def handeMissingGlassHeart(self,extraInfo):
-        if self.completed:
-            1/0
-        if not self.active:
-            return
-
-        self.postHandler()
+        return (None,(".","stand around confused"))
 
 src.quests.addType(StoryAscendTry)

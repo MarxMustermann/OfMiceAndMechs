@@ -114,8 +114,9 @@ class AdvancedQuestMenu(src.subMenu.SubMenu):
                     """
                     options.append(("GoHome", "GoHome"))
                     options.append(("Adventure", "Adventure"))
+                    options.append(("ClearTile", "ClearTile"))
+                    options.append(("LootRoom", "LootRoom"))
                     options.append(("ScavengeTile", "ScavengeTile"))
-                    options.append(("SecureTile", "SecureTile"))
                     options.append(("ClearInventory", "ClearInventory"))
                     options.append(("BeUsefull", "BeUsefull"))
                     options.append(("BeUsefullOnTile", "BeUsefullOnTile"))
@@ -339,7 +340,6 @@ class AdvancedQuestMenu(src.subMenu.SubMenu):
                         questInstance = self.quest()
 
                     # assign the quest
-
                     self.character.assignQuest(questInstance, active=True)
 
                     self.state = "done"

@@ -12,6 +12,7 @@ class EnemyCaller(src.items.Item):
     enemy_limit = 50
 
     def __init__(self):
+        self.event = None
         super().__init__(display="EC")
 
     def handleEpochChange(self):
@@ -28,7 +29,9 @@ class EnemyCaller(src.items.Item):
                     for _i in range(random.randint(0, 2)):
                         monsterType = random.choice(["Golem", "ShieldBug"])
                         pos = (random.randint(1, 11), random.randint(1, 11), 0)
-                        golem = src.characters.characterMap[monsterType]()
+                        golem = src.characters.characterMap[monsterType](
+                            multiplier=src.monster.Monster.get_random_multiplier(monsterType)
+                        )
                         golem.godMode = True
                         quest = src.quests.questMap["SecureTile"](toSecure=(x, y), wandering=False)
                         quest.autoSolve = True

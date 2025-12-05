@@ -72,7 +72,7 @@ If you don't find a {self.itemType} blueprint, research it.
 
             if itemPlaced:
                 if itemPlaced.bolted:
-                    return (None,None)
+                    return (None,(".","stand around confused"))
                 if itemPlaced.container != character.container:
                     quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="go to the tile the Machine is to be placed")
                     return ([quest],None)
@@ -85,7 +85,6 @@ If you don't find a {self.itemType} blueprint, research it.
                 for direction in directions:
                     if character.getPosition(offset=direction[0]) == itemPlaced.getPosition():
                         return (None,(direction[1]+"cb","bolt down the machine"))
-
 
             if character.inventory and character.inventory[-1].type == "Machine" and character.inventory[-1].toProduce == self.itemType:
                 if not self.targetPosition:
@@ -117,8 +116,7 @@ If you don't find a {self.itemType} blueprint, research it.
                         break
 
                     if not validTargetPosition:
-                        self.fail("no spot to build machine")
-                        return (None,None)
+                        return self._solver_trigger_fail(dryRun,"no spot to build machine")
 
                     self.targetPosition = targetPosition
                     self.targetPositionBig = room.getPosition()
@@ -189,9 +187,7 @@ If you don't find a {self.itemType} blueprint, research it.
                 if "machining" in character.duties:
                     newQuest = src.quests.questMap["Machining"](toProduce=self.itemType,amount=1,reason=f"construct a machine that produces {self.itemType}",produceToInventory=True)
                     return ([newQuest],None)
-                if not dryRun:
-                    self.fail(reason="no machine found")
-                return (None,None)
+                return self._solver_trigger_fail(dryRun,"no machine found")
 
             items = machineMachine.container.getItemByPosition(machineMachine.getPosition(offset=(1,0,0)))
             if items and items[-1].type == "Machine":
@@ -309,11 +305,11 @@ If you don't find a {self.itemType} blueprint, research it.
             if "machining" in character.duties:
                 newQuest = src.quests.questMap["Machining"](toProduce=self.itemType,amount=1,reason=f"construct a machine that produces {self.itemType}",produceToInventory=True)
                 return ([newQuest],None)
-            self.fail(reason="no blueprint for "+self.itemType)
-            return (None,None)
-        return (None,None)
+            return self._solver_trigger_fail(dryRun,"no blueprint for "+self.itemType)
 
-    def triggerCompletionCheck(self,character=None):
+        return (None,(".","stand around confused"))
+
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
@@ -325,7 +321,8 @@ If you don't find a {self.itemType} blueprint, research it.
 
         rooms = character.getTerrain().getRoomByPosition(self.targetPositionBig)
         if not rooms:
-            self.fail("targetroom gone")
+            if not dryRun:
+                self.fail("targetroom gone")
             return True
 
         room = rooms[-1]
@@ -334,7 +331,8 @@ If you don't find a {self.itemType} blueprint, research it.
             return False
 
         if items[-1].type == "Machine" and items[-1].toProduce == self.itemType and items[-1].bolted:
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
 
         return False
@@ -364,7 +362,7 @@ If you don't find a {self.itemType} blueprint, research it.
         super().assignToCharacter(character)
 
     def boltedItem(self,extraInfo):
-        self.triggerCompletionCheck(self.character)
+        self.triggerCompletionCheck(self.character,dryRun=False)
 
     def getQuestMarkersTile(self,character):
         result = super().getQuestMarkersTile(character)

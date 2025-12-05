@@ -3,7 +3,162 @@ import random
 
 import src
 
-def SpawnStorageRoom(terrain, coordinate, controlRoom, teleporter_group):
+def castLineDamage(character,direction):
+    terrain = character.getTerrain()
+    last_position = character.getPosition()
+    for i in range(0,20):
+        new_position = (last_position[0]+direction[0],last_position[1]+direction[1],last_position[2]+direction[2])
+        if character.container.isRoom:
+            if new_position[0] < 1:
+                break
+            if new_position[1] < 1:
+                break
+            if new_position[0] > 11:
+                break
+            if new_position[1] > 11:
+                break
+        else:
+            if new_position[0]%15 < 1:
+                break
+            if new_position[1]%15 < 1:
+                break
+            if new_position[0]%15 > 13:
+                break
+            if new_position[1]%15 > 13:
+                break
+        last_position = new_position
+
+        if terrain.mana < 0.1:
+            character.addMessage("out of mana")
+            return
+        terrain.mana -= 0.1
+
+        character.container.addAnimation(new_position,"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "++")]})
+
+        other_characters = character.container.getCharactersOnPosition(new_position)
+        if not other_characters:
+            continue
+
+        character.container.addAnimation(new_position,"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#fff", "black"), "&9")]})
+        character.container.addAnimation(new_position,"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "%%")]})
+        for other_character in other_characters:
+            if terrain.mana < 2:
+                character.addMessage("out of mana")
+                return
+            terrain.mana -= 2
+
+            other_character.hurt(100,reason="magic")
+
+def addStatusEffect(character,buffType,cost=0.1):
+    buff = src.statusEffects.statusEffectMap[effectType]()
+    character.addStatusEffect(buff)
+
+def addSpeedBuffs(character,cost=0.5):
+    terrain = character.getTerrain()
+    if terrain.mana < cost:
+        character.addMessage("out of mana")
+        return
+    terrain.mana -= cost
+
+    buffs = [
+                   src.statusEffects.statusEffectMap["Haste"](speedUp=0.2,duration=200),
+                   src.statusEffects.statusEffectMap["Frenzy"](speedUp=0.2,duration=200),
+            ]
+    for buff in buffs:
+        character.addStatusEffect(buff)
+
+def heal(character):
+    terrain = character.getTerrain()
+    if terrain.mana < 2.5:
+        character.addMessage("out of mana")
+        return
+    terrain.mana -= 2.5
+
+    character.heal(200,"magic")
+
+def spawnForceField(character):
+    '''
+    spawn a ring formed dmage effect around a character
+    '''
+
+    terrain = character.getTerrain()
+    offsets = [(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]
+    for offset in offsets:
+        if terrain.mana < 0.1:
+            character.addMessage("out of mana")
+            return
+        terrain.mana -= 0.1
+        position = character.getPosition(offset=offset)
+        character.container.addAnimation(position,"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "%%")]})
+        for other_character in character.container.getCharactersOnPosition(position):
+            if terrain.mana < 4:
+                character.addMessage("out of mana")
+                return
+            terrain.mana -= 4
+
+            damage_amount = 200
+            other_character.container.addAnimation(position,"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#fff", "black"), "&9")]})
+            other_character.container.addAnimation(position,"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "%%")]})
+            other_character.hurt(damage_amount,reason="shocked")
+            character.addMessage(f"you shock somebody for {damage_amount} damage")
+
+def teleportToTile(character, position, terrain):
+    '''
+    teleport character to a tile 
+    '''
+    character.container.removeCharacter(character)
+    room = terrain.getRoomByPosition(position)
+    if len(room):
+        room[0].addCharacter(character,7,7)
+    else:
+        terrain.addCharacter(character,15*position[0]+7,15*position[1]+7)
+
+def teleportToTerrain(character, terrainPosition, spawnOutside=False):
+    '''
+    teleport character to a terrain
+    '''
+    x, y = terrainPosition
+    character.container.removeCharacter(character)
+    terrain = src.gamestate.gamestate.terrainMap[y][x]
+
+    target_tile_position = (7,7)
+    if spawnOutside:
+        candidates = []
+        for x in range(1,14):
+            for y in range(1,14):
+                if terrain.getRoomByPosition((x,y,0)):
+                    continue
+                candidates.append((x,y,0))
+        target_tile_position = random.choice(candidates)
+
+    room = terrain.getRoomByPosition(target_tile_position)
+    if len(room):
+        room[0].addCharacter(character, 7, 7)
+    else:
+        terrain.addCharacter(character, 15 * target_tile_position[0] + 7, 15 * target_tile_position[1] + 7)
+    character.changed("changedTerrain",{"character":character})
+    character.interactionState["itemMarkedLast"] = None
+
+def spawnCharacter(terrain, bigCoordinate=None, coordinate=None, monsterType=None, faction=None):
+    if not faction:
+        faction = "ghost"
+    if not monsterType:
+        faction = "Monster"
+    if not coordinate:
+        coordinate = (random.randint(1,13),random.randint(1,13))
+
+    character = src.characters.characterMap[monsterType]()
+    character.faction = faction
+    character.automated = True
+
+    terrain.addCharacter(character, bigCoordinate[0]*15+coordinate[0], bigCoordinate[1]*15+coordinate[1])
+
+    return character
+
+def spawnStorageRoom(terrain, coordinate, controlRoom, teleporter_group):
+    '''
+    spawn storage room
+    '''
     room = spawnRoomFromFloorPlan(terrain, coordinate, "storage1.json")
     pos = room.getPosition()
 
@@ -26,12 +181,15 @@ def SpawnStorageRoom(terrain, coordinate, controlRoom, teleporter_group):
 
     teleporter = src.items.itemMap["DimensionTeleporter"]()
     teleporter.group = teleporter_group
-    teleporter.mode = random.choice([0, 1])
+    teleporter.setMode(random.choice([0, 1]))
     teleporter.boltAction(None)
     room.addItem(teleporter, (1, 1, 0))
 
 
 def spawnRoomFromFloorPlan(terrain, coordinate, floorplan):
+    '''
+    spawn room based on a floor plan
+    '''
     room = spawnRoom(terrain, "EmptyRoom", coordinate)
     with open("data/floorPlans/" + floorplan) as fileHandle:
         rawFloorplan = json.load(fileHandle)
@@ -42,6 +200,9 @@ def spawnRoomFromFloorPlan(terrain, coordinate, floorplan):
 
 
 def getFloorPlanFromDict(rawFloorplan):
+    '''
+    create floor plan from dictionary
+    '''
     converted = {}
     if "buildSites" in rawFloorplan:
         buildSites = []
@@ -71,6 +232,9 @@ def getFloorPlanFromDict(rawFloorplan):
     return converted
 
 def convertFloorPlanToDict(self, floorPlan):
+    '''
+    convert floor plan to dictionary
+    '''
     converted = {}
     if "buildSites" in floorPlan:
         buildSites = []
@@ -101,6 +265,9 @@ def convertFloorPlanToDict(self, floorPlan):
 
 
 def spawnScrapField(terrain, coordinate):
+    '''
+    spawn a scrap field
+    '''
     bigX, bigY = coordinate
     for x in range(1, 14):
         for y in range(1, 14):
@@ -118,6 +285,9 @@ def spawnScrapField(terrain, coordinate):
     terrain.scrapFields.append((bigX, bigY, 0))
 
 def spawnTrapRoom(terrain, coordinate, faction, doors="0,6 6,0 6,12 12,6"):
+    '''
+    spawn a trap room
+    '''
     trapRoom2 = spawnRoom(terrain, "EmptyRoom", coordinate, doors)
 
     trapRoom2.tag = "traproom"
@@ -170,13 +340,16 @@ def spawnTrapRoom(terrain, coordinate, faction, doors="0,6 6,0 6,12 12,6"):
 
 
 def spawnArenaRoom(terrain, coordinate, difficulty, doors="0,6 6,0 6,12 12,6"):
+    '''
+    generates an arena room
+    '''
     trapRoom1 = spawnRoom(terrain, "EmptyRoom", coordinate, doors)
     trapRoom1.tag = "arena"
 
     sword = src.items.itemMap["Sword"]()
     sword.baseDamage = 15
     if difficulty == "easy":
-        sword.baseDamage = 25
+        sword.baseDamage = 18
     if difficulty == "difficult":
         sword.baseDamage = 10
     sword.bolted = False
@@ -184,7 +357,7 @@ def spawnArenaRoom(terrain, coordinate, difficulty, doors="0,6 6,0 6,12 12,6"):
     sword = src.items.itemMap["Sword"]()
     sword.baseDamage = 15
     if difficulty == "easy":
-        sword.baseDamage = 25
+        sword.baseDamage = 18
     if difficulty == "difficult":
         sword.baseDamage = 10
     sword.bolted = False
@@ -221,11 +394,13 @@ def spawnArenaRoom(terrain, coordinate, difficulty, doors="0,6 6,0 6,12 12,6"):
 
     swordSharpener = src.items.itemMap["SwordSharpener"]()
     swordSharpener.bolted = True
-    trapRoom1.addItem(swordSharpener, (11, 5, 0))
+    trapRoom1.addItem(swordSharpener, (10, 5, 0))
+    trapRoom1.addInputSlot((11, 5, 0), "Grindstone")
 
     armorReinforcer = src.items.itemMap["ArmorReinforcer"]()
     armorReinforcer.bolted = True
-    trapRoom1.addItem(armorReinforcer, (11, 7, 0))
+    trapRoom1.addItem(armorReinforcer, (10, 7, 0))
+    trapRoom1.addInputSlot((11, 7, 0), "ChitinPlates")
 
     trapRoom1.addInputSlot((11, 9, 0), "MoldFeed", {})
     moldFeed = src.items.itemMap["MoldFeed"]()
@@ -245,7 +420,7 @@ def spawnArenaRoom(terrain, coordinate, difficulty, doors="0,6 6,0 6,12 12,6"):
 
     for x in range(1, 12):
         for y in range(2, 11):
-            if (x, y) in ((11, 9), (11, 8), (11, 5), (11, 7), (11, 4), (11, 3)):
+            if (x, y) in ((11, 9), (11, 8), (11, 5), (11, 7), (11, 4), (11, 3), (10, 5), (10,7)):
                 continue
             trapRoom1.walkingSpace.add((x, y, 0))
 
@@ -296,6 +471,9 @@ def spawnArenaRoom(terrain, coordinate, difficulty, doors="0,6 6,0 6,12 12,6"):
 
 
 def spawnTempleRoom(terrain, coordinate, faction, doors="0,6 6,0 6,12 12,6"):
+    '''
+    spawn a temple
+    '''
     throneRoom = spawnRoom(terrain, "EmptyRoom", coordinate, doors)
     throneRoom.tag = "temple"
     for item in throneRoom.itemsOnFloor:
@@ -306,17 +484,11 @@ def spawnTempleRoom(terrain, coordinate, faction, doors="0,6 6,0 6,12 12,6"):
         item.walkable = False
     throneRoom.priority = 5
 
-    for x in (
-        2,
-        10,
-    ):
+    for x in (2,10):
         for y in range(1, 12):
             throneRoom.walkingSpace.add((x, y, 0))
     for x in range(3, 10):
-        for y in (
-            3,
-            6,
-        ):
+        for y in (3,6):
             throneRoom.walkingSpace.add((x, y, 0))
     for x in range(5, 8):
         for y in range(7, 12):
@@ -363,6 +535,9 @@ def spawnTempleRoom(terrain, coordinate, faction, doors="0,6 6,0 6,12 12,6"):
 
 
 def spawnSpawnRoom(terrain, coordinate, faction, doors="0,6 6,0 6,12 12,6"):
+    '''
+    spawn a room with equipment to spawn clones
+    '''
     spawnedRoom = spawnRoom(terrain, "EmptyRoom", coordinate, doors)
     for item in spawnedRoom.itemsOnFloor:
         if item.type != "Door":
@@ -409,6 +584,12 @@ def spawnSpawnRoom(terrain, coordinate, faction, doors="0,6 6,0 6,12 12,6"):
     command.bolted = True
     spawnedRoom.addItem(command, (4, 3, 0))
 
+    flask = src.items.itemMap["GooFlask"]()
+    flask.uses = 100
+    spawnedRoom.addItem(flask, (2, 3, 0))
+    flask = src.items.itemMap["GooFlask"]()
+    flask.uses = 100
+    spawnedRoom.addItem(flask, (2, 3, 0))
     flask = src.items.itemMap["GooFlask"]()
     flask.uses = 100
     spawnedRoom.addItem(flask, (2, 3, 0))
@@ -466,6 +647,9 @@ def spawnSpawnRoom(terrain, coordinate, faction, doors="0,6 6,0 6,12 12,6"):
 
 
 def spawnControlRoom(terrain, coordinate, spawnReportArchive=False):
+    '''
+    spawn a main control room for the base
+    '''
     mainRoom = spawnRoom(terrain, "EmptyRoom", coordinate, "0,6 6,0 6,12 12,6")
     mainRoom.storageRooms = []
     for item in mainRoom.getItemByPosition((12, 6, 0)):
@@ -575,6 +759,12 @@ def spawnControlRoom(terrain, coordinate, spawnReportArchive=False):
         reportArchive = src.items.itemMap["ReportArchive"]()
         reportArchive.bolted = True
         mainRoom.addItem(reportArchive, (5, 1, 0))
+    personnelTracker = src.items.itemMap["PersonnelTracker"]()
+    personnelTracker.bolted = True
+    mainRoom.addItem(personnelTracker, (4, 1, 0))
+    mapTable = src.items.itemMap["MapTable"]()
+    mapTable.bolted = True
+    mainRoom.addItem(mapTable, (5, 2, 0))
     communicator = src.items.itemMap["Communicator"]()
     communicator.bolted = True
     mainRoom.addItem(communicator, (1, 3, 0))
@@ -585,6 +775,9 @@ def spawnControlRoom(terrain, coordinate, spawnReportArchive=False):
     siegeManager.bolted = True
     mainRoom.addItem(siegeManager, (4, 4, 0))
     siegeManager.handleTick()
+    knowledge_base = src.items.itemMap["KnowledgeBase"]()
+    knowledge_base.bolted = True
+    mainRoom.addItem(knowledge_base, (1, 4, 0))
 
     # add most basic items
     painter = src.items.itemMap["Painter"]()
@@ -601,6 +794,9 @@ def spawnControlRoom(terrain, coordinate, spawnReportArchive=False):
 
 
 def spawnRoom(terrain, roomType, coordinate, doors="0,6 6,0 6,12 12,6"):
+    '''
+    spawn a room
+    '''
     architect = getArchitect(terrain)
 
     return architect.doAddRoom(
@@ -616,6 +812,9 @@ def spawnRoom(terrain, roomType, coordinate, doors="0,6 6,0 6,12 12,6"):
 
 
 def getArchitect(terrain):
+    '''
+    get an architect item able to do things
+    '''
     items = terrain.getItemByPosition((1, 1, 0))
     if len(items):
         for item in items:
@@ -630,12 +829,22 @@ def getArchitect(terrain):
 
 
 def spawnForest(terrain,coordinate):
+    '''
+    spawn a forrest
+    '''
     terrain.forests.append(coordinate)
     
     tree = src.items.itemMap["Tree"]()
     terrain.addItem(tree,(15*coordinate[0]+7,15*coordinate[1]+7,0))
 
 def spawnWaves():
+    '''
+    spawn waves of enemies
+    '''
+    bloodMoon = False
+    if src.gamestate.gamestate.tick%(15*15*15*15) == 0:
+        bloodMoon = True
+
     for (godId,god) in src.gamestate.gamestate.gods.items():
         if ( (god["lastHeartPos"][0] != god["home"][0]) or
              (god["lastHeartPos"][1] != god["home"][1])):
@@ -647,6 +856,9 @@ def spawnWaves():
             numEnemies = 1
             numSpectres = 0
             numSpectres += numEnemies
+
+            if bloodMoon:
+                numSpectres *=2
 
             numGlassHeartsOnPos = 0
             for checkGod in src.gamestate.gamestate.gods.values():
@@ -660,10 +872,13 @@ def spawnWaves():
                 baseHealth = 10
                 baseDamage = 3
                 multipliers = (1.01,1.02,1.01,1.02)
-            elif src.gamestate.gamestate.difficulty == "difficulty":
+            elif src.gamestate.gamestate.difficulty == "difficult":
                 baseHealth = 100
                 baseDamage = 10
                 multipliers = (1.3,1.5,1.3,1.5)
+
+            if bloodMoon:
+                baseDamage *=2
 
             for _i in range(numSpectres):
                 enemy = src.characters.characterMap["Spectre"](6,6)
@@ -749,3 +964,200 @@ def spawnWaves():
                 quest.assignToCharacter(enemy)
                 quest.activate()
                 enemy.quests.append(quest)
+
+def setUpRuin(pos):
+    '''
+    spwans ruins on a terrain
+    '''
+    # get basic info
+    currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
+
+    # set up helper item to spawn stuff
+    item = src.items.itemMap["ArchitectArtwork"]()
+    architect = item
+    item.godMode = True
+    currentTerrain.addItem(item,(1,1,0))
+    rand_pos = (7,7)
+    make_room = True
+    filled_cord = []
+    for i in range(random.randint(2,6)):
+        if rand_pos in filled_cord:
+            continue
+        filled_cord.append(rand_pos)
+        if make_room:
+            # create the basic room
+            room = architect.doAddRoom(
+                    {
+                        "coordinate": rand_pos,
+                        "roomType": "EmptyRoom",
+                        "doors": "0,6 6,0 12,6 6,12",
+                        "offset": [1,1],
+                        "size": [13, 13],
+                    },
+                    None,
+            )
+
+            # decide between mixed or pure loot room
+            loot_types = ["ScrapCompactor","MetalBars","Vial","MoldFeed","Bolt","Flask","GooFlask","Rod","Sword","Scrap","ManufacturingTable","MemoryFragment"]
+            if src.gamestate.gamestate.difficulty == "easy":
+                loot_types.extend(["Vial","GooFlask","MemoryFragment"])
+            if random.random() > 0.5:
+                loot_types = [random.choice(loot_types)]
+
+            # fill room
+            monsterType = random.choice(["Golem","ShieldBug"])
+            for i in range(0,random.randint(1,8)):
+                # add loot
+                if random.random() < 0.2:
+                    mana_crystal = src.items.itemMap["ManaCrystal"]()
+                    room.addItem(mana_crystal,(6,6,0))
+                else:
+                    position = (random.randint(1,13),random.randint(1,13),0)
+                    item = src.items.itemMap[random.choice(loot_types)]()
+                    if item.type == "GooFlask":
+                        item.uses = 100
+                    if item.type == "Vial":
+                        item.uses = 10
+                    room.addItem(item,position)
+
+                # give one free loot
+                if i == 0:
+                    continue
+
+                # add monster
+                pos = (random.randint(1,11),random.randint(1,11),0)
+                multiplier = src.monster.Monster.get_random_multiplier(monsterType)
+                if src.gamestate.gamestate.difficulty == "easy":
+                    multiplier = 1
+                golem = src.characters.characterMap[monsterType](multiplier=multiplier)
+                golem.godMode = True
+                quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
+                quest.autoSolve = True
+                quest.assignToCharacter(golem)
+                quest.activate()
+                golem.quests.append(quest)
+                room.addCharacter(golem, pos[0], pos[1])
+        else:
+            for i in range(random.randint(1,3)):
+                monsterType = random.choice(["Golem","ShieldBug"])
+                pos = (random.randint(1,11),random.randint(1,11),0)
+                multiplier = src.monster.Monster.get_random_multiplier(monsterType)
+                if src.gamestate.gamestate.difficulty == "easy":
+                    multiplier = 1
+                golem = src.characters.characterMap[monsterType](multiplier=multiplier)
+                golem.godMode = True
+                quest = src.quests.questMap["SecureTile"](toSecure=rand_pos)
+                quest.autoSolve = True
+                quest.assignToCharacter(golem)
+                quest.activate()
+                golem.quests.append(quest)
+                currentTerrain.addCharacter(golem, pos[0] + rand_pos[0] * 15, pos[1] + rand_pos[1] * 15)
+
+            for i in range(random.randint(1,3)):
+                loot_types = ["Flask", "GooFlask", "Scrap", "Scrap", "MemoryFragment"]
+                item = src.items.itemMap[random.choice(loot_types)]()
+                if item.type == "GooFlask":
+                    item.uses = 100
+                if item.type == "Vial":
+                    item.uses = 10
+                currentTerrain.addItem(item, (pos[0] + rand_pos[0] * 15, pos[1] + rand_pos[1] * 15,0))
+        rand_pos = (random.randint(3,11),random.randint(3,11))
+        make_room = random.random() < 0.4
+
+def setUpThroneDungeon(pos):
+    #set up dungeons
+    currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
+    item = src.items.itemMap["ArchitectArtwork"]()
+    architect = item
+    item.godMode = True
+    currentTerrain.addItem(item,(1,1,0))
+
+    mainRoom = architect.doAddRoom(
+            {
+                   "coordinate": (7,7),
+                   "roomType": "EmptyRoom",
+                   "doors": "0,6",
+                   "offset": [1,1],
+                   "size": [13, 13],
+            },
+            None,
+       )
+
+    guardRoom = architect.doAddRoom(
+            {
+                   "coordinate": (6,7),
+                   "roomType": "EmptyRoom",
+                   "doors": "0,6 12,6",
+                   "offset": [1,1],
+                   "size": [13, 13],
+            },
+            None,
+       )
+
+
+    glassHeart = src.items.itemMap["GlassThrone"]()
+    mainRoom.addItem(glassHeart,(6,6,0))
+
+    enemy = src.characters.characterMap["Guardian"](4,4,modifier=10)
+    guardRoom.addCharacter(enemy,11,6)
+
+    quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0))
+    quest.autoSolve = True
+    quest.assignToCharacter(enemy)
+    quest.activate()
+    enemy.quests.append(quest)
+
+    for x in range(1,14):
+        for y in range(1,14):
+            if x == 7 and y == 7:
+                continue
+            if x == 6 and y == 7:
+                continue
+
+            enemy = src.characters.characterMap["Monk"](4,4)
+
+            quest = src.quests.questMap["SecureTile"](toSecure=(x,y,0))
+            quest.autoSolve = True
+            quest.assignToCharacter(enemy)
+            quest.activate()
+            enemy.quests.append(quest)
+
+            currentTerrain.addCharacter(enemy, x*15+7, y*15+7)
+
+            for _i in range(random.randint(0,3)):
+                for _j in range(2):
+                    scrap = src.items.itemMap["Scrap"](amount=20)
+                    currentTerrain.addItem(scrap,(x*15+random.randint(1,12),y*15+random.randint(1,12),0))
+
+def setUpStatueRoom(pos,itemID=None):
+    if itemID is None:
+        itemID = random.choice([1,2,3,4,5,6,7])
+
+    # get basic info
+    currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
+    currentTerrain.tag = "statue room"
+
+    # set up helper item to spawn stuff
+    # bad code: spawning stuff should be in a "magic" class or similar
+    item = src.items.itemMap["ArchitectArtwork"]()
+    architect = item
+    item.godMode = True
+    currentTerrain.addItem(item,(1,1,0))
+
+    # create the basic room
+    room = architect.doAddRoom(
+            {
+                   "coordinate": (7,7),
+                   "roomType": "EmptyRoom",
+                   "doors": "0,6 6,0 12,6 6,12",
+                   "offset": [1,1],
+                   "size": [13, 13],
+            },
+            None,
+       )
+
+    # add random amount of loot
+    statue = src.items.itemMap["GlassStatue"](itemID=itemID)
+    statue.charges = 5
+    room.addItem(statue,(6,6,0))
+

@@ -2,6 +2,9 @@ import src
 
 
 class SharpenPersonalSword(src.quests.MetaQuestSequence):
+    '''
+    quest to sharpen your own sword
+    '''
     type = "SharpenPersonalSword"
 
     def __init__(self, description="sharpen personal sword", creator=None, command=None, lifetime=None):
@@ -12,16 +15,26 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
         self.shortCode = "e"
 
     def handleSwordSharpened(self,extraInfo=None):
+        '''
+        end quest when sword was sharpened
+        '''
         self.postHandler()
 
     def assignToCharacter(self, character):
+        '''
+        assign quest to a character
+        '''
         if self.character:
             return
 
         self.startWatching(character,self.handleSwordSharpened, "sharpened sword")
         super().assignToCharacter(character)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
+        '''
+        check if the quest completed and end it
+        '''
+
         if not character:
             return False
 
@@ -29,11 +42,16 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
             return False
 
         if character.weapon.baseDamage >= 30:
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
+        '''
+        generate the next step to solve the quest
+        '''
 
+        
         if self.subQuests:
             return (None,None)
 
@@ -52,7 +70,11 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
 
         if character.macroState.get("submenue"):
             submenue = character.macroState.get("submenue")
-            if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu):
+            if submenue.tag == "applyOptionSelection" and submenue.extraInfo.get("item").type == "SwordSharpener":
+                return (None,("j","use SwordSharpener"))
+            if submenue.tag == "SwordSharpenerSlider":
+                return (None,("j","sharpen the sword"))
+            if submenue.tag == "SwordSharpenerSelection":
                 foundOption = False
                 rewardIndex = 0
                 if rewardIndex == 0:
@@ -133,6 +155,28 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),description="go to a room having a SwordSharpener")
                 return ([quest],None)
 
-        return (None,None)
+        return (None,(".","stand around confused"))
+
+    def getQuestMarkersSmall(self,character,renderForTile=False):
+        '''
+        return the quest markers for the normal map
+        '''
+        if isinstance(character.container,src.rooms.Room):
+            if renderForTile:
+                return []
+        else:
+            if not renderForTile:
+                return []
+
+        result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
+        if not renderForTile:
+            if isinstance(character.container,src.rooms.Room):
+                for item in character.container.itemsOnFloor:
+                    if not item.type == "SwordSharpener":
+                        continue
+                    if not item.bolted:
+                        continue
+                    result.append((item.getPosition(),"target"))
+        return result
 
 src.quests.addType(SharpenPersonalSword)

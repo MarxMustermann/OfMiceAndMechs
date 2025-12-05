@@ -24,36 +24,59 @@ Do some scrap hammering{reason}.
 Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
 """
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None, dryRun=True):
         if not character:
             return False
 
         return False
 
     def getNextStep(self,character,ignoreCommands=False, dryRun = True):
+        '''
+        get the next step towards solving the quest
+        '''
+
+        # let subquests complete first
         if self.subQuests:
             return (None,None)
 
+        # enter tile properly
+        if not character.container.isRoom:
+            pos = character.getSpacePosition()
+            if pos == (14,7,0):
+                return (None,("a","enter room"))
+            if pos == (0,7,0):
+                return (None,("d","enter room"))
+            if pos == (7,14,0):
+                return (None,("w","enter room"))
+            if pos == (7,0,0):
+                return (None,("s","enter room"))
+
+        # use menu to set how much scrap to produce
         if character.macroState["submenue"] and character.macroState["submenue"].tag == "anvilAmountInput":
+
+            # confirm the selection
             submenue = character.macroState["submenue"]
             targetAmount = str(self.amount - self.amountDone)
             if submenue.text == targetAmount:
                 return (None,(["enter"],"set how many of the item to produce"))
 
+            # type in the number to produce
             correctIndex = 0
             while correctIndex < len(targetAmount) and correctIndex < len(submenue.text):
                 if targetAmount[correctIndex] != submenue.text[correctIndex]:
                     break
                 correctIndex += 1
-
             if correctIndex < len(submenue.text):
                 return (None,(["backspace"],"delete input"))
-
             return (None,(targetAmount[correctIndex:],"enter name of the tem to produce"))
 
+        # select to produce scrap on the anvil
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
+
+            # set up helper variable
             submenue = character.macroState["submenue"]
         
+            # get index of the menu entry to select
             index = None
             counter = 1
             for option in submenue.options.items():
@@ -61,15 +84,16 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
                     index = counter
                     break
                 counter += 1
-
             if index is None:
                 index = counter-1
 
+            # select the menu entry to produce the item
             if self.produceToInventory:
                 activationCommand = "j"
             else:
                 activationCommand = "k"
-
+            if self.amount-self.amountDone > 1:
+                activationCommand = activationCommand.upper()
             offset = index-submenue.selectionIndex
             command = ""
             if offset > 0:
@@ -79,35 +103,46 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
             command += activationCommand
             return (None,(command,"hammer scrap"))
 
+        # exit othe menues
         if character.macroState["submenue"] and not ignoreCommands:
             return (None,(["esc"],"exit submenu"))
 
+        # handle bump item activation
         if character.macroState.get("itemMarkedLast"):
             if character.macroState["itemMarkedLast"].type == "Anvil":
                 return (None,("j","activate anvil"))
             else:
                 return (None,(".","undo selection"))
 
-        if character.getBigPosition() != character.getHomeRoomCord():
-            quest = src.quests.questMap["GoToTile"](targetPosition=character.getHomeRoomCord(),reason="go to anvil")
-            return ([quest],None)
-
+        # get local anvils
         anvils = []
         if character.container.isRoom:
             anvils.extend(character.container.getItemsByType("Anvil"))
-        if not character.container.isRoom:
-            return ([src.quests.questMap["EnterRoom"]()],None)
 
+        # go to room with anvils
+        if not anvils:
+            for room in character.getTerrain().rooms:
+                for item in room.getItemsByType("Anvil"):
+                    if not item.bolted:
+                        continue
+                    quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),reason="go to a room with a Anvil")
+                    return ([quest],None)
+
+            return self._solver_trigger_fail(dryRun,"no anvil available")
+
+        # get anvils right next to the character
         anvilNearBy = None
         for anvil in anvils:
             if not character.getDistance(anvil.getPosition()) > 1:
                 anvilNearBy = anvil
                 break
 
+        # go to an anvil
         if not anvilNearBy:
             quest = src.quests.questMap["GoToPosition"](targetPosition=anvils[0].getPosition(),ignoreEndBlocked=True,reason="go to an anvil")
             return ([quest],None)
 
+        # activate anvil
         pos = character.getPosition()
         anvilPos = anvilNearBy.getPosition()
         if self.produceToInventory:
@@ -127,8 +162,8 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
         if (pos[0],pos[1]+1,pos[2]) == anvilPos:
             return (None,("sj"+activationCommand,"hammer some scrap"))
 
-        return (None,None)
-
+        # fail
+        return self._solver_trigger_fail(dryRun,"impossible state")
 
     def handleQuestFailure(self,extraParam):
         if extraParam["quest"] not in self.subQuests:
@@ -193,6 +228,28 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
         self.startWatching(character,self.handleNoScrap, "no scrap error")
 
         return super().assignToCharacter(character)
+
+    def getQuestMarkersSmall(self,character,renderForTile=False):
+        '''
+        return the quest markers for the normal map
+        '''
+        if isinstance(character.container,src.rooms.Room):
+            if renderForTile:
+                return []
+        else:
+            if not renderForTile:
+                return []
+
+        result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
+        if not renderForTile:
+            if isinstance(character.container,src.rooms.Room):
+                for item in character.container.itemsOnFloor:
+                    if not item.type == "Anvil":
+                        continue
+                    if not item.bolted:
+                        continue
+                    result.append((item.getPosition(),"target"))
+        return result
 
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):

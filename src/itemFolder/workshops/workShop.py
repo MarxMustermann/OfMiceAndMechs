@@ -5,42 +5,6 @@ class WorkShop(src.items.Item):
     type = "WorkShop"
     name = "WorkShop"
 
-    def produceItem_wait(self, params):
-        character = params["character"]
-
-        if not "hitCounter" in params:
-            params["hitCounter"] = character.numAttackedWithoutResponse
-
-        if params["hitCounter"] != character.numAttackedWithoutResponse:
-            character.addMessage("You got hit while working")
-            return
-        ticksLeft = params["productionTime"] - params["doneProductionTime"]
-        character.timeTaken += 1
-        params["doneProductionTime"] += 1
-
-        barLength = params["productionTime"]//10
-        if params["productionTime"]%10:
-            barLength += 1
-        baseProgressbar = "X"*(params["doneProductionTime"]//10)+"."*(barLength-(params["doneProductionTime"]//10))
-        progressBar = ""
-        while len(baseProgressbar) > 10:
-            progressBar += baseProgressbar[:10]+"\n"
-            baseProgressbar = baseProgressbar[10:]
-        progressBar += baseProgressbar
-
-        submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(progressBar, targetParamName="abortKey")
-        submenue.tag = "metalWorkingProductWait"
-        character.macroState["submenue"] = submenue
-        character.macroState["submenue"].followUp = {
-            "container": self,
-            "method": "produceItem_done" if ticksLeft <= 0 else "produceItem_wait",
-            "params": params,
-        }
-        character.runCommandString(".", nativeKey=True)
-        if ticksLeft % 10 != 9 and src.gamestate.gamestate.mainChar == character:
-            src.interaction.skipNextRender = True
-
-
     def getConfigurationOptions(self, character):
         options = super().getConfigurationOptions(character)
         if self.bolted:
@@ -108,7 +72,7 @@ class WorkShop(src.items.Item):
             for i in range(ItemTypeAmount[itemType]):
                 current_item = neededItemCount[itemType][i]
                 if current_item in character.inventory:
-                    character.inventory.remove(current_item)
+                    character.removeItemFromInventory(current_item)
                 else:
                     self.container.removeItem(current_item)
 

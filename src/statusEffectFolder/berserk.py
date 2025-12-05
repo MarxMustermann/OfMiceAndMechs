@@ -2,14 +2,19 @@ import src
 
 
 class Berserk(src.statusEffects.DamageBuff,src.statusEffects.MovementBuff):
+    '''
+    status effect that represents melee combat rush
+    '''
     type = "Berserk"
-
     def __init__(self, damageBonus=10, duration=10, speedUp=0.1,reason=None,inventoryItem=None):
         self.damageBonus = damageBonus
         self.speedUp = speedUp
         super().__init__(duration=duration,reason=reason,inventoryItem=inventoryItem)
 
     def modDamage(self, attacker, attacked, bonus:str, damage):
+        '''
+        modify the damage dealt
+        '''
         damage += self.damageBonus
         if "and you gone Berserk" not in bonus:
             return (damage, bonus + "and you gone Berserk ")
@@ -17,25 +22,37 @@ class Berserk(src.statusEffects.DamageBuff,src.statusEffects.MovementBuff):
         return (damage, bonus)
 
     def modMovement(self, speed):
+        '''
+        modify the movement speed
+        '''
         try:
             self.speedUp
         except:
             self.speedUp = 0.1
-
         return speed * (1-self.speedUp)
 
     def getShortCode(self):
+        '''
+        return a short code representing this status effect in the UI
+        '''
         return "BSRK"
 
     def getLoreDescription(self):
+        '''
+        get nice to read description
+        '''
         text = ""
         text += f"You are in a beserk rage and are ready to kill.\nYou chase your victims faster and hurt them harder.\n\nYou need to hurry and move fast or your rage runs out"
         return text
 
     def buildStatListDescription(self,description = ""):
+        '''
+        get short and technical description
+        '''
         description = super().buildStatListDescription(description=description)
         description += f"damage bonus: {self.damageBonus} damage\n"
         description += f"speed up: {self.speedUp*100}%\n"
         return description
 
+# register the staus effect
 src.statusEffects.addType(Berserk)

@@ -8,13 +8,14 @@ logger = logging.getLogger(__name__)
 class AdventureOnTerrain(src.quests.MetaQuestSequence):
     type = "AdventureOnTerrain"
 
-    def __init__(self, description="adventure on terrain", creator=None, lifetime=None, reason=None, targetTerrain=None):
+    def __init__(self, description="adventure on terrain", creator=None, lifetime=None, reason=None, targetTerrain=None,terrainsWeight= None):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description+f" {targetTerrain}"
         self.reason = reason
         self.targetTerrain = targetTerrain
         self.donePointsOfInterest = []
+        self.terrainsWeight = terrainsWeight
 
     def getRemainingPointsOfInterests(self):
         result = []
@@ -38,11 +39,17 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
         return result
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
+        if self.triggerCompletionCheck(dryRun=dryRun):
+            return (None,("+","end quest"))
+
         if self.subQuests:
             return (None,None)
 
         if not character:
             return (None,None)
+
+        if character.is_low_health():
+            return self._solver_trigger_fail(dryRun,"low health")
 
         if character.macroState["submenue"]:
             return (None, (["esc"], "exit menu"))
@@ -54,12 +61,10 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
         currentTerrain = character.getTerrain()
 
         if self.targetTerrain[0] == character.registers["HOMETx"] and self.targetTerrain[1] == character.registers["HOMETy"]:
-            if not dryRun:
-                self.fail("home is target")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"home is target")
 
         if not (currentTerrain.xPosition == self.targetTerrain[0] and currentTerrain.yPosition == self.targetTerrain[1]):
-            quest = src.quests.questMap["GoToTerrain"](targetTerrain=self.targetTerrain)
+            quest = src.quests.questMap["GoToTerrain"](targetTerrain=self.targetTerrain,terrainsWeight= self.terrainsWeight)
             return ([quest],None)
 
         if character.getBigPosition()[0] == 0:
@@ -83,9 +88,7 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
 
         pointsOfInterest = self.getRemainingPointsOfInterests()
         if not pointsOfInterest:
-            if not dryRun:
-                self.fail("no POI found to explore")
-            return (None,None)
+            return self._solver_trigger_fail("no POI found to explore")
 
         char_big_pos = character.getBigPosition()
 
@@ -94,49 +97,47 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
         else:
             itemsOnFloor = character.container.getNearbyItems(character)
 
-        for item in itemsOnFloor:
-            if item.bolted or not item.walkable:
-                continue
-            if item.xPosition == None:
-                logger.error("found ghost item")
-                continue
-            item_pos =item.getSmallPosition()
-            if item_pos[0] == None:
-                logger.error("found ghost item")
-                continue
-            if item_pos[0] > 12:
-                continue
-
-            if item.type in ("Scrap","MetalBars"):
-                continue
-
-            invalidStack = False
-            for stackedItem in character.container.getItemByPosition(item.getPosition()):
-                if stackedItem == item:
-                    break
-                if not stackedItem.bolted:
+        if not char_big_pos in self.donePointsOfInterest:
+            for item in itemsOnFloor:
+                if item.bolted or not item.walkable:
                     continue
-                invalidStack = True
-            if invalidStack:
-                continue
+                if item.xPosition == None:
+                    logger.error("found ghost item")
+                    continue
+                item_pos =item.getSmallPosition()
+                if item_pos[0] == None:
+                    logger.error("found ghost item")
+                    continue
+                if item_pos[0] > 12:
+                    continue
+                if character.container.isRoom and (item_pos[0] > 11 or item_pos[1] > 11 or item_pos[0] < 1 or item_pos[1] < 1):
+                    continue
 
-            if character.container.isRoom:
+                if item.type in ("Scrap","MetalBars","MoldFeed"):
+                    continue
+
+                if item.type in ("Bolt",) and character.getFreeInventorySpace() <= 1:
+                    continue
+
+                invalidStack = False
+                for stackedItem in character.container.getItemByPosition(item.getPosition()):
+                    if stackedItem == item:
+                        break
+                    if not stackedItem.bolted:
+                        continue
+                    invalidStack = True
+                if invalidStack:
+                    continue
+
                 quest = src.quests.questMap["LootRoom"](targetPosition=character.getBigPosition(),endWhenFull=True)
-                return ([quest],None)
-            else:
-                quest = src.quests.questMap["ScavengeTile"](targetPosition=character.getBigPosition())
                 return ([quest],None)
 
         if not dryRun:
             self.donePointsOfInterest.append(character.getBigPosition())
 
         pointOfInterest = random.choice(pointsOfInterest)
-        if currentTerrain.getRoomByPosition(pointOfInterest):
-            quest = src.quests.questMap["LootRoom"](targetPosition=pointOfInterest,endWhenFull=True)
-            return ([quest],None)
-        else:
-            quest = src.quests.questMap["ScavengeTile"](targetPosition=pointOfInterest)
-            return ([quest],None)
+        quest = src.quests.questMap["LootRoom"](targetPosition=pointOfInterest,endWhenFull=True)
+        return ([quest],None)
 
     def generateTextDescription(self):
         return [f"""
@@ -145,7 +146,7 @@ Go out and adventure on tile {self.targetTerrain}.
 {self.donePointsOfInterest}
 """]
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
@@ -154,19 +155,27 @@ Go out and adventure on tile {self.targetTerrain}.
         if not (currentTerrain.xPosition == self.targetTerrain[0] and currentTerrain.yPosition == self.targetTerrain[1]):
             return False
 
-        if not character.getFreeInventorySpace():
-            self.postHandler()
+        if not character.getFreeInventorySpace(ignoreTypes=["Bolt"]):
+            if not dryRun:
+                self.postHandler()
             return True
 
         if currentTerrain.tag == "ruin":
             if self.getRemainingPointsOfInterests():
                 return False
 
-        character.terrainInfo[currentTerrain.getPosition()]["looted"] = True
-        self.postHandler()
+        if not dryRun:
+            if currentTerrain.tag == "ruin":
+                character.terrainInfo[currentTerrain.getPosition()]["looted"] = True
+            self.postHandler()
         return True
 
     def wrapedTriggerCompletionCheck(self,test=None):
         pass
+
+    def handleQuestFailure(self,extraInfo):
+        if extraInfo["quest"].type == "LootRoom":
+            self.donePointsOfInterest.append(extraInfo["quest"].targetPosition)
+            return
 
 src.quests.addType(AdventureOnTerrain)

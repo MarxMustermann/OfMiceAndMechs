@@ -8,6 +8,11 @@ class Haste(src.statusEffects.MovementBuff):
         self.speedUp = speedUp
         super().__init__(duration,reason=reason,inventoryItem=inventoryItem)
 
+    def getLoreDescription(self):
+        text = ""
+        text += f"You feel like getting somewhere fast."
+        return text
+
     def modMovement(self, speed):
         return speed * (1-self.speedUp)
 

@@ -27,7 +27,7 @@ Activate a filled corpse animator to spawn a ghoul
 
         self.runsCommands = True
         self.filled = filled
-        self.commands = {"born":"j"}
+        self.commands = {"born":"jj"}
 
         self.commandOptions = [
                 ("born", "set command for newly animated ghouls"),
@@ -102,7 +102,7 @@ Activate a filled corpse animator to spawn a ghoul
             if isinstance(item, src.items.itemMap["Corpse"]):
                 corpse = item
         if corpse:
-            character.inventory.remove(corpse)
+            character.removeItemFromInventory(corpse)
             self.filled = True
             self.container.addAnimation(character.getPosition(),"showchar",1,{"char":"--"})
             self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"OO")})

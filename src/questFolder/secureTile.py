@@ -49,12 +49,12 @@ Try luring enemies into landmines or detonating some bombs."""
     def wrapedTriggerCompletionCheck2(self, extraInfo):
         if not self.active:
             return
-        self.triggerCompletionCheck(extraInfo["character"])
+        self.triggerCompletionCheck(extraInfo["character"],dryRun=False)
 
     def handleTileChange2(self):
         if not self.active:
             return
-        self.triggerCompletionCheck(self.character)
+        self.triggerCompletionCheck(self.character,dryRun=False)
 
     def assignToCharacter(self, character):
         if self.character:
@@ -74,7 +74,7 @@ Try luring enemies into landmines or detonating some bombs."""
             character.awardReputation(amount=50, reason=text)
         super().postHandler()
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
 
         if not character:
             return False
@@ -85,65 +85,74 @@ Try luring enemies into landmines or detonating some bombs."""
         if isinstance(character.container,src.rooms.Room):
             if character.container.xPosition == self.targetPosition[0] and character.container.yPosition == self.targetPosition[1]:
                 if not character.getNearbyEnemies():
-                    self.postHandler(character)
+                    if not dryRun:
+                        self.postHandler(character)
                     return True
         else:
             if character.xPosition//15 == self.targetPosition[0] and character.yPosition//15 == self.targetPosition[1]:
                 if not character.getNearbyEnemies():
-                    self.postHandler(character)
+                    if not dryRun:
+                        self.postHandler(character)
                     return True
 
         return False
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
-        if not self.subQuests:
-            if character.macroState["submenue"] and character.macroState["submenue"].tag != "tileMovementmenu" and not ignoreCommands:
-               return (None,(["esc"],"exit the menu")) 
+        if self.subQuests:
+            return (None,None)
 
-            if character.health < character.maxHealth - 20 and character.canHeal():
-                return (None,("JH","heal"))
+        if character.macroState["submenue"] and character.macroState["submenue"].tag != "tileMovementmenu" and not ignoreCommands:
+           return (None,(["esc"],"exit the menu")) 
 
-            if not self.strict:
-                self.huntdownCooldown -= 1
-                if self.huntdownCooldown < 0:
-                    enemies = character.getNearbyEnemies()
-                    if enemies:
-                        if self.alwaysHuntDown:
-                            quest = src.quests.questMap["Huntdown"](target=random.choice(enemies))
-                            return ([quest],None)
-                        if not dryRun:
-                            self.huntdownCooldown = 100
-                        if random.random() < 0.3:
-                            quest = src.quests.questMap["Huntdown"](target=random.choice(enemies))
-                            return ([quest],None)
-                        else:
-                            quest = src.quests.questMap["Fight"]()
-                            return ([quest],None)
-            else:
+        if character.health < character.maxHealth - 20 and character.canHeal():
+            return (None,("JH","heal"))
+
+        if not self.strict:
+            huntdownCooldown = self.huntdownCooldown
+            huntdownCooldown -= 1
+            if not dryRun:
+                self.huntdownCooldown = huntdownCooldown
+            if huntdownCooldown < 0:
                 enemies = character.getNearbyEnemies()
                 if enemies:
-                    quest = src.quests.questMap["Fight"]()
-                    return ([quest],None)
-            if character.getBigPosition() == self.targetPosition:
-                pos = character.getSpacePosition()
-                if pos == (0,7,0):
-                    return (None, ("d","enter tile"))
-                if pos == (14,7,0):
-                    return (None, ("a","enter tile"))
-                if pos == (7,0,0):
-                    return (None, ("s","enter tile"))
-                if pos == (7,14,0):
-                    return (None, ("w","enter tile"))
+                    if self.alwaysHuntDown:
+                        quest = src.quests.questMap["Huntdown"](target=random.choice(enemies))
+                        return ([quest],None)
+                    if not dryRun:
+                        self.huntdownCooldown = 100
+                    if random.random() < 0.3:
+                        quest = src.quests.questMap["Huntdown"](target=random.choice(enemies))
+                        return ([quest],None)
+                    else:
+                        quest = src.quests.questMap["Fight"]()
+                        return ([quest],None)
 
-                enemies = character.getNearbyEnemies()
-                if not enemies and not self.endWhenCleared:
-                    if self.wandering and random.random() < 0.2:
-                        (x,y,_) = character.getSpacePosition()
-                        x= src.helpers.clamp(x+int(random.uniform(-3,3)),2,12)
-                        y= src.helpers.clamp(y+int(random.uniform(-3,3)),2,12)
-                        quest = src.quests.questMap["GoToPosition"](targetPosition = (x,y))
-                        return ([quest], None)
-                    return (None, ("."*10,"wait"))
-        return super().getNextStep(character=character,ignoreCommands=ignoreCommands)
+        enemies = character.getNearbyEnemies()
+        if enemies:
+            quest = src.quests.questMap["Fight"]()
+            return ([quest],None)
+
+        if character.getBigPosition() == self.targetPosition:
+            pos = character.getSpacePosition()
+            if pos == (0,7,0):
+                return (None, ("d","enter tile"))
+            if pos == (14,7,0):
+                return (None, ("a","enter tile"))
+            if pos == (7,0,0):
+                return (None, ("s","enter tile"))
+            if pos == (7,14,0):
+                return (None, ("w","enter tile"))
+
+            enemies = character.getNearbyEnemies()
+            if not enemies and not self.endWhenCleared:
+                if self.wandering and random.random() < 0.2:
+                    (x,y,_) = character.getSpacePosition()
+                    x= src.helpers.clamp(x+int(random.uniform(-3,3)),2,12)
+                    y= src.helpers.clamp(y+int(random.uniform(-3,3)),2,12)
+                    quest = src.quests.questMap["GoToPosition"](targetPosition = (x,y))
+                    return ([quest], None)
+                return (None, (";","wait"))
+
+        return super().getNextStep(character=character,ignoreCommands=ignoreCommands,dryRun=dryRun)
 
 src.quests.addType(SecureTile)

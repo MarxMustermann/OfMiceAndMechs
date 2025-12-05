@@ -2,26 +2,20 @@ import src
 
 
 class SetBaseAutoExpansion(src.quests.MetaQuestSequence):
+    '''
+    quest to set the amount of rooms the NPCs should build automatically
+    '''
     type = "SetBaseAutoExpansion"
-
     def __init__(self, description="set base expansion parameter", creator=None, targetLevel=2):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
         self.targetLevel = targetLevel
 
-    def handleSiegeDisabled(self, extraInfo):
-        self.postHandler()
-
-    def assignToCharacter(self, character):
-        if self.character:
-            return None
-
-        self.startWatching(character,self.handleSiegeDisabled, "did unrestricted outside")
-
-        return super().assignToCharacter(character)
-
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None, dryRun=True):
+        '''
+        check and end quest if completed
+        '''
         if not character:
             return False
 
@@ -35,12 +29,16 @@ class SetBaseAutoExpansion(src.quests.MetaQuestSequence):
 
         if foundCityPlaner:
             if foundCityPlaner.autoExtensionThreashold:
-                self.postHandler()
+                if not dryRun:
+                    self.postHandler()
                 return True
         
         return False
 
     def getNextStep(self,character,ignoreCommands=False,dryRun=True):
+        '''
+        generate next step towards solving the quest
+        '''
         if self.subQuests:
             return (None,None)
         
@@ -76,9 +74,7 @@ class SetBaseAutoExpansion(src.quests.MetaQuestSequence):
             break
 
         if not cityPlaner:
-            if not dryRun:
-                self.fail("no city planer")
-            return (None,None)
+            return self._solver_trigger_fail(dryRun,"no city planer")
 
         if character.getBigPosition() != cityPlaner.container.getPosition():
             quest = src.quests.questMap["GoToTile"](targetPosition=cityPlaner.container.getPosition(),description="go to the command centre",reason="to reach the CityPlaner")
@@ -106,9 +102,18 @@ class SetBaseAutoExpansion(src.quests.MetaQuestSequence):
         return (None,(list(interactionCommand+direction+"a"+"2")+["enter"],"disable the outside restrictions"))
 
     def generateTextDescription(self):
+        '''
+        generate a text description to show on the UI
+        '''
         text = ["""
+To set up new production lines or facilities a base needs empty rooms.
+Clones can ensure there are always new rooms to build it.
+
+The city planner has a entry that determines how many empty rooms there should be.
+If there are less empty rooms than that entry indicates the NPC will start building a new room.
+You will not designate build sites for that.
 """]
         return text
 
-
+# register quest type
 src.quests.addType(SetBaseAutoExpansion)

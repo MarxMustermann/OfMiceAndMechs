@@ -5,17 +5,11 @@ import math
 
 
 class Shrine(src.items.Item):
-    """
-    """
-
-
+    '''
+    ingame item to interact with the gods
+    '''
     type = "Shrine"
-
     def __init__(self,name="shrine",god=None):
-        """
-        set up the initial state
-        """
-
         super().__init__(display="\\/", name=name)
         self.god = god
 
@@ -23,7 +17,7 @@ class Shrine(src.items.Item):
                         [
                     ("showInfo", "show Info"),
                     ("wish", "wish"),
-                    ("challenge", "pray"),
+                    #("challenge", "pray"),
                     #("taunt", "taunt"),
                     ("teleport", "telport home"),
                         ]
@@ -37,6 +31,9 @@ class Shrine(src.items.Item):
                         }
 
     def taunt(self,character):
+        '''
+        provoke a god (disbaled)
+        '''
         if self.itemID == 1:
             options = []
             options.append((100,"100"))
@@ -59,20 +56,12 @@ class Shrine(src.items.Item):
             pass
 
     def teleport(self,character):
+        '''
+        teleport the character home
+        '''
         x = character.registers["HOMETx"]
         y = character.registers["HOMETy"]
-        newTerrain = src.gamestate.gamestate.terrainMap[y][x]
-
-        bigPos = (7,7)
-        character.container.removeCharacter(character)
-        room = newTerrain.getRoomByPosition(bigPos)
-        if room:
-            room[0].addCharacter(character,7,7)
-        else:
-            newTerrain.addCharacter(character,15*bigPos[0]+7,15*bigPos[1]+7)
-        character.changed("changedTerrain",{"character":character})
-
-        character.interactionState["itemMarkedLast"] = None
+        src.magic.teleportToTerrain(character, (x,y))
 
     def isChallengeDone(self):
         if self.god == 1:
@@ -240,13 +229,13 @@ class Shrine(src.items.Item):
             progressbarWithNewlines = progressbarWithNewlines[:-1]
 
         if ticksLeft > 100:
-            character.timeTaken += 100
+            character.takeTime(100,"prayed")
             params["doneProductionTime"] += 100
             submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(progressbarWithNewlines,targetParamName="abortKey")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"waitPrayWait","params":params}
         else:
-            character.timeTaken += ticksLeft
+            character.takeTime(ticksLeft,"prayed")
             params["doneProductionTime"] += ticksLeft
             submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(progressbarWithNewlines,targetParamName="abortKey")
             character.macroState["submenue"] = submenue
@@ -427,7 +416,8 @@ class Shrine(src.items.Item):
             cost *= glassHeartRebate
             if character.attackSpeed > 0.5:
                 options.append(("upgrade attack speed",f"({cost}) upgrade attack speed"))
-            options.append(("upgrade movement speed",f"({cost}) upgrade movement speed"))
+            if character.movementSpeed > 0.5:
+                options.append(("upgrade movement speed",f"({cost}) upgrade movement speed"))
 
         elif self.god == 5:
             foundArmor = None
@@ -559,7 +549,7 @@ class Shrine(src.items.Item):
                 character.addMessage(f"your weapons base damage is increased by {increaseValue} to {character.weapon.baseDamage}")
                 self.getTerrain().mana -= cost
                 if foundWeapon:
-                    character.inventory.remove(foundWeapon)
+                    character.removeItemFromInventory(foundWeapon)
             else:
                 character.addMessage(f"the mana is used up")
 
@@ -588,7 +578,7 @@ class Shrine(src.items.Item):
                 increaseValue = 0.1
                 increaseValue = min(character.movementSpeed-0.5,increaseValue)
                 character.movementSpeed -= increaseValue
-                character.addMessage(f"your attack speed is improved by {round(abs(character.movementSpeed-old)/old*100)}%")
+                character.addMessage(f"your movement speed is improved by {round(abs(character.movementSpeed-old)/old*100)}%")
                 self.getTerrain().mana -= cost
             else:
                 character.addMessage(f"the mana is used up")
@@ -613,7 +603,7 @@ class Shrine(src.items.Item):
                 character.addMessage(f"your armors armor value is increased by {increaseValue} to {character.armor.armorValue}")
                 self.getTerrain().mana -= cost
                 if foundArmor:
-                    character.inventory.remove(foundArmor)
+                    character.removeItemFromInventory(foundArmor)
             else:
                 character.addMessage(f"the mana is used up")
 
@@ -638,7 +628,7 @@ class Shrine(src.items.Item):
                 character.addMessage(f"your max health is increased by {increaseValue} to {character.maxHealth}")
                 self.getTerrain().mana -= cost
                 if foundVial:
-                    character.inventory.remove(foundVial)
+                    character.removeItemFromInventory(foundVial)
             else:
                 character.addMessage(f"the mana is used up")
 
@@ -648,9 +638,8 @@ class Shrine(src.items.Item):
 
             if self.getTerrain().mana >= cost:
                 text = "healing"
-                character.heal(200,"wishing for health")
-                character.addMessage(f"your are healed")
-                self.getTerrain().mana -= cost
+                src.magic.heal(character)
+                self.getTerrain().mana -= cost-2.5
             else:
                 character.addMessage(f"the mana is used up")
 
@@ -675,7 +664,7 @@ class Shrine(src.items.Item):
                 for _i in range(0,10):
                     item = src.items.itemMap["Wall"]()
                     item.bolted = False
-                    character.inventory.append(item)
+                    character.addToInventory(item)
                 self.getTerrain().mana -= cost
             else:
                 character.addMessage(f"the mana is used up")
@@ -689,7 +678,7 @@ class Shrine(src.items.Item):
                     foundWeapons.append(item)
 
             for foundWeapon in foundWeapons:
-                character.inventory.remove(foundWeapon)
+                character.removeItemFromInventory(foundWeapon)
                 cost -= 0.5
             cost *= glassHeartRebate
             if self.getTerrain().mana >= cost:
@@ -697,7 +686,7 @@ class Shrine(src.items.Item):
                 for _i in range(0,10):
                     item = src.items.itemMap["Bolt"]()
                     item.bolted = False
-                    character.inventory.append(item)
+                    character.addToInventory(item)
                 self.getTerrain().mana -= cost
             else:
                 character.addMessage(f"the mana is used up")
@@ -820,7 +809,7 @@ class Shrine(src.items.Item):
 
 
             if foundFlask:
-                character.inventory.remove(foundFlask)
+                character.removeItemFromInventory(foundFlask)
 
             return True
 

@@ -64,7 +64,9 @@ class RoomMenu(src.subMenu.SubMenu):
         if self.room.requiredDuties:
             self.persistentText.append("\n\nThis room has required duties.\n%s"%self.room.requiredDuties)
 
-        self.persistentText.append("\n\n- q: open staff section\n- r: show resource sources\n- o: issue room orders")
+        
+        self.persistentText.append("\n\n- t: set room tag")
+        #self.persistentText.append("\n\n- q: open staff section\n- r: show resource sources\n- o: issue room orders\n- t: set room tag")
 
         src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.persistentText))
 
@@ -72,12 +74,18 @@ class RoomMenu(src.subMenu.SubMenu):
             self.firstKey = False
             return None
 
+        """
         if character and key in ("q",):
             character.macroState["submenue"] = src.menuFolder.roomDutyMenu.RoomDutyMenu(self.room)
 
         if character and key in ("r",):
             character.macroState["submenue"] = src.menuFolder.roomSourceMenu.RoomSourceMenu(self.room)
+        """
 
+        if character and key in ("t",):
+            character.macroState["submenue"] = src.menuFolder.roomTagMenu.RoomTagMenu(self.room)
+
+        """
         if character and key in ("o",):
             homeRoom = character.getHomeRoom()
             items = homeRoom.getItemsByType("OrderArtwork",needsBolted=True)
@@ -88,6 +96,7 @@ class RoomMenu(src.subMenu.SubMenu):
             item.showMap(character)
             self.done = True
             return True
+        """
 
         # exit the submenu
         if key in ("esc",):

@@ -23,15 +23,15 @@ class MemoryReader(src.items.itemMap["WorkShop"]):
 
         self.fragments_decrypted = -1
 
-        self.massages = ["example massage 1", "example massage 2", "example massage 3"]
+        self.messages = ["example message 1", "example message 2", "example message 3"]
 
         self.fragment_per_implant = 5
 
     def read(self, fragment_number, character):
         submenue = src.menuFolder.textMenu.TextMenu(
-            "you decrypt new fragment:\n" + self.massages[fragment_number],
+            "you decrypt new fragment:\n" + self.messages[fragment_number],
         )
-        submenue.tag = "massage"
+        submenue.tag = "message"
         character.macroState["submenue"] = submenue
         character.runCommandString("~", nativeKey=True)
 
@@ -43,8 +43,8 @@ class MemoryReader(src.items.itemMap["WorkShop"]):
         return fragments
 
     def decryptFragments(self, character):
-        if self.fragments_decrypted + 1 == len(self.massages):
-            character.addMessage("You can't decrypt more massages")
+        if self.fragments_decrypted + 1 == len(self.messages):
+            character.addMessage("You can't decrypt more messages")
             return
 
         fragments = self.getFragments(character)
@@ -53,12 +53,12 @@ class MemoryReader(src.items.itemMap["WorkShop"]):
             character.addMessage("You need to have fragments in your inventory to decrypt them")
             return
 
-        character.inventory.remove(fragments[-1])
+        character.removeItemFromInventory(fragments[-1])
 
         self.fragments_decrypted += 1
 
         numbers = ["first", "second", "third", "forth", "fifth", "sixth", "seventh"]
-        option = f"read {numbers[self.fragments_decrypted]} massage"
+        option = f"read {numbers[self.fragments_decrypted]} message"
         self.applyOptions.append(
             (option, option),
         )
@@ -74,19 +74,20 @@ class MemoryReader(src.items.itemMap["WorkShop"]):
             return
 
         params = {"character": character}
-        params["productionTime"] = 50
-        params["doneProductionTime"] = 0
-        params["hitCounter"] = character.numAttackedWithoutResponse
-        self.produceItem_wait(params)
+        params["delayTime"] = 50
+        params["action"]= "output_produced_item"
+        self.delayedAction(params)
 
-    def produceItem_done(self, params):
+    def output_produced_item(self, params):
         character = params["character"]
 
         fragments = self.getFragments(character)
         for i in range(self.fragment_per_implant):
-            character.inventory.remove(fragments[i])
+            character.removeItemFromInventory(fragments[i])
 
-        character.inventory.append(src.items.itemMap["Implant"]())
+        character.addToInventory(src.items.itemMap["Implant"]())
+        character.stats["items produced"]["Implant"] = character.stats["items produced"].get("Implant", 0) + 1
+
         character.addMessage("you got a functional implant")
 
 src.items.addType(MemoryReader, nonManufactured=True)

@@ -5,6 +5,7 @@ import src
 
 class ClearTerrain(src.quests.MetaQuestSequence):
     type = "ClearTerrain"
+    lowLevel = True
 
     def __init__(self, description="clear terrain", creator=None, command=None, lifetime=None,outsideOnly=False,insideOnly=False):
         questList = []
@@ -21,7 +22,7 @@ Just clear the whole terrain tile for tile.
 """]
         return text
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return None
         if not character.container:
@@ -56,7 +57,8 @@ Just clear the whole terrain tile for tile.
                         continue
                     return False
 
-        self.postHandler()
+        if not dryRun:
+            self.postHandler()
         return True
 
 
@@ -114,6 +116,25 @@ Just clear the whole terrain tile for tile.
                         quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition(),endWhenCleared=True)
                         return ([quest],None)
 
-        return (None,None)
+        return (None,(".","stand around confused"))
+
+    def handleQuestFailure(self,extraParam):
+        '''
+        handle a subquest failing
+        '''
+
+        super().handleQuestFailure(extraParam)
+
+        # set up helper variables
+        quest = extraParam.get("quest")
+        reason = extraParam.get("reason")
+
+        if reason:
+            if reason == "no tile path":
+                if quest.type == "SecureTile":
+                    newQuest = src.quests.questMap["ClearPathToTile"](targetPositionBig=quest.targetPosition, reason="be able to reach the enemy")
+                    self.addQuest(newQuest)
+                    self.startWatching(newQuest,self.handleQuestFailure,"failed")
+                    return
 
 src.quests.addType(ClearTerrain)

@@ -1,0 +1,27 @@
+* fix known crashes
+* overhaul fonts
+* remove disabled functions
+  * clean up main menu
+  * remove abbandoned factories or make them useful
+  * add better rank placeholder
+* test crash reports
+  * empty database
+* create release binary
+  * merge to master
+  * test windows binary
+  * check install instructions
+* fix reported bugs
+  * reduce shield bug HP
+  * move mapping table
+  * do popups on new status effect
+  * fix crashes
+  * add "waiting" popup for coal burner
+  * make quest menu show deepest relevant quest
+  * make walking animation not hide enemy on first frame
+  * make death and respawn scene more differen
+    * maybe add an animation that moves to character?
+* record a let's play
+* get steam page up and running
+* overhaul website
+* auto playthrough
+* repare feedback questionaire

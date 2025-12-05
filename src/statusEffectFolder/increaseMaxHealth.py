@@ -8,6 +8,11 @@ class IncreaseMaxHealth(src.statusEffects.HealthBuff):
         self.healthBonus = healthBonus
         super().__init__(duration=duration, inventoryItem=inventoryItem, reason=reason)
 
+    def getLoreDescription(self):
+        text = ""
+        text += f"You feel tougher than ususal, for a time."
+        return text
+
     def modHealth(self, health):
         return health + self.healthBonus
 

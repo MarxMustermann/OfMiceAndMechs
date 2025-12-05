@@ -15,6 +15,7 @@ class DebugMenu(src.subMenu.SubMenu):
     debug_options = [
         "Teleport",
         "Teleport Terrain",
+        "kill enemies on Terrain",
         "Clear Fog",
         "Add Mana",
         "Get Item",
@@ -24,6 +25,17 @@ class DebugMenu(src.subMenu.SubMenu):
         "Debug Memory",
         "clear path cache",
         "pass time",
+        "gain endgame strength",
+        "gain full strength",
+        "spawn room",
+        "toggleQuestExpanding",
+        "toggleQuestExpanding2",
+        "toggleExpandQ",
+        "toggleCommandOnPlus",
+        "change personality settings",
+        "toggle SDL",
+        "fix room state",
+        "fix terrain state",
     ]
 
     def __init__(self):
@@ -52,6 +64,120 @@ class DebugMenu(src.subMenu.SubMenu):
             text += debug
 
             match debug:
+                case "fix terrain state":
+                    if current_change:
+                        terrain = character.getTerrain()
+                        terrain.clear_broken_states()
+                        return True
+                case "fix room state":
+                    if current_change:
+                        if character.container.isRoom:
+                            character.container.clear_broken_states()
+                        return True
+                case "change personality settings":
+                    if current_change:
+                        def getValue():
+                            settingName = character.macroState["submenue"].selection
+
+                            def setValue():
+                                value = character.macroState["submenue"].text
+                                if settingName in (
+                                    "autoCounterAttack",
+                                    "autoFlee",
+                                    "abortMacrosOnAttack",
+                                    "attacksEnemiesOnContact",
+                                ):
+                                    if value == "True":
+                                        value = True
+                                    else:
+                                        value = False
+                                else:
+                                    try:
+                                        value = int(value)
+                                    except:
+                                        return
+                                character.personality[settingName] = value
+
+                            if settingName is None:
+                                return
+                            submenu3 = src.menuFolder.inputMenu.InputMenu("input value")
+                            character.macroState["submenue"] = submenu3
+                            character.macroState["submenue"].followUp = setValue
+                            return
+
+                        options = []
+                        for (key, value) in character.personality.items():
+                            options.append((key, f"{key}: {value}"))
+                        submenu2 = src.menuFolder.selectionMenu.SelectionMenu("select personality setting", options)
+                        character.macroState["submenue"] = submenu2
+                        character.macroState["submenue"].followUp = getValue
+                        return True
+                case "toggleQuestExpanding":
+                    if current_change:
+                        character.autoExpandQuests = not character.autoExpandQuests
+                        return True
+                case "toggleQuestExpanding2":
+                    if current_change:
+                        character.autoExpandQuests2 = not character.autoExpandQuests2
+                        return True
+                case "toggleExpandQ":
+                    if current_change:
+                        character.autoExpandQ = not character.autoExpandQ
+                        return True
+                case "toggleCommandOnPlus":
+                    if current_change:
+                        character.disableCommandsOnPlus = not character.disableCommandsOnPlus
+                        return True
+                case "gain full strength":
+                    if current_change:
+                        character.maxHealth = 500
+                        character.health = 500
+                        character.baseAttackSpeed = 0.10
+                        character.movementSpeed = 0.10
+                        character.baseDamage = 20
+                        character.hasSpecialAttacks = True
+
+                        weapon = src.items.itemMap["Sword"]()
+                        weapon.baseDamage = 30
+                        character.weapon = weapon
+                        armor = src.items.itemMap["Armor"]()
+                        armor.armorValue = 8
+                        character.armor = armor
+
+                        return True
+                case "gain endgame strength":
+                    if current_change:
+                        character.maxHealth = 370
+                        character.health = 370
+                        character.baseAttackSpeed = 0.50
+                        character.movementSpeed = 0.50
+                        character.baseDamage = 20
+                        character.hasSpecialAttacks = True
+
+                        weapon = src.items.itemMap["Sword"]()
+                        weapon.baseDamage = 30
+                        character.weapon = weapon
+                        armor = src.items.itemMap["Armor"]()
+                        armor.armorValue = 8
+                        character.armor = armor
+
+                        return True
+                case "kill enemies on Terrain":
+                    if current_change:
+                        terrain = character.getTerrain()
+                        
+                        candidates = []
+                        candidates.extend(terrain.characters)
+
+                        for room in terrain.rooms:
+                            candidates.extend(room.characters)
+                        
+                        for candidate in candidates[:]:
+                            if candidate.faction == character.faction:
+                                continue
+                            candidate.die("sudden death")
+
+                        return True
                 case "Obtain Glass hearts":
                     if current_change:
                         terrain = character.getHomeTerrain()
@@ -104,7 +230,7 @@ class DebugMenu(src.subMenu.SubMenu):
                                     "j": {
                                         "function": {
                                             "container": self,
-                                            "method": "action",
+                                            "method": "teleport",
                                             "params": {"character":character},
                                         },
                                         "description": "move to it",
@@ -115,6 +241,49 @@ class DebugMenu(src.subMenu.SubMenu):
                             mapContent[room.yPosition][room.xPosition] = room.displayChar
                         for scrapField in terrain.scrapFields:
                             mapContent[scrapField[1]][scrapField[0]] = "ss"
+                        submenue = src.menuFolder.mapMenu.MapMenu(
+                            mapContent=mapContent,
+                            functionMap=functionMap,
+                            cursor=character.getBigPosition(),
+                        )
+                        character.macroState["submenue"] = submenue
+                        return True
+                case "spawn room":
+                    if current_change:
+                        terrain = character.getTerrain()
+                        mapContent = []
+                        functionMap = {}
+
+                        for x in range(15):
+                            mapContent.append([])
+                            for y in range(15):
+                                if x not in (0, 14) and y not in (0, 14):
+                                    displayChar = "  "
+                                elif x != 7 and y != 7:
+                                    displayChar = "##"
+                                else:
+                                    displayChar = "  "
+                                mapContent[x].append(displayChar)
+                        for x in range(1,14):
+                            for y in range(1,14):
+                                functionMap[(y, x)] = {
+                                    "j": {
+                                        "function": {
+                                            "container": self,
+                                            "method": "spawnRoom",
+                                            "params": {"character":character},
+                                        },
+                                        "description": "spawn room",
+                                    }
+                                }
+
+                        for room in terrain.rooms:
+                            mapContent[room.yPosition][room.xPosition] = room.displayChar
+                            del functionMap[(room.xPosition, room.yPosition)]
+                        for scrapField in terrain.scrapFields:
+                            mapContent[scrapField[1]][scrapField[0]] = "ss"
+                            del functionMap[(scrapField[0], scrapField[1])]
+
                         submenue = src.menuFolder.mapMenu.MapMenu(
                             mapContent=mapContent,
                             functionMap=functionMap,
@@ -138,7 +307,7 @@ class DebugMenu(src.subMenu.SubMenu):
                                     }
                                 }
 
-                        submenue = src.menuFolder.TerrainMenu.TerrainMenu(
+                        submenue = src.menuFolder.terrainMenu.TerrainMenu(
                             functionMap=functionMap,
                             cursor=character.getTerrain().getPosition(),
                             applyKey="big_coordinate",
@@ -173,12 +342,44 @@ class DebugMenu(src.subMenu.SubMenu):
                             "method": "action",
                             "params": {"character": character},
                         }
+                case "toggle SDL":
+                    if current_change:
+                        src.interaction.allow_sdl = not src.interaction.allow_sdl
             text += "\n"
 
         src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), text))
 
         # exit submenu
         return key == "esc"
+
+    def spawnRoom(self, params):
+        '''
+        spawn a room
+        '''
+        character = params["character"]
+        src.magic.spawnRoom(character.getTerrain(),"EmptyRoom",params["coordinate"])
+
+    def teleport(self, params):
+        '''
+        teleport character to a tile 
+        '''
+
+        # prepare parameters
+        character = params["character"]
+        terrain = character.getTerrain()
+        position = params["coordinate"]
+
+        # call the background mechanism
+        src.magic.teleportToTile(character, position, terrain)
+
+    def teleportToTerrain(self, params):
+        '''
+        teleport character to a terrain
+        '''
+        terrain_position = params["big_coordinate"]
+        character = params["character"]
+
+        src.magic.teleportToTerrain(character, terrain_position)
 
     def action(self, params):
         character = params["character"]
@@ -189,16 +390,6 @@ class DebugMenu(src.subMenu.SubMenu):
             except Exception as e:
                 print("error: " + str(e))
             return
-
-        if "coordinate" in params:
-            print(params["coordinate"])
-            terrain = character.getTerrain()
-            character.container.removeCharacter(character)
-            room = terrain.getRoomByPosition(params["coordinate"])
-            if len(room):
-                room[0].addCharacter(character,7,7)
-            else:
-                terrain.addCharacter(character,15*params["coordinate"][0]+7,15*params["coordinate"][1]+7)
 
         if "item" in params:
             print(params["item"])
@@ -211,9 +402,9 @@ class DebugMenu(src.subMenu.SubMenu):
                 if key.lower() == item_name:
                     if m:
                         for _ in range(int(m.group()[1:])):
-                            character.inventory.append(item_ty())
+                            character.addToInventory(item_ty())
                     else:
-                        character.inventory.append(item_ty())
+                        character.addToInventory(item_ty())
 
                     character.addMessage(f"added {item_name}")
                     return
@@ -221,26 +412,17 @@ class DebugMenu(src.subMenu.SubMenu):
             character.addMessage(f"item ({item_name}) not found")
 
         if "big_coordinate" in params:
-            print(params["big_coordinate"])
-            x, y = params["big_coordinate"]
-            terrain = character.getTerrain()
-            character.container.removeCharacter(character)
-            terrain = src.gamestate.gamestate.terrainMap[y][x]
-            room = terrain.getRoomByPosition((7, 7))
-            if len(room):
-                room[0].addCharacter(character, 7, 7)
-            else:
-                terrain.addCharacter(character, 15 * 7 + 7, 15 * 7 + 7)
+            self.teleportToTerrain(params)
 
         if "ticks" in params:
-            params["productionTime"] = int(params["ticks"])
-            params["doneProductionTime"] = 0
-            params["hitCounter"] = character.numAttackedWithoutResponse
+            params["delayTime"] = int(params["ticks"])
+            params["action"]= "onDone"
 
-            class Dummy(src.items.itemMap["WorkShop"]):
-                def produceItem_done(self, params):
-                    ticks = params["productionTime"]
-                    character = params["character"]
-                    character.addMessage(f"passed {ticks} tick")
+            def onDone(params):
+                ticks = params["delayTime"]
+                character = params["character"]
+                character.addMessage(f"passed {ticks} tick")
 
-            Dummy().produceItem_wait(params)
+            dummy = src.items.Item()
+            dummy.onDone = onDone
+            dummy.delayedAction(params)

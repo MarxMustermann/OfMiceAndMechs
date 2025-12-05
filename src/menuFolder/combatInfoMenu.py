@@ -20,10 +20,10 @@ class CombatInfoMenu(src.subMenu.SubMenu):
         text = ""
 
         text += "you: \n\n"
-        text += "name:        %s\n" % char.name
-        text += "health:      %s\n" % char.health
-        text += "exhaustion:  %s\n" % char.exhaustion
-        text += "timeTaken:   %f\n" % char.timeTaken
+        text += f"name:        {char.name} {char.getPosition()}\n"
+        text += f"health:      {char.health}\n"
+        text += f"exhaustion:  {char.exhaustion}\n"
+        text += f"timeTaken:   {char.timeTaken}\n"
 
         text += """
 
@@ -34,13 +34,10 @@ nearby enemies:
         enemies = char.getNearbyEnemies()
         for enemy in enemies:
             text += "-------------  \n"
-            text += "name:        %s\n" % enemy.name
-            text += "health:     %s\n" % enemy.health
-            text += "exhaustion:  %s\n" % enemy.exhaustion
-            timeTaken = enemy.timeTaken
-            if timeTaken > 1:
-                timeTaken -= 1
-            text += f"timeTaken:   {timeTaken:f}\n"
+            text += f"name:        {enemy.name} {enemy.getPosition()}\n"
+            text += f"health:      {enemy.health}\n"
+            text += f"exhaustion:  {enemy.exhaustion}\n"
+            text += f"timeTaken:   {enemy.timeTaken:f}\n"
 
         text += """
 
@@ -49,13 +46,10 @@ subordinates:
 """
         for ally in char.subordinates:
             text += "-------------  \n"
-            text += "name:        %s\n" % ally.name
-            text += "health:     %s\n" % ally.health
-            text += "exhaustion:  %s\n" % ally.exhaustion
-            timeTaken = ally.timeTaken
-            if timeTaken > 1:
-                timeTaken -= 1
-            text += f"timeTaken:   {timeTaken:f}\n"
+            text += f"name:        {ally.name} {ally.getPosition()}\n"
+            text += f"health:      {ally.health}\n"
+            text += f"exhaustion:  {ally.exhaustion}\n"
+            text += f"timeTaken:   {ally.timeTaken:f}\n"
 
         return text
 

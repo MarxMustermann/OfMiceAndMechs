@@ -1,6 +1,6 @@
 import src
-import src.rooms
 
+import random
 
 class RoomBuilder(src.items.Item):
     """
@@ -23,6 +23,30 @@ Place Walls and and Doors around the room builder and activate the room builder 
 The room has to be a rectangle.
 """
 
+    def get_missing_items(self):
+        """
+        get information on what items still need to be placed
+        """
+        # set up helper variables
+        big_pos = self.getBigPosition()
+        terrain = self.getTerrain()
+        if terrain == None:
+            return None
+
+        # get missing items
+        missing_items = []
+        for x in range(1,14):
+            for y in range(1,14):
+                item_type = "Wall"
+                if x == 7 or y == 7:
+                    item_type = "Door"
+                pos = (big_pos[0]*15+x,big_pos[1]*15+y,0)
+                found_items = terrain.getItemByPosition(pos)
+                if len(found_items) == 1 and found_items[0].type == item_type:
+                    continue
+                missing_items.append((item_type,pos))
+        return missing_items
+
     def apply(self, character):
         """
         handle a character trying to build a room
@@ -40,7 +64,7 @@ The room has to be a rectangle.
             character.addMessage("this machine can not be used within rooms")
             return
 
-        # check for items placed
+        # find room edges
         wallLeft = False
         for offset in range(6, 7):
             pos = (self.xPosition - offset, self.yPosition,0)
@@ -82,7 +106,7 @@ The room has to be a rectangle.
             character.addMessage("no boundaries found")
             return
 
-        # check for items placed
+        # check room dimensions
         roomLeft = self.xPosition - wallLeft.xPosition
         roomRight = wallRight.xPosition - self.xPosition
         roomTop = self.yPosition - wallTop.yPosition
@@ -94,7 +118,7 @@ The room has to be a rectangle.
             character.addMessage("room to big")
             return
 
-        # check for items placed
+        # check if there are items where the room outlines are
         wallMissing = False
         items = []
         specialItems = []
@@ -159,7 +183,6 @@ The room has to be a rectangle.
                 character.addMessage("wall missing")
                 return
 
-            # check for items placed
             for item in specialItems:
                 for compareItem in specialItems:
                     if item == compareItem:
@@ -177,7 +200,7 @@ The room has to be a rectangle.
                     character.addMessage("special items to near to each other")
                     return
 
-        # check for items placed
+        # actually spawn the new room
         oldTerrain = self.container
         for item in specialItems:
             if item == self:
@@ -189,7 +212,6 @@ The room has to be a rectangle.
             item.xPosition = roomLeft + oldX - self.xPosition
             item.yPosition = roomTop + oldY - self.yPosition
             doorPos.append((roomLeft + oldX - self.xPosition,roomTop + oldY - self.yPosition))
-
         room = src.rooms.EmptyRoom(
             self.xPosition // 15,
             self.yPosition // 15,
@@ -211,36 +233,39 @@ The room has to be a rectangle.
         bigPos = character.getBigPosition()
 
         # check if there is a neigbouring trap room
-        hasTraproomNeighbour = False
+        has_connected_traproom_neighbour = False
         traproomOffset = None
-        neigbourTraproom = None
+        connected_neigbour_traproom = None
+        neigbour_traprooms = []
         offsets = [(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]
         for offset in offsets:
             rooms = terrain.getRoomByPosition((bigPos[0]+offset[0],bigPos[1]+offset[1],0))
             if not rooms:
                 continue
-            if not rooms[0].tag == "traproom":
+            if not rooms[0].tag or not (rooms[0].tag.lower() in ("traproom", "entryroom","trapsupport")):
                 continue
+
+            neigbour_traprooms.append(rooms[0])
 
             if offset == (1,0,0):
                 if rooms[0].getPositionWalkable((0,6,0)):
-                    hasTraproomNeighbour = True
+                    has_connected_traproom_neighbour = True
             if offset == (-1,0,0):
                 if rooms[0].getPositionWalkable((12,6,0)):
-                    hasTraproomNeighbour = True
+                    has_connected_traproom_neighbour = True
             if offset == (0,1,0):
                 if rooms[0].getPositionWalkable((6,0,0)):
-                    hasTraproomNeighbour = True
+                    has_connected_traproom_neighbour = True
             if offset == (0,-1,0):
                 if rooms[0].getPositionWalkable((6,12,0)):
-                    hasTraproomNeighbour = True
+                    has_connected_traproom_neighbour = True
 
-            if hasTraproomNeighbour:
+            if has_connected_traproom_neighbour:
                 traproomOffset = offset
-                neigbourTraproom = rooms[0]
+                connected_neigbour_traproom = rooms[0]
                 break
 
-        if hasTraproomNeighbour:
+        if has_connected_traproom_neighbour:
             # open new trap room doors
             offsets = [(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]
             for offset in offsets:
@@ -271,7 +296,7 @@ The room has to be a rectangle.
                         item.walkable = True
 
             # close old traprooms doors
-            neigbourTraproomPos = neigbourTraproom.getPosition()
+            neigbourTraproomPos = connected_neigbour_traproom.getPosition()
             offsets = [(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]
             for offset in offsets:
                 rooms = terrain.getRoomByPosition((neigbourTraproomPos[0]+offset[0],neigbourTraproomPos[1]+offset[1],0))
@@ -281,127 +306,140 @@ The room has to be a rectangle.
                 if offset == (-traproomOffset[0],-traproomOffset[1],-traproomOffset[2]):
                     continue
 
-                print(offset)
-
                 if offset == (1,0,0):
-                    for item in neigbourTraproom.getItemByPosition((12,6,0)):
+                    for item in connected_neigbour_traproom.getItemByPosition((12,6,0)):
                         if item.type != "Door":
                             continue
                         item.walkable = False
                 if offset == (-1,0,0):
-                    for item in neigbourTraproom.getItemByPosition((0,6,0)):
+                    for item in connected_neigbour_traproom.getItemByPosition((0,6,0)):
                         if item.type != "Door":
                             continue
                         item.walkable = False
                 if offset == (0,1,0):
-                    for item in neigbourTraproom.getItemByPosition((6,12,0)):
+                    for item in connected_neigbour_traproom.getItemByPosition((6,12,0)):
                         if item.type != "Door":
                             continue
                         item.walkable = False
                 if offset == (0,-1,0):
-                    for item in neigbourTraproom.getItemByPosition((6,0,0)):
+                    for item in connected_neigbour_traproom.getItemByPosition((6,0,0)):
                         if item.type != "Door":
                             continue
                         item.walkable = False
 
-            ###########################################
-            ###
-            ##   draw markings for new trap room
-            #
-
-            faction = character.faction
-
-            # add walking space in the center
-            room.addWalkingSpace((6,6,0))
-            room.tag = "traproom"
-
-            # add north-south trap line
-            for y in (1,2,3,4,5,7,8,9,10,11):
-                triggerPlate = src.items.itemMap["TriggerPlate"]()
-                triggerPlate.faction = faction
-                triggerPlate.bolted = True 
-                room.addItem(triggerPlate,(6,y,0))
-                room.addWalkingSpace((6,y,0))
-                for x in (5,7):
-                    rodTower = src.items.itemMap["RodTower"]()
-                    room.addItem(rodTower,(x,y,0))
-                    triggerPlate.targets.append((x,y,0))
-
-            # add west-east trap line
-            for x in (1,2,3,4,5,7,8,9,10):
-                triggerPlate = src.items.itemMap["TriggerPlate"]()
-                triggerPlate.faction = faction
-                triggerPlate.bolted = True 
-                room.addItem(triggerPlate,(x,6,0))
-                room.addWalkingSpace((x,6,0))
-                for y in (5,7):
-                    if x not in (5,7,):
-                        rodTower = src.items.itemMap["RodTower"]()
-                        room.addItem(rodTower,(x,y,0))
-                    triggerPlate.targets.append((x,y,0))
-            room.addWalkingSpace((11,6,0))
+            # set new room as entry room
+            room.tag = "entryRoom"
 
             # add alarm bell
             alarmBell = src.items.itemMap["AlarmBell"]()
-            alarmBell.bolted = True 
-            room.addItem(alarmBell,(11,7,0))
+            alarmBell.bolted = True
+            room.addItem(alarmBell,(3,3,0))
+            room.alarm = True
 
-            wall = src.items.itemMap["Wall"]()
-            wall.bolted = True 
-            room.addItem(wall,(11,5,0))
 
-        if not hasTraproomNeighbour:
-            westNeighbours = terrain.getRoomByPosition((bigPos[0]-1,bigPos[1],0))
-            if westNeighbours:
-                for item in room.getItemByPosition((0,6,0)):
-                    if item.type != "Door":
-                        continue
-                    item.walkable = True
-                for item in westNeighbours[0].getItemByPosition((12,6,0)):
-                    if item.type != "Door":
-                        continue
-                    item.walkable = True
-            eastNeighbours = terrain.getRoomByPosition((bigPos[0]+1,bigPos[1],0))
-            if eastNeighbours:
-                for item in room.getItemByPosition((12,6,0)):
-                    if item.type != "Door":
-                        continue
-                    item.walkable = True
-                for item in eastNeighbours[0].getItemByPosition((0,6,0)):
-                    if item.type != "Door":
-                        continue
-                    item.walkable = True
-            northNeighbours = terrain.getRoomByPosition((bigPos[0],bigPos[1]-1,0))
-            if northNeighbours:
-                for item in room.getItemByPosition((6,0,0)):
-                    if item.type != "Door":
-                        continue
-                    item.walkable = True
-                for item in northNeighbours[0].getItemByPosition((6,12,0)):
-                    if item.type != "Door":
-                        continue
-                    item.walkable = True
-            southNeighbours = terrain.getRoomByPosition((bigPos[0],bigPos[1]+1,0))
-            if southNeighbours:
-                for item in room.getItemByPosition((6,12,0)):
-                    if item.type != "Door":
-                        continue
-                    item.walkable = True
-                for item in southNeighbours[0].getItemByPosition((6,0,0)):
-                    if item.type != "Door":
-                        continue
-                    item.walkable = True
+        if not has_connected_traproom_neighbour:
+            if not neigbour_traprooms:
+                westNeighbours = terrain.getRoomByPosition((bigPos[0]-1,bigPos[1],0))
+                if westNeighbours and not (westNeighbours[0].tag and (westNeighbours[0].tag.lower() in ("traproom", "entryroom","trapsupport"))):
+                    for item in room.getItemByPosition((0,6,0)):
+                        if item.type != "Door":
+                            continue
+                        item.walkable = True
+                    for item in westNeighbours[0].getItemByPosition((12,6,0)):
+                        if item.type != "Door":
+                            continue
+                        item.walkable = True
+                eastNeighbours = terrain.getRoomByPosition((bigPos[0]+1,bigPos[1],0))
+                if eastNeighbours and not (eastNeighbours[0].tag and (eastNeighbours[0].tag.lower() in ("traproom", "entryroom","trapsupport"))):
+                    for item in room.getItemByPosition((12,6,0)):
+                        if item.type != "Door":
+                            continue
+                        item.walkable = True
+                    for item in eastNeighbours[0].getItemByPosition((0,6,0)):
+                        if item.type != "Door":
+                            continue
+                        item.walkable = True
+                northNeighbours = terrain.getRoomByPosition((bigPos[0],bigPos[1]-1,0))
+                if northNeighbours and not (northNeighbours[0].tag and (northNeighbours[0].tag.lower() in ("traproom", "entryroom","trapsupport"))):
+                    for item in room.getItemByPosition((6,0,0)):
+                        if item.type != "Door":
+                            continue
+                        item.walkable = True
+                    for item in northNeighbours[0].getItemByPosition((6,12,0)):
+                        if item.type != "Door":
+                            continue
+                        item.walkable = True
+                southNeighbours = terrain.getRoomByPosition((bigPos[0],bigPos[1]+1,0))
+                if southNeighbours and not (southNeighbours[0].tag and (southNeighbours[0].tag.lower() in ("traproom", "entryroom","trapsupport"))):
+                    for item in room.getItemByPosition((6,12,0)):
+                        if item.type != "Door":
+                            continue
+                        item.walkable = True
+                    for item in southNeighbours[0].getItemByPosition((6,0,0)):
+                        if item.type != "Door":
+                            continue
+                        item.walkable = True
+            else:
+                neighbour = random.choice(neigbour_traprooms)
+                if neighbour.xPosition < room.xPosition:
+                    for item in room.getItemByPosition((0,6,0)):
+                        if item.type != "Door":
+                            continue
+                        item.walkable = True
+                    for item in neighbour.getItemByPosition((12,6,0)):
+                        if item.type != "Door":
+                            continue
+                        item.walkable = True
+                if neighbour.xPosition > room.xPosition:
+                    for item in room.getItemByPosition((12,6,0)):
+                        if item.type != "Door":
+                            continue
+                        item.walkable = True
+                    for item in neighbour.getItemByPosition((0,6,0)):
+                        if item.type != "Door":
+                            continue
+                        item.walkable = True
+                if neighbour.yPosition < room.yPosition:
+                    for item in room.getItemByPosition((6,0,0)):
+                        if item.type != "Door":
+                            continue
+                        item.walkable = True
+                    for item in neighbour.getItemByPosition((6,12,0)):
+                        if item.type != "Door":
+                            continue
+                        item.walkable = True
+                if neighbour.yPosition > room.yPosition:
+                    for item in room.getItemByPosition((6,12,0)):
+                        if item.type != "Door":
+                            continue
+                        item.walkable = True
+                    for item in neighbour.getItemByPosition((6,0,0)):
+                        if item.type != "Door":
+                            continue
+                        item.walkable = True
+
+                room.tag = "trapSupport"
+
+                # add alarm bell
+                alarmBell = src.items.itemMap["AlarmBell"]()
+                alarmBell.bolted = True
+                room.addItem(alarmBell,(3,3,0))
+                room.alarm = True
+
+        # add newly generated room
+        oldTerrain.addRooms([room])
 
         # set up animations
-        xOffset = character.xPosition - self.xPosition
-        yOffset = character.yPosition - self.yPosition
+        for character_to_move in self.getTerrain().getCharactersOnTile(self.getBigPosition())[:]:
+            xOffset = character_to_move.xPosition - self.xPosition
+            yOffset = character_to_move.yPosition - self.yPosition
 
-        oldTerrain.removeCharacter(character)
-        oldTerrain.addRooms([room])
-        character.xPosition = roomLeft + xOffset
-        character.yPosition = roomTop + yOffset
-        room.addCharacter(character, roomLeft + xOffset, roomTop + yOffset)
+            oldTerrain.removeCharacter(character_to_move)
+            character_to_move.xPosition = roomLeft + xOffset
+            character_to_move.yPosition = roomTop + yOffset
+            room.addCharacter(character_to_move, roomLeft + xOffset, roomTop + yOffset)
 
+        # move characters into the room
         basePos = character.getBigPosition()
         self.container.addAnimation((basePos[0]*15+7,basePos[1]*15+7,0),"showchar",35,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"RB")})
         self.container.addAnimation((basePos[0]*15+7,basePos[1]*15+7,0),"showchar",3,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"::")})

@@ -8,6 +8,9 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
         self.dutyArtwork = dutyArtwork
         self.index = [0,0]
 
+    def get_duties(self):
+        return list(reversed(["manufacturing","scavenging","machine operation","cleaning","painting","maggot gathering","machine placing","room building","machining","metal working","hauling","resource fetching","scrap hammering","resource gathering","praying","mold farming"]))
+
     def handleKey(self, key, noRender=False, character = None):
         """
         show the help text and ignore keypresses
@@ -39,13 +42,12 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
         if src.gamestate.gamestate.mainChar in npcs:
             npcs.remove(src.gamestate.gamestate.mainChar)
 
-        duties = list(reversed(["manufacturing","epoch questing","scavenging","machine operation","clone spawning","city planning","cleaning","painting","maggot gathering","machine placing","room building","machining","metal working","hauling","resource fetching","scrap hammering","resource gathering","questing","flask filling","praying","mold farming"]))
-
+        duties = self.get_duties()
 
         if key == "C":
             for npc in npcs:
                 npc.duties = []
-        if key in ("w","up") and not self.index[0] < 1:
+        if key in ("w","up") and not self.index[0] < 0:
             self.index[0] -= 1
         if key in ("s","down"):
             self.index[0] += 1
@@ -61,7 +63,7 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
                 if isinstance(npc,src.characters.characterMap["Ghoul"]):
                     continue
 
-                if rowCounter == self.index[0]:
+                if rowCounter == self.index[0] or self.index[0] == -1:
                     dutyname = duties[self.index[1]]
 
                     if key == "l":
@@ -100,6 +102,8 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
             color = "default"
             if rowCounter == self.index[1]:
                 color = "#555"
+                if self.index[0] == -1:
+                    color = "#888"
             text.append("|")
             text.append((src.interaction.urwid.AttrSpec("default", color)," "+duty+" "))
             rowCounter += 1
@@ -140,6 +144,11 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
                     if rowCounter == self.index[1] or lineCounter == self.index[0]:
                         color = "#333"
                     text.append((src.interaction.urwid.AttrSpec("default", color),"  "))
+
+                distancer = " "
+                if duty in npc.duties and npc.dutyPriorities.get(duty,1) > 9:
+                    distancer = ""
+                text.append((src.interaction.urwid.AttrSpec("default", color),distancer))
 
                 if duty in npc.duties:
                     text.append(str(npc.dutyPriorities.get(duty,1)))

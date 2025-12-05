@@ -1,34 +1,55 @@
 import src
 
 class QuestMenu(src.subMenu.SubMenu):
-    """
-    show the quests for a character and allow player interaction
-    """
+    '''
+    menu showing the quests for a character and allow player interaction
+    Parameters:
+        char: the character to show the quests for
+    '''
 
     def __init__(self, char=None):
-        """
-        initialise internal state
-
-        Parameters:
-            char: the character to show the quests for
-        """
-
         self.type = "QuestMenu"
         self.lockOptions = True
         if not char:
             char = src.gamestate.gamestate.mainChar
         self.char = char
         self.offsetX = 0
-        self.questCursor = [0]
+        self.setCursorToCurrentQuest()
+        self.skipKeypress = True
+
         self.sidebared = False
         super().__init__()
+
+    def setCursorToCurrentQuest(self):
+        '''
+        select the deepest quest that is not trivial 
+        '''
+        baseList = self.char.quests
+        self.questCursor = []
+        while len(baseList):
+            quest = baseList[0]
+            try:
+                baseList = quest.subQuests
+            except:
+                break
+
+            try:
+                if quest.lowLevel:
+                    break
+            except:
+                pass
+
+            self.questCursor.append(0)
+
+        if self.questCursor == []:
+            self.questCursor.append(0)
 
     def render(self, char):
         return self.renderQuests(char=self.char, asList=True, questCursor=self.questCursor,sidebared=self.sidebared)
 
     # overrides the superclasses method completely
     def handleKey(self, key, noRender=False, character = None):
-        """
+        '''
         show a questlist and handle interactions
 
         Parameters:
@@ -36,10 +57,19 @@ class QuestMenu(src.subMenu.SubMenu):
             noRender: a flag toskip rendering
         Returns:
             returns True when done
-        """
+        '''
+
+        try:
+            self.skipKeypress
+        except:
+            self.skipKeypress = False
+
+        if self.skipKeypress:
+            self.skipKeypress = False
+            key = "~"
 
         # exit submenu
-        if key == "esc":
+        if key in ("esc","q"):
             return True
         if key in ("ESC","lESC",):
             self.char.rememberedMenu.append(self)
@@ -237,6 +267,14 @@ class QuestMenu(src.subMenu.SubMenu):
                     nextstep = f"suggested action: \npress {solvingCommangString} \nto {reason}\n\n"
                 else:
                     nextstep = "suggested action: \npress + \nto generate subquests\n\n"
+
+                automatic = False
+                for quest in char.getActiveQuests():
+                    if not quest.autoSolve:
+                        continue
+                    automatic = True
+                if char.hasOwnAction or automatic:
+                    nextstep = "suggested action: \n\nwait or press ctrl-d to stop auto solve\n\n"
                 txt.append(src.interaction.ActionMeta(payload="+",content=nextstep))
 
             if not sidebared:

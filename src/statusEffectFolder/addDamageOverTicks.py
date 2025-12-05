@@ -17,7 +17,7 @@ class AddDamageOverTicks(src.statusEffects.DamageBuff):
 
     def getLoreDescription(self):
         text = ""
-        text += f"Increases the damage you deal for some time."
+        text += f"You feel stronger. This will pass, so hurry"
         return text
 
     def buildStatListDescription(self,description = ""):

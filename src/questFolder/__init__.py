@@ -6,6 +6,7 @@ import src.questFolder.buildRoom
 import src.questFolder.cleanSpace
 import src.questFolder.clearInventory
 import src.questFolder.clearPathToPosition
+import src.questFolder.clearPathToTile
 import src.questFolder.clearTerrain
 import src.questFolder.clearTile
 import src.questFolder.deleteMarking
@@ -44,6 +45,8 @@ import src.questFolder.runCommand
 import src.questFolder.scavenge
 import src.questFolder.scavengeTile
 import src.questFolder.scheduleRoomBuilding
+import src.questFolder.unScheduleRoomBuilding
+import src.questFolder.convertToTraproom
 import src.questFolder.scrapHammering
 import src.questFolder.secureTile
 import src.questFolder.setUpMachine
@@ -64,3 +67,7 @@ import src.questFolder.dropItemsOutside
 import src.questFolder.brewPotion
 import src.questFolder.consumePotion
 import src.questFolder.discardItemsInside
+import src.questFolder.furnishRoom
+import src.questFolder.doMapSync
+import src.questFolder.ensureMaindutyClone
+import src.questFolder.unblockDoor

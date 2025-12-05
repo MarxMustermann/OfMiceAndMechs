@@ -691,7 +691,7 @@ your room produces a MetalBar every {ticksPerBar} ticks on average.""")
             character.runCommandString("*********")
             room.addCharacter(character,0,6)
             for _i in range(10):
-                character.inventory.append(src.items.itemMap["Scrap"]())
+                character.addToInventory(src.items.itemMap["Scrap"]())
 
             quest = src.quests.RestockRoom(targetPosition=(room.xPosition,room.yPosition,0),toRestock="Scrap")
             quest.activate()
@@ -706,7 +706,7 @@ your room produces a MetalBar every {ticksPerBar} ticks on average.""")
             character.runCommandString("*********")
             room.addCharacter(character,0,6)
             for _i in range(10):
-                character.inventory.append(src.items.itemMap["Corpse"]())
+                character.addToInventory(src.items.itemMap["Corpse"]())
 
             quest = src.quests.RestockRoom(targetPosition=(room.xPosition,room.yPosition,0),toRestock="Corpse")
             quest.activate()
@@ -988,6 +988,8 @@ class MainGame(BasicPhase):
         """
 
         self.preselection = preselection
+        self.listeners = {"default": []}
+        self.watched = []
         super().__init__("MainGame", seed=seed)
 
     def get_free_position(self,tag):
@@ -999,7 +1001,7 @@ class MainGame(BasicPhase):
 
         return pos
 
-    def start(self, seed=0, difficulty=None):
+    def start(self, seed=0, difficulty=None, difficultyMap=None):
         """
         set up terrain and spawn main character
 
@@ -1025,7 +1027,7 @@ class MainGame(BasicPhase):
         pos = (7,7)
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
         currentTerrain.tag = "center terrain"
-        self.setUpShrine(pos)
+        src.magic.setUpThroneDungeon(pos)
 
         self.difficulty = difficulty
 
@@ -1037,19 +1039,12 @@ class MainGame(BasicPhase):
         if not self.preselection:
             self.preselection = "Story"
 
-        difficultyModifier = 1
-        if self.difficulty == "tutorial":
-            difficultyModifier = 0.5
-        if self.difficulty == "easy":
-            difficultyModifier = 0.5
-        if self.difficulty == "difficult":
-            difficultyModifier = 2
+        difficultyModifier = difficultyMap["difficultyModifier"]
 
         src.gamestate.gamestate.difficulty = self.difficulty
+        src.gamestate.gamestate.difficultyMap = difficultyMap
 
         numDungeons = 7
-        if self.difficulty == "tutorial":
-            numDungeons = 2
 
         dungeonPositions = []
         dungeon_counter = 0
@@ -1057,29 +1052,18 @@ class MainGame(BasicPhase):
             dungeonPositions.append(self.get_free_position("dungeon"))
             dungeon_counter += 1
 
-        if self.difficulty == "tutorial":
-            self.setUpGlassHeartDungeon(dungeonPositions[0],1,1*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[1],2,1.5*difficultyModifier)
-        elif self.difficulty == "difficult":
-            gods = [1,2,3,4,5,6,7]
-            random.shuffle(gods)
-            self.setUpGlassHeartDungeon(dungeonPositions[0],gods[0],1*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[1],gods[1],2*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[2],gods[2],3*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[3],gods[3],4*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[4],gods[4],5*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[5],gods[5],6*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[6],gods[6],7*difficultyModifier)
-        else:
-            self.setUpGlassHeartDungeon(dungeonPositions[0],1,1*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[1],2,1.5*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[2],3,2*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[3],4,2.5*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[4],5,3*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[5],6,3.5*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[6],7,4*difficultyModifier)
+        gods = [1, 2, 3, 4, 5, 6, 7]
 
-            dungeonPositions.append(self.get_free_position("dungeon2"))
+        if difficultyMap["shuffle_gods"]:
+            random.shuffle(gods)
+
+        diff_increase_per_dungeon = difficultyMap["diff_increase_per_dungeon"]
+
+        self.setUpGlassHeartDungeon(dungeonPositions[0], gods[0], 1 * difficultyModifier)
+
+        for i in range(1, numDungeons):
+            dungeon_difficulty_modifier = (1 + diff_increase_per_dungeon * i) * difficultyModifier
+            self.setUpGlassHeartDungeon(dungeonPositions[i], gods[i], dungeon_difficulty_modifier)
 
         if self.preselection == "Story":
             self.sternsBasePosition = self.get_free_position("sterns base")
@@ -1095,10 +1079,10 @@ class MainGame(BasicPhase):
 
         remote_base_npc = [True] * 9 + [False]
 
-        def random_freq():
+        def random_frequency():
             return D(random.choice(range(88, 107))) + random.choice([D(0.5), D(0)])
 
-        remote_base_teleporter_group = random_freq()
+        remote_base_teleporter_group = random_frequency()
         random.shuffle(remote_base_npc)
         for i in range(1, 10):
             t_pos = self.get_free_position("remote base")
@@ -1126,8 +1110,8 @@ class MainGame(BasicPhase):
             )
 
             if src.helpers.percentage_chance(0.2):
-                remote_base_teleporter_group = random_freq()
-            src.magic.SpawnStorageRoom(
+                remote_base_teleporter_group = random_frequency()
+            src.magic.spawnStorageRoom(
                 currentTerrain, remove((base_tile[0], base_tile[1] - 2)), controlRoom, remote_base_teleporter_group
             )
 
@@ -1171,7 +1155,7 @@ class MainGame(BasicPhase):
                     ]
 
                     npc.faction = c_faction
-                    controlRoom.addCharacter(npc, random.randint(1, 13), random.randint(1, 13))
+                    controlRoom.addCharacter(npc, random.randint(1, 11), random.randint(1, 11))
                     npc.flask = src.items.itemMap["GooFlask"]()
                     npc.flask.uses = 100
 
@@ -1204,15 +1188,18 @@ class MainGame(BasicPhase):
                     npc.duties.append("manufacturing")
                     npc.duties.append("praying")
 
-        for _i in range(1,40):
+        for _i in range(1,20):
             self.setUpShrine(self.get_free_position("shrine"))
 
-        for _i in range(1,15):
-            self.setUpFactoryRemains(self.get_free_position("factory"))
+        #for _i in range(1,15):
+        #    self.setUpFactoryRemains(self.get_free_position("factory"))
+
+        for _i in range(1,20):
+            self.setUpCloningLab(self.get_free_position("cloning lab"))
 
         for _i in range(1,2):
             for itemID in [1,2,3,4,5,6,7]:
-                self.setUpStatueRoom(self.get_free_position("statue room"),itemID)
+                src.magic.setUpStatueRoom(self.get_free_position("statue room"),itemID)
 
         # prepare state to switch between good and bad ending
         src.gamestate.gamestate.stern["fixedImplant"] = False
@@ -1230,11 +1217,12 @@ class MainGame(BasicPhase):
         src.gamestate.gamestate.mainChar = mainChar
         mainChar.addListener(self.mainCharacterDeath,"died")
         for popup in src.popups.popupsArray:
-            popup().addToChar(mainChar)
+            if callable(popup):
+                popup().addToChar(mainChar)
+            else:
+                popup.addToChar(mainChar)
 
-        if self.difficulty == "tutorial":
-            mainChar.maxHealth *= 2
-            mainChar.health *= 2
+
         if self.difficulty == "easy":
             mainChar.maxHealth *= 2
             mainChar.health *= 2
@@ -1242,34 +1230,25 @@ class MainGame(BasicPhase):
             mainChar.maxHealth = int(mainChar.maxHealth*0.5)
             mainChar.health = int(mainChar.health*0.5)
 
-        if not self.difficulty == "tutorial":
-            questMenu = src.menuFolder.questMenu.QuestMenu(mainChar)
-            questMenu.sidebared = True
-            mainChar.rememberedMenu.append(questMenu)
+        questMenu = src.menuFolder.questMenu.QuestMenu(mainChar)
+        questMenu.sidebared = True
+        mainChar.rememberedMenu.append(questMenu)
 
         messagesMenu = src.menuFolder.messagesMenu.MessagesMenu(mainChar)
         mainChar.rememberedMenu2.append(messagesMenu)
         mainChar.disableCommandsOnPlus = True
         mainChar.autoExpandQuests2 = True
 
-        print("len(self.available_positions)")
-        print(len(self.available_positions))
-
         self.setUpSpidersPit(self.get_free_position("spider pit"))
 
         while self.available_positions:
-            self.setUpRuin(self.get_free_position("ruin"))
+            src.magic.setUpRuin(self.get_free_position("ruin"))
 
         self.numRounds = 1
         self.startRound()
+        self.doMaintenance()
 
-
-
-        containerQuest = src.quests.questMap["ReachOutStory"]()
-        containerQuest.assignToCharacter(src.gamestate.gamestate.mainChar)
-        containerQuest.activate()
-        containerQuest.endTrigger = {"container": self, "method": "openedQuests"}
-        src.gamestate.gamestate.mainChar.quests.append(containerQuest)
+        self.reachImplant()
 
         src.gamestate.gamestate.mainChar.messages = []
         src.gamestate.gamestate.story = self
@@ -1297,150 +1276,13 @@ try to remember how you got here ..."""
             self.activeStory["sternsContraption"].startMeltdown()
 
     def gotEpochReward(self,extraParam):
-        if self.difficulty == "tutorial" and "NPC" in extraParam["rewardType"]:
-            try:
-                self.showed_npc_respawn_info
-            except:
-                self.showed_npc_respawn_info = False
-
-            if not self.showed_npc_respawn_info:
-                text = """
-You spawned a NPC. The NPC will do some work on the base,
-but that is not why the NPC is so important.
-
-The NPC basically acts as an extra life.
-If you have no NPCs the game is permadeath.
-This means you die and the game ends.
-
-If you die and have NPCs in your base,
-you will take control over one of those NPCs.
-So now you can die and respawn afterwards until you run out of NPCs.
-
-Now claim the other GlassHearts to win the game.
-Use the other GlassStatues (GG) to teleport to dungeons.
-Then go and claim their heart.
-
-You should start with the GlassStatue on the top right.
-That GlassStatue leads to the next easiest dungeon.
-"""
-                submenu = src.menuFolder.textMenu.TextMenu(text+"""
-
-= press esc to close this menu =
-""")
-                self.activeStory["mainChar"].macroState["submenue"] = submenu
-                self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
-                self.activeStory["mainChar"].addMessage(text)
-
-                self.showed_npc_respawn_info = True
-
-        if self.difficulty == "medium":
-            pass
+        pass
 
     def deliveredSpecialItem(self,extraParam):
-        if self.difficulty == "tutorial":
-            try:
-                self.showed_glass_heart_info
-            except:
-                self.showed_glass_heart_info = False
-
-            if not self.showed_glass_heart_info:
-                text = """
-You claimed ownership of a GlassHeart.
-This means you are one step closer to win the game.
-You need to control all GlassHearts to win the game.
-
-You also get some mana as a reward.
-Use that to spawn a NPC. That is pretty important actually.
-
-Use the leftmost Shrine (\\/) to wish for a NPC.
-What the NPC does does not matter on easy.
-"""
-                submenu = src.menuFolder.textMenu.TextMenu(text+"""
-
-= press esc to close this menu =
-""")
-                self.activeStory["mainChar"].macroState["submenue"] = submenu
-                self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
-                self.activeStory["mainChar"].addMessage(text)
-
-                self.showed_glass_heart_info = True
-                return
-
-            try:
-                self.showed_glass_heart_info2
-            except:
-                self.showed_glass_heart_info2 = False
-
-            if not self.showed_glass_heart_info2:
-                text = """
-You claimed ownership of the second GlassHeart.
-On easy this means that you collected all GlassHearts.
-
-Now there is only one step left to do.
-Use the Throne (TT) in the middle of the Temple to win the game.
-"""
-                submenu = src.menuFolder.textMenu.TextMenu(text+"""
-
-= press esc to close this menu =
-""")
-                self.activeStory["mainChar"].macroState["submenue"] = submenu
-                self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
-                self.activeStory["mainChar"].addMessage(text)
-
-                self.showed_glass_heart_info2 = True
-                return
-
-            '''
-            numGlassHearts = 0
-            for god,godData in src.gamestate.gamestate.gods.items():
-                if godData["lastHeartPos"] == (self.activeStory["mainChar"].getTerrain().xPosition,self.activeStory["mainChar"].getTerrain().yPosition):
-                    numGlassHearts += 1
-
-            if numGlassHearts == 7:
-                text = """
-You claimed all GlassHearts.
-
-And when you are done then try medium difficulty, much more will be explained there.
-"""
-                submenu = src.menuFolder.textMenu.TextMenu(text+"""
-
-= press esc to close this menu =
-""")
-                self.activeStory["mainChar"].macroState["submenue"] = submenu
-                self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
-                self.activeStory["mainChar"].addMessage(text)
-
-                self.showed_glass_heart_info2 = True
-                return
-            '''
+        pass
 
     def changedTerrain(self,extraParam):
         item = extraParam["character"]
-
-        if self.difficulty == "tutorial":
-            try:
-                self.showedBaseInfo
-            except:
-                self.showedBaseInfo = False
-
-            if not self.showedBaseInfo:
-                    text = """
-You returned to your base. The base is your home.
-It is a small base, but it has a temple.
-Bring the GlassHeart to your temple.
-
-Use the GlassStatue marked as (kk) to claim the GlassHeart as yours.
-When the GlassHeart is properly set it will show as KK.
-"""
-                    submenu = src.menuFolder.textMenu.TextMenu(text+"""
-
-= press esc to close this menu =
-""")
-                    self.activeStory["mainChar"].macroState["submenue"] = submenu
-                    self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
-                    self.activeStory["mainChar"].addMessage(text)
-
-                    self.showedBaseInfo = True
 
         if self.difficulty == ("medium","easy",):
             try:
@@ -1475,30 +1317,7 @@ a metal worker"""
     def itemPickedUp(self,extraParam):
         item = extraParam[1]
 
-        if self.difficulty == "tutorial":
-            try:
-                self.showedGlassHeartInfo
-            except:
-                self.showedGlassHeartInfo = False
 
-            if not self.showedGlassHeartInfo:
-                if item.type == "SpecialItem":
-                    text = """
-You picked up the GlassHeart.
-Now return to your base to put the GlassHeart to use.
-
-To return back to the base use the Shrine (\\/).
-Select the "teleport home" option to get back to base."""
-                    submenu = src.menuFolder.textMenu.TextMenu(text+"""
-
-= press esc to close this menu =
-    """)
-                    self.activeStory["mainChar"].macroState["submenue"] = submenu
-                    self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
-                    self.activeStory["mainChar"].addMessage(text)
-
-                    self.showedGlassHeartInfo = True
-                    return
         if self.difficulty == ("medium","easy",):
             try:
                 self.showedGlassHeartInfo
@@ -1582,101 +1401,6 @@ So bring it with you to be able to spawn one NPC cheaper.
 
     def enteredRoom(self,extraParam):
         newRoom = extraParam[1]
-
-        if self.difficulty == "tutorial":
-            try:
-                self.showedEnemyWarning
-            except:
-                self.showedEnemyWarning = False
-
-            if not self.showedEnemyWarning:
-                foundEnemies = False
-                for otherChar in newRoom.characters:
-                    if otherChar.faction == extraParam[0].faction:
-                        continue
-                    foundEnemies = True
-
-                if foundEnemies:
-                    text = """
-There are enemies in the room.
-Enemies are shown with a red background.
-Fight the enemies by bumping into them.
-
-There are more complex fighting systems,
-but you won't need them on easy difficulty."""
-                    submenu = src.menuFolder.textMenu.TextMenu(text+"""
-
-= press esc to close this menu =
-""")
-                    self.activeStory["mainChar"].macroState["submenue"] = submenu
-                    self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
-                    self.activeStory["mainChar"].addMessage(text)
-
-                    self.showedEnemyWarning = True
-                    return
-
-            try:
-                self.showedLandMineWarning
-            except:
-                self.showedLandMineWarning = False
-
-            if not self.showedLandMineWarning:
-                foundLandMine = False
-                for item in newRoom.itemsOnFloor:
-                    if item.type != "LandMine":
-                        continue
-                    foundLandMine = True
-
-                if foundLandMine:
-                    text = """
-This room contains LandMines.
-Active LandMines are shown as red "_~".
-
-Try not to step onto them and avoid standing next to them."""
-                    submenu = src.menuFolder.textMenu.TextMenu(text+"""
-
-= press esc to close this menu =
-""")
-                    self.activeStory["mainChar"].macroState["submenue"] = submenu
-                    self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
-                    self.activeStory["mainChar"].addMessage(text)
-
-                    self.showedLandMineWarning = True
-                    return
-
-            try:
-                self.showedStatueExtractInfo
-            except:
-                self.showedStatueExtractInfo = False
-
-            if not self.showedStatueExtractInfo:
-                foundFilledStatue = False
-                for item in newRoom.itemsOnFloor:
-                    if item.type != "GlassStatue":
-                        continue
-                    if not item.hasItem:
-                        continue
-                    foundFilledStatue = True
-
-                if foundFilledStatue:
-                    text = """
-You reached the central chamber of a dungeon.
-
-Use the GlassStatue to extract the GlassHeart from the GlassStatue (KK).
-Pick up the GlassHeart (!!) afterwards.
-
-press ? after closing this menu to see what keys you need to use.
-"""
-                    submenu = src.menuFolder.textMenu.TextMenu(text+"""
-
-= press esc to close this menu =
-""")
-                    self.activeStory["mainChar"].macroState["submenue"] = submenu
-                    self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
-                    self.activeStory["mainChar"].addMessage(text)
-
-                    self.showedStatueExtractInfo = True
-                    return
 
         if self.difficulty == ("medium","easy",):
             foundEnemies = False
@@ -1916,107 +1640,6 @@ but they are likely to explode when disturbed.
                         self.showedLandMineCollectingInfo = True
                         return
 
-    def setUpDungeon(self,pos):
-        #set up dungeons
-        currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
-        item = src.items.itemMap["ArchitectArtwork"]()
-        architect = item
-        item.godMode = True
-        currentTerrain.addItem(item,(1,1,0))
-
-        mainRoom = architect.doAddRoom(
-                {
-                       "coordinate": (7,7),
-                       "roomType": "EmptyRoom",
-                       "doors": "0,6 6,0 12,6 6,12",
-                       "offset": [1,1],
-                       "size": [13, 13],
-                },
-                None,
-           )
-
-        glassHeart = src.items.itemMap["GlassHeart"]()
-        mainRoom.addItem(glassHeart,(6,6,0))
-
-    def setUpThroneDungeon(self,pos):
-        #set up dungeons
-        currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
-        item = src.items.itemMap["ArchitectArtwork"]()
-        architect = item
-        item.godMode = True
-        currentTerrain.addItem(item,(1,1,0))
-
-        mainRoom = architect.doAddRoom(
-                {
-                       "coordinate": (7,7),
-                       "roomType": "EmptyRoom",
-                       "doors": "0,6 6,0 12,6 6,12",
-                       "offset": [1,1],
-                       "size": [13, 13],
-                },
-                None,
-           )
-
-        glassHeart = src.items.itemMap["Throne"]()
-        mainRoom.addItem(glassHeart,(6,6,0))
-
-        for x in range(1,14):
-            for y in range(1,14):
-                if x == 7 and y == 7:
-                    continue
-
-                enemy = src.characters.characterMap["Monster"](4,4)
-                enemy.health = 30
-                enemy.baseDamage = 7
-                enemy.maxHealth = 30
-                enemy.godMode = True
-                enemy.movementSpeed = 0.8
-
-                quest = src.quests.questMap["SecureTile"](toSecure=(x,y,0))
-                quest.autoSolve = True
-                quest.assignToCharacter(enemy)
-                quest.activate()
-                enemy.quests.append(quest)
-
-                currentTerrain.addCharacter(enemy, x*15+7, y*15+7)
-
-                for _i in range(random.randint(0,3)):
-                    for _j in range(2):
-                        scrap = src.items.itemMap["Scrap"](amount=20)
-                        currentTerrain.addItem(scrap,(x*15+random.randint(1,12),y*15+random.randint(1,12),0))
-
-    def setUpStatueRoom(self,pos,itemID=None):
-        if itemID is None:
-            itemID = random.choice([1,2,3,4,5,6,7])
-
-        # get basic info
-        currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
-        currentTerrain.tag = "statue room"
-
-        # set up helper item to spawn stuff
-        # bad code: spawning stuff should be in a "magic" class or similar
-        item = src.items.itemMap["ArchitectArtwork"]()
-        architect = item
-        item.godMode = True
-        currentTerrain.addItem(item,(1,1,0))
-
-        # create the basic room
-        room = architect.doAddRoom(
-                {
-                       "coordinate": (7,7),
-                       "roomType": "EmptyRoom",
-                       "doors": "0,6 6,0 12,6 6,12",
-                       "offset": [1,1],
-                       "size": [13, 13],
-                },
-                None,
-           )
-
-        # add random amount of loot 
-        statue = src.items.itemMap["GlassStatue"](itemID=itemID)
-        statue.charges = 5
-        room.addItem(statue,(6,6,0))
-
     def setUpSpidersPit(self,pos):
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
         currentTerrain.tag = "spider pit"
@@ -2044,6 +1667,19 @@ but they are likely to explode when disturbed.
         self.factionCounter += 1
 
         architect = src.magic.getArchitect(currentTerrain)
+
+        # create shelter room
+        shelter = architect.doAddRoom(
+                {
+                       "coordinate": (1,9),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 6,0 6,12 12,6",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        shelter.tag = "shelter"
 
         ####
         # create the control room
@@ -2213,6 +1849,20 @@ but they are likely to explode when disturbed.
                     wall.bolted = False
                     currentTerrain.addItem(wall,(15*x+random.randint(2,11),15*y+random.randint(2,11),0))
 
+                if random.random() > 0.2:
+                    rod = src.items.itemMap["Rod"]()
+                    rod.bolted = False
+                    currentTerrain.addItem(rod,(15*x+random.randint(2,11),15*y+random.randint(2,11),0))
+                if random.random() > 0.2:
+                    rod = src.items.itemMap["Bolt"]()
+                    rod.bolted = False
+                    currentTerrain.addItem(rod,(15*x+random.randint(2,11),15*y+random.randint(2,11),0))
+
+        # place a ro just in reach for the player
+        pos = (15*2+random.randint(2,13),15*7+random.randint(2,13),0)
+        rod = src.items.itemMap["Rod"]()
+        currentTerrain.addItem(rod,pos)
+
         # place initial fighting spots
         for fightingSpot in fightingSpots:
 
@@ -2228,8 +1878,11 @@ but they are likely to explode when disturbed.
 
             # spawn corpses
             if fightingSpot in [(6,8,0),]:
+                pos = (15*fightingSpot[0]+random.randint(2,11),15*fightingSpot[1]+random.randint(2,11),0)
+                rod = src.items.itemMap["Rod"]()
+                currentTerrain.addItem(rod,pos)
                 corpse = src.items.itemMap["Corpse"]()
-                currentTerrain.addItem(corpse,(15*fightingSpot[0]+random.randint(2,11),15*fightingSpot[1]+random.randint(2,11),0))
+                currentTerrain.addItem(corpse,pos)
 
                 vial = src.items.itemMap["Vial"]()
                 vial.uses = 5
@@ -2238,8 +1891,11 @@ but they are likely to explode when disturbed.
                 if random.random() < 0.8:
                     choice = random.random()
                     if choice < 0.3:
+                        pos = (15*fightingSpot[0]+random.randint(2,11),15*fightingSpot[1]+random.randint(2,11),0)
+                        rod = src.items.itemMap["Rod"]()
+                        currentTerrain.addItem(rod,pos)
                         corpse = src.items.itemMap["Corpse"]()
-                        currentTerrain.addItem(corpse,(15*fightingSpot[0]+random.randint(2,11),15*fightingSpot[1]+random.randint(2,11),0))
+                        currentTerrain.addItem(corpse,pos)
                     elif choice < 0.7:
                         vial = src.items.itemMap["Vial"]()
                         vial.uses = 5
@@ -2328,9 +1984,9 @@ but they are likely to explode when disturbed.
                 if self.difficulty == "easy":
                     lifetime = 300
                 if self.difficulty == "medium":
-                    lifetime = 100
+                    lifetime = 250
                 if self.difficulty == "difficult":
-                    lifetime = 10
+                    lifetime = 20
                 quest = src.quests.questMap["SecureTile"](toSecure=snatcherNest,lifetime=lifetime, wandering=True, endWhenCleared=False)
                 quest.autoSolve = True
                 quest.assignToCharacter(enemy)
@@ -2441,92 +2097,17 @@ but they are likely to explode when disturbed.
         mana_crystal = src.items.itemMap["Shrine"]()
         room.addItem(mana_crystal,(6,6,0))
 
-    def setUpRuin(self,pos):
+    def setUpCloningLab(self, pos):
         # get basic info
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
+        currentTerrain.tag = "cloning lab"
 
-        # set up helper item to spawn stuff
-        # bad code: spawning stuff should be in a "magic" class or similar
-        item = src.items.itemMap["ArchitectArtwork"]()
-        architect = item
-        item.godMode = True
-        currentTerrain.addItem(item,(1,1,0))
-        rand_pos = (7,7)
-        make_room = True
-        filled_cord = []
-        for i in range(random.randint(2,6)):
-            if rand_pos in filled_cord:
-                continue
-            filled_cord.append(rand_pos)
-            if make_room:
-                # create the basic room
-                room = architect.doAddRoom(
-                        {
-                            "coordinate": rand_pos,
-                            "roomType": "EmptyRoom",
-                            "doors": "0,6 6,0 12,6 6,12",
-                            "offset": [1,1],
-                            "size": [13, 13],
-                        },
-                        None,
-                )
+        central_room = src.magic.spawnRoom(currentTerrain, "EmptyRoom", (7, 7))
 
-                # decide between mixed or pure loot room
-                loot_types = ["ScrapCompactor","MetalBars","Vial","MoldFeed","Bolt","Flask","GooFlask","Rod","Sword","Scrap","ManufacturingTable","MemoryFragment"]
-                if random.random() > 0.5:
-                    loot_types = [random.choice(loot_types)]
+        implant_m = src.items.itemMap["MonsterSpawner"]()
+        central_room.addItem(implant_m, (6, 6, 0))
 
-                # add random amount of loot 
-                monsterType = random.choice(["Golem","ShieldBug"])
-                for i in range(0,random.randint(1,8)):
-                    # add loot
-                    if random.random() < 0.2:
-                        mana_crystal = src.items.itemMap["ManaCrystal"]()
-                        room.addItem(mana_crystal,(6,6,0))
-                    else:
-                        positions = [(3,8,0),(2,2,0),(11,4,0),(6,11,0),(10,11,0),(5,5,0)]
-                        item = src.items.itemMap[random.choice(loot_types)]()
-                        if item.type == "GooFlask":
-                            item.uses = 100
-                        if item.type == "Vial":
-                            item.uses = 10
-                        room.addItem(item,random.choice(positions))
-
-                    # give one free loot
-                    if i == 0:
-                        continue
-
-                    # add monster
-                    pos = (random.randint(1,11),random.randint(1,11),0)
-                    golem = src.characters.characterMap[monsterType]()
-                    golem.godMode = True
-                    quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
-                    quest.autoSolve = True
-                    quest.assignToCharacter(golem)
-                    quest.activate()
-                    golem.quests.append(quest)
-                    room.addCharacter(golem, pos[0], pos[1])
-            else:
-                for i in range(random.randint(1,3)):
-                    monsterType = random.choice(["Golem","ShieldBug"])
-                    pos = (random.randint(1,11),random.randint(1,11),0)
-                    golem = src.characters.characterMap[monsterType]()
-                    golem.godMode = True
-                    quest = src.quests.questMap["SecureTile"](toSecure=rand_pos)
-                    quest.autoSolve = True
-                    quest.assignToCharacter(golem)
-                    quest.activate()
-                    golem.quests.append(quest)
-                    currentTerrain.addCharacter(golem, pos[0] + rand_pos[0] * 15, pos[1] + rand_pos[1] * 15)
-
-                for i in range(random.randint(1,3)):
-                    loot_types = ["Flask", "GooFlask", "Scrap", "Scrap", "MemoryFragment"]
-                    item = src.items.itemMap[random.choice(loot_types)]()
-                    currentTerrain.addItem(item, (pos[0] + rand_pos[0] * 15, pos[1] + rand_pos[1] * 15,0))
-            rand_pos = (random.randint(3,11),random.randint(3,11))
-            make_room = random.random() < 0.4
-
-    def setUpLab(self, pos, freq):
+    def setUpLab(self, pos, frequency):
         # get basic info
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
         currentTerrain.tag = "lab"
@@ -2539,7 +2120,7 @@ but they are likely to explode when disturbed.
         teleporter_room = src.magic.spawnRoom(currentTerrain, "EmptyRoom", (6, 7))
 
         teleporter = src.items.itemMap["DimensionTeleporter"]()
-        teleporter.group = freq
+        teleporter.group = frequency
         teleporter.mode = random.choice([0, 1])
         teleporter.boltAction(None)
         teleporter_room.addItem(teleporter, (6, 6, 0))
@@ -2555,7 +2136,9 @@ but they are likely to explode when disturbed.
         for _i in range(random.randint(5, 7)):
             monsterType = random.choice(["Golem", "ShieldBug"])
             pos = (random.randint(1, 11), random.randint(1, 11), 0)
-            golem = src.characters.characterMap[monsterType]()
+            golem = src.characters.characterMap[monsterType](
+                multiplier=src.monster.Monster.get_random_multiplier(monsterType)
+            )
             golem.godMode = True
             quest = src.quests.questMap["SecureTile"](toSecure=(8, 7), wandering=False)
             quest.autoSolve = True
@@ -2585,19 +2168,19 @@ but they are likely to explode when disturbed.
         # overwrite sacrifice requirement on easy
         if self.difficulty == "easy":
             if itemID == 1:
-                sacrificeRequirement = ("Scrap",1)
+                sacrificeRequirement = ("Scrap",5)
             if itemID == 2:
-                sacrificeRequirement = ("MetalBars",1)
+                sacrificeRequirement = ("MetalBars",5)
             if itemID == 3:
-                sacrificeRequirement = ("Rod",1)
+                sacrificeRequirement = ("Rod",5)
             if itemID == 4:
-                sacrificeRequirement = ("Frame",1)
+                sacrificeRequirement = ("Tank",5)
             if itemID == 5:
-                sacrificeRequirement = ("MoldFeed",1)
+                sacrificeRequirement = ("MoldFeed",5)
             if itemID == 6:
-                sacrificeRequirement = ("Bolt",1)
+                sacrificeRequirement = ("Bolt",5)
             if itemID == 7:
-                sacrificeRequirement = ("Sword",1)
+                sacrificeRequirement = ("Sword",5)
 
         # create the god
         src.gamestate.gamestate.gods[itemID] = {
@@ -2644,13 +2227,9 @@ but they are likely to explode when disturbed.
         # set branching factor
         extraRooms = []
         numExtraRooms = 2
-        if self.difficulty == "tutorial":
-            numExtraRooms = 0
 
         # set targeted length of the main path
         targetLen = 10
-        if self.difficulty == "tutorial":
-            targetLen = 5
 
         # add entry point to central chamber from random direction
         possibleDirections = [(-1,0),(1,0),(0,-1),(0,1)]
@@ -3007,6 +2586,37 @@ but they are likely to explode when disturbed.
 
                 currentTerrain.addCharacter(enemy, x*15+pos[0], y*15+pos[1])
 
+    def spawnExtraInvasion(self,extraInfo):
+        character = extraInfo["character"]
+
+        terrain = character.getTerrain()
+
+        if not terrain.mana >= 0.1:
+            return
+
+        for i in range(5):
+            if not terrain.mana >= 0.1:
+                break
+            terrain.mana -= 0.1
+            attacker = src.magic.spawnCharacter(terrain, bigCoordinate=(4, 7, 0), monsterType="Spiderling", faction="insects")
+            attacker.timetalen = 10*1
+
+            quest = src.quests.questMap["SecureTile"](toSecure=(6, 7, 0))
+            quest.autoSolve = True
+            attacker.assignQuest(quest, active=True)
+
+        for other_character in terrain.characters:
+            if not terrain.mana >= 0.1:
+                break
+            if not isinstance(other_character,src.characters.characterMap["Hunter"]):
+                break
+            terrain.mana -= 0.1
+            src.magic.addStatusEffect(other_character,"Haste",cost=0.1)
+            src.magic.addStatusEffect(other_character,"Haste",cost=0.1)
+            src.magic.addStatusEffect(other_character,"Haste",cost=0.1)
+
+        character.addMessage("Your implant emmits pain for a moment")
+
     def createRoguelikeStart(self):
         homeTerrain = src.gamestate.gamestate.terrainMap[self.playerBasePosition[1]][self.playerBasePosition[0]]
 
@@ -3038,6 +2648,7 @@ but they are likely to explode when disturbed.
         mainChar.personality["abortMacrosOnAttack"] = False
         mainChar.personality["autoCounterAttack"] = False
         mainChar.addListener(src.cinematicsFolder.death.Death,"died_pre")
+        mainChar.addListener(self.spawnExtraInvasion,"set faction")
 
         storyStartInfo = {}
         storyStartInfo["terrain"] = homeTerrain
@@ -3112,6 +2723,7 @@ but they are likely to explode when disturbed.
         mainChar.personality["abortMacrosOnAttack"] = False
         mainChar.personality["autoCounterAttack"] = False
         mainChar.addListener(src.cinematicsFolder.death.Death,"died_pre")
+        mainChar.addListener(self.spawnExtraInvasion,"set faction")
 
         storyStartInfo = {}
         storyStartInfo["terrain"] = homeTerrain
@@ -3193,6 +2805,7 @@ but they are likely to explode when disturbed.
         mainChar.personality["abortMacrosOnAttack"] = False
         mainChar.personality["autoCounterAttack"] = False
         mainChar.addListener(src.cinematicsFolder.death.Death,"died_pre")
+        mainChar.addListener(self.spawnExtraInvasion,"set faction")
 
         storyStartInfo = {}
         storyStartInfo["terrain"] = homeTerrain
@@ -3210,6 +2823,9 @@ but they are likely to explode when disturbed.
         startRoom.addItem(contraption,(6,6,0))
         storyStartInfo["sternsContraption"] = contraption
 
+        item = src.items.itemMap["PotionOfSpeed"]()
+        startRoom.addItem(item,(10,6,0))
+
         return storyStartInfo
 
     def openedQuests(self):
@@ -3224,6 +2840,67 @@ but they are likely to explode when disturbed.
             return
         1/0
 
+    def addQuest(self,quest,mainChar):
+        quest.assignToCharacter(mainChar)
+        quest.activate()
+        quest.addListener(self.handle_quest_failure, "failed")
+        mainChar.assignQuest(quest,active=True)
+        quest.endTrigger = {"container": self, "method": "reachImplant"}
+
+    def handle_quest_failure(self,extraInfo=None):
+        reason = extraInfo.get("reason")
+        old_quest = extraInfo.get("quest")
+        main_char = self.activeStory["mainChar"]
+
+        if reason == "no path":
+            if old_quest.type == "GoHome":
+                quest = src.quests.questMap["ClearPathToTile"](targetPositionBig=main_char.getHomeRoomCord())
+                self.addQuest(quest,main_char)
+                return
+            if not main_char.is_in_home_room():
+                quest = src.quests.questMap["GoHome"]()
+                self.addQuest(quest,main_char)
+                return
+
+    def stopWatching(self, target, callback, tag=""):
+        """
+        deregister callback from being notified if an event occurs
+
+        Parameters:
+            target: the thing that is watching
+            callback: the callback to call
+            tag: the type of event to listen for
+        """
+
+        if tag == "":
+            1/0
+
+        target.delListener(callback, tag)
+        self.watched.remove((target, callback, tag))
+
+    def stopWatchingTarget(self, target):
+        try:
+            self.watched
+        except:
+            self.watched = []
+        for (otherTarget, callback, tag) in self.watched[:]:
+            target.delListener(callback, tag)
+            if (target, callback, tag) in self.watched:
+                self.watched.remove((target, callback, tag))
+
+    def disableAllListeners(self):
+        toDisable = []
+        for listeners in self.listeners.values():
+            for listener in listeners:
+                toDisable.append(listener)
+        
+        for listener in toDisable:
+            listener.__self__.stopWatchingTarget(self)
+
+    def stopWatchingAll(self):
+        for listenItem in self.watched[:]:
+            self.stopWatching(listenItem[0], listenItem[1], listenItem[2])
+
     def openedQuestsStory(self):
         mainChar = self.activeStory["mainChar"]
         homeTerrain = src.gamestate.gamestate.terrainMap[mainChar.registers["HOMETy"]][mainChar.registers["HOMETx"]]
@@ -3231,19 +2908,13 @@ but they are likely to explode when disturbed.
         # go home when lost
         if not mainChar.getTerrain() == homeTerrain:
             quest = src.quests.questMap["GoHome"]()
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
             return
         
         # flee initial room
         if mainChar.container.tag == "sternslab":
             quest = src.quests.questMap["EscapeLab"]()
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
             return
 
         # heal
@@ -3261,20 +2932,14 @@ but they are likely to explode when disturbed.
                 if not item.uses:
                     continue
                 quest = src.quests.questMap["TreatWounds"]()
-                quest.assignToCharacter(mainChar)
-                quest.activate()
-                mainChar.assignQuest(quest,active=True)
-                quest.endTrigger = {"container": self, "method": "reachImplant"}
+                self.addQuest(quest,mainChar)
                 return
 
             # pick up nearby vials
             if mainChar.getFreeInventorySpace() > 0:
                 if src.quests.questMap["TreatWounds"].getTileVials(mainChar):
                     quest = src.quests.questMap["TreatWounds"]()
-                    quest.assignToCharacter(mainChar)
-                    quest.activate()
-                    mainChar.assignQuest(quest,active=True)
-                    quest.endTrigger = {"container": self, "method": "reachImplant"}
+                    self.addQuest(quest,mainChar)
                     return
 
         # assimilate into base
@@ -3309,36 +2974,24 @@ but they are likely to explode when disturbed.
                 # fight for vial from tile
                 if hasVial and hasEnemy:
                     quest = src.quests.questMap["SecureTile"](toSecure=vialTile,endWhenCleared=True,reason="be able to fetch the Vial from that tile",story="You reach out to your implant and it answers:\n\nThere is a Corpse and a Vial on the tile to the north.")
-                    quest.assignToCharacter(mainChar)
-                    quest.activate()
-                    mainChar.assignQuest(quest,active=True)
-                    quest.endTrigger = {"container": self, "method": "reachImplant"}
+                    self.addQuest(quest,mainChar)
                     return
 
                 # go to vial from tile
                 if hasVial:
                     quest = src.quests.questMap["GoToTile"](targetPosition=vialTile,reason="be able to fetch the Vial from that tile",story="You reach out to your implant and it answers:\n\nThere is a Vial on the tile to the north.")
-                    quest.assignToCharacter(mainChar)
-                    quest.activate()
-                    mainChar.assignQuest(quest,active=True)
-                    quest.endTrigger = {"container": self, "method": "reachImplant"}
+                    self.addQuest(quest,mainChar)
                     return
 
             # get to control room
             if not (mainChar.getBigPosition() in [(7,7,0),(7,8,0)]):
                 quest = src.quests.questMap["ReachSafety"]()
-                quest.assignToCharacter(mainChar)
-                quest.activate()
-                mainChar.assignQuest(quest,active=True)
-                quest.endTrigger = {"container": self, "method": "reachImplant"}
+                self.addQuest(quest,mainChar)
                 return
 
             # steal faction id
             quest = src.quests.questMap["ResetFaction"]()
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
             return
 
         # get the players environment
@@ -3349,20 +3002,14 @@ but they are likely to explode when disturbed.
             for room in terrain.rooms:
                 if room.getNonEmptyOutputslots(itemType="Armor",allowStorage=True,allowDesiredFilled=True):
                     quest = src.quests.questMap["Equip"](description="equip",reason="be able to defend yourself",story="You reach out to implant and it answers:\n")
-                    quest.assignToCharacter(mainChar)
-                    quest.activate()
-                    mainChar.assignQuest(quest,active=True)
-                    quest.endTrigger = {"container": self, "method": "reachImplant"}
+                    self.addQuest(quest,mainChar)
                     return
 
         if not mainChar.weapon:
             for room in terrain.rooms:
                 if room.getNonEmptyOutputslots(itemType="Sword",allowStorage=True,allowDesiredFilled=True):
                     quest = src.quests.questMap["Equip"](description="equip",reason="be able to defend yourself",story="You reach out to implant and it answers:\n")
-                    quest.assignToCharacter(mainChar)
-                    quest.activate()
-                    mainChar.assignQuest(quest,active=True)
-                    quest.endTrigger = {"container": self, "method": "reachImplant"}
+                    self.addQuest(quest,mainChar)
                     return
 
         # check for hunters
@@ -3381,6 +3028,22 @@ but they are likely to explode when disturbed.
                 if character.charType == "Ghoul":
                     ghulCount += 1
 
+        # defent base against the implant wave
+        coordinates = [(6,7,0),(5,7,0),(4,7,0)]
+        for coordinate in coordinates:
+            rooms = homeTerrain.getRoomByPosition(coordinate)
+            if not rooms:
+                characters = terrain.charactersByTile.get(coordinate,[])
+            else:
+                characters = rooms[0].characters
+
+            for other_character in characters:
+                if other_character.faction == character.faction:
+                    continue
+                quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,lifetime=100,description="defend the arena",reason="ensure no attackers get into the base")
+                self.addQuest(quest,mainChar)
+                return
+
         # keep trap rooms clean
         if not ghulCount:
             room = homeTerrain.getRoomByPosition((5,7,0))[0]
@@ -3390,84 +3053,64 @@ but they are likely to explode when disturbed.
                     if item.bolted:
                         continue
 
-                    if not hunterCount:
+                    foundCorpse = False
+                    for check_room in terrain.rooms:
+                        if check_room.tag == "shelter":
+                            continue
+                        if check_room.getItemByType("Corpse"):
+                            foundCorpse = True
+
+                    if not hunterCount and foundCorpse:
                         # spawn trap cleaning ghul
                         quest = src.quests.questMap["SpawnGhul"]()
-                        quest.assignToCharacter(mainChar)
-                        quest.activate()
-                        mainChar.assignQuest(quest,active=True)
-                        quest.endTrigger = {"container": self, "method": "reachImplant"}
+                        self.addQuest(quest,mainChar)
                         return
 
                     # clear room yourself
-                    quest = src.quests.questMap["ClearTile"](description="clean up trap room",targetPosition=room.getPosition(),reason="clean the trap room.\n\nThe trap room relies on TriggerPlates to work.\nThose only work, if there are no items ontop of them.\nRestore the defence by removing the enemies remains.\nAvoid any enemies entering the trap room while you work",story="You reach out to your implant and it answers:\n\nThe main defenses of the base is the trap room,\nit needs to be cleaned to ensure it works correctly.")
-                    quest.assignToCharacter(mainChar)
-                    quest.activate()
-                    mainChar.assignQuest(quest,active=True)
-                    quest.endTrigger = {"container": self, "method": "reachImplant"}
-                    return
+                    hasEnemy = False
+                    for other_character in room.characters:
+                        if other_character.faction == character.faction:
+                            continue
+                        hasEnemy = True
+                    if not hasEnemy:
+                        quest = src.quests.questMap["ClearTile"](description="clean up trap room",targetPosition=room.getPosition(),reason="clean the trap room.\n\nThe trap room relies on TriggerPlates to work.\nThose only work, if there are no items ontop of them.\nRestore the defence by removing the enemies remains.\nAvoid any enemies entering the trap room while you work",story="You reach out to your implant and it answers:\n\nThe main defence of the base is the trap room,\nit needs to be cleaned to ensure it works correctly.")
+                        self.addQuest(quest,mainChar)
+                        return
 
-        # wait out hunters
-        if hunterCount:
-            quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,reason="ensure no Hunters get into the base",story="You reach out to your implant and it answers:\n\nThere are still Hunters out there trying to kill you.\nIf you stay inside, they will get caught up in the Traproom.",lifetime=100,description="wait out Hunters")
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
-            return
-        
         # try to contact base leader
         if not src.gamestate.gamestate.stern.get("failedContact1"):
             quest = src.quests.questMap["ContactCommand"]()
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
             return
 
         # get promoted to rank 5 to unlock Communicator
         if mainChar.rank > 5:
             quest = src.quests.questMap["GetRank5PromotionStory"]()
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
             return
 
         # try to contact base leader
         if not src.gamestate.gamestate.stern.get("failedContact2"):
             quest = src.quests.questMap["ContactCommand"]()
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
             return
 
         # try to contact main base
         if not src.gamestate.gamestate.stern.get("failedBaseContact1"):
             quest = src.quests.questMap["ContactMainBase"]()
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
             return
 
         # get promoted to rank 5 to unlock Communicator
         if mainChar.rank > 2:
             quest = src.quests.questMap["GetRank2PromotionStory"]()
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
             return
 
         # try to contact main base
         if not src.gamestate.gamestate.stern.get("failedBaseContact2"):
             quest = src.quests.questMap["ContactMainBase"]()
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
             return
 
         # count the number of enemies/allies
@@ -3495,10 +3138,7 @@ but they are likely to explode when disturbed.
         # kill snatchers (redundant to GetRank2Promotion)
         if snatcherCount:
             quest = src.quests.questMap["ConfrontSnatchers"]()
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
             return
 
         # ensure there is a backup NPC (redundant to GetRank5Promotion, but also triggers after respawn)
@@ -3512,10 +3152,7 @@ but they are likely to explode when disturbed.
                     continue
 
                 quest = src.quests.questMap["SpawnClone"]()
-                quest.assignToCharacter(mainChar)
-                quest.activate()
-                mainChar.assignQuest(quest,active=True)
-                quest.endTrigger = {"container": self, "method": "reachImplant"}
+                self.addQuest(quest,mainChar)
                 return
 
         # ensure healing for the clones
@@ -3524,10 +3161,7 @@ but they are likely to explode when disturbed.
             regenerator = room.getItemByType("Regenerator",needsBolted=True)
             if regenerator and not regenerator.activated:
                 quest = src.quests.questMap["ActivateRegenerator"]()
-                quest.assignToCharacter(mainChar)
-                quest.activate()
-                mainChar.assignQuest(quest,active=True)
-                quest.endTrigger = {"container": self, "method": "reachImplant"}
+                self.addQuest(quest,mainChar)
                 return
 
         # check for spider lairs
@@ -3557,10 +3191,7 @@ but they are likely to explode when disturbed.
             # clear first spider spot
             if specialSpiderBlockersFound:
                 quest = src.quests.questMap["BaitSpiders"](targetPositionBig=specialSpiderBlockersFound[0])
-                quest.assignToCharacter(mainChar)
-                quest.activate()
-                mainChar.assignQuest(quest,active=True)
-                quest.endTrigger = {"container": self, "method": "reachImplant"}
+                self.addQuest(quest,mainChar)
                 return
 
             # select target
@@ -3571,10 +3202,7 @@ but they are likely to explode when disturbed.
                 spider_lair_pos = target[1]
                     
                 quest = src.quests.questMap["BaitSpiders"](targetPositionBig=spider_lair_pos)
-                quest.assignToCharacter(mainChar)
-                quest.activate()
-                mainChar.assignQuest(quest,active=True)
-                quest.endTrigger = {"container": self, "method": "reachImplant"}
+                self.addQuest(quest,mainChar)
                 return
 
             # clear spiderlings
@@ -3582,73 +3210,49 @@ but they are likely to explode when disturbed.
                 spider_lair_pos = target[1]
                     
                 quest = src.quests.questMap["SecureTile"](toSecure=spider_lair_pos,endWhenCleared=True)
-                quest.assignToCharacter(mainChar)
-                quest.activate()
-                mainChar.assignQuest(quest,active=True)
-                quest.endTrigger = {"container": self, "method": "reachImplant"}
+                self.addQuest(quest,mainChar)
                 return
 
         # remove all enemies from terrain
         if enemyCount > 0:
             quest = src.quests.questMap["ClearTerrain"]()
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
             return
 
         # get promoted to base commander
         if mainChar.rank > 2:
             quest = src.quests.questMap["GetPromotion"](targetRank=mainChar.rank-1,reason="gain the rank of a base commmander")
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
             return
 
         # ascend to be supreme leader
         if not src.gamestate.gamestate.stern.get("failedAscend"):
             quest = src.quests.questMap["StoryAscendTry"]()
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
             return
 
         if not mainChar.weapon:
             for room in mainChar.getTerrain().rooms:
                 if room.getNonEmptyOutputslots("Sword"):
                     quest = src.quests.questMap["Equip"]()
-                    quest.assignToCharacter(mainChar)
-                    quest.activate()
-                    mainChar.assignQuest(quest,active=True)
-                    quest.endTrigger = {"container": self, "method": "reachImplant"}
+                    self.addQuest(quest,mainChar)
                     return
 
         if not mainChar.armor:
             for room in mainChar.getTerrain().rooms:
                 if room.getNonEmptyOutputslots("Armor"):
                     quest = src.quests.questMap["Equip"]()
-                    quest.assignToCharacter(mainChar)
-                    quest.activate()
-                    mainChar.assignQuest(quest,active=True)
-                    quest.endTrigger = {"container": self, "method": "reachImplant"}
+                    self.addQuest(quest,mainChar)
                     return
 
         if not mainChar.weapon:
             quest = src.quests.questMap["MetalWorking"](toProduce="Sword",amount=1,produceToInventory=False,tryHard=True)
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
             return
 
         if not mainChar.armor:
             quest = src.quests.questMap["MetalWorking"](toProduce="Armor",amount=1,produceToInventory=False,tryHard=True)
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
             return
                     
         # collect all glass heart
@@ -3657,18 +3261,13 @@ but they are likely to explode when disturbed.
                 continue
 
             quest = src.quests.questMap["CollectGlassHearts"]()
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
             return
 
         # ascend to be supreme leader
         if mainChar.rank != 1:
             quest = src.quests.questMap["Ascend"]()
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
+            self.addQuest(quest,mainChar)
             return
 
     def openedQuestsTravel(self):
@@ -3716,6 +3315,10 @@ Once you understand things try to find better solutions.
             quest.endTrigger = {"container": self, "method": "reachImplant"}
 
     def reachImplant(self):
+        main_char = self.activeStory["mainChar"]
+        if main_char.quests:
+            return
+
         containerQuest = src.quests.questMap["ReachOutStory"]()
         src.gamestate.gamestate.mainChar.quests.append(containerQuest)
         containerQuest.activate()
@@ -3723,10 +3326,25 @@ Once you understand things try to find better solutions.
         src.gamestate.gamestate.mainChar.addMessage("reach out to implant by pressing q")
         containerQuest.endTrigger = {"container": self, "method": "openedQuests"}
 
+    def doMaintenance(self):
+
+        main_char = self.activeStory["mainChar"]
+        if not main_char.quests:
+            self.reachImplant()
+
+        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
+        event.setCallback({"container": self, "method": "doMaintenance"})
+
+        terrain = src.gamestate.gamestate.terrainMap[7][7]
+        terrain.addEvent(event)
 
     def startRound(self):
 
         self.numRounds += 1
+
+        main_char = self.activeStory["mainChar"]
+        if not main_char.quests:
+            self.reachImplant()
 
         event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + self.epochLength)
         event.setCallback({"container": self, "method": "startRound"})

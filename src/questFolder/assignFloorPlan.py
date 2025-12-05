@@ -50,9 +50,7 @@ Set the floor plan: {self.floorPlanType}
                 return (None,(command,"remove old construction site marker"))
 
             if self.roomPosition not in cityPlaner.getAvailableRoomPositions():
-                if not dryRun:
-                    self.fail("room already registered")
-                return (None,None)
+                return self._solver_trigger_fail(dryRun,"room already registered")
 
             command += "f"
             return (None,(command,"set a floor plan"))
@@ -96,14 +94,29 @@ Set the floor plan: {self.floorPlanType}
         if character.macroState["submenue"] and not ignoreCommands:
             return (None,(["esc"],"exit submenu"))
 
-        pos = character.getBigPosition()
+        # enter room
+        if not character.container.isRoom:
+            if character.getTerrain().getRoomByPosition(character.getBigPosition()):
+                quest = src.quests.questMap["EnterRoom"]()
+                return ([quest],None)
+            else:
+                quest = src.quests.questMap["GoHome"]()
+                return ([quest],None)
 
-        if pos != character.getHomeRoomCord():
-            quest = src.quests.questMap["GoHome"](description="go to command centre")
-            return ([quest],None)
+        # go to room with city planer
+        cityPlaner = character.container.getItemByType("CityPlaner")
+        if not cityPlaner:
+            for room in character.getTerrain().rooms:
+                cityPlaner = room.getItemByType("CityPlaner")
+                if not cityPlaner:
+                    continue
+                quest = src.quests.questMap["GoToTile"](targetPosition=cityPlaner.getBigPosition(),description="go to command centre",reason="go to command centre")
+                return ([quest],None)
+
+            return self._solver_trigger_fail(dryRun,"no planer")
 
         if not character.container.isRoom:
-            return (None,None)
+            return (None,(".","stand around confused"))
 
         cityPlaner = character.container.getItemsByType("CityPlaner")[0]
         command = None
@@ -130,7 +143,7 @@ Set the floor plan: {self.floorPlanType}
     """
     never complete
     """
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None, dryRun=True):
         if not character:
             return None
 
@@ -138,7 +151,8 @@ Set the floor plan: {self.floorPlanType}
         room = terrain.getRoomByPosition(self.roomPosition)[0]
 
         if room.floorPlan:
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
         return None
 
@@ -150,7 +164,7 @@ Set the floor plan: {self.floorPlanType}
 
 
     def handleAssignFloorPlan(self,extraParams):
-        self.triggerCompletionCheck(extraParams["character"])
+        self.triggerCompletionCheck(extraParams["character"],dryRun=False)
 
     def getQuestMarkersTile(self,character):
         result = super().getQuestMarkersTile(character)
@@ -164,11 +178,48 @@ Set the floor plan: {self.floorPlanType}
         self.startWatching(character,self.handleAssignFloorPlan, "assigned floor plan")
 
         return super().assignToCharacter(character)
+
+    def getQuestMarkersSmall(self,character,renderForTile=False):
+        '''
+        return the quest markers for the normal map
+        '''
+        if isinstance(character.container,src.rooms.Room):
+            if renderForTile:
+                return []
+        else:
+            if not renderForTile:
+                return []
+
+        result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
+        if not renderForTile:
+            if isinstance(character.container,src.rooms.Room):
+                for item in character.container.itemsOnFloor:
+                    if not item.type == "CityPlaner":
+                        continue
+                    if not item.bolted:
+                        continue
+                    result.append((item.getPosition(),"target"))
+        return result
+
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
+        if not character.getHomeRoomCord():
+            return (None,None)
+
         terrain = character.getTerrain()
-        cityCore = terrain.getRoomByPosition(character.getHomeRoomCord())[0]
-        cityPlaner = cityCore.getItemByType("CityPlaner",needsBolted=True)
+        cityPlaner = None
+        cityPlaners = []
+        for room in terrain.rooms:
+            items = room.getItemsByType("CityPlaner",needsBolted=True)
+            if items:
+                cityPlaners.extend(items)
+
+        if cityPlaners:
+            cityPlaner = cityPlaners[0]
+
+        if len(cityPlaners) > 1:
+            quest = src.quests.questMap["CleanSpace"](reason="remove duplicate CityPlaner",targetPositionBig=cityPlaner.getBigPosition(),targetPosition=cityPlaner.getPosition(),abortOnfullInventory=False,pickUpBolted=True)
+            return ([quest],None)
 
         # do inventory of scrap fields
         numItemsScrapfield = 0
@@ -200,6 +251,8 @@ Set the floor plan: {self.floorPlanType}
             targets = []
             counter = 0
             for checkRoom in terrain.rooms:
+                if checkRoom.tag == "shelter":
+                    continue
                 roomPos = checkRoom.getPosition()
                 for offset in ((1,0,0),(-1,0,0),(0,1,0),(0,-1,0)):
                     newPos = (roomPos[0]+offset[0],roomPos[1]+offset[1],0)
@@ -236,6 +289,8 @@ Set the floor plan: {self.floorPlanType}
         # ensure there is a general purpose room
         if cityPlaner and not cityPlaner.generalPurposeRooms:
             for room in terrain.rooms:
+                if room.tag == "shelter":
+                    continue
                 if room.getPosition() == (7,0,0):
                     continue
                 if room.getPosition() in cityPlaner.specialPurposeRooms:
@@ -267,6 +322,8 @@ Set the floor plan: {self.floorPlanType}
 
         if cityPlaner and not cityPlaner.generalPurposeRooms:
             for room in terrain.rooms:
+                if room.tag == "shelter":
+                    continue
                 if room.getPosition() == (7,0,0):
                     continue
                 if room.getPosition() in cityPlaner.specialPurposeRooms:

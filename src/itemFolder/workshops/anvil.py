@@ -105,24 +105,24 @@ class Anvil(src.items.itemMap["WorkShop"]):
             "preferInventoryOut": preferInventoryOut,
             "dropsSpotsFull": dropsSpotsFull,
         }
-        params["productionTime"] = 10
-        params["doneProductionTime"] = 0
-        params["hitCounter"] = character.numAttackedWithoutResponse
+
         params["extraAmount"] = amount-1
+        params["delayTime"] = 10
+        params["action"]= "output_produced_item"
+        self.delayedAction(params)
 
-        self.produceItem_wait(params)
-
-    def produceItem_done(self,params):
+    def output_produced_item(self,params):
         character = params["character"]
         scrap = params["scrap"]
         preferInventoryOut = params["preferInventoryOut"]
         dropsSpotsFull = params["dropsSpotsFull"]
 
         new = src.items.itemMap["MetalBars"]()
+        character.stats["items produced"]["MetalBars"] = character.stats["items produced"].get("MetalBars", 0) + 1
         character.addMessage("You produce a metal bar")
         character.addMessage("It takes you 10 turns to do that")
         if scrap in character.inventory:
-            character.inventory.remove(scrap)
+            character.removeItemFromInventory(scrap)
         else:
             self.container.addAnimation(scrap.getPosition(),"showchar",1,{"char":"--"})
             if scrap.amount == 1:
@@ -132,7 +132,7 @@ class Anvil(src.items.itemMap["WorkShop"]):
                 scrap.setWalkable()
 
         if dropsSpotsFull or (preferInventoryOut and character.getFreeInventorySpace() > 0):
-            character.inventory.append(new)
+            character.addToInventory(new)
         else:
             for output in self.outs:
                 targetPos = (self.xPosition+output[0], self.yPosition+output[1], self.zPosition+output[2])

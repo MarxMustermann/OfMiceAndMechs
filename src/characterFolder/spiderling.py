@@ -58,4 +58,13 @@ class Spiderling(src.monster.Monster):
         """
         return "sp"
 
+    def getLoreDescription(self):
+        return f"You see a Spiderling.\nIt balances on its many legs almost drowning in the mud.\n\nIt looks at you with its many eyes.\nSome show an expression of fear and some an expression of disgust."
+
+    def getFunctionalDescription(self):
+        return f"Spiderlings are weak and not fast and have little HP."
+
+    def description(self):
+        return self.getLoreDescription()+"\n\n---- "+self.getFunctionalDescription()
+
 src.characters.add_character(Spiderling)

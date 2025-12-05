@@ -11,9 +11,9 @@ class Potion(src.items.Item):
 
     def apply(self, character):
         flask = src.items.itemMap["Flask"]()
-        if not self.container:
-            character.inventory.remove(self)
-            character.inventory.append(flask)
+        if isinstance(self.container,src.characters.characterMap["Clone"]):
+            character.removeItemFromInventory(self)
+            character.addToInventory(flask)
         else:
             container = self.container
             pos = self.getPosition()
@@ -25,6 +25,6 @@ class Potion(src.items.Item):
         return src.canvas.displayChars.vial_full
     
     @abstractmethod
-    def Ingredients(): ...
+    def ingredients(): ...
 
 src.items.addType(Potion)

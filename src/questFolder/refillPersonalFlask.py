@@ -18,7 +18,7 @@ class RefillPersonalFlask(src.quests.MetaQuestSequence):
         if not self.active:
             return
 
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
     def handleMoved(self,extraInfo=None):
         self.subQuestCompleted()
@@ -30,12 +30,13 @@ class RefillPersonalFlask(src.quests.MetaQuestSequence):
         self.startWatching(character,self.handleMoved, "moved")
         super().assignToCharacter(character)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
         if character.flask and character.flask.uses > 80:
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
         return False
 
@@ -98,7 +99,6 @@ class RefillPersonalFlask(src.quests.MetaQuestSequence):
                     if offset == (0,-1,0):
                         return (None,("Jwj","refill"))
 
-
             for item in character.container.itemsOnFloor:
                 if not character.container.getItemByPosition(item.getPosition()):
                     continue
@@ -108,7 +108,6 @@ class RefillPersonalFlask(src.quests.MetaQuestSequence):
                 if item.type == "GooFlask" and item.uses:
                     quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),description="go to goo flask",ignoreEndBlocked=True)
                     return ([quest],None)
-
 
         room = None
         for roomCandidate in character.getTerrain().rooms:
@@ -122,10 +121,8 @@ class RefillPersonalFlask(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),description="go to goo source")
             return ([quest],None)
 
-        character.addMessage("found no source for goo")
-        if not dryRun:
-            self.fail()
-        return (None,None)
+        return self._solver_trigger_fail(dryRun,"found no source for goo")
+
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
         if character.flask and character.flask.uses < 3:
@@ -133,4 +130,5 @@ class RefillPersonalFlask(src.quests.MetaQuestSequence):
                 beUsefull.idleCounter = 0
             return ([src.quests.questMap["RefillPersonalFlask"]()],None)
         return (None,None)
+
 src.quests.addType(RefillPersonalFlask)

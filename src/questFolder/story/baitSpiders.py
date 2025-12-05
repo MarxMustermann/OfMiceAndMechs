@@ -45,13 +45,13 @@ class BaitSpiders(src.quests.MetaQuestSequence):
                     phase = "run"
                     if not dryRun:
                         self.phase = phase
-                    return (None,None)
+                    return (None,(".","stand around confused"))
 
         if phase == "wait":
             if not self.character.getNearbyEnemies():
                 if not dryRun:
                     self.postHandler()
-                return (None,None)
+                return (None,("+","end quest"))
 
             if not character.container.isRoom:
                 if character.xPosition%15 == 0:
@@ -77,12 +77,12 @@ class BaitSpiders(src.quests.MetaQuestSequence):
                     return (None,("d","flee tile"))
 
             if character.getBigPosition() != (6,7,0):
-                quest = src.quests.questMap["GoToTile"](targetPosition=(6,7,0),reason="get to safety",description="run back to base",paranoid=True)
+                quest = src.quests.questMap["GoToTile"](targetPosition=(6,7,0),reason="get to safety",description="run back to base",paranoid=True,allowMapMenu=False,ignoreEnemies=True)
                 phase = "end"
                 if not dryRun:
                     self.phase = phase
                 return ([quest],None)
-        return (None,None)
+        return (None,(".","stand around confused"))
 
     def generateTextDescription(self):
         triggerPlate = src.items.itemMap["TriggerPlate"]()
@@ -140,9 +140,9 @@ Guard the arena behind the trap room to ensure no spider slips through.
         if not self.active:
             return
 
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False
 
@@ -154,11 +154,13 @@ Guard the arena behind the trap room to ensure no spider slips through.
                 foundEnemy = True
                 break
             if not foundEnemy:
-                self.postHandler()
+                if not dryRun:
+                    self.postHandler()
                 return True
 
         if self.phase == "end" and not self.subQuests:
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return True
 
         return False

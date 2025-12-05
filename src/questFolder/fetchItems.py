@@ -5,6 +5,7 @@ import src
 
 class FetchItems(src.quests.MetaQuestSequence):
     type = "FetchItems"
+    lowLevel = True
 
     def __init__(self, description="fetch items", creator=None, toCollect=None, amount=None, returnToTile=True,lifetime=None,takeAnyUnbolted=False,tryHard=False,reason=None):
         questList = []
@@ -81,7 +82,7 @@ Press d to move the cursor and show the subquests description.
         return out
 
     def pickedUpItem(self,extraInfo):
-        self.triggerCompletionCheck(extraInfo[0])
+        self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
     def assignToCharacter(self, character):
         if self.character:
@@ -105,15 +106,17 @@ Press d to move the cursor and show the subquests description.
         parameters.append({"name":"toCollect","type":"itemType"})
         return parameters
 
-    def triggerCompletionCheck(self,character=None):
+    def triggerCompletionCheck(self,character=None,dryRun=True):
 
         if not character:
-            return
+            return False
 
         if character.getNearbyEnemies():
-            self.fail("enemies nearby")
+            if not dryRun:
+                self.fail("enemies nearby")
             return True
 
+        collectedItems = self.collectedItems
         if self.amount:
             numItems = 0
             for item in reversed(character.inventory):
@@ -122,24 +125,27 @@ Press d to move the cursor and show the subquests description.
                 numItems += 1
 
             if numItems >= self.amount:
-                self.collectedItems = True
+                collectedItems = True
         else:
             if character.getFreeInventorySpace() <= 0 and character.inventory[-1].type == self.toCollect:
-                self.collectedItems = True
+                collectedItems = True
 
-        if self.collectedItems:
-            self.postHandler()
-            return
+        if not dryRun:
+            self.collectedItems = collectedItems
+        if collectedItems:
+            if not dryRun:
+                self.postHandler()
+            return True
 
         if isinstance(character.container,src.rooms.Room):
             outputSlots = character.container.getNonEmptyOutputslots(itemType=self.toCollect)
             random.shuffle(outputSlots)
             if outputSlots:
-                return
+                return False
 
             if self.getSource():
-                return
-        return
+                return False
+        return False
 
     def getSource(self):
         if not isinstance(self.character.container,src.rooms.Room):
@@ -230,18 +236,22 @@ Press d to move the cursor and show the subquests description.
 
                 if foundDirection:
                     interactionCommand = "K"
+                    direction_command = None
                     if "advancedPickup" in character.interactionState:
                         interactionCommand = ""
                     if foundDirection == (0,0,0):
-                        return (None,(interactionCommand+".","pick up item"))
+                        direction_command = "."
                     if foundDirection == (1,0,0):
-                        return (None,(interactionCommand+"d","pick up item"))
+                        direction_command = "d"
                     if foundDirection == (-1,0,0):
-                        return (None,(interactionCommand+"a","pick up item"))
+                        direction_command = "a"
                     if foundDirection == (0,1,0):
-                        return (None,(interactionCommand+"s","pick up item"))
+                        direction_command = "s"
                     if foundDirection == (0,-1,0):
-                        return (None,(interactionCommand+"w","pick up item"))
+                        direction_command = "w"
+
+                    if direction_command:
+                        return (None,(interactionCommand+direction_command,"pick up item"))
 
                 outputSlot = random.choice(outputSlots)
                 quest = src.quests.questMap["GoToPosition"](targetPosition=outputSlot[0],ignoreEndBlocked=True,description="go to "+self.toCollect,reason=f"be able to pick up the {self.toCollect}")
@@ -252,13 +262,13 @@ Press d to move the cursor and show the subquests description.
 
                 if character.container.isRoom:
                     for item in character.container.itemsOnFloor:
-                        if item.bolted is False and item.type == self.toCollect:
+                        if item.bolted is False and item.type == self.toCollect and not item.is_bolted_over():
                             candidates.append(item)
 
                 if not candidates:
                     for room in character.getTerrain().rooms:
                         for item in room.itemsOnFloor:
-                            if item.bolted is False and item.type == self.toCollect:
+                            if item.bolted is False and item.type == self.toCollect and not item.is_bolted_over():
                                 candidates.append(item)
 
                 if candidates:
@@ -266,26 +276,29 @@ Press d to move the cursor and show the subquests description.
                     offsets = [(0,0,0),(1,0,0),(0,1,0),(-1,0,0),(0,-1,0)]
                     foundDirection = None
                     for item in candidates:
-                        if character.getDistance(item.getPosition()) < 2:
+                        if item.container == character.container and character.getDistance(item.getPosition()) < 2:
                             for offset in offsets:
                                 if character.getPosition(offset=offset) == item.getPosition():
-                                    if item.container == character.container:
-                                        foundDirection = offset
+                                    foundDirection = offset
 
                     if foundDirection:
                         interactionCommand = "K"
+                        direction_command = None
                         if "advancedPickup" in character.interactionState:
                             interactionCommand = ""
                         if foundDirection == (0,0,0):
-                            return (None,(interactionCommand+".","pick up item"))
+                            direction_command = "."
                         if foundDirection == (1,0,0):
-                            return (None,(interactionCommand+"d","pick up item"))
+                            direction_command = "d"
                         if foundDirection == (-1,0,0):
-                            return (None,(interactionCommand+"a","pick up item"))
+                            direction_command = "a"
                         if foundDirection == (0,1,0):
-                            return (None,(interactionCommand+"s","pick up item"))
+                            direction_command = "s"
                         if foundDirection == (0,-1,0):
-                            return (None,(interactionCommand+"w","pick up item"))
+                            direction_command = "w"
+
+                        if direction_command:
+                            return (None,(interactionCommand+direction_command,"pick up item"))
 
                     item = random.choice(candidates)
                     quests = []
@@ -315,10 +328,28 @@ Press d to move the cursor and show the subquests description.
                             newQuest = src.quests.questMap["MetalWorking"](toProduce=self.toCollect,amount=1,reason="produce a item you do not have",produceToInventory=True,tryHard=self.tryHard)
                             return ([newQuest],None)
 
-                if not dryRun:
-                    self.fail(reason=f"no source for item {self.toCollect}")
-                return (None,None)
-        return (None,None)
+                return self._solver_trigger_fail(dryRun,f"no source for item {self.toCollect}")
+
+        return (None,(".","stand around confused"))
+
+    def getQuestMarkersSmall(self,character,renderForTile=False):
+        '''
+        return the quest markers for the normal map
+        '''
+        if isinstance(character.container,src.rooms.Room):
+            if renderForTile:
+                return []
+        else:
+            if not renderForTile:
+                return []
+
+        result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
+        if not renderForTile:
+            if isinstance(character.container,src.rooms.Room):
+                room = character.container
+                for outputSlot in character.container.getNonEmptyOutputslots(itemType=self.toCollect):
+                    result.append((outputSlot[0],"target"))
+        return result
 
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
@@ -345,8 +376,10 @@ Press d to move the cursor and show the subquests description.
 
                         if not hasItem:
                             allowStorage = trueInput
+                            allowDesiredFilled = True
                             if inputSlot[2].get("desiredState") == "filled":
                                 allowStorage = True
+                                allowDesiredFilled = False
 
                             source = None
                             for candidateSource in room.sources:
@@ -360,10 +393,11 @@ Press d to move the cursor and show the subquests description.
                                 sourceRoom = sourceRoom[0]
                                 if sourceRoom == character.container:
                                     continue
-                                if not sourceRoom.getNonEmptyOutputslots(itemType=inputSlot[1],allowStorage=allowStorage):
+                                outputSlots = sourceRoom.getNonEmptyOutputslots(itemType=inputSlot[1],allowStorage=allowStorage,allowDesiredFilled=allowDesiredFilled)
+                                if not outputSlots:
                                     continue
 
-                                source = candidateSource
+                                source = (candidateSource[0],candidateSource[1],outputSlots)
                                 break
 
                             if not source:
@@ -371,7 +405,7 @@ Press d to move the cursor and show the subquests description.
                                     if otherRoom == room:
                                         continue
 
-                                    outputSlots = otherRoom.getNonEmptyOutputslots(itemType=inputSlot[1],allowStorage=allowStorage,)
+                                    outputSlots = otherRoom.getNonEmptyOutputslots(itemType=inputSlot[1],allowStorage=allowStorage,allowDesiredFilled=allowDesiredFilled)
                                     if not outputSlots:
                                         continue
 
@@ -415,20 +449,20 @@ Press d to move the cursor and show the subquests description.
 
                                 roomPos = (room.xPosition,room.yPosition,0)
                                 if source[0] != roomPos:
-                                    quests.append(src.quests.questMap["GoToTile"](targetPosition=roomPos))
+                                    quests.append(src.quests.questMap["GoToTile"](targetPosition=roomPos,reason="fetched3"))
 
-                                quests.append(src.quests.questMap["FetchItems"](toCollect=inputSlot[1], amount=amountToFetch))
+                                quests.append(src.quests.questMap["FetchItems"](toCollect=inputSlot[1], amount=amountToFetch,reason="fetched4"))
                                 if source[0] != roomPos:
-                                    quests.append(src.quests.questMap["GoToTile"](targetPosition=(source[0])))
+                                    quests.append(src.quests.questMap["GoToTile"](targetPosition=(source[0]),reason="fetched5"))
 
                                 if character.inventory and (not amountToFetch or amountToFetch > character.getFreeInventorySpace()):
-                                    quests.append(src.quests.questMap["ClearInventory"](returnToTile=False))
+                                    quests.append(src.quests.questMap["ClearInventory"](returnToTile=False,reason="fetched6"))
                             else:
                                 roomPos = (room.xPosition,room.yPosition,0)
                                 if source[0] != roomPos:
-                                    quests.append(src.quests.questMap["GoToTile"](targetPosition=roomPos))
+                                    quests.append(src.quests.questMap["GoToTile"](targetPosition=roomPos,reason="fetched7"))
 
-                                quests.append(src.quests.questMap["CleanSpace"](targetPositionBig=source[0],targetPosition=source[2][0][0]))
+                                quests.append(src.quests.questMap["CleanSpace"](targetPositionBig=source[0],targetPosition=source[2][0][0],reason="fetched8"))
                                 if not dryRun:
                                     beUsefull.idleCounter = 0
                                 return (quests,None)
@@ -458,9 +492,9 @@ Press d to move the cursor and show the subquests description.
                                 continue
                             quests = []
                             quests.append(src.quests.questMap["RestockRoom"](targetPositionBig=room.getPosition(),targetPosition=storageSlot[0],allowAny=True,toRestock=items[0].type,reason="fill a storage stockpile designated to be filled"))
-                            quests.append(src.quests.questMap["CleanSpace"](targetPositionBig=otherRoom.getPosition(),targetPosition=checkStorageSlot[0],reason="fill a storage stockpile designated to be filled",abortOnfullInventory=True))
+                            quests.append(src.quests.questMap["CleanSpace"](targetPositionBig=otherRoom.getPosition(),targetPosition=checkStorageSlot[0],reason="have items to fill a storage stockpile with",abortOnfullInventory=True))
                             if character.inventory:
-                                quests.append(src.quests.questMap["ClearInventory"]())
+                                quests.append(src.quests.questMap["ClearInventory"](reason="fetched9"))
                             if not dryRun:
                                 beUsefull.idleCounter = 0
                             return (quests,None)
@@ -475,7 +509,6 @@ Press d to move the cursor and show the subquests description.
         quest = extraParam["quest"]
 
         reason = extraParam.get("reason")
-        print(reason)
 
         if reason == "no path found":
             character = self.character

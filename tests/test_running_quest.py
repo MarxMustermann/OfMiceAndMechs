@@ -124,7 +124,7 @@ def test_placeItem_1(terrain,character):
     terrain.addCharacter(character,bigPos[0]*15+charPos[0],bigPos[1]*15+charPos[1])
 
     wall = src.items.itemMap["Wall"]()
-    character.inventory.append(wall)
+    character.addToInventory(wall)
 
     targetPos = (charPos[0],charPos[1]+1,charPos[2])
 
@@ -148,7 +148,7 @@ def test_placeItem_2(terrain,character):
     terrain.addCharacter(character,bigPos[0]*15+charPos[0],bigPos[1]*15+charPos[1])
 
     wall = src.items.itemMap["Wall"]()
-    character.inventory.append(wall)
+    character.addToInventory(wall)
 
     targetPos = (charPos[0],charPos[1]+1,charPos[2])
 
@@ -175,10 +175,10 @@ def test_placeItem_3(terrain,character):
     terrain.addCharacter(character,bigPos[0]*15+charPos[0],bigPos[1]*15+charPos[1])
 
     wall = src.items.itemMap["Wall"]()
-    character.inventory.append(wall)
+    character.addToInventory(wall)
 
     bloom = src.items.itemMap["Bloom"]()
-    character.inventory.append(bloom)
+    character.addToInventory(bloom)
     
     targetPos = (charPos[0],charPos[1]+1,charPos[2])
 
@@ -205,10 +205,10 @@ def test_placeItem_4(terrain,character):
     terrain.addCharacter(character,bigPos[0]*15+charPos[0],bigPos[1]*15+charPos[1])
 
     wall = src.items.itemMap["Wall"]()
-    character.inventory.append(wall)
+    character.addToInventory(wall)
 
     bloom = src.items.itemMap["Bloom"]()
-    character.inventory.append(bloom)
+    character.addToInventory(bloom)
     
     targetPos = (charPos[0],charPos[1]+1,charPos[2])
 

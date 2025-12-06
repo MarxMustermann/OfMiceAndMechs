@@ -19,7 +19,11 @@ class SettingMenu(src.subMenu.SubMenu):
         if key in ("a", "d", "left", "right", "j", "enter"):
             change_event = True
         if key in ("w", "s","up","down"):
-            self.index += 1 if key in ("s","down") else -1
+            if key in ("s","down"):
+                change_amount = 1
+            else:
+                change_amount = -1
+            self.index += change_amount
             self.index = src.helpers.clamp(self.index, 0, len(self.setting_options)-1)
 
         # show info

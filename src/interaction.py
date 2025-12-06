@@ -2603,7 +2603,7 @@ def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
                ("main menu","save and back to main menu"),
                ("quit", "save and quit"),
                ("help","help"),
-               ("change setting", "change setting")]
+               ("change settings", "change settings")]
     submenu = src.menuFolder.selectionMenu.SelectionMenu("What do you want to do?", options)
     char.macroState["submenue"] = submenu
 
@@ -2622,7 +2622,7 @@ def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
             raise SystemExit() #HACK: workaround for bug that causes memory leak
         elif selection == "help":
             charState["submenue"] = src.menuFolder.helpMenu.HelpMenu()
-        elif selection == "change setting":
+        elif selection == "change settings":
             charState["submenue"] = src.menuFolder.settingMenu.SettingMenu() 
         elif selection == "main menu":
             char.macroState["submenue"] = None

@@ -206,6 +206,9 @@ Remove all items from the walkways that are not bolted down."""
         if rooms:
             room = rooms[0]
 
+        if not room:
+            return []
+
         if room.floorPlan:
             return []
 

@@ -18,9 +18,16 @@ class ShockTower(src.items.Item):
         self.charges = 0
 
     def apply(self,character):
+        if not self.bolted:
+            character.addMessage("the item needs to be bolted down to be used")
+            return
+
         self.showTargetingHud({"character":character})
 
     def loadNearbyAmmo(self):
+        if not self.bolted:
+            return "not bolted down"
+
         ammoDropSpots = [(0,1,0),(0,-1,0),(1,0,0),(-1,0,0)]
         numLoaded = 0
         for dropSpot in ammoDropSpots:
@@ -91,6 +98,9 @@ press . to wait"""]
         character.macroState["submenue"].followUp = {"container":self,"method":"showTargetingHud","params":params}
 
     def remoteActivate(self,extraParams=None):
+        if not self.bolted:
+            return
+
         if self.charges:
             if extraParams and extraParams.get("pos"):
                 pos = extraParams.get("pos")
@@ -99,6 +109,9 @@ press . to wait"""]
             self.loadNearbyAmmo()
 
     def shock(self,targetPos,character=None):
+        if not self.bolted:
+            return "not bolted down"
+
         if self.charges < 1:
             if character:
                 character.addMessage("no charges")
@@ -122,7 +135,7 @@ press . to wait"""]
 
         return "you trigger the shock tower"
 
-    def configure(self, character):
+    def reload(self, character):
         """
 
         Parameters:
@@ -137,7 +150,8 @@ press . to wait"""]
                 break
 
         if not compressorFound:
-            character.addMessage("you have no LightningRod")
+            character.addMessage("you have no LightningRod, loading nearby ammo")
+            self.loadNearbyAmmo()
             return
 
         self.charges += 1
@@ -167,8 +181,9 @@ The shocker has %s charges
             options["b"] = ("unbolt", self.unboltAction)
         else:
             options["b"] = ("bolt down", self.boltAction)
-        options["a"] = ("toggle active", self.toggleActive)
-        options["t"] = ("configure target", self.configureTargetHook)
+        #options["a"] = ("toggle active", self.toggleActive)
+        #options["t"] = ("configure target", self.configureTargetHook)
+        options["r"] = ("reload tower", self.reload)
         return options
 
     def configureTargetHook(self,character):

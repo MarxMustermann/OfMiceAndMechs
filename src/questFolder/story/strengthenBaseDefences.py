@@ -39,7 +39,7 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
         for room in terrain.rooms:
 
             # filter room types
-            if not room.tag in ("traproom","entryRoom",):
+            if not room.tag in ("trapRoom","entryRoom",):
                 continue
 
             # check for outside connectivity 

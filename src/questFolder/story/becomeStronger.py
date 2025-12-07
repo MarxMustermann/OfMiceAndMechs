@@ -24,8 +24,12 @@ class BecomeStronger(src.quests.MetaQuestSequence):
             return ([quest],None)
 
         if character.health < character.maxHealth//2:
-            quest = src.quests.questMap["Heal"]()
-            return ([quest],None)
+            if character.canHeal():
+                quest = src.quests.questMap["Heal"]()
+                return ([quest],None)
+            else:
+                quest = src.quests.questMap["GoHome"]()
+                return ([quest],None)
 
         for room in character.getTerrain().rooms:
             for item in room.getItemsByType("SwordSharpener"):

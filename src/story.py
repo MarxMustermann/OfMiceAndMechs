@@ -3046,36 +3046,39 @@ but they are likely to explode when disturbed.
 
         # keep trap rooms clean
         if not ghulCount:
-            room = homeTerrain.getRoomByPosition((5,7,0))[0]
-            for walkingSpace in room.walkingSpace:
-                items = room.getItemByPosition(walkingSpace)
-                for item in items:
-                    if item.bolted:
-                        continue
+            for room in terrain.rooms:
+                if room.tag != "trapRoom":
+                    continue
 
-                    foundCorpse = False
-                    for check_room in terrain.rooms:
-                        if check_room.tag == "shelter":
+                for walkingSpace in room.walkingSpace:
+                    items = room.getItemByPosition(walkingSpace)
+                    for item in items:
+                        if item.bolted:
                             continue
-                        if check_room.getItemByType("Corpse"):
-                            foundCorpse = True
 
-                    if not hunterCount and foundCorpse:
-                        # spawn trap cleaning ghul
-                        quest = src.quests.questMap["SpawnGhul"]()
-                        self.addQuest(quest,mainChar)
-                        return
+                        foundCorpse = False
+                        for check_room in terrain.rooms:
+                            if check_room.tag == "shelter":
+                                continue
+                            if check_room.getItemByType("Corpse"):
+                                foundCorpse = True
 
-                    # clear room yourself
-                    hasEnemy = False
-                    for other_character in room.characters:
-                        if other_character.faction == character.faction:
-                            continue
-                        hasEnemy = True
-                    if not hasEnemy:
-                        quest = src.quests.questMap["ClearTile"](description="clean up trap room",targetPosition=room.getPosition(),reason="clean the trap room.\n\nThe trap room relies on TriggerPlates to work.\nThose only work, if there are no items ontop of them.\nRestore the defence by removing the enemies remains.\nAvoid any enemies entering the trap room while you work",story="You reach out to your implant and it answers:\n\nThe main defence of the base is the trap room,\nit needs to be cleaned to ensure it works correctly.")
-                        self.addQuest(quest,mainChar)
-                        return
+                        if not hunterCount and foundCorpse:
+                            # spawn trap cleaning ghul
+                            quest = src.quests.questMap["SpawnGhul"]()
+                            self.addQuest(quest,mainChar)
+                            return
+
+                        # clear room yourself
+                        hasEnemy = False
+                        for other_character in room.characters:
+                            if other_character.faction == character.faction:
+                                continue
+                            hasEnemy = True
+                        if not hasEnemy:
+                            quest = src.quests.questMap["ClearTile"](description="clean up trap room",targetPosition=room.getPosition(),reason="clean the trap room.\n\nThe trap room relies on TriggerPlates to work.\nThose only work, if there are no items ontop of them.\nRestore the defence by removing the enemies remains.\nAvoid any enemies entering the trap room while you work",story="You reach out to your implant and it answers:\n\nThe main defence of the base is the trap room,\nit needs to be cleaned to ensure it works correctly.")
+                            self.addQuest(quest,mainChar)
+                            return
 
         # try to contact base leader
         if not src.gamestate.gamestate.stern.get("failedContact1"):

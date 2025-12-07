@@ -290,7 +290,7 @@ def spawnTrapRoom(terrain, coordinate, faction, doors="0,6 6,0 6,12 12,6"):
     '''
     trapRoom2 = spawnRoom(terrain, "EmptyRoom", coordinate, doors)
 
-    trapRoom2.tag = "traproom"
+    trapRoom2.tag = "trapRoom"
 
     # add walking space in the center
     trapRoom2.addWalkingSpace((6, 6, 0))

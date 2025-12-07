@@ -3302,7 +3302,7 @@ Press those keys when you are stuck.
 Those keys are automatically generated and not optimal.
 Once you understand things try to find better solutions.
 """
-            quest = src.quests.questMap["DelveDungeon"](targetTerrain=pos,storyText=storyText,directSendback=True)
+            quest = src.quests.questMap["DelveDungeon"](targetTerrain=pos,storyText=storyText)
             quest.assignToCharacter(mainChar)
             quest.activate()
             mainChar.assignQuest(quest,active=True)

@@ -64,6 +64,14 @@ class SpawnClone(src.quests.MetaQuestSequence):
                         self.startWatching(newQuest,self.handleQuestFailure,"failed")
                         return
 
+            # fetch any goo flasks lieing around
+            for room in self.character.getTerrain().rooms:
+                for item in room.getItemsByType("GooFlask"):
+                    newQuest = src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=item.getPosition())
+                    self.addQuest(newQuest)
+                    self.startWatching(newQuest,self.handleQuestFailure,"failed")
+                    return
+
             if self.character.container.isRoom:
                 for item in self.character.container.getItemsByType("GooProducer"):
                     if item.readyToUse():

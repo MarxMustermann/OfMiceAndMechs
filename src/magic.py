@@ -910,7 +910,7 @@ def spawnWaves():
                         terrain.addCharacter(enemy,15*bigPos[0]+7,15*bigPos[1]+7)
                         break
 
-                quest = src.quests.questMap["DelveDungeon"](targetTerrain=(terrain.xPosition,terrain.yPosition,0),itemID=godId,suicidal=True)
+                quest = src.quests.questMap["DelveDungeon"](targetTerrain=(terrain.xPosition,terrain.yPosition,0),itemID=godId,suicidal=True,directSendback=True)
                 quest.autoSolve = True
                 quest.assignToCharacter(enemy)
                 quest.activate()

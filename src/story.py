@@ -3047,7 +3047,7 @@ but they are likely to explode when disturbed.
         # keep trap rooms clean
         if not ghulCount:
             for room in terrain.rooms:
-                if room.tag != "trapRoom":
+                if room.tag == "trapRoom":
                     continue
 
                 for walkingSpace in room.walkingSpace:

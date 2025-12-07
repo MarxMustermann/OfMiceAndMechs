@@ -70,7 +70,7 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
 
         # handle a base without an outside trap room
         if len(edgeTrapRooms) != 1:
-            1/0 #FIXME: ;-)
+            return self._solver_trigger_fail(dryRun,"no edge traprooms found")
 
         # search for buildsites for the trap room
         cityPlaner = None

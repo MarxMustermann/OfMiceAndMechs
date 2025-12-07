@@ -730,6 +730,7 @@ press key to select action
 * g = run guard mode for 10 ticks
 * h = get emergency heatlh
 * c = mark terrain as explored
+* t = wait till end of epoch
 """
         header.set_text(
             (urwid.AttrSpec("default", "default"), "action menu")
@@ -889,6 +890,10 @@ def handleActivitySelection(key,char):
         submenue.tag = "tileMovementmenu"
         char.macroState["submenue"] = submenue
         char.runCommandString("~",nativeKey=True)
+
+    if key == "t":
+        char.startWaitForEnemy(15*15*15-(src.gamestate.gamestate.tick%(15*15*15)))
+
     del char.interactionState["runaction"]
 
 def handleStartMacroReplayChar(key,char,charState,main,header,footer,urwid,flags):

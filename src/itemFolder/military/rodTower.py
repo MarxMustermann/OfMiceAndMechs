@@ -8,6 +8,7 @@ class RodTower(src.items.Item):
     """
 
     type = "RodTower"
+    name = "rod tower"
 
     def __init__(self):
         """

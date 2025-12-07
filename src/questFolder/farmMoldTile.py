@@ -125,6 +125,7 @@ farm mold on the tile {self.targetPosition}"""
                     numSprouts += 1
                     if numSprouts > 4:
                         leftOverItems.append(item)
+        random.shuffle(leftOverItems)
         return leftOverItems
 
     def pickedUpItem(self,extraInfo):

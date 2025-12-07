@@ -1005,38 +1005,45 @@ def setUpRuin(pos):
                 loot_types = [random.choice(loot_types)]
 
             # fill room
-            monsterType = random.choice(["Golem","ShieldBug"])
-            for i in range(0,random.randint(1,8)):
-                # add loot
-                if random.random() < 0.2:
-                    mana_crystal = src.items.itemMap["ManaCrystal"]()
-                    room.addItem(mana_crystal,(6,6,0))
-                else:
-                    position = (random.randint(1,13),random.randint(1,13),0)
-                    item = src.items.itemMap[random.choice(loot_types)]()
-                    if item.type == "GooFlask":
-                        item.uses = 100
-                    if item.type == "Vial":
-                        item.uses = 10
-                    room.addItem(item,position)
+            if random.random() < 0.8:
+                # add monsters and loot
+                monsterType = random.choice(["Golem","ShieldBug"])
+                for i in range(0,random.randint(1,8)):
+                    # add loot
+                    if random.random() < 0.2:
+                        mana_crystal = src.items.itemMap["ManaCrystal"]()
+                        room.addItem(mana_crystal,(6,6,0))
+                    else:
+                        position = (random.randint(1,13),random.randint(1,13),0)
+                        item = src.items.itemMap[random.choice(loot_types)]()
+                        if item.type == "GooFlask":
+                            item.uses = 100
+                        if item.type == "Vial":
+                            item.uses = 10
+                        room.addItem(item,position)
 
-                # give one free loot
-                if i == 0:
-                    continue
+                    # give one free loot
+                    if i == 0:
+                        continue
 
-                # add monster
-                pos = (random.randint(1,11),random.randint(1,11),0)
-                multiplier = src.monster.Monster.get_random_multiplier(monsterType)
-                if src.gamestate.gamestate.difficulty == "easy":
-                    multiplier = 1
-                golem = src.characters.characterMap[monsterType](multiplier=multiplier)
-                golem.godMode = True
-                quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
-                quest.autoSolve = True
-                quest.assignToCharacter(golem)
-                quest.activate()
-                golem.quests.append(quest)
-                room.addCharacter(golem, pos[0], pos[1])
+                    # add monster
+                    pos = (random.randint(1,11),random.randint(1,11),0)
+                    multiplier = src.monster.Monster.get_random_multiplier(monsterType)
+                    if src.gamestate.gamestate.difficulty == "easy":
+                        multiplier = 1
+                    golem = src.characters.characterMap[monsterType](multiplier=multiplier)
+                    golem.godMode = True
+                    quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
+                    quest.autoSolve = True
+                    quest.assignToCharacter(golem)
+                    quest.activate()
+                    golem.quests.append(quest)
+                    room.addCharacter(golem, pos[0], pos[1])
+            else:
+                # add functional room
+                item_type = random.choice(["SwordSharpener","ArmorReinforcer","MetalWorkingBench","CoalBurner"])
+                item = src.items.itemMap[item_type]()
+                room.addItem(item,(6,6,0))
         else:
             for i in range(random.randint(1,3)):
                 monsterType = random.choice(["Golem","ShieldBug"])

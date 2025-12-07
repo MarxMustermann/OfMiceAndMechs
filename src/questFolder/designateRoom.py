@@ -175,6 +175,10 @@ Use the CityPlaner to designate the room.
         terrain = character.getTerrain()
         room = terrain.getRoomByPosition(character.getHomeRoomCord())[0]
         cityPlaner = room.getItemsByType("CityPlaner")[0]
+        if not cityPlaner:
+            if not dryRun:
+                self.fail("no planer")
+            return True
 
         if self.roomType == "specialPurposeRoom" and self.roomPosition in cityPlaner.specialPurposeRooms:
             if not dryRun:

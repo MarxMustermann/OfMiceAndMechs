@@ -106,6 +106,18 @@ Rule the world and put an end to those attacks!
                             quest = src.quests.questMap["ReinforcePersonalArmor"]()
                             return ([quest],None)
 
+                if character.health < character.adjustedMaxHealth:
+                    readyCoalBurner = False
+                    for room in currentTerrain.rooms:
+                        for coalBurner in room.getItemsByType("CoalBurner"):
+                            if not coalBurner.getMoldFeed(character):
+                                continue
+                            readyCoalBurner = True
+                    if readyCoalBurner:
+                        quest = src.quests.questMap["Heal"](noWaitHeal=True,noVialHeal=True)
+                        return ([quest],None)
+
+
             terrain = character.getTerrain()
             if terrain.xPosition != 7 or terrain.yPosition != 7:
                 quest = src.quests.questMap["GoToTerrain"](targetTerrain=(7,7,0),reason="get to the glass palace", description="go to glass palace")

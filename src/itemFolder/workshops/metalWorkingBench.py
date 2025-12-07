@@ -209,6 +209,7 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         # repeat if more items should be produced
         params["amount"] -= 1
         if params["amount"]:
+            params["doneTime"] = 0
             self.produceItem(params)
 
     def getInputItems(self):

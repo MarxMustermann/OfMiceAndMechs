@@ -37,6 +37,12 @@ Fetch any glass heart.
         text += """
 After fetching the glass heart return the glass heart to your base and set it into the glass statue.
 """
+        if self.directSendback:
+            text += """
+directSendback"""
+        if self.suicidal:
+            text += """
+suicidal"""
         return text
 
     def handleDelivery(self, extraInfo):
@@ -76,7 +82,10 @@ After fetching the glass heart return the glass heart to your base and set it in
         
         if character.macroState.get("itemMarkedLast"):
             if character.macroState["itemMarkedLast"].type == "GlassStatue":
-                return (None,("j","activate glass statue"))
+                if self.directSendback:
+                    return (None,("cr","return GlassHeart"))
+                else:
+                    return (None,("j","activate glass statue"))
             else:
                 return (None,(".","undo selection"))
 

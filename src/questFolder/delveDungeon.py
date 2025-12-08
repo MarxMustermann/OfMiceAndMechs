@@ -4,7 +4,7 @@ import random
 class DelveDungeon(src.quests.MetaQuestSequence):
     type = "DelveDungeon"
 
-    def __init__(self, description="delve dungeon",targetTerrain=None,itemID=None,storyText=None, directSendback=False, suicidal=False):
+    def __init__(self, description="delve dungeon",targetTerrain=None,itemID=None,storyText=None, directSendback=False, suicidal=False, walkToTarget=False):
         questList = []
         super().__init__(questList, creator=None)
         self.metaDescription = description
@@ -13,6 +13,7 @@ class DelveDungeon(src.quests.MetaQuestSequence):
         self.storyText = storyText
         self.directSendback = directSendback
         self.suicidal = suicidal
+        self.walkToTarget = walkToTarget
 
     def generateTextDescription(self):
         text = ""
@@ -208,9 +209,17 @@ suicidal"""
                             quest = src.quests.questMap["ActivateGlassStatue"](targetPositionBig=room.getPosition(),targetPosition=item.getPosition())
                             return ([quest],None)
 
-                # actually walk to the target terrain
-                quest = src.quests.questMap["GoToTerrain"](targetTerrain=(self.targetTerrain[0],self.targetTerrain[1],0))
-                return ([quest],None)
+                try:
+                    self.walkToTarget
+                except:
+                    self.walkToTarget = False
+
+                if not self.walkToTarget:
+                    return self._solver_trigger_fail(dryRun,"no GlassStatue found")
+                else:
+                    # actually walk to the target terrain
+                    quest = src.quests.questMap["GoToTerrain"](targetTerrain=(self.targetTerrain[0],self.targetTerrain[1],0))
+                    return ([quest],None)
 
             foundGlassHeart = None
             for room in terrain.rooms:

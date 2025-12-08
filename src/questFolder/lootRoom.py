@@ -17,6 +17,8 @@ class LootRoom(src.quests.MetaQuestSequence):
         self.story = story
         self.endWhenFull = endWhenFull
 
+        self.visited_target_tile = False
+
         if targetPosition:
             self.setParameters({"targetPosition":targetPosition})
 
@@ -34,10 +36,21 @@ Loot the room on tile {self.targetPosition}{reasonString}.
 Remove all items that are not bolted down."""
         return text
 
+    def changedTile(self, extraInfo=None):
+        if self.targetPosition == self.character.getBigPosition():
+            self.visited_target_tile = True
+        else:
+            if self.visited_target_tile:
+                self.fail("left target tile")
+
     def assignToCharacter(self, character):
         if self.character:
             return
 
+        if self.targetPosition == character.getBigPosition():
+            self.visited_target_tile = True
+
+        self.startWatching(character,self.changedTile, "changedTile")
         self.startWatching(character,self.wrapedTriggerCompletionCheck, "itemPickedUp")
         super().assignToCharacter(character)
 

@@ -131,7 +131,7 @@ Guard the arena behind the trap room to ensure no spider slips through.
                     self.spiderPositions.append(enemy.getSpacePosition())
         else:
             if self.phase == "wait":
-                self.phase = "bait"
+                self.phase = "run"
 
     def wrapedTriggerCompletionCheck(self, extraInfo):
         if self.completed:

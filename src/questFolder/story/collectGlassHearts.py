@@ -290,6 +290,8 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
 
                 # ensure some walls are in storage
                 hasWall = False
+                if character.searchInventory("Wall"):
+                    hasWall = True
                 for room in character.getTerrain().rooms:
                     if room.getNonEmptyOutputslots("Wall"):
                         hasWall = True

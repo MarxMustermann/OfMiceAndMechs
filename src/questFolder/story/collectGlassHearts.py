@@ -182,9 +182,12 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
 
             # count trap rooms
             numTrapRooms = 0
+            numNonTrapRooms = 0
             for room in character.getTerrain().rooms:
                 if room.tag == "trapRoom":
                     numTrapRooms += 1
+                else:
+                    numNonTrapRooms += 1
 
             # ensure an appropriate number of trap rooms
             if numTrapRooms < numGlassHearts//2:
@@ -264,7 +267,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                 return ([quest],None)
 
         # fill empty rooms with life
-        if foundCityPlaner:
+        if foundCityPlaner and numGlassHearts:
             rooms = foundCityPlaner.getAvailableRooms()
             random.shuffle(rooms)
             if rooms:
@@ -281,6 +284,12 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                 if candidates:
                     quest = src.quests.questMap["AssignFloorPlan"](floorPlanType=candidates[0],roomPosition=room.getPosition())
                     return ([quest],None)
+
+            # ensure an appropriate number of economic rooms
+            if numNonTrapRooms < 5+numGlassHearts+1:
+                coordinate = random.choice(foundCityPlaner.plannedRooms)
+                quest = src.quests.questMap["BuildRoom"](targetPosition=coordinate,lifetime=1000,tryHard=True)
+                return ([quest],None)
 
         # get statues ready for teleport
         strengthRating = character.getStrengthSelfEstimate()

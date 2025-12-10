@@ -2617,6 +2617,12 @@ class Terrain:
                 end = pivot
         self.events.insert(start, event)
 
+    def search_item_by_type(self,itemType = None):
+        for item_list in self.itemsByCoordinate.values():
+            for item in item_list:
+                if item.type == itemType:
+                    return item
+        return None
 
 
 class EmptyTerrain(Terrain):

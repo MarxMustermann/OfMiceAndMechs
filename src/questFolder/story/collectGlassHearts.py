@@ -287,6 +287,16 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
 
             # ensure an appropriate number of economic rooms
             if numNonTrapRooms < 5+numGlassHearts+1:
+
+                # ensure some walls are in storage
+                hasWall = False
+                for room in character.getTerrain().rooms:
+                    if room.getNonEmptyOutputslots("Wall"):
+                        hasWall = True
+                if not hasWall and character.getTerrain().search_item_by_type("Wall"):
+                    quest = src.quests.questMap["Scavenge"](toCollect="Wall",lifetime=1000,tryHard=True)
+                    return ([quest],None)
+
                 coordinate = random.choice(foundCityPlaner.plannedRooms)
                 quest = src.quests.questMap["BuildRoom"](targetPosition=coordinate,lifetime=1000,tryHard=True)
                 return ([quest],None)

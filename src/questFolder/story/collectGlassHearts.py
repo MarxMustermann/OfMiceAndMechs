@@ -297,9 +297,22 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                     quest = src.quests.questMap["Scavenge"](toCollect="Wall",lifetime=1000,tryHard=True)
                     return ([quest],None)
 
-                coordinate = random.choice(foundCityPlaner.plannedRooms)
-                quest = src.quests.questMap["BuildRoom"](targetPosition=coordinate,lifetime=1000,tryHard=True)
-                return ([quest],None)
+                # continue building a planned room
+                planned_rooms = foundCityPlaner.plannedRooms[:]
+                random.shuffle(planned_rooms)
+                if planned_rooms:
+                    found_build_site = None
+                    for planned_room in planned_rooms:
+                        items = character.getTerrain().getItemByPosition((planned_room[0]*15+7,planned_room[1]*15+7,0))
+                        if not len(items) == 1:
+                            continue
+                        if not items[0].type == "RoomBuilder":
+                            continue
+                        found_build_site = planned_room
+
+                    coordinate = random.choice(foundCityPlaner.plannedRooms)
+                    quest = src.quests.questMap["BuildRoom"](targetPosition=coordinate,lifetime=1000,tryHard=True)
+                    return ([quest],None)
 
         # get statues ready for teleport
         strengthRating = character.getStrengthSelfEstimate()

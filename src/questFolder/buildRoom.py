@@ -321,7 +321,6 @@ Press d to move the cursor and show the subquests description.
                         beUsefull.idleCounter = 0
                     return ([quest],None)
         if not cityPlaner:
-            1/0
             return (None,None)
 
         if not cityPlaner or cityPlaner.autoExtensionThreashold > 0:

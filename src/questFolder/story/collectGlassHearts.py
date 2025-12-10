@@ -310,7 +310,10 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                             continue
                         found_build_site = planned_room
 
-                    coordinate = random.choice(foundCityPlaner.plannedRooms)
+                    if found_build_site:
+                        coordinate = found_build_site
+                    if not coordinate:
+                        coordinate = random.choice(foundCityPlaner.plannedRooms)
                     quest = src.quests.questMap["BuildRoom"](targetPosition=coordinate,lifetime=1000,tryHard=True)
                     return ([quest],None)
 

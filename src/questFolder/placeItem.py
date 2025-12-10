@@ -169,6 +169,9 @@ Press d to move the cursor and show the subquests description.
         if self.subQuests:
             return (None,None)
 
+        if self.triggerCompletionCheck(dryRun=dryRun):
+            return (None,(".","stand around confused"))
+
         if self.targetPositionBig:
             terrain = character.getTerrain()
             rooms = terrain.getRoomByPosition(self.targetPositionBig)
@@ -304,12 +307,9 @@ Press d to move the cursor and show the subquests description.
         return (None,(".","stand around confused"))
 
     def triggerCompletionCheck(self,character=None,dryRun=True):
-        if not character:
-            return False
-
-        rooms = character.getTerrain().getRoomByPosition(self.targetPositionBig)
+        rooms = self.character.getTerrain().getRoomByPosition(self.targetPositionBig)
         if not rooms:
-            items = character.getTerrain().getItemByPosition((self.targetPosition[0]+self.targetPositionBig[0]*15,self.targetPosition[1]+self.targetPositionBig[1]*15,0))
+            items = self.character.getTerrain().getItemByPosition((self.targetPosition[0]+self.targetPositionBig[0]*15,self.targetPosition[1]+self.targetPositionBig[1]*15,0))
         else:
             items = rooms[0].getItemByPosition(self.targetPosition)
 

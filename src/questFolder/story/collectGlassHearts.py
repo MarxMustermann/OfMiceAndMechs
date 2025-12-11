@@ -130,7 +130,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["ClearInventory"](returnToTile=False)
                 return ([quest],None)
 
-            quest = src.quests.questMap["Adventure"]()
+            quest = src.quests.questMap["Adventure"](description="explore the surroundings",reason="get some map awareness")
             return ([quest],None)
 
         # ensure there is a backup NPC
@@ -249,7 +249,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                         return ([quest],None)
 
                     # beat people up for fun .... erh to gather ressources
-                    quest = src.quests.questMap["Adventure"]()
+                    quest = src.quests.questMap["Adventure"](description="loot the surroundings",reason="get some useful resources and pass some time")
                     return ([quest],None)
 
         # ensure the base is set to auto expand

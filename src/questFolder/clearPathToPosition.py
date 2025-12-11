@@ -66,7 +66,7 @@ Pick up and unbolt items that are in the way.
                 self.path = path
 
         if not path:
-            return (None,(".","stand around confused"))
+            return self._solver_trigger_fail(dryRun,"no path")
 
         path = path[:]
 

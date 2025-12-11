@@ -35,6 +35,10 @@ terrain_message = [
         "statue room",
         """A ceremonial statue in a small dedicated it looks like there is an old lab guarded by a lot of monsters.\n\nYou can feel something horrible happened here and that the place holds dark secrets. Better not to find out what dark secrets lie here.\n\n-- leave this place immediatly and stay away""",
     ),
+    (
+        "nothingness",
+        """There is nothing here than swamp and maybe a bit of scrap here or there.\n\n-- nothing interesting to be found here""",
+    ),
 ]
 
 for type, message in terrain_message:

@@ -1,8 +1,6 @@
 from functools import partial
 
 import src
-import src.popups
-
 
 class EnterTerrain(src.popups.Popup):
     def __init__(self, terrainType, message):

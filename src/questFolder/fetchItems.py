@@ -321,7 +321,7 @@ Press d to move the cursor and show the subquests description.
                         return ([quest],None)
                 else:
                     if self.tryHard:
-                        if random.random() < 0.5:
+                        if random.random() < -0.5: # disabled!
                             quest = src.quests.questMap["ProduceItem"](itemType=self.toCollect,tryHard=self.tryHard,reason="have items to fetch")
                             return ([quest],None)
                         else:

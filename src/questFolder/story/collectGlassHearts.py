@@ -275,6 +275,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
 
                 candidates = ["manufacturingHall","electrifierHall","smokingRoom"]
                 random.shuffle(candidates)
+                candidates.insert(0,"trapMaterialsManufacturing")
                 candidates.insert(0,"wallManufacturing")
                 candidates.insert(0,"storage")
                 for checkRoom in terrain.rooms:

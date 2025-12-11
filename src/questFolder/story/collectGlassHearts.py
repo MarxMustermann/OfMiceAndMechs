@@ -290,11 +290,15 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
 
                 # ensure some walls are in storage
                 hasWall = False
+                inventoryWallsOnly = False
                 if character.searchInventory("Wall"):
                     hasWall = True
+                    inventoryWallsOnly = True
                 for room in character.getTerrain().rooms:
                     if room.getNonEmptyOutputslots("Wall"):
                         hasWall = True
+                        inventoryWallsOnly = False
+                        break
                 if not hasWall and character.getTerrain().search_item_by_type("Wall"):
                     quest = src.quests.questMap["Scavenge"](toCollect="Wall",lifetime=1000,tryHard=True)
                     return ([quest],None)
@@ -304,7 +308,10 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                 random.shuffle(planned_rooms)
                 if planned_rooms:
                     found_build_site = None
-                    for planned_room in planned_rooms:
+                    for planned_room in planned_rooms[:]:
+                        if character.getTerrain().getRoomByPosition(planned_room):
+                            planned_rooms.remove(planned_room)
+                            break
                         items = character.getTerrain().getItemByPosition((planned_room[0]*15+7,planned_room[1]*15+7,0))
                         if not len(items) == 1:
                             continue
@@ -312,11 +319,15 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                             continue
                         found_build_site = planned_room
 
+                if planned_rooms:
                     if found_build_site:
                         coordinate = found_build_site
-                    if not coordinate:
+                    else:
                         coordinate = random.choice(foundCityPlaner.plannedRooms)
-                    quest = src.quests.questMap["BuildRoom"](targetPosition=coordinate,lifetime=1000,tryHard=True)
+                    tryHard = True
+                    if inventoryWallsOnly:
+                        tryHard = False
+                    quest = src.quests.questMap["BuildRoom"](targetPosition=coordinate,lifetime=1000,tryHard=tryHard,ignoreAlarm=True)
                     return ([quest],None)
 
         # get statues ready for teleport

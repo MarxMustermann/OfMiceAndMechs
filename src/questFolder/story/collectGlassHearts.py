@@ -267,7 +267,6 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                 return ([quest],None)
 
         # fill empty rooms with life
-        print("check rooms")
         if foundCityPlaner and numGlassHearts:
             rooms = foundCityPlaner.getAvailableRooms()
             random.shuffle(rooms)

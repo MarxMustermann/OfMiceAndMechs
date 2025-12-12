@@ -90,6 +90,7 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
     def configureItem(self,params):
         character = params["character"]
 
+        # collect information about what to do
         if "type" not in params:
             options = []
             options.append(("None","None"))
@@ -122,28 +123,31 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"configureItem","params":params}
             return
-
         if params.get("type") == "byName":
             submenue = src.menuFolder.inputMenu.InputMenu("Type the name of the item to produce",targetParamName="type",tag="manufacturingTableTypeConfigurationNameInput")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"configureItem","params":params}
             return
 
+        # handle edge case
         if params.get("type") in src.items.nonManufacturedTypes:
             ty = params.get("type")
             character.addMessage(f"cannot produce item type {ty}")
             return
 
+        # remove the configuration from this machine
         if params.get("type") == "None":
             self.toProduce = None
             self.numUsed = 0
             return
 
+        # handle edge case
         if params.get("type") not in src.items.itemMap:
             if params.get("type"):
                 character.addMessage("Item type unknown.")
             return
 
+        # set the configuration for this machine state
         self.toProduce = params.get("type")
         self.numUsed = 0
 

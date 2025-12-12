@@ -75,16 +75,17 @@ use the manufacturing table on {self.targetPosition}{reason}.
             quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True,reason="get near the machine")
             return ([quest],None)
 
+        message = "manufacture item"
         if (pos[0],pos[1],pos[2]) == self.targetPosition:
-            return (None,("jj","manufacture item"))
+            return (None,("jj",message))
         if (pos[0]-1,pos[1],pos[2]) == self.targetPosition:
-            return (None,("Jaj","manufacture item"))
+            return (None,("Jaj",message))
         if (pos[0]+1,pos[1],pos[2]) == self.targetPosition:
-            return (None,("Jdj","manufacture item"))
+            return (None,("Jdj",message))
         if (pos[0],pos[1]-1,pos[2]) == self.targetPosition:
-            return (None,("Jwj","manufacture item"))
+            return (None,("Jwj",message))
         if (pos[0],pos[1]+1,pos[2]) == self.targetPosition:
-            return (None,("Jsj","manufacture item"))
+            return (None,("Jsj",message))
         return (None,(".","stand around confused"))
 
     def getQuestMarkersTile(self,character):
@@ -109,6 +110,7 @@ use the manufacturing table on {self.targetPosition}{reason}.
             if character.getBigPosition() == self.targetPositionBig:
                 result.append(((self.targetPosition[0],self.targetPosition[1]),"target"))
         return result
+
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
         terrain = character.getTerrain()

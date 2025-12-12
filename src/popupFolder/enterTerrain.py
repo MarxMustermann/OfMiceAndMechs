@@ -47,6 +47,10 @@ terrain_message = [
         "spider pit",
         """This terrain is overrun with spiders, mostly concerned with themselves\n\n-- best to stay away if you are not looking for a fight""",
     ),
+    (
+        "dungeon",
+        """This dungeon protects the heart of a god. It is well protected by a series of defences.\n\n-- best to stay away if you are not looking for a fight""",
+    ),
 ]
 
 for type, message in terrain_message:

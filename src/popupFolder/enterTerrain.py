@@ -39,6 +39,10 @@ terrain_message = [
         "nothingness",
         """There is nothing here than swamp and maybe a bit of scrap here or there.\n\n-- nothing interesting to be found here""",
     ),
+    (
+        "cloning lab",
+        """The implant and cloning technology was developed in those labs. Many interessting things should still be left here.\n\n-- best to leave those alone""",
+    ),
 ]
 
 for type, message in terrain_message:

@@ -273,8 +273,9 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
             if rooms:
                 room = rooms[0]
 
-                candidates = ["manufacturingHall","electrifierHall","smokingRoom"]
+                candidates = ["electrifierHall","smokingRoom"]
                 random.shuffle(candidates)
+                candidates.insert(0,"manufacturingHall")
                 candidates.insert(0,"trapMaterialsManufacturing")
                 candidates.insert(0,"wallManufacturing")
                 candidates.insert(0,"storage")

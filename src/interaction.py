@@ -3144,8 +3144,8 @@ press key for advanced drop
         if key in (commandChars.hail,):
             charState["submenue"] = src.menuFolder.chatPartnerselection.ChatPartnerselection()
 
-        if key in ("H",):
-            charState["submenue"] = src.menuFolder.instructSubordinatesMenu.InstructSubordinatesMenu()
+        #if key in ("H",):
+        #    charState["submenue"] = src.menuFolder.instructSubordinatesMenu.InstructSubordinatesMenu()
 
         if key in ("r",) and char.room:
             charState["submenue"] = src.menuFolder.roomMenu.RoomMenu(char.room)

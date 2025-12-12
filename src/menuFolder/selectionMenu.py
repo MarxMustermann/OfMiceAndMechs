@@ -10,12 +10,12 @@ class SelectionMenu(src.subMenu.SubMenu):
         default: the default value
         targetParamName: name of the parameter the selection should be stored in
     '''
-    def __init__(self, text="", options=None, default=None, targetParamName="selection",extraDescriptions=None, selected=None):
+    def __init__(self, text="", options=None, default=None, targetParamName="selection",extraDescriptions=None, selected=None, tag=None):
         if not options:
             options = []
 
         self.type = "SelectionMenu"
-        super().__init__(default=default,targetParamName=targetParamName)
+        super().__init__(default=default,targetParamName=targetParamName,tag=tag)
         self.setOptions(text, options)
 
         if selected:

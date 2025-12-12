@@ -267,6 +267,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                 return ([quest],None)
 
         # fill empty rooms with life
+        print("check rooms")
         if foundCityPlaner and numGlassHearts:
             rooms = foundCityPlaner.getAvailableRooms()
             random.shuffle(rooms)
@@ -287,7 +288,9 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                     return ([quest],None)
 
             # ensure an appropriate number of economic rooms
+            print(numNonTrapRooms,5+numGlassHearts+1)
             if numNonTrapRooms < 5+numGlassHearts+1:
+                print("missing room")
 
                 # ensure some walls are in storage
                 hasWall = False
@@ -329,6 +332,26 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                     if inventoryWallsOnly:
                         tryHard = False
                     quest = src.quests.questMap["BuildRoom"](targetPosition=coordinate,lifetime=1000,tryHard=tryHard,ignoreAlarm=True)
+                    return ([quest],None)
+
+                baseNeighbours = []
+                offsets = ((0,1,0),(1,0,0),(0,-1,0),(-1,0,0))
+                for room in terrain.rooms:
+                    if room.tag in ("shelter","trapRoom","entryRoom","trapSupport"):
+                        continue
+                    pos = room.getPosition()
+                    for offset in offsets:
+                        checkPos = (pos[0]+offset[0],pos[1]+offset[1],0)
+                        if terrain.getRoomByPosition(checkPos):
+                            continue
+                        if checkPos in baseNeighbours:
+                            continue
+                        baseNeighbours.append(checkPos)
+
+                if baseNeighbours:
+                    random.shuffle(baseNeighbours)
+
+                    quest = src.quests.questMap["ScheduleRoomBuilding"](roomPosition=baseNeighbours[0])
                     return ([quest],None)
 
         # get statues ready for teleport

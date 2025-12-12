@@ -152,6 +152,9 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
         self.toProduce = params.get("type")
         self.numUsed = 0
 
+        # send out events
+        character.changed("configured ManufacturingTable",{})
+
     def produceItem(self,character):
         if self.disabled:
             character.addMessage("This item is disabled")

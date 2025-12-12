@@ -304,6 +304,9 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                         inventoryWallsOnly = False
                         break
                 if not hasWall and character.getTerrain().search_item_by_type("Wall"):
+                    if not character.getFreeInventorySpace():
+                        quest = src.quests.questMap["ClearInventory"](tryHard=True)
+                        return ([quest],None)
                     quest = src.quests.questMap["Scavenge"](toCollect="Wall",lifetime=1000,tryHard=True)
                     return ([quest],None)
 

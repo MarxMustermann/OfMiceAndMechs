@@ -38,7 +38,7 @@ class Adventure(src.quests.MetaQuestSequence):
             return (None, ("w","enter the terrain"))
 
         if character.searchInventory("MemoryFragment"):
-            quest = src.quests.questMap["ConsumePotion"](potionType="MemoryFragment",description="break memories")
+            quest = src.quests.questMap["ConsumePotion"](potionType="MemoryFragment",description="extract memories")
             return ([quest],None)
         
         currentTerrain = character.getTerrain()

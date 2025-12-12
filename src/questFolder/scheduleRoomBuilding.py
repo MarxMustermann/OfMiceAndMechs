@@ -41,6 +41,15 @@ Use a CityPlaner to do this.
         if self.subQuests:
             return (None,None)
 
+        terrain = character.getTerrain()
+        if self.roomPosition in terrain.forests or self.roomPosition in terrain.scrapFields:
+            return self._solver_trigger_fail(dryRun,"target position blocked")
+
+        if terrain.getRoomByPosition(self.roomPosition):
+            return self._solver_trigger_fail(dryRun,"room already build")
+
+        terrain = character.getTerrain()
+
         # navigate the build-menu and schedule building the room
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.mapMenu.MapMenu) and not ignoreCommands:
             submenue = character.macroState["submenue"]

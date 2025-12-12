@@ -757,12 +757,15 @@ def handleActivitySelection(key,char):
         if key in ("d",):
             newPos = (charPos[0]+1,charPos[1],charPos[2])
 
-        quest = src.quests.questMap["GoToTile"](targetPosition=newPos,paranoid=True)
-        quest.autoSolve = True
-        quest.assignToCharacter(char)
-        quest.activate()
+        if newPos[0] in (0,14) or newPos[1] in (0,14):
+            char.addMessage("you cannot auto move into the terrain border")
+        else:
+            quest = src.quests.questMap["GoToTile"](targetPosition=newPos,paranoid=True)
+            quest.autoSolve = True
+            quest.assignToCharacter(char)
+            quest.activate()
 
-        char.quests.insert(0,quest)
+            char.quests.insert(0,quest)
 
     if key == "g":
         char.startGuarding(1)

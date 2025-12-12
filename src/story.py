@@ -2838,7 +2838,6 @@ but they are likely to explode when disturbed.
         if self.activeStory["type"] == "story start":
             self.openedQuestsStory()
             return
-        1/0
 
     def addQuest(self,quest,mainChar):
         quest.assignToCharacter(mainChar)

@@ -8,7 +8,7 @@ class InputMenu(src.subMenu.SubMenu):
 
     type = "InputMenu"
 
-    def __init__(self, query="", ignoreFirst=False, targetParamName="text",stealAllKeys=False):
+    def __init__(self, query="", ignoreFirst=False, targetParamName="text",stealAllKeys=False, tag=None):
         """
         initialise internal state
 
@@ -19,7 +19,7 @@ class InputMenu(src.subMenu.SubMenu):
 
         self.query = query
         self.text = ""
-        super().__init__()
+        super().__init__(tag=tag)
         self.footerText = "enter the text press enter to confirm"
         self.firstHit = True
         self.ignoreFirst = ignoreFirst

@@ -152,16 +152,33 @@ class ReportArchive(src.items.Item):
         # get the report
         report = self.reports[fragment_number]
 
-        # unveil the coordinates mantioned 
+        # unveil the coordinates mentioned
+        coordinates = []
         for (coordinate,tag) in report[2]:
+            coordinates.append(coordinate)
             if coordinate in character.terrainInfo:
                 continue
             character.terrainInfo[coordinate] = {"tag":tag}
 
+        # generate a map showing the reports locations
+        pseudo_map = []
+        pos = None
+        for y in range(0,15):
+            pseudo_map.append(["  "])
+            for x in range(0,15):
+                if (x,y,0) in coordinates:
+                    pseudo_map[y].append("XX")
+                elif y == 7 or x == 7:
+                    pseudo_map[y].append("  ")
+                elif y in (0,14) or x in (0,14):
+                    pseudo_map[y].append("~~")
+                else:
+                    pseudo_map[y].append("  ")
+            pseudo_map[y].append("\n")
+
         # open UI to read the report
-        submenue = src.menuFolder.textMenu.TextMenu(
-            f"== {report[0]} ==\n\n{report[1]}"
-        )
+        text = [f"== {report[0]} ==\n\n{report[1]}\n\n",pseudo_map]
+        submenue = src.menuFolder.textMenu.TextMenu(text)
         submenue.tag = "message"
         character.macroState["submenue"] = submenue
         character.runCommandString("~", nativeKey=True)

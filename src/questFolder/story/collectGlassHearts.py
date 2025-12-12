@@ -288,10 +288,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                     return ([quest],None)
 
             # ensure an appropriate number of economic rooms
-            print(numNonTrapRooms,5+numGlassHearts+1)
             if numNonTrapRooms < 5+numGlassHearts+1:
-                print("missing room")
-
                 # ensure some walls are in storage
                 hasWall = False
                 inventoryWallsOnly = False

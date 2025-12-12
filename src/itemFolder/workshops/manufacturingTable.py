@@ -97,6 +97,7 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
             options.append(("MetalBars","MetalBars"))
             options.append(("Bolt","Bolt"))
             options.append(("Rod","Rod"))
+            options.append(("Tank","Tank"))
             options.append(("Frame","Frame"))
             options.append(("Case","Case"))
             options.append(("Wall","Wall"))

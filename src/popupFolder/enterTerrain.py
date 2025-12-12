@@ -51,6 +51,10 @@ terrain_message = [
         "dungeon",
         """This dungeon protects the heart of a god. It is well protected by a series of defences.\n\n-- best to stay away if you are not looking for a fight""",
     ),
+    (
+        "remote base",
+        """You see a base similar to what your base looks like.\n\n-- You may be able to find some useful resorces here""",
+    ),
 ]
 
 for type, message in terrain_message:

@@ -43,6 +43,10 @@ terrain_message = [
         "cloning lab",
         """The implant and cloning technology was developed in those labs. Many interessting things should still be left here.\n\n-- best to leave those alone""",
     ),
+    (
+        "spider pit",
+        """This terrain is overrun with spiders, mostly concerned with themselves\n\n-- best to stay away if you are not looking for a fight""",
+    ),
 ]
 
 for type, message in terrain_message:

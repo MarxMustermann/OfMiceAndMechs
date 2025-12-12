@@ -10,7 +10,7 @@ class SubMenu(object):
     The base class for submenus offering selections
     """
 
-    def __init__(self, default=None, targetParamName="selection"):
+    def __init__(self, default=None, targetParamName="selection",tag=None):
         """
         set up basic state
 
@@ -28,7 +28,7 @@ class SubMenu(object):
         self.footerText = "press w / s to move selection up / down, press enter / j / k to select, press esc to exit"
         self.followUp = None
         self.done = False
-        self.tag = None
+        self.tag = tag
         self.extraInfo ={}
 
         self.options = collections.OrderedDict()

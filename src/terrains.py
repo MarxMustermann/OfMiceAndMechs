@@ -2046,6 +2046,10 @@ class Terrain:
         usedAnimationSlots = set()
         for animation in self.animations[:]:
             (pos,animationType,duration,extraInfo) = animation
+            if pos is None or coordinateOffset is None:
+                continue
+            if pos[0] is None or coordinateOffset[0] is None:
+                continue
             pos = (pos[0]-coordinateOffset[1],pos[1]-coordinateOffset[0])
             if pos[0] < 0 or pos[1] < 0 or pos[0] > size[0] or pos[1] > size[1]:
                 self.animations.remove(animation)

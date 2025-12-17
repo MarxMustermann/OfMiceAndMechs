@@ -88,7 +88,7 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
 
         pointsOfInterest = self.getRemainingPointsOfInterests()
         if not pointsOfInterest:
-            return self._solver_trigger_fail(dryRun,"no POI found to explore")
+            return (None,("gc","mark terrain as explored"))
 
         char_big_pos = character.getBigPosition()
 
@@ -166,16 +166,6 @@ Go out and adventure on tile {self.targetTerrain}.
             return True
 
         return False
-
-        if currentTerrain.tag == "ruin":
-            if self.getRemainingPointsOfInterests():
-                return False
-
-        if not dryRun:
-            if currentTerrain.tag == "ruin":
-                character.terrainInfo[currentTerrain.getPosition()]["looted"] = True
-            self.postHandler()
-        return True
 
     def wrapedTriggerCompletionCheck(self,test=None):
         pass

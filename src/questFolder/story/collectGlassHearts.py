@@ -320,8 +320,16 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                         continue
                     pos = room.getPosition()
                     for offset in offsets:
-                        items = character.getTerrain().getItemByPosition(((pos[0]+offset[0])*15+7,(pos[1]+offset[1])*15+7,0))
-                        quest = src.quests.questMap["BuildRoom"](targetPosition=coordinate,lifetime=1000,tryHard=tryHard,ignoreAlarm=True)
+                        coordinate = ((pos[0]+offset[0]),(pos[1]+offset[1]),0)
+                        items = character.getTerrain().getItemByPosition((coordinate[0]*15+7,coordinate[1]*15+7,0))
+                        if not len(items) == 1:
+                            continue
+                        if not items[0].type == "RoomBuilder":
+                            continue
+                        tryHard = True
+                        if inventoryWallsOnly:
+                            tryHard = False
+                        quest = src.quests.questMap["BuildRoom"](targetPosition=coordinate,lifetime=1000,tryHard=tryHard,ignoreAlarm=True,reason="complete an existing build site")
                         return ([quest],None)
 
                 # find scheduled room building sites
@@ -349,7 +357,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                     tryHard = True
                     if inventoryWallsOnly:
                         tryHard = False
-                    quest = src.quests.questMap["BuildRoom"](targetPosition=coordinate,lifetime=1000,tryHard=tryHard,ignoreAlarm=True)
+                    quest = src.quests.questMap["BuildRoom"](targetPosition=coordinate,lifetime=1000,tryHard=tryHard,ignoreAlarm=True,reason="build a planned room")
                     return ([quest],None)
 
                 # schedule building new rooms

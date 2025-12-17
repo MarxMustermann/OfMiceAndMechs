@@ -81,6 +81,15 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                     continue
                 numGlassHearts += 1
 
+        # fetch city planer
+        foundCityPlaner = None
+        for room in terrain.rooms:
+            items = room.getItemsByType("CityPlaner",needsBolted=True)
+            if not items:
+                continue
+            foundCityPlaner = items[0]
+            break
+
         # count the number of enemies/allies
         npcCount = 0
         enemyCount = 0
@@ -129,6 +138,27 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
             if terrain.mana >= 20:
                 quest = src.quests.questMap["GetEpochReward"](rewardType="spawn scrap",reason="ensure enough scrap is available")
                 return ([quest],None)
+
+        # fill empty rooms with life
+        if foundCityPlaner and numGlassHearts:
+            rooms = foundCityPlaner.getAvailableRooms()
+            random.shuffle(rooms)
+            if rooms:
+                room = rooms[0]
+
+                candidates = ["electrifierHall","smokingRoom"]
+                random.shuffle(candidates)
+                candidates.insert(0,"manufacturingHall")
+                candidates.insert(0,"trapMaterialsManufacturing")
+                candidates.insert(0,"wallManufacturing")
+                candidates.insert(0,"storage")
+                for checkRoom in terrain.rooms:
+                    if checkRoom.tag in candidates:
+                        candidates.remove(checkRoom.tag)
+                
+                if candidates:
+                    quest = src.quests.questMap["AssignFloorPlan"](floorPlanType=candidates[0],roomPosition=room.getPosition())
+                    return ([quest],None)
 
         # ensure some exploaring happens
         if len(character.terrainInfo) < numGlassHearts*3:
@@ -258,42 +288,15 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                     return ([quest],None)
 
         # ensure the base is set to auto expand
-        foundCityPlaner = None
-        for room in terrain.rooms:
-            items = room.getItemsByType("CityPlaner",needsBolted=True)
-            if not items:
-                continue
-            foundCityPlaner = items[0]
-            break
-
         if foundCityPlaner:
             if not foundCityPlaner.autoExtensionThreashold:
                 quest = src.quests.questMap["SetBaseAutoExpansion"](targetLevel=2)
                 return ([quest],None)
 
-        # fill empty rooms with life
+        # ensure an appropriate number of economic rooms
         if foundCityPlaner and numGlassHearts:
-            rooms = foundCityPlaner.getAvailableRooms()
-            random.shuffle(rooms)
-            if rooms:
-                room = rooms[0]
-
-                candidates = ["electrifierHall","smokingRoom"]
-                random.shuffle(candidates)
-                candidates.insert(0,"manufacturingHall")
-                candidates.insert(0,"trapMaterialsManufacturing")
-                candidates.insert(0,"wallManufacturing")
-                candidates.insert(0,"storage")
-                for checkRoom in terrain.rooms:
-                    if checkRoom.tag in candidates:
-                        candidates.remove(checkRoom.tag)
-                
-                if candidates:
-                    quest = src.quests.questMap["AssignFloorPlan"](floorPlanType=candidates[0],roomPosition=room.getPosition())
-                    return ([quest],None)
-
-            # ensure an appropriate number of economic rooms
             if numNonTrapRooms < 5+numGlassHearts+1:
+
                 # ensure some walls are in storage
                 hasWall = False
                 inventoryWallsOnly = False

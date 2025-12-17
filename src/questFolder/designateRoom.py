@@ -173,8 +173,16 @@ Use the CityPlaner to designate the room.
             return None
 
         terrain = character.getTerrain()
-        room = terrain.getRoomByPosition(character.getHomeRoomCord())[0]
-        cityPlaner = room.getItemsByType("CityPlaner")[0]
+        cityPlaner = None
+        cityPlaners = []
+        for room in terrain.rooms:
+            items = room.getItemsByType("CityPlaner",needsBolted=True)
+            if items:
+                cityPlaners.extend(items)
+
+        if cityPlaners:
+            cityPlaner = cityPlaners[0]
+
         if not cityPlaner:
             if not dryRun:
                 self.fail("no planer")

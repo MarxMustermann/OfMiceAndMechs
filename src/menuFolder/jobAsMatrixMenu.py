@@ -9,7 +9,29 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
         self.index = [0,0]
 
     def get_duties(self):
-        return list(reversed(["manufacturing","scavenging","machine operation","cleaning","painting","maggot gathering","machine placing","room building","machining","metal working","hauling","resource fetching","scrap hammering","resource gathering","praying","mold farming"]))
+        """
+        returns what duties can be managed at this item
+        Returns:
+            a list of duties
+        """
+        return list(reversed([
+                "manufacturing",
+                "scavenging",
+                "machine operation",
+                "cleaning",
+                "painting",
+                "maggot gathering",
+                "machine placing",
+                "room building",
+                "machining",
+                "metal working",
+                "hauling",
+                "resource fetching",
+                "scrap hammering",
+                "resource gathering",
+                "praying",
+                "mold farming"
+            ]))
 
     def handleKey(self, key, noRender=False, character = None):
         """
@@ -26,6 +48,7 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
         if key in ("esc"," ",):
             return True
 
+        # gather the npcs to show
         terrain = self.dutyArtwork.getTerrain()
         npcs = []
         for char in terrain.characters:
@@ -42,8 +65,10 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
         if src.gamestate.gamestate.mainChar in npcs:
             npcs.remove(src.gamestate.gamestate.mainChar)
 
+        # set up helper variable
         duties = self.get_duties()
 
+        # handle user interactions
         if key == "C":
             for npc in npcs:
                 npc.duties = []
@@ -90,11 +115,12 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
 
                 rowCounter += 1
 
+        # add instructions to output
         text = "press wasd to move cursor"
         text += "press j to enable/disable"
-
         text = [text]
 
+        # add matrix head to output
         text.append("\ncharacter                 ")
         rowCounter = 0
         dutyCounter = 0
@@ -112,17 +138,14 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
                 text.append("\n                          ")
                 dutyCounter = 0
 
-
+        # add actual matrix to output
         def convertName(name):
             return name.ljust(25," ")[0:24]
-
-
         lineCounter = 0
         color = "default"
         rowCounter = 0
         if lineCounter == self.index[0]:
             color = "#333"
-
         lineCounter = 0
         for npc in npcs:
             if npc.faction != character.faction:
@@ -161,9 +184,8 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
                 rowCounter += 1
             lineCounter += 1
 
-        # show info
+        # show output
         src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\n\nhelp\n\n"))
         self.persistentText = text
         src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.persistentText))
-
         return False

@@ -166,30 +166,28 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
             # add the duties
             rowCounter = 0
             for duty in duties:
+                # determine background color
+                background_color = "default"
+                if rowCounter == self.index[1] or lineCounter == self.index[0]:
+                    background_color = "#333"
 
                 # add index indicator in front
                 if lineCounter == self.index[0] and rowCounter == self.index[1]:
                     text.append("=>")
                 else:
-                    color = "default"
-                    if rowCounter == self.index[1] or lineCounter == self.index[0]:
-                        color = "#333"
-                    text.append((src.interaction.urwid.AttrSpec("default", color),"  "))
+                    text.append((src.interaction.urwid.AttrSpec("default", background_color),"  "))
 
                 # add spacing in front
                 distancer = " "
                 if duty in npc.duties and npc.dutyPriorities.get(duty,1) > 9:
                     distancer = ""
-                text.append((src.interaction.urwid.AttrSpec("default", color),distancer))
+                text.append((src.interaction.urwid.AttrSpec("default", background_color),distancer))
 
                 # add the actual duty priority
                 if duty in npc.duties:
                     text.append(str(npc.dutyPriorities.get(duty,1)))
                 else:
-                    color = "default"
-                    if rowCounter == self.index[1] or lineCounter == self.index[0]:
-                        color = "#333"
-                    text.append((src.interaction.urwid.AttrSpec("default", color)," "))
+                    text.append((src.interaction.urwid.AttrSpec("default", background_color)," "))
                 text.append("|")
                 rowCounter += 1
             lineCounter += 1

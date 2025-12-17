@@ -256,7 +256,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
 
                 # either actively build base defences or pass time
                 forceAdventure = False
-                if self.room_building_streak_length >= 3:
+                if self.room_building_streak_length >= 1:
                     forceAdventure = True
                 if (random.random() < 0.5 or forceBuildRoom) and not forceAdventure:
                     if not dryRun:
@@ -452,6 +452,8 @@ Those dungeons can be accessed using the GlassStatues in the Temple.
 Once you apeased the god of a GlassStatue, it will allow you to teleport to its dungeon.
 So apease the gods and obtain their GlassHearts.
 """]
+
+        text.append(self.room_building_streak_length)
         return text
 
     def assignToCharacter(self, character):

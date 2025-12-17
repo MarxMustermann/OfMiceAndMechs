@@ -132,10 +132,6 @@ Use the CityPlaner to designate the room.
 
         pos = character.getBigPosition()
 
-        if pos != character.getHomeRoomCord():
-            quest = src.quests.questMap["GoHome"](description="go to command centre")
-            return ([quest],None)
-
         if not character.container.isRoom:
             if character.xPosition%15 == 0:
                 return (None,("d","enter room"))
@@ -146,7 +142,26 @@ Use the CityPlaner to designate the room.
             if character.yPosition%15 == 14:
                 return (None,("w","enter room"))
 
-        cityPlaner = character.container.getItemsByType("CityPlaner")[0]
+        terrain = character.getTerrain()
+        cityPlaner = None
+        cityPlaners = []
+        for room in terrain.rooms:
+            items = room.getItemsByType("CityPlaner",needsBolted=True)
+            if items:
+                cityPlaners.extend(items)
+
+        if cityPlaners:
+            cityPlaner = cityPlaners[0]
+
+        if not cityPlaner:
+            if not dryRun:
+                self.fail("no planer")
+            return True
+
+        if cityPlaner.container != character.container:
+            quest = src.quests.questMap["GoToTile"](targetPosition=cityPlaner.getBigPosition())
+            return ([quest],None)
+
         command = None
         if character.getPosition(offset=(1,0,0)) == cityPlaner.getPosition():
             command = "d"

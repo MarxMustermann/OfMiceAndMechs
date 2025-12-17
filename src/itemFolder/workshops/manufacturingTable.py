@@ -119,6 +119,7 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
             options.append(("PersonnelTracker","PersonnelTracker"))
             options.append(("ArmorStand","ArmorStand"))
             options.append(("WeaponRack","WeaponRack"))
+            options.append(("ManufacturingTable","ManufacturingTable"))
             options.append(("byName","produce by name"))
             submenue = src.menuFolder.selectionMenu.SelectionMenu("what item to produce?",options,targetParamName="type",tag="manufacturingTableTypeConfigurationSelection")
             character.macroState["submenue"] = submenue

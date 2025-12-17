@@ -46,4 +46,11 @@ class Spectre(src.monster.Monster):
         self.charType = "Golem"
         self.specialDisplay = (src.interaction.urwid.AttrSpec((100,100,255),"black"),"0O")
 
+    def advance(self,advanceMacros=False):
+        if not self.quests:
+            self.die()
+            return
+
+        super().advance(advanceMacros=advanceMacros)
+
 src.characters.add_character(Spectre)

@@ -163,32 +163,41 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
                 color = "default"
             text.append((src.interaction.urwid.AttrSpec("default", color),f"{convertName(npc.name)}: "))
 
+            # get highest duty
+            highest_priority = 1
+            for priority in npc.dutyPriorities.values():
+                if priority > highest_priority:
+                    highest_priority = priority
+
             # add the duties
             rowCounter = 0
             for duty in duties:
-                # determine background color
+                # determine colors
                 background_color = "default"
                 if rowCounter == self.index[1] or lineCounter == self.index[0]:
                     background_color = "#333"
+                foreground_color = "default"
+                if npc.dutyPriorities.get(duty,1) == highest_priority:
+                    foreground_color = "#ff3"
 
                 # add index indicator in front
                 if lineCounter == self.index[0] and rowCounter == self.index[1]:
-                    text.append((src.interaction.urwid.AttrSpec("default", background_color),"=>"))
+                    text.append((src.interaction.urwid.AttrSpec(foreground_color, background_color),"=>"))
                 else:
-                    text.append((src.interaction.urwid.AttrSpec("default", background_color),"  "))
+                    text.append((src.interaction.urwid.AttrSpec(foreground_color, background_color),"  "))
 
                 # add spacing in front
                 distancer = " "
                 if duty in npc.duties and npc.dutyPriorities.get(duty,1) > 9:
                     distancer = ""
-                text.append((src.interaction.urwid.AttrSpec("default", background_color),distancer))
+                text.append((src.interaction.urwid.AttrSpec(foreground_color, background_color),distancer))
 
                 # add the actual duty priority
                 if duty in npc.duties:
                     duty_priority = str(npc.dutyPriorities.get(duty,1))
-                    text.append((src.interaction.urwid.AttrSpec("default", background_color),duty_priority))
+                    text.append((src.interaction.urwid.AttrSpec(foreground_color, background_color),duty_priority))
                 else:
-                    text.append((src.interaction.urwid.AttrSpec("default", background_color)," "))
+                    text.append((src.interaction.urwid.AttrSpec(foreground_color, background_color)," "))
                 text.append("|")
                 rowCounter += 1
             lineCounter += 1

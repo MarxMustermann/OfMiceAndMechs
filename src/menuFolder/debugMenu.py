@@ -36,6 +36,7 @@ class DebugMenu(src.subMenu.SubMenu):
         "toggle SDL",
         "fix room state",
         "fix terrain state",
+        "take over character on tile",
     ]
 
     def __init__(self):
@@ -64,6 +65,54 @@ class DebugMenu(src.subMenu.SubMenu):
             text += debug
 
             match debug:
+                case "take over character on tile":
+                    if current_change:
+                        terrain = character.getTerrain()
+                        mapContent = []
+                        functionMap = {}
+
+                        for x in range(15):
+                            mapContent.append([])
+                            for y in range(15):
+                                if x not in (0, 14) and y not in (0, 14):
+                                    displayChar = "  "
+                                elif x != 7 and y != 7:
+                                    displayChar = "##"
+                                else:
+                                    displayChar = "  "
+                                mapContent[x].append(displayChar)
+                        for room in terrain.rooms:
+                            mapContent[room.yPosition][room.xPosition] = room.displayChar
+                        for scrapField in terrain.scrapFields:
+                            mapContent[scrapField[1]][scrapField[0]] = "ss"
+                        for x in range(1,14):
+                            for y in range(1,14):
+                                mapContent[x].append(displayChar)
+                                if not terrain.getCharactersOnTile((x,y,0)):
+                                    continue
+                                mapContent[x][y] = "XX"
+                                functionMap[(y, x)] = {
+                                    "j": {
+                                        "function": {
+                                            "container": self,
+                                            "method": "takeOverOnTile",
+                                            "params": {"character":character},
+                                        },
+                                        "description": "take over character",
+                                    }
+                                }
+
+                        submenue = src.menuFolder.mapMenu.MapMenu(
+                            mapContent=mapContent,
+                            functionMap=functionMap,
+                            cursor=character.getBigPosition(),
+                        )
+                        character.macroState["submenue"] = submenue
+                        return True
+                    if current_change:
+                        terrain = character.getTerrain()
+                        terrain.clear_broken_states()
+                        return True
                 case "fix terrain state":
                     if current_change:
                         terrain = character.getTerrain()
@@ -371,6 +420,16 @@ class DebugMenu(src.subMenu.SubMenu):
 
         # call the background mechanism
         src.magic.teleportToTile(character, position, terrain)
+
+    def takeOverOnTile(self, params):
+        character = params["character"]
+        terrain = character.getTerrain()
+        target_characters = terrain.getCharactersOnTile(params["coordinate"])
+        if not target_characters:
+            return
+
+        target_character = random.choice(target_characters)
+        src.gamestate.gamestate.mainChar = target_character
 
     def teleportToTerrain(self, params):
         '''

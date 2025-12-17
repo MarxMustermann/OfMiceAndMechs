@@ -382,4 +382,5 @@ Set the floor plan: {self.floorPlanType}
                 return (None,None)
             return (None,None)
         return (None,None)
+
 src.quests.addType(AssignFloorPlan)

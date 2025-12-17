@@ -88,7 +88,7 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
 
         pointsOfInterest = self.getRemainingPointsOfInterests()
         if not pointsOfInterest:
-            return self._solver_trigger_fail("no POI found to explore")
+            return self._solver_trigger_fail(dryRun,"no POI found to explore")
 
         char_big_pos = character.getBigPosition()
 

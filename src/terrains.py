@@ -172,6 +172,8 @@ class Terrain:
         return result
 
     def getCharactersOnTile(self,position):
+        if len(position) < 3:
+            position = (position[0],position[1],0)
         return self.charactersByTile.get(position,[])
 
     def getCharactersOnPosition(self,position):

@@ -160,6 +160,13 @@ Go out and adventure on tile {self.targetTerrain}.
                 self.postHandler()
             return True
 
+        if character.terrainInfo[currentTerrain.getPosition()].get("looted"):
+            if not dryRun:
+                self.postHandler()
+            return True
+
+        return False
+
         if currentTerrain.tag == "ruin":
             if self.getRemainingPointsOfInterests():
                 return False

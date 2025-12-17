@@ -309,7 +309,7 @@ class Quest:
     """
     helperfunction to trigger a quest fail from within a solver
     """
-    def _solver_trigger_fail(self,dryRun,reason=None):
+    def _solver_trigger_fail(self,dryRun,reason):
         if not dryRun:
             self.character.addMessage(f"triggered fail for {reason}")
             self.fail(reason)

@@ -312,7 +312,19 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                     quest = src.quests.questMap["Scavenge"](toCollect="Wall",lifetime=1000,tryHard=True)
                     return ([quest],None)
 
-                # find existing build sites
+                # continue building existing room building sites
+                baseNeighbours = []
+                offsets = ((0,1,0),(1,0,0),(0,-1,0),(-1,0,0))
+                for room in terrain.rooms:
+                    if room.tag in ("shelter","trapRoom","entryRoom","trapSupport"):
+                        continue
+                    pos = room.getPosition()
+                    for offset in offsets:
+                        items = character.getTerrain().getItemByPosition(((pos[0]+offset[0])*15+7,(pos[1]+offset[1])*15+7,0))
+                        quest = src.quests.questMap["BuildRoom"](targetPosition=coordinate,lifetime=1000,tryHard=tryHard,ignoreAlarm=True)
+                        return ([quest],None)
+
+                # find scheduled room building sites
                 planned_rooms = foundCityPlaner.plannedRooms[:]
                 random.shuffle(planned_rooms)
                 if planned_rooms:
@@ -328,7 +340,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                             continue
                         found_build_site = planned_room
 
-                # continue building existing build sites
+                # build planned rooms
                 if planned_rooms:
                     if found_build_site:
                         coordinate = found_build_site

@@ -148,18 +148,26 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
             color = "#333"
         lineCounter = 0
         for npc in npcs:
+            
+            # filter npcs
             if npc.faction != character.faction:
                 continue
             if isinstance(npc,src.characters.characterMap["Ghoul"]):
                 continue
+
+            # add name
             text.append("\n")
             if lineCounter == self.index[0]:
                 color = "#333"
             else:
                 color = "default"
             text.append((src.interaction.urwid.AttrSpec("default", color),f"{convertName(npc.name)}: "))
+
+            # add the duties
             rowCounter = 0
             for duty in duties:
+
+                # add index indicator in front
                 if lineCounter == self.index[0] and rowCounter == self.index[1]:
                     text.append("=>")
                 else:
@@ -168,11 +176,13 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
                         color = "#333"
                     text.append((src.interaction.urwid.AttrSpec("default", color),"  "))
 
+                # add spacing in front
                 distancer = " "
                 if duty in npc.duties and npc.dutyPriorities.get(duty,1) > 9:
                     distancer = ""
                 text.append((src.interaction.urwid.AttrSpec("default", color),distancer))
 
+                # add the actual duty priority
                 if duty in npc.duties:
                     text.append(str(npc.dutyPriorities.get(duty,1)))
                 else:

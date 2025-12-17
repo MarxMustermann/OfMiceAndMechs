@@ -136,5 +136,7 @@ Just clear the whole terrain tile for tile.
                     self.addQuest(newQuest)
                     self.startWatching(newQuest,self.handleQuestFailure,"failed")
                     return
+            if quest.type == "ClearPathToTile":
+                self.fail(reason)
 
 src.quests.addType(ClearTerrain)

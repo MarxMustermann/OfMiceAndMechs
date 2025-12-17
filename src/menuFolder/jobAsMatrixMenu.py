@@ -173,7 +173,7 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
 
                 # add index indicator in front
                 if lineCounter == self.index[0] and rowCounter == self.index[1]:
-                    text.append("=>")
+                    text.append((src.interaction.urwid.AttrSpec("default", background_color),"=>"))
                 else:
                     text.append((src.interaction.urwid.AttrSpec("default", background_color),"  "))
 
@@ -185,7 +185,8 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
 
                 # add the actual duty priority
                 if duty in npc.duties:
-                    text.append(str(npc.dutyPriorities.get(duty,1)))
+                    duty_priority = str(npc.dutyPriorities.get(duty,1))
+                    text.append((src.interaction.urwid.AttrSpec("default", background_color),duty_priority))
                 else:
                     text.append((src.interaction.urwid.AttrSpec("default", background_color)," "))
                 text.append("|")

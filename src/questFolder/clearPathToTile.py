@@ -127,7 +127,7 @@ Open doors and break walls that are in the way.
         tile_map = {"good":[startPos],"bad":[],"visited":[],"map":{startPos:[]}}
         while tile_map["good"] or tile_map["bad"]:
             self._expand(tile_map)
-        return tile_map["map"][endPos]
+        return tile_map["map"].get(endPos,[])
 
     def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
@@ -156,8 +156,7 @@ Open doors and break walls that are in the way.
                 self.path = path
 
         if not path:
-            quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig)
-            return ([quest],None)
+            return self._solver_trigger_fail(dryRun,"no path to target")
 
         path = path[:]
         step = path.pop(0) 

@@ -600,6 +600,7 @@ def spawnSpawnRoom(terrain, coordinate, faction, doors="0,6 6,0 6,12 12,6"):
     item = src.items.itemMap["AlchemyTable"]()
     item.bolted = True
     spawnedRoom.addItem(item, (8, 5, 0))
+    spawnedRoom.addStorageSlot((10, 5, 0), "Bloom", {"desiredState": "filled"})
 
     #spawnedRoom.addInputSlot((2, 10, 0), "Bloom")
     spawnedRoom.addStorageSlot((2, 10, 0), "Bloom", {"desiredState": "filled"})

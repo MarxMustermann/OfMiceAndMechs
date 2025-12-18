@@ -89,6 +89,14 @@ Rule the world and put an end to those attacks!
             if character.yPosition%15 == 14:
                 return (None,("w","enter room"))
 
+        # activate correct item when marked
+        if character.macroState.get("itemMarkedLast"):
+            item = character.macroState["itemMarkedLast"]
+            if item.type == "Throne":
+                return (None,("j","activate Thron"))
+            else:
+                return (None,(".","undo selection"))
+
         # check if the Trone was properly activated yet
         hasSeeker = False
         for statusEffect in character.statusEffects:

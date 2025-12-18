@@ -133,7 +133,7 @@ Configure the manufacturing table on {self.targetPosition}{reason} to produce {s
         message = "configure item type"
         activationCommand = "J"
         if "advancedInteraction" in character.interactionState:
-            activationCommand = " "
+            activationCommand = ""
         direction = None
         if (pos[0],pos[1],pos[2]) == self.targetPosition:
             direction = "."

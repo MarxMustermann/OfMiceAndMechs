@@ -195,6 +195,7 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
         # repeat if more items should be produced
         params["amount"] -= 1
         if params["amount"]:
+            params["doneTime"] = 0
             self.producePotion(params)
 
     def getInputItems(self):

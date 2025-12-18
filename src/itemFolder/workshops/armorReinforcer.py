@@ -311,7 +311,8 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         armor = character.armor
         if not isinstance(armor,src.items.itemMap["Armor"]):
             return False
-        amountNeeded = self.amountNeededForOneUpgrade(armor.armorValue+1+extraIncrease)
+        target_value = armor.armorValue+0.5
+        amountNeeded = self.amountNeededForOneUpgrade(target_value)
 
         if amountNeeded is None:
             return False

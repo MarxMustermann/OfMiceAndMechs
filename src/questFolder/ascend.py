@@ -93,6 +93,19 @@ Rule the world and put an end to those attacks!
 
         if hasSeeker:
             currentTerrain = character.getTerrain()
+
+            # check in what state the base is
+            num_NPCs = 0
+            for check_character in currentTerrain.getAllCharacters():
+                if character.is_ally(check_character):
+                    if not character.burnedIn:
+                        num_NPCs += 1
+
+            # ensure there are backup NPCs
+            if num_NPCs < 3:
+                quest = src.quests.questMap["SpawnClone"](tryHard=True,lifetime=1000,reason="ensure somebody will be left to man the base")
+                return ([quest],None)
+
             if currentTerrain == character.getHomeTerrain():
                 for room in character.getTerrain().rooms:
                     for item in room.getItemsByType("SwordSharpener"):
@@ -116,7 +129,6 @@ Rule the world and put an end to those attacks!
                     if readyCoalBurner:
                         quest = src.quests.questMap["Heal"](noWaitHeal=True,noVialHeal=True)
                         return ([quest],None)
-
 
             terrain = character.getTerrain()
             if terrain.xPosition != 7 or terrain.yPosition != 7:

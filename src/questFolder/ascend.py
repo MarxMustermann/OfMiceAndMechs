@@ -99,7 +99,7 @@ Rule the world and put an end to those attacks!
             num_enemies = 0
             for check_character in currentTerrain.getAllCharacters():
                 if character.is_ally(check_character):
-                    if not character.burnedIn and not character.charType == "Clone":
+                    if not character.burnedIn and character.charType == "Clone":
                         num_NPCs += 1  
                 else:
                     num_enemies += 1

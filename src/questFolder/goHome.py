@@ -145,7 +145,15 @@ Press control-d to stop your character from moving.
             return (None, ("s","enter the terrain"))
         if character.getBigPosition()[1] == 14:
             return (None, ("w","enter the terrain"))
-        
+
+        # activate production item when marked
+        if character.macroState.get("itemMarkedLast"):
+            item = character.macroState["itemMarkedLast"]
+            if item.type == "Shrine":
+                return (None,("j","activate Shrine"))
+            else:
+                return (None,(".","undo selection"))
+
         currentTerrain = character.getTerrain()
 
         if character.getTerrainPosition() != self.getHomeLocation():

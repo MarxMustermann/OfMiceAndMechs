@@ -71,7 +71,14 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
         if character.macroState.get("submenue"):
             submenue = character.macroState.get("submenue")
             if submenue.tag == "applyOptionSelection" and submenue.extraInfo.get("item").type == "SwordSharpener":
-                return (None,("j","use SwordSharpener"))
+                target_index = None
+                counter = 0
+                for option in submenue.options.values():
+                    counter += 1
+                    if option == "sharpen equipped sword":
+                        target_index = counter
+                if not target_index is None:
+                    return (None,("s"*(target_index-submenue.selectionIndex)+"w"*(submenue.selectionIndex-target_index)+"j","use SwordSharpener"))
             if submenue.tag == "SwordSharpenerSlider":
                 return (None,("j","sharpen the sword"))
             if submenue.tag == "SwordSharpenerSelection":
@@ -106,6 +113,14 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
         if character.getNearbyEnemies():
             quest = src.quests.questMap["Fight"](description="defend yourself")
             return ([quest],None)
+
+        # activate production item when marked
+        if character.macroState.get("itemMarkedLast"):
+            item = character.macroState["itemMarkedLast"]
+            if item.type == "SwordSharpener":
+                return (None,("j","activate SwordSharpener"))
+            else:
+                return (None,(".","undo selection"))
 
         terrain = character.getTerrain()
 

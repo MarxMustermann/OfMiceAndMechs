@@ -39,6 +39,37 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         '''
         self.produceItem({"character":character})
 
+    def _get_item_options(self):
+        options = []
+        options.append(("Bolt","Bolt"))
+        options.append(("Rod","Rod"))
+        options.append(("Frame","Frame"))
+        options.append(("Case","Case"))
+        options.append(("Wall","Wall"))
+        options.append(("Door","Door"))
+        options.append(("RoomBuilder","RoomBuilder"))
+        options.append(("Painter","Painter"))
+        options.append(("CityPlaner","CityPlaner"))
+        options.append(("ScrapCompactor","ScrapCompactor"))
+        options.append(("Sword","Sword"))
+        options.append(("Armor","Armor"))
+        options.append(("CoalBurner","CoalBurner"))
+        options.append(("Vial","Vial"))
+        options.append(("Statue","Statue"))
+        options.append(("Sheet","Sheet"))
+        options.append(("CorpseAnimator","Corpseanimator"))
+        options.append(("Shrine","Shrine"))
+        options.append(("Throne","Throne"))
+        options.append(("ItemCollector","ItemCollector"))
+        options.append(("PersonnelTracker","PersonnelTracker"))
+        options.append(("ArmorStand","ArmorStand"))
+        options.append(("WeaponRack","WeaponRack"))
+        options.append(("RodTower","RodTower"))
+        options.append(("BoltTower","BoltTower"))
+        options.append(("TriggerPlate","TriggerPlate"))
+        options.append(("byName","produce by name"))
+        return options
+
     def produceItem(self,params):
         '''
         show the UI to actually start producing an item
@@ -49,34 +80,7 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
 
         # show the UI to select the type of item to produce
         if "type" not in params:
-            options = []
-            options.append(("Bolt","Bolt"))
-            options.append(("Rod","Rod"))
-            options.append(("Frame","Frame"))
-            options.append(("Case","Case"))
-            options.append(("Wall","Wall"))
-            options.append(("Door","Door"))
-            options.append(("RoomBuilder","RoomBuilder"))
-            options.append(("Painter","Painter"))
-            options.append(("CityPlaner","CityPlaner"))
-            options.append(("ScrapCompactor","ScrapCompactor"))
-            options.append(("Sword","Sword"))
-            options.append(("Armor","Armor"))
-            options.append(("CoalBurner","CoalBurner"))
-            options.append(("Vial","Vial"))
-            options.append(("Statue","Statue"))
-            options.append(("Sheet","Sheet"))
-            options.append(("CorpseAnimator","Corpseanimator"))
-            options.append(("Shrine","Shrine"))
-            options.append(("Throne","Throne"))
-            options.append(("ItemCollector","ItemCollector"))
-            options.append(("PersonnelTracker","PersonnelTracker"))
-            options.append(("ArmorStand","ArmorStand"))
-            options.append(("WeaponRack","WeaponRack"))
-            options.append(("RodTower","RodTower"))
-            options.append(("BoltTower","BoltTower"))
-            options.append(("TriggerPlate","TriggerPlate"))
-            options.append(("byName","produce by name"))
+            options = self._get_item_options()
             submenue = src.menuFolder.selectionMenu.SelectionMenu("what item to produce?",options,targetParamName="type")
             submenue.tag = "metalWorkingProductSelection"
             character.macroState["submenue"] = submenue
@@ -293,32 +297,7 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
 
         # show UI to select thy type of item to schedule
         if "type" not in params:
-            options = []
-            options.append(("delete","delete"))
-            options.append(("Bolt","Bolt"))
-            options.append(("Rod","Rod"))
-            options.append(("Frame","Frame"))
-            options.append(("Case","Case"))
-            options.append(("Wall","Wall"))
-            options.append(("Door","Door"))
-            options.append(("RoomBuilder","RoomBuilder"))
-            options.append(("Painter","Painter"))
-            options.append(("CityPlaner","CityPlaner"))
-            options.append(("ScrapCompactor","ScrapCompactor"))
-            options.append(("Sword","Sword"))
-            options.append(("Armor","Armor"))
-            options.append(("CoalBurner","CoalBurner"))
-            options.append(("Vial","Vial"))
-            options.append(("Statue","Statue"))
-            options.append(("Sheet","Sheet"))
-            options.append(("CorpseAnimator","Corpseanimator"))
-            options.append(("Shrine","Shrine"))
-            options.append(("Throne","Throne"))
-            options.append(("ItemCollector","ItemCollector"))
-            options.append(("PersonnelTracker","PersonnelTracker"))
-            options.append(("ArmorStand","ArmorStand"))
-            options.append(("WeaponRack","WeaponRack"))
-            options.append(("byName","produce by name"))
+            options = self._get_item_options()
             submenue = src.menuFolder.selectionMenu.SelectionMenu("what item to produce?",options,targetParamName="type")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"scheduleProduction","params":params}

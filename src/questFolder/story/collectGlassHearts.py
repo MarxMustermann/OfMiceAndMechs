@@ -173,6 +173,25 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                     quest = src.quests.questMap["AssignFloorPlan"](floorPlanType=candidates[0],roomPosition=room.getPosition())
                     return ([quest],None)
 
+        # ensure some items are set to be produced in the manufacturing halls
+        to_produce = ["Tank"]
+        for room in terrain.rooms:
+            if not room.tag == "manufacturingHall":
+                continue
+            for manufacturingTable in room.getItemsByType("ManufacturingTable",needsBolted=True):
+                item_type = manufacturingTable.toProduce
+                if item_type in to_produce:
+                    to_produce.remove(item_type)
+        if to_produce:
+            for room in terrain.rooms:
+                if not room.tag == "manufacturingHall":
+                    continue
+                for manufacturingTable in room.getItemsByType("ManufacturingTable",needsBolted=True):
+                    if manufacturingTable.toProduce:
+                        continue
+                    quest = src.quests.questMap["ConfigureManufacturingTable"](targetPosition=manufacturingTable.getPosition(), targetPositionBig=room.getPosition(), itemType=to_produce[0])
+                    return ([quest],None)
+
         # ensure some exploaring happens
         if len(character.terrainInfo) < numGlassHearts*3:
             if character.getFreeInventorySpace() < 3:

@@ -174,7 +174,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                     return ([quest],None)
 
         # ensure some items are set to be produced in the manufacturing halls
-        to_produce = ["Tank"]
+        to_produce = ["Tank","Sheet","Bolt","Rod","Armor","Sword",]
         for room in terrain.rooms:
             if not room.tag == "manufacturingHall":
                 continue

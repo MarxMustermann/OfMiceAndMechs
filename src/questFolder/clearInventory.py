@@ -38,7 +38,7 @@ To see your items open the your inventory by pressing i."""
             if not self.tileToReturnTo:
                 text += "\n\nReturn to your current position afterwards."
             else:
-                text += "\n\nReturn to the tile {self.tileToReturnTo} afterwards."
+                text += f"\n\nReturn to the tile {self.tileToReturnTo} afterwards."
             
         return text
 

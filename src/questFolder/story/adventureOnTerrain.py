@@ -146,6 +146,7 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
         return [f"""
 Go out and adventure on tile {self.targetTerrain}.
 
+visited POI:
 {self.donePointsOfInterest}
 """]
 

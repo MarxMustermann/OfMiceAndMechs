@@ -98,12 +98,12 @@ Rule the world and put an end to those attacks!
             num_NPCs = 0
             for check_character in currentTerrain.getAllCharacters():
                 if character.is_ally(check_character):
-                    if not character.burnedIn:
-                        num_NPCs += 1
+                    if not character.burnedIn and not character.charType == "Clone":
+                        num_NPCs += 1  
 
-            # ensure there are backup NPCs
-            if num_NPCs < 3:
-                quest = src.quests.questMap["SpawnClone"](tryHard=True,lifetime=1000,reason="ensure somebody will be left to man the base")
+            # defend the base
+            if num_enemies:
+                quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,lifetime=100,description="defend the arena",reason="ensure no attackers get into the base")
                 return ([quest],None)
 
             if currentTerrain == character.getHomeTerrain():

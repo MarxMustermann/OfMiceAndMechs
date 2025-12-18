@@ -219,6 +219,9 @@ track:
                 else:
                     rawMap[y].append("  ")
             rawMap[y].append("\n")
+        for visit in self.track:
+            pos = visit["pos"]
+            rawMap[pos[1]][pos[0]] = "xx"
 
         rawMap[homeCoordinate[1]][homeCoordinate[0]] = "HH"
         rawMap[characterCoordinate[1]][characterCoordinate[0]] = "@@"
@@ -228,8 +231,8 @@ track:
         text.extend("0: Home base\n")
     
         counter = 1
-        for item in self.track:
-            text.append(f"{counter}: {item}\n")
+        for visit in self.track:
+            text.append(f"{counter}: {visit}\n")
             counter += 1
         return text
 

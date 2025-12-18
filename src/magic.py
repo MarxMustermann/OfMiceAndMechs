@@ -443,7 +443,8 @@ def spawnArenaRoom(terrain, coordinate, difficulty, doors="0,6 6,0 6,12 12,6"):
     command.command += "8aw"  # return to start position
     command.repeat = True
     trapRoom1.addItem(command, (3, 1, 0))
-    trapRoom1.addInputSlot((1, 1, 0), "Corpse")
+    #trapRoom1.addInputSlot((1, 1, 0), "Corpse") # alernative
+    trapRoom1.addStorageSlot((1, 1, 0), "Corpse", {"desiredState": "filled"})
     for x in range(4, 12):
         trapRoom1.addOutputSlot((x, 1, 0), None)
 
@@ -465,7 +466,8 @@ def spawnArenaRoom(terrain, coordinate, difficulty, doors="0,6 6,0 6,12 12,6"):
     command.command += "100."  # wait
     command.repeat = True
     trapRoom1.addItem(command, (3, 11, 0))
-    trapRoom1.addInputSlot((1, 11, 0), "Corpse")
+    #trapRoom1.addInputSlot((1, 11, 0), "Corpse") # alternatice
+    trapRoom1.addStorageSlot((1, 11, 0), "Corpse", {"desiredState": "filled"})
     for x in range(4, 12):
         trapRoom1.addOutputSlot((x, 11, 0), None)
 

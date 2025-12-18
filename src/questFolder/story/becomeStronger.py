@@ -73,9 +73,17 @@ class BecomeStronger(src.quests.MetaQuestSequence):
                         return ([quest],None)
 
         # ensure the character is somewhat healed
-        if character.adjustedMaxHealth-character.health > 100 and character.canHeal():
-            quest = src.quests.questMap["Heal"]()
-            return ([quest],None)
+        if character.adjustedMaxHealth-character.health > 100:
+            can_heal = character.canHeal()
+            for room in terrain.rooms:
+                for item in room.getItemsByType("CoalBurner"):
+                    if not item.getMoldFeed(character):
+                        continue
+                    can_heal = True
+                    break
+            if can_heal:
+                quest = src.quests.questMap["Heal"]()
+                return ([quest],None)
 
         # increase max health
         if character.maxHealth < 500:

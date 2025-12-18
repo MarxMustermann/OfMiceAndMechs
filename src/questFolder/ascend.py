@@ -69,12 +69,16 @@ Rule the world and put an end to those attacks!
         '''
         generate the next step towards solving the quest
         '''
+
+        # handle edge cases
         if self.subQuests:
             return (None,None)
 
+        # handle menues
         if character.macroState["submenue"] and not ignoreCommands:
             return (None,(["esc"],"close menu"))
 
+        # enter rooms fully
         if not character.container.isRoom:
             if character.xPosition%15 == 0:
                 return (None,("d","enter room"))
@@ -85,6 +89,7 @@ Rule the world and put an end to those attacks!
             if character.yPosition%15 == 14:
                 return (None,("w","enter room"))
 
+        # check if the Trone was properly activated yet
         hasSeeker = False
         for statusEffect in character.statusEffects:
             if not statusEffect.type == "ThroneSeeker":
@@ -92,8 +97,11 @@ Rule the world and put an end to those attacks!
             hasSeeker = True
 
         if hasSeeker:
+            
+            # set up helper variables
             currentTerrain = character.getTerrain()
 
+            # prepare for the raid
             if currentTerrain == character.getHomeTerrain():
 
                 # check in what state the base is
@@ -116,22 +124,26 @@ Rule the world and put an end to those attacks!
                     quest = src.quests.questMap["SpawnClone"](tryHard=True,lifetime=1000,reason="ensure somebody will be left to man the base")
                     return ([quest],None)
 
+                # ensure a good strength level
                 if character.getStrengthSelfEstimate() < 3:
                     quest = src.quests.questMap["BecomeStronger"](targetStrength=3,lifetime=15*15*15)
                     return ([quest],None)
 
+                # sharpen sword
                 for room in character.getTerrain().rooms:
                     for item in room.getItemsByType("SwordSharpener"):
                         if item.readyToBeUsedByCharacter(character):
                             quest = src.quests.questMap["SharpenPersonalSword"]()
                             return ([quest],None)
 
+                # improve armor
                 for room in character.getTerrain().rooms:
                     for item in room.getItemsByType("ArmorReinforcer"):
                         if item.readyToBeUsedByCharacter(character):
                             quest = src.quests.questMap["ReinforcePersonalArmor"]()
                             return ([quest],None)
 
+                # heal
                 if character.health < character.adjustedMaxHealth:
                     readyCoalBurner = False
                     for room in currentTerrain.rooms:
@@ -143,19 +155,21 @@ Rule the world and put an end to those attacks!
                         quest = src.quests.questMap["Heal"](noWaitHeal=True,noVialHeal=True)
                         return ([quest],None)
 
+            # go to glass palace
             terrain = character.getTerrain()
             if terrain.xPosition != 7 or terrain.yPosition != 7:
                 quest = src.quests.questMap["GoToTerrain"](targetTerrain=(7,7,0),reason="get to the glass palace", description="go to glass palace")
                 return ([quest],None)
 
+            # go to glass throne
             if character.getBigPosition() != (7,7,0):
                 quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),reason="get to the throne room", description="go to throne room")
                 return ([quest],None)
-
             if character.getDistance((6,6,0)) > 1:
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(6,6,0),ignoreEndBlocked=True,reason="get near the glass throne", description="go to the glass throne")
                 return ([quest],None)
             
+            # actually activate the throne and win the game :-)
             pos = character.getPosition()
             targetPosition = (6,6,0)
             if (pos[0],pos[1],pos[2]) == targetPosition:
@@ -173,25 +187,26 @@ Rule the world and put an end to those attacks!
                 return (None,(interactionCommand+"s","activate the Throne"))
             return (None,(".","stand around confused"))
 
+        # find throne
         terrain = character.getTerrain()
         for room in terrain.rooms:
             throne = room.getItemByType("Throne",needsBolted=True)
             if throne:
                 break
-
         if not throne:
             return self._solver_trigger_fail(dryRun,"no throne")
 
+        # go to throne
         if character.container != throne.container:
             quest = src.quests.questMap["GoToTile"](targetPosition=throne.container.getPosition(),reason="get to the temple", description="go to temple")
             return ([quest],None)
-
         pos = character.getPosition()
         targetPosition = throne.getPosition()
         if targetPosition not in (pos,(pos[0],pos[1]+1,pos[2]),(pos[0]-1,pos[1],pos[2]),(pos[0]+1,pos[1],pos[2]),(pos[0],pos[1]-1,pos[2])):
             quest = src.quests.questMap["GoToPosition"](targetPosition=targetPosition,ignoreEndBlocked=True,reason="get near the throne", description="go to throne")
             return ([quest],None)
 
+        # activate throne
         if (pos[0],pos[1],pos[2]) == targetPosition:
             return (None,("j","activate the Throne"))
         interactionCommand = "J"

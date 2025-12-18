@@ -62,7 +62,7 @@ Cosume an item of the type {self.itemType} from your inventory{reason}.
 
             offset = counter-character.macroState["submenue"].cursor
 
-            return (None,("s"*offset+"w"*(-offset)+"j","drink the item"))
+            return (None,("s"*offset+"w"*(-offset)+"j","consume the item"))
         return (None,("i","open inventory"))
 
 src.quests.addType(ConsumeItem)

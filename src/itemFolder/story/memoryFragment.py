@@ -22,7 +22,7 @@ class MemoryFragment(src.items.Item):
         terrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
         currentInfo = character.terrainInfo.get(terrain.getPosition())
         is_new_info = False
-        if not currentInfo:
+        if not currentInfo and not pos == (7,7):
             character.terrainInfo[terrain.getPosition()] = {"tag":terrain.tag}
             text = f"you uncovered the terrain {pos}.\nIt is a {terrain.tag}"
             is_new_info = True

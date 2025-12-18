@@ -26,10 +26,6 @@ class MonsterSpawner(src.items.Item):
         '''
         do the monster spawning
         '''
-        try:
-            self.strength
-        except:
-            self.strength = random.randint(1,10)
 
         if character.xPosition > self.xPosition:
             character.addMessage("you cannot use this machine from the east")

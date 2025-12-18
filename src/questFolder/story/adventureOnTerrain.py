@@ -88,7 +88,10 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
 
         pointsOfInterest = self.getRemainingPointsOfInterests()
         if not pointsOfInterest:
-            return (None,("gc","mark terrain as explored"))
+            if currentTerrain.tag == "ruin":
+                return (None,("gc","mark terrain as explored"))
+            else:
+                return self._solver_trigger_fail(dryRun,"no POI")
 
         char_big_pos = character.getBigPosition()
 
@@ -156,6 +159,11 @@ Go out and adventure on tile {self.targetTerrain}.
             return False
 
         if not character.getFreeInventorySpace(ignoreTypes=["Bolt"]):
+            if not dryRun:
+                self.postHandler()
+            return True
+
+        if not currentTerrain.tag == "ruin":
             if not dryRun:
                 self.postHandler()
             return True

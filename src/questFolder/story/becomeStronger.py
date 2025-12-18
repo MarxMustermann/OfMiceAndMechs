@@ -73,7 +73,7 @@ class BecomeStronger(src.quests.MetaQuestSequence):
                         return ([quest],None)
 
         # ensure the character is somewhat healed
-        if character.adjustedMaxHealth-character.adjustedHealth > 100 and character.canHeal():
+        if character.adjustedMaxHealth-character.health > 100 and character.canHeal():
             quest = src.quests.questMap["Heal"]()
             return ([quest],None)
 

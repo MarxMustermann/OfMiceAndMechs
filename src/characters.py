@@ -2928,6 +2928,9 @@ press any other key to attack normally"""
             else:
                 listenFunction(info)
 
+    def is_ally(self,other_character):
+        return other_character.faction == self.faction
+
     def startIdling(self):
         '''
         (obsolete?)

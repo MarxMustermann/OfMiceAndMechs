@@ -66,6 +66,19 @@ class Adventure(src.quests.MetaQuestSequence):
                     quest = src.quests.questMap["Heal"](noWaitHeal=True,noVialHeal=True)
                     return ([quest],None)
 
+            for room in currentTerrain.rooms:
+                if not room.tag == "trapRoom":
+                    continue
+                numItems = 0
+                for item in room.itemsOnFloor:
+                    if item.bolted == False:
+                        if item.getPosition() not in room.walkingSpace:
+                            continue
+                        numItems += 1
+                if numItems > 4:
+                    quest = src.quests.questMap["ClearTile"](targetPosition=room.getPosition())
+                    return ([quest],None)
+
         if not character.weapon or not character.armor:
             quest = src.quests.questMap["Equip"](tryHard=True)
             return ([quest],None)

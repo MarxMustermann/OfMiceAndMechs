@@ -145,7 +145,7 @@ class EnsureMaindutyClone(src.quests.MetaQuestSequence):
         '''
         generate text description
         '''
-        text = ["""
+        text = [f"""
 Ensure at least one Clone has {self.dutyType} as highest duty.
 """]
         return text

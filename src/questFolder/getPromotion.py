@@ -71,6 +71,14 @@ Use the Promotor to do this.
             quest = src.quests.questMap["GoHome"]()
             return  ([quest],None)
 
+        # activate production item when marked
+        if character.macroState.get("itemMarkedLast"):
+            item = character.macroState["itemMarkedLast"]
+            if item.type == "Promoter":
+                return (None,("j","activate Promoter"))
+            else:
+                return (None,(".","undo selection"))
+
         if not character.container.isRoom:
             pos = character.getSpacePosition()
             if pos == (14,7,0):

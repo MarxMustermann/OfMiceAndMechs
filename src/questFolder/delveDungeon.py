@@ -277,7 +277,10 @@ suicidal"""
                     if self.directSendback:
                         return (None,(directionCommand+"cr","return GlassHeart"))
                     else:
-                        return (None,(directionCommand+"jssj","eject GlassHeart"))
+                        activationCommand = "J"
+                        if "advancedInteraction" in character.interactionState:
+                            activationCommand = ""
+                        return (None,(activationCommand+directionCommand+"ssj","eject GlassHeart"))
 
                 return self._solver_trigger_fail(dryRun,"no GlassStatue found")
 
@@ -330,7 +333,10 @@ suicidal"""
             directionCommand = "a"
         if character.getPosition(offset=(0,-1,0)) == glassStatue.getPosition():
             directionCommand = "w"
-        return (None,(directionCommand+"jssj","insert glass heart"))
+        activationCommand = "J"
+        if "advancedInteraction" in character.interactionState:
+            activationCommand = ""
+        return (None,(activationCommand+directionCommand+"ssj","insert glass heart"))
 
     def delveToRoomIfSafe(self,character,path,dryRun=True):
         new_pos = character.getBigPosition()

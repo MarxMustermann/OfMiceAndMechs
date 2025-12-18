@@ -48,6 +48,11 @@ class MonsterSpawner(src.items.Item):
         # increase strength
         self.strength += 1
 
+        # self destruct
+        if self.strength > 10:
+            self.destroy()
+            return
+
     def render(self):
         '''
         return a custom render

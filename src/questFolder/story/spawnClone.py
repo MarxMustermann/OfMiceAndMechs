@@ -148,6 +148,10 @@ class SpawnClone(src.quests.MetaQuestSequence):
         if not character:
             return (None,None)
 
+        if not character.isOnHomeTerrain():
+            quest = src.quests.questMap["GoHome"]()
+            return ([quest],None)
+
         if not character.getBigPosition() == (7,8,0):
             quest = src.quests.questMap["GoToTile"](targetPosition=(7,8,0),reason="go to spawning room",description="go to spawning room")
             return ([quest],None)

@@ -186,6 +186,19 @@ suicidal"""
                     quest = src.quests.questMap["Equip"](tryHard=True)
                     return ([quest],None)
 
+                for room in terrain.rooms:
+                    if not room.tag == "trapRoom":
+                        continue
+                    numItems = 0
+                    for item in room.itemsOnFloor:
+                        if item.bolted == False:
+                            if item.getPosition() not in room.walkingSpace:
+                                continue
+                            numItems += 1
+                    if numItems > 4:
+                        quest = src.quests.questMap["ClearTile"](targetPosition=room.getPosition())
+                        return ([quest],None)
+
             if currentTerrain != character.getHomeTerrain():
                 if character.container.isRoom and character.getFreeInventorySpace() and isinstance(character,src.characters.characterMap["Clone"]):
                     for item in character.container.itemsOnFloor:

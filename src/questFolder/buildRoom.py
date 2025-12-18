@@ -144,6 +144,14 @@ Press d to move the cursor and show the subquests description.
             quest = src.quests.questMap["Fight"]()
             return ([quest],None)
 
+        # activate production item when marked
+        if character.macroState.get("itemMarkedLast"):
+            item = character.macroState["itemMarkedLast"]
+            if item.type == "RoomBuilder":
+                return (None,("j","activate RoomBuilder"))
+            else:
+                return (None,(".","undo selection"))
+
         # properly enter tile
         if not character.container.isRoom:
             pos = character.getSpacePosition()

@@ -52,11 +52,6 @@ class MonsterSpawner(src.items.Item):
         '''
         return a custom render
         '''
-        try:
-            self.strength
-        except:
-            self.strength = random.randint(1,10)
-
         shade = max(0,255-(30*(self.strength-1)))
         color = (255,shade,shade)
         return (src.interaction.urwid.AttrSpec(color, "black"), "MS")
@@ -68,10 +63,6 @@ class MonsterSpawner(src.items.Item):
         Returns:
             the decription text
         '''
-        try:
-            self.strength
-        except:
-            self.strength = random.randint(1,10)
 
         text = super().getLongInfo()
         text += f"""

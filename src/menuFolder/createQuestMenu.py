@@ -119,5 +119,5 @@ class CreateQuestMenu(src.subMenu.SubMenu):
         if not noRender:
             src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\ncreate Quest\n"))
             # show rendered text via urwid
-            src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), "type: {}\n\nparameters: \n\n{}\n\ncurrent parameter: \n\n{} : {}\n\noptional parameters: \n\n{}\n\npress space to confirm^".format(self.questType,self.questParams,self.parameterName,self.parameterValue,self.optionalParams)))
+            src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), "type: {}\n\nparameters: \n\n{}\n\ncurrent parameter: \n\n{} : {}\n\noptional parameters: \n\n{}\n\npress space to confirm\npress enter to confirm and auto solve".format(self.questType,self.questParams,self.parameterName,self.parameterValue,self.optionalParams)))
         return False

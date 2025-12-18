@@ -48,6 +48,19 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["GoHome"]()
             return ([quest],None)
 
+        # defend the base
+        num_enemies = 0
+        for check_character in terrain.getAllCharacters():
+            if not character.is_ally(check_character):
+                num_enemies += 1
+        if num_enemies:
+            if src.gamestate.gamestate.tick%(15*15*15) < 1000:
+                quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,lifetime=100,description="defend the arena",reason="ensure no attackers get into the base")
+                return ([quest],None)
+            else:
+                quest = src.quests.questMap["ClearTerrain"]()
+                return ([quest],None)
+
         # ensure a good amount of health
         if character.health < character.maxHealth*0.75:
             if not (terrain.xPosition == character.registers["HOMETx"] and

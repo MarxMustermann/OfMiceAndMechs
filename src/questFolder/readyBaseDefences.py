@@ -66,6 +66,14 @@ class ReadyBaseDefences(src.quests.MetaQuestSequence):
         if character.macroState["submenue"] and not ignoreCommands:
             return (None,(["esc"],"to close menu"))
 
+        # activate production item when marked
+        if character.macroState.get("itemMarkedLast"):
+            item = character.macroState["itemMarkedLast"]
+            if item.type == "SiegeManager":
+                return (None,("j","activate SiegeManager"))
+            else:
+                return (None,(".","undo selection"))
+
         siegeManager = None
         for room in terrain.rooms:
             item = room.getItemByType("SiegeManager",needsBolted=True)

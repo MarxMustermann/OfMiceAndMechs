@@ -46,6 +46,14 @@ class BrewPotion(src.quests.MetaQuestSequence):
             if pos == (7,0,0):
                 return (None,("s","enter room"))
 
+        # activate production item when marked
+        if character.macroState.get("itemMarkedLast"):
+            item = character.macroState["itemMarkedLast"]
+            if item.type == "AlchemyTable":
+                return (None,("j","activate AlchemyTable"))
+            else:
+                return (None,(".","undo selection"))
+
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
             submenue = character.macroState["submenue"]
             if submenue.tag == "alchemyTableProductSelection":

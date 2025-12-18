@@ -6,7 +6,7 @@ class ConsumeItem(src.quests.MetaQuestSequence):
     type = "ConsumeItem"
     lowLevel = True
 
-    def __init__(self, description="consume potion", creator=None, potionType=None,reason=None):
+    def __init__(self, description="consume item", creator=None, potionType=None,reason=None):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
@@ -20,7 +20,7 @@ class ConsumeItem(src.quests.MetaQuestSequence):
         if self.reason:
             reason = f",\nto {self.reason}"
         text = f"""
-Cosume a potion of the type {self.potionType} from your inventory{reason}.
+Cosume an item of the type {self.potionType} from your inventory{reason}.
 """
         return text
 
@@ -62,7 +62,7 @@ Cosume a potion of the type {self.potionType} from your inventory{reason}.
 
             offset = counter-character.macroState["submenue"].cursor
 
-            return (None,("s"*offset+"w"*(-offset)+"j","drink the potion"))
+            return (None,("s"*offset+"w"*(-offset)+"j","drink the item"))
         return (None,("i","open inventory"))
 
 src.quests.addType(ConsumeItem)

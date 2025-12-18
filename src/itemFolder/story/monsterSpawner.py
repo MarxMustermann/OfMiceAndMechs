@@ -49,7 +49,8 @@ class MonsterSpawner(src.items.Item):
         self.strength += 1
 
         # self destruct
-        if self.strength > 10:
+        random_value = random.random()*self.strength
+        if self.strength > 10 or random_value > 3:
             self.destroy()
             return
 

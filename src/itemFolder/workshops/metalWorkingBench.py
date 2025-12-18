@@ -73,6 +73,9 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
             options.append(("PersonnelTracker","PersonnelTracker"))
             options.append(("ArmorStand","ArmorStand"))
             options.append(("WeaponRack","WeaponRack"))
+            options.append(("RodTower","RodTower"))
+            options.append(("BoltTower","BoltTower"))
+            options.append(("TriggerPlate","TriggerPlate"))
             options.append(("byName","produce by name"))
             submenue = src.menuFolder.selectionMenu.SelectionMenu("what item to produce?",options,targetParamName="type")
             submenue.tag = "metalWorkingProductSelection"

@@ -318,7 +318,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                         return ([quest],None)
 
                     # beat people up for fun .... erh to gather ressources
-                    quest = src.quests.questMap["Adventure"](description="loot the surroundings",reason="get some useful resources and pass some time")
+                    quest = src.quests.questMap["Adventure"](description="loot the surroundings",reason="get some useful resources and pass some time until the trap rooms are completed")
                     return ([quest],None)
 
         # ensure the base is set to auto expand

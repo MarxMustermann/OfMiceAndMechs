@@ -1502,6 +1502,8 @@ def doHandleMenu(key,char,charState,main,header,footer,urwid,flags):
     noRender = True
     if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
         noRender = False
+    if src.gamestate.gamestate.mainChar == char and lastSubmenu and lastSubmenu.tag == "Wait":
+        noRender = False
     done = charState["submenue"].handleKey(key, noRender=noRender, character=char)
 
     if lastSubmenu != charState["submenue"]:
@@ -3372,7 +3374,6 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
 
     # render submenus
     if charState["submenue"]:
-
         # set flag to not render the game
         if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
             char.specialRender = True
@@ -3380,6 +3381,11 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
         noRender = True
         if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
             noRender = False
+        submenu = char.macroState.get("submenue")
+        if src.gamestate.gamestate.mainChar == char and submenu and submenu.tag == "Wait":
+            noRender = False
+            char.specialRender = True
+            charState["submenue"].handleKey("~", noRender=noRender, character=char)
 
         # let the submenu handle the keystroke
         lastSubmenu = charState["submenue"]
@@ -4355,7 +4361,10 @@ def renderGameDisplay(renderChar=None):
         return outData
 
     # render the game
-    if not char.specialRender or tcodConsole:
+    specialRender = char.specialRender
+    if submenue and submenue.tag == "Wait":
+        specialRender = True
+    if not specialRender or tcodConsole:
 
         skipRender = True
 
@@ -4725,7 +4734,7 @@ def renderGameDisplay(renderChar=None):
                 )
 
                 canvas = render(char)
-    if char.specialRender:
+    if specialRender:
         if useTiles:
             pydisplay.fill((0, 0, 0))
             font = pygame.font.Font("config/DejaVuSansMono.ttf", 14)
@@ -7606,11 +7615,12 @@ def advanceChar(char,render=True, pull_events = True, singleStep=False):
             rerender = True
             skipNextRender = False
         elif state["commandKeyQueue"]:
-            if (char == src.gamestate.gamestate.mainChar):
-                char.getTerrain().animations = []
-                for room in char.getTerrain().rooms:
-                    room.animations = []
             key = state["commandKeyQueue"].pop()
+            if (char == src.gamestate.gamestate.mainChar):
+                if not (key[1] ==  "norecord" or "norecord" in key[1]):
+                    char.getTerrain().animations = []
+                    for room in char.getTerrain().rooms:
+                        room.animations = []
             processInput(
                 key, charState=state, noAdvanceGame=True, char=char
             )

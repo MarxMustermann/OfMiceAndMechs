@@ -1072,7 +1072,7 @@ class Item:
         baseProgressbar = "X" * int(params["doneTime"] // 10) + "." * int(
             barLength - (params["doneTime"] // 10)
         )
-        progressBar = ""
+        progressBar = str(params["doneTime"])+"/"+str(params["delayTime"])+"\n"
         while len(baseProgressbar) > 10:
             progressBar += baseProgressbar[:10]+"\n"
             baseProgressbar = baseProgressbar[10:]
@@ -1081,16 +1081,16 @@ class Item:
         submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(progressBar, targetParamName="abortKey")
         submenue.tag = "Wait"
         character.macroState["submenue"] = submenue
+        followUp_method = "delayedAction"
+        if ticksLeft <= 1:
+            followUp_method = params["action"]
         character.macroState["submenue"].followUp = {
             "container": self,
-            "method": params["action"] if ticksLeft <= 0 else "delayedAction",
+            "method": followUp_method,
             "params": params,
         }
 
-        character.runCommandString(".", nativeKey=True)
-        if ticksLeft % 10 != 9 and src.gamestate.gamestate.mainChar == character:
-            src.interaction.skipNextRender = True
-
+        character.runCommandString(".", nativeKey=False)
 
 
 commons = [

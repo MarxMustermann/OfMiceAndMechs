@@ -519,7 +519,22 @@ So apease the gods and obtain their GlassHearts.
         return True
 
     def handleQuestFailure(self,extraParam):
-        if extraParam["reason"] == "no job":
+        
+        # prepare helper variables
+        reason = extraParam.get("reason")
+
+        # produce some missing items
+        if reason:
+            if reason.startswith("no source for item "):
+                if reason.split(" ")[4] == "Door":
+                    newQuest = src.quests.questMap["MetalWorking"](toProduce=reason.split(" ")[4],amount=1,produceToInventory=True,tryHard=True)
+                    self.addQuest(newQuest)
+
+                    self.startWatching(newQuest,self.handleQuestFailure,"failed")
+                    return
+
+        # heal when bored
+        if reason == "no job":
             self.subQuests.remove(extraParam["quest"])
 
             newQuest = src.quests.questMap["Heal"](noVialHeal=True)

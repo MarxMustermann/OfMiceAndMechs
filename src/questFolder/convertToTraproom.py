@@ -89,6 +89,14 @@ Use a CityPlaner to do this.
         if character.macroState["submenue"] and not ignoreCommands:
             return (None,(["esc"],"exit submenu"))
 
+        # activate production item when marked
+        if character.macroState.get("itemMarkedLast"):
+            item = character.macroState["itemMarkedLast"]
+            if item.type == "CityPlaner":
+                return (None,("j","activate CityPlaner"))
+            else:
+                return (None,(".","undo selection"))
+
         # enter room
         if not character.container.isRoom:
             if character.getTerrain().getRoomByPosition(character.getBigPosition()):

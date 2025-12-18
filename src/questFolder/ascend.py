@@ -116,7 +116,7 @@ Rule the world and put an end to those attacks!
                     quest = src.quests.questMap["SpawnClone"](tryHard=True,lifetime=1000,reason="ensure somebody will be left to man the base")
                     return ([quest],None)
 
-                if character.getStrengthEstimate() < 3:
+                if character.getStrengthSelfEstimate() < 3:
                     quest = src.quests.questMap["BecomeStronger"](targetStrength=3,lifetime=15*15*15)
                     return ([quest],None)
 

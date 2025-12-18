@@ -599,7 +599,8 @@ def spawnSpawnRoom(terrain, coordinate, faction, doors="0,6 6,0 6,12 12,6"):
     item.bolted = True
     spawnedRoom.addItem(item, (8, 5, 0))
 
-    spawnedRoom.addInputSlot((2, 10, 0), "Bloom")
+    #spawnedRoom.addInputSlot((2, 10, 0), "Bloom")
+    spawnedRoom.addStorageSlot((2, 10, 0), "Bloom", {"desiredState": "filled"})
     item = src.items.itemMap["BloomShredder"]()
     spawnedRoom.addItem(item, (3, 10, 0))
     item = src.items.itemMap["BioPress"]()

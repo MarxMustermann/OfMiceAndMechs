@@ -54,6 +54,19 @@ class GoToTerrain(src.quests.MetaQuestSequence):
             return True
         return False
 
+    def generateTextDescription(self):
+        '''
+        generate a description of this quest
+        '''
+        reason = ""
+        if self.reason:
+            reason = f", to {self.reason}"
+
+        text = []
+        text.append(f"Go to terrain {self.targetTerrain}{reason}.")
+
+        return text
+
     def getTerrainPath(self,startPos,targetPos):
 
         if self.terrainsWeight:

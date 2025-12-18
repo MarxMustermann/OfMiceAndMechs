@@ -207,5 +207,19 @@ Rule the world and put an end to those attacks!
             return (None,(interactionCommand+"s","activate the Throne"))
         return (None,None)
 
+    def handleQuestFailure(self,extraParam):
+        
+        # prepare helper variables
+        reason = extraParam.get("reason")
+
+        if reason == "no way to heal":
+            for room in self.character.getTerrain().rooms:
+                for item in room.getItemsByType("MoldFeed"):
+                    newQuest = src.quests.questMap["CleanSpace"](targetPosition=item.getPosition(),targetPositionBig=room.getPosition(),tryHard=True)
+                    self.addQuest(newQuest)
+                    self.startWatching(newQuest,self.handleQuestFailure,"failed")
+                    return
+
+
 # register the quest type
 src.quests.addType(Ascend)

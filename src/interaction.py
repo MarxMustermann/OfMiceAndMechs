@@ -7620,7 +7620,8 @@ def advanceChar(char,render=True, pull_events = True, singleStep=False):
         elif state["commandKeyQueue"]:
             key = state["commandKeyQueue"].pop()
             if (char == src.gamestate.gamestate.mainChar):
-                if not (key[1] ==  "norecord" or "norecord" in key[1]):
+                submenu = state["submenue"]
+                if not submenu or submenu.tag != "Wait":
                     char.getTerrain().animations = []
                     for room in char.getTerrain().rooms:
                         room.animations = []

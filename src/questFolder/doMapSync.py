@@ -101,6 +101,14 @@ Use the MapTable to do this.
             quest = src.quests.questMap["GoHome"](description="go inside")
             return  ([quest],None)
         
+        # activate production item when marked
+        if character.macroState.get("itemMarkedLast"):
+            item = character.macroState["itemMarkedLast"]
+            if item.type == "MapTable":
+                return (None,("j","activate MapTable"))
+            else:
+                return (None,(".","undo selection"))
+
         # activate map table
         for item in room.itemsOnFloor:
             if not item.bolted:

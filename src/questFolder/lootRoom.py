@@ -259,6 +259,10 @@ Remove all items that are not bolted down."""
                 if not hasAvoidItem:
                     command = command.upper()
 
+            if command[0] == "K":
+                if "advancedPickup" in character.interactionState:
+                    command = command[1:]
+
             return (None,(command,"clear spot"))
 
         items = self.getLeftoverItems(character)

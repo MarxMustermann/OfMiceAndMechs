@@ -42,6 +42,14 @@ class SpawnGhul(src.quests.MetaQuestSequence):
         if character.macroState["submenue"] and not ignoreCommands:
             return (None,(["esc"],"to close menu"))
 
+        # activate production item when marked
+        if character.macroState.get("itemMarkedLast"):
+            item = character.macroState["itemMarkedLast"]
+            if item.type == "CorpseAnimator":
+                return (None,("j","activate CorpseAnimator"))
+            else:
+                return (None,(".","undo selection"))
+
         # use hardcoded target positions
         targetPosBig = (6,7,0)
         targetPos = (2,11,0)

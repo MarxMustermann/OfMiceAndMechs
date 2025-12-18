@@ -1011,8 +1011,11 @@ def setUpRuin(pos):
                 for i in range(0,random.randint(1,8)):
                     # add loot
                     if random.random() < 0.2:
+                        position = (6,6,0)
                         mana_crystal = src.items.itemMap["ManaCrystal"]()
-                        room.addItem(mana_crystal,(6,6,0))
+                        if not room.getPositionWalkable(position):
+                            continue
+                        room.addItem(mana_crystal,position)
                     else:
                         position = (random.randint(1,13),random.randint(1,13),0)
                         item = src.items.itemMap[random.choice(loot_types)]()
@@ -1020,6 +1023,8 @@ def setUpRuin(pos):
                             item.uses = 100
                         if item.type == "Vial":
                             item.uses = 10
+                        if room.getItemByPosition(position):
+                            continue
                         room.addItem(item,position)
 
                     # give one free loot

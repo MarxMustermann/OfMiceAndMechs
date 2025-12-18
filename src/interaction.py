@@ -4582,6 +4582,8 @@ def renderGameDisplay(renderChar=None):
                             bar_width = 19
                         elif char.adjustedMaxHealth < 1000:
                             bar_width = 20
+                        else:
+                            bar_width = 21
 
                         stepSize = char.adjustedMaxHealth/bar_width
                         if stepSize == 0:

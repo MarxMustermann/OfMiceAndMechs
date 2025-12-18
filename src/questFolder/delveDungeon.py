@@ -196,8 +196,28 @@ suicidal"""
                                 continue
                             numItems += 1
                     if numItems > 4:
+                        # clean the trap room yourself
+                        quests = []
                         quest = src.quests.questMap["ClearTile"](targetPosition=room.getPosition())
-                        return ([quest],None)
+                        quests.append(quest)
+
+                        # ensure at least one Clone has Room building as highest prio
+                        foundClone = False
+                        for candidate in terrain.getAllCharacters():
+                            if not candidate.faction == character.faction:
+                                continue
+                            if candidate == character:
+                                continue
+                            if not candidate.getRandomProtisedDuties():
+                                continue
+                            if not candidate.getRandomProtisedDuties()[0] == "cleaning":
+                                continue
+                            foundClone = True
+                        if not foundClone:
+                            quest = src.quests.questMap["EnsureMaindutyClone"](dutyType="cleaning")
+                            quests.append(quest)
+
+                        return (list(reversed(quests)),None)
 
             if currentTerrain != character.getHomeTerrain():
                 if character.container.isRoom and character.getFreeInventorySpace() and isinstance(character,src.characters.characterMap["Clone"]):

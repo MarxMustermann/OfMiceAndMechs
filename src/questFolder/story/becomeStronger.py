@@ -30,8 +30,9 @@ class BecomeStronger(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["Heal"]()
                 return ([quest],None)
             else:
-                quest = src.quests.questMap["GoHome"]()
-                return ([quest],None)
+                if not character.isOnHomeTerrain():
+                    quest = src.quests.questMap["GoHome"]()
+                    return ([quest],None)
 
         for room in character.getTerrain().rooms:
             for item in room.getItemsByType("SwordSharpener"):

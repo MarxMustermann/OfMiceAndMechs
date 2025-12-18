@@ -68,6 +68,12 @@ class BecomeStronger(src.quests.MetaQuestSequence):
                         quest = src.quests.questMap["CleanSpace"](targetPosition=item.getSmallPosition(),targetPositionBig=(x,y,0),abortOnfullInventory=False,description="fetch chitin plates")
                         return ([quest],None)
 
+        # ensure the character is somewhat healed
+        if character.adjustedMaxHealth-character.adjustedHealth > 100 and character.canHeal():
+            quest = src.quests.questMap["Heal"]()
+            return ([quest],None)
+
+        # increase max health
         if character.maxHealth < 500:
             if character.searchInventory("PermaMaxHealthPotion"):
                 quest = src.quests.questMap["ConsumeItem"](itemType="PermaMaxHealthPotion")

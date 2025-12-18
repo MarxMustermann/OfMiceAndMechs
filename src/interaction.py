@@ -3374,6 +3374,7 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
 
     # render submenus
     if charState["submenue"]:
+
         # set flag to not render the game
         if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
             char.specialRender = True

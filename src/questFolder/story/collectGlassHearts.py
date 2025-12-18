@@ -191,7 +191,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
 
             if npcCount < 2:
                 for room in terrain.rooms:
-                    if not room.tag == "traproom":
+                    if not room.tag == "trapRoom":
                         continue
                     numItems = 0
                     for item in room.itemsOnFloor:
@@ -245,7 +245,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                 for room in terrain.rooms:
                     
                     # ignore non trap rooms
-                    if not room.tag in ("traproom","entryRoom",):
+                    if not room.tag in ("trapRoom","entryRoom",):
                         continue
 
                     # check for neighbouring buildsites

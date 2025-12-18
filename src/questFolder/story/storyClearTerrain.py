@@ -119,7 +119,7 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
             return ([quest],None)
 
         for room in terrain.rooms:
-            if not room.tag == "traproom":
+            if not room.tag == "trapRoom":
                 continue
             hasEnemy = False
             for otherCharacter in room.characters:

@@ -103,7 +103,7 @@ class SpawnClone(src.quests.MetaQuestSequence):
 
             # ensure traprooms don't fill up
             for room in self.character.getTerrain().rooms:
-                if not room.tag == "traproom":
+                if not room.tag == "trapRoom":
                     continue
                 numItems = 0
                 for item in room.itemsOnFloor:

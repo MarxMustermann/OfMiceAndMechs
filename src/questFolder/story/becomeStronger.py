@@ -196,7 +196,7 @@ class BecomeStronger(src.quests.MetaQuestSequence):
 
         # ensure traprooms don't fill up
         for room in terrain.rooms:
-            if not room.tag == "traproom":
+            if not room.tag == "trapRoom":
                 continue
             numItems = 0
             for item in room.itemsOnFloor:

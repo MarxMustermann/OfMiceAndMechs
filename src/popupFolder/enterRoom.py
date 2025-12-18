@@ -40,7 +40,7 @@ Use the quest menu by pressing q to get more information how to beat this enemy.
 
 room_message = [
     (
-        "traproom",
+        "trapRoom",
         """Your implant interrupts:
 
 You just entered a trap room.

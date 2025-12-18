@@ -70,6 +70,14 @@ class ActivateGlassStatue(src.quests.MetaQuestSequence):
         if character.macroState["submenue"] and not ignoreCommands:
             return (None,(["esc"],"to close menu"))
 
+        # activate production item when marked
+        if character.macroState.get("itemMarkedLast"):
+            item = character.macroState["itemMarkedLast"]
+            if item.type == "GlassStatue":
+                return (None,("j","activate GlassStatue"))
+            else:
+                return (None,(".","undo selection"))
+
         terrain = character.getTerrain()
         for room in terrain.rooms:
             throne = room.getItemByType("Throne",needsBolted=True)

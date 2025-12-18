@@ -165,9 +165,13 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
 
             # get highest duty
             highest_priority = 1
+            multiple_highest = False
             for priority in npc.dutyPriorities.values():
+                if priority == highest_priority:
+                    multiple_highest = True
                 if priority > highest_priority:
                     highest_priority = priority
+                    multiple_highest = False
 
             # add the duties
             rowCounter = 0
@@ -178,7 +182,10 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
                     background_color = "#333"
                 foreground_color = "default"
                 if npc.dutyPriorities.get(duty,1) == highest_priority:
-                    foreground_color = "#ff3"
+                    if multiple_highest:
+                        foreground_color = "#f83"
+                    else:
+                        foreground_color = "#ff3"
                 color_info = src.interaction.urwid.AttrSpec(foreground_color, background_color)
 
                 # add index indicator in front

@@ -110,17 +110,18 @@ class SpawnGhul(src.quests.MetaQuestSequence):
                     quest = src.quests.questMap["FetchItems"](toCollect="Corpse",amount=1)
                     return ([quest],None)
 
+            # collect corpses from non storage
             for room in character.getTerrain().rooms:
                 corpse = room.getItemByType("Corpse")
                 if not corpse:
                     continue
-                
                 if not character.getFreeInventorySpace():
                     quest = src.quests.questMap["ClearInventory"](returnToTile=False,tryHard=True)
                     return ([quest],None)
                 quest = src.quests.questMap["CleanSpace"](description="grab enemy remains", targetPositionBig=room.getPosition(), targetPosition=corpse.getPosition(), reason="have a corpse to reanimate", abortOnfullInventory=True)
                 return ([quest],None)
             
+            # fail if no corpses are availabe
             return self._solver_trigger_fail(dryRun,"no Corpse")
         
         if character.getBigPosition() != targetPosBig:

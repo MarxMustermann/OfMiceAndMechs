@@ -2,8 +2,8 @@ import random
 
 import src
 
-class ConsumePotion(src.quests.MetaQuestSequence):
-    type = "ConsumePotion"
+class ConsumeItem(src.quests.MetaQuestSequence):
+    type = "ConsumeItem"
     lowLevel = True
 
     def __init__(self, description="consume potion", creator=None, potionType=None,reason=None):
@@ -13,7 +13,7 @@ class ConsumePotion(src.quests.MetaQuestSequence):
         self.reason = reason
 
         self.potionType = potionType
-        self.type = "ConsumePotion"
+        self.type = "ConsumeItem"
 
     def generateTextDescription(self):
         reason = ""
@@ -65,4 +65,4 @@ Cosume a potion of the type {self.potionType} from your inventory{reason}.
             return (None,("s"*offset+"w"*(-offset)+"j","drink the potion"))
         return (None,("i","open inventory"))
 
-src.quests.addType(ConsumePotion)
+src.quests.addType(ConsumeItem)

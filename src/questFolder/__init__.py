@@ -65,7 +65,7 @@ import src.questFolder.readyBaseDefences
 import src.questFolder.configureSiegeManager
 import src.questFolder.dropItemsOutside
 import src.questFolder.brewPotion
-import src.questFolder.consumePotion
+import src.questFolder.consumeItem
 import src.questFolder.discardItemsInside
 import src.questFolder.furnishRoom
 import src.questFolder.doMapSync

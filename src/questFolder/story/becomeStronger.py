@@ -1,5 +1,7 @@
 import src
 
+import random
+
 class BecomeStronger(src.quests.MetaQuestSequence):
     type = "BecomeStronger"
 
@@ -102,7 +104,7 @@ class BecomeStronger(src.quests.MetaQuestSequence):
                 if room.getNonEmptyOutputslots("Bloom"):
                     bloomAvailable = True
                     break
-            remoteBloomAvailable = None
+            remoteBloomsAvailable = []
             if not bloomAvailable:
                 for x in range(1,14):
                     for y in range(1,14):
@@ -111,8 +113,10 @@ class BecomeStronger(src.quests.MetaQuestSequence):
                         for item in terrain.itemsByBigCoordinate.get((x,y,0),[]):
                             if item.type != "Bloom":
                                 continue
-                            remoteBloomAvailable = ((x,y,0),item.getSmallPosition())
-                            break
+                            remoteBloomsAvailable.append(((x,y,0),item.getSmallPosition()))
+            remoteBloomAvailable = None
+            if remoteBloomsAvailable:
+                remoteBloomAvailable = random.choice(remoteBloomsAvailable)
 
             flaskAvailable = False
             if character.searchInventory("Flask"):

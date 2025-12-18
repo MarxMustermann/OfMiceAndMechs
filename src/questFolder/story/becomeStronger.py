@@ -67,7 +67,7 @@ class BecomeStronger(src.quests.MetaQuestSequence):
 
         if character.maxHealth < 500:
             if character.searchInventory("PermaMaxHealthPotion"):
-                quest = src.quests.questMap["ConsumeItem"](potionType="PermaMaxHealthPotion")
+                quest = src.quests.questMap["ConsumeItem"](itemType="PermaMaxHealthPotion")
                 return ([quest],None)
 
             for room in terrain.rooms:

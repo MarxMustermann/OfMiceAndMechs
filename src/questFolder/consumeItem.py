@@ -6,13 +6,13 @@ class ConsumeItem(src.quests.MetaQuestSequence):
     type = "ConsumeItem"
     lowLevel = True
 
-    def __init__(self, description="consume item", creator=None, potionType=None,reason=None):
+    def __init__(self, description="consume item", creator=None, itemType=None,reason=None):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
         self.reason = reason
 
-        self.potionType = potionType
+        self.itemType = itemType
         self.type = "ConsumeItem"
 
     def generateTextDescription(self):
@@ -20,7 +20,7 @@ class ConsumeItem(src.quests.MetaQuestSequence):
         if self.reason:
             reason = f",\nto {self.reason}"
         text = f"""
-Cosume an item of the type {self.potionType} from your inventory{reason}.
+Cosume an item of the type {self.itemType} from your inventory{reason}.
 """
         return text
 
@@ -28,7 +28,7 @@ Cosume an item of the type {self.potionType} from your inventory{reason}.
         if not character:
             return False
 
-        if character.searchInventory(self.potionType):
+        if character.searchInventory(self.itemType):
             return False
 
         if not dryRun:
@@ -56,7 +56,7 @@ Cosume an item of the type {self.potionType} from your inventory{reason}.
 
             counter = 0
             for item in character.inventory:
-                if item.type == self.potionType:
+                if item.type == self.itemType:
                     break
                 counter += 1
 

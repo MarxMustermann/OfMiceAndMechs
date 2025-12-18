@@ -1093,6 +1093,9 @@ class Item:
 
         character.runCommandString(".", nativeKey=False)
 
+        # skip frames to make rendering faster
+        if ticksLeft % 10 != 9 and src.gamestate.gamestate.mainChar == character:
+            src.interaction.skipNextRender = True
 
 commons = [
     "MarkerBean",

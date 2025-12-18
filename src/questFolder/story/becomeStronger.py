@@ -34,18 +34,21 @@ class BecomeStronger(src.quests.MetaQuestSequence):
                     quest = src.quests.questMap["GoHome"]()
                     return ([quest],None)
 
+        # upgrade sword
         for room in character.getTerrain().rooms:
             for item in room.getItemsByType("SwordSharpener"):
                 if item.readyToBeUsedByCharacter(character):
                     quest = src.quests.questMap["SharpenPersonalSword"]()
                     return ([quest],None)
 
+        # upgrade armor
         for room in character.getTerrain().rooms:
             for item in room.getItemsByType("ArmorReinforcer"):
                 if item.readyToBeUsedByCharacter(character):
                     quest = src.quests.questMap["ReinforcePersonalArmor"]()
                     return ([quest],None)
 
+        # gather sword upgrade resources
         if character.weapon.baseDamage < 30:
             for x in range(1,14):
                 for y in range(1,14):
@@ -57,6 +60,7 @@ class BecomeStronger(src.quests.MetaQuestSequence):
                         quest = src.quests.questMap["CleanSpace"](targetPosition=item.getSmallPosition(),targetPositionBig=(x,y,0),abortOnfullInventory=False,description="fetch grindstone")
                         return ([quest],None)
 
+        # gather armor upgrade resources
         if character.armor.armorValue < 8:
             for x in range(1,14):
                 for y in range(1,14):

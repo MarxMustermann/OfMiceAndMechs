@@ -158,6 +158,8 @@ Rule the world and put an end to those attacks!
             # go to glass palace
             terrain = character.getTerrain()
             if terrain.xPosition != 7 or terrain.yPosition != 7:
+                quest = src.quests.questMap["TeleportToGlassPalace"]()
+                return ([quest],None)
                 quest = src.quests.questMap["GoToTerrain"](targetTerrain=(7,7,0),reason="get to the glass palace", description="go to glass palace")
                 return ([quest],None)
 

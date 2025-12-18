@@ -110,15 +110,21 @@ Press d to move the cursor and show the subquests description.
         if character.macroState["submenue"] and character.macroState["submenue"].tag == "metalWorkingProductSelection":
             submenue = character.macroState["submenue"]
             index = None
+            name_input_index = None
             counter = 1
             for option in submenue.options.items():
                 if option[1] == self.toProduce:
                     index = counter
                     break
+                if option[1] == "byName":
+                    name_input_index = counter
                 counter += 1
 
             if index is None:
-                index = counter-1
+                if name_input_index:
+                    index = name_input_index
+                else:
+                    index = counter-1
 
             if self.produceToInventory:
                 activationCommand = "j"

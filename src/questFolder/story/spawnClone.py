@@ -108,6 +108,8 @@ class SpawnClone(src.quests.MetaQuestSequence):
                 numItems = 0
                 for item in room.itemsOnFloor:
                     if item.bolted == False:
+                        if item.getPosition() not in room.walkingSpace:
+                            continue
                         numItems += 1
                 if numItems > 4:
                     newQuest = src.quests.questMap["ClearTile"](targetPosition=room.getPosition())

@@ -30,7 +30,18 @@ class EnsureMaindutyClone(src.quests.MetaQuestSequence):
                 continue
             if not candidate.duties:
                 continue
-            if not candidate.getRandomProtisedDuties()[0] == self.dutyType:
+            if not self.dutyType in candidate.duties:
+                continue
+            duty_priority = candidate.dutyPriorities.get(self.dutyType,1)
+            if duty_priority == 1 and len(candidate.duties) > 1:
+                continue
+            not_highest = False
+            for (check_duty,check_priority) in candidate.dutyPriorities.items():
+                if check_duty == self.dutyType:
+                    continue
+                if check_priority >= duty_priority:
+                    not_highest = True
+            if not_highest:
                 continue
             print(candidate.name)
             foundClone = True

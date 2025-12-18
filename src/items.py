@@ -1063,7 +1063,8 @@ class Item:
             return
 
         ticksLeft = params["delayTime"] - params["doneTime"]
-        character.takeTime(1,"working")
+        if params["doneTime"] > 0:
+            character.takeTime(1,"working")
         params["doneTime"] += 1
 
         barLength = params["delayTime"]//10

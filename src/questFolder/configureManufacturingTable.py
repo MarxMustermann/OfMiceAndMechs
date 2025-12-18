@@ -78,6 +78,15 @@ Configure the manufacturing table on {self.targetPosition}{reason} to produce {s
         # handle menues
         submenue = character.macroState.get("submenue")
         if submenue:
+            if submenue.tag == "applyOptionSelection" and submenue.extraInfo.get("item").type == "ManufacturingTable":
+                target_index = None
+                counter = 0
+                for option in submenue.options.values():
+                    counter += 1
+                    if option == "configure item":
+                        target_index = counter
+                if not target_index is None:
+                    return (None,("s"*(target_index-submenue.selectionIndex)+"w"*(submenue.selectionIndex-target_index)+"j","configure ManufacturingTable"))
             if submenue.tag == "manufacturingTableTypeConfigurationSelection":
 
                 # get the index of the value to select
@@ -102,6 +111,14 @@ Configure the manufacturing table on {self.targetPosition}{reason} to produce {s
                     return (None,("j","select the item type to set"))
 
             return (None,(["esc"],"close the sub menu"))
+
+        # activate production item when marked
+        if character.macroState.get("itemMarkedLast"):
+            item = character.macroState["itemMarkedLast"]
+            if item.type == "ManufacturingTable" and item.getPosition() == self.targetPosition and item.getBigPosition() == self.targetPositionBig:
+                return (None,("j","activate ManufacturingTable"))
+            else:
+                return (None,(".","undo selection"))
             
         # go to the manufacturing table
         if self.targetPositionBig and character.getBigPosition() != self.targetPositionBig:
@@ -114,16 +131,22 @@ Configure the manufacturing table on {self.targetPosition}{reason} to produce {s
 
         # start configuring the manufacturing table
         message = "configure item type"
+        activationCommand = "J"
+        if "advancedInteraction" in character.interactionState:
+            activationCommand = " "
+        direction = None
         if (pos[0],pos[1],pos[2]) == self.targetPosition:
-            return (None,("jsj",message))
+            direction = "."
         if (pos[0]-1,pos[1],pos[2]) == self.targetPosition:
-            return (None,("Jasj",message))
+            direction = "a"
         if (pos[0]+1,pos[1],pos[2]) == self.targetPosition:
-            return (None,("Jdsj",message))
+            direction = "d"
         if (pos[0],pos[1]-1,pos[2]) == self.targetPosition:
-            return (None,("Jwsj",message))
+            direction = "w"
         if (pos[0],pos[1]+1,pos[2]) == self.targetPosition:
-            return (None,("Jssj",message))
+            direction = "s"
+        if direction:
+            return (None,(activationCommand+direction+"sj",message))
         return (None,(".","stand around confused"))
 
     def getQuestMarkersTile(self,character):

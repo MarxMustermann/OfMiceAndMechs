@@ -168,7 +168,7 @@ class BecomeStronger(src.quests.MetaQuestSequence):
             if manaCrystalAvailable and bloomAvailable and flaskAvailable:
                 for room in terrain.rooms:
                     for item in room.getItemsByType("AlchemyTable",needsBolted=True):
-                        quest = src.quests.questMap["BrewPotion"](potionType="PermaMaxHealthPotion")
+                        quest = src.quests.questMap["BrewPotion"](potionType="PermaMaxHealthPotion",amount=None)
                         return ([quest],None)
 
             if (manaCrystalAvailable or outsideManaCrystal) and not (bloomAvailable or remoteBloomAvailable):

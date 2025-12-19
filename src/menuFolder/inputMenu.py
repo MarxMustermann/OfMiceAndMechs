@@ -108,3 +108,16 @@ class InputMenu(src.subMenu.SubMenu):
             self.firstHit = False
 
         return False
+
+    def get_command_to_input(self,value):
+        if self.text == value:
+            return ["enter"]
+        if len(self.text) > len(value):
+            return ["backspace"]
+        index = 0
+        while index < len(self.text):
+            if not self.text[index] == value[index]:
+                return ["backspace"]
+            index += 1
+        return value[len(self.text):]
+

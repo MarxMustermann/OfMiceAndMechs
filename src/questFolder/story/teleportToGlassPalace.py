@@ -51,10 +51,20 @@ class TeleportToGlassPalace(src.quests.MetaQuestSequence):
             return ([quest],None)
 
         # handle menues
-        if character.macroState["submenue"] and not ignoreCommands:
-            if character.macroState["submenue"].tag == "throneTeleport":
-                return (None,("j","teleport"))
+        submenue = character.macroState.get("submenue")
+        if submenue and not ignoreCommands:
+            if submenue.tag == "throneTeleport":
+                command = submenue.get_command_to_select_option("yes")
+                return (None,(command,"teleport"))
             return (None,(["esc"],"close menu"))
+
+        # activate correct item when marked
+        if character.macroState.get("itemMarkedLast"):
+            item = character.macroState["itemMarkedLast"]
+            if item.type == "Throne":
+                return (None,("j","activate Thron"))
+            else:
+                return (None,(".","undo selection"))
 
         # find throne
         terrain = character.getTerrain()

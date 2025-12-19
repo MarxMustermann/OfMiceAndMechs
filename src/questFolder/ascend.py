@@ -137,6 +137,11 @@ Rule the world and put an end to those attacks!
                     quest = src.quests.questMap["BecomeStronger"](targetStrength=3,lifetime=15*15*15)
                     return ([quest],None)
 
+                # clear inventory
+                if character.has_big_item_in_inventory():
+                    quest = src.quests.questMap["ClearInventory"]()
+                    return ([quest],None)
+
                 # sharpen sword
                 for room in character.getTerrain().rooms:
                     for item in room.getItemsByType("SwordSharpener"):

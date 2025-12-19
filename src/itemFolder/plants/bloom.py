@@ -71,6 +71,11 @@ class Bloom(src.items.Item):
             character: the character picking the item uo
         """
 
+        # damage nearby characters
+        character.hurt(25,"mold sting")
+        for nearby_character in self.container.getCharactersOnTile(self.getBigPosition()):
+            nearby_character.hurt(10,"inhale spores")
+
         self.bolted = False
         self.localSpawn()
         self.dead = True

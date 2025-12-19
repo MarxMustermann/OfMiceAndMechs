@@ -47,6 +47,12 @@ you can eat it to gain 25 satiation.
             generateScrap: flag to leave no residue
         """
 
+        # damage nearby characters
+        for character in self.container.getCharactersOnTile(self.getBigPosition()):
+            if character.getDistance(self.getPosition()) <= 1:
+                character.hurt(20,"inhale spores")
+
+        # add new and active mold
         new = src.items.itemMap["Mold"]()
         self.container.addItem(new, self.getPosition())
         new.startSpawn()

@@ -137,7 +137,7 @@ class SpawnClone(src.quests.MetaQuestSequence):
                 hasClone = True
 
             if hasClone and random.random() < 0.5:
-                newQuest = src.quests.questMap["Adventure"](lifetime=3000)
+                newQuest = src.quests.questMap["Adventure"](lifetime=random.random(10000)+2000)
                 self.addQuest(newQuest)
                 self.startWatching(newQuest,self.handleQuestFailure,"failed")
                 return

@@ -52,8 +52,11 @@ class ReinforcePersonalArmor(src.quests.MetaQuestSequence):
                     return (None,(command,"reinforce armor"))
             if submenue.tag == "ArmorReinforcerSlider":
                 return (None,("j","reinforce the armor"))
-            
             return (None,(["esc"],"close the menu"))
+        
+        action = self.generate_confirm_activation_command(allowedItems=["ArmorReinforcer"])
+        if action:
+            return action
 
         if character.getNearbyEnemies():
             quest = src.quests.questMap["Fight"](description="defend yourself")

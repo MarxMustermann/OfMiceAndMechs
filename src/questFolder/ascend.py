@@ -127,6 +127,9 @@ Rule the world and put an end to those attacks!
 
                 # defend the base
                 if num_enemies:
+                    if src.gamestate.gamestate.tick > 1000:
+                        quest = src.quests.questMap["ClearTerrain"]()
+                        return ([quest],None)
                     quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,lifetime=100,description="defend the arena",reason="ensure no attackers get into the base")
                     return ([quest],None)
 

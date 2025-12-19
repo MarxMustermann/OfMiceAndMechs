@@ -58,6 +58,10 @@ farm mold on the tile {self.targetPosition}"""
         if character.getTerrain().getRoomByPosition(self.targetPosition):
             return self._solver_trigger_fail(dryRun,"blocked by room")
 
+        # ensure minumum health
+        if character.health < 30:
+            return self._solver_trigger_fail(dryRun,"low health")
+
         if character.getBigPosition() != (self.targetPosition[0], self.targetPosition[1], 0):
             quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition,reason="go to target tile")
             return ([quest],None)

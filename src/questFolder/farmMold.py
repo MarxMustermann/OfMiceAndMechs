@@ -61,6 +61,10 @@ farm mold"""
         if not character:
             return (None,None)
 
+        # ensure minumum health
+        if character.health < 30:
+            return self._solver_trigger_fail(dryRun,"low health")
+
         # search for blooms to pick
         terrain = character.getTerrain()
         candidates = []

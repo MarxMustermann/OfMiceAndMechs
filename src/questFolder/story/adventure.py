@@ -37,6 +37,10 @@ class Adventure(src.quests.MetaQuestSequence):
         if character.getBigPosition()[1] == 14:
             return (None, ("w","enter the terrain"))
 
+        if character.getNearbyEnemies():
+            quest = src.quests.questMap["Fight"]()
+            return ([quest],None)
+
         if character.searchInventory("MemoryFragment"):
             quest = src.quests.questMap["ConsumeItem"](itemType="MemoryFragment",description="extract memories")
             return ([quest],None)

@@ -2369,6 +2369,12 @@ press any other key to attack normally"""
                 if otherCharacter.xPosition//15 == self.xPosition//15 and otherCharacter.yPosition//15 == self.yPosition//15:
                     otherCharacter.changed("character died on tile",{"deadChar":self,"character":otherCharacter})
 
+    def has_big_item_in_inventory(self):
+        for item in self.inventory:
+            if not item.walkable:
+                return True
+        return False
+
     def canHeal(self):
         '''
         check if the character can heal right now

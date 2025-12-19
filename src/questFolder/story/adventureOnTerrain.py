@@ -143,12 +143,37 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
         return ([quest],None)
 
     def generateTextDescription(self):
-        return [f"""
+        text = [f"""
 Go out and adventure on tile {self.targetTerrain}.
 
-visited POI:
-{self.donePointsOfInterest}
 """]
+
+        text.append(f"""points of interest:\n""")
+        rawMap = []
+        for y in range(15):
+            rawMap.append([])
+            for x in range(15):
+                if x == 0 or y == 0 or x == 14 or y == 14:
+                    rawMap[y].append("~~")
+                else:
+                    rawMap[y].append("  ")
+            rawMap[y].append("\n")
+        for pos in self.getRemainingPointsOfInterests():
+            rawMap[pos[1]][pos[0]] = "OO"
+        for pos in self.donePointsOfInterest:
+            rawMap[pos[1]][pos[0]] = "XX"
+        text.append("\n")
+        text.append(rawMap)
+        text.append("\n")
+        for pos in self.getRemainingPointsOfInterests()+self.donePointsOfInterest:
+            text.append(f"* {pos}")
+            if pos in self.donePointsOfInterest:
+                text.append(f" visited")
+            text.append(f"\n")
+        if self.character:
+            rawMap[self.character.getBigPosition()[1]][self.character.getBigPosition()[0]] = "@@"
+
+        return text
 
     def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:

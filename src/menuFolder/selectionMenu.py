@@ -55,7 +55,6 @@ class SelectionMenu(src.subMenu.SubMenu):
         return bool(self.getSelection())
 
     def get_command_to_select_option(self,option_to_select):
-        print(self.options)
         command = ""
         target_index = None
         counter = 0

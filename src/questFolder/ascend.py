@@ -93,12 +93,9 @@ Rule the world and put an end to those attacks!
                 return (None,("w","enter room"))
 
         # activate correct item when marked
-        if character.macroState.get("itemMarkedLast"):
-            item = character.macroState["itemMarkedLast"]
-            if item.type == "Throne":
-                return (None,("j","activate Thron"))
-            else:
-                return (None,(".","undo selection"))
+        action = self.generate_confirm_activation_command(allowedItems=("Throne",))
+        if action:
+            return action
 
         # check if the Trone was properly activated yet
         hasSeeker = False

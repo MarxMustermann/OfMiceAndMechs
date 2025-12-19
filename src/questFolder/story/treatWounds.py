@@ -70,8 +70,16 @@ class TreatWounds(src.quests.MetaQuestSequence):
         for tileVial in tileVials:
             if tileVial.getPosition() == characterPos:
                 return (None,("k","pick up the Vial"))
+            if tileVial.getPosition(offset=(1,0,0)) == characterPos:
+                return (None,("Ka","pick up the Vial"))
+            if tileVial.getPosition(offset=(-1,0,0)) == characterPos:
+                return (None,("Kd","pick up the Vial"))
+            if tileVial.getPosition(offset=(0,1,0)) == characterPos:
+                return (None,("Kw","pick up the Vial"))
+            if tileVial.getPosition(offset=(0,-1,0)) == characterPos:
+                return (None,("Ks","pick up the Vial"))
 
-        quest = src.quests.questMap["GoToPosition"](targetPosition=tileVials[0].getSmallPosition(),reason="be able to pick up the vial",description="go to the next Vial")
+        quest = src.quests.questMap["GoToPosition"](targetPosition=tileVials[0].getSmallPosition(),reason="be able to pick up the vial",description="go to the next Vial",ignoreEndBlocked=True)
         return ([quest],None)
 
     def generateTextDescription(self):

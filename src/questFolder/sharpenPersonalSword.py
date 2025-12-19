@@ -71,42 +71,11 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
         if character.macroState.get("submenue"):
             submenue = character.macroState.get("submenue")
             if submenue.tag == "applyOptionSelection" and submenue.extraInfo.get("item").type == "SwordSharpener":
-                target_index = None
-                counter = 0
-                for option in submenue.options.values():
-                    counter += 1
-                    if option == "sharpen equipped sword":
-                        target_index = counter
-                if not target_index is None:
-                    return (None,("s"*(target_index-submenue.selectionIndex)+"w"*(submenue.selectionIndex-target_index)+"j","use SwordSharpener"))
+                command = submenue.get_command_to_select_option("sharpen equipped sword")
+                if command:
+                    return (None,(action,"use SwordSharpener"))
             if submenue.tag == "SwordSharpenerSlider":
                 return (None,("j","sharpen the sword"))
-            if submenue.tag == "SwordSharpenerSelection":
-                foundOption = False
-                rewardIndex = 0
-                if rewardIndex == 0:
-                    counter = 1
-                    for option in submenue.options.items():
-                        if option[1] == "sharpen sword":
-                            foundOption = True
-                            break
-                        if option[1] == "Sharpen Equipped Sword":
-                            foundOption = True
-                            break
-                        counter += 1
-                    rewardIndex = counter
-
-                if not foundOption:
-                    return (None,(["esc"],"to close menu"))
-
-                offset = rewardIndex-submenue.selectionIndex
-                command = ""
-                if offset > 0:
-                    command += "s"*offset
-                else:
-                    command += "w"*(-offset)
-                command += "j"
-                return (None,(command,"contact command"))
             
             return (None,(["esc"],"close the menu"))
 

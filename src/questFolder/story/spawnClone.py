@@ -94,12 +94,23 @@ class SpawnClone(src.quests.MetaQuestSequence):
                         self.startWatching(newQuest,self.handleQuestFailure,"failed")
                         return
 
+            # refill bloom shredder
+            bloom_availabe = False
             for room in self.character.getTerrain().rooms:
                 if room.getNonEmptyOutputslots("Bloom"):
-                    newQuest = src.quests.questMap["FetchItems"](toCollect="Bloom")
-                    self.addQuest(newQuest)
-                    self.startWatching(newQuest,self.handleQuestFailure,"failed")
-                    return
+                    bloom_availabe = True
+            if bloom_availabe:
+                for room in self.character.getTerrain().rooms:
+                    for item in room.getItemsByType("BloomShredder",needsBolted=True):
+                        drop_position = item.getPosition(offset=(-1,0,0))
+                        if not room.getPositionWalkable(drop_position):
+                            continue
+                        newQuest = src.quests.questMap["RestockRoom"](toRestock="Bloom",targetPositionBig=room.getPosition(),targetPosition=drop_position)
+                        self.addQuest(newQuest)
+                        newQuest = src.quests.questMap["FetchItems"](toCollect="Bloom")
+                        self.addQuest(newQuest)
+                        self.startWatching(newQuest,self.handleQuestFailure,"failed")
+                        return
 
             # ensure traprooms don't fill up
             for room in self.character.getTerrain().rooms:

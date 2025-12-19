@@ -316,5 +316,45 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
         else:
             return False
 
+    def get_amount_producable(self,item_type,character=None):
+
+        # get ingredient list
+        ingredients = []
+        raw_ingredient_types = src.items.itemMap[item_type].ingredients()
+        if raw_ingredient_types:
+            for raw_ingredient_type in raw_ingredient_types:
+                ingredients.append(raw_ingredient_type.type)
+        ingredients.append("Flask")
+
+        # get available material
+        accessible_items = character.inventory+self.getInputItems()
+
+        # calculate ho many items can be produced
+        amount = 0
+        remaining_ingredients = ingredients[:]
+        items_to_check = accessible_items[:]
+        used_items = []
+        while True:
+            # end when everything was checked
+            if not items_to_check:
+                break
+
+            # remove available ingredients
+            item = items_to_check.pop(0)
+            if item in used_items:
+                continue
+            if not item.type in remaining_ingredients:
+                continue
+            remaining_ingredients.remove(item.type)
+            used_items.append(item)
+            
+            # register completed ingredient lists
+            if not remaining_ingredients:
+                remaining_ingredients = ingredients[:]
+                items_to_check = accessible_items[:]
+                amount += 1
+
+        return amount
+
 # register the item type
 src.items.addType(AlchemyTable)

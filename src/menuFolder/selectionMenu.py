@@ -53,3 +53,16 @@ class SelectionMenu(src.subMenu.SubMenu):
 
         # stop when done
         return bool(self.getSelection())
+
+    def get_command_to_select_option(self,option_to_select):
+        print(self.options)
+        command = ""
+        target_index = None
+        counter = 0
+        for option in self.options.values():
+            counter += 1
+            if option == option_to_select:
+                target_index = counter
+        if not target_index is None:
+            return "s"*(target_index-self.selectionIndex)+"w"*(self.selectionIndex-target_index)+"j"
+        return None

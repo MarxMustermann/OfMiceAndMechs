@@ -74,9 +74,9 @@ class Bloom(src.items.Item):
         if not self.dead:
             # damage nearby characters
             if self.container.isRoom == False:
-                character.hurt(25,"mold sting")
+                character.hurt(15,"mold sting")
                 for nearby_character in self.container.getCharactersOnTile(self.getBigPosition()):
-                    nearby_character.hurt(10,"inhale spores")
+                    nearby_character.hurt(5,"inhale spores")
 
             # die off
             self.bolted = False

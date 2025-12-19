@@ -84,12 +84,9 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
             return ([quest],None)
 
         # activate production item when marked
-        if character.macroState.get("itemMarkedLast"):
-            item = character.macroState["itemMarkedLast"]
-            if item.type == "SwordSharpener":
-                return (None,("j","activate SwordSharpener"))
-            else:
-                return (None,(".","undo selection"))
+        action = self.generate_confirm_activation_command(allowedItems=["SwordSharpener"])
+        if action:
+            return action
 
         terrain = character.getTerrain()
 

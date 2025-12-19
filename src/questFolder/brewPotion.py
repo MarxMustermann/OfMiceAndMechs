@@ -4,15 +4,23 @@ import src
 class BrewPotion(src.quests.MetaQuestSequence):
     type = "BrewPotion"
 
-    def __init__(self, description="brew potion", creator=None, lifetime=None, potionType=None):
+    def __init__(self, description="brew potion", creator=None, lifetime=None, potionType=None, amount=1):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = description
 
         self.shortCode = "e"
         self.potionType = potionType
+        self.amount = amount
 
     def handleBrewedPotions(self,extraInfo=None):
+        try:
+            self.amount
+        except:
+            self.amount = 1
+        if self.amount > 1:
+            self.amount -= 1
+            return
         self.postHandler()
 
     def assignToCharacter(self, character):
@@ -54,10 +62,13 @@ class BrewPotion(src.quests.MetaQuestSequence):
             else:
                 return (None,(".","undo selection"))
 
-        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
-            submenue = character.macroState["submenue"]
+        submenue = character.macroState["submenue"]
+        if submenue and isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
             if submenue.tag == "alchemyTableProductSelection":
-                action = submenue.get_command_to_select_option(self.potionType)
+                selectionCommand = "j"
+                if self.amount > 1:
+                    selectionCommand = "J"
+                action = submenue.get_command_to_select_option(self.potionType,selectionCommand=selectionCommand)
                 if action:
                     return (None,(action,"produce item"))
 
@@ -69,7 +80,9 @@ class BrewPotion(src.quests.MetaQuestSequence):
             else:
                 return (None,(submenue.get_command_to_select_option("produce potion"),"start brewing"))
 
-        if character.macroState["submenue"] and not ignoreCommands:
+        if submenue and not ignoreCommands:
+            if submenue.tag == "metalWorkingAmountInput":
+                return (None,submenue.get_command_to_input(str(self.amount)),"enter amount to produce")
             return (None,(["esc"],"exit submenu"))
 
         terrain = character.getTerrain()
@@ -141,6 +154,7 @@ class BrewPotion(src.quests.MetaQuestSequence):
         text = [f"""
 Brew a potion of the type {self.potionType}
 """]
+        text.append(f"produce {self.amount} potions")
         return text
 
     def handleQuestFailure(self,extraParam):

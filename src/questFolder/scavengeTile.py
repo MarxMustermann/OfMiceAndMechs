@@ -101,6 +101,8 @@ This quest will end when the target tile has no items left."""
     
     def getLeftoverItems(self,character):
         terrain = character.getTerrain()
+        if not terrain:
+            return []
         leftOverItems = []
         items = terrain.itemsByBigCoordinate.get(self.targetPosition,[])
         items = items[:]

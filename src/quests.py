@@ -150,6 +150,17 @@ class Quest:
     def generateSubquests(self,character=None,dryRun=True):
         pass
 
+    def generate_confirm_activation_command(self,allowedItems=None):
+        if not self.character:
+            return
+        
+        if self.character.macroState.get("itemMarkedLast"):
+            item = self.character.macroState["itemMarkedLast"]
+            if not allowedItems or item.type in allowedItems:
+                return (None,("j","activate"))
+            else:
+                return (None,(".","undo selection"))
+
     def startWatching(self, target, callback, tag=""):
         """
         register callback to be notified if an event occours

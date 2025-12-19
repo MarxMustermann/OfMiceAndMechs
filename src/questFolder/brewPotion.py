@@ -156,7 +156,7 @@ class BrewPotion(src.quests.MetaQuestSequence):
 
         return (None,(".","stand around confused"))
 
-    dief generateTextDescription(self):
+    def generateTextDescription(self):
         text = [f"""
 Brew a potion of the type {self.potionType}
 """]

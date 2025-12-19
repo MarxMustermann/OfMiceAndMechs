@@ -75,7 +75,10 @@ Rule the world and put an end to those attacks!
             return (None,None)
 
         # handle menues
-        if character.macroState["submenue"] and not ignoreCommands:
+        submenue = character.macroState.get("submenue")
+        if submenue and not ignoreCommands:
+            if submenue.type == "TextMenu":
+                return (None,(["enter"],"continue"))
             return (None,(["esc"],"close menu"))
 
         # enter rooms fully

@@ -18,7 +18,7 @@ class BrewPotion(src.quests.MetaQuestSequence):
             self.amount
         except:
             self.amount = 1
-        if self.amount > 1:
+        if self.amount and self.amount > 1:
             self.amount -= 1
             return
         self.postHandler()
@@ -66,7 +66,10 @@ class BrewPotion(src.quests.MetaQuestSequence):
         if submenue and isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
             if submenue.tag == "alchemyTableProductSelection":
                 selectionCommand = "j"
-                if self.amount > 1:
+                amount = self.amount
+                if amount is None:
+                    amount = submenue.extraInfo["item"].get_amount_producable(self.potionType,character)
+                if amount > 1:
                     selectionCommand = "J"
                 action = submenue.get_command_to_select_option(self.potionType,selectionCommand=selectionCommand)
                 if action:
@@ -82,7 +85,10 @@ class BrewPotion(src.quests.MetaQuestSequence):
 
         if submenue and not ignoreCommands:
             if submenue.tag == "metalWorkingAmountInput":
-                return (None,submenue.get_command_to_input(str(self.amount)),"enter amount to produce")
+                amount = self.amount
+                if amount is None:
+                    amount = submenue.extraInfo["item"].get_amount_producable(self.potionType,character)
+                return (None,submenue.get_command_to_input(str(amount)),"enter amount to produce")
             return (None,(["esc"],"exit submenu"))
 
         terrain = character.getTerrain()
@@ -150,10 +156,13 @@ class BrewPotion(src.quests.MetaQuestSequence):
 
         return (None,(".","stand around confused"))
 
-    def generateTextDescription(self):
+    dief generateTextDescription(self):
         text = [f"""
 Brew a potion of the type {self.potionType}
 """]
+        amount = self.amount
+        if amount is None:
+            amount = "some amount of"
         text.append(f"produce {self.amount} potions")
         return text
 

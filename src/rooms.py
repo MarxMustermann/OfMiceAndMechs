@@ -1413,7 +1413,10 @@ class Room:
                     display = (src.interaction.urwid.AttrSpec("#740","#000"),display)
 
                     if not pos == (None,None,None):
-                        chars[pos[1]][pos[0]] = display
+                        try:
+                            chars[pos[1]][pos[0]] = display
+                        except:
+                            pass
 
                     animation[2] -= 1
 

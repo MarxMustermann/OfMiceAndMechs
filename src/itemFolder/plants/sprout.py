@@ -51,9 +51,10 @@ you can eat it to gain 10 satiation.
         """
 
         # damage nearby characters
-        for character in self.container.getCharactersOnTile(self.getBigPosition()):
-            if character.getDistance(self.getPosition()) <= 1:
-                character.hurt(1,"inhale spores")
+        if self.container.isRoom == False:
+            for character in self.container.getCharactersOnTile(self.getBigPosition()):
+                if character.getDistance(self.getPosition()) <= 1:
+                    character.hurt(1,"inhale spores")
 
         new = src.items.itemMap["Mold"]()
         self.container.addItem(new, self.getPosition())

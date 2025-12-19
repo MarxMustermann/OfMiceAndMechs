@@ -72,9 +72,10 @@ class Bloom(src.items.Item):
         """
 
         # damage nearby characters
-        character.hurt(25,"mold sting")
-        for nearby_character in self.container.getCharactersOnTile(self.getBigPosition()):
-            nearby_character.hurt(10,"inhale spores")
+        if self.container.isRoom == False:
+            character.hurt(25,"mold sting")
+            for nearby_character in self.container.getCharactersOnTile(self.getBigPosition()):
+                nearby_character.hurt(10,"inhale spores")
 
         self.bolted = False
         self.localSpawn()

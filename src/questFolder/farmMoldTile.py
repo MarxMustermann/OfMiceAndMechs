@@ -114,6 +114,8 @@ farm mold on the tile {self.targetPosition}"""
 
     def getLeftoverItems(self,character):
         terrain = character.getTerrain()
+        if not terrain:
+            return []
         leftOverItems = []
         numSprouts = 0
         items = terrain.itemsByBigCoordinate.get(self.targetPosition,[])

@@ -47,37 +47,11 @@ class ReinforcePersonalArmor(src.quests.MetaQuestSequence):
         if character.macroState.get("submenue"):
             submenue = character.macroState.get("submenue")
             if submenue.tag == "applyOptionSelection" and submenue.extraInfo.get("item").type == "ArmorReinforcer":
-                return (None,("j","use ArmorReinforcer"))
-            if submenue.tag == "ArmorReinforceerSelection":
-                return (None,("j","selct reeinforcing the armor"))
+                command = submenue.get_command_to_select_option("reinforce equipped armor")
+                if command:
+                    return (None,(command,"reinforce armor"))
             if submenue.tag == "ArmorReinforcerSlider":
                 return (None,("j","reinforce the armor"))
-            if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu):
-                foundOption = False
-                rewardIndex = 0
-                if rewardIndex == 0:
-                    counter = 1
-                    for option in submenue.options.items():
-                        if option[1] == "Reinforce armor":
-                            foundOption = True
-                            break
-                        if option[1] == "Reinforce Equipped Armor":
-                            foundOption = True
-                            break
-                        counter += 1
-                    rewardIndex = counter
-
-                if not foundOption:
-                    return (None,(["esc"],"to close menu"))
-
-                offset = rewardIndex-submenue.selectionIndex
-                command = ""
-                if offset > 0:
-                    command += "s"*offset
-                else:
-                    command += "w"*(-offset)
-                command += "j"
-                return (None,(command,"contact command"))
             
             return (None,(["esc"],"close the menu"))
 

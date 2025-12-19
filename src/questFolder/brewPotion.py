@@ -57,41 +57,17 @@ class BrewPotion(src.quests.MetaQuestSequence):
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
             submenue = character.macroState["submenue"]
             if submenue.tag == "alchemyTableProductSelection":
-                index = None
-                counter = 1
-                for option in submenue.options.items():
-                    if option[1] == self.potionType:
-                        index = counter
-                        break
-                    counter += 1
+                action = submenue.get_command_to_select_option(self.potionType)
+                if action:
+                    return (None,(action,"produce item"))
 
-                if index is None:
-                    index = counter-1
+                action = submenue.get_command_to_select_option("byName")
+                if action:
+                    return action
 
-                offset = index-submenue.selectionIndex
-                command = ""
-                if offset > 0:
-                    command += "s"*offset
-                else:
-                    command += "w"*(-offset)
-                command += "j"
-                return (None,(command,"produce item"))
+                return (None,(["esc"],"close menu"))
             else:
-                menuEntry = "produce potion"
-                counter = 1
-                for option in submenue.options.values():
-                    if option == menuEntry:
-                        index = counter
-                        break
-                    counter += 1
-                command = ""
-                if submenue.selectionIndex > counter:
-                    command += "w"*(submenue.selectionIndex-counter)
-                if submenue.selectionIndex < counter:
-                    command += "s"*(counter-submenue.selectionIndex)
-
-                command += "j"
-                return (None,(command,"start brewing"))
+                return (None,(submenue.get_command_to_select_option("produce potion"),"start brewing"))
 
         if character.macroState["submenue"] and not ignoreCommands:
             return (None,(["esc"],"exit submenu"))

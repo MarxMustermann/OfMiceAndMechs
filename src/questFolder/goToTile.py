@@ -22,7 +22,7 @@ class GoToTile(src.quests.MetaQuestSequence):
     type = "GoToTile"
     lowLevel = True
 
-    def __init__(self, description="go to tile", creator=None, targetPosition=None, lifetime=None, paranoid=False, showCoordinates=True,reason=None,abortHealthPercentage=0, story=None, allowMapMenu=True, abortOnDanger=False, ignoreEnemies=False):
+    def __init__(self, description="go to tile", creator=None, targetPosition=None, lifetime=None, paranoid=False, showCoordinates=True,reason=None,abortHealthPercentage=0, story=None, allowMapMenu=True, abortOnDanger=False, ignoreEnemies=False, suicidal=False):
         if targetPosition:
             if targetPosition[0] < 1 or targetPosition[0] > 13:
                 raise ValueError(f"target position {targetPosition} out of range")
@@ -45,6 +45,7 @@ class GoToTile(src.quests.MetaQuestSequence):
         self.allowMapMenu = allowMapMenu
         self.abortOnDanger = abortOnDanger
         self.ignoreEnemies = ignoreEnemies
+        self.suicidal = suicidal
 
     def handleEnteredRoom(self,extraInfo):
         character = extraInfo[0]
@@ -327,7 +328,7 @@ The target tile is {direction[4:]}
                         quest = src.quests.questMap["Flee"](returnHome=True,lifetime=100)
                         return ([quest],None)
             if not self.ignoreEnemies and character.getNearbyEnemies() and isinstance(character,src.characters.characterMap["Clone"]):
-                if character.health < character.maxHealth//5 or self.paranoid:
+                if (character.health < character.maxHealth//5 or self.paranoid) and not self.sucidal:
                     quest = src.quests.questMap["Flee"]()
                     return ([quest],None)
                 else:
@@ -386,7 +387,7 @@ The target tile is {direction[4:]}
             # fight nearby enemies
             # TODO: reenable random
             if not self.ignoreEnemies and character.getNearbyEnemies() and isinstance(character,src.characters.characterMap["Clone"]):
-                if character.health < character.maxHealth//5 or self.paranoid:
+                if (character.health < character.maxHealth//5 or self.paranoid) and not self.suicidal:
                     quest = src.quests.questMap["Flee"]()
                     return ([quest],None)
                 else:

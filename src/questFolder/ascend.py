@@ -181,7 +181,7 @@ Rule the world and put an end to those attacks!
 
             # go to glass throne
             if character.getBigPosition() != (7,7,0):
-                quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),reason="get to the throne room", description="go to throne room")
+                quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),reason="get to the throne room", description="go to throne room",suicidal=True)
                 return ([quest],None)
             if character.getDistance((6,6,0)) > 1:
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(6,6,0),ignoreEndBlocked=True,reason="get near the glass throne", description="go to the glass throne")

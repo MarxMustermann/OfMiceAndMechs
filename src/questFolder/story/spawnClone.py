@@ -108,6 +108,7 @@ class SpawnClone(src.quests.MetaQuestSequence):
                         newQuest = src.quests.questMap["RestockRoom"](toRestock="Bloom",targetPositionBig=room.getPosition(),targetPosition=drop_position)
                         self.addQuest(newQuest)
                         newQuest = src.quests.questMap["FetchItems"](toCollect="Bloom")
+                        self.addQuest(newQuest)
                         return
 
             # ensure traprooms don't fill up

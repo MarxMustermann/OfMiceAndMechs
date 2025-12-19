@@ -122,10 +122,22 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
         text += "\n"
         text += "lastJobOrder: %s\n" % char.lastJobOrder
         text += "skills: %s\n" % char.skills
-        if len(char.duties) > 5:
+        if len(char.duties) < 5:
             text += "duties: %s\n" % ",\n".join(char.duties)
         else:
-            text += "duties: %s\n" % char.duties
+            text += "duties: "
+            duties_to_show = char.duties[:]
+            counter = 0
+            while duties_to_show:
+                text += "%s" % duties_to_show.pop(0)
+                if duties_to_show:
+                    if counter > 5:
+                        text += ",\n      "
+                        counter = 0
+                    else:
+                        text += ", "
+                        counter += 1
+            text += "\n" % char.duties
         text += "numAttackedWithoutResponse: %s\n" % char.numAttackedWithoutResponse
         text += f"position: {char.getSpacePosition()}\n"
         text += f"big position: {char.getBigPosition()}\n"

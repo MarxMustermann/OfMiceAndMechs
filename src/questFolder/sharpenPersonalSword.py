@@ -73,7 +73,7 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
             if submenue.tag == "applyOptionSelection" and submenue.extraInfo.get("item").type == "SwordSharpener":
                 command = submenue.get_command_to_select_option("sharpen equipped sword")
                 if command:
-                    return (None,(action,"use SwordSharpener"))
+                    return (None,(command,"use SwordSharpener"))
             if submenue.tag == "SwordSharpenerSlider":
                 return (None,("j","sharpen the sword"))
             

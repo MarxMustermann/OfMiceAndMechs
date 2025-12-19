@@ -48,6 +48,7 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
             options.append(("byName","produce by name"))
             submenue = src.menuFolder.selectionMenu.SelectionMenu("what item to produce?",options,targetParamName="type")
             submenue.tag = "alchemyTableProductSelection"
+            submenue.extraInfo["item"] = self
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"producePotion","params":params}
             return
@@ -80,6 +81,7 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
         if not "amount" in params:
             submenue = src.menuFolder.inputMenu.InputMenu("Type how many of the items produce",targetParamName="rawAmount")
             submenue.tag = "metalWorkingAmountInput"
+            submenue.extraInfo["item"] = self
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"producePotion","params":params}
             return

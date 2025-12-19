@@ -59,7 +59,7 @@ farm mold on the tile {self.targetPosition}"""
             return self._solver_trigger_fail(dryRun,"blocked by room")
 
         # ensure minumum health
-        if character.health < 30:
+        if character.health < 50:
             return self._solver_trigger_fail(dryRun,"low health")
 
         if character.getBigPosition() != (self.targetPosition[0], self.targetPosition[1], 0):
@@ -137,10 +137,18 @@ farm mold on the tile {self.targetPosition}"""
     def pickedUpItem(self,extraInfo):
         self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
+    def handleHurt(self,extraInfo=None):
+        if not self.character:
+            return
+
+        if self.character.health < 50:
+            self.fail("low health")
+
     def assignToCharacter(self, character):
         if self.character:
             return None
 
+        self.startWatching(character,self.handleHurt, "hurt")
         self.startWatching(character,self.pickedUpItem, "itemPickedUp")
         return super().assignToCharacter(character)
 

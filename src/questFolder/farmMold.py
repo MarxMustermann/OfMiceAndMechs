@@ -62,7 +62,7 @@ farm mold"""
             return (None,None)
 
         # ensure minumum health
-        if character.health < 30:
+        if character.health < 50:
             return self._solver_trigger_fail(dryRun,"low health")
 
         # search for blooms to pick
@@ -136,6 +136,20 @@ farm mold"""
         if not dryRun:
             beUsefull.idleCounter = 0
         return ([quest],None)
+
+    def handleHurt(self,extraInfo=None):
+        if not self.character:
+            return
+
+        if self.character.health < 50:
+            self.fail("low health")
+
+    def assignToCharacter(self, character):
+        if self.character:
+            return None
+
+        self.startWatching(character,self.handleHurt, "hurt")
+        return super().assignToCharacter(character)
 
 # register the quest type
 src.quests.addType(FarmMold)

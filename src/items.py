@@ -418,9 +418,6 @@ class Item:
             character: the character picking up the item
         """
 
-        if src.gamestate.gamestate.mainChar in character.container.characters:
-            src.interaction.playSound("itemPickedUp","actions")
-
         oldPos = self.getPosition()
 
         # gather the actions

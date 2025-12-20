@@ -208,11 +208,16 @@ Go out and adventure on tile {self.targetTerrain}.
 
     def handleChangedTile(self, extraInfo=None):
         pos = extraInfo.get("old_pos")
-        if not pos in self.getRemainingPointsOfInterests():
-            return
-        if pos in self.donePointsOfInterest:
-            return
-        self.donePointsOfInterest.append(pos)
+        if pos in self.getRemainingPointsOfInterests() and not pos in self.donePointsOfInterest:
+            self.donePointsOfInterest.append(pos)
+        pos = extraInfo.get("new_pos")
+        if pos in self.getRemainingPointsOfInterests() and not pos in self.donePointsOfInterest:
+            self.donePointsOfInterest.append(pos)
+
+    def handleEnteredRoom(self, extraInfo=None):
+        pos = extraInfo[1].getPosition()
+        if pos in self.getRemainingPointsOfInterests() and not pos in self.donePointsOfInterest:
+            self.donePointsOfInterest.append(pos)
 
     def assignToCharacter(self, character):
         '''
@@ -222,6 +227,7 @@ Go out and adventure on tile {self.targetTerrain}.
             return
 
         self.startWatching(character,self.handleChangedTile, "changedTile")
+        self.startWatching(character,self.handleEnteredRoom, "entered room")
         super().assignToCharacter(character)
 
 src.quests.addType(AdventureOnTerrain)

@@ -154,7 +154,7 @@ class AdvancedQuestMenu(src.subMenu.SubMenu):
                     self.selection += key
 
                 if not noRender:
-                    src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.selection+"\n\n%s"%(self.activeChar.questsDone)))
+                    src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), "name: "+self.selection+"\n\n"))
                 return False
 
         # let the player select the parameters for the quest

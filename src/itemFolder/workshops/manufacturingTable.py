@@ -41,15 +41,11 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
         self.priority = 0
 
     def boltAction(self, character):
-        if hasattr(self,"numUsed"):
-            self.numUsed = 0
-
+        self.numUsed = 0
         super().boltAction(character)
 
     def unboltAction(self, character):
-        if hasattr(self,"numUsed"):
-            self.numUsed = 0
-
+        self.numUsed = 0
         super().unboltAction(character)
 
     """

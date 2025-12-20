@@ -607,6 +607,13 @@ def spawnSpawnRoom(terrain, coordinate, faction, doors="0,6 6,0 6,12 12,6"):
     else: # VARIANT
         spawnedRoom.addStorageSlot((9, 5, 0), "Bloom", {"desiredState": "filled"})
 
+    if random.random() < 0.25: # VARIANT: 
+        spawnedRoom.addInputSlot((8, 6, 0), "ManaCrystal")
+    elif random.random() < 0.25: # VARIANT: 
+        spawnedRoom.addInputSlot((9, 6, 0), "ManaCrystal")
+    else:
+        pass
+
     if random.random() < 0.8: # VARIANT
         spawnedRoom.addStorageSlot((2, 10, 0), "Bloom", {"desiredState": "filled"})
     else: # VARIANT

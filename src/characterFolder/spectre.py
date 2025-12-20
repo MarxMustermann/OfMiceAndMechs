@@ -59,6 +59,9 @@ class Spectre(src.monster.Monster):
         self.registers["HOMEy"] = 7
         self.personality["moveItemsOnCollision"] = False
 
+        self.faction = "spectre"
+        self.tag = "spectre"
+
     def advance(self,advanceMacros=False):
         if not self.quests:
             self.die()

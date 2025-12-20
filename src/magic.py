@@ -903,8 +903,6 @@ def spawnWaves():
                 enemy.health = int(baseHealth*2*multipliers[0]**numGlassHeartsOnPos)
                 enemy.maxHealth = enemy.health
                 enemy.baseDamage = int(baseDamage+1*multipliers[1]**numGlassHeartsOnPos)
-                enemy.faction = "spectre"
-                enemy.tag = "spectre"
                 enemy.movementSpeed = 2
                 enemy.registers["HOMETx"] = spectreHome[0]
                 enemy.registers["HOMETy"] = spectreHome[1]
@@ -948,8 +946,6 @@ def spawnWaves():
                 enemy.maxHealth = enemy.health
                 #enemy.baseDamage = int((5+(src.gamestate.gamestate.tick//(15*15*15))/10)*1.1**numGlassHeartsOnPos)
                 enemy.baseDamage = int(baseDamage+3*multipliers[3]**numGlassHeartsOnPos)
-                enemy.faction = "spectre"
-                enemy.tag = "spectre"
                 enemy.movementSpeed = 1.8
                 enemy.registers["HOMETx"] = spectreHome[0]
                 enemy.registers["HOMETy"] = spectreHome[1]

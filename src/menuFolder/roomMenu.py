@@ -99,7 +99,7 @@ class RoomMenu(src.subMenu.SubMenu):
         """
 
         # exit the submenu
-        if key in ("esc",):
+        if key in ("esc","r",):
             self.done = True
             return True
         return None

@@ -332,7 +332,7 @@ The target tile is {direction[4:]}
                     quest = src.quests.questMap["Flee"]()
                     return ([quest],None)
                 else:
-                    quest = src.quests.questMap["Fight"]()
+                    quest = src.quests.questMap["Fight"](suicidal=self.suicidal)
                     return ([quest],None)
 
             # check path and fail if appropriate
@@ -391,7 +391,7 @@ The target tile is {direction[4:]}
                     quest = src.quests.questMap["Flee"]()
                     return ([quest],None)
                 else:
-                    quest = src.quests.questMap["Fight"]()
+                    quest = src.quests.questMap["Fight"](suicidal=self.suicidal)
                     return ([quest],None)
 
             # chack and regenerate path

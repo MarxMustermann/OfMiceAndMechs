@@ -149,6 +149,10 @@ class NPCsOverlay:
                             char = character.name[0]+character.name.split(" ")[1][0]
                         else:
                             char = character.name[0]+character.name[1]
+                        if character.burnedIn:
+                            char = char.lower()
+                        else:
+                            char = char.upper()
                     else:
                         char = "Gu"
                 elif viewChar == "faction":

@@ -12,15 +12,16 @@ class ClearTile(src.quests.MetaQuestSequence):
     def __init__(self, description="clean tile", creator=None, targetPositionBig=None, noDelegate=False, reason=None, story=None):
         questList = []
         super().__init__(questList, creator=creator)
-        self.metaDescription = description+" "+str(targetPositionBig)
+        self.metaDescription = description
+        if targetPositionBig:
+            self.metaDescription += " "+str(targetPositionBig)
         self.baseDescription = description
         self.reason = reason
         self.story = story
 
         self.timesDelegated = 0
 
-        if targetPositionBig:
-            self.setParameters({"targetPositionBig":targetPositionBig})
+        self.targetPositionBig = targetPositionBig
 
         self.noDelegate = noDelegate
 
@@ -112,6 +113,12 @@ Remove all items from the walkways that are not bolted down."""
         if not character:
             return (None,None)
 
+        # guess missing parameters
+        if not self.targetPositionBig:
+            if not dryRun:
+                self.targetPositionBig = character.getBigPosition()
+            return (None,("+","set current position as target"))
+
         # abort if threatended
         if character.getNearbyEnemies():
             return self._solver_trigger_fail(dryRun,"nearby enemies")
@@ -201,7 +208,11 @@ Remove all items from the walkways that are not bolted down."""
         else:
             terrain  = character.container
 
-        rooms = terrain.getRoomByPosition(self.targetPositionBig)
+        targetPositionBig = self.targetPositionBig
+        if not targetPositionBig:
+            targetPositionBig = character.getBigPosition()
+
+        rooms = terrain.getRoomByPosition(targetPositionBig)
         room = None
         if rooms:
             room = rooms[0]
@@ -224,11 +235,6 @@ Remove all items from the walkways that are not bolted down."""
             foundItems.append(items[0])
 
         return foundItems
-
-    def getRequiredParameters(self):
-        parameters = super().getRequiredParameters()
-        parameters.append({"name":"targetPositionBig","type":"coordinate"})
-        return parameters
 
 # register quest type
 src.quests.addType(ClearTile)

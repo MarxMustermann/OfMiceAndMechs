@@ -145,6 +145,7 @@ class ViewNPCsMenu(src.subMenu.SubMenu):
                     x += 1
                 self.persistentText.append("\n")
                 y += 1
+        self.persistentText.append("\nburned in: %s"%(selectedCharacter.burnedIn))
         self.persistentText.append("\nrank: %s"%(selectedCharacter.rank))
         self.persistentText.append("\ninventory: ")
         for item in selectedCharacter.inventory:

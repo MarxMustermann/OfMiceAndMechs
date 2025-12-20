@@ -55,16 +55,6 @@ class KnowledgeBase(src.items.Item):
             options["b"] = ("bolt down", self.boltAction)
         return options
 
-    def boltAction(self,character):
-        self.bolted = True
-        character.addMessage("you bolt down the KnowledgeBase")
-        character.changed("boltedItem",{"character":character,"item":self})
-
-    def unboltAction(self,character):
-        self.bolted = False
-        character.addMessage("you unbolt the KnowledgeBase")
-        character.changed("unboltedItem",{"character":character,"item":self})
-
     def getLongInfo(self):
         return """
 item: Spawner

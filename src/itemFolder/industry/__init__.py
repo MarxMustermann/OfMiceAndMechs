@@ -13,3 +13,4 @@ import src.itemFolder.industry.pavingGenerator
 import src.itemFolder.industry.roomBuilder
 import src.itemFolder.industry.scrapCompactor
 import src.itemFolder.industry.scraper
+import src.itemFolder.industry.manaCrystalizer

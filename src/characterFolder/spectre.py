@@ -49,6 +49,10 @@ class Spectre(src.monster.Monster):
             self.name = subType
         self.specialDisplay = (src.interaction.urwid.AttrSpec((100,100,255),"black"),"0O")
 
+        self.registers["HOMEx"] = 7
+        self.registers["HOMEy"] = 7
+        self.personality["moveItemsOnCollision"] = False
+
     def advance(self,advanceMacros=False):
         if not self.quests:
             self.die()

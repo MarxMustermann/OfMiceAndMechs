@@ -908,9 +908,6 @@ def spawnWaves():
                 enemy.movementSpeed = 2
                 enemy.registers["HOMETx"] = spectreHome[0]
                 enemy.registers["HOMETy"] = spectreHome[1]
-                enemy.registers["HOMEx"] = 7
-                enemy.registers["HOMEy"] = 7
-                enemy.personality["moveItemsOnCollision"] = False
 
                 numTries = 0
                 while True:
@@ -956,9 +953,6 @@ def spawnWaves():
                 enemy.movementSpeed = 1.8
                 enemy.registers["HOMETx"] = spectreHome[0]
                 enemy.registers["HOMETy"] = spectreHome[1]
-                enemy.registers["HOMEx"] = 7
-                enemy.registers["HOMEy"] = 7
-                enemy.personality["moveItemsOnCollision"] = False
 
                 numTries = 0
                 while True:

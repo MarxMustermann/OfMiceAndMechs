@@ -328,7 +328,7 @@ The target tile is {direction[4:]}
                         quest = src.quests.questMap["Flee"](returnHome=True,lifetime=100)
                         return ([quest],None)
             if not self.ignoreEnemies and character.getNearbyEnemies() and isinstance(character,src.characters.characterMap["Clone"]):
-                if (character.health < character.maxHealth//5 or self.paranoid) and not self.sucidal:
+                if (character.health < character.maxHealth//5 or self.paranoid) and not self.suicidal:
                     quest = src.quests.questMap["Flee"]()
                     return ([quest],None)
                 else:

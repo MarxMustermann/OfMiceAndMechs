@@ -119,7 +119,6 @@ class AdvancedQuestMenu(src.subMenu.SubMenu):
                     options.append(("ScavengeTile", "ScavengeTile"))
                     options.append(("ClearInventory", "ClearInventory"))
                     options.append(("BeUsefull", "BeUsefull"))
-                    options.append(("BeUsefullOnTile", "BeUsefullOnTile"))
                     options.append(("Equip", "Equip"))
                     options.append(("Eat", "Eat"))
                     options.append(("FillFlask", "FillFlask"))

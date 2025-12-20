@@ -66,20 +66,9 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
             options["b"] = ("bolt down", self.boltAction)
         return options
 
-    def boltAction(self, character):
-        self.bolted = True
-        character.addMessage("you bolt down the GrowthTank")
-        character.changed("boltedItem", {"character": character, "item": self})
-
-    def unboltAction(self, character):
-        self.bolted = False
-        character.addMessage("you unbolt the GrowthTank")
-        character.changed("unboltedItem", {"character": character, "item": self})
-
     """
     manually eject character
     """
-
     def apply(self, character):
         """
         refill or spawn a new npc depending on fill status

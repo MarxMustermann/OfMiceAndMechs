@@ -51,7 +51,7 @@ Try luring enemies into landmines or detonating some bombs."""
             return
         self.triggerCompletionCheck(extraInfo["character"],dryRun=False)
 
-    def handleTileChange2(self):
+    def handleTileChange2(self,extraInfo={}):
         if not self.active:
             return
         self.triggerCompletionCheck(self.character,dryRun=False)

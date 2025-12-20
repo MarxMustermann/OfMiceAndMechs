@@ -49,16 +49,6 @@ class Door(src.items.Item):
         character.changed("unblockedDoor",{"character":character,"item":self})
         self.walkable = True
 
-    def boltAction(self,character):
-        self.bolted = True
-        character.addMessage("you bolt down the Door")
-        character.changed("boltedItem",{"character":character,"item":self})
-
-    def unboltAction(self,character):
-        self.bolted = False
-        character.addMessage("you unbolt the Door")
-        character.changed("unboltedItem",{"character":character,"item":self})
-
     def render(self):
         """
         render depending on state

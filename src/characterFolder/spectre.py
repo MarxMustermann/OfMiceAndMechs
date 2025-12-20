@@ -45,9 +45,15 @@ class Spectre(src.monster.Monster):
             characterId=characterId,
         )
         self.charType = "Spectre"
+
         if subType:
             self.name = subType
+
         self.specialDisplay = (src.interaction.urwid.AttrSpec((100,100,255),"black"),"0O")
+        if subType == "killerSpectre":
+            self.specialDisplay = (src.interaction.urwid.AttrSpec((100,100,255),"black"),"0K")
+        if subType == "stealerSpectre":
+            self.specialDisplay = (src.interaction.urwid.AttrSpec((100,100,255),"black"),"0S")
 
         self.registers["HOMEx"] = 7
         self.registers["HOMEy"] = 7

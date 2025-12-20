@@ -122,7 +122,7 @@ class SpawnClone(src.quests.MetaQuestSequence):
                             continue
                         numItems += 1
                 if numItems > 4:
-                    newQuest = src.quests.questMap["ClearTile"](targetPosition=room.getPosition())
+                    newQuest = src.quests.questMap["ClearTile"](targetPositionBig=room.getPosition())
                     self.addQuest(newQuest)
                     self.startWatching(newQuest,self.handleQuestFailure,"failed")
                     return

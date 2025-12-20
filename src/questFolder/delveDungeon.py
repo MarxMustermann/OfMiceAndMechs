@@ -198,7 +198,7 @@ suicidal"""
                     if numItems > 4:
                         # clean the trap room yourself
                         quests = []
-                        quest = src.quests.questMap["ClearTile"](targetPosition=room.getPosition())
+                        quest = src.quests.questMap["ClearTile"](targetPositionBig=room.getPosition())
                         quests.append(quest)
 
                         # ensure at least one Clone has Room building as highest prio

@@ -9,18 +9,18 @@ class ClearTile(src.quests.MetaQuestSequence):
     '''
     type = "ClearTile"
     lowLevel = True
-    def __init__(self, description="clean tile", creator=None, targetPosition=None, noDelegate=False, reason=None, story=None):
+    def __init__(self, description="clean tile", creator=None, targetPositionBig=None, noDelegate=False, reason=None, story=None):
         questList = []
         super().__init__(questList, creator=creator)
-        self.metaDescription = description+" "+str(targetPosition)
+        self.metaDescription = description+" "+str(targetPositionBig)
         self.baseDescription = description
         self.reason = reason
         self.story = story
 
         self.timesDelegated = 0
 
-        if targetPosition:
-            self.setParameters({"targetPosition":targetPosition})
+        if targetPositionBig:
+            self.setParameters({"targetPositionBig":targetPositionBig})
 
         self.noDelegate = noDelegate
 
@@ -37,7 +37,7 @@ class ClearTile(src.quests.MetaQuestSequence):
 
         if self.character.rank == 3:
             text = f"""{storyString}
-Ensure that the trap room on {self.targetPosition} is cleaned{reasonString}.
+Ensure that the trap room on {self.targetPositionBig} is cleaned{reasonString}.
 
 Since you are the commander of the base you can make other people do it.
 Send the rank 5-6 NPCs and proceed to do something else in the meantime.
@@ -55,7 +55,7 @@ If the task is not completed after some time, reload the trap room yourself.
 Use the shockers in the trap room for this."""
         else:
             text = f"""{storyString}
-Clean the room on tile {self.targetPosition}{reasonString}.
+Clean the room on tile {self.targetPositionBig}{reasonString}.
 
 Remove all items from the walkways that are not bolted down."""
         return text
@@ -94,9 +94,9 @@ Remove all items from the walkways that are not bolted down."""
         '''
         set the parameters ina indirect way (obsolete)
         '''
-        if "targetPosition" in parameters and "targetPosition" in parameters:
-            self.targetPosition = parameters["targetPosition"]
-            self.metaDescription = self.baseDescription+" "+str(self.targetPosition)
+        if "targetPositionBig" in parameters and "targetPositionBig" in parameters:
+            self.targetPositionBig = parameters["targetPositionBig"]
+            self.metaDescription = self.baseDescription+" "+str(self.targetPositionBig)
         return super().setParameters(parameters)
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
@@ -137,7 +137,7 @@ Remove all items from the walkways that are not bolted down."""
                 return (None,("d","enter tile"))
 
         # go to the tile to clean up
-        if character.getBigPosition() != (self.targetPosition[0], self.targetPosition[1], 0):
+        if character.getBigPosition() != (self.targetPositionBig[0], self.targetPositionBig[1], 0):
             quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
             return ([quest],None)
 
@@ -201,7 +201,7 @@ Remove all items from the walkways that are not bolted down."""
         else:
             terrain  = character.container
 
-        rooms = terrain.getRoomByPosition(self.targetPosition)
+        rooms = terrain.getRoomByPosition(self.targetPositionBig)
         room = None
         if rooms:
             room = rooms[0]
@@ -227,7 +227,7 @@ Remove all items from the walkways that are not bolted down."""
 
     def getRequiredParameters(self):
         parameters = super().getRequiredParameters()
-        parameters.append({"name":"targetPosition","type":"coordinate"})
+        parameters.append({"name":"targetPositionBig","type":"coordinate"})
         return parameters
 
 # register quest type

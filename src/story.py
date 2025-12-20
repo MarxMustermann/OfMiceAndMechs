@@ -3075,7 +3075,7 @@ but they are likely to explode when disturbed.
                                 continue
                             hasEnemy = True
                         if not hasEnemy:
-                            quest = src.quests.questMap["ClearTile"](description="clean up trap room",targetPosition=room.getPosition(),reason="clean the trap room.\n\nThe trap room relies on TriggerPlates to work.\nThose only work, if there are no items ontop of them.\nRestore the defence by removing the enemies remains.\nAvoid any enemies entering the trap room while you work",story="You reach out to your implant and it answers:\n\nThe main defence of the base is the trap room,\nit needs to be cleaned to ensure it works correctly.")
+                            quest = src.quests.questMap["ClearTile"](description="clean up trap room",targetPositionBig=room.getPosition(),reason="clean the trap room.\n\nThe trap room relies on TriggerPlates to work.\nThose only work, if there are no items ontop of them.\nRestore the defence by removing the enemies remains.\nAvoid any enemies entering the trap room while you work",story="You reach out to your implant and it answers:\n\nThe main defence of the base is the trap room,\nit needs to be cleaned to ensure it works correctly.")
                             self.addQuest(quest,mainChar)
                             return
 

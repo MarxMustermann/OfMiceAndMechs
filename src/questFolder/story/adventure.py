@@ -82,7 +82,7 @@ class Adventure(src.quests.MetaQuestSequence):
                             continue
                         numItems += 1
                 if numItems > 4:
-                    quest = src.quests.questMap["ClearTile"](targetPosition=room.getPosition())
+                    quest = src.quests.questMap["ClearTile"](targetPositionBig=room.getPosition())
                     return ([quest],None)
 
         if not character.weapon or not character.armor:

@@ -517,7 +517,7 @@ Press d to move the cursor and show the subquests description.
                     for item in character.room.getItemByPosition(walkingSpace):
                         if item.bolted:
                             break
-                        newQuest = src.quests.questMap["ClearTile"](targetPosition=character.getBigPosition())
+                        newQuest = src.quests.questMap["ClearTile"](targetPositionBig=character.getBigPosition())
                         self.addQuest(newQuest)
                         self.startWatching(newQuest,self.handleQuestFailure,"failed")
                         return

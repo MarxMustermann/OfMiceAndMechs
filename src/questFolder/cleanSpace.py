@@ -218,7 +218,7 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
                         quest = src.quests.questMap["ClearInventory"](reason="have space to pick up items (duty: clean)")
                         beUsefull.idleCounter = 0
                         return ([quest],None)
-                    quest = src.quests.questMap["ClearTile"](targetPosition=room.getPosition(),reason="tidy up the room (duty: clean)")
+                    quest = src.quests.questMap["ClearTile"](targetPositionBig=room.getPosition(),reason="tidy up the room (duty: clean)")
                     if not dryRun:
                         beUsefull.idleCounter = 0
                     return ([quest],None)

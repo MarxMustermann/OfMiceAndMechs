@@ -227,7 +227,7 @@ class BecomeStronger(src.quests.MetaQuestSequence):
                         continue
                     numItems += 1
             if numItems > 2:
-                quest = src.quests.questMap["ClearTile"](targetPosition=room.getPosition())
+                quest = src.quests.questMap["ClearTile"](targetPositionBig=room.getPosition())
                 return ([quest],None)
 
         # ensure to have free inventory space

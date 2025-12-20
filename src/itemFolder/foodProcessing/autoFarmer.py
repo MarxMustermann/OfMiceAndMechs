@@ -175,14 +175,4 @@ class AutoFarmer(src.items.Item):
             options["b"] = ("bolt down", self.boltAction)
         return options
 
-    def boltAction(self,character):
-        self.bolted = True
-        character.addMessage("you bolt down the AutoFarmer")
-        character.changed("boltedItem",{"character":character,"item":self})
-
-    def unboltAction(self,character):
-        self.bolted = False
-        character.addMessage("you unbolt the AutoFarmer")
-        character.changed("unboltedItem",{"character":character,"item":self})
-
 src.items.addType(AutoFarmer)

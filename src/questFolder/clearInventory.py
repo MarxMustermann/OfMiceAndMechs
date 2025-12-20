@@ -48,7 +48,7 @@ To see your items open the your inventory by pressing i."""
         '''
         self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
-    def handleTileChange(self):
+    def handleTileChange(self,extraInfo=None):
         '''
         hande the character having moved
         '''

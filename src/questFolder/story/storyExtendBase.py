@@ -30,7 +30,7 @@ class StoryExtendBase(src.quests.MetaQuestSequence):
                         continue
                     if item.type in ("Wall","Scrap",):
                         continue
-                    quest = src.quests.questMap["LootRoom"](targetPosition=character.getBigPosition())
+                    quest = src.quests.questMap["LootRoom"](targetPositionBig=character.getBigPosition())
                     return ([quest],None)
 
         # ensure healing for the clones

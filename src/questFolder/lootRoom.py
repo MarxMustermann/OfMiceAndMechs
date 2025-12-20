@@ -8,10 +8,10 @@ logger = logging.getLogger(__name__)
 class LootRoom(src.quests.MetaQuestSequence):
     type = "LootRoom"
 
-    def __init__(self, description="loot room", creator=None, targetPosition=None, reason=None, story=None, endWhenFull=False):
+    def __init__(self, description="loot room", creator=None, targetPositionBig=None, reason=None, story=None, endWhenFull=False):
         questList = []
         super().__init__(questList, creator=creator)
-        self.metaDescription = description+" "+str(targetPosition)
+        self.metaDescription = description+" "+str(targetPositionBig)
         self.baseDescription = description
         self.reason = reason
         self.story = story
@@ -19,8 +19,8 @@ class LootRoom(src.quests.MetaQuestSequence):
 
         self.visited_target_tile = False
 
-        if targetPosition:
-            self.setParameters({"targetPosition":targetPosition})
+        if targetPositionBig:
+            self.setParameters({"targetPositionBig":targetPositionBig})
 
     def generateTextDescription(self):
         reasonString = ""
@@ -31,13 +31,13 @@ class LootRoom(src.quests.MetaQuestSequence):
             storyString = self.story
 
         text = f"""{storyString}
-Loot the room on tile {self.targetPosition}{reasonString}.
+Loot the room on tile {self.targetPositionBig}{reasonString}.
 
 Remove all items that are not bolted down."""
         return text
 
     def changedTile(self, extraInfo=None):
-        if self.targetPosition == self.character.getBigPosition():
+        if self.targetPositionBig == self.character.getBigPosition():
             self.visited_target_tile = True
         else:
             if self.visited_target_tile:
@@ -47,7 +47,7 @@ Remove all items that are not bolted down."""
         if self.character:
             return
 
-        if self.targetPosition == character.getBigPosition():
+        if self.targetPositionBig == character.getBigPosition():
             self.visited_target_tile = True
 
         self.startWatching(character,self.changedTile, "changedTile")
@@ -62,7 +62,7 @@ Remove all items that are not bolted down."""
         if not character:
             return False
 
-        if character.getBigPosition() != (self.targetPosition[0], self.targetPosition[1], 0):
+        if character.getBigPosition() != (self.targetPositionBig[0], self.targetPositionBig[1], 0):
             return False
 
         if self.endWhenFull and character.getFreeInventorySpace(ignoreTypes=["Bolt"]) == 0:
@@ -78,9 +78,9 @@ Remove all items that are not bolted down."""
         return False
 
     def setParameters(self,parameters):
-        if "targetPosition" in parameters and "targetPosition" in parameters:
-            self.targetPosition = parameters["targetPosition"]
-            self.metaDescription = self.baseDescription+" "+str(self.targetPosition)
+        if "targetPositionBig" in parameters and "targetPositionBig" in parameters:
+            self.targetPositionBig = parameters["targetPositionBig"]
+            self.metaDescription = self.baseDescription+" "+str(self.targetPositionBig)
         return super().setParameters(parameters)
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
@@ -129,8 +129,8 @@ Remove all items that are not bolted down."""
             if character.xPosition%15 == 0:
                 return (None,("d","enter tile"))
 
-        if character.getBigPosition() != (self.targetPosition[0], self.targetPosition[1], 0):
-            quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
+        if character.getBigPosition() != (self.targetPositionBig[0], self.targetPositionBig[1], 0):
+            quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig)
             return ([quest],None)
 
         charPos = character.getPosition()
@@ -297,7 +297,7 @@ Remove all items that are not bolted down."""
         if character.container.isRoom:
             itemsOnFloor = character.container.itemsOnFloor
 
-            rooms = terrain.getRoomByPosition(self.targetPosition)
+            rooms = terrain.getRoomByPosition(self.targetPositionBig)
             room = None
             if rooms:
                 room = rooms[0]
@@ -375,7 +375,7 @@ Remove all items that are not bolted down."""
 
     def getRequiredParameters(self):
         parameters = super().getRequiredParameters()
-        parameters.append({"name":"targetPosition","type":"coordinate"})
+        parameters.append({"name":"targetPositionBig","type":"coordinate"})
         return parameters
 
 src.quests.addType(LootRoom)

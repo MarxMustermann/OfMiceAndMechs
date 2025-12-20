@@ -32,7 +32,7 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
                         continue
                     if item.type in ("Wall","Scrap","MoldFeed","Bolt"):
                         continue
-                    quest = src.quests.questMap["LootRoom"](targetPosition=character.getBigPosition(),endWhenFull=True)
+                    quest = src.quests.questMap["LootRoom"](targetPositionBig=character.getBigPosition(),endWhenFull=True)
                     return ([quest],None)
 
         # ensure healing for the clones

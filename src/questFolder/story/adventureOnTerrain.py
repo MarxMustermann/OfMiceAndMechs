@@ -132,11 +132,11 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
                 if invalidStack:
                     continue
 
-                quest = src.quests.questMap["LootRoom"](targetPosition=character.getBigPosition(),endWhenFull=True)
+                quest = src.quests.questMap["LootRoom"](targetPositionBig=character.getBigPosition(),endWhenFull=True)
                 return ([quest],None)
 
         pointOfInterest = random.choice(pointsOfInterest)
-        quest = src.quests.questMap["LootRoom"](targetPosition=pointOfInterest,endWhenFull=True)
+        quest = src.quests.questMap["LootRoom"](targetPositionBig=pointOfInterest,endWhenFull=True)
         return ([quest],None)
 
     def generateTextDescription(self):

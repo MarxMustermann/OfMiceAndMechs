@@ -138,7 +138,7 @@ Remove all items from the walkways that are not bolted down."""
 
         # go to the tile to clean up
         if character.getBigPosition() != (self.targetPositionBig[0], self.targetPositionBig[1], 0):
-            quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
+            quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig)
             return ([quest],None)
 
         # check for items to pick up directly next to the character

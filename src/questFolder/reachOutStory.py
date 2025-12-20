@@ -13,7 +13,8 @@ class ReachOutStory(src.quests.MetaQuestSequence):
         return False
 
     def handleQuestsOpened(self,extraInfo=None):
-        self.postHandler()
+        if self.character.quests[0] == self:
+            self.postHandler()
 
     def assignToCharacter(self,character):
         if self.character:

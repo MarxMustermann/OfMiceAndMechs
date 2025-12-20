@@ -1317,6 +1317,8 @@ class CityPlaner(src.items.Item):
 
         for pos in self.plannedRooms:
             mapContent[pos[1]][pos[0]] = "xx"
+            if pos == self.plannedRooms[0]:
+                mapContent[pos[1]][pos[0]] = "XX"
         for pos in self.specialPurposeRooms:
             if (pos[0],pos[1]) in functionMap:
                 del functionMap[(pos[0],pos[1])]

@@ -16,6 +16,7 @@ class Spectre(src.monster.Monster):
         name="Spectre",
         creator=None,
         characterId=None,
+        subType = None
     ):
         """
         basic state setting
@@ -44,6 +45,8 @@ class Spectre(src.monster.Monster):
             characterId=characterId,
         )
         self.charType = "Spectre"
+        if subType:
+            self.name = subType
         self.specialDisplay = (src.interaction.urwid.AttrSpec((100,100,255),"black"),"0O")
 
     def advance(self,advanceMacros=False):

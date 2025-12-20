@@ -223,15 +223,4 @@ it holds the command:
         m+= " repeat"
         character.addMessage(m)
 
-    def boltAction(self, character):
-        self.bolted = True
-        character.addMessage("you bolt down the " + self.name)
-        character.changed("boltedItem", {"character": character, "item": self})
-
-    def unboltAction(self, character):
-        self.bolted = False
-        character.addMessage("you unbolt the " + self.name)
-        character.changed("unboltedItem", {"character": character, "item": self})
-
-
 src.items.addType(Command)

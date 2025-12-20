@@ -13,18 +13,6 @@ class WorkShop(src.items.Item):
             options["b"] = ("bolt down", self.boltAction)
         return options
 
-    def boltAction(self, character):
-        if hasattr(self,"numUsed"):
-            self.numUsed = 0
-
-        super().boltAction(character)
-
-    def unboltAction(self, character):
-        if hasattr(self,"numUsed"):
-            self.numUsed = 0
-
-        super().unboltAction(character)
-
     def getInputItems(self):
         result = []
 

@@ -7,6 +7,7 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
         super().__init__()
         self.dutyArtwork = dutyArtwork
         self.index = [0,0]
+        self.cached_npc_order = []
 
     def get_duties(self):
         """
@@ -100,6 +101,13 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
                     npcs.append(char)
         if src.gamestate.gamestate.mainChar in npcs:
             npcs.remove(src.gamestate.gamestate.mainChar)
+
+        # make sure the order doesn't switch during usage
+        for npc in reversed(self.cached_npc_order):
+            if npc in npcs:
+                npcs.remove(npc)
+                npcs.insert(0,npc)
+        self.cached_npc_order = npcs[:]
 
         # set up helper variable
         duties = self.get_duties()

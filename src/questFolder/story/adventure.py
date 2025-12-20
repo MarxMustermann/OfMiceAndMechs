@@ -62,7 +62,7 @@ class Adventure(src.quests.MetaQuestSequence):
             if character.health < character.adjustedMaxHealth:
                 readyCoalBurner = False
                 for room in currentTerrain.rooms:
-                    for coalBurner in room.getItemsByType("CoalBurner"):
+                    for coalBurner in room.getItemsByType("CoalBurner",needsBolted=True):
                         if not coalBurner.getMoldFeed(character):
                             continue
                         readyCoalBurner = True

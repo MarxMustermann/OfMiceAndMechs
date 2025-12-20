@@ -1123,16 +1123,6 @@ class CityPlaner(src.items.Item):
             character.addMessage("set value")
             self.autoExtensionThreashold = value
 
-    def boltAction(self,character):
-        self.bolted = True
-        character.addMessage("you bolt down the CityPlaner")
-        character.changed("boltedItem",{"character":character,"item":self})
-
-    def unboltAction(self,character):
-        self.bolted = False
-        character.addMessage("you unbolt the CityPlaner")
-        character.changed("unboltedItem",{"character":character,"item":self})
-
     def setGeneralPurposeRoomFromMap(self,params):
         self.generalPurposeRooms.append((params["coordinate"][0],params["coordinate"][1],0))
         params["character"].changed("designated room",params)

@@ -106,6 +106,8 @@ Place the items in the correct input or storage stockpile.
         return False
 
     def getNumDrops(self,character):
+        if not self.toRestock:
+            return len(character.inventory)
         numDrops = 0
         for item in reversed(character.inventory):
             if item.type != self.toRestock:
@@ -125,16 +127,20 @@ Place the items in the correct input or storage stockpile.
         super().assignToCharacter(character)
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
+        # handle edge cases
         if self.subQuests:
             return (None,None)
 
+        # handle menus
         if character.macroState["submenue"] and not ignoreCommands:
             if not isinstance(character.macroState["submenue"],src.menuFolder.inventoryMenu.InventoryMenu):
                 return (None,(["esc"],"close the menu"))
 
+        # defend yourself
         if character.getNearbyEnemies():
             return self._solver_trigger_fail(dryRun,"nearby enemies")
 
+        # go to the target
         if self.targetPositionBig and character.getBigPosition() != self.targetPositionBig:
             quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig)
             return ([quest],None)

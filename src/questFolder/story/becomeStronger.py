@@ -27,7 +27,7 @@ class BecomeStronger(src.quests.MetaQuestSequence):
 
         if character.health < character.maxHealth//2:
             if character.canHeal():
-                quest = src.quests.questMap["Heal"]()
+                quest = src.quests.questMap["Heal"](noWaitHeal=True)
                 return ([quest],None)
             else:
                 if not character.isOnHomeTerrain():
@@ -82,7 +82,7 @@ class BecomeStronger(src.quests.MetaQuestSequence):
                     can_heal = True
                     break
             if can_heal:
-                quest = src.quests.questMap["Heal"]()
+                quest = src.quests.questMap["Heal"](noWaitHeal=True)
                 return ([quest],None)
 
         # increase max health
@@ -187,7 +187,7 @@ class BecomeStronger(src.quests.MetaQuestSequence):
                 return ([quest],None)
 
         if character.health < character.maxHealth:
-            quest = src.quests.questMap["Heal"]()
+            quest = src.quests.questMap["Heal"](noWaitHeal=True)
             return ([quest],None)
 
         # count the number of enemies/allies

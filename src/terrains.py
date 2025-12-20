@@ -1853,6 +1853,54 @@ class Terrain:
                     if not (x + 14 * 15 - 1 < coordinateOffset[1] or x + 14 * 15 - 1 > coordinateOffset[1]+size[1]):
                         chars[y-coordinateOffset[0]][x-coordinateOffset[1] + 14 * 15 - 1] = forceField
 
+            #draw extended boundaries 
+            for room in self.rooms:
+                pos = room.getPosition()
+                if not room.getPositionWalkable((6,0,0)):
+                    raw_position_x = room.xPosition*15
+                    raw_position_y = (room.yPosition-1)*15
+                    left_end = raw_position_x-coordinateOffset[1]
+                    top_end = raw_position_y-coordinateOffset[0]
+                    for offset in [(14,7),(15,7)]:
+                        y = top_end+offset[0]
+                        x = left_end+offset[1]
+                        if x < 0 or y <0 or x > size[1] or y > size[0]:
+                            continue
+                        chars[y][x] = forceField
+                if not room.getPositionWalkable((6,12,0)):
+                    raw_position_x = room.xPosition*15
+                    raw_position_y = (room.yPosition+1)*15
+                    left_end = raw_position_x-coordinateOffset[1]
+                    top_end = raw_position_y-coordinateOffset[0]
+                    for offset in [(-1,7),(0,7)]:
+                        y = top_end+offset[0]
+                        x = left_end+offset[1]
+                        if x < 0 or y <0 or x > size[1] or y > size[0]:
+                            continue
+                        chars[y][x] = forceField
+                if not room.getPositionWalkable((0,6,0)):
+                    raw_position_x = (room.xPosition-1)*15
+                    raw_position_y = room.yPosition*15
+                    left_end = raw_position_x-coordinateOffset[1]
+                    top_end = raw_position_y-coordinateOffset[0]
+                    for offset in [(7,14),(7,15)]:
+                        y = top_end+offset[0]
+                        x = left_end+offset[1]
+                        if x < 0 or y <0 or x > size[1] or y > size[0]:
+                            continue
+                        chars[y][x] = forceField
+                if not room.getPositionWalkable((12,6,0)):
+                    raw_position_x = (room.xPosition+1)*15
+                    raw_position_y = room.yPosition*15
+                    left_end = raw_position_x-coordinateOffset[1]
+                    top_end = raw_position_y-coordinateOffset[0]
+                    for offset in [(7,-1),(7,0)]:
+                        y = top_end+offset[0]
+                        x = left_end+offset[1]
+                        if x < 0 or y <0 or x > size[1] or y > size[0]:
+                            continue
+                        chars[y][x] = forceField
+
             # show/hide rooms
             for room in self.rooms:
                 if src.gamestate.gamestate.mainChar.room == room:

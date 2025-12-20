@@ -88,7 +88,7 @@ class BrewPotion(src.quests.MetaQuestSequence):
                 amount = self.amount
                 if amount is None:
                     amount = submenue.extraInfo["item"].get_amount_producable(self.potionType,character)
-                return (None,submenue.get_command_to_input(str(amount)),"enter amount to produce")
+                return (None,(submenue.get_command_to_input(str(amount)),"enter amount to produce"))
             return (None,(["esc"],"exit submenu"))
 
         terrain = character.getTerrain()

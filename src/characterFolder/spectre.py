@@ -43,7 +43,7 @@ class Spectre(src.monster.Monster):
             creator=creator,
             characterId=characterId,
         )
-        self.charType = "Golem"
+        self.charType = "Spectre"
         self.specialDisplay = (src.interaction.urwid.AttrSpec((100,100,255),"black"),"0O")
 
     def advance(self,advanceMacros=False):

@@ -225,13 +225,19 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
 
             # get highest duty
             highest_priority = 1
+            second_highest_priority = 1
             multiple_highest = False
             for priority in npc.dutyPriorities.values():
                 if priority == highest_priority:
                     multiple_highest = True
+                    continue
                 if priority > highest_priority:
+                    second_highest_priority = highest_priority
                     highest_priority = priority
                     multiple_highest = False
+                    continue
+                if priority > second_highest_priority:
+                    second_highest_priority = priority
 
             # add the duties
             rowCounter = 0
@@ -241,6 +247,8 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
                 if rowCounter == self.index[1] or lineCounter == self.index[0]:
                     background_color = "#333"
                 foreground_color = "default"
+                if npc.dutyPriorities.get(duty,1) == second_highest_priority and not multiple_highest:
+                    foreground_color = "#f94"
                 if npc.dutyPriorities.get(duty,1) == highest_priority:
                     if multiple_highest:
                         foreground_color = "#f83"

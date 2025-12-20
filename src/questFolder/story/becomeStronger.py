@@ -187,8 +187,16 @@ class BecomeStronger(src.quests.MetaQuestSequence):
                 return ([quest],None)
 
         if character.health < character.maxHealth:
-            quest = src.quests.questMap["Heal"](noWaitHeal=True)
-            return ([quest],None)
+            can_heal = character.canHeal()
+            for room in terrain.rooms:
+                for item in room.getItemsByType("CoalBurner"):
+                    if not item.getMoldFeed(character):
+                        continue
+                    can_heal = True
+                    break
+            if can_heal:
+                quest = src.quests.questMap["Heal"](noWaitHeal=True)
+                return ([quest],None)
 
         # count the number of enemies/allies
         npcCount = 0

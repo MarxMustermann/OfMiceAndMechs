@@ -119,9 +119,6 @@ class AdvancedQuestMenu(src.subMenu.SubMenu):
                     options.append(("ScavengeTile", "ScavengeTile"))
                     options.append(("ClearInventory", "ClearInventory"))
                     options.append(("BeUsefull", "BeUsefull"))
-                    options.append(("Equip", "Equip"))
-                    options.append(("Eat", "Eat"))
-                    options.append(("FillFlask", "FillFlask"))
                     self.setOptions("what type of quest: (press N for quest by name)", options)
 
                 # let the superclass handle the actual selection

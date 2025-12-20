@@ -219,5 +219,19 @@ class ReportArchive(src.items.Item):
 
         self.read(self.fragments_unlocked-1, character)
 
+    def getConfigurationOptions(self, character):
+        '''
+        register the configuration options with superclass
+
+        Parameters:
+            character: the character trying to conigure the machine
+        '''
+        options = super().getConfigurationOptions(character)
+        if self.bolted:
+            options["b"] = ("unbolt", self.unboltAction)
+        else:
+            options["b"] = ("bolt down", self.boltAction)
+        return options
+
 # register item type
 src.items.addType(ReportArchive)

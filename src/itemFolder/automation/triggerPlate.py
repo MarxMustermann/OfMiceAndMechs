@@ -159,14 +159,4 @@ class TriggerPlate(src.items.Item):
         character.macroState["submenue"] = submenue
         character.macroState["submenue"].followUp = {"container":self,"method":"configureTargetPosition","params":params}
 
-    def boltAction(self,character):
-        self.bolted = True
-        character.addMessage("you bolt down the Statue")
-        character.changed("boltedItem",{"character":character,"item":self})
-
-    def unboltAction(self,character):
-        self.bolted = False
-        character.addMessage("you unbolt the Statue")
-        character.changed("unboltedItem",{"character":character,"item":self})
-
 src.items.addType(TriggerPlate)

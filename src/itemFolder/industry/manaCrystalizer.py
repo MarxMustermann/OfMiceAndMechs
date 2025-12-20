@@ -18,7 +18,7 @@ class ManaCrystalizer(src.items.Item):
 
     def apply(self, character):
         # spawn mana crystal
-        new = src.items.itemMap["ManaCrystal"](amount=1)
+        new = src.items.itemMap["ManaCrystal"]()
         self.container.addItem(new,(self.xPosition + 1,self.yPosition,self.zPosition))
         character.addMessage("you crystalize some mana")
 

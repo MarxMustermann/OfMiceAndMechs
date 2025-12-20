@@ -74,4 +74,12 @@ class Integrator(src.items.Item):
         self.container.addAnimation(character.getPosition(),"showchar",1,{"char":"OO"})
         self.container.addAnimation(self.getPosition(),"showchar",1,{"char":"OO"})
 
+    def getConfigurationOptions(self, character):
+        options = super().getConfigurationOptions(character)
+        if self.bolted:
+            options["b"] = ("unbolt", self.unboltAction)
+        else:
+            options["b"] = ("bolt", self.boltAction)
+        return options
+
 src.items.addType(Integrator)

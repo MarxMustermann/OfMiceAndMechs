@@ -3333,6 +3333,12 @@ Once you understand things try to find better solutions.
         main_char = self.activeStory["mainChar"]
         if not main_char.quests:
             self.reachImplant()
+        if len(main_char.quests) > 1:
+            for quest in main_char.quests:
+                if quest.type == "ReachOutStory":
+                    quest.endTrigger = None
+                    quest.postHandler()
+                    break
 
         event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
         event.setCallback({"container": self, "method": "doMaintenance"})

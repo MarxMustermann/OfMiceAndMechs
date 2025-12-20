@@ -92,21 +92,5 @@ class MapTable(src.items.Item):
             options["b"] = ("bolt down", self.boltAction)
         return options
 
-    def boltAction(self,character):
-        '''
-        bult down item
-        '''
-        self.bolted = True
-        character.addMessage("you bolt down the MapTable")
-        character.changed("boltedItem",{"character":character,"item":self})
-
-    def unboltAction(self,character):
-        '''
-        bult down item
-        '''
-        self.bolted = False
-        character.addMessage("you unbolt the MapTable")
-        character.changed("unboltedItem",{"character":character,"item":self})
-
 # register item type
 src.items.addType(MapTable)

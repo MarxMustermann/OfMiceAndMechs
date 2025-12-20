@@ -51,7 +51,7 @@ class GoToTile(src.quests.MetaQuestSequence):
         character = extraInfo[0]
         self.triggerCompletionCheck(dryRun=False,character=character)
 
-    def handleChangedTile(self):
+    def handleChangedTile(self, extraInfo=None):
         '''
         handle the charactar having moved from tile to tile
         '''

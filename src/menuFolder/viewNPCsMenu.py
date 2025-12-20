@@ -58,7 +58,20 @@ class ViewNPCsMenu(src.subMenu.SubMenu):
                 self.index = 0
             self.lastSelectedCharacter = None
 
+        # show general information
         self.persistentText.append(f"{self.index+1} of {len(characters)}\n\n")
+        num_outside = 0
+        num_burned_in = 0
+        for check_character in characters:
+            if not check_character.container.isRoom:
+                num_outside += 1
+            if check_character.burnedIn:
+                num_burned_in += 1
+        num_inside = len(characters)-num_outside
+        num_aware = len(characters)-num_burned_in
+        self.persistentText.append(f"{num_outside} outside {num_inside} inside\n")
+        self.persistentText.append(f"{num_burned_in} burned in {num_aware} fully aware\n")
+        self.persistentText.append(f"\n")
 
         if self.lastSelectedCharacter:
             counter = 0

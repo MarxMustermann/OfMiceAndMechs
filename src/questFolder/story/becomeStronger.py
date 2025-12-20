@@ -168,6 +168,9 @@ class BecomeStronger(src.quests.MetaQuestSequence):
             if manaCrystalAvailable and bloomAvailable and flaskAvailable:
                 for room in terrain.rooms:
                     for item in room.getItemsByType("AlchemyTable",needsBolted=True):
+                        if not character.getFreeInventorySpace():
+                            quest = src.quests.questMap["ClearInventory"]()
+                            return ([quest],None)
                         quest = src.quests.questMap["BrewPotion"](potionType="PermaMaxHealthPotion",amount=None)
                         return ([quest],None)
 

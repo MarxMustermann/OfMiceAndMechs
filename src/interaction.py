@@ -161,6 +161,11 @@ def advanceGame():
                         hasItem = True
                     else:
                         foundEmptyGlassStatue = glassStatue
+            if not hasItem and not foundEmptyGlassStatue:
+                room = random.choice(terrain.rooms)
+                room.clearCoordinate((6,6,0))
+                glass_statue = src.items.itemMap["GlassStatue"](itemID=godId)
+                room.addItem(glass_statue,(6,6,0))
             if not hasItem and foundEmptyGlassStatue:
                 foundEmptyGlassStatue.hasItem = True
 

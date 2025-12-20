@@ -135,9 +135,6 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["LootRoom"](targetPosition=character.getBigPosition(),endWhenFull=True)
                 return ([quest],None)
 
-        if not dryRun:
-            self.donePointsOfInterest.append(character.getBigPosition())
-
         pointOfInterest = random.choice(pointsOfInterest)
         quest = src.quests.questMap["LootRoom"](targetPosition=pointOfInterest,endWhenFull=True)
         return ([quest],None)
@@ -208,5 +205,23 @@ Go out and adventure on tile {self.targetTerrain}.
         if extraInfo["quest"].type == "LootRoom":
             self.donePointsOfInterest.append(extraInfo["quest"].targetPosition)
             return
+
+    def handleChangedTile(self, extraInfo=None):
+        pos = extraInfo.get("old_pos")
+        if not pos in self.getRemainingPointsOfInterests():
+            return
+        if pos in self.donePointsOfInterest:
+            return
+        self.donePointsOfInterest.append(pos)
+
+    def assignToCharacter(self, character):
+        '''
+        listen to the character changing the terrain
+        '''
+        if self.character:
+            return
+
+        self.startWatching(character,self.handleChangedTile, "changedTile")
+        super().assignToCharacter(character)
 
 src.quests.addType(AdventureOnTerrain)

@@ -166,14 +166,4 @@ weapon: None
 """
         return result
 
-    def boltAction(self,character):
-        self.bolted = True
-        character.addMessage("you bolt down the ScrapCompactor")
-        character.changed("boltedItem",{"character":character,"item":self})
-
-    def unboltAction(self,character):
-        self.bolted = False
-        character.addMessage("you unbolt the ScrapCompactor")
-        character.changed("unboltedItem",{"character":character,"item":self})
-
 src.items.addType(RodTower)

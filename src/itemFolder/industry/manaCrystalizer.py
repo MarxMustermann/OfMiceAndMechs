@@ -17,10 +17,20 @@ class ManaCrystalizer(src.items.Item):
         self.name = "mana crystalizer"
 
     def apply(self, character):
-        # spawn mana crystal
+        terrain = character.getTerrain()
+        if terrain.mana > 1:
+            terrain.mana -= 1
+            params = {"character":character,"delayTime":1000,"action":"produce_crystal"}
+            self.delayedAction(params)
+        else:
+            character.addMessage("no mana")
+
+    def produce_crystal(self,params):
+        character = params["character"]
+        terrain = self.getTerrain()
         new = src.items.itemMap["ManaCrystal"]()
         self.container.addItem(new,(self.xPosition + 1,self.yPosition,self.zPosition))
-        character.addMessage("you crystalize some mana")
+        character.addMessage(f"you crystalize some mana\nthere is {terrain.mana} mana left")
 
     def getConfigurationOptions(self, character):
         '''

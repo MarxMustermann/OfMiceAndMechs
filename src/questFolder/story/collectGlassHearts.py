@@ -537,7 +537,7 @@ So apease the gods and obtain their GlassHearts.
         if reason == "no job":
             self.subQuests.remove(extraParam["quest"])
 
-            newQuest = src.quests.questMap["Heal"](noVialHeal=True)
+            newQuest = src.quests.questMap["Heal"](noVialHeal=True,noWaitHeal=True)
             self.addQuest(newQuest)
             self.startWatching(newQuest,self.handleQuestFailure,"failed")
             return

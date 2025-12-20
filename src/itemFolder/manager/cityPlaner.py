@@ -736,16 +736,12 @@ class CityPlaner(src.items.Item):
                         continue
                     walkingSpaces.append((x,y,0))
             for x in range(1,4):
-                print((x,6,0))
                 walkingSpaces.append((x,6,0))
             for x in range(9,12):
-                print((x,6,0))
                 walkingSpaces.append((x,6,0))
             for y in range(1,4):
-                print((6,y,0))
                 walkingSpaces.append((6,y,0))
             for y in range(9,12):
-                print((6,y,0))
                 walkingSpaces.append((6,y,0))
 
             buildSites.append(((6, 5, 0),"BoltTower",{}))

@@ -8,6 +8,7 @@ class ViewNPCsMenu(src.subMenu.SubMenu):
         self.index = 0
         self.personnelArtwork = personnelArtwork
         self.lastSelectedCharacter = None
+        self.cached_npc_order = []
 
     def handleKey(self, key, noRender=False, character = None):
 
@@ -32,6 +33,13 @@ class ViewNPCsMenu(src.subMenu.SubMenu):
         if not characters:
             src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), "no personnel found"))
             return None
+
+        # make sure the order doesn't switch during usage
+        for npc in reversed(self.cached_npc_order):
+            if npc in characters:
+                characters.remove(npc)
+                characters.insert(0,npc)
+        self.cached_npc_order = characters[:]
 
         if key in (".",):
             character.takeTime(1,"waiting")

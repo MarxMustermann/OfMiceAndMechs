@@ -226,22 +226,6 @@ class ScrapCompactor(src.items.Item):
             options["b"] = ("bolt down", self.boltAction)
         return options
 
-    def boltAction(self,character):
-        '''
-        bolt the item down
-        '''
-        self.bolted = True
-        character.addMessage("you bolt down the ScrapCompactor")
-        character.changed("boltedItem",{"character":character,"item":self})
-
-    def unboltAction(self,character):
-        '''
-        unbolt the item
-        '''
-        self.bolted = False
-        character.addMessage("you unbolt the ScrapCompactor")
-        character.changed("unboltedItem",{"character":character,"item":self})
-
     def getLongInfo(self):
         '''
         returns a longer than normal description text

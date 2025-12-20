@@ -82,14 +82,6 @@ class DutyBeacon(src.items.Item):
             options["b"] = ("bolt down", self.boltAction)
         return options
 
-    def boltAction(self,character):
-        self.bolted = True
-        character.addMessage("you bolt down the Machine")
-
-    def unboltAction(self,character):
-        self.bolted = False
-        character.addMessage("you unbolt the Machine")
-
     def getLongInfo(self):
         """
         returns a longer than normal description of the item

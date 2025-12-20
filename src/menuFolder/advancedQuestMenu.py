@@ -113,11 +113,11 @@ class AdvancedQuestMenu(src.subMenu.SubMenu):
                         options.append((value.type, key))
                     """
                     options.append(("GoHome", "GoHome"))
-                    options.append(("Adventure", "Adventure"))
+                    options.append(("ClearInventory", "ClearInventory"))
+                    options.append(("ScavengeTile", "ScavengeTile"))
                     options.append(("ClearTile", "ClearTile"))
                     options.append(("LootRoom", "LootRoom"))
-                    options.append(("ScavengeTile", "ScavengeTile"))
-                    options.append(("ClearInventory", "ClearInventory"))
+                    options.append(("Adventure", "Adventure"))
                     options.append(("BeUsefull", "BeUsefull"))
                     self.setOptions("what type of quest: (press N for quest by name)", options)
 

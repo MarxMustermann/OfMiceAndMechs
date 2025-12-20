@@ -62,6 +62,11 @@ class BrewPotion(src.quests.MetaQuestSequence):
             else:
                 return (None,(".","undo selection"))
 
+        # ensure inventory space
+        if not character.getFreeInventorySpace():
+            quest = src.quests.questMap["ClearInventory"]()
+            return ([quest],None)
+
         submenue = character.macroState["submenue"]
         if submenue and isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
             if submenue.tag == "alchemyTableProductSelection":

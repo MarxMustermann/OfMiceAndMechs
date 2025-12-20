@@ -9,7 +9,9 @@ class ScavengeTile(src.quests.MetaQuestSequence):
     def __init__(self, description="scavenge tile", creator=None, targetPositionBig=None,toCollect=None, reason=None, endOnFullInventory=False,tryHard=False,lifetime=None,ignoreAlarm=False):
         questList = []
         super().__init__(questList, creator=creator,lifetime=None)
-        self.metaDescription = description+" "+str(targetPositionBig)
+        self.metaDescription = description
+        if targetPositionBig:
+            self.metaDescription += " "+str(targetPositionBig)
         self.baseDescription = description
         self.toCollect = toCollect
         self.reason = reason
@@ -56,6 +58,12 @@ This quest will end when the target tile has no items left."""
 
     def getNextStep(self,character,ignoreCommands=False, dryRun = True):
         self.triggerCompletionCheck(character=character,dryRun=dryRun)
+
+
+        if not self.targetPositionBig:
+            if not dryRun:
+                self.targetPositionBig = character.getBigPosition()
+            return (None,("+","set current position as target"))
 
         if not self.subQuests:
             if character.getNearbyEnemies():
@@ -104,7 +112,10 @@ This quest will end when the target tile has no items left."""
         if not terrain:
             return []
         leftOverItems = []
-        items = terrain.itemsByBigCoordinate.get(self.targetPositionBig,[])
+        targetPositionBig = self.targetPositionBig
+        if not targetPositionBig:
+            targetPositionBig = character.getBigPosition()
+        items = terrain.itemsByBigCoordinate.get(targetPositionBig,[])
         items = items[:]
         random.shuffle(items)
         for item in items:
@@ -128,7 +139,10 @@ This quest will end when the target tile has no items left."""
 
     def getQuestMarkersTile(self,character):
         result = super().getQuestMarkersTile(character)
-        result.append(((self.targetPositionBig[0],self.targetPositionBig[1]),"target"))
+        targetPositionBig = self.targetPositionBig
+        if not targetPositionBig:
+            targetPositionBig = character.getBigPosition()
+        result.append(((targetPositionBig[0],targetPositionBig[1]),"target"))
         return result
 
     def getQuestMarkersSmall(self,character,renderForTile=False):
@@ -139,10 +153,14 @@ This quest will end when the target tile has no items left."""
             if not renderForTile:
                 return []
 
+        targetPositionBig = self.targetPositionBig
+        if not targetPositionBig:
+            targetPositionBig = character.getBigPosition()
+
         result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
 
         if renderForTile and character.getBigPosition() == self.targetPositionBig:
-            for item in character.getTerrain().itemsByBigCoordinate.get(self.targetPositionBig,[]):
+            for item in character.getTerrain().itemsByBigCoordinate.get(targetPositionBig,[]):
                 if item.bolted:
                     continue
                 if self.toCollect and item.type != self.toCollect:

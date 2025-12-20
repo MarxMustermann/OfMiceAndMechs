@@ -121,7 +121,7 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
         text = [text]
 
         # add matrix head to output
-        text.append("\ncharacter                 ")
+        text.append("\ncharacter                ")
         rowCounter = 0
         dutyCounter = 0
         for duty in duties:
@@ -135,8 +135,24 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
             rowCounter += 1
             dutyCounter += 1
             if dutyCounter == 6:
-                text.append("\n                          ")
+                text.append("\n                         ")
                 dutyCounter = 0
+        text.append("|\n\n                         ")
+        rowCounter = 0
+        dutyCounter = 0
+        for duty in duties:
+            color = "default"
+            if rowCounter == self.index[1]:
+                color = "#555"
+                if self.index[0] == -1:
+                    color = "#888"
+            text.append("|")
+            text.append((src.interaction.urwid.AttrSpec("default", color),""+duty[:5]+""))
+            rowCounter += 1
+            dutyCounter += 1
+            if dutyCounter == 6:
+                dutyCounter = 0
+        text.append("|")
 
         # add actual matrix to output
         def convertName(name):

@@ -14,18 +14,16 @@ class WorkShop(src.items.Item):
         return options
 
     def boltAction(self, character):
-        self.bolted = True
-        character.addMessage("you bolt down the " + self.name)
-        character.changed("boltedItem", {"character": character, "item": self})
         if hasattr(self,"numUsed"):
             self.numUsed = 0
 
+        super().boltAction(character)
+
     def unboltAction(self, character):
-        self.bolted = False
-        character.addMessage("you unbolt the " + self.name)
-        character.changed("unboltedItem", {"character": character, "item": self})
         if hasattr(self,"numUsed"):
             self.numUsed = 0
+
+        super().unboltAction(character)
 
     def getInputItems(self):
         result = []

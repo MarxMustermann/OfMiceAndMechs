@@ -79,8 +79,10 @@ class GoToTerrain(src.quests.MetaQuestSequence):
             for x in range(1,14):
                 for y in range(1,14):
                     terrainMap[x][y] = self.terrainsWeight[(x,y,0)]
+            terrainMap[7][7] = 32000
         else:
             terrainMap = np.ones((14,14),dtype=np.int16)
+            terrainMap[7][7] = 32000
 
         pathfinder = tcod.path.AStar(terrainMap,diagonal = 0)
         path = pathfinder.get_path(startPos[0],startPos[1],targetPos[0],targetPos[1])

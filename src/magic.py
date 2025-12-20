@@ -599,11 +599,18 @@ def spawnSpawnRoom(terrain, coordinate, faction, doors="0,6 6,0 6,12 12,6"):
     spawnedRoom.addStorageSlot((7, 5, 0), "Flask", {"desiredState": "filled"})
     item = src.items.itemMap["AlchemyTable"]()
     item.bolted = True
-    spawnedRoom.addItem(item, (8, 5, 0))
-    spawnedRoom.addStorageSlot((10, 5, 0), "Bloom", {"desiredState": "filled"})
+    spawnedRoom.addItem(item, (8, 5, 0))  
+    if random.random() < 0.5: # VARIANT: 
+        spawnedRoom.addInputSlot((9, 5, 0), "Bloom")
+    elif random.random() < 0.5: # VARIANT: 
+        spawnedRoom.addStorageSlot((10, 5, 0), "Bloom", {"desiredState": "filled"})
+    else: # VARIANT
+        spawnedRoom.addStorageSlot((9, 5, 0), "Bloom", {"desiredState": "filled"})
 
-    #spawnedRoom.addInputSlot((2, 10, 0), "Bloom")
-    spawnedRoom.addStorageSlot((2, 10, 0), "Bloom", {"desiredState": "filled"})
+    if random.random() < 0.8: # VARIANT
+        spawnedRoom.addStorageSlot((2, 10, 0), "Bloom", {"desiredState": "filled"})
+    else: # VARIANT
+        spawnedRoom.addInputSlot((2, 10, 0), "Bloom")
     item = src.items.itemMap["BloomShredder"]()
     spawnedRoom.addItem(item, (3, 10, 0))
     item = src.items.itemMap["BioPress"]()

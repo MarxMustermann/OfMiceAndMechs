@@ -104,7 +104,7 @@ done tiles: {self.doneTiles}"""
             if hasIdleSubordinate:
                 return (None,("Hjsssssj","make subordinate scavenge"))
             else:
-                quest = src.quests.questMap["ScavengeTile"](targetPosition=target,toCollect=self.toCollect,reason="fill your inventory",ignoreAlarm=self.ignoreAlarm,tryHard=self.tryHard)
+                quest = src.quests.questMap["ScavengeTile"](targetPositionBig=target,toCollect=self.toCollect,reason="fill your inventory",ignoreAlarm=self.ignoreAlarm,tryHard=self.tryHard)
                 return ([quest],None)
 
         # mark current tile as completed
@@ -304,7 +304,7 @@ done tiles: {self.doneTiles}"""
             if not terrain.itemsByBigCoordinate.get(terrain.collectionSpots[-1]):
                 terrain.collectionSpots.pop()
                 continue
-            quest = src.quests.questMap["ScavengeTile"](targetPosition=(terrain.collectionSpots[-1]),lifetime=1000)
+            quest = src.quests.questMap["ScavengeTile"](targetPositionBig=(terrain.collectionSpots[-1]),lifetime=1000)
             if not dryRun:
                 beUsefull.idleCounter = 0
             return ([quest],None)

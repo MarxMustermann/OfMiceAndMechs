@@ -148,7 +148,7 @@ class InstructSubordinatesMenu(src.subMenu.SubMenu):
                 pos = character.getBigPosition()
 
                 for npc in character.subordinates:
-                    quest = src.quests.questMap["ScavengeTile"](targetPosition=pos)
+                    quest = src.quests.questMap["ScavengeTile"](targetPositionBig=pos)
                     quest.autoSolve = True
                     npc.assignQuest(quest,active=self.addFront)
 

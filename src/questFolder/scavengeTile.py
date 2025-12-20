@@ -6,16 +6,16 @@ import src
 class ScavengeTile(src.quests.MetaQuestSequence):
     type = "ScavengeTile"
 
-    def __init__(self, description="scavenge tile", creator=None, targetPosition=None,toCollect=None, reason=None, endOnFullInventory=False,tryHard=False,lifetime=None,ignoreAlarm=False):
+    def __init__(self, description="scavenge tile", creator=None, targetPositionBig=None,toCollect=None, reason=None, endOnFullInventory=False,tryHard=False,lifetime=None,ignoreAlarm=False):
         questList = []
         super().__init__(questList, creator=creator,lifetime=None)
-        self.metaDescription = description+" "+str(targetPosition)
+        self.metaDescription = description+" "+str(targetPositionBig)
         self.baseDescription = description
         self.toCollect = toCollect
         self.reason = reason
         self.endOnFullInventory = endOnFullInventory
 
-        self.targetPosition = targetPosition
+        self.targetPositionBig = targetPositionBig
         self.tryHard = tryHard
         self.ignoreAlarm = ignoreAlarm
 
@@ -26,7 +26,7 @@ class ScavengeTile(src.quests.MetaQuestSequence):
         if self.reason:
             reason = f", to {self.reason}"
         text = f"""
-Scavenge the tile {self.targetPosition}"""
+Scavenge the tile {self.targetPositionBig}"""
         if self.toCollect:
             text += f" for {self.toCollect}"
         text += f"""{reason}."""
@@ -85,8 +85,8 @@ This quest will end when the target tile has no items left."""
                 quest = src.quests.questMap["ClearInventory"](reason="be able to pick up more items")
                 return ([quest],None)
 
-            if character.getBigPosition() != (self.targetPosition[0], self.targetPosition[1], 0):
-                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition,reason="go to target tile")
+            if character.getBigPosition() != (self.targetPositionBig[0], self.targetPositionBig[1], 0):
+                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="go to target tile")
                 return ([quest],None)
 
 
@@ -94,7 +94,7 @@ This quest will end when the target tile has no items left."""
             for item in items:
                 path = character.getTerrain().getPathTile(character.getTilePosition(),character.getSpacePosition() ,item.getSmallPosition(),character=character,ignoreEndBlocked =True)
                 if len(path) or item.getPosition() == character.getPosition():
-                    quest = src.quests.questMap["CleanSpace"](targetPosition=item.getSmallPosition(),targetPositionBig=self.targetPosition,reason="pick up the items",pickUpBolted=True)
+                    quest = src.quests.questMap["CleanSpace"](targetPosition=item.getSmallPosition(),targetPositionBig=self.targetPositionBig,reason="pick up the items",pickUpBolted=True)
                     return ([quest],None)
 
         return (None,(".","stand around confused"))
@@ -104,7 +104,7 @@ This quest will end when the target tile has no items left."""
         if not terrain:
             return []
         leftOverItems = []
-        items = terrain.itemsByBigCoordinate.get(self.targetPosition,[])
+        items = terrain.itemsByBigCoordinate.get(self.targetPositionBig,[])
         items = items[:]
         random.shuffle(items)
         for item in items:
@@ -128,7 +128,7 @@ This quest will end when the target tile has no items left."""
 
     def getQuestMarkersTile(self,character):
         result = super().getQuestMarkersTile(character)
-        result.append(((self.targetPosition[0],self.targetPosition[1]),"target"))
+        result.append(((self.targetPositionBig[0],self.targetPositionBig[1]),"target"))
         return result
 
     def getQuestMarkersSmall(self,character,renderForTile=False):
@@ -141,8 +141,8 @@ This quest will end when the target tile has no items left."""
 
         result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
 
-        if renderForTile and character.getBigPosition() == self.targetPosition:
-            for item in character.getTerrain().itemsByBigCoordinate.get(self.targetPosition,[]):
+        if renderForTile and character.getBigPosition() == self.targetPositionBig:
+            for item in character.getTerrain().itemsByBigCoordinate.get(self.targetPositionBig,[]):
                 if item.bolted:
                     continue
                 if self.toCollect and item.type != self.toCollect:

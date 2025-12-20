@@ -48,7 +48,7 @@ class SpawnClone(src.quests.MetaQuestSequence):
                     if not item.type == "GooFlask":
                         continue
 
-                    newQuest = src.quests.questMap["ScavengeTile"](targetPosition=coord,toCollect="GooFlask",tryHard=True)
+                    newQuest = src.quests.questMap["ScavengeTile"](targetPositionBig=coord,toCollect="GooFlask",tryHard=True)
                     self.addQuest(newQuest)
                     self.startWatching(newQuest,self.handleQuestFailure,"failed")
                     return

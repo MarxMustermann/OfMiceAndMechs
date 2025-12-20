@@ -11,7 +11,9 @@ class LootRoom(src.quests.MetaQuestSequence):
     def __init__(self, description="loot room", creator=None, targetPositionBig=None, reason=None, story=None, endWhenFull=False):
         questList = []
         super().__init__(questList, creator=creator)
-        self.metaDescription = description+" "+str(targetPositionBig)
+        self.metaDescription = description
+        if targetPositionBig:
+            self.metaDescription += " "+str(targetPositionBig)
         self.baseDescription = description
         self.reason = reason
         self.story = story
@@ -19,8 +21,7 @@ class LootRoom(src.quests.MetaQuestSequence):
 
         self.visited_target_tile = False
 
-        if targetPositionBig:
-            self.setParameters({"targetPositionBig":targetPositionBig})
+        self.targetPositionBig = targetPositionBig
 
     def generateTextDescription(self):
         reasonString = ""
@@ -62,7 +63,7 @@ Remove all items that are not bolted down."""
         if not character:
             return False
 
-        if character.getBigPosition() != (self.targetPositionBig[0], self.targetPositionBig[1], 0):
+        if self.targetPositionBig and character.getBigPosition() != (self.targetPositionBig[0], self.targetPositionBig[1], 0):
             return False
 
         if self.endWhenFull and character.getFreeInventorySpace(ignoreTypes=["Bolt"]) == 0:
@@ -89,6 +90,11 @@ Remove all items that are not bolted down."""
 
         if not character:
             return (None,None)
+
+        if not self.targetPositionBig:
+            if not dryRun: 
+                self.targetPositionBig = character.getBigPosition()
+            return (None,("+","set current position as target"))
 
         if not ignoreCommands:
             submenue = character.macroState.get("submenue")
@@ -297,7 +303,10 @@ Remove all items that are not bolted down."""
         if character.container.isRoom:
             itemsOnFloor = character.container.itemsOnFloor
 
-            rooms = terrain.getRoomByPosition(self.targetPositionBig)
+            targetPositionBig = self.targetPositionBig
+            if not targetPositionBig:
+                targetPositionBig = character.getBigPosition()
+            rooms = terrain.getRoomByPosition(targetPositionBig)
             room = None
             if rooms:
                 room = rooms[0]
@@ -372,10 +381,5 @@ Remove all items that are not bolted down."""
             self.startWatching(newQuest,self.handleQuestFailure,"failed")
             return
         self.fail(extraInfo["reason"])
-
-    def getRequiredParameters(self):
-        parameters = super().getRequiredParameters()
-        parameters.append({"name":"targetPositionBig","type":"coordinate"})
-        return parameters
 
 src.quests.addType(LootRoom)

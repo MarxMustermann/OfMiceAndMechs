@@ -117,6 +117,7 @@ class AdvancedQuestMenu(src.subMenu.SubMenu):
                     options.append(("ScavengeTile", "ScavengeTile"))
                     options.append(("ClearTile", "ClearTile"))
                     options.append(("LootRoom", "LootRoom"))
+                    options.append(("DoMapSync", "DoMapSync"))
                     options.append(("Adventure", "Adventure"))
                     options.append(("BeUsefull", "BeUsefull"))
                     self.setOptions("what type of quest: (press N for quest by name)", options)

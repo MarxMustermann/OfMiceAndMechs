@@ -78,6 +78,8 @@ class Adventure(src.quests.MetaQuestSequence):
                     if item.bolted == False:
                         if item.getPosition() not in room.walkingSpace:
                             continue
+                        if room.getItemByPosition(item.getPosition())[0].bolted:
+                            continue
                         numItems += 1
                 if numItems > 4:
                     quest = src.quests.questMap["ClearTile"](targetPosition=room.getPosition())

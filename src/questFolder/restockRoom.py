@@ -124,11 +124,6 @@ Place the items in the correct input or storage stockpile.
 
         super().assignToCharacter(character)
 
-    def getRequiredParameters(self):
-        parameters = super().getRequiredParameters()
-        parameters.append({"name":"targetPositionBig","type":"coordinate"})
-        return parameters
-
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
         if self.subQuests:
             return (None,None)

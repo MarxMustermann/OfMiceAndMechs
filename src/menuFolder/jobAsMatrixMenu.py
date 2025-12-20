@@ -33,6 +33,42 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
                 "mold farming"
             ]))
 
+    def get_short_form(self,duty_name):
+        match duty_name:
+            case "mold farming":
+                return "mfarm"
+            case "praying":
+                return "prayr"
+            case "resource gathering":
+                return "regat"
+            case "scrap hammering":
+                return "scrha"
+            case "resource fetching":
+                return "refet"
+            case "hauling":
+                return "haulr"
+            case "metal working":
+                return "metwo"
+            case "machining":
+                return "machi"
+            case "room building":
+                return "roomb"
+            case "machine placing":
+                return "place"
+            case "maggot gathering":
+                return "magot"
+            case "painting":
+                return "paint"
+            case "cleaning":
+                return "clean"
+            case "machine operation":
+                return "maopr"
+            case "scavenging":
+                return "scave"
+            case "manufacturing":
+                return "manuf"
+        return duty_name[:4]
+
     def handleKey(self, key, noRender=False, character = None):
         """
         show the help text and ignore keypresses
@@ -147,7 +183,7 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
                 if self.index[0] == -1:
                     color = "#888"
             text.append("|")
-            text.append((src.interaction.urwid.AttrSpec("default", color),""+duty[:5]+""))
+            text.append((src.interaction.urwid.AttrSpec("default", color),""+self.get_short_form(duty)[:5]+""))
             rowCounter += 1
             dutyCounter += 1
             if dutyCounter == 6:

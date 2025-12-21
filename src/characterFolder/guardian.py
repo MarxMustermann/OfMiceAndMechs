@@ -50,17 +50,17 @@ class Guardian(src.monster.Monster):
         baseMovementSpeed = 4
         baseAttackSpeed = 4
         baseRawDamage = 0.2
-        basehealth = 10
+        basehealth = 40
         if src.gamestate.gamestate.difficulty == "medium":
             baseMovementSpeed = 2
             baseAttackSpeed = 2
             baseRawDamage = 0.5
-            basehealth = 50
+            basehealth = 200
         if src.gamestate.gamestate.difficulty == "difficult":
             baseMovementSpeed = 1
             baseAttackSpeed = 1
             baseRawDamage = 1
-            basehealth = 100
+            basehealth = 400
 
         self.charType = "Guardian"
         self.specialDisplay = "&&"

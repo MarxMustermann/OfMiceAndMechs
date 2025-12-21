@@ -6,10 +6,10 @@ class EnsureMaindutyClone(src.quests.MetaQuestSequence):
     a quest to ensure 
     '''
     type = "EnsureMaindutyClone"
-    def __init__(self, description="ensure main duty clone", creator=None, dutyType="cleaning"):
+    def __init__(self, description="ensure duty", creator=None, dutyType="cleaning"):
         questList = []
         super().__init__(questList, creator=creator)
-        self.metaDescription = description
+        self.metaDescription = f"ensure {dutyType} duty"
         self.dutyType = dutyType
 
     def triggerCompletionCheck(self,character=None,dryRun=True):

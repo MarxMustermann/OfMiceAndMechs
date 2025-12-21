@@ -188,19 +188,19 @@ So if an enemy is to directly east of you:
                 if command == "d":
                     pos = character.getPosition()
                     if not character.container.getPositionWalkable((pos[0]+1,pos[1],pos[2]),character=character):
-                        command = "Kdl"
+                        command = "Kd"+random.choice(["l","La","Ls","Lw","Ld"])
                 elif command == "a":
                     pos = character.getPosition()
                     if not character.container.getPositionWalkable((pos[0]-1,pos[1],pos[2]),character=character):
-                        command = "Kal"
+                        command = "Ka"+random.choice(["l","La","Ls","Lw","Ld"])
                 elif command == "s":
                     pos = character.getPosition()
                     if not character.container.getPositionWalkable((pos[0],pos[1]+1,pos[2]),character=character):
-                        command = "Ksl"
+                        command = "Ks"+random.choice(["l","La","Ls","Lw","Ld"])
                 elif command == "w":
                     pos = character.getPosition()
                     if not character.container.getPositionWalkable((pos[0],pos[1]-1,pos[2]),character=character):
-                        command = "Kwl"
+                        command = "Kw"+random.choice(["l","La","Ls","Lw","Ld"])
 
                 if command:
                     return (None,(command,"approach enemy"))
@@ -239,19 +239,19 @@ So if an enemy is to directly east of you:
         if command == "d":
             pos = character.getPosition()
             if not character.container.getPositionWalkable((pos[0]+1,pos[1],pos[2]),character=character):
-                command = "Kdl"
+                command = "Kd"+random.choice(["l","La","Ls","Lw","Ld"])
         elif command == "a":
             pos = character.getPosition()
             if not character.container.getPositionWalkable((pos[0]-1,pos[1],pos[2]),character=character):
-                command = "Kal"
+                command = "Ka"+random.choice(["l","La","Ls","Lw","Ld"])
         elif command == "s":
             pos = character.getPosition()
             if not character.container.getPositionWalkable((pos[0],pos[1]+1,pos[2]),character=character):
-                command = "Ksl"
+                command = "Ks"+random.choice(["l","La","Ls","Lw","Ld"])
         elif command == "w":
             pos = character.getPosition()
             if not character.container.getPositionWalkable((pos[0],pos[1]-1,pos[2]),character=character):
-                command = "Kwl"
+                command = "Kw"+random.choice(["l","La","Ls","Lw","Ld"])
 
         if command is None:
             return (None,(".","stand around confused (no command found)"))

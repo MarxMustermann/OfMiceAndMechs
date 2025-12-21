@@ -71,22 +71,9 @@ class Guardian(src.monster.Monster):
         self.godMode = True
         self.movementSpeed = baseMovementSpeed/modifier
         self.baseAttackSpeed = baseAttackSpeed/modifier
-        self.specialCharges = 0
         self.rawBaseDame = baseRawDamage*modifier
         self.baseDamage = baseRawDamage*modifier
         self.modifier = modifier
-
-    def hurt(self, damage, reason=None, actor=None):
-        self.specialCharges += 2
-        self.baseDamage = self.rawBaseDame * (1 + self.specialCharges)
-
-        super().hurt(damage,reason=reason,actor=actor)
-
-    def advance(self,advanceMacros=False):
-        if self.specialCharges > 0:
-            self.specialCharges -= 1
-            self.baseDamage = self.rawBaseDame * (1 + self.specialCharges)
-        super().advance(advanceMacros=advanceMacros)
 
     def changed(self, tag="default", info=None):
         if tag == "pickup bolted fail":
@@ -117,8 +104,6 @@ class Guardian(src.monster.Monster):
         force static render
         """
         color = (255,255,255)
-        if self.specialCharges > 1:
-            color = (255,int(max(0,255-self.baseDamage)),int(max(0,255-self.baseDamage)))
         return (src.interaction.urwid.AttrSpec(color, "black"), "&&")
 
 src.characters.add_character(Guardian)

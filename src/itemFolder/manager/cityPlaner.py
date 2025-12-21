@@ -793,7 +793,7 @@ class CityPlaner(src.items.Item):
                     rodTower_positions.append((x,10,0))
                 for x in range(1,6):
                     rodTower_positions.append((x,11,0))
-                for y in range(2,7):
+                for y in range(2,6):
                     rodTower_positions.append((1,y,0))
 
                 for pos in rodTower_positions:

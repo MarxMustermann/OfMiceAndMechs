@@ -17,13 +17,14 @@ class FactionSetter(src.items.Item):
         '''
         set the faction of a character
         '''
+        # change faction
         character.faction = self.faction
         character.addMessage(f"your faction was changed to {self.faction}")
         character.changed("set faction",{"character":character})
 
+        # show user feedback
         self.container.addAnimation(character.getPosition(),"showchar",1,{"char":"OO"})
         self.container.addAnimation(self.getPosition(),"showchar",1,{"char":"OO"})
-
         text = f"""
 You insert your head into the machine.
 It claws into your head and connects to your implant.
@@ -32,6 +33,17 @@ It changes your implant and sets your faction marker to {self.faction}.
 """
         character.macroState["submenue"] = src.menuFolder.textMenu.TextMenu(text)
 
+        # reset rank
+        character.rank = None
+        character.hasSpecialAttacks = False
+        character.hasSwapAttack = False
+        character.hasRun = False
+        character.hasJump = False
+        character.hasLineShot = False
+        character.hasRandomShot = False
+        character.hasMaxHealthBoost = False
+        character.hasMovementSpeedBoost = False
+
     def getConfigurationOptions(self, character):
         '''
         register the configuration options with superclass
@@ -39,7 +51,6 @@ It changes your implant and sets your faction marker to {self.faction}.
         Parameters:
             character: the character trying to conigure the machine
         '''
-
         options = super().getConfigurationOptions(character)
         if self.bolted:
             options["b"] = ("unbolt", self.unboltAction)

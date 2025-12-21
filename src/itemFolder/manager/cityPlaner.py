@@ -348,6 +348,7 @@ class CityPlaner(src.items.Item):
         options.append(("storage","storage"))
         options.append(("scrapStorage","scrap storage"))
         options.append(("wallManufacturing","wall manufacturing"))
+        options.append(("wallStorage","wall storage"))
         options.append(("basicMaterialsManufacturing","basic material manufacturing"))
         options.append(("trapMaterialsManufacturing","trap material manufacturing"))
         options.append(("basicRoombuildingItemsManufacturing","basic room building items manufacturing"))
@@ -1029,7 +1030,10 @@ class CityPlaner(src.items.Item):
 
         # generate prefab for a storage unit
         # TODO: should be capsuled
-        if floorPlanType == "scrapStorage":
+        if floorPlanType in ("scrapStorage","wallStorage"):
+            toStore = "Scrap"
+            if floorPlanType == "wallStorage":
+                toStore = "Wall"
             for y in range(1,12):
                 walkingSpaces.append((6,y,0))
 
@@ -1037,7 +1041,7 @@ class CityPlaner(src.items.Item):
                     for x in range(1,12):
                         if x == 6:
                             continue
-                        storageSlots.append(((x,y,0),"Scrap",{"desiredState":"filled"}))
+                        storageSlots.append(((x,y,0),"Wall",{"desiredState":"filled"}))
                 else:
                     for x in range(1,12):
                         if x == 6:

@@ -2423,7 +2423,7 @@ but they are likely to explode when disturbed.
         runModifier = (random.random()-0.5)*0.5
         logger.info(f"runmodifer dungeon {itemID}: {runModifier}")
         counter = 0
-        for room in reversed(rooms[:-2]):
+        for room in reversed(rooms[1:-2]):
 
             if counter == 0:
                 counter += 1
@@ -2453,6 +2453,17 @@ but they are likely to explode when disturbed.
                 room.addCharacter(mechanical_crawler, pos[0], pos[1])
 
             counter += 1
+
+        # add guardian room
+        room = rooms[0]
+        pos = (7,7,0)
+        guardian = src.characters.characterMap["Guardian"](7,7,modifier=multiplier)
+        quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
+        quest.autoSolve = True
+        quest.assignToCharacter(guardian)
+        quest.activate()
+        guardian.quests.append(quest)
+        room.addCharacter(guardian, pos[0], pos[1])
 
         # spawn monsters and items on dead ends
         implants = 0

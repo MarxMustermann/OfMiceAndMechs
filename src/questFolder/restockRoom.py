@@ -68,7 +68,16 @@ Place the items in the correct input or storage stockpile.
             room = character.container
 
             foundNeighbour = None
-            inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny)
+            if self.toRestock:
+                inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny)
+            else:
+                inputSlots = []
+                for item in reversed(character.inventory):
+                    inputSlots = room.getEmptyInputslots(itemType=item.type,allowAny=self.allowAny)
+                    if inputSlots:
+                        break
+                if not inputSlots:
+                    inputSlots = room.getEmptyInputslots(itemType=None,allowAny=self.allowAny)
             if not inputSlots:
                 if not dryRun:
                     self.postHandler()
@@ -145,6 +154,7 @@ Place the items in the correct input or storage stockpile.
             quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig)
             return ([quest],None)
 
+        # enter rooms properly
         if not isinstance(character.container,src.rooms.Room):
             charPos = (character.xPosition%15,character.yPosition%15,character.zPosition%15)
             if charPos == (7,0,0):
@@ -157,20 +167,30 @@ Place the items in the correct input or storage stockpile.
                 return (None,("a","enter tile"))
 
             return self._solver_trigger_fail(dryRun,"unknown reason")
-
         room = character.container
 
+        # handle edge cases
         if not hasattr(room,"inputSlots"):
             return self._solver_trigger_fail(dryRun,"no input slot attribute")
-
         if not character.inventory:
             return (None,(".","stand around confused"))
 
-        fullyEmpty = not character.inventory[-1].walkable
-        inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny,allowStorage=False,fullyEmpty=fullyEmpty)
-        if not inputSlots:
-            inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny,allowStorage=True,fullyEmpty=fullyEmpty)
-        random.shuffle(inputSlots)
+        # find stockpiles to drop things into
+        if self.toRestock:
+            fullyEmpty = not character.inventory[-1].walkable
+            inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny,allowStorage=False,fullyEmpty=fullyEmpty)
+            if not inputSlots:
+                inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny,allowStorage=True,fullyEmpty=fullyEmpty)
+            random.shuffle(inputSlots)
+        else:
+            for item in reversed(character.inventory):
+                fullyEmpty = not character.inventory[-1].walkable
+                inputSlots = room.getEmptyInputslots(itemType=item.type,allowAny=self.allowAny,allowStorage=False,fullyEmpty=fullyEmpty)
+                if not inputSlots:
+                    inputSlots = room.getEmptyInputslots(itemType=item.type,allowAny=self.allowAny,allowStorage=True,fullyEmpty=fullyEmpty)
+                random.shuffle(inputSlots)
+                if inputSlots:
+                    break
 
         if self.targetPosition:
             newInputs = []
@@ -194,7 +214,14 @@ Place the items in the correct input or storage stockpile.
 
         if character.inventory and foundDirectDrop:
             dropContent = room.getItemByPosition(foundDirectDrop[0])
-            if not dropContent or self.toRestock != "Scrap" or dropContent[0].type != "Scrap":
+
+            toRestock = self.toRestock
+            if not toRestock:
+                toRestock = foundDirectDrop[2][1]
+            if dropContent and not toRestock:
+                toRestock = dropContent[0].type
+
+            if not dropContent or toRestock != "Scrap" or dropContent[0].type != "Scrap":
                 maxSpace = foundDirectDrop[2][2].get("maxAmount")
                 if not maxSpace:
                     if (dropContent and dropContent[0].walkable == False) or character.inventory[-1].walkable == False:
@@ -209,7 +236,7 @@ Place the items in the correct input or storage stockpile.
                 if numToDrop > 0:
                     item = character.inventory[-1]
                     counter = -1
-                    while item.type != self.toRestock:
+                    while item.type != toRestock:
                         counter += 1
                         item = character.inventory[counter]
 

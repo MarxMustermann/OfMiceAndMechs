@@ -1197,6 +1197,7 @@ class CityPlaner(src.items.Item):
     def clearRoomFromMap(self,params):
         terrain = self.getTerrain()
         room = terrain.getRoomByPosition(params["coordinate"])[0]
+        old_tag = room.tag
         room.tag = None
         room.floorPlan = None
         toKeep = []
@@ -1216,6 +1217,11 @@ class CityPlaner(src.items.Item):
                 continue
 
             room.removeItem(item)
+
+        if old_tag == "trapRoom":
+            room.tag = "entryRoom"
+            item = src.items.itemMap["AlarmBell"]()
+            room.addItem(item,(3,3,0))
 
         self.showMap(params["character"], cursor = params["coordinate"])
 

@@ -40,7 +40,7 @@ class ReachSafety(src.quests.MetaQuestSequence):
             if not character.container.isRoom:
                 return (None,("d","to enter the room"))
             if character.getNearbyEnemies():
-                quest = src.quests.questMap["Fight"](description="kill the last enemy")
+                quest = src.quests.questMap["Fight"](description="kill the last enemy",simpleOnly=True)
                 return ([quest],None)
             return (None,(".","stand around confused"))
         quest = src.quests.questMap["GoToTileStory"](targetPosition=(5,7,0),reason="reach the base entrance",description="reach the base entrance",allowMapMenu=False)

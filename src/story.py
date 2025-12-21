@@ -2986,7 +2986,7 @@ but they are likely to explode when disturbed.
 
                 # fight for vial from tile
                 if hasVial and hasEnemy:
-                    quest = src.quests.questMap["SecureTile"](toSecure=vialTile,endWhenCleared=True,reason="be able to fetch the Vial from that tile",story="You reach out to your implant and it answers:\n\nThere is a Corpse and a Vial on the tile to the north.")
+                    quest = src.quests.questMap["SecureTile"](toSecure=vialTile,endWhenCleared=True,reason="be able to fetch the Vial from that tile",story="You reach out to your implant and it answers:\n\nThere is a Corpse and a Vial on the tile to the north.",simpleAttacksOnly=True)
                     self.addQuest(quest,mainChar)
                     return
 

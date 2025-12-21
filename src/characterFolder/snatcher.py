@@ -13,6 +13,7 @@ class Snatcher(src.monster.Monster):
         if src.gamestate.gamestate.difficulty == "difficult":
             self.baseDamage *= 2
             self.health *= 2
+            self.maxHealth *= 2
         self.health = self.maxHealth
 
         self.homeTile = None

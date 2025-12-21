@@ -1359,7 +1359,7 @@ class Terrain:
         characters = self.characters[:]
         for room in self.rooms:
             characters.extend(room.characters)
-        return characters
+        return list(set(characters))
 
     def getPathTile(self,tilePos,startPos,targetPos,tryHard=False,avoidItems=None,localRandom=None,ignoreEndBlocked=None,character=None,ignoreUnbolted=False):
         """

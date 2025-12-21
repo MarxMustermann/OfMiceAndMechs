@@ -50,6 +50,30 @@ class TeleportToGlassPalace(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["GoHome"]()
             return ([quest],None)
 
+        # check in what state the base is
+        num_NPCs = 0
+        num_enemies = 0
+        for check_character in character.getTerrain().getAllCharacters():
+            if character.is_ally(check_character):
+                if not check_character.burnedIn and check_character.charType == "Clone":
+                    num_NPCs += 1  
+            else:
+                num_enemies += 1
+
+        # defend the base
+        if num_enemies:
+            if src.gamestate.gamestate.tick > 1000:
+                quest = src.quests.questMap["ClearTerrain"]()
+                return ([quest],None)
+            quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,lifetime=100,description="defend the arena",reason="ensure no attackers get into the base")
+            return ([quest],None)
+
+        # ensure there are backup NPCs
+        print(num_NPCs)
+        if num_NPCs < 3:
+            quest = src.quests.questMap["SpawnClone"](tryHard=True,lifetime=1000,reason="ensure somebody will be left to man the base")
+            return ([quest],None)
+
         # handle menues
         submenue = character.macroState.get("submenue")
         if submenue and not ignoreCommands:

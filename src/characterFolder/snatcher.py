@@ -10,6 +10,10 @@ class Snatcher(src.monster.Monster):
         self.specialDisplay = "sn"
         self.baseDamage = 20
         self.maxHealth = 18
+        if src.gamestate.gamestate.difficulty == "medium":
+            self.baseDamage *= 1.5
+            self.health *= 1.5
+            self.maxHealth *= 1.5
         if src.gamestate.gamestate.difficulty == "difficult":
             self.baseDamage *= 2
             self.health *= 2

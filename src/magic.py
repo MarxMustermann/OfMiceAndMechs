@@ -615,7 +615,7 @@ def spawnSpawnRoom(terrain, coordinate, faction, doors="0,6 6,0 6,12 12,6"):
     if random.random() < 0.25: # VARIANT: 
         spawnedRoom.addInputSlot((8, 6, 0), "ManaCrystal")
     elif random.random() < 0.25: # VARIANT: 
-        spawnedRoom.addInputSlot((9, 6, 0), "ManaCrystal")
+        spawnedRoom.addInputSlot((8, 6, 0), "ManaCrystal")
     else:
         pass
 

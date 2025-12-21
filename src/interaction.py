@@ -2955,10 +2955,8 @@ press key for the advanced interaction
 * d = activate east
 * . = activate item on floor
 * i = activate last item in inventory
-* f = eat food
 * h = heal
 * H = heal fully
-* j = activate job order
 
 """
 

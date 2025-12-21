@@ -8,7 +8,6 @@ class ActivateRegenerator(src.quests.MetaQuestSequence):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
-        self.regenerator = None
 
     def handleRegeneratorActivated(self, extraInfo):
         self.postHandler()
@@ -48,22 +47,22 @@ class ActivateRegenerator(src.quests.MetaQuestSequence):
         if character.xPosition%15 == 0 and character.yPosition%15 == 7:
             return (None,("d","enter the tile"))
 
-        if not self.regenerator:
-            terrain = character.getTerrain()
-            for room in terrain.rooms:
-                self.regenerator = room.getItemByType("Regenerator",needsBolted=True)
-                if self.regenerator:
-                    break
+        regenerator = None
+        terrain = character.getTerrain()
+        for room in terrain.rooms:
+            regenerator = room.getItemByType("Regenerator",needsBolted=True)
+            if regenerator:
+                break
 
-        if character.getBigPosition() != self.regenerator.container.getPosition():
-            quest = src.quests.questMap["GoToTile"](targetPosition=self.regenerator.container.getPosition(),description="go to the temple",reason="to reach the regenerator")
+        if character.getBigPosition() != regenerator.container.getPosition():
+            quest = src.quests.questMap["GoToTile"](targetPosition=regenerator.container.getPosition(),description="go to the temple",reason="to reach the regenerator")
             return ([quest],None)
 
-        if character.getDistance(self.regenerator.getPosition()) > 1:
-            quest = src.quests.questMap["GoToPosition"](targetPosition=self.regenerator.getPosition(),ignoreEndBlocked=True,description="go to the Regenerator",reason="to activate the regenerator")
+        if character.getDistance(regenerator.getPosition()) > 1:
+            quest = src.quests.questMap["GoToPosition"](targetPosition=regenerator.getPosition(),ignoreEndBlocked=True,description="go to the Regenerator",reason="to activate the regenerator")
             return ([quest],None)
         
-        t_pos = self.regenerator.getPosition()
+        t_pos = regenerator.getPosition()
         pos = character.getPosition()
         direction = "."
         if (pos[0]-1,pos[1],pos[2]) == t_pos:

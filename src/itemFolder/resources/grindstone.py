@@ -3,7 +3,7 @@ import src
 
 class Grindstone(src.items.Item):
     type = "Grindstone"
-    name = "Grind stone"
+    name = "grind stone"
     description = "item dropped from golems that can be used to improve weapons"
     walkable = True
     bolted = False

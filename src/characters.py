@@ -2923,6 +2923,15 @@ press any other key to attack normally"""
             if terrain.getPosition() not in self.terrainInfo:
                 self.terrainInfo[terrain.getPosition()] = {"tag":terrain.tag}
 
+        if tag in ("changedTile","entered room",):
+            if not self.container.isRoom:
+                terrain = self.getTerrain()
+                for other_character in terrain.getCharactersOnTile(self.getBigPosition())[:]:
+                    if other_character == self:
+                        continue
+                    self.changed("encountered character",{"character":self, "other_character":other_character})
+                    other_character.changed("encountered character",{"character":other_character, "other_character":self})
+
         # do nothing if nobody listens
         if tag not in self.listeners:
             return

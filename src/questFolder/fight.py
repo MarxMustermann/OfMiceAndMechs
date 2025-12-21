@@ -9,13 +9,14 @@ class Fight(src.quests.MetaQuestSequence):
     '''
     type = "Fight"
     lowLevel = True
-    def __init__(self, description="fight", creator=None, command=None, lifetime=None, weaponOnly=False, reason=None, suicidal=False):
+    def __init__(self, description="fight", creator=None, command=None, lifetime=None, weaponOnly=False, reason=None, suicidal=False, simpleOnly=False):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = description
         self.weaponOnly = weaponOnly
         self.reason = reason
         self.suicidal = suicidal
+        self.simpleOnly = simpleOnly
 
         self.shortCode = "f"
 
@@ -123,7 +124,7 @@ So if an enemy is to directly east of you:
             if not directionCommand:
                 return (None,("m","attack enemy (below you)"))
 
-            if not character.hasSpecialAttacks:
+            if not character.hasSpecialAttacks or self.simpleOnly:
                 return (None,(directionCommand,"attack enemy"))
 
             specialAttack = None

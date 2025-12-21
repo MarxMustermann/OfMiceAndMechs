@@ -117,6 +117,7 @@ class AdvancedQuestMenu(src.subMenu.SubMenu):
                     options.append(("ScavengeTile", "ScavengeTile"))
                     options.append(("ClearTile", "ClearTile"))
                     options.append(("LootRoom", "LootRoom"))
+                    options.append(("RestockRoom", "RestockRoom"))
                     options.append(("DoMapSync", "DoMapSync"))
                     options.append(("Adventure", "Adventure"))
                     options.append(("BeUsefull", "BeUsefull"))

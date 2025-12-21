@@ -390,7 +390,9 @@ class Shrine(src.items.Item):
             cost = str(cost)
             cost = " "*(5-len(cost))+cost
             numCharacters = self.getNumTrueCharacters(character)
-            options.append((f"spawn true NPC",f"({cost}) {numCharacters} spawn NPC"))
+            count = str(numCharacters)
+            count = " "*(2-len(count))+count
+            options.append((f"spawn true NPC",f"({cost}) {count} spawn NPC"))
 
             cost = self.getBurnedInCharacterSpawningCost(character)
             cost *= glassHeartRebate
@@ -405,7 +407,9 @@ class Shrine(src.items.Item):
                 specificCost = math.ceil(specificCost*10)/10
                 specificCost = str(specificCost)
                 specificCost = " "*(5-len(specificCost))+specificCost
-                options.append((f"spawn {duty} NPC",f"({specificCost}) {dutyMap.get(duty,0)} spawn {duty} NPC"))
+                count = str(dutyMap.get(duty,0))
+                count = " "*(2-len(count))+count
+                options.append((f"spawn {duty} NPC",f"({specificCost}) {count} spawn {duty} NPC"))
 
         elif self.god == 2:
             cost = self.getCost("spawn scrap",character)

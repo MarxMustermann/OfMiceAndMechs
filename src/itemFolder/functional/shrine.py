@@ -372,7 +372,7 @@ class Shrine(src.items.Item):
         glassHeartRebate = self.get_glass_heart_rebate()
 
         options = []
-        options.append(("None","(0) None (exit)"))
+        options.append(("None","(  0  ) None (exit)"))
         if self.god == 1:
             cost = self.getCharacterSpawningCost(character)
             cost *= glassHeartRebate
@@ -387,6 +387,8 @@ class Shrine(src.items.Item):
             if foundFlask:
                 cost /= 2
 
+            cost = str(cost)
+            cost = " "*(5-len(cost))+cost
             numCharacters = self.getNumTrueCharacters(character)
             options.append((f"spawn true NPC",f"({cost}) {numCharacters} spawn NPC"))
 
@@ -401,6 +403,8 @@ class Shrine(src.items.Item):
             for duty in duties:
                 specificCost = cost*(dutyMap.get(duty,0)+1)
                 specificCost = math.ceil(specificCost*10)/10
+                specificCost = str(specificCost)
+                specificCost = " "*(5-len(specificCost))+specificCost
                 options.append((f"spawn {duty} NPC",f"({specificCost}) {dutyMap.get(duty,0)} spawn {duty} NPC"))
 
         elif self.god == 2:

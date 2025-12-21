@@ -58,10 +58,6 @@ class ManufacturingManager(src.items.Item):
             options = []
             options.append((None,f"exit menu"))
             options.append(("addItemType",f"add item type"))
-            try:
-                self.basicOptions
-            except:
-                self.basicOptions = ["MetalBars","Rod","Frame","Case","Sheet","ManufacturingTable","Bolt","Armor","Sword"]
             for option in self.basicOptions:
                 options.append((option,f"{option} {numActiveTables.get(option,0)}"))
 

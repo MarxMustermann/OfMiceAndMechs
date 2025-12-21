@@ -728,7 +728,15 @@ class CityPlaner(src.items.Item):
         # TODO: should be capsuled
         if floorPlanType == "trapRoom":
             variant = "default"
-            if variant == "defauLt":
+            access_points = [(6,0,0),(0,6,0),(12,6,0),(6,12,0)]
+            open_access_points = []
+            for access_point in access_points:
+                if room.getPositionWalkable(access_point):
+                    open_access_points.append(access_point)
+            if tuple(open_access_points) == ((6,0,0),(6,12,0)):
+                variant = "updown"
+
+            if variant == "default":
                 for y in (4,8):
                     for x in range(1,12):
                         walkingSpaces.append((x,y,0))
@@ -775,7 +783,7 @@ class CityPlaner(src.items.Item):
                     buildSites.append(((5, y, 0),"RodTower",{}))
                     buildSites.append(((6, y, 0),"TriggerPlate",{"floor":"walkingSpace","targets":str([(5,y,0),(7,y,0),boltPos])}))
                     buildSites.append(((7, y, 0),"RodTower",{}))
-            elif variant == "special":
+            elif variant == "updown":
                 rodTower_positions = []
                 for x in range(2,6):
                     rodTower_positions.append((x,1,0))

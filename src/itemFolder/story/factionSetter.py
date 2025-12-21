@@ -34,7 +34,7 @@ It changes your implant and sets your faction marker to {self.faction}.
         character.macroState["submenue"] = src.menuFolder.textMenu.TextMenu(text)
 
         # reset rank
-        character.rank = None
+        character.rank = 6
         character.hasSpecialAttacks = False
         character.hasSwapAttack = False
         character.hasRun = False

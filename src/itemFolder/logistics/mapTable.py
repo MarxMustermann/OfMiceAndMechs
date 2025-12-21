@@ -67,6 +67,7 @@ class MapTable(src.items.Item):
                 self.terrainInfo[coordinate] = {}
             for (key,value)  in info.items():
                 self.terrainInfo[coordinate][key] = value
+        character.addMessage("you added your knowledge to the map")
 
     def readMap(self, character):
         '''
@@ -77,6 +78,7 @@ class MapTable(src.items.Item):
                 character.terrainInfo[coordinate] = {}
             for (key,value)  in info.items():
                 character.terrainInfo[coordinate][key] = value
+        character.addMessage("you extracted the maps knowledge")
 
     def getConfigurationOptions(self, character):
         '''

@@ -136,8 +136,8 @@ Rule the world and put an end to those attacks!
                     return ([quest],None)
 
                 # ensure a good strength level
-                if character.getStrengthSelfEstimate() < 4:
-                    quest = src.quests.questMap["BecomeStronger"](targetStrength=4,lifetime=15*15*15)
+                if character.getStrengthSelfEstimate() < 5:
+                    quest = src.quests.questMap["BecomeStronger"](targetStrength=5,lifetime=15*15*15)
                     return ([quest],None)
 
                 # clear inventory

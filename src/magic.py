@@ -382,11 +382,13 @@ def spawnArenaRoom(terrain, coordinate, difficulty, doors="0,6 6,0 6,12 12,6"):
     trapRoom1.addItem(armor, (11, 4, 0))
     trapRoom1.addStorageSlot((11, 4, 0), "Armor")
 
+    """
     for x in range(4, 12):
         for i in range(10):
             bloom = src.items.itemMap["Bloom"]()
             bloom.dead = True
             trapRoom1.addItem(bloom, (x, 1, 0))
+    """
 
     coalBurner = src.items.itemMap["CoalBurner"]()
     coalBurner.bolted = True
@@ -419,11 +421,12 @@ def spawnArenaRoom(terrain, coordinate, difficulty, doors="0,6 6,0 6,12 12,6"):
     trapRoom1.addItem(moldFeed, (11, 9, 0))
 
     for x in range(1, 12):
-        for y in range(2, 11):
+        for y in range(1, 12):
             if (x, y) in ((11, 9), (11, 8), (11, 5), (11, 7), (11, 4), (11, 3), (10, 5), (10,7)):
                 continue
             trapRoom1.walkingSpace.add((x, y, 0))
-
+    
+    """
     # added ghoul automation for harvesting
     corpseAnimator = src.items.itemMap["CorpseAnimator"]()
     corpseAnimator.bolted = True
@@ -447,7 +450,9 @@ def spawnArenaRoom(terrain, coordinate, difficulty, doors="0,6 6,0 6,12 12,6"):
     trapRoom1.addStorageSlot((1, 1, 0), "Corpse", {"desiredState": "filled"})
     for x in range(4, 12):
         trapRoom1.addOutputSlot((x, 1, 0), None)
+    """
 
+    """
     # added ghoul automation for trap room clearing
     corpseAnimator = src.items.itemMap["CorpseAnimator"]()
     corpseAnimator.bolted = True
@@ -470,7 +475,7 @@ def spawnArenaRoom(terrain, coordinate, difficulty, doors="0,6 6,0 6,12 12,6"):
     trapRoom1.addStorageSlot((1, 11, 0), "Corpse", {"desiredState": "filled"})
     for x in range(4, 12):
         trapRoom1.addOutputSlot((x, 11, 0), None)
-
+    """
 
 def spawnTempleRoom(terrain, coordinate, faction, doors="0,6 6,0 6,12 12,6"):
     '''

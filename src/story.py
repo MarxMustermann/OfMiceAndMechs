@@ -3069,6 +3069,7 @@ but they are likely to explode when disturbed.
                         if item.bolted:
                             continue
 
+                        """
                         foundCorpse = False
                         for check_room in terrain.rooms:
                             if check_room.tag == "shelter":
@@ -3081,6 +3082,7 @@ but they are likely to explode when disturbed.
                             quest = src.quests.questMap["SpawnGhul"]()
                             self.addQuest(quest,mainChar)
                             return
+                        """
 
                         # clear room yourself
                         hasEnemy = False

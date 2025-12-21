@@ -30,7 +30,7 @@ class Communicator(src.items.Item):
         character = extraParams["character"]
 
         if extraParams["type"] == "contact base leader":
-            if character.rank > 5:
+            if not character.rank or character.rank > 5:
                 character.addMessage("You need to be at least rank 5.")
                 character.changed("permission denied",{})
 
@@ -57,7 +57,7 @@ no base leader found.
                 character.changed("no base commander",{})
             return
         if extraParams["type"] == "contact main base":
-            if character.rank > 2:
+            if not character.rank or character.rank > 2:
                 character.addMessage("You need to be at least rank 2.")
                 character.changed("permission denied",{})
 

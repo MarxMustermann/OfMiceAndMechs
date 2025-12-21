@@ -53,6 +53,9 @@ class ManufacturingManager(src.items.Item):
             numActiveTables[item.toProduce] = numActiveTables.get(item.toProduce,0) + 1
             numTablesUsed += 1
 
+            if not item.toProduce in self.basicOptions:
+                self.basicOptions.append(item.toProduce)
+
         character = params["character"]
         if "type" not in params:
             options = []

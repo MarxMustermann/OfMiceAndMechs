@@ -63,7 +63,7 @@ class ViewNPCsMenu(src.subMenu.SubMenu):
         num_outside = 0
         num_burned_in = 0
         for check_character in characters:
-            if not check_character.container.isRoom:
+            if not check_character.container.isRoom and not terrain.getRoomByPosition(check_character.getBigPosition()):
                 num_outside += 1
             if check_character.burnedIn:
                 num_burned_in += 1

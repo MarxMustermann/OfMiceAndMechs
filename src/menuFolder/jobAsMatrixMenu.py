@@ -24,7 +24,6 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
                 "maggot gathering",
                 "machine placing",
                 "room building",
-                "machining",
                 "metal working",
                 "hauling",
                 "resource fetching",

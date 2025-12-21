@@ -2792,7 +2792,10 @@ but they are likely to explode when disturbed.
         mainChar.flask = src.items.itemMap["GooFlask"]()
         mainChar.flask.uses = 100
         mainChar.duties = ["praying","city planning","clone spawning",]
-        mainChar.rank = 6
+        mainChar.rank = 3
+        mainChar.hasSpecialAttacks = True
+        mainChar.hasJump = True
+        mainChar.hasLineShot = True
         mainChar.timeTaken = 1
         mainChar.runCommandString(".",nativeKey=True)
 

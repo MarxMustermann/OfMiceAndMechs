@@ -6,17 +6,13 @@ class EncounteredMonster(src.popups.Popup):
         self.monsterType = monsterType
 
     def subscribedEvent(self):
-        return "hunted"
+        return "encountered character"
 
     def text(self):
         return self.monsterType().description()
 
     def conditionMet(self, params) -> bool:
-        return type(params["hunter"]).__name__ == self.monsterType.__name__
-
-
-
-
+        return type(params["other_character"]).__name__ == self.monsterType.__name__
 
 for charType in src.characters.characterMap.values():
     if issubclass(charType,  src.characters.characterMap["Monster"]) and charType != src.characters.characterMap["Monster"]:

@@ -135,6 +135,11 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["LootRoom"](targetPosition=character.getBigPosition(),endWhenFull=True)
                 return ([quest],None)
 
+        if character.getBigPosition() in self.getRemainingPointsOfInterests():
+            if not dryRun:
+                self.donePointsOfInterest.append(character.getBigPosition())
+            return (None,("+","register room as explored"))
+
         pointOfInterest = random.choice(pointsOfInterest)
         quest = src.quests.questMap["LootRoom"](targetPosition=pointOfInterest,endWhenFull=True)
         return ([quest],None)

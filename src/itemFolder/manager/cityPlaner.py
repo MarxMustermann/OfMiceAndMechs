@@ -727,52 +727,92 @@ class CityPlaner(src.items.Item):
         # generate prefab for a trap room
         # TODO: should be capsuled
         if floorPlanType == "trapRoom":
-            for y in (4,8):
+            variant = "default"
+            if variant == "defauLt":
+                for y in (4,8):
+                    for x in range(1,12):
+                        walkingSpaces.append((x,y,0))
+                for x in (4,8):
+                    for y in range(1,12):
+                        if y in (4,8):
+                            continue
+                        walkingSpaces.append((x,y,0))
+                for x in range(1,4):
+                    walkingSpaces.append((x,6,0))
+                for x in range(9,12):
+                    walkingSpaces.append((x,6,0))
+                for y in range(1,4):
+                    walkingSpaces.append((6,y,0))
+                for y in range(9,12):
+                    walkingSpaces.append((6,y,0))
+
+                buildSites.append(((6, 5, 0),"BoltTower",{}))
+                inputSlots.append(((5, 7, 0),"Bolt",{}))
+                buildSites.append(((6, 7, 0),"BoltTower",{}))
+                inputSlots.append(((7, 7, 0),"Bolt",{}))
+                buildSites.append(((5, 6, 0),"BoltTower",{}))
+                inputSlots.append(((7, 5, 0),"Bolt",{}))
+                buildSites.append(((7, 6, 0),"BoltTower",{}))
+                inputSlots.append(((5, 5, 0),"Bolt",{}))
                 for x in range(1,12):
-                    walkingSpaces.append((x,y,0))
-            for x in (4,8):
-                for y in range(1,12):
-                    if y in (4,8):
+                    if x > 3 and x < 9:
                         continue
-                    walkingSpaces.append((x,y,0))
-            for x in range(1,4):
-                walkingSpaces.append((x,6,0))
-            for x in range(9,12):
-                walkingSpaces.append((x,6,0))
-            for y in range(1,4):
-                walkingSpaces.append((6,y,0))
-            for y in range(9,12):
-                walkingSpaces.append((6,y,0))
 
-            buildSites.append(((6, 5, 0),"BoltTower",{}))
-            inputSlots.append(((5, 7, 0),"Bolt",{}))
-            buildSites.append(((6, 7, 0),"BoltTower",{}))
-            inputSlots.append(((7, 7, 0),"Bolt",{}))
-            buildSites.append(((5, 6, 0),"BoltTower",{}))
-            inputSlots.append(((7, 5, 0),"Bolt",{}))
-            buildSites.append(((7, 6, 0),"BoltTower",{}))
-            inputSlots.append(((5, 5, 0),"Bolt",{}))
-            for x in range(1,12):
-                if x > 3 and x < 9:
-                    continue
+                    if x < 6:
+                        boltPos = (5,6,0)
+                    else:
+                        boltPos = (7,6,0)
+                    buildSites.append(((x, 5, 0),"RodTower",{}))
+                    buildSites.append(((x, 6, 0),"TriggerPlate",{"floor":"walkingSpace","targets":str([(x,5,0),(x,7,0),boltPos])}))
+                    buildSites.append(((x, 7, 0),"RodTower",{}))
+                for y in range(1,12):
+                    if y > 3 and y < 9:
+                        continue
+                    if y < 6:
+                        boltPos = (6,5,0)
+                    else:
+                        boltPos = (6,7,0)
+                    buildSites.append(((5, y, 0),"RodTower",{}))
+                    buildSites.append(((6, y, 0),"TriggerPlate",{"floor":"walkingSpace","targets":str([(5,y,0),(7,y,0),boltPos])}))
+                    buildSites.append(((7, y, 0),"RodTower",{}))
+            elif variant == "special":
+                rodTower_positions = []
+                for x in range(2,6):
+                    rodTower_positions.append((x,1,0))
+                for x in range(5,11):
+                    rodTower_positions.append((x,2,0))
+                for x in range(3,12):
+                    rodTower_positions.append((x,4,0))
+                for x in range(2,11):
+                    rodTower_positions.append((x,6,0))
+                for x in range(2,12):
+                    rodTower_positions.append((x,8,0))
+                for x in range(2,4):
+                    rodTower_positions.append((x,9,0))
+                for x in range(5,11):
+                    rodTower_positions.append((x,10,0))
+                for x in range(1,6):
+                    rodTower_positions.append((x,11,0))
+                for y in range(2,7):
+                    rodTower_positions.append((1,y,0))
 
-                if x < 6:
-                    boltPos = (5,6,0)
-                else:
-                    boltPos = (7,6,0)
-                buildSites.append(((x, 5, 0),"RodTower",{}))
-                buildSites.append(((x, 6, 0),"TriggerPlate",{"floor":"walkingSpace","targets":str([(x,5,0),(x,7,0),boltPos])}))
-                buildSites.append(((x, 7, 0),"RodTower",{}))
-            for y in range(1,12):
-                if y > 3 and y < 9:
-                    continue
-                if y < 6:
-                    boltPos = (6,5,0)
-                else:
-                    boltPos = (6,7,0)
-                buildSites.append(((5, y, 0),"RodTower",{}))
-                buildSites.append(((6, y, 0),"TriggerPlate",{"floor":"walkingSpace","targets":str([(5,y,0),(7,y,0),boltPos])}))
-                buildSites.append(((7, y, 0),"RodTower",{}))
+                for pos in rodTower_positions:
+                    buildSites.append((pos,"RodTower",{}))
+
+                for y in range(1,12):
+                    for x in range(1,12):
+                        pos = (x,y,0)
+                        if pos in [(1,1,0),(3,3,0)]:
+                            pass
+                        elif pos in rodTower_positions: 
+                            pass
+                        else:
+                            targets = []
+                            for offset in [(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]:
+                                check_position = (pos[0]+offset[0],pos[1]+offset[1],0)
+                                if check_position in rodTower_positions:
+                                    targets.append(check_position)
+                            buildSites.append(((x, y, 0),"TriggerPlate",{"floor":"walkingSpace","targets":str(targets)}))
 
         # generate prefab for a scrap compacter room
         # TODO: should be capsuled

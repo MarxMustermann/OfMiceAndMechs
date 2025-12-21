@@ -1,5 +1,6 @@
 import src
 
+import random
 
 class Sprout2(src.items.Item):
     """
@@ -49,6 +50,16 @@ you can eat it to gain 25 satiation.
 
         # damage nearby characters
         if self.container.isRoom == False:
+            # show animations
+            color_pool = ["#252","#030","#474","#240","#383"]
+            character_pool = ["`",",",".","+","*","~","'",":",";","-"]
+            for offset in [(0,0,0),(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]:
+                chars = []
+                for i in range(0,int(random.random()*3)+2):
+                    chars.append((src.interaction.urwid.AttrSpec(random.choice(color_pool),"black"),random.choice(character_pool)+random.choice(character_pool)))
+                self.container.addAnimation(self.getPosition(offset=offset),"charsequence",2,{"chars":chars})
+
+            # do the actual damage
             for character in self.container.getCharactersOnTile(self.getBigPosition()):
                 if character.getDistance(self.getPosition()) <= 1:
                     character.hurt(20,"inhale spores")

@@ -74,6 +74,20 @@ class Bloom(src.items.Item):
         if not self.dead:
             # damage nearby characters
             if self.container.isRoom == False:
+
+                # show animations
+                color_pool = ["#252","#030","#474","#240","#383"]
+                character_pool = ["`",",",".","+","*","~","'",":",";","-"]
+                base_x = self.xPosition-self.xPosition%15
+                base_y = self.yPosition-self.yPosition%15
+                for x in range(1,14):
+                    for y in range(1,14):
+                        chars = []
+                        for i in range(0,int(random.random()*2)+1):
+                            chars.append((src.interaction.urwid.AttrSpec(random.choice(color_pool),"black"),random.choice(character_pool)+random.choice(character_pool)))
+                        self.container.addAnimation((base_x+x,base_y+y,0),"charsequence",1,{"chars":chars})
+
+                # do the actual damage
                 character.hurt(15,"mold sting")
                 for nearby_character in self.container.getCharactersOnTile(self.getBigPosition()):
                     nearby_character.hurt(5,"inhale spores")

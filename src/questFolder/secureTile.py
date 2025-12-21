@@ -6,7 +6,7 @@ import src
 class SecureTile(src.quests.questMap["GoToTile"]):
     type = "SecureTile"
 
-    def __init__(self, description="secure tile", toSecure=None, endWhenCleared=False, reputationReward=0,rewardText=None,strict=False,alwaysHuntDown=False,reason=None,story=None, wandering = False, lifetime=None):
+    def __init__(self, description="secure tile", toSecure=None, endWhenCleared=False, reputationReward=0,rewardText=None,strict=False,alwaysHuntDown=False,reason=None,story=None, wandering = False, lifetime=None, simpleAttacksOnly=False):
         super().__init__(description=description,targetPosition=toSecure,lifetime=lifetime)
         self.metaDescription = description
         self.endWhenCleared = endWhenCleared
@@ -20,6 +20,7 @@ class SecureTile(src.quests.questMap["GoToTile"]):
         self.wandering = wandering
         if toSecure is not None and (toSecure[0] > 13 or toSecure[1] > 13):
             raise Exception("Out of bounds" + str(toSecure))
+        self.simpleAttacksOnly = simpleAttacksOnly
 
     def generateTextDescription(self):
         reasonString = ""
@@ -124,12 +125,12 @@ Try luring enemies into landmines or detonating some bombs."""
                         quest = src.quests.questMap["Huntdown"](target=random.choice(enemies))
                         return ([quest],None)
                     else:
-                        quest = src.quests.questMap["Fight"]()
+                        quest = src.quests.questMap["Fight"](simpleOnly=self.simpleAttacksOnly)
                         return ([quest],None)
 
         enemies = character.getNearbyEnemies()
         if enemies:
-            quest = src.quests.questMap["Fight"]()
+            quest = src.quests.questMap["Fight"](simpleOnly=self.simpleAttacksOnly)
             return ([quest],None)
 
         if character.getBigPosition() == self.targetPosition:

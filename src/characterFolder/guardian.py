@@ -77,26 +77,12 @@ class Guardian(src.monster.Monster):
         self.modifier = modifier
 
     def hurt(self, damage, reason=None, actor=None):
-        try:
-            self.rawBaseDame
-        except:
-            self.rawBaseDame = 20
-
         self.specialCharges += 2
         self.baseDamage = self.rawBaseDame * (1 + self.specialCharges)
 
         super().hurt(damage,reason=reason,actor=actor)
 
     def advance(self,advanceMacros=False):
-        try:
-            self.specialCharges
-        except:
-            self.specialCharges = 0
-        try:
-            self.rawBaseDame
-        except:
-            self.rawBaseDame = 20
-
         if self.specialCharges > 0:
             self.specialCharges -= 1
             self.baseDamage = self.rawBaseDame * (1 + self.specialCharges)
@@ -130,12 +116,6 @@ class Guardian(src.monster.Monster):
         """
         force static render
         """
-
-        try:
-            self.specialCharges
-        except:
-            self.specialCharges = 0
-
         color = (255,255,255)
         if self.specialCharges > 1:
             color = (255,int(max(0,255-self.baseDamage)),int(max(0,255-self.baseDamage)))

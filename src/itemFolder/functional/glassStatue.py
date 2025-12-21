@@ -343,7 +343,8 @@ class GlassStatue(src.items.Item):
             return
 
         if glassHeart.epoch < src.gamestate.gamestate.tick//(15*15*15):
-            character.addMessage("the heart stpped beating and shatters. Transer the heart faster next time.")
+            character.addMessage("the heart stopped beating and shatters.\nTranser the heart faster next time.")
+
             character.removeItemFromInventory(glassHeart)
             return
 

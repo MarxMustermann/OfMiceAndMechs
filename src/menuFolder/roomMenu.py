@@ -65,8 +65,10 @@ class RoomMenu(src.subMenu.SubMenu):
             self.persistentText.append("\n\nThis room has required duties.\n%s"%self.room.requiredDuties)
 
         
-        self.persistentText.append("\n\n- t: set room tag")
-        self.persistentText.append("\n\n- c: clean room (quest)")
+        self.persistentText.append("\n")
+        self.persistentText.append("- t: set room tag\n")
+        self.persistentText.append("- c: clean room (quest)\n")
+        self.persistentText.append("- s: restock room (quest)\n")
         #self.persistentText.append("\n\n- q: open staff section\n- r: show resource sources\n- o: issue room orders\n- t: set room tag")
 
         src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.persistentText))
@@ -77,6 +79,8 @@ class RoomMenu(src.subMenu.SubMenu):
 
         if character and key in ("c",):
             character.macroState["submenue"] = src.menuFolder.createQuestMenu.CreateQuestMenu("ClearTile", [character], character)
+        if character and key in ("s",):
+            character.macroState["submenue"] = src.menuFolder.createQuestMenu.CreateQuestMenu("RestockRoom", [character], character)
         """
         if character and key in ("q",):
             character.macroState["submenue"] = src.menuFolder.roomDutyMenu.RoomDutyMenu(self.room)

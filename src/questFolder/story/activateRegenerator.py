@@ -47,6 +47,11 @@ class ActivateRegenerator(src.quests.MetaQuestSequence):
         if character.xPosition%15 == 0 and character.yPosition%15 == 7:
             return (None,("d","enter the tile"))
 
+        # activate correct item when marked
+        action = self.generate_confirm_activation_command(allowedItems=("Regenerator","CoalBurner"))
+        if action:
+            return action
+
         regenerator = None
         terrain = character.getTerrain()
         for room in terrain.rooms:

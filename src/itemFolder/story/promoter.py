@@ -40,15 +40,12 @@ Its tendrils reach out and touch your implant.
         character = extraInfo["character"]
 
         # filter input
-        if not character.rank:
-            character.addMessage("you need a rank to use this machine")
-            return
         if not self.faction:
             self.faction = character.faction
 
         # check if promotion to rank 5 applies
         highestAllowed = None
-        if character.rank > 5:
+        if not character.rank or character.rank > 5:
             numCharacters = 0
             terrain = character.getTerrain()
             for checkChar in terrain.characters:
@@ -87,7 +84,7 @@ There need to be at least 1 clone besides you on the base to allow any promption
                 highestAllowed = 5
 
         # check if promotion to rank 4 applies
-        if character.rank > 4:
+        if not character.rank or character.rank > 4:
             terrain = character.getTerrain()
             if len(terrain.rooms) < 7:
                 if not highestAllowed:
@@ -108,7 +105,7 @@ Build more rooms.
                 highestAllowed = 4
 
         # check if promotion to rank 3 applies
-        if character.rank > 3:
+        if not character.rank or character.rank > 3:
             foundEnemies = []
             terrain = self.getTerrain()
             for otherChar in terrain.characters:
@@ -141,7 +138,7 @@ Kill all enemies on this terrain, to unlock the promotions to rank 3.
                 highestAllowed = 3
 
         # check if promotion to rank 2 applies
-        if character.rank > 2:
+        if not character.rank or character.rank > 2:
             numCharacters = 0
             terrain = character.getTerrain()
             for checkChar in terrain.characters:
@@ -195,6 +192,9 @@ There need to be at least 3 clones besides you on the base to allow any promptio
         # unpack parameters
         character = extraInfo["character"]
         highestAllowed = extraInfo["highestAllowed"]
+
+        if not character.rank:
+            character.rank = 6
 
         while character.rank > highestAllowed:
             if character.rank == 6:

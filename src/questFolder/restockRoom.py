@@ -145,129 +145,155 @@ Place the items in the correct input or storage stockpile.
             quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig)
             return ([quest],None)
 
-        if isinstance(character.container,src.rooms.Room):
-            room = character.container
+        if not isinstance(character.container,src.rooms.Room):
+            charPos = (character.xPosition%15,character.yPosition%15,character.zPosition%15)
+            if charPos == (7,0,0):
+                return (None,("s","enter tile"))
+            if charPos == (7,14,0):
+                return (None,("w","enter tile"))
+            if charPos == (0,7,0):
+                return (None,("d","enter tile"))
+            if charPos == (14,7,0):
+                return (None,("a","enter tile"))
 
-            if not hasattr(room,"inputSlots"):
-                return self._solver_trigger_fail(dryRun,"no input slot attribute")
+            return self._solver_trigger_fail(dryRun,"unknown reason")
 
-            if not character.inventory:
-                return (None,(".","stand around confused"))
+        room = character.container
 
-            fullyEmpty = not character.inventory[-1].walkable
-            inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny,allowStorage=False,fullyEmpty=fullyEmpty)
-            if not inputSlots:
-                inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny,allowStorage=True,fullyEmpty=fullyEmpty)
-            random.shuffle(inputSlots)
+        if not hasattr(room,"inputSlots"):
+            return self._solver_trigger_fail(dryRun,"no input slot attribute")
 
-            if self.targetPosition:
-                newInputs = []
-                for slot in inputSlots:
-                    if self.targetPosition != slot[0]:
-                        continue
-                    newInputs.append(slot)
-                inputSlots = newInputs
+        if not character.inventory:
+            return (None,(".","stand around confused"))
 
-            # find neighbored input fields
-            foundDirectDrop = None
-            for direction in ((-1,0),(1,0),(0,-1),(0,1),(0,0)):
-                neighbour = (character.xPosition+direction[0],character.yPosition+direction[1],character.zPosition)
-                for inputSlot in inputSlots:
-                    if neighbour[0] != inputSlot[0][0]:
-                        continue
-                    if neighbour[1] != inputSlot[0][1]:
-                        continue
-                    foundDirectDrop = (neighbour,direction,inputSlot)
-                    break
+        fullyEmpty = not character.inventory[-1].walkable
+        inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny,allowStorage=False,fullyEmpty=fullyEmpty)
+        if not inputSlots:
+            inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny,allowStorage=True,fullyEmpty=fullyEmpty)
+        random.shuffle(inputSlots)
 
-            if character.inventory and foundDirectDrop:
-                dropContent = room.getItemByPosition(foundDirectDrop[0])
-                if not dropContent or self.toRestock != "Scrap" or dropContent[0].type != "Scrap":
-                    maxSpace = foundDirectDrop[2][2].get("maxAmount")
-                    if not maxSpace:
-                        if (dropContent and dropContent[0].walkable == False) or character.inventory[-1].walkable == False:
-                            maxSpace = 1
-                        else:
-                            maxSpace = 25
-                    if not dropContent:
-                        spaceTaken = 0
+        if self.targetPosition:
+            newInputs = []
+            for slot in inputSlots:
+                if self.targetPosition != slot[0]:
+                    continue
+                newInputs.append(slot)
+            inputSlots = newInputs
+
+        # find neighbored input fields
+        foundDirectDrop = None
+        for direction in ((-1,0),(1,0),(0,-1),(0,1),(0,0)):
+            neighbour = (character.xPosition+direction[0],character.yPosition+direction[1],character.zPosition)
+            for inputSlot in inputSlots:
+                if neighbour[0] != inputSlot[0][0]:
+                    continue
+                if neighbour[1] != inputSlot[0][1]:
+                    continue
+                foundDirectDrop = (neighbour,direction,inputSlot)
+                break
+
+        if character.inventory and foundDirectDrop:
+            dropContent = room.getItemByPosition(foundDirectDrop[0])
+            if not dropContent or self.toRestock != "Scrap" or dropContent[0].type != "Scrap":
+                maxSpace = foundDirectDrop[2][2].get("maxAmount")
+                if not maxSpace:
+                    if (dropContent and dropContent[0].walkable == False) or character.inventory[-1].walkable == False:
+                        maxSpace = 1
                     else:
-                        spaceTaken = len(dropContent)
-                    numToDrop = min(maxSpace-spaceTaken,self.getNumDrops(character))
-                    if numToDrop > 0:
-                        item = character.inventory[-1]
-                        counter = -1
-                        while item.type != self.toRestock:
-                            counter += 1
-                            item = character.inventory[counter]
+                        maxSpace = 25
+                if not dropContent:
+                    spaceTaken = 0
+                else:
+                    spaceTaken = len(dropContent)
+                numToDrop = min(maxSpace-spaceTaken,self.getNumDrops(character))
+                if numToDrop > 0:
+                    item = character.inventory[-1]
+                    counter = -1
+                    while item.type != self.toRestock:
+                        counter += 1
+                        item = character.inventory[counter]
 
-                        if not item.walkable:
-                            numToDrop = 1
-    
-                        submenue = character.macroState["submenue"]
-                        inventoryCommand = ""
-                        if counter > -1:
-                            if not submenue:
-                                inventoryCommand += "i"+"s"*counter
-                            if isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu):
-                                if counter > submenue.cursor:
-                                    inventoryCommand += "s"*(counter-submenue.cursor)
-                                else:
-                                    inventoryCommand += "w"*(submenue.cursor-counter)
-                            numToDrop = 1
-
+                    if not item.walkable:
                         numToDrop = 1
 
-                        interactionCommand = "L"
-                        if inventoryCommand == "":
-                            if "advancedDrop" in character.interactionState:
-                                interactionCommand = ""
-                            if isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu) and submenue.subMenu and submenue.subMenu.tag == "dropDirection":
-                                interactionCommand = ""
+                    submenue = character.macroState["submenue"]
+                    inventoryCommand = ""
+                    if counter > -1:
+                        if not submenue:
+                            inventoryCommand += "i"+"s"*counter
+                        if isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu):
+                            if counter > submenue.cursor:
+                                inventoryCommand += "s"*(counter-submenue.cursor)
+                            else:
+                                inventoryCommand += "w"*(submenue.cursor-counter)
+                        numToDrop = 1
 
-                        if foundDirectDrop[1] == (-1,0):
-                            return (None,((interactionCommand+"A")*numToDrop,"store an item"))
-                        if foundDirectDrop[1] == (1,0):
-                            return (None,((interactionCommand+"D")*numToDrop,"store an item"))
-                        if foundDirectDrop[1] == (0,-1):
-                            return (None,((interactionCommand+"W")*numToDrop,"store an item"))
-                        if foundDirectDrop[1] == (0,1):
-                            return (None,((interactionCommand+"S")*numToDrop,"store an item"))
-                        if foundDirectDrop[1] == (0,0):
-                            return (None,((inventoryCommand+"l")*numToDrop,"store an item"))
-                else:
+                    numToDrop = 1
+
+                    interactionCommand = "L"
+                    if inventoryCommand == "":
+                        if "advancedDrop" in character.interactionState:
+                            interactionCommand = ""
+                        if isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu) and submenue.subMenu and submenue.subMenu.tag == "dropDirection":
+                            interactionCommand = ""
+
                     if foundDirectDrop[1] == (-1,0):
-                        command = "Ja"*10
-                        if "advancedInteraction" in character.interactionState:
-                            command = command[1:]
-                        return (None,(command,"put scrap on scrap pile"))
+                        return (None,((interactionCommand+"A")*numToDrop,"store an item"))
                     if foundDirectDrop[1] == (1,0):
-                        command = "Jd"*10
-                        if "advancedInteraction" in character.interactionState:
-                            command = command[1:]
-                        return (None,(command,"put scrap on scrap pile"))
+                        return (None,((interactionCommand+"D")*numToDrop,"store an item"))
                     if foundDirectDrop[1] == (0,-1):
-                        command = "Jw"*10
-                        if "advancedInteraction" in character.interactionState:
-                            command = command[1:]
-                        return (None,(command,"put scrap on scrap pile"))
+                        return (None,((interactionCommand+"W")*numToDrop,"store an item"))
                     if foundDirectDrop[1] == (0,1):
-                        command = "Js"*10
-                        if "advancedInteraction" in character.interactionState:
-                            command = command[1:]
-                        return (None,(command,"put scrap on scrap pile"))
+                        return (None,((interactionCommand+"S")*numToDrop,"store an item"))
                     if foundDirectDrop[1] == (0,0):
-                        return (None,("j"*self.getNumDrops(character),"put scrap on scrap pile"))
+                        return (None,((inventoryCommand+"l")*numToDrop,"store an item"))
+            else:
+                if foundDirectDrop[1] == (-1,0):
+                    command = "Ja"*10
+                    if "advancedInteraction" in character.interactionState:
+                        command = command[1:]
+                    return (None,(command,"put scrap on scrap pile"))
+                if foundDirectDrop[1] == (1,0):
+                    command = "Jd"*10
+                    if "advancedInteraction" in character.interactionState:
+                        command = command[1:]
+                    return (None,(command,"put scrap on scrap pile"))
+                if foundDirectDrop[1] == (0,-1):
+                    command = "Jw"*10
+                    if "advancedInteraction" in character.interactionState:
+                        command = command[1:]
+                    return (None,(command,"put scrap on scrap pile"))
+                if foundDirectDrop[1] == (0,1):
+                    command = "Js"*10
+                    if "advancedInteraction" in character.interactionState:
+                        command = command[1:]
+                    return (None,(command,"put scrap on scrap pile"))
+                if foundDirectDrop[1] == (0,0):
+                    return (None,("j"*self.getNumDrops(character),"put scrap on scrap pile"))
 
-            foundNeighbour = None
+        foundNeighbour = None
+        for slot in inputSlots:
+            if len(slot[0]) < 3:
+                slot = ((slot[0][0],slot[0][1],0),slot[1],slot[2])
+
+            for direction in ((-1,0),(1,0),(0,-1),(0,1)):
+                neighbour = (slot[0][0]-direction[0],slot[0][1]-direction[1],slot[0][2])
+                if neighbour not in room.walkingSpace:
+                    continue
+                if not room.getPositionWalkable(neighbour):
+                    continue
+                foundNeighbour = (neighbour,direction)
+                break
+            if foundNeighbour:
+                break
+
+        if not foundNeighbour:
             for slot in inputSlots:
                 if len(slot[0]) < 3:
                     slot = ((slot[0][0],slot[0][1],0),slot[1],slot[2])
 
                 for direction in ((-1,0),(1,0),(0,-1),(0,1)):
                     neighbour = (slot[0][0]-direction[0],slot[0][1]-direction[1],slot[0][2])
-                    if neighbour not in room.walkingSpace:
-                        continue
                     if not room.getPositionWalkable(neighbour):
                         continue
                     foundNeighbour = (neighbour,direction)
@@ -275,38 +301,12 @@ Place the items in the correct input or storage stockpile.
                 if foundNeighbour:
                     break
 
-            if not foundNeighbour:
-                for slot in inputSlots:
-                    if len(slot[0]) < 3:
-                        slot = ((slot[0][0],slot[0][1],0),slot[1],slot[2])
+        if not foundNeighbour:
+            return self._solver_trigger_fail(dryRun,"no dropoff found")
 
-                    for direction in ((-1,0),(1,0),(0,-1),(0,1)):
-                        neighbour = (slot[0][0]-direction[0],slot[0][1]-direction[1],slot[0][2])
-                        if not room.getPositionWalkable(neighbour):
-                            continue
-                        foundNeighbour = (neighbour,direction)
-                        break
-                    if foundNeighbour:
-                        break
-
-            if not foundNeighbour:
-                return self._solver_trigger_fail(dryRun,"no dropoff found")
-
-            quest = src.quests.questMap["GoToPosition"](reason="get to the stockpile and be able to fill it")
-            quest.setParameters({"targetPosition":foundNeighbour[0]})
-            return ([quest],None)
-
-        charPos = (character.xPosition%15,character.yPosition%15,character.zPosition%15)
-        if charPos == (7,0,0):
-            return (None,("s","enter tile"))
-        if charPos == (7,14,0):
-            return (None,("w","enter tile"))
-        if charPos == (0,7,0):
-            return (None,("d","enter tile"))
-        if charPos == (14,7,0):
-            return (None,("a","enter tile"))
-
-        return self._solver_trigger_fail(dryRun,"unknown reason")
+        quest = src.quests.questMap["GoToPosition"](reason="get to the stockpile and be able to fill it")
+        quest.setParameters({"targetPosition":foundNeighbour[0]})
+        return ([quest],None)
 
     def getQuestMarkersTile(self,character):
         result = super().getQuestMarkersTile(character)

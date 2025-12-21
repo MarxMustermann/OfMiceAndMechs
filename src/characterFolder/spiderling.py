@@ -41,7 +41,7 @@ class Spiderling(src.monster.Monster):
         if src.gamestate.gamestate.difficulty == "difficult":
             self.baseDamage *= 2
             self.health *= 2
-            self.maxHealth = 2
+            self.maxHealth *= 2
 
         self.solvers = [
             "NaiveActivateQuest",

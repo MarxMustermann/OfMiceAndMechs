@@ -67,7 +67,7 @@ The base has a Promoter, use that to get promoted.
         if not character:
             return None
 
-        if character.rank <= 5:
+        if character.rank and character.rank <= 5:
             if not dryRun:
                 self.postHandler()
             return True

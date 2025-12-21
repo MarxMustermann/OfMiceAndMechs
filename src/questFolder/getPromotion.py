@@ -46,7 +46,7 @@ Use the Promotor to do this.
         '''
         if not character:
             return False
-        if character.rank <= self.targetRank:
+        if character.rank and character.rank <= self.targetRank:
             if not dryRun:
                 self.postHandler()
             return True

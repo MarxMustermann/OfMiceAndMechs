@@ -3107,7 +3107,7 @@ but they are likely to explode when disturbed.
             return
 
         # get promoted to rank 5 to unlock Communicator
-        if mainChar.rank > 5:
+        if not mainChar.rank or mainChar.rank > 5:
             quest = src.quests.questMap["GetRank5PromotionStory"]()
             self.addQuest(quest,mainChar)
             return

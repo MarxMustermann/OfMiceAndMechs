@@ -679,6 +679,7 @@ def spawnControlRoom(terrain, coordinate, spawnReportArchive=False):
          if item.type != "Door":
              continue
          item.walkable = False
+    mainRoom.tag = "control room"
 
     # place anvil
     anvilPos = (10, 2, 0)

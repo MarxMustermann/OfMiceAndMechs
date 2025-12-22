@@ -57,11 +57,11 @@ Set the floor plan: {self.floorPlanType}
                 command += "f"
                 return (None,(command,"set a floor plan"))
 
-            if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
-                if submenue.tag == "floorplanSelection":
-                    command = submenue.get_command_to_select_option(self.floorPlanType)
-                    return (None,(command,"select the floor plan"))
+            if submenue.tag == "floorplanSelection":
+                command = submenue.get_command_to_select_option(self.floorPlanType)
+                return (None,(command,"select the floor plan"))
 
+            if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu):
                 command = submenue.get_command_to_select_option("showMap")
                 return (None,(command,"show the map"))
 

@@ -4708,6 +4708,10 @@ def renderGameDisplay(renderChar=None):
                             warning = (src.pseudoUrwid.AttrSpec((255, 68, 51), (0, 0, 0)),"SLOW")
                             indicators.append(" ")
                             indicators.append(warning)
+                        if char.tool:
+                            warning = (src.pseudoUrwid.AttrSpec((255, 68, 51), (0, 0, 0)),"TOOL")
+                            indicators.append(" ")
+                            indicators.append(warning)
 
                         x = max(uiElement["offset"][0]+uiElement["width"]//2-len(indicators)//2,0)
                         y = uiElement["offset"][1]

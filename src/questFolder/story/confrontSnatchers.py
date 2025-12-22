@@ -97,7 +97,7 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
                                 command = "K"+command
                             return (None,(command,"pick up items"))
 
-                if len(snatchers) < 5:
+                if len(snatchers) < 5 and character.weapon:
                     quest = src.quests.questMap["SecureTile"](toSecure=random.choice(snatchers).getBigPosition(),endWhenCleared=True)
                     return ([quest],None)
                     

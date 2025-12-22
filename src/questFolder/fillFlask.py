@@ -60,6 +60,11 @@ class FillFlask(src.quests.MetaQuestSequence):
             command = submenue.get_command_to_select_option("fill_empty_flask")
             return (None,(command,"fill flasks"))
 
+        # activate production item when marked
+        action = self.generate_confirm_activation_command(allowedItems=["GooDispenser"])
+        if action:
+            return action
+
         pos = character.getBigPosition()
         pos = (pos[0],pos[1])
 

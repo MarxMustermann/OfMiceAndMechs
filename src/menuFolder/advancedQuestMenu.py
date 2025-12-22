@@ -127,6 +127,7 @@ class AdvancedQuestMenu(src.subMenu.SubMenu):
                     options.append(("SpawnClone", "SpawnClone"))
                     options.append(("Adventure", "Adventure"))
                     options.append(("AdventureOnTerrain", "AdventureOnTerrain"))
+                    options.append(("Equip", "Equip"))
                     self.setOptions("what type of quest: (press N for quest by name)", options)
 
                 # let the superclass handle the actual selection

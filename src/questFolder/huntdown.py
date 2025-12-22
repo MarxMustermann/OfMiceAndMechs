@@ -4,12 +4,13 @@ import src
 class Huntdown(src.quests.MetaQuestSequence):
     type = "Huntdown"
 
-    def __init__(self, description="huntdown", target=None, lifetime=None, alwaysfollow = False):
+    def __init__(self, description="huntdown", target=None, lifetime=None, alwaysfollow = False, reason=None):
         questList = []
         super().__init__(questList,lifetime=lifetime)
         self.metaDescription = description
         self.target = target
         self.alwaysfollow = alwaysfollow
+        self.reason = reason
 
     def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:

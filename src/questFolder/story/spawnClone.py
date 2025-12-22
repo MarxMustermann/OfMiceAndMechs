@@ -165,7 +165,7 @@ class SpawnClone(src.quests.MetaQuestSequence):
 
         # go home
         if not character.isOnHomeTerrain():
-            quest = src.quests.questMap["GoHome"]()
+            quest = src.quests.questMap["GoHome"](reason="get inside")
             return ([quest],None)
 
         # enter room fully
@@ -178,7 +178,7 @@ class SpawnClone(src.quests.MetaQuestSequence):
                 return (None,("s","enter tile"))
             if character.yPosition%15 == 14:
                 return (None,("w","enter tile"))
-            quest = src.quests.questMap["GoHome"]()
+            quest = src.quests.questMap["GoHome"](reason="work from inside")
             return ([quest],None)
 
         # go to room with growth tank
@@ -194,7 +194,7 @@ class SpawnClone(src.quests.MetaQuestSequence):
             return self._solver_trigger_fail(dryRun,"no growth tank found")
 
         if len(growthTank.container.getItemByPosition(growthTank.getPosition(offset=(1,0,0)))) > 1:
-            quest = src.quests.questMap["CleanSpace"](targetPosition=growthTank.getPosition(offset=(1,0,0)),targetPositionBig=growthTank.getBigPosition(),abortOnfullInventory=False)
+            quest = src.quests.questMap["CleanSpace"](targetPosition=growthTank.getPosition(offset=(1,0,0)),targetPositionBig=growthTank.getBigPosition(),abortOnfullInventory=False,reason="clean up the growths tanks output")
             return ([quest],None)
 
         if not growthTank.filled and len(growthTank.getFlasks(character)) < 1:

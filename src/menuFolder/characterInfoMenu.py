@@ -72,26 +72,37 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
             if char.flask:
                 flaskInfo = str(char.flask.uses)+" flask charges"
             text += f"satiation:  {char.satiation} ({flaskInfo})\n"
-            text += f"hasSpecialAttacks: {char.hasSpecialAttacks}\n"
-            text += f"hasSwapAttack: {char.hasSwapAttack}\n"
-            text += f"hasRun: {char.hasRun}\n"
-            text += f"hasJump: {char.hasJump}\n"
-            text += f"hasLineShot: {char.hasLineShot}\n"
-            text += f"hasRandomShot: {char.hasRandomShot}\n"
-            text += f"hasMovementSpeedBoost: {char.hasMovementSpeedBoost}\n"
-            text += f"hasMaxHealthBoost: {char.hasMaxHealthBoost}\n"
-            text += f"hasMagic: {char.hasMagic}\n"
+            text += "\n"
+            text += f"hasSpecialAttacks:      {char.hasSpecialAttacks}\n"
+            text += f"hasSwapAttack:          {char.hasSwapAttack}\n"
+            text += f"hasRun:                 {char.hasRun}\n"
+            text += f"hasJump:                {char.hasJump}\n"
+            text += f"hasLineShot:            {char.hasLineShot}\n"
+            text += f"hasRandomShot:          {char.hasRandomShot}\n"
+            text += f"hasMovementSpeedBoost:  {char.hasMovementSpeedBoost}\n"
+            text += f"hasMaxHealthBoost:      {char.hasMaxHealthBoost}\n"
+            text += f"hasMagic:               {char.hasMagic}\n"
             text += "\n"
             if char.lastMapSync:
                 text += f"lastMapSync: {src.gamestate.gamestate.tick-char.lastMapSync}\n"
-            text += "\n"
+                text += "\n"
             for jobOrder in char.jobOrders:
                 text += str(jobOrder.taskName)
                 text += ": %s \n" % json.dumps(jobOrder.tasks)#,indent=4)
-            text += "\n"
             text += "lastJobOrder: %s\n" % char.lastJobOrder
-            text += "skills: %s\n" % char.skills
             text += "combat value: %s" % char.getStrengthSelfEstimate() + "\n"
+            text += "numAttackedWithoutResponse: %s\n" % char.numAttackedWithoutResponse
+            text += f"position: {char.getSpacePosition()}\n"
+            text += f"big position: {char.getBigPosition()}\n"
+            text += f"terrain position: {char.getTerrainPosition()}\n"
+            text += f"grievances: {char.grievances}\n"
+            text += f"terrainName: %s\n" % char.getTerrain().tag
+            text += f"disableCommandsOnPlus: %s\n" % char.disableCommandsOnPlus
+            text += f"autoExpandQuests: %s\n" % char.autoExpandQuests
+            text += f"autoExpandQuests2: %s\n" % char.autoExpandQuests2
+            text += f"burnedIn: %s" % char.burnedIn
+        
+        if self.page == 3:
             if len(char.duties) < 5:
                 text += "duties: %s\n" % ",\n".join(char.duties)
             else:
@@ -108,16 +119,7 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
                             text += ", "
                             counter += 1
                 text += "\n" % char.duties
-            text += "numAttackedWithoutResponse: %s\n" % char.numAttackedWithoutResponse
-            text += f"position: {char.getSpacePosition()}\n"
-            text += f"big position: {char.getBigPosition()}\n"
-            text += f"terrain position: {char.getTerrainPosition()}\n"
-            text += f"grievances: {char.grievances}\n"
-            text += f"terrainName: %s\n" % char.getTerrain().tag
-            text += f"disableCommandsOnPlus: %s\n" % char.disableCommandsOnPlus
-            text += f"autoExpandQuests: %s\n" % char.autoExpandQuests
-            text += f"autoExpandQuests2: %s\n" % char.autoExpandQuests2
-            text += f"burnedIn: %s\n" % char.burnedIn
+            text += "skills: %s" % char.skills
 
         text += "\n"
         text += "\n"
@@ -169,8 +171,8 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
         if key == "a":
             self.page -= 1
         if self.page < 1:
-            self.page = 2
-        if self.page > 2:
+            self.page = 3
+        if self.page > 3:
             self.page = 1
 
         if key in ("t",):

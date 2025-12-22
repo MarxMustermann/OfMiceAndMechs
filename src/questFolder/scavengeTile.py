@@ -74,10 +74,10 @@ This quest will end when the target tile has no items left."""
         # handle enemies
         if character.getNearbyEnemies():
             if character.health > character.maxHealth//3:
-                quest = src.quests.questMap["Fight"]()
+                quest = src.quests.questMap["Fight"](reason="defend yourself")
                 return ([quest],None)
             else:
-                quest = src.quests.questMap["Heal"]()
+                quest = src.quests.questMap["Heal"](reason="be able to fight")
                 return ([quest],None)
             
         # fail on alarm

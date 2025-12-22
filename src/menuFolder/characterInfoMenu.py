@@ -115,7 +115,10 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
             text += f"autoExpandQuests: %s\n" % char.autoExpandQuests
             text += f"autoExpandQuests2: %s\n" % char.autoExpandQuests2
             text += f"burnedIn: %s\n" % char.burnedIn
-            text += f"tool: %s\n" % char.tool
+            tool_text = "no tool"
+            if char.tool:
+                tool_text = char.tool.name
+            text += f"tool: %s\n" % tool_text
 
         text += "\n"
         text += "\n"

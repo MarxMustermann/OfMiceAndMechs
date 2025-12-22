@@ -21,7 +21,7 @@ class CombatInfoMenu(src.subMenu.SubMenu):
 
         text += "you: \n\n"
         text += f"name:        {char.name} {char.getSpacePosition()}\n"
-        text += f"health:      {char.health}\n"
+        text += f"health:      {char.health}/{char.adjustedMaxHealth}\n"
         text += f"exhaustion:  {char.exhaustion}\n"
         text += f"timeTaken:   {round(char.timeTaken,2)}\n"
         text += f"movemmentsp: {char.adjustedMovementSpeed}\n"
@@ -37,7 +37,7 @@ nearby enemies:
         for enemy in enemies:
             text += "-------------  \n"
             text += f"name:        {enemy.name} {enemy.getSpacePosition()}\n"
-            text += f"health:      {enemy.health}\n"
+            text += f"health:      {enemy.health}/{char.adjustedMaxHealth}\n"
             text += f"exhaustion:  {enemy.exhaustion}\n"
             text += f"timeTaken:   {round(enemy.timeTaken,2)}\n"
             text += f"movemmentsp: {enemy.adjustedMovementSpeed}\n"
@@ -51,7 +51,7 @@ subordinates:
         for ally in char.subordinates:
             text += "-------------  \n"
             text += f"name:        {ally.name} {ally.getSpacePosition()}\n"
-            text += f"health:      {ally.health}\n"
+            text += f"health:      {ally.health}/{char.adjustedMaxHealth}\n"
             text += f"exhaustion:  {ally.exhaustion}\n"
             text += f"timeTaken:   {round(ally.timeTaken,2)}\n"
             text += f"movemmentsp: {enemy.adjustedMovementSpeed}\n"

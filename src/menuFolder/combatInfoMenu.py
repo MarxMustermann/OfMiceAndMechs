@@ -12,6 +12,7 @@ class CombatInfoMenu(src.subMenu.SubMenu):
     def __init__(self, char=None):
         self.char = char
         super().__init__()
+        self.sidebared = False
 
     def render(self,char):
         if char.dead:
@@ -19,16 +20,17 @@ class CombatInfoMenu(src.subMenu.SubMenu):
 
         text = ""
 
-        text += "you: \n\n"
-        text += f"name:        {char.name} {char.getSpacePosition()}\n"
-        text += f"health:      {char.health}/{char.adjustedMaxHealth}\n"
-        text += f"exhaustion:  {char.exhaustion}\n"
-        text += f"timeTaken:   {round(char.timeTaken,2)}\n"
-        text += f"movemmentsp: {char.adjustedMovementSpeed}\n"
-        text += f"attacksp:    {char.attackSpeed}\n"
+        if not self.sidebared:
+            text += "you: \n\n"
+            text += f"name:        {char.name} {char.getSpacePosition()}\n"
+            text += f"health:      {char.health}/{char.adjustedMaxHealth}\n"
+            text += f"exhaustion:  {char.exhaustion}\n"
+            text += f"timeTaken:   {round(char.timeTaken,2)}\n"
+            text += f"movemmentsp: {char.adjustedMovementSpeed}\n"
+            text += f"attacksp:    {char.attackSpeed}\n"
+            text += "\n"
 
-        text += """
-nearby enemies:
+        text += """nearby enemies:
 """
 
         enemies = char.getNearbyEnemies()
@@ -71,9 +73,11 @@ subordinates:
             return True
         if key in ("ESC","lESC",):
             self.char.rememberedMenu.append(self)
+            self.sidebared = True
             return True
         if key in ("rESC",):
             self.char.rememberedMenu2.append(self)
+            self.sidebared = True
             return True
 
         char = self.char

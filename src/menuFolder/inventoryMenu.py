@@ -29,6 +29,8 @@ class InventoryMenu(src.subMenu.SubMenu):
         self.cursor = 0
         super().__init__()
         self.footerText = "press j to activate, press l to drop, press esc to exit"
+        self.min_lines = 8
+        self.min_cols = 20
 
     def handleKey(self, key, noRender=False, character=None):
         """
@@ -182,9 +184,13 @@ class InventoryMenu(src.subMenu.SubMenu):
         else:
             char = character
 
+        num_rows = 0
+        num_columns = 0
+
         txt = []
         if not sidebared:
             txt.append("your inventory:\n\n")
+            num_rows += 2
         if len(char.inventory):
             counter = 0
             for item in char.inventory:
@@ -199,28 +205,49 @@ class InventoryMenu(src.subMenu.SubMenu):
                             src.canvas.displayChars.indexedMapping[item.render()],
                             " - ",
                             item.name,
-                            "\n",
                         ]
                     )
-                    if not sidebared and counter == cursor + 1:
-                        txt.extend(
-                            [
-                                item.getDetailedInfo(),
-                                "\n\n",
-                            ]
-                        )
                 else:
-                    txt.extend([str(counter), " - ", item.render(), " - ", item.name, "\n"])
-                    if not sidebared and counter == cursor + 1:
-                        txt.extend(
-                            [
-                                item.getDetailedInfo(),
-                                "\n\n",
+                    txt.extend([str(counter), " - ", item.render(), " - ", item.name])
+                txt.append("\n")
+                num_rows += 1
+
+                if not sidebared and counter == cursor + 1:
+                    description = item.getDetailedInfo()
+                    txt.extend(
+                        [
+                            description,
+                            "\n\n",
                             ]
-                        )
+                    )
+                    num_rows += 2
+                    num_columns = len(description)
             txt.append("\n")
+            num_rows += 1
             if not sidebared:
-                txt.append("press ws to move cursor\npress L to drop item nearby\npress l to drop item\npress j to activate item\npress e to examine item\n")
+                if num_rows <= self.min_lines-5:
+                    extra_rows = (self.min_lines-5)-num_rows
+                    txt.append("\n"*(extra_rows))
+                    num_rows += extra_rows
+                txt.append("press ws to move cursor\npress L to drop item nearby\npress l to drop item\npress j to activate item\npress e to examine item")
+                num_rows += 4
         else:
-            txt.append("empty Inventory\n\n")
+            txt.append("empty Inventory\n")
+            num_rows += 1
+        txt.append(str(num_rows)+"/"+str(num_columns))
+        txt.append("\n")
+        num_rows += 1
+        try:
+            self.min_lines
+        except:
+            self.min_lines = 8
+        if not sidebared:
+            if num_rows <= self.min_lines:
+                txt.append("\n"*(self.min_lines-num_rows))
+            else:
+                self.min_lines = num_rows
+            if num_columns <= self.min_cols:
+                txt.append(" "*self.min_cols)
+            else:
+                self.min_cols = num_columns
         return txt

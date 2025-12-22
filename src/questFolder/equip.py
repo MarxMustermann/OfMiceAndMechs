@@ -185,7 +185,10 @@ Swords can range from 10 to 25 damage per hit.
             offsets = [((1,0,0),"d"),((-1,0,0),"a"),((0,1,0),"s"),((0,-1,0),"w"),((0,0,0),".")]
             for offset in offsets:
                 if character.getPosition(offset=offset[0]) == bestSword.getPosition():
-                    return (None,("J"+offset[1],"equip the item"))
+                    command = "J"+offset[1]
+                    if command == "J.":
+                        command = "j"
+                    return (None,(command,"equip the item"))
             1/0
 
         if bestArmor and (not character.armor or bestArmor.armorValue > character.armor.armorValue):
@@ -200,7 +203,10 @@ Swords can range from 10 to 25 damage per hit.
             offsets = [((1,0,0),"d"),((-1,0,0),"a"),((0,1,0),"s"),((0,-1,0),"w"),((0,0,0),".")]
             for offset in offsets:
                 if character.getPosition(offset=offset[0]) == bestArmor.getPosition():
-                    return (None,("J"+offset[1],"equip the item"))
+                    command = "J"+offset[1]
+                    if command == "J.":
+                        command = "j"
+                    return (None,(command,"equip the item"))
             2/0
 
         if "metal working" in character.duties or self.tryHard:

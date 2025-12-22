@@ -57,6 +57,31 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
         # wait for snatchers to appear
         enemies = character.getNearbyEnemies()
         if not enemies:
+
+            if not character.weapon:
+                terrain = character.getTerrain()
+                items = terrain.getNearbyItems(character)
+                for item in items:
+                    if not item.type == "Rod":
+                        continue
+                    if not item == terrain.getItemByPosition(item.getPosition())[0]:
+                        continue
+
+                    if character.getDistance(item.getPosition()) > 1:
+                        quest = src.quests.questMap["GoToPosition"](targetPosition=item.getSmallPosition(),ignoreEndBlocked=True,reason="be able to pick up a rod")
+                        return ([quest],None)
+
+                    command = "j"
+                    if character.getPosition(offset=(1,0,0)) == item.getPosition():
+                        command = "Jd"
+                    if character.getPosition(offset=(-1,0,0)) == item.getPosition():
+                        command = "Ja"
+                    if character.getPosition(offset=(0,1,0)) == item.getPosition():
+                        command = "Js"
+                    if character.getPosition(offset=(0,-1,0)) == item.getPosition():
+                        command = "Jw"
+                    return (None,(command,"equip rod"))
+                    1/0
         
             terrain = character.getTerrain()
             snatchers = []
@@ -148,6 +173,8 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
                     if character.macroState.get("submenue") and character.macroState["submenue"].tag == "specialAttackSelection":
                         interactionCommand = ""
 
+                    if not character.weapon and character.exhaustion > 0:
+                        return (None,("s","flee"))
                     if character.exhaustion < 1:
                         return (None,(interactionCommand+"k","attack Snatcher"))
                     if character.exhaustion < 10:

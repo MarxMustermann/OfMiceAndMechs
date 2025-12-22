@@ -122,19 +122,19 @@ Try luring enemies into landmines or detonating some bombs."""
                 enemies = character.getNearbyEnemies()
                 if enemies:
                     if self.alwaysHuntDown:
-                        quest = src.quests.questMap["Huntdown"](target=random.choice(enemies))
+                        quest = src.quests.questMap["Huntdown"](target=random.choice(enemies),reason="ensure your enemy is dead")
                         return ([quest],None)
                     if not dryRun:
                         self.huntdownCooldown = 100
                     if random.random() < 0.3:
-                        quest = src.quests.questMap["Huntdown"](target=random.choice(enemies))
+                        quest = src.quests.questMap["Huntdown"](target=random.choice(enemies),reason="ensure victory")
                         return ([quest],None)
                     else:
-                        quest = src.quests.questMap["Fight"](simpleOnly=self.simpleAttacksOnly)
+                        quest = src.quests.questMap["Fight"](simpleOnly=self.simpleAttacksOnly,reason="reduce danger")
                         return ([quest],None)
         enemies = character.getNearbyEnemies()
         if enemies:
-            quest = src.quests.questMap["Fight"](simpleOnly=self.simpleAttacksOnly)
+            quest = src.quests.questMap["Fight"](simpleOnly=self.simpleAttacksOnly,reason="defend yourself")
             return ([quest],None)
 
         # go to the position to secure
@@ -158,7 +158,7 @@ Try luring enemies into landmines or detonating some bombs."""
                     (x,y,_) = character.getSpacePosition()
                     x= src.helpers.clamp(x+int(random.uniform(-3,3)),2,12)
                     y= src.helpers.clamp(y+int(random.uniform(-3,3)),2,12)
-                    quest = src.quests.questMap["GoToPosition"](targetPosition = (x,y))
+                    quest = src.quests.questMap["GoToPosition"](targetPosition = (x,y),reason="get to a nicer spot")
                     return ([quest], None)
                 if not character.rank and character.charType == "Clone":
                     return (None, ("....","wait"))

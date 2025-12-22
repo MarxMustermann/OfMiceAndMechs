@@ -4775,6 +4775,7 @@ def renderGameDisplay(renderChar=None):
             pygame.display.update()
         if tcodConsole:
             plainText = stringifyUrwid(main.get_text())
+
             height = 0
             width = 0
             for line in plainText.split("\n"):

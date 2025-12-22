@@ -17,6 +17,16 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
         super().__init__()
         self.page = 1
 
+        self.min_lines = 8
+        self.min_rows = 50
+
+    def _get_text_dimensions(self,text):
+        lines = text.split("\n")
+        max_line = 0
+        for line in lines:
+            max_line = max(max_line,len(line))
+        return (len(lines),max_line)
+
     def render(self,char):
         if char.dead:
             return ""
@@ -129,6 +139,17 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
         text += "\n"
         text += "\npress e to view the status effect on the character"
         text += "\npress s to view the character statistics"
+
+        dimensions = self._get_text_dimensions(text)
+        if dimensions[0] <= self.min_lines:
+            text += "\n"*(self.min_lines-dimensions[0])
+        else:
+            self.min_lines = dimensions[0]
+        if dimensions[1] <= self.min_rows:
+            text += "\n"*(self.min_rows-dimensions[1])
+        else:
+            self.min_rows = dimensions[1]
+
         return text
 
     def handleKey(self, key, noRender=False, character = None):

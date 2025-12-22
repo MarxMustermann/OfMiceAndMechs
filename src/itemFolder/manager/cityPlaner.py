@@ -344,6 +344,8 @@ class CityPlaner(src.items.Item):
         return room
 
     def get_available_floorplans(self):
+
+        # set up raw options
         options = []
         options.append(("storage","storage"))
         options.append(("scrapStorage","scrap storage"))
@@ -371,6 +373,22 @@ class CityPlaner(src.items.Item):
         options.append(("smokingRoom","smoking room"))
         options.append(("trapRoom","trap room"))
         options.append(("temple","temple"))
+
+        # add counters
+        index = 0
+        while index < len(options):
+            option = options[index]
+            num_built = 0
+            for room in self.getTerrain().rooms:
+                if not room.tag == option[0]:
+                    continue
+                num_built += 1
+
+            option = (option[0],str(num_built)+" "+option[1])
+            options[index] = option
+            index += 1
+
+        # return the result
         return options
 
     def setFloorplanFromMap(self,params):

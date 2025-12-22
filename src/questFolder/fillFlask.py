@@ -119,7 +119,7 @@ Flask can be refilled at a GooDispenser."""
                 if not item == character.container.getItemByPosition(item.getPosition())[0]:
                     continue
                 if item.type == "GooDispenser" and item.charges:
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),description="go to goo dispenser",ignoreEndBlocked=True)
+                    quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),description="go to goo dispenser",ignoreEndBlocked=True,reason="be able to fill up Flask")
                     return ([quest],None)
 
         # go to room with goo dispenser
@@ -129,9 +129,10 @@ Flask can be refilled at a GooDispenser."""
                 if item.type == "GooDispenser" and item.charges:
                     room = roomCandidate
         if room:
-            quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),description="go to goo source")
+            quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),description="go to goo source",reason="be able to fill Flask")
             return ([quest],None)
 
+        # fail
         return self._solver_trigger_fail(dryRun,"found no source for goo")
 
     @staticmethod

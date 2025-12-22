@@ -61,23 +61,7 @@ Set the floor plan: {self.floorPlanType}
                 command = submenue.get_command_to_select_option(self.floorPlanType)
                 return (None,(command,"select the floor plan"))
 
-            submenue = character.macroState["submenue"]
-            rewardIndex = 0
-            if rewardIndex == 0:
-                counter = 1
-                for option in submenue.options.items():
-                    if option[1] == "showMap":
-                        break
-                    counter += 1
-                rewardIndex = counter
-
-            offset = rewardIndex-submenue.selectionIndex
-            command = ""
-            if offset > 0:
-                command += "s"*offset
-            else:
-                command += "w"*(-offset)
-            command += "j"
+            command = submenue.get_command_to_select_option("showMap")
             return (None,(command,"show the map"))
 
         if character.macroState["submenue"] and not ignoreCommands:

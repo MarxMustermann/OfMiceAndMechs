@@ -32,39 +32,39 @@ Set the floor plan: {self.floorPlanType}
         if self.subQuests:
             return (None,None)
 
-        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.mapMenu.MapMenu) and not ignoreCommands:
-            submenue = character.macroState["submenue"]
-            command = ""
-            if submenue.cursor[0] > self.roomPosition[0]:
-                command += "a"*(submenue.cursor[0]-self.roomPosition[0])
-            if submenue.cursor[0] < self.roomPosition[0]:
-                command += "d"*(self.roomPosition[0]-submenue.cursor[0])
-            if submenue.cursor[1] > self.roomPosition[1]:
-                command += "w"*(submenue.cursor[1]-self.roomPosition[1])
-            if submenue.cursor[1] < self.roomPosition[1]:
-                command += "s"*(self.roomPosition[1]-submenue.cursor[1])
+        # handle menues
+        submenue = character.macroState["submenue"]
+        if submenue and not ignoreCommands:
+            if isinstance(submenue,src.menuFolder.mapMenu.MapMenu) and not ignoreCommands:
+                command = ""
+                if submenue.cursor[0] > self.roomPosition[0]:
+                    command += "a"*(submenue.cursor[0]-self.roomPosition[0])
+                if submenue.cursor[0] < self.roomPosition[0]:
+                    command += "d"*(self.roomPosition[0]-submenue.cursor[0])
+                if submenue.cursor[1] > self.roomPosition[1]:
+                    command += "w"*(submenue.cursor[1]-self.roomPosition[1])
+                if submenue.cursor[1] < self.roomPosition[1]:
+                    command += "s"*(self.roomPosition[1]-submenue.cursor[1])
 
-            cityPlaner = character.container.getItemsByType("CityPlaner")[0]
-            if self.roomPosition in cityPlaner.plannedRooms:
-                command += "x"
-                return (None,(command,"remove old construction site marker"))
+                cityPlaner = character.container.getItemsByType("CityPlaner")[0]
+                if self.roomPosition in cityPlaner.plannedRooms:
+                    command += "x"
+                    return (None,(command,"remove old construction site marker"))
 
-            if self.roomPosition not in cityPlaner.getAvailableRoomPositions():
-                return self._solver_trigger_fail(dryRun,"room already registered")
+                if self.roomPosition not in cityPlaner.getAvailableRoomPositions():
+                    return self._solver_trigger_fail(dryRun,"room already registered")
 
-            command += "f"
-            return (None,(command,"set a floor plan"))
+                command += "f"
+                return (None,(command,"set a floor plan"))
 
-        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
-            submenue = character.macroState["submenue"]
-            if submenue.tag == "floorplanSelection":
-                command = submenue.get_command_to_select_option(self.floorPlanType)
-                return (None,(command,"select the floor plan"))
+            if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
+                if submenue.tag == "floorplanSelection":
+                    command = submenue.get_command_to_select_option(self.floorPlanType)
+                    return (None,(command,"select the floor plan"))
 
-            command = submenue.get_command_to_select_option("showMap")
-            return (None,(command,"show the map"))
+                command = submenue.get_command_to_select_option("showMap")
+                return (None,(command,"show the map"))
 
-        if character.macroState["submenue"] and not ignoreCommands:
             return (None,(["esc"],"exit submenu"))
 
         # enter room

@@ -65,47 +65,47 @@ This quest will end when the target tile has no items left."""
                 self.targetPositionBig = character.getBigPosition()
             return (None,("+","set current position as target"))
 
-        if not self.subQuests:
-            if character.getNearbyEnemies():
-                if character.health > character.maxHealth//3:
-                    quest = src.quests.questMap["Fight"]()
-                    return ([quest],None)
-                else:
-                    quest = src.quests.questMap["Heal"]()
-                    return ([quest],None)
-                
-            hasIdleSubordinate = False
-            for subordinate in character.subordinates:
-                if len(subordinate.quests) < 2:
-                    hasIdleSubordinate = True
+        if self.subQuests:
+            return (None, None)
 
-            if hasIdleSubordinate:
-                return (None,("Hjsssssj","make subordinate scavenge"))
-
-            if character.getTerrain().alarm and not self.tryHard and not self.ignoreAlarm:
-                return self._solver_trigger_fail(dryRun,"alarm")
-
-            if not character.getFreeInventorySpace() > 0:
-                if self.endOnFullInventory:
-                    if not dryRun:
-                        self.postHandler()
-                    return (None,("+","end quest"))
-                quest = src.quests.questMap["ClearInventory"](reason="be able to pick up more items")
+        if character.getNearbyEnemies():
+            if character.health > character.maxHealth//3:
+                quest = src.quests.questMap["Fight"]()
                 return ([quest],None)
-
-            if character.getBigPosition() != (self.targetPositionBig[0], self.targetPositionBig[1], 0):
-                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="go to target tile")
+            else:
+                quest = src.quests.questMap["Heal"]()
                 return ([quest],None)
+            
+        hasIdleSubordinate = False
+        for subordinate in character.subordinates:
+            if len(subordinate.quests) < 2:
+                hasIdleSubordinate = True
+
+        if hasIdleSubordinate:
+            return (None,("Hjsssssj","make subordinate scavenge"))
+
+        if character.getTerrain().alarm and not self.tryHard and not self.ignoreAlarm:
+            return self._solver_trigger_fail(dryRun,"alarm")
+
+        if not character.getFreeInventorySpace() > 0:
+            if self.endOnFullInventory:
+                if not dryRun:
+                    self.postHandler()
+                return (None,("+","end quest"))
+            quest = src.quests.questMap["ClearInventory"](reason="be able to pick up more items")
+            return ([quest],None)
+
+        if character.getBigPosition() != (self.targetPositionBig[0], self.targetPositionBig[1], 0):
+            quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="go to target tile")
+            return ([quest],None)
 
 
-            items = self.getLeftoverItems(character)
-            for item in items:
-                path = character.getTerrain().getPathTile(character.getTilePosition(),character.getSpacePosition() ,item.getSmallPosition(),character=character,ignoreEndBlocked =True)
-                if len(path) or item.getPosition() == character.getPosition():
-                    quest = src.quests.questMap["CleanSpace"](targetPosition=item.getSmallPosition(),targetPositionBig=self.targetPositionBig,reason="pick up the items",pickUpBolted=True)
-                    return ([quest],None)
-
-        return (None,(".","stand around confused"))
+        items = self.getLeftoverItems(character)
+        for item in items:
+            path = character.getTerrain().getPathTile(character.getTilePosition(),character.getSpacePosition() ,item.getSmallPosition(),character=character,ignoreEndBlocked =True)
+            if len(path) or item.getPosition() == character.getPosition():
+                quest = src.quests.questMap["CleanSpace"](targetPosition=item.getSmallPosition(),targetPositionBig=self.targetPositionBig,reason="pick up the items",pickUpBolted=True)
+                return ([quest],None)
     
     def getLeftoverItems(self,character):
         terrain = character.getTerrain()

@@ -165,7 +165,7 @@ Press d to move the cursor and show the subquests description.
                 if submenue.selectionIndex < counter:
                     command += "s"*(counter-submenue.selectionIndex)
 
-                if submenue.extraInfo.get("item").lastProduction == self.toProduce and (self.amount-self.amountDone > 1):
+                if submenue.extraInfo.get("item").lastProduction == self.toProduce and (self.amount and (self.amount-self.amountDone > 1)):
                     command += "J"
                 else:
                     command += "j"
@@ -245,7 +245,7 @@ Press d to move the cursor and show the subquests description.
             return
 
         self.amountDone += 1
-        if self.amount is not None and self.amountDone >= self.amount:
+        if self.amount is None or self.amountDone >= self.amount:
             self.postHandler()
 
     def handleInventoryFull(self, extraInfo):

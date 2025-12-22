@@ -140,19 +140,21 @@ To see your items open the your inventory by pressing i."""
                 quest = src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True, reason="reduce the number of items in your inventory")
                 return ([quest],None)
 
+        # fail if there is no home
         if "HOMEx" not in character.registers:
             return self._solver_trigger_fail(dryRun,"no home")
 
+        # get rid of the items
         if character.inventory:
-            homeRoom = character.getHomeRoom()
 
+            homeRoom = character.getHomeRoom()
             if not homeRoom:
                 return self._solver_trigger_fail(dryRun,"no home")
-
             if hasattr(homeRoom,"storageRooms") and homeRoom.storageRooms:
                 quest = src.quests.questMap["GoToTile"](targetPosition=(homeRoom.storageRooms[0].xPosition,homeRoom.storageRooms[0].yPosition,0),reason="go to a storage room")
                 return ([quest],None)
 
+            # restock rooms if possible
             for checkRoom in character.getTerrain().rooms:
                 emptyInputSlots = checkRoom.getEmptyInputslots(character.inventory[-1].type, allowAny=True)
                 if emptyInputSlots:
@@ -160,6 +162,7 @@ To see your items open the your inventory by pressing i."""
                     quest2 = src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True, reason="reduce the number of item in your inventory")
                     return ([quest2,quest1],None)
 
+            # just get rid of items
             if not character.getTerrain().alarm:
                 quest = src.quests.questMap["DropItemsOutside"]()
                 return ([quest],None)
@@ -168,10 +171,12 @@ To see your items open the your inventory by pressing i."""
                 return ([quest],None)
             return self._solver_trigger_fail(dryRun,"no storage available")
 
+        # return back to original position
         if self.returnToTile and character.getBigPosition() != self.returnToTile:
             quest = src.quests.questMap["GoToTile"](description="return to tile",targetPosition=self.tileToReturnTo,reason="get back where your inventory was filled up")
             return ([quest],None)
 
+        # end quest
         if not dryRun:
             self.postHandler()
         return (None,("+","end quest"))

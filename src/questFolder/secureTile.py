@@ -99,15 +99,20 @@ Try luring enemies into landmines or detonating some bombs."""
         return False
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
+
+        # handle weird edge cases
         if self.subQuests:
             return (None,None)
 
+        # handle most menues
         if character.macroState["submenue"] and character.macroState["submenue"].tag != "tileMovementmenu" and not ignoreCommands:
            return (None,(["esc"],"exit the menu")) 
 
+        # heal
         if character.health < character.maxHealth - 20 and character.canHeal():
             return (None,("JH","heal"))
 
+        # initiate actual combat
         if not self.strict:
             huntdownCooldown = self.huntdownCooldown
             huntdownCooldown -= 1
@@ -127,13 +132,15 @@ Try luring enemies into landmines or detonating some bombs."""
                     else:
                         quest = src.quests.questMap["Fight"](simpleOnly=self.simpleAttacksOnly)
                         return ([quest],None)
-
         enemies = character.getNearbyEnemies()
         if enemies:
             quest = src.quests.questMap["Fight"](simpleOnly=self.simpleAttacksOnly)
             return ([quest],None)
 
+        # go to the position to secure
         if character.getBigPosition() == self.targetPosition:
+
+            # enter tiles properly
             pos = character.getSpacePosition()
             if pos == (0,7,0):
                 return (None, ("d","enter tile"))
@@ -144,6 +151,7 @@ Try luring enemies into landmines or detonating some bombs."""
             if pos == (7,14,0):
                 return (None, ("w","enter tile"))
 
+            # wait for enemies
             enemies = character.getNearbyEnemies()
             if not enemies and not self.endWhenCleared:
                 if self.wandering and random.random() < 0.2:
@@ -163,6 +171,7 @@ Try luring enemies into landmines or detonating some bombs."""
                         return ([quest], None)
                     return (None, (";","wait"))
 
+        # let super class handle further details
         return super().getNextStep(character=character,ignoreCommands=ignoreCommands,dryRun=dryRun)
 
 src.quests.addType(SecureTile)

@@ -128,13 +128,9 @@ To see your items open the your inventory by pressing i."""
             if character.xPosition%15 == 0:
                 return (None,("d","enter tile"))
 
-            # go gome
-            if "HOMEx" in character.registers:
-                quest = src.quests.questMap["GoHome"](reason="work from inside the base")
-                return ([quest],None)
-
-            # just drop things on the floor
-            return (None,("l","drop item"))
+            # just drop items somewhere
+            if not "HOMEx" in character.registers:
+                return (None,("l","drop item"))
 
         # clear inventory in local room
         room = character.getRoom()

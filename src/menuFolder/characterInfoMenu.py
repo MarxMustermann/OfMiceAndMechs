@@ -18,7 +18,7 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
         self.page = 1
 
         self.min_lines = 8
-        self.min_rows = 50
+        self.min_cols = 50
 
     def _get_text_dimensions(self,text):
         lines = text.split("\n")
@@ -148,10 +148,10 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
         text += "\npress e to view the status effect on the character"
         text += "\npress s to view the character statistics\n"
 
-        if dimensions[1] <= self.min_rows:
-            text += " "*(self.min_rows-dimensions[1])
+        if dimensions[1] <= self.min_cols:
+            text += " "*(self.min_cols-dimensions[1])
         else:
-            self.min_rows = dimensions[1]
+            self.min_cols = dimensions[1]
 
         return text
 

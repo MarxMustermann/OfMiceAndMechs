@@ -69,6 +69,11 @@ Set the floor plan: {self.floorPlanType}
             # close unkown menues
             return (None,(["esc"],"exit submenu"))
 
+        # activate production item when marked
+        action = self.generate_confirm_activation_command(allowedItems=["CityPlaner"])
+        if action:
+            return action
+
         # enter room
         if not character.container.isRoom:
             if character.getTerrain().getRoomByPosition(character.getBigPosition()):

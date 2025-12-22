@@ -75,6 +75,18 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["SpawnClone"](reason="have some clones in the base")
             return ([quest],None)
 
+        # ensure the character has equipment
+        if not character.armor or not character.weapon:
+            quest = src.quests.questMap["Equip"](reason="be able to defend yoursef", tryHard=True)
+            return ([quest],None)
+
+        # ensure proper weapons
+        if character.weapon and character.weapon.type == "Rod":
+            quests = [] 
+            quests.append(src.quests.questMap["MetalWorking"](toProduce="Sword",reason="have a proper weapon available", tryHard=True))
+            quests.append(src.quests.questMap["Equip"](reason="be able to defend yoursef", tryHard=True))
+            return (list(reversed(quests)),None)
+
         # ensure the character has good health
         if character.health < 80:
 

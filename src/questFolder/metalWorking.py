@@ -131,7 +131,7 @@ Press d to move the cursor and show the subquests description.
             else:
                 activationCommand = "k"
 
-            if self.amount - self.amountDone > 1:
+            if self.amount and self.amount - self.amountDone > 1:
                 activationCommand = activationCommand.upper()
 
             offset = index-submenue.selectionIndex

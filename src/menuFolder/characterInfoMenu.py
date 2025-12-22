@@ -173,6 +173,11 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
             returns True when done
         """
 
+        # workaround bug
+        if self.skipKeypress:
+            self.skipKeypress = False
+            key = "~"
+
         # exit the submenu
         if key in ("esc","v"):
             return True
@@ -193,10 +198,6 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
             character.macroState["submenue"] = submenue
             submenue.handleKey("~", noRender=noRender, character=character)
             return True
-
-        if self.skipKeypress:
-            self.skipKeypress = False
-            key = "~"
 
         if key == "d":
             self.page += 1

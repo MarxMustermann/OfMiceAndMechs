@@ -15,6 +15,16 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
         self.shortCode = "e"
         self.reason = reason
 
+    def generateTextDescription(self):
+        '''
+        generate a textual description to show on the UI
+        '''
+        reasonString = ""
+        if self.reason:
+            reasonString = ", to "+self.reason
+        text = f"Sharden your personal Sword{reasonString}."
+        return [text]
+
     def handleSwordSharpened(self,extraInfo=None):
         '''
         end quest when sword was sharpened

@@ -41,25 +41,29 @@ This quest will end when your inventory is empty."""
 
     def getNextStep(self,character,ignoreCommands=False, dryRun = True):
 
+        # handle weird edge cases
         if not character:
             return (None,None)
-
         if self.subQuests:
             return (None,None)
 
+        # set up helper variables
         terrain = character.getTerrain()
 
-        # drop items
+        # drop items on tile
         if not terrain.getRoomByPosition(character.getBigPosition()):
+
+            # drop items
             if not terrain.getItemByPosition(character.getPosition()) and not (character.getSpacePosition()[0] in (1,13) or character.getSpacePosition()[1] in (1,13)):
                 return (None,("l","drop item"))
+
             # go somewhere else
             if random.random() > 0.1:
                 pos = (random.randint(2,12),random.randint(2,12),0)
                 quest = src.quests.questMap["GoToPosition"](targetPosition=pos,reason="move to a random point to drop items")
                 return ([quest],None)
 
-        # go somewhere else
+        # go to different tile
         bigPos = (random.randint(2,12),random.randint(2,12),0)
         quest = src.quests.questMap["GoToTile"](targetPosition=bigPos,reason="move to a random tile to drop items")
         return ([quest],None)

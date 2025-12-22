@@ -18,10 +18,11 @@ class DropItemsOutside(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         out = []
 
-        reason = ""
-        text = """
-Clear your inventory outside"""
-        text += f"""{reason}."""
+        reasonText = ""
+        if self.reason:
+            reasonText += f", {self.reason}"
+        text = f"""
+Clear your inventory outside{reasonText}."""
         text += """
 
 This quest will end when your inventory is empty."""

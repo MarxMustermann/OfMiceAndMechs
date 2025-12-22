@@ -81,28 +81,30 @@ Flask can be refilled at a GooDispenser."""
         if action:
             return action
 
+        # fill flask from local goo dispenser
         if character.container.isRoom:
+
+            # fill flask from goo dispenser on neighbour position
             offsets = [(0,0,0),(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]
             for offset in offsets:
+
+                # check if goo dispenser is on position
                 pos = character.getPosition(offset=offset)
                 items = character.container.getItemByPosition(pos)
                 if not items:
                     continue
-
                 shouldUse = False
                 if items[0].type in ["GooDispenser"] and items[0].charges:
                     shouldUse = True
-
                 if not shouldUse:
                     continue
 
+                # use the goo dispenser to fill flask
                 if offset == (0,0,0):
                     return (None,("jsj","fill flask"))
-
                 interactionCommand = "J"
                 if "advancedInteraction" in character.interactionState:
                     interactionCommand = ""
-
                 if offset == (1,0,0):
                     return (None,(interactionCommand+"dsj","fill flask"))
                 if offset == (-1,0,0):
@@ -112,6 +114,7 @@ Flask can be refilled at a GooDispenser."""
                 if offset == (0,-1,0):
                     return (None,(interactionCommand+"wsj","fill flask"))
 
+            # go to goo dispenser
             for item in character.container.itemsOnFloor:
                 if not item == character.container.getItemByPosition(item.getPosition())[0]:
                     continue
@@ -119,12 +122,12 @@ Flask can be refilled at a GooDispenser."""
                     quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),description="go to goo dispenser",ignoreEndBlocked=True)
                     return ([quest],None)
 
+        # go to room with goo dispenser
         room = None
         for roomCandidate in character.getTerrain().rooms:
             for item in roomCandidate.itemsOnFloor:
                 if item.type == "GooDispenser" and item.charges:
                     room = roomCandidate
-
         if room:
             quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),description="go to goo source")
             return ([quest],None)

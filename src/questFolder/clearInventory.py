@@ -162,10 +162,10 @@ To see your items open the your inventory by pressing i."""
 
             # just get rid of items
             if not character.getTerrain().alarm:
-                quest = src.quests.questMap["DropItemsOutside"]()
+                quest = src.quests.questMap["DropItemsOutside"](reason="get rid of the items")
                 return ([quest],None)
             else:
-                quest = src.quests.questMap["DiscardItemsInside"]()
+                quest = src.quests.questMap["DiscardItemsInside"](reason="get rid of the items safely")
                 return ([quest],None)
             return self._solver_trigger_fail(dryRun,"no storage available")
 

@@ -172,6 +172,8 @@ The target tile is {direction[4:]}
 """
         if self.paranoid:
             text += "Be paranoid."
+        if self.abortOnDanger:
+            text += "\nabort on danger."
         return text
 
     def triggerCompletionCheck(self, character=None, dryRun=True):

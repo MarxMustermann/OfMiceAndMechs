@@ -51,45 +51,44 @@ Use a CityPlaner to do this.
         terrain = character.getTerrain()
 
         # navigate the build-menu and schedule building the room
-        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.mapMenu.MapMenu) and not ignoreCommands:
-            submenue = character.macroState["submenue"]
-            command = ""
-            if submenue.cursor[0] > self.roomPosition[0]:
-                command += "a"*(submenue.cursor[0]-self.roomPosition[0])
-            if submenue.cursor[0] < self.roomPosition[0]:
-                command += "d"*(self.roomPosition[0]-submenue.cursor[0])
-            if submenue.cursor[1] > self.roomPosition[1]:
-                command += "w"*(submenue.cursor[1]-self.roomPosition[1])
-            if submenue.cursor[1] < self.roomPosition[1]:
-                command += "s"*(self.roomPosition[1]-submenue.cursor[1])
-            if self.priorityBuild:
-                command += "R"
-            else:
-                command += "r"
-            return (None,(command,"schedule building a room"))
+        submenue = character.macroState["submenue"]
+        if submenue and not ignoreCommands:
+            if isinstance(submenue,src.menuFolder.mapMenu.MapMenu) and not ignoreCommands:
+                command = ""
+                if submenue.cursor[0] > self.roomPosition[0]:
+                    command += "a"*(submenue.cursor[0]-self.roomPosition[0])
+                if submenue.cursor[0] < self.roomPosition[0]:
+                    command += "d"*(self.roomPosition[0]-submenue.cursor[0])
+                if submenue.cursor[1] > self.roomPosition[1]:
+                    command += "w"*(submenue.cursor[1]-self.roomPosition[1])
+                if submenue.cursor[1] < self.roomPosition[1]:
+                    command += "s"*(self.roomPosition[1]-submenue.cursor[1])
+                if self.priorityBuild:
+                    command += "R"
+                else:
+                    command += "r"
+                return (None,(command,"schedule building a room"))
 
-        # select the build menu
-        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
-            submenue = character.macroState["submenue"]
-            rewardIndex = 0
-            if rewardIndex == 0:
-                counter = 1
-                for option in submenue.options.items():
-                    if option[1] == "showMap":
-                        break
-                    counter += 1
-                rewardIndex = counter
-            offset = rewardIndex-submenue.selectionIndex
-            command = ""
-            if offset > 0:
-                command += "s"*offset
-            else:
-                command += "w"*(-offset)
-            command += "j"
-            return (None,(command,"show the map"))
+            # select the build menu
+            if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
+                rewardIndex = 0
+                if rewardIndex == 0:
+                    counter = 1
+                    for option in submenue.options.items():
+                        if option[1] == "showMap":
+                            break
+                        counter += 1
+                    rewardIndex = counter
+                offset = rewardIndex-submenue.selectionIndex
+                command = ""
+                if offset > 0:
+                    command += "s"*offset
+                else:
+                    command += "w"*(-offset)
+                command += "j"
+                return (None,(command,"show the map"))
 
-        # close unkown menus
-        if character.macroState["submenue"] and not ignoreCommands:
+            # close unkown menus
             return (None,(["esc"],"exit submenu"))
 
         # enter room

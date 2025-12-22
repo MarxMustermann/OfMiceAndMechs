@@ -217,7 +217,7 @@ class SpawnClone(src.quests.MetaQuestSequence):
 
         itemPos = growthTank.getPosition()
         if character.getDistance(itemPos) > 1:
-            quest = src.quests.questMap["GoToPosition"](targetPosition=growthTank.getPosition(),reason="to be able to use the growth tank",description="go to growth tank",ignoreEndBlocked=True)
+            quest = src.quests.questMap["GoToPosition"](targetPosition=growthTank.getPosition(),reason="be able to use the growth tank",description="go to growth tank",ignoreEndBlocked=True)
             return ([quest],None)
 
         if character.macroState.get("itemMarkedLast"):

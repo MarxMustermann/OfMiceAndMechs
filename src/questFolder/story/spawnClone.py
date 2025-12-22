@@ -212,7 +212,7 @@ class SpawnClone(src.quests.MetaQuestSequence):
             return ([quest],None)
 
         if not growthTank.filled and len(growthTank.getFlasks(character)) < 1:
-            quest = src.quests.questMap["FetchItems"](toCollect="GooFlask",amount=1)
+            quest = src.quests.questMap["FetchItems"](toCollect="GooFlask",amount=1,reason="be able to spawn a clone")
             return ([quest],None)
 
         itemPos = growthTank.getPosition()

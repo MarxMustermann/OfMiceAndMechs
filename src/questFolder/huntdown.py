@@ -47,18 +47,16 @@ Hunt down enemy{reasonText}."""
         # handle weird edge cases
         if self.subQuests:
             return (None,None)
-
         if not self.target.container:
             return (None,("10.","wait"))
-
         if isinstance(self.target.container, src.rooms.Room):
             targetPos = (self.target.container.xPosition,self.target.container.yPosition,0)
         else:
             targetPos = (self.target.xPosition//15,self.target.yPosition//15,0)
-
         if targetPos == (0,0,0):
             return (None,(".","stand around confused"))
 
+        # enter rooms properly
         if character.yPosition%15 == 0:
             return (None,("s","move toward target"))
         if character.yPosition%15 == 14:
@@ -68,6 +66,7 @@ Hunt down enemy{reasonText}."""
         if character.xPosition%15 == 14:
             return (None,("a","move toward target"))
 
+        # follow target
         if isinstance(character.container, src.rooms.Room):
             charPos = (character.container.xPosition,character.container.yPosition,0)
         else:
@@ -87,10 +86,11 @@ Hunt down enemy{reasonText}."""
                     self.fail(abort_reason)
                 return (None,("+",f"abort quest\n({abort_reason})"))
 
-            quest = src.quests.questMap["GoToTile"](paranoid=True,targetPosition=newPos)
+            quest = src.quests.questMap["GoToTile"](paranoid=True,targetPosition=newPos,reason="reach victim")
             return ([quest],None)
 
-        quest = src.quests.questMap["Fight"](suicidal=True)
+        # do actual combat
+        quest = src.quests.questMap["Fight"](suicidal=True,reason="end your enemy")
         return ([quest],None)
 
 src.quests.addType(Huntdown)

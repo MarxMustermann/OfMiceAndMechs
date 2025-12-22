@@ -66,11 +66,11 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
                 statusEffectString += statusEffect.type + " (" + statusEffect.getShortCode() + "), "
             if not statusEffectString == "":
                 statusEffectString = statusEffectString[:-2]
-            text += f"status effects: %s\npress e to view a detailed buff list"%(statusEffectString,)
+            text += f"status effects: %s\npress e to view a detailed buff list\n"%(statusEffectString,)
             
         if self.page == 2:
             if len(char.duties) < 5:
-                text += "duties: %s\n" % ",\n".join(char.duties)
+                text += "duties: %s\n" % ",\n        ".join(char.duties)
             else:
                 text += "duties: "
                 duties_to_show = char.duties[:]
@@ -85,8 +85,9 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
                             text += ", "
                             counter += 1
                 text += "\n" % char.duties
-            text += "skills: %s\n" % char.skills
-            text += f"grievances: {char.grievances}\n"
+            text += "\n"
+            text += f"skills:      %s\n" % char.skills
+            text += f"grievances:  {char.grievances}\n"
         
         if self.page == 3:
             if hasattr(char,"superior"):

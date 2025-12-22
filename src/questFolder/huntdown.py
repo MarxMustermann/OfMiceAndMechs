@@ -48,11 +48,6 @@ Hunt down enemy{reasonText}."""
         if self.subQuests:
             return (None,None)
 
-        if isinstance(character.container, src.rooms.Room):
-            charPos = (character.container.xPosition,character.container.yPosition,0)
-        else:
-            charPos = (character.xPosition//15,character.yPosition//15,0)
-
         if not self.target.container:
             return (None,("10.","wait"))
 
@@ -73,6 +68,10 @@ Hunt down enemy{reasonText}."""
         if character.xPosition%15 == 14:
             return (None,("a","move toward target"))
 
+        if isinstance(character.container, src.rooms.Room):
+            charPos = (character.container.xPosition,character.container.yPosition,0)
+        else:
+            charPos = (character.xPosition//15,character.yPosition//15,0)
         if charPos != targetPos:
             if self.alwaysfollow or abs(charPos[0]-targetPos[0])+abs(charPos[1]-targetPos[1]) == 1:
                 newPos = targetPos

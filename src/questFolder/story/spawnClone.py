@@ -147,19 +147,22 @@ class SpawnClone(src.quests.MetaQuestSequence):
                     continue
                 hasClone = True
 
+            # try to loot goo flasks from the surroundings
             if hasClone and random.random() < 0.5:
                 newQuest = src.quests.questMap["Adventure"](lifetime=random.random()*10000+2000,reason="find some goo flasks")
                 self.addQuest(newQuest)
                 self.startWatching(newQuest,self.handleQuestFailure,"failed")
                 return
-            else: 
-                newQuest = src.quests.questMap["FarmMold"](tryHard=True,lifetime=1000,reason="obtain some blooms")
-                self.addQuest(newQuest)
-                self.startWatching(newQuest,self.handleQuestFailure,"failed")
-                newQuest = src.quests.questMap["Heal"](noWaitHeal=True,reason="be safe while farming")
-                self.addQuest(newQuest)
-                return
 
+            # generate more blooms
+            newQuest = src.quests.questMap["FarmMold"](tryHard=True,lifetime=1000,reason="obtain some blooms")
+            self.addQuest(newQuest)
+            self.startWatching(newQuest,self.handleQuestFailure,"failed")
+            newQuest = src.quests.questMap["Heal"](noWaitHeal=True,reason="be safe while farming")
+            self.addQuest(newQuest)
+            return
+
+        # fail recursively
         self.fail(reason)
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):

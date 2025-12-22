@@ -122,7 +122,7 @@ Remove all items that are not bolted down."""
 
         # handle direct threats
         if character.getNearbyEnemies():
-            quest = src.quests.questMap["Fight"]()
+            quest = src.quests.questMap["Fight"](reason="get rid of threats")
             return ([quest],None)
 
         # ensure there is inventory space
@@ -143,7 +143,7 @@ Remove all items that are not bolted down."""
 
         # go the the location to be looted
         if character.getBigPosition() != (self.targetPositionBig[0], self.targetPositionBig[1], 0):
-            quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig)
+            quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="reach the loot")
             return ([quest],None)
 
         # find lootable items in reach
@@ -298,7 +298,7 @@ Remove all items that are not bolted down."""
             if item.type in ["Bolt"] and character.getFreeInventorySpace() <= 1:
                 continue
 
-            quest = src.quests.questMap["GoToPosition"](targetPosition=item_pos,ignoreEndBlocked=True)
+            quest = src.quests.questMap["GoToPosition"](targetPosition=item_pos,ignoreEndBlocked=True,reason="be able to pick up loot")
             return ([quest],None)
 
         # dummy return

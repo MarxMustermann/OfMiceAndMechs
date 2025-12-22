@@ -15,7 +15,7 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
         self.char = char
         self.skipKeypress = True
         super().__init__()
-        self.page = 0
+        self.page = 1
 
     def render(self,char):
         if char.dead:
@@ -36,7 +36,7 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
         text += f"page: {self.page}\n"
         text += "\n"
         text += "\n"
-        if self.page == 0:
+        if self.page == 1:
             text += "health:       %s" % char.health + "\n"
             text += "max health:   %s" % char.adjustedMaxHealth + "\n"
             text += "exhaustion:   %s" % char.exhaustion + "\n"
@@ -102,7 +102,7 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
         except:
             char.lastMapSync = None
 
-        if self.page == 1:
+        if self.page == 2:
             text += "\n"
             text += f"movementSpeed:  {char.adjustedMovementSpeed}\n"
             text += f"attackSpeed:    {char.attackSpeed}\n"
@@ -200,13 +200,13 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
             return True
 
         if key == "d":
-            self.page += 1
+            self.page += 2
         if key == "a":
-            self.page -= 1
-        if self.page < 0:
+            self.page -= 2
+        if self.page < 1:
+            self.page = 2
+        if self.page > 2:
             self.page = 1
-        if self.page > 1:
-            self.page = 0
 
         if key in ("t",):
             if not self.char.tool:

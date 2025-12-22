@@ -24,6 +24,8 @@ class CombatInfoMenu(src.subMenu.SubMenu):
         text += f"health:      {char.health}\n"
         text += f"exhaustion:  {char.exhaustion}\n"
         text += f"timeTaken:   {round(char.timeTaken,2)}\n"
+        text += f"movemmentsp: {char.adjustedMovementSpeed}\n"
+        text += f"attacksp:    {char.attackSpeed}\n"
 
         text += """
 
@@ -38,6 +40,8 @@ nearby enemies:
             text += f"health:      {enemy.health}\n"
             text += f"exhaustion:  {enemy.exhaustion}\n"
             text += f"timeTaken:   {round(enemy.timeTaken,2)}\n"
+            text += f"movemmentsp: {enemy.adjustedMovementSpeed}\n"
+            text += f"attacksp:    {enemy.attackSpeed}\n"
 
         text += """
 
@@ -50,6 +54,8 @@ subordinates:
             text += f"health:      {ally.health}\n"
             text += f"exhaustion:  {ally.exhaustion}\n"
             text += f"timeTaken:   {round(ally.timeTaken,2)}\n"
+            text += f"movemmentsp: {enemy.adjustedMovementSpeed}\n"
+            text += f"attacksp:    {enemy.attackSpeed}\n"
 
         return text
 

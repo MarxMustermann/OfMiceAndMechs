@@ -23,7 +23,7 @@ class CombatInfoMenu(src.subMenu.SubMenu):
         text += f"name:        {char.name} {char.getPosition()}\n"
         text += f"health:      {char.health}\n"
         text += f"exhaustion:  {char.exhaustion}\n"
-        text += f"timeTaken:   {char.timeTaken}\n"
+        text += f"timeTaken:   {round(char.timeTaken,2)}\n"
 
         text += """
 
@@ -37,7 +37,7 @@ nearby enemies:
             text += f"name:        {enemy.name} {enemy.getPosition()}\n"
             text += f"health:      {enemy.health}\n"
             text += f"exhaustion:  {enemy.exhaustion}\n"
-            text += f"timeTaken:   {enemy.timeTaken:f}\n"
+            text += f"timeTaken:   {round(enemy.timeTaken,2)}\n"
 
         text += """
 
@@ -49,7 +49,7 @@ subordinates:
             text += f"name:        {ally.name} {ally.getPosition()}\n"
             text += f"health:      {ally.health}\n"
             text += f"exhaustion:  {ally.exhaustion}\n"
-            text += f"timeTaken:   {ally.timeTaken:f}\n"
+            text += f"timeTaken:   {round(ally.timeTaken,2)}\n"
 
         return text
 

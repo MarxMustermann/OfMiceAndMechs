@@ -97,6 +97,15 @@ So if an enemy is to directly east of you:
         if (not self.suicidal) and (character.health < character.maxHealth//5):
             return self._solver_trigger_fail(dryRun,"low health")
 
+        # make character drop tools to fight
+        if character.tool:
+            submenue = character.macroState.get("submenue")
+            if not submenue:
+                return (None,("v","open character menu"))
+            if not isinstance(submenue,src.menuFolder.characterInfoMenu.CharacterInfoMenu):
+                return (None,(["esc"],"close menu"))
+            return (None,("t","drop tool"))
+
         if not ignoreCommands:
             submenue = character.macroState.get("submenue")
             if submenue and not submenue.tag == "specialAttackSelection":

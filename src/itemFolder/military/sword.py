@@ -24,7 +24,7 @@ class Sword(src.items.Item):
         super().__init__(display="wt")
 
         if badQuality:
-            self.baseDamage = 10
+            self.baseDamage = 11
         else:
             self.baseDamage = int(random.triangular(10,25,15))
 

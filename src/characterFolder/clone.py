@@ -40,7 +40,7 @@ class Clone(src.characters.Character):
             super().die(reason=reason, addCorpse=addCorpse, killer=killer)
             return
 
-        self.container.addItem(src.items.itemMap["Implant"](), self.getPosition())
+        #self.container.addItem(src.items.itemMap["Implant"](), self.getPosition())
         super().die(reason=reason, addCorpse=addCorpse, killer=killer)
 
     def getLoreDescription(self):

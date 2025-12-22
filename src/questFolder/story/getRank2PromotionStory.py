@@ -17,7 +17,7 @@ class GetRank2PromotionStory(src.quests.MetaQuestSequence):
         text = f"""
 You reach out to your implant and it answers:
 
-The Communicator does let you contact tha main base with your current rank.
+The Communicator does not let you contact the main base with your current rank.
 Gain rank 2 by getting promoted using the normal way{reasonString}.
 The base has a Promoter, use that to get promoted.
 

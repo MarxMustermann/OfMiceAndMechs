@@ -114,6 +114,7 @@ class AdvancedQuestMenu(src.subMenu.SubMenu):
                     """
                     options.append(("GoHome", "GoHome"))
                     options.append(("ClearInventory", "ClearInventory"))
+                    options.append(("Scavenge", "Scavenge"))
                     options.append(("ScavengeTile", "ScavengeTile"))
                     options.append(("ClearTile", "ClearTile"))
                     options.append(("LootRoom", "LootRoom"))
@@ -122,9 +123,10 @@ class AdvancedQuestMenu(src.subMenu.SubMenu):
                     options.append(("SharpenPersonalSword", "SharpenPersonalSword"))
                     options.append(("ReinforcePersonalArmor", "ReinforcePersonalArmor"))
                     options.append(("ClearTerrain", "ClearTerrain"))
-                    options.append(("Adventure", "Adventure"))
                     options.append(("BeUsefull", "BeUsefull"))
                     options.append(("SpawnClone", "SpawnClone"))
+                    options.append(("Adventure", "Adventure"))
+                    options.append(("AdventureOnTerrain", "AdventureOnTerrain"))
                     self.setOptions("what type of quest: (press N for quest by name)", options)
 
                 # let the superclass handle the actual selection

@@ -57,17 +57,21 @@ This quest will end when the target tile has no items left."""
         return False
 
     def getNextStep(self,character,ignoreCommands=False, dryRun = True):
+
+        # end when done
         self.triggerCompletionCheck(character=character,dryRun=dryRun)
 
-
+        # use current position as default
         if not self.targetPositionBig:
             if not dryRun:
                 self.targetPositionBig = character.getBigPosition()
             return (None,("+","set current position as target"))
 
+        # handle weird edge cases
         if self.subQuests:
             return (None, None)
 
+        # handle enemies
         if character.getNearbyEnemies():
             if character.health > character.maxHealth//3:
                 quest = src.quests.questMap["Fight"]()
@@ -80,13 +84,14 @@ This quest will end when the target tile has no items left."""
         for subordinate in character.subordinates:
             if len(subordinate.quests) < 2:
                 hasIdleSubordinate = True
-
         if hasIdleSubordinate:
             return (None,("Hjsssssj","make subordinate scavenge"))
 
+        # fail on alarm
         if character.getTerrain().alarm and not self.tryHard and not self.ignoreAlarm:
             return self._solver_trigger_fail(dryRun,"alarm")
 
+        # ensure free inventory space
         if not character.getFreeInventorySpace() > 0:
             if self.endOnFullInventory:
                 if not dryRun:
@@ -95,11 +100,12 @@ This quest will end when the target tile has no items left."""
             quest = src.quests.questMap["ClearInventory"](reason="be able to pick up more items")
             return ([quest],None)
 
+        # go to loot spot
         if character.getBigPosition() != (self.targetPositionBig[0], self.targetPositionBig[1], 0):
             quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="go to target tile")
             return ([quest],None)
 
-
+        # pick up items
         items = self.getLeftoverItems(character)
         for item in items:
             path = character.getTerrain().getPathTile(character.getTilePosition(),character.getSpacePosition() ,item.getSmallPosition(),character=character,ignoreEndBlocked =True)

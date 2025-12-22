@@ -12,6 +12,21 @@ class FillFlask(src.quests.MetaQuestSequence):
         self.shortCode = "e"
         self.reason = reason
 
+    def generateTextDescription(self):
+        out = []
+
+        reasonText = ""
+        if self.reason:
+            reasonText += f", to {self.reason}"
+        text = f"""
+Fill Flasks{reasonText}."""
+        text += """
+
+Flask can be refilled at a GooDispenser."""
+
+        out.append(text)
+        return out
+
     def wrapedTriggerCompletionCheck(self, extraInfo):
         if not self.active:
             return

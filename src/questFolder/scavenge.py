@@ -38,11 +38,28 @@ Scavenge the outside area"""
         text += """
 
 This quest will end when your inventory is full."""
+        out.append(text)
+        text = ""
 
         if self.doneTiles:
-            text += f"""
 
-done tiles: {self.doneTiles}"""
+            out.append(f"""\n\ncompleted spots:\n""")
+            rawMap = []
+            for y in range(15):
+                rawMap.append([])
+                for x in range(15):
+                    if x == 0 or y == 0 or x == 14 or y == 14:
+                        rawMap[y].append("~~")
+                    else:
+                        rawMap[y].append("  ")
+                rawMap[y].append("\n")
+            for pos in self.doneTiles:
+                rawMap[pos[1]][pos[0]] = "XX"
+            if self.character:
+                rawMap[self.character.getBigPosition()[1]][self.character.getBigPosition()[0]] = "@@"
+            out.append("\n")
+            out.append(rawMap)
+            out.append("\n")
 
         out.append(text)
         return out

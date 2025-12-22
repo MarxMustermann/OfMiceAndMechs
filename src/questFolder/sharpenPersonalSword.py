@@ -7,12 +7,13 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
     '''
     type = "SharpenPersonalSword"
 
-    def __init__(self, description="sharpen personal sword", creator=None, command=None, lifetime=None):
+    def __init__(self, description="sharpen personal sword", creator=None, command=None, lifetime=None, reason=None):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = description
 
         self.shortCode = "e"
+        self.reason = reason
 
     def handleSwordSharpened(self,extraInfo=None):
         '''

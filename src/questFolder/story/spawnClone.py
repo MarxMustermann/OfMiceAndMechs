@@ -156,20 +156,18 @@ class SpawnClone(src.quests.MetaQuestSequence):
         generate the next step towards solving the quest
         '''
 
+        # handle weird edge cases
         if self.subQuests:
             return (None,None)
-
         if not character:
             return (None,None)
 
+        # go home
         if not character.isOnHomeTerrain():
             quest = src.quests.questMap["GoHome"]()
             return ([quest],None)
 
-        if not character.getBigPosition() == (7,8,0):
-            quest = src.quests.questMap["GoToTile"](targetPosition=(7,8,0),reason="go to spawning room",description="go to spawning room")
-            return ([quest],None)
-
+        # enter room fully
         if not character.container.isRoom:
             if character.xPosition%15 == 0:
                 return (None,("d","enter tile"))
@@ -181,7 +179,15 @@ class SpawnClone(src.quests.MetaQuestSequence):
                 return (None,("w","enter tile"))
             return (None,None)
 
+        # go to room with growth tank
         growthTank = character.container.getItemByType("GrowthTank")
+        if not growthTank:
+            for room in character.getTerrain().rooms:
+                growthTank = room.getItemByType("GrowthTank")
+                if not growthTank:
+                    continue
+                quest = src.quests.questMap["GoToTile"](targetPosition=growthTank.getBigPosition(),reason="go to spawning room",description="go to spawning room")
+                return ([quest],None)
         if not growthTank:
             return self._solver_trigger_fail(dryRun,"no growth tank found")
 

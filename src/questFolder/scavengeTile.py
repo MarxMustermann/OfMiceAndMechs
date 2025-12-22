@@ -80,13 +80,6 @@ This quest will end when the target tile has no items left."""
                 quest = src.quests.questMap["Heal"]()
                 return ([quest],None)
             
-        hasIdleSubordinate = False
-        for subordinate in character.subordinates:
-            if len(subordinate.quests) < 2:
-                hasIdleSubordinate = True
-        if hasIdleSubordinate:
-            return (None,("Hjsssssj","make subordinate scavenge"))
-
         # fail on alarm
         if character.getTerrain().alarm and not self.tryHard and not self.ignoreAlarm:
             return self._solver_trigger_fail(dryRun,"alarm")

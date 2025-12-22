@@ -5,15 +5,19 @@ class Heal(src.quests.MetaQuestSequence):
     type = "Heal"
     lowLevel = True
 
-    def __init__(self, description="heal",noWaitHeal=False,noVialHeal=False):
+    def __init__(self, description="heal",noWaitHeal=False,noVialHeal=False,reason=None):
         super().__init__()
         self.metaDescription = description
         self.noWaitHeal = noWaitHeal
         self.noVialHeal = noVialHeal
+        self.reason = reason
 
     def generateTextDescription(self):
-        text = """
-You are hurt. Heal yourself.
+        reasonString = ""
+        if self.reason:
+            reasonString = ", to "+self.reason
+        text = f"""
+You are hurt. Heal yourself{reasonString}.
 
 You can heal yourself using vials.
 Use vials to heal yourself.

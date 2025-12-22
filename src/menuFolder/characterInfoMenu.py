@@ -93,14 +93,14 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
             for jobOrder in char.jobOrders:
                 text += str(jobOrder.taskName)
                 text += ": %s \n" % json.dumps(jobOrder.tasks)#,indent=4)
-            text += "lastJobOrder: %s\n" % char.lastJobOrder
-            text += "combat value: %s" % char.getStrengthSelfEstimate() + "\n"
-            text += "numAttackedWithoutResponse: %s\n" % char.numAttackedWithoutResponse
-            text += f"terrainName: %s\n" % char.getTerrain().tag
-            text += f"disableCommandsOnPlus: %s\n" % char.disableCommandsOnPlus
-            text += f"autoExpandQuests: %s\n" % char.autoExpandQuests
-            text += f"autoExpandQuests2: %s\n" % char.autoExpandQuests2
-            text += f"burnedIn: %s" % char.burnedIn
+            text += f"lastJobOrder:                %s\n" % char.lastJobOrder
+            text += f"combat value:                %s" % char.getStrengthSelfEstimate() + "\n"
+            text += f"numAttackedWithoutResponse:  %s\n" % char.numAttackedWithoutResponse
+            text += f"terrainName:                 %s\n" % char.getTerrain().tag
+            text += f"disableCommandsOnPlus:       %s\n" % char.disableCommandsOnPlus
+            text += f"autoExpandQuests:            %s\n" % char.autoExpandQuests
+            text += f"autoExpandQuests2:           %s\n" % char.autoExpandQuests2
+            text += f"burnedIn:                    %s\n" % char.burnedIn
         
         if self.page == 3:
             if len(char.duties) < 5:
@@ -119,10 +119,9 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
                             text += ", "
                             counter += 1
                 text += "\n" % char.duties
-            text += "skills: %s" % char.skills
+            text += "skills: %s\n" % char.skills
             text += f"grievances: {char.grievances}\n"
 
-        text += "\n"
         text += "\n"
         text += "press a/d to change what information is shown"
         text += "\n"

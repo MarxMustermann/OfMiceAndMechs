@@ -35,6 +35,7 @@ Set the floor plan: {self.floorPlanType}
         # handle menues
         submenue = character.macroState["submenue"]
         if submenue and not ignoreCommands:
+            # select build site on map
             if isinstance(submenue,src.menuFolder.mapMenu.MapMenu) and not ignoreCommands:
                 command = ""
                 if submenue.cursor[0] > self.roomPosition[0]:
@@ -45,22 +46,21 @@ Set the floor plan: {self.floorPlanType}
                     command += "w"*(submenue.cursor[1]-self.roomPosition[1])
                 if submenue.cursor[1] < self.roomPosition[1]:
                     command += "s"*(self.roomPosition[1]-submenue.cursor[1])
-
                 cityPlaner = character.container.getItemsByType("CityPlaner")[0]
                 if self.roomPosition in cityPlaner.plannedRooms:
                     command += "x"
                     return (None,(command,"remove old construction site marker"))
-
                 if self.roomPosition not in cityPlaner.getAvailableRoomPositions():
                     return self._solver_trigger_fail(dryRun,"room already registered")
-
                 command += "f"
                 return (None,(command,"set a floor plan"))
 
+            # select floor plan
             if submenue.tag == "floorplanSelection":
                 command = submenue.get_command_to_select_option(self.floorPlanType)
                 return (None,(command,"select the floor plan"))
 
+            # open map
             if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu):
                 command = submenue.get_command_to_select_option("showMap")
                 return (None,(command,"show the map"))

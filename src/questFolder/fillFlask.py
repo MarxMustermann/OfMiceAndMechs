@@ -4,12 +4,13 @@ import src
 class FillFlask(src.quests.MetaQuestSequence):
     type = "FillFlask"
 
-    def __init__(self, description="fill flask", creator=None, command=None, lifetime=None):
+    def __init__(self, description="fill flask", creator=None, command=None, lifetime=None, reason=None):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = description
 
         self.shortCode = "e"
+        self.reason = reason
 
     def wrapedTriggerCompletionCheck(self, extraInfo):
         if not self.active:

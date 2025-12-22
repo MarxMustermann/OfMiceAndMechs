@@ -33,13 +33,6 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
 
         text = ""
 
-        armorValue = None
-        if char.armor:
-            armorValue = char.armor.armorValue
-        weaponBaseDamage = None
-        if char.weapon:
-            weaponBaseDamage = char.weapon.baseDamage
-
         print(char.registers)
 
         text += "name:      %s\n" % char.name
@@ -55,8 +48,20 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
             text += "exhaustion:   %s" % char.exhaustion + "\n"
             text += "time taken:   %s" % char.timeTaken + "\n"
             text += "\n"
-            text += "weapon:       %s\n" % weaponBaseDamage
-            text += "armor:        %s\n" % armorValue
+            text += "weapon:       "
+            weaponBaseDamage = None
+            if char.weapon:
+                text += char.weapon.name
+                text += f" ({char.weapon.baseDamage})"
+            text += "\n"
+            text += "armor:        "
+            armorValue = None
+            if char.armor:
+                text += char.armor.name
+                text += f" ({char.armor.armorValue})"
+            else:
+                text += "no armor"
+            text += "\n"
             tool_text = "no tool"
             if char.tool:
                 tool_text = char.tool.name

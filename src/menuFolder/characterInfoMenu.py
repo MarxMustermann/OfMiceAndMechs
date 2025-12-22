@@ -135,18 +135,21 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
             text += f"burnedIn:                    %s\n" % char.burnedIn
 
         text += "\n"
+
+        dimensions = self._get_text_dimensions(text)
+        if dimensions[0]+5 <= self.min_lines:
+            text += "\n"*(self.min_lines-(dimensions[0]+5))
+        else:
+            self.min_lines = dimensions[0]+5
+
+        text += "\n"
         text += "press a/d to change what information is shown"
         text += "\n"
         text += "\npress e to view the status effect on the character"
-        text += "\npress s to view the character statistics"
+        text += "\npress s to view the character statistics\n"
 
-        dimensions = self._get_text_dimensions(text)
-        if dimensions[0] <= self.min_lines:
-            text += "\n"*(self.min_lines-dimensions[0])
-        else:
-            self.min_lines = dimensions[0]
         if dimensions[1] <= self.min_rows:
-            text += "\n"*(self.min_rows-dimensions[1])
+            text += " "*(self.min_rows-dimensions[1])
         else:
             self.min_rows = dimensions[1]
 

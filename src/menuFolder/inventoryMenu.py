@@ -43,7 +43,6 @@ class InventoryMenu(src.subMenu.SubMenu):
 
         if self.subMenu:
             self.subMenu.handleKey(key, noRender=noRender, character=character)
-            print(self.subMenu.done)
             if not self.subMenu.done:
                 return False
             key = "~"

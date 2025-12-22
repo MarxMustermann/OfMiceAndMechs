@@ -177,11 +177,6 @@ class InventoryMenu(src.subMenu.SubMenu):
         sidebared = self.sidebared
         cursor = self.cursor
 
-        try:
-            self.cursor
-        except:
-            self.cursor = 0
-
         if character is None:
             char = src.gamestate.gamestate.mainChar
         else:

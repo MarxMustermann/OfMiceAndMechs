@@ -179,16 +179,17 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
 
         if self.skipKeypress:
             self.skipKeypress = False
-        else:
-            # exit the submenu
-            if key in ("esc","v"):
-                return True
-            if key in ("ESC","lESC",):
-                self.char.rememberedMenu.append(self)
-                return True
-            if key in ("rESC",):
-                self.char.rememberedMenu2.append(self)
-                return True
+            key = "~"
+
+        # exit the submenu
+        if key in ("esc","v"):
+            return True
+        if key in ("ESC","lESC",):
+            self.char.rememberedMenu.append(self)
+            return True
+        if key in ("rESC",):
+            self.char.rememberedMenu2.append(self)
+            return True
 
         char = self.char
 

@@ -4791,15 +4791,15 @@ def renderGameDisplay(renderChar=None):
                 pseudoDisplay[counter-1][offsetLeft] = "|"
                 tcodConsole.print(x=offsetLeft+width+3, y=counter-1, string="|",fg=(255,255,255),bg=(0,0,0))
                 pseudoDisplay[counter-1][offsetLeft+width+3] = "|"
-                tcodConsole.print(x=offsetLeft+width+0, y=counter-1, string="<",fg=(255,255,255),bg=(0,0,0))
-                pseudoDisplay[counter-1][offsetLeft+width+0] = "<"
-                src.gamestate.gamestate.clickMap[(offsetLeft+width+0,counter-1)] = ["lESC"]
-                tcodConsole.print(x=offsetLeft+width+1, y=counter-1, string="X",fg=(255,255,255),bg=(0,0,0))
-                pseudoDisplay[counter-1][offsetLeft+width+1] = "X"
-                src.gamestate.gamestate.clickMap[(offsetLeft+width+1,counter-1)] = ["esc"]
-                tcodConsole.print(x=offsetLeft+width+2, y=counter-1, string=">",fg=(255,255,255),bg=(0,0,0))
-                pseudoDisplay[counter-1][offsetLeft+width+2] = ">"
-                src.gamestate.gamestate.clickMap[(offsetLeft+width+2,counter-1)] = ["rESC"]
+                #tcodConsole.print(x=offsetLeft+width+0, y=counter-1, string="<",fg=(255,255,255),bg=(0,0,0))
+                #pseudoDisplay[counter-1][offsetLeft+width+0] = "<"
+                #src.gamestate.gamestate.clickMap[(offsetLeft+width+0,counter-1)] = ["lESC"]
+                #tcodConsole.print(x=offsetLeft+width+1, y=counter-1, string="X",fg=(255,255,255),bg=(0,0,0))
+                #pseudoDisplay[counter-1][offsetLeft+width+1] = "X"
+                #src.gamestate.gamestate.clickMap[(offsetLeft+width+1,counter-1)] = ["esc"]
+                #tcodConsole.print(x=offsetLeft+width+2, y=counter-1, string=">",fg=(255,255,255),bg=(0,0,0))
+                #pseudoDisplay[counter-1][offsetLeft+width+2] = ">"
+                #src.gamestate.gamestate.clickMap[(offsetLeft+width+2,counter-1)] = ["rESC"]
 
                 #tcodConsole.print(x=offsetLeft+width+5, y=counter-1, string=stringifyUrwid(header.get_text()),fg=(255,255,255),bg=(0,0,0))
                 #pseudoDisplay[counter-1][offsetLeft+width+5] = stringifyUrwid(header.get_text())

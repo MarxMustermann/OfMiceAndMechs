@@ -4703,7 +4703,7 @@ def renderGameDisplay(renderChar=None):
                         printUrwidToTcod(uiElement["text"],uiElement["offset"])
                         printUrwidToDummy(pseudoDisplay,uiElement["text"],uiElement["offset"])
                     if uiElement["type"] == "time":
-                        text = f"epoch: {src.gamestate.gamestate.tick//(15*15*15)} tick: {src.gamestate.gamestate.tick%(15*15*15)} {char.timeTaken}"
+                        text = f"epoch: {src.gamestate.gamestate.tick//(15*15*15)} tick: {src.gamestate.gamestate.tick%(15*15*15)} {round(char.timeTaken,2)}"
                         printUrwidToTcod(text,uiElement["offset"],((255, 68, 51),(0,0,0)) if src.gamestate.gamestate.mainChar.timeTaken > 1 else None)
                         printUrwidToDummy(pseudoDisplay,text,uiElement["offset"])
                     if uiElement["type"] == "rememberedMenu" and char.rememberedMenu:

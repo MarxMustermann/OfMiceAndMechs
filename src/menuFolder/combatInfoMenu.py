@@ -28,9 +28,7 @@ class CombatInfoMenu(src.subMenu.SubMenu):
         text += f"attacksp:    {char.attackSpeed}\n"
 
         text += """
-
 nearby enemies:
-
 """
 
         enemies = char.getNearbyEnemies()
@@ -44,9 +42,7 @@ nearby enemies:
             text += f"attacksp:    {enemy.attackSpeed}\n"
 
         text += """
-
 subordinates:
-
 """
         for ally in char.subordinates:
             text += "-------------  \n"

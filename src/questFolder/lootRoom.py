@@ -85,38 +85,39 @@ Remove all items that are not bolted down."""
         return super().setParameters(parameters)
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
+
+        # handle weird edge cases
         if self.subQuests:
             return (None,None)
-
         if not character:
             return (None,None)
 
+        # set current position as target
         if not self.targetPositionBig:
             if not dryRun: 
                 self.targetPositionBig = character.getBigPosition()
             return (None,("+","set current position as target"))
 
-        if not ignoreCommands:
-            submenue = character.macroState.get("submenue")
+        # handle submenues
+        submenue = character.macroState.get("submenue")
+        if submenue and not ignoreCommands:
+            if isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu) and character.getFreeInventorySpace() <= 1:
+                targetIndex = 0
+                for item in character.inventory:
+                    if item.type == "Bolt":
+                        break
+                    targetIndex += 1
 
-            if submenue:
-                if isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu) and character.getFreeInventorySpace() <= 1:
-                    targetIndex = 0
-                    for item in character.inventory:
-                        if item.type == "Bolt":
-                            break
-                        targetIndex += 1
+                if targetIndex >= len(character.inventory):
+                    return (None,(["esc"],"exit the menu"))
 
-                    if targetIndex >= len(character.inventory):
-                        return (None,(["esc"],"exit the menu"))
+                inventoryCommand = ""
+                inventoryCommand += "s"*(targetIndex-submenue.cursor)
+                inventoryCommand += "w"*(submenue.cursor-targetIndex)
+                inventoryCommand += "l"
+                return (None,(inventoryCommand,"drop the item"))
 
-                    inventoryCommand = ""
-                    inventoryCommand += "s"*(targetIndex-submenue.cursor)
-                    inventoryCommand += "w"*(submenue.cursor-targetIndex)
-                    inventoryCommand += "l"
-                    return (None,(inventoryCommand,"drop the item"))
-
-                return (None,(["esc"],"exit the menu"))
+            return (None,(["esc"],"exit the menu"))
 
         if character.getNearbyEnemies():
             quest = src.quests.questMap["Fight"]()

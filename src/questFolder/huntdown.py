@@ -40,8 +40,11 @@ Hunt down enemy{reasonText}."""
         return False
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
+
+        # end quest when done
         self.triggerCompletionCheck(dryRun=dryRun)
 
+        # handle weird edge cases
         if self.subQuests:
             return (None,None)
 

@@ -147,15 +147,13 @@ To see your items open the your inventory by pressing i."""
         # get rid of the items
         if character.inventory:
 
+            # restock rooms if possible
+            rooms_to_check = []
             homeRoom = character.getHomeRoom()
             if not homeRoom:
-                return self._solver_trigger_fail(dryRun,"no home")
-            if hasattr(homeRoom,"storageRooms") and homeRoom.storageRooms:
-                quest = src.quests.questMap["GoToTile"](targetPosition=(homeRoom.storageRooms[0].xPosition,homeRoom.storageRooms[0].yPosition,0),reason="go to a storage room")
-                return ([quest],None)
-
-            # restock rooms if possible
-            for checkRoom in character.getTerrain().rooms:
+                rooms_to_check.extend(homeRoom.storageRooms)
+            rooms_to_check.extend(character.getTerrain().rooms)
+            for checkRoom in rooms_to_check:
                 emptyInputSlots = checkRoom.getEmptyInputslots(character.inventory[-1].type, allowAny=True)
                 if emptyInputSlots:
                     quest1 = src.quests.questMap["GoToTile"](targetPosition=checkRoom.getPosition(),reason="go to a room with empty stockpiles")

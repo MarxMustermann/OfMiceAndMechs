@@ -166,9 +166,9 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
             return True
 
         if key == "d":
-            self.page += 2
+            self.page += 1
         if key == "a":
-            self.page -= 2
+            self.page -= 1
         if self.page < 1:
             self.page = 2
         if self.page > 2:

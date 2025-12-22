@@ -4,12 +4,23 @@ import src
 class ReinforcePersonalArmor(src.quests.MetaQuestSequence):
     type = "ReinforcePersonalArmor"
 
-    def __init__(self, description="reinforce personal armor", creator=None, command=None, lifetime=None):
+    def __init__(self, description="reinforce personal armor", creator=None, command=None, lifetime=None, reason=None):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = description
 
         self.shortCode = "e"
+        self.reason = reason
+
+    def generateTextDescription(self):
+        '''
+        generate a textual description to show on the UI
+        '''
+        reasonString = ""
+        if self.reason:
+            reasonString = ", to "+self.reason
+        text = f"Reinforce your personal Armor{reasonString}."
+        return [text]
 
     def handleArmorImproved(self,extraInfo=None):
         self.postHandler()

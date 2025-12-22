@@ -234,7 +234,6 @@ class InventoryMenu(src.subMenu.SubMenu):
         else:
             txt.append("empty Inventory\n")
             num_rows += 1
-        txt.append(str(num_rows)+"/"+str(num_columns))
         txt.append("\n")
         num_rows += 1
         try:

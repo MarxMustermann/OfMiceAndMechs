@@ -13,9 +13,10 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
         self.metaDescription = description
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
+
+        # handle weird edge cases
         if self.subQuests:
             return (None,None)
-
         if not character:
             return (None,None)
 
@@ -69,18 +70,20 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
                         continue
                     npcCount += 1 
 
+        # ensure there are backup npcs
         if npcCount < 2:
             quest = src.quests.questMap["SpawnClone"]()
             return ([quest],None)
 
         # ensure the character has good health
         if character.health < 80:
+
+            # check what resources are available
             characterHasVial = False
             vials = character.searchInventory("Vial")
             for vial in vials:
                 if vial.uses > 0:
                     characterHasFlask = True
-
             readyCoalBurner = False
             for room in terrain.rooms:
                 for coalBurner in room.getItemsByType("CoalBurner"):
@@ -88,18 +91,20 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
                         continue
                     readyCoalBurner = True
 
+            # heal using available resources
             if characterHasVial or readyCoalBurner:
                 quest = src.quests.questMap["Heal"](noWaitHeal=True,noVialHeal=True)
                 return ([quest],None)
 
+            # try to find more healing resources
             if not character.getFreeInventorySpace():
                 quest = src.quests.questMap["ClearInventory"](returnToTile=False)
                 return ([quest],None)
-
             if not terrain.alarm:
                 quest = src.quests.questMap["Scavenge"](lifetime=500)
                 return ([quest],None)
 
+            # heal any way possible
             quest = src.quests.questMap["Heal"](noVialHeal=True)
             return ([quest],None)
 
@@ -118,6 +123,7 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["LiftOutsideRestrictions"]()
             return ([quest],None)
 
+        # defend against waves from areana room
         for room in terrain.rooms:
             if not room.tag == "trapRoom":
                 continue
@@ -126,7 +132,6 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
                 if otherCharacter.faction == character.faction:
                     continue
                 hasEnemy = True
-
             if hasEnemy:
                 quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,lifetime=100,description="defend the arena",reason="ensure no attackers get into the base")
                 return ([quest],None)
@@ -189,13 +194,13 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
                         quest = src.quests.questMap["ScheduleRoomBuilding"](roomPosition=position)
                         return ([quest],None)
 
+        # upgrade equipment if possible
         for room in character.getTerrain().rooms:
             for item in room.getItemsByType("SwordSharpener"):
                 if item.readyToBeUsedByCharacter(character,extraIncrease=1):
                     quest1 = src.quests.questMap["SharpenPersonalSword"]()
                     quest2 = src.quests.questMap["ClearInventory"](returnToTile=False)
                     return ([quest2,quest1],None)
-
         for room in character.getTerrain().rooms:
             for item in room.getItemsByType("ArmorReinforcer"):
                 if item.readyToBeUsedByCharacter(character,extraIncrease=1):
@@ -210,7 +215,6 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
             for y in range(1,14):
                 numSpiders = 0
                 numSpiderlings = 0
-
                 for otherChar in terrain.charactersByTile.get((x,y,0),[]):
                     if otherChar.dead or otherChar.getBigPosition() != (x,y,0):
                         terrain.charactersByTile[(x,y,0)].remove(otherChar)
@@ -219,7 +223,6 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
                         numSpiders += 1
                     if otherChar.charType == "Spiderling":
                         numSpiderlings += 1
-
                 if numSpiders:
                     targets_found.append(("spider",(x,y,0),numSpiders))
                     pos = (5,8,0)
@@ -228,7 +231,9 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
                 if numSpiderlings:
                     targets_found.append(("spiderling",(x,y,0),numSpiderlings))
 
+        # clear spider lairs
         if targets_found:
+
             # clear first spider spot
             if specialSpiderBlockersFound:
                 quest = src.quests.questMap["BaitSpiders"](targetPositionBig=specialSpiderBlockersFound[0])
@@ -258,6 +263,7 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["SecureTile"](toSecure=spider_lair_pos,endWhenCleared=True,reason=reason)
                 return ([quest],None)
 
+        # get generic enemy groupings
         targets_found = {}
         for otherChar in terrain.characters:
             if otherChar.faction == character.faction:
@@ -265,6 +271,7 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
             tilePos = otherChar.getBigPosition()
             targets_found[tilePos] = targets_found.get(tilePos,0)+1
 
+        # attack enemy groupings
         if targets_found:
             targets_pos = list(targets_found.keys())
             targets_pos.sort(key=lambda x: src.helpers.distance_between_points(x,character.getTilePosition()))
@@ -272,6 +279,7 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["SecureTile"](toSecure=target,endWhenCleared=True)
             return ([quest],None)
 
+        # run the normal quest
         quest = src.quests.questMap["ClearTerrain"]()
         return ([quest],None)
 

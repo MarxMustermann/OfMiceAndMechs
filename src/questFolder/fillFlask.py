@@ -50,26 +50,14 @@ class FillFlask(src.quests.MetaQuestSequence):
         if self.triggerCompletionCheck(character,dryRun=dryRun):
             return (None,None)
 
+        # handle menues
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
             submenue = character.macroState["submenue"]
 
             if not submenue.extraInfo.get("item"):
                 return (None,(["esc"],"exit submenu"))
 
-            menuEntry = "fill_empty_flask"
-            counter = 1
-            for option in submenue.options.values():
-                if option == menuEntry:
-                    index = counter
-                    break
-                counter += 1
-            command = ""
-            if submenue.selectionIndex > counter:
-                command += "w"*(submenue.selectionIndex-counter)
-            if submenue.selectionIndex < counter:
-                command += "s"*(counter-submenue.selectionIndex)
-
-            command += "j"
+            command = submenue.get_command_to_select_option("fill_empty_flask")
             return (None,(command,"fill flasks"))
 
         pos = character.getBigPosition()

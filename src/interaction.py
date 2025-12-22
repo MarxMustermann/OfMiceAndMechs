@@ -4823,6 +4823,7 @@ def renderGameDisplay(renderChar=None):
                         pseudoDisplay[counter][offsetLeft+extraX] = char
                         extraX += 1
                     counter += 1
+                counter -= 1
                 tcodConsole.print(x=offsetLeft, y=counter, string="| "+" "*width+" |",fg=(255,255,255),bg=(0,0,0))
                 extraX = 0
                 for char in "| "+" "*width+" |":

@@ -24,11 +24,12 @@ class Flee(src.quests.MetaQuestSequence):
 
     def generateTextDescription(self):
         '''
-        generate a description text to show in the UI
+        generate a textual description to show on the UI
         '''
-        return ["""
-run,run,run!!!
-"""]
+        reasonString = ""
+        if self.reason:
+            reasonString = ", to "+self.reason
+        return [f"""Flee from your enemies{reasonString}."""]
 
     def triggerCompletionCheck(self,character=None,dryRun=True):
         '''

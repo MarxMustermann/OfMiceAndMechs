@@ -32,31 +32,30 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
 
         print(char.registers)
 
-        text += "name:       %s\n" % char.name
-        text += f"page: {self.page}\n"
+        text += "name:      %s\n" % char.name
+        text += "faction:   %s\n" % char.faction
+        if hasattr(char,"rank"):
+            text += "rank:      %s\n" % char.rank
         text += "\n"
+        text += f"page: {self.page}\n"
         text += "\n"
         if self.page == 1:
             text += "health:       %s" % char.health + "\n"
             text += "max health:   %s" % char.adjustedMaxHealth + "\n"
             text += "exhaustion:   %s" % char.exhaustion + "\n"
+            text += "time taken:   %s" % char.timeTaken + "\n"
             text += "\n"
-            text += "baseDamage:   %s\n" % char.baseDamage
             text += "weapon:       %s\n" % weaponBaseDamage
             text += "armor:        %s\n" % armorValue
-            text += "faction:      %s\n" % char.faction
-            text += "time taken:   %s" % char.timeTaken + "\n"
-            text += "combat value: %s" % char.getStrengthSelfEstimate() + "\n"
-
-            if hasattr(char,"rank"):
-                text += "rank:       %s\n" % char.rank
-            if hasattr(char,"superior"):
-                text += "superior:   %s\n" % char.superior
-            text += "reputation: %s\n" % char.reputation
-            flaskInfo = "-"
-            if char.flask:
-                flaskInfo = str(char.flask.uses)+" flask charges"
-            text += f"satiation:  {char.satiation} ({flaskInfo})\n"
+            tool_text = "no tool"
+            if char.tool:
+                tool_text = char.tool.name
+                text += f"tool:         %s\n" % tool_text
+            text += "\n"
+            text += f"baseDamage:     {char.baseDamage}\n"
+            text += f"movementSpeed:  {char.adjustedMovementSpeed}\n"
+            text += f"attackSpeed:    {char.attackSpeed}\n"
+            text += "\n"
 
             statusEffectString = ""
             for statusEffect in char.statusEffects:
@@ -66,10 +65,13 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
             text += f"status effects: %s\npress e to view a detailed buff list"%(statusEffectString,)
             
         if self.page == 2:
-            text += "\n"
-            text += f"movementSpeed:  {char.adjustedMovementSpeed}\n"
-            text += f"attackSpeed:    {char.attackSpeed}\n"
-            text += "\n"
+            if hasattr(char,"superior"):
+                text += "superior:   %s\n" % char.superior
+            text += "reputation: %s\n" % char.reputation
+            flaskInfo = "-"
+            if char.flask:
+                flaskInfo = str(char.flask.uses)+" flask charges"
+            text += f"satiation:  {char.satiation} ({flaskInfo})\n"
             text += f"hasSpecialAttacks: {char.hasSpecialAttacks}\n"
             text += f"hasSwapAttack: {char.hasSwapAttack}\n"
             text += f"hasRun: {char.hasRun}\n"
@@ -89,6 +91,7 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
             text += "\n"
             text += "lastJobOrder: %s\n" % char.lastJobOrder
             text += "skills: %s\n" % char.skills
+            text += "combat value: %s" % char.getStrengthSelfEstimate() + "\n"
             if len(char.duties) < 5:
                 text += "duties: %s\n" % ",\n".join(char.duties)
             else:
@@ -115,10 +118,6 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
             text += f"autoExpandQuests: %s\n" % char.autoExpandQuests
             text += f"autoExpandQuests2: %s\n" % char.autoExpandQuests2
             text += f"burnedIn: %s\n" % char.burnedIn
-            tool_text = "no tool"
-            if char.tool:
-                tool_text = char.tool.name
-            text += f"tool: %s\n" % tool_text
 
         text += "\n"
         text += "\n"

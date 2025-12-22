@@ -53,6 +53,13 @@ Use a CityPlaner to do this.
         # navigate the build-menu and schedule building the room
         submenue = character.macroState["submenue"]
         if submenue and not ignoreCommands:
+
+            # open map
+            if submenue.tag == "applyOptionSelection":
+                command = submenue.get_command_to_select_option("showMap")
+                return (None,(command,"show the map"))
+
+            # build the build site from map
             if isinstance(submenue,src.menuFolder.mapMenu.MapMenu) and not ignoreCommands:
                 command = ""
                 if submenue.cursor[0] > self.roomPosition[0]:
@@ -68,25 +75,6 @@ Use a CityPlaner to do this.
                 else:
                     command += "r"
                 return (None,(command,"schedule building a room"))
-
-            # select the build menu
-            if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
-                rewardIndex = 0
-                if rewardIndex == 0:
-                    counter = 1
-                    for option in submenue.options.items():
-                        if option[1] == "showMap":
-                            break
-                        counter += 1
-                    rewardIndex = counter
-                offset = rewardIndex-submenue.selectionIndex
-                command = ""
-                if offset > 0:
-                    command += "s"*offset
-                else:
-                    command += "w"*(-offset)
-                command += "j"
-                return (None,(command,"show the map"))
 
             # close unkown menus
             return (None,(["esc"],"exit submenu"))

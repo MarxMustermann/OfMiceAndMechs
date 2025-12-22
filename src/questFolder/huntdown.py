@@ -12,6 +12,18 @@ class Huntdown(src.quests.MetaQuestSequence):
         self.alwaysfollow = alwaysfollow
         self.reason = reason
 
+    def generateTextDescription(self):
+        out = []
+
+        reasonText = ""
+        if self.reason:
+            reasonText += f", to {self.reason}"
+        text = f"""
+Hunt down enemy{reasonText}."""
+
+        out.append(text)
+        return out
+
     def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
             return False

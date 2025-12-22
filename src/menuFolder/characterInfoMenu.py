@@ -69,6 +69,26 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
             text += f"status effects: %s\npress e to view a detailed buff list"%(statusEffectString,)
             
         if self.page == 2:
+            if len(char.duties) < 5:
+                text += "duties: %s\n" % ",\n".join(char.duties)
+            else:
+                text += "duties: "
+                duties_to_show = char.duties[:]
+                counter = 0
+                while duties_to_show:
+                    text += "%s" % duties_to_show.pop(0)
+                    if duties_to_show:
+                        if counter > 5:
+                            text += ",\n      "
+                            counter = 0
+                        else:
+                            text += ", "
+                            counter += 1
+                text += "\n" % char.duties
+            text += "skills: %s\n" % char.skills
+            text += f"grievances: {char.grievances}\n"
+        
+        if self.page == 3:
             if hasattr(char,"superior"):
                 text += "superior:   %s\n" % char.superior
             text += "reputation: %s\n" % char.reputation
@@ -101,26 +121,6 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
             text += f"autoExpandQuests:            %s\n" % char.autoExpandQuests
             text += f"autoExpandQuests2:           %s\n" % char.autoExpandQuests2
             text += f"burnedIn:                    %s\n" % char.burnedIn
-        
-        if self.page == 3:
-            if len(char.duties) < 5:
-                text += "duties: %s\n" % ",\n".join(char.duties)
-            else:
-                text += "duties: "
-                duties_to_show = char.duties[:]
-                counter = 0
-                while duties_to_show:
-                    text += "%s" % duties_to_show.pop(0)
-                    if duties_to_show:
-                        if counter > 5:
-                            text += ",\n      "
-                            counter = 0
-                        else:
-                            text += ", "
-                            counter += 1
-                text += "\n" % char.duties
-            text += "skills: %s\n" % char.skills
-            text += f"grievances: {char.grievances}\n"
 
         text += "\n"
         text += "press a/d to change what information is shown"

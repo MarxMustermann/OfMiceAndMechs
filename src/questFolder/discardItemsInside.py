@@ -62,7 +62,7 @@ This quest will end when your inventory is empty."""
             return (None,("l","drop item"))
         for dropPosition in dropPositions:
             if character.container.getPositionWalkable(dropPosition):
-                quest = src.quests.questMap["GoToPosition"](targetPosition=dropPosition)
+                quest = src.quests.questMap["GoToPosition"](targetPosition=dropPosition,reason="reach drop spot")
                 return ([quest],None)
 
         # fail

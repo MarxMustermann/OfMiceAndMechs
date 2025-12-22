@@ -56,6 +56,10 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
             text += f"movementSpeed:  {char.adjustedMovementSpeed}\n"
             text += f"attackSpeed:    {char.attackSpeed}\n"
             text += "\n"
+            text += f"position:          {char.getSpacePosition()}\n"
+            text += f"big position:      {char.getBigPosition()}\n"
+            text += f"terrain position:  {char.getTerrainPosition()}\n"
+            text += "\n"
 
             statusEffectString = ""
             for statusEffect in char.statusEffects:
@@ -92,10 +96,6 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
             text += "lastJobOrder: %s\n" % char.lastJobOrder
             text += "combat value: %s" % char.getStrengthSelfEstimate() + "\n"
             text += "numAttackedWithoutResponse: %s\n" % char.numAttackedWithoutResponse
-            text += f"position: {char.getSpacePosition()}\n"
-            text += f"big position: {char.getBigPosition()}\n"
-            text += f"terrain position: {char.getTerrainPosition()}\n"
-            text += f"grievances: {char.grievances}\n"
             text += f"terrainName: %s\n" % char.getTerrain().tag
             text += f"disableCommandsOnPlus: %s\n" % char.disableCommandsOnPlus
             text += f"autoExpandQuests: %s\n" % char.autoExpandQuests
@@ -120,6 +120,7 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
                             counter += 1
                 text += "\n" % char.duties
             text += "skills: %s" % char.skills
+            text += f"grievances: {char.grievances}\n"
 
         text += "\n"
         text += "\n"

@@ -35,6 +35,12 @@ Set the floor plan: {self.floorPlanType}
         # handle menues
         submenue = character.macroState["submenue"]
         if submenue and not ignoreCommands:
+
+            # open map
+            if submenue.tag == "applyOptionSelection":
+                command = submenue.get_command_to_select_option("showMap")
+                return (None,(command,"show the map"))
+
             # select build site on map
             if isinstance(submenue,src.menuFolder.mapMenu.MapMenu) and not ignoreCommands:
                 command = ""
@@ -60,11 +66,7 @@ Set the floor plan: {self.floorPlanType}
                 command = submenue.get_command_to_select_option(self.floorPlanType)
                 return (None,(command,"select the floor plan"))
 
-            # open map
-            if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu):
-                command = submenue.get_command_to_select_option("showMap")
-                return (None,(command,"show the map"))
-
+            # close unkown menues
             return (None,(["esc"],"exit submenu"))
 
         # enter room

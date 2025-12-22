@@ -101,31 +101,36 @@ Remove all items that are not bolted down."""
         # handle submenues
         submenue = character.macroState.get("submenue")
         if submenue and not ignoreCommands:
+
+            # drop item from inventory
             if isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu) and character.getFreeInventorySpace() <= 1:
                 targetIndex = 0
                 for item in character.inventory:
                     if item.type == "Bolt":
                         break
                     targetIndex += 1
-
                 if targetIndex >= len(character.inventory):
                     return (None,(["esc"],"exit the menu"))
-
                 inventoryCommand = ""
                 inventoryCommand += "s"*(targetIndex-submenue.cursor)
                 inventoryCommand += "w"*(submenue.cursor-targetIndex)
                 inventoryCommand += "l"
                 return (None,(inventoryCommand,"drop the item"))
 
+            # close unknown submenues
             return (None,(["esc"],"exit the menu"))
 
+        # handle direct threats
         if character.getNearbyEnemies():
             quest = src.quests.questMap["Fight"]()
             return ([quest],None)
 
+        # ensure there is inventory space
         if not character.getFreeInventorySpace(ignoreTypes=["Bolt"]) > 0:
             quest = src.quests.questMap["ClearInventory"](reason="have inventory space to pick up more items",returnToTile=False)
             return ([quest],None)
+
+        # actually enter rooms
         if not isinstance(character.container,src.rooms.Room):
             if character.yPosition%15 == 14:
                 return (None,("w","enter tile"))
@@ -136,12 +141,13 @@ Remove all items that are not bolted down."""
             if character.xPosition%15 == 0:
                 return (None,("d","enter tile"))
 
+        # go the the location to be looted
         if character.getBigPosition() != (self.targetPositionBig[0], self.targetPositionBig[1], 0):
             quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig)
             return ([quest],None)
 
+        # find lootable items in reach
         charPos = character.getPosition()
-
         offsets = [(0,0,0),(1,0,0),(0,1,0),(-1,0,0),(0,-1,0)]
         foundOffset = None
         foundItems = None
@@ -188,6 +194,7 @@ Remove all items that are not bolted down."""
                 foundOffset = offset
                 break
 
+        # ensure inventory space
         if not character.getFreeInventorySpace() > 0:
             dropCommand = "l"
 
@@ -245,6 +252,7 @@ Remove all items that are not bolted down."""
                 return (None,("+","abort quest\n("+abort_reason+")"))
             return (None,("i"+"s"*index+dropCommand,"drop item"))
 
+        # pick up loot
         if foundOffset:
             if foundOffset == (0,0,0):
                 command = "k"*len(foundItems)
@@ -272,6 +280,7 @@ Remove all items that are not bolted down."""
 
             return (None,(command,"clear spot"))
 
+        # go to loot
         items = self.getLeftoverItems(character)
         random.shuffle(items)
         for item in items:
@@ -292,6 +301,7 @@ Remove all items that are not bolted down."""
             quest = src.quests.questMap["GoToPosition"](targetPosition=item_pos,ignoreEndBlocked=True)
             return ([quest],None)
 
+        # dummy return
         return self._solver_trigger_fail(dryRun,"unknown reason")
 
     def getLeftoverItems(self,character):

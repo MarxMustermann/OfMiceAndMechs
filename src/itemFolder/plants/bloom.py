@@ -11,7 +11,6 @@ class Bloom(src.items.Item):
     type = "Bloom"
     name = "bloom"
     description = "blossomed mold"
-    bolted = False
     walkable = True
     dead = False
 
@@ -71,7 +70,9 @@ class Bloom(src.items.Item):
             character: the character picking the item uo
         """
 
+        # handle getting harversted
         if not self.dead:
+
             # damage nearby characters
             if self.container.isRoom == False:
 

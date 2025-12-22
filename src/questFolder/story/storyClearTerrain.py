@@ -22,7 +22,7 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
 
         # defend yourself
         if character.getNearbyEnemies():
-            quest = src.quests.questMap["Fight"](suicidal=True)
+            quest = src.quests.questMap["Fight"](suicidal=True,reason="get rid of the enemies")
             return ([quest],None)
 
         # loot tile
@@ -41,7 +41,7 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
         for room in terrain.rooms:
             regenerator = room.getItemByType("Regenerator",needsBolted=True)
             if regenerator and not regenerator.activated:
-                quest = src.quests.questMap["ActivateRegenerator"]()
+                quest = src.quests.questMap["ActivateRegenerator"](reason="ensure all clones can heal")
                 return ([quest],None)
 
         # count the number of enemies/allies
@@ -72,7 +72,7 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
 
         # ensure there are backup npcs
         if npcCount < 2:
-            quest = src.quests.questMap["SpawnClone"]()
+            quest = src.quests.questMap["SpawnClone"](reason="have some clones in the base")
             return ([quest],None)
 
         # ensure the character has good health
@@ -93,24 +93,24 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
 
             # heal using available resources
             if characterHasVial or readyCoalBurner:
-                quest = src.quests.questMap["Heal"](noWaitHeal=True,noVialHeal=True)
+                quest = src.quests.questMap["Heal"](noWaitHeal=True,noVialHeal=True,reason="have energy to fight again")
                 return ([quest],None)
 
             # try to find more healing resources
             if not character.getFreeInventorySpace():
-                quest = src.quests.questMap["ClearInventory"](returnToTile=False)
+                quest = src.quests.questMap["ClearInventory"](returnToTile=False,reason="be able to collect some healing items")
                 return ([quest],None)
             if not terrain.alarm:
-                quest = src.quests.questMap["Scavenge"](lifetime=500)
+                quest = src.quests.questMap["Scavenge"](lifetime=500,reason="collect some healing items")
                 return ([quest],None)
 
             # heal any way possible
-            quest = src.quests.questMap["Heal"](noVialHeal=True)
+            quest = src.quests.questMap["Heal"](noVialHeal=True,reason="be able to fight again")
             return ([quest],None)
 
         # kill snatchers (redundant to GetRank2Promotion)
         if snatcherCount:
-            quest = src.quests.questMap["ConfrontSnatchers"]()
+            quest = src.quests.questMap["ConfrontSnatchers"](reason="be able to move outside")
             return ([quest],None)
 
         # handle an ongoing wave
@@ -120,7 +120,7 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
 
         # unrestrict outside movement
         if terrain.alarm:
-            quest = src.quests.questMap["LiftOutsideRestrictions"]()
+            quest = src.quests.questMap["LiftOutsideRestrictions"](reason="make the clones to work outside")
             return ([quest],None)
 
         # defend against waves from areana room
@@ -140,14 +140,14 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
         for room in character.getTerrain().rooms:
             for item in room.getItemsByType("SwordSharpener"):
                 if item.readyToBeUsedByCharacter(character,extraIncrease=1):
-                    quest1 = src.quests.questMap["SharpenPersonalSword"]()
-                    quest2 = src.quests.questMap["ClearInventory"](returnToTile=False)
+                    quest1 = src.quests.questMap["SharpenPersonalSword"](reason="be able to cut deeper")
+                    quest2 = src.quests.questMap["ClearInventory"](returnToTile=False,reason="have more space for items")
                     return ([quest2,quest1],None)
         for room in character.getTerrain().rooms:
             for item in room.getItemsByType("ArmorReinforcer"):
                 if item.readyToBeUsedByCharacter(character,extraIncrease=1):
-                    quest1 = src.quests.questMap["ReinforcePersonalArmor"]()
-                    quest2 = src.quests.questMap["ClearInventory"](returnToTile=False)
+                    quest1 = src.quests.questMap["ReinforcePersonalArmor"](reason="get hurt less")
+                    quest2 = src.quests.questMap["ClearInventory"](returnToTile=False,reason="be able to collect more")
                     return ([quest2,quest1],None)
 
         # check for spider lairs
@@ -178,7 +178,7 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
 
             # clear first spider spot
             if specialSpiderBlockersFound:
-                quest = src.quests.questMap["BaitSpiders"](targetPositionBig=specialSpiderBlockersFound[0])
+                quest = src.quests.questMap["BaitSpiders"](targetPositionBig=specialSpiderBlockersFound[0],reason="get rid of them")
                 return ([quest],None)
 
             # select target
@@ -218,11 +218,11 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
             targets_pos = list(targets_found.keys())
             targets_pos.sort(key=lambda x: src.helpers.distance_between_points(x,character.getTilePosition()))
             target = targets_pos[0]
-            quest = src.quests.questMap["SecureTile"](toSecure=target,endWhenCleared=True)
+            quest = src.quests.questMap["SecureTile"](toSecure=target,endWhenCleared=True,reason="eliminate more enemies")
             return ([quest],None)
 
         # run the normal quest
-        quest = src.quests.questMap["ClearTerrain"]()
+        quest = src.quests.questMap["ClearTerrain"](reason="get rid of the last enemies")
         return ([quest],None)
 
     def generateTextDescription(self):

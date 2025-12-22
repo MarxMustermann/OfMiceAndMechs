@@ -38,11 +38,7 @@ can be processed in a corpse shredder
         """
 
         text = super().getLongInfo()
-        text = """
-The corpse has %s charges left.
-""" % (
-            self.charges
-        )
+        text += """The lifeless remains of something that looks a loot like you."""
         return text
 
     def apply(self, character):

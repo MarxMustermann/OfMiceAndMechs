@@ -9,7 +9,7 @@ class Rod(src.items.Item):
     '''
     type = "Rod"
     name = "rod"
-    description = "used to build items"
+    description = "used to build items, can also be used to hit people"
     bolted = False
     walkable = True
     def __init__(self,badQuality=False):

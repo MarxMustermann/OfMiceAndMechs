@@ -58,18 +58,7 @@ Set the floor plan: {self.floorPlanType}
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
             submenue = character.macroState["submenue"]
             if submenue.tag == "floorplanSelection":
-                counter = 1
-                for option in submenue.options.items():
-                    if option[1] == self.floorPlanType:
-                        break
-                    counter += 1
-
-                command = ""
-                if submenue.selectionIndex > counter:
-                    command += "w"*(submenue.selectionIndex-counter)
-                if submenue.selectionIndex < counter:
-                    command += "s"*(counter-submenue.selectionIndex)
-                command += "j"
+                command = submenue.get_command_to_select_option(self.floorPlanType)
                 return (None,(command,"select the floor plan"))
 
             submenue = character.macroState["submenue"]

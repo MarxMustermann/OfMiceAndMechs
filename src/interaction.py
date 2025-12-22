@@ -3013,11 +3013,6 @@ press key for the configuration interaction
 You have a strange feeling, but nothing happens.
 """)
         if key in ("P",):
-            try:
-                char.hasMagic
-            except:
-                char.hasMagic = False
-
             if char.hasMagic:
                 char.selectCastMagic()
             else:

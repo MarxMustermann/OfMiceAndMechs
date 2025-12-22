@@ -190,6 +190,15 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
         if key in ("rESC",):
             self.char.rememberedMenu2.append(self)
             return True
+        if key in ("t",):
+            if not self.char.tool:
+                character.addMessage("no tool to remove")
+            else:
+                tool = self.char.tool
+                self.char.tool = None
+                self.char.container.addItem(tool,self.char.getPosition())
+                character.addMessage("you dropped your tool")
+                return True
 
         char = self.char
 

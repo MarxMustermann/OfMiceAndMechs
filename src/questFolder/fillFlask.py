@@ -63,8 +63,10 @@ Flask can be refilled at a GooDispenser."""
             self.generateSubquests(self.character)
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
+
+        # make quest end when done
         if self.triggerCompletionCheck(character,dryRun=dryRun):
-            return (None,None)
+            return (None,("+","end quest"))
 
         # handle menues
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:

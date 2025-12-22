@@ -155,6 +155,12 @@ Try luring enemies into landmines or detonating some bombs."""
                 if not character.rank and character.charType == "Clone":
                     return (None, ("....","wait"))
                 else:
+                    if character.xPosition == 0 or character.yPosition == 0 or character.xPosition == 12 or character.yPosition == 12:
+                        (x,y,_) = character.getSpacePosition()
+                        x= src.helpers.clamp(x+int(random.uniform(-3,3)),2,12)
+                        y= src.helpers.clamp(y+int(random.uniform(-3,3)),2,12)
+                        quest = src.quests.questMap["GoToPosition"](targetPosition = (x,y))
+                        return ([quest], None)
                     return (None, (";","wait"))
 
         return super().getNextStep(character=character,ignoreCommands=ignoreCommands,dryRun=dryRun)

@@ -66,6 +66,7 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
                 statusEffectString += statusEffect.type + " (" + statusEffect.getShortCode() + "), "
             if not statusEffectString == "":
                 statusEffectString = statusEffectString[:-2]
+            statusEffectString = "[]"
             text += f"status effects: %s\npress e to view a detailed buff list\n"%(statusEffectString,)
             
         if self.page == 2:

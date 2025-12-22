@@ -19,10 +19,11 @@ class DiscardItemsInside(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         out = []
 
-        reason = ""
-        text = """
-Clear your inventory inside"""
-        text += f"""{reason}."""
+        reasonText = ""
+        if self.reason:
+            reasonText += f", {self.reason}"
+        text = f"""
+Clear your inventory inside{reasonText}."""
         text += """
 
 This quest will end when your inventory is empty."""

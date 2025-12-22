@@ -63,6 +63,11 @@ class LiftOutsideRestrictions(src.quests.MetaQuestSequence):
                 return (None,(command,"contact command"))
             
             return (None,(["esc"],"to close menu"))
+
+        # activate production item when marked
+        action = self.generate_confirm_activation_command(allowedItems=["SiegeManager"])
+        if action:
+            return action
         
         terrain = character.getTerrain()
         siegeManager = None

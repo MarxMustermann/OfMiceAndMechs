@@ -20,7 +20,7 @@ class DropItemsOutside(src.quests.MetaQuestSequence):
 
         reasonText = ""
         if self.reason:
-            reasonText += f", {self.reason}"
+            reasonText += f", to {self.reason}"
         text = f"""
 Clear your inventory outside{reasonText}."""
         text += """

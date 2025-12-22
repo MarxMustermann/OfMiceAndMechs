@@ -13,6 +13,7 @@ class CombatInfoMenu(src.subMenu.SubMenu):
         self.char = char
         super().__init__()
         self.sidebared = False
+        self.skipKeypress = True
 
     def render(self,char):
         if char.dead:
@@ -68,8 +69,12 @@ subordinates:
             returns True when done
         """
 
+        if self.skipKeypress:
+            self.skipKeypress = False
+            key = "~"
+
         # exit the submenu
-        if key == "esc":
+        if key in ("esc","o",):
             return True
         if key in ("ESC","lESC",):
             self.char.rememberedMenu.append(self)

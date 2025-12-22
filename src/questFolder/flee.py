@@ -71,7 +71,7 @@ class Flee(src.quests.MetaQuestSequence):
             if not dryRun:
                 self.startTick = src.gamestate.gamestate.tick
             pos = random.choice([(6,0,0),(0,6,0),(12,6,0),(6,12,0)])
-            quest = src.quests.questMap["GoToPosition"](targetPosition=pos)
+            quest = src.quests.questMap["GoToPosition"](targetPosition=pos,reason="reach escape spot")
             return ([quest],None)
 
         # return home after initial esscape 
@@ -79,7 +79,7 @@ class Flee(src.quests.MetaQuestSequence):
             bigPos = character.getBigPosition()
             homePos = character.getHomeRoomCord()
             if self.returnHome and bigPos != homePos:
-                quest = src.quests.questMap["GoHome"]()
+                quest = src.quests.questMap["GoHome"](reason="get back to safety")
                 return ([quest],None)
             if not dryRun:
                 self.postHandler()

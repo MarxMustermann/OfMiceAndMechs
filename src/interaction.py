@@ -2939,6 +2939,8 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
                 else:
                     char.addMessage("no item to drop")
                     char.container.addAnimation(char.getPosition(offset=(0,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
+            if charState.get("itemMarkedLast"):
+                del charState["itemMarkedLast"]
 
         # drink from the first available item in inventory
         # bad pattern: the user has to have the choice from what item to drink from
@@ -2968,6 +2970,8 @@ press key for the advanced interaction
                 char.specialRender = True
 
             char.interactionState["advancedInteraction"] = {}
+            if charState.get("itemMarkedLast"):
+                del charState["itemMarkedLast"]
             return None
 
         if key in ("C",):
@@ -2993,6 +2997,8 @@ press key for the configuration interaction
                 char.specialRender = True
 
             char.interactionState["advancedConfigure"] = {}
+            if charState.get("itemMarkedLast"):
+                del charState["itemMarkedLast"]
             return None
 
         if key in ("g",):
@@ -3056,6 +3062,8 @@ press key to set fire direction
                 char.doRandomRanged()
             else:
                 char.addMessage("no ranged attack")
+            if charState.get("itemMarkedLast"):
+                del charState["itemMarkedLast"]
         if key in ("K",):
             if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
                 text = """
@@ -3082,6 +3090,8 @@ press key for advanced pickup
                 char.specialRender = True
 
             char.interactionState["advancedPickup"] = {}
+            if charState.get("itemMarkedLast"):
+                del charState["itemMarkedLast"]
             return None
 
         if key in ("L",):
@@ -3110,6 +3120,8 @@ press key for advanced drop
                 char.specialRender = True
 
             char.interactionState["advancedDrop"] = {}
+            if charState.get("itemMarkedLast"):
+                del charState["itemMarkedLast"]
             return None
 
         if key in ("#",):

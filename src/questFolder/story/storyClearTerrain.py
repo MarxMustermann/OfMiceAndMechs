@@ -136,64 +136,6 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,lifetime=100,description="defend the arena",reason="ensure no attackers get into the base")
                 return ([quest],None)
 
-        # complete build site
-        if not terrain.getRoomByPosition((8,7,0)):
-            enemyOnBuildSite = False
-            for otherChar in terrain.charactersByTile.get((8,7,0),[]):
-                if otherChar.faction == character.faction:
-                    continue
-                enemyOnBuildSite = True
-
-            if not enemyOnBuildSite:
-                roomBuilderItems = terrain.getItemByPosition((8*15+7,7*15+7,0))
-                if not roomBuilderItems or roomBuilderItems[0].type != "RoomBuilder":
-                    quest = src.quests.questMap["BuildRoom"](targetPosition=(8,7,0),takeAnyUnbolted=True)
-                    return ([quest],None)
-
-                wallsInStorage = False
-                for room in character.getTerrain().rooms:
-                    if room.getNonEmptyOutputslots("Wall"):
-                        wallsInStorage = True
-                if character.inventory and character.inventory[-1].type == "Wall":
-                    wallsInStorage = True
-
-                numDoorsInStorage = 0
-                for room in character.getTerrain().rooms:
-                    numDoorsInStorage += len(room.getItemsByType("Door",needsUnbolted=True))
-
-                if wallsInStorage and numDoorsInStorage >= 4:
-                    quest = src.quests.questMap["BuildRoom"](targetPosition=(8,7,0),takeAnyUnbolted=True)
-                    return ([quest],None)
-
-                if not wallsInStorage:
-                    if not character.getFreeInventorySpace():
-                        quest = src.quests.questMap["ClearInventory"](tryHard=True)
-                        return ([quest],None)
-                    quest = src.quests.questMap["Scavenge"](toCollect="Wall")
-                    return ([quest],None)
-        else:
-            room = terrain.getRoomByPosition((8,7,0))[0]
-            if not room.tag and not room.floorPlan:
-                quest = src.quests.questMap["AssignFloorPlan"](floorPlanType="storage",roomPosition=(8,7,0))
-                return ([quest],None)
-
-            foundCityPlaner = None
-            for room in terrain.rooms:
-                items = room.getItemsByType("CityPlaner",needsBolted=True)
-                if not items:
-                    continue
-                foundCityPlaner = items[0]
-                break
-
-            if foundCityPlaner:
-                for position in [(8,6,0),(8,8,0)]:
-                    if not foundCityPlaner.plannedRooms:
-                        rooms = terrain.getRoomByPosition(position)
-                        if rooms:
-                            continue
-                        quest = src.quests.questMap["ScheduleRoomBuilding"](roomPosition=position)
-                        return ([quest],None)
-
         # upgrade equipment if possible
         for room in character.getTerrain().rooms:
             for item in room.getItemsByType("SwordSharpener"):

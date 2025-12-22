@@ -42,28 +42,30 @@ This quest will end when your inventory is empty."""
 
     def getNextStep(self,character,ignoreCommands=False, dryRun = True):
 
+        # handle weird edge cases
         if not character:
             return (None,None)
-
         if self.subQuests:
             return (None,None)
 
+        # set up helper variables
         terrain = character.getTerrain()
 
         # go inside
         if not character.container.isRoom:
-            quest = src.quests.questMap["GoHome"]()
+            quest = src.quests.questMap["GoHome"](reason="get inside")
             return ([quest],None)
 
+        # drop items in door frames
         dropPositions = [(0,6,0),(12,6,0),(6,0,0),(6,12,0)]
         if character.getPosition() in dropPositions:
             return (None,("l","drop item"))
-
         for dropPosition in dropPositions:
             if character.container.getPositionWalkable(dropPosition):
                 quest = src.quests.questMap["GoToPosition"](targetPosition=dropPosition)
                 return ([quest],None)
 
+        # fail
         return self._solver_trigger_fail(dryRun,"no drop spot")
 
     def droppedItem(self,extraInfo):

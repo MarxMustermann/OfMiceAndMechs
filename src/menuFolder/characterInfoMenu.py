@@ -65,43 +65,6 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
                 statusEffectString = statusEffectString[:-2]
             text += f"status effects: %s\npress e to view a detailed buff list"%(statusEffectString,)
             
-        try:
-            char.hasSwapAttack
-        except:
-            char.hasSwapAttack = False
-        try:
-            char.hasRun
-        except:
-            char.hasRun = False
-        try:
-            char.hasJump
-        except:
-            char.hasJump = False
-        try:
-            char.hasLineShot
-        except:
-            char.hasLineShot = False
-        try:
-            char.hasRandomShot
-        except:
-            char.hasRandomShot = False
-        try:
-            char.hasMovementSpeedBoost
-        except:
-            char.hasMovementSpeedBoost = False
-        try:
-            char.hasMaxHealthBoost
-        except:
-            char.hasMaxHealthBoost = False
-        try:
-            char.hasMagic
-        except:
-            char.hasMagic = False
-        try:
-            char.lastMapSync
-        except:
-            char.lastMapSync = None
-
         if self.page == 2:
             text += "\n"
             text += f"movementSpeed:  {char.adjustedMovementSpeed}\n"

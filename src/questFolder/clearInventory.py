@@ -98,13 +98,16 @@ To see your items open the your inventory by pressing i."""
         '''
         calculate the next step towards solving the quest
         '''
+
         # remember current position as place to return to
         if self.returnToTile and not self.tileToReturnTo:
             self.tileToReturnTo = character.getBigPosition()
 
+        # handle weird edge cases
         if self.subQuests:
             return (None,None)
 
+        # fail on danger
         if character.getNearbyEnemies():
             return self._solver_trigger_fail(dryRun, "nearby enemies")
 
@@ -112,7 +115,10 @@ To see your items open the your inventory by pressing i."""
         if not ignoreCommands and character.macroState.get("submenue"):
             return (None,(["esc"],"exit submenu"))
 
+        # handle weird edge cases
         if not isinstance(character.container,src.rooms.Room):
+
+            # enter rooms properly
             if character.yPosition%15 == 14:
                 return (None,("w","enter tile"))
             if character.yPosition%15 == 0:
@@ -122,18 +128,20 @@ To see your items open the your inventory by pressing i."""
             if character.xPosition%15 == 0:
                 return (None,("d","enter tile"))
 
+            # go gome
             if "HOMEx" in character.registers:
-                quest = src.quests.questMap["GoHome"]()
+                quest = src.quests.questMap["GoHome"](reason="work from inside the base")
                 return ([quest],None)
 
+            # just drop things on the floor
             return (None,("l","drop item"))
 
-        # clear inventory local
+        # clear inventory in local room
         room = character.getRoom()
         if len(character.inventory) and room:
             emptyInputSlots = room.getEmptyInputslots(character.inventory[-1].type, allowAny=True)
             if emptyInputSlots:
-                quest = src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True, reason="reduce the number of item in your inventory")
+                quest = src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True, reason="reduce the number of items in your inventory")
                 return ([quest],None)
 
         if "HOMEx" not in character.registers:

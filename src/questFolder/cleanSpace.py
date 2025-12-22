@@ -249,10 +249,6 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
                 if not misplacmentFound:
                     continue
 
-                if character == src.gamestate.gamestate.mainChar:
-                    print(slot)
-                    print(room.getPosition())
-                    print(room.tag)
                 quest = src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=slot[0], reason="tidy up the spot (duty: clean)",pickUpBolted=True)
                 if not dryRun:
                     beUsefull.idleCounter = 0

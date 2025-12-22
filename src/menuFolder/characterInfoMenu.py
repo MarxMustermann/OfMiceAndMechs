@@ -15,6 +15,7 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
         self.char = char
         self.skipKeypress = True
         super().__init__()
+        self.page = 0
 
     def render(self,char):
         if char.dead:
@@ -32,36 +33,38 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
         print(char.registers)
 
         text += "name:       %s\n" % char.name
+        text += f"page: {self.page}\n"
         text += "\n"
         text += "\n"
-        text += "health:       %s" % char.health + "\n"
-        text += "max health:   %s" % char.adjustedMaxHealth + "\n"
-        text += "exhaustion:   %s" % char.exhaustion + "\n"
-        text += "\n"
-        text += "baseDamage:   %s\n" % char.baseDamage
-        text += "weapon:       %s\n" % weaponBaseDamage
-        text += "armor:        %s\n" % armorValue
-        text += "faction:      %s\n" % char.faction
-        text += "time taken:   %s" % char.timeTaken + "\n"
-        text += "combat value: %s" % char.getStrengthSelfEstimate() + "\n"
+        if self.page == 0:
+            text += "health:       %s" % char.health + "\n"
+            text += "max health:   %s" % char.adjustedMaxHealth + "\n"
+            text += "exhaustion:   %s" % char.exhaustion + "\n"
+            text += "\n"
+            text += "baseDamage:   %s\n" % char.baseDamage
+            text += "weapon:       %s\n" % weaponBaseDamage
+            text += "armor:        %s\n" % armorValue
+            text += "faction:      %s\n" % char.faction
+            text += "time taken:   %s" % char.timeTaken + "\n"
+            text += "combat value: %s" % char.getStrengthSelfEstimate() + "\n"
 
-        if hasattr(char,"rank"):
-            text += "rank:       %s\n" % char.rank
-        if hasattr(char,"superior"):
-            text += "superior:   %s\n" % char.superior
-        text += "reputation: %s\n" % char.reputation
-        flaskInfo = "-"
-        if char.flask:
-            flaskInfo = str(char.flask.uses)+" flask charges"
-        text += f"satiation:  {char.satiation} ({flaskInfo})\n"
+            if hasattr(char,"rank"):
+                text += "rank:       %s\n" % char.rank
+            if hasattr(char,"superior"):
+                text += "superior:   %s\n" % char.superior
+            text += "reputation: %s\n" % char.reputation
+            flaskInfo = "-"
+            if char.flask:
+                flaskInfo = str(char.flask.uses)+" flask charges"
+            text += f"satiation:  {char.satiation} ({flaskInfo})\n"
 
-        statusEffectString = ""
-        for statusEffect in char.statusEffects:
-            statusEffectString += statusEffect.type + " (" + statusEffect.getShortCode() + "), "
-        if not statusEffectString == "":
-            statusEffectString = statusEffectString[:-2]
-        text += f"status effects: %s\npress e to view a detailed buff list"%(statusEffectString,)
-        
+            statusEffectString = ""
+            for statusEffect in char.statusEffects:
+                statusEffectString += statusEffect.type + " (" + statusEffect.getShortCode() + "), "
+            if not statusEffectString == "":
+                statusEffectString = statusEffectString[:-2]
+            text += f"status effects: %s\npress e to view a detailed buff list"%(statusEffectString,)
+            
         try:
             char.hasSwapAttack
         except:
@@ -99,57 +102,62 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
         except:
             char.lastMapSync = None
 
-        text += "\n"
-        text += f"movementSpeed:  {char.adjustedMovementSpeed}\n"
-        text += f"attackSpeed:    {char.attackSpeed}\n"
-        text += "\n"
-        text += f"hasSpecialAttacks: {char.hasSpecialAttacks}\n"
-        text += f"hasSwapAttack: {char.hasSwapAttack}\n"
-        text += f"hasRun: {char.hasRun}\n"
-        text += f"hasJump: {char.hasJump}\n"
-        text += f"hasLineShot: {char.hasLineShot}\n"
-        text += f"hasRandomShot: {char.hasRandomShot}\n"
-        text += f"hasMovementSpeedBoost: {char.hasMovementSpeedBoost}\n"
-        text += f"hasMaxHealthBoost: {char.hasMaxHealthBoost}\n"
-        text += f"hasMagic: {char.hasMagic}\n"
-        text += "\n"
-        if char.lastMapSync:
-            text += f"lastMapSync: {src.gamestate.gamestate.tick-char.lastMapSync}\n"
-        text += "\n"
-        for jobOrder in char.jobOrders:
-            text += str(jobOrder.taskName)
-            text += ": %s \n" % json.dumps(jobOrder.tasks)#,indent=4)
-        text += "\n"
-        text += "lastJobOrder: %s\n" % char.lastJobOrder
-        text += "skills: %s\n" % char.skills
-        if len(char.duties) < 5:
-            text += "duties: %s\n" % ",\n".join(char.duties)
-        else:
-            text += "duties: "
-            duties_to_show = char.duties[:]
-            counter = 0
-            while duties_to_show:
-                text += "%s" % duties_to_show.pop(0)
-                if duties_to_show:
-                    if counter > 5:
-                        text += ",\n      "
-                        counter = 0
-                    else:
-                        text += ", "
-                        counter += 1
-            text += "\n" % char.duties
-        text += "numAttackedWithoutResponse: %s\n" % char.numAttackedWithoutResponse
-        text += f"position: {char.getSpacePosition()}\n"
-        text += f"big position: {char.getBigPosition()}\n"
-        text += f"terrain position: {char.getTerrainPosition()}\n"
-        text += f"grievances: {char.grievances}\n"
-        text += f"terrainName: %s\n" % char.getTerrain().tag
-        text += f"disableCommandsOnPlus: %s\n" % char.disableCommandsOnPlus
-        text += f"autoExpandQuests: %s\n" % char.autoExpandQuests
-        text += f"autoExpandQuests2: %s\n" % char.autoExpandQuests2
-        text += f"burnedIn: %s\n" % char.burnedIn
-        text += f"tool: %s\n" % char.tool
+        if self.page == 1:
+            text += "\n"
+            text += f"movementSpeed:  {char.adjustedMovementSpeed}\n"
+            text += f"attackSpeed:    {char.attackSpeed}\n"
+            text += "\n"
+            text += f"hasSpecialAttacks: {char.hasSpecialAttacks}\n"
+            text += f"hasSwapAttack: {char.hasSwapAttack}\n"
+            text += f"hasRun: {char.hasRun}\n"
+            text += f"hasJump: {char.hasJump}\n"
+            text += f"hasLineShot: {char.hasLineShot}\n"
+            text += f"hasRandomShot: {char.hasRandomShot}\n"
+            text += f"hasMovementSpeedBoost: {char.hasMovementSpeedBoost}\n"
+            text += f"hasMaxHealthBoost: {char.hasMaxHealthBoost}\n"
+            text += f"hasMagic: {char.hasMagic}\n"
+            text += "\n"
+            if char.lastMapSync:
+                text += f"lastMapSync: {src.gamestate.gamestate.tick-char.lastMapSync}\n"
+            text += "\n"
+            for jobOrder in char.jobOrders:
+                text += str(jobOrder.taskName)
+                text += ": %s \n" % json.dumps(jobOrder.tasks)#,indent=4)
+            text += "\n"
+            text += "lastJobOrder: %s\n" % char.lastJobOrder
+            text += "skills: %s\n" % char.skills
+            if len(char.duties) < 5:
+                text += "duties: %s\n" % ",\n".join(char.duties)
+            else:
+                text += "duties: "
+                duties_to_show = char.duties[:]
+                counter = 0
+                while duties_to_show:
+                    text += "%s" % duties_to_show.pop(0)
+                    if duties_to_show:
+                        if counter > 5:
+                            text += ",\n      "
+                            counter = 0
+                        else:
+                            text += ", "
+                            counter += 1
+                text += "\n" % char.duties
+            text += "numAttackedWithoutResponse: %s\n" % char.numAttackedWithoutResponse
+            text += f"position: {char.getSpacePosition()}\n"
+            text += f"big position: {char.getBigPosition()}\n"
+            text += f"terrain position: {char.getTerrainPosition()}\n"
+            text += f"grievances: {char.grievances}\n"
+            text += f"terrainName: %s\n" % char.getTerrain().tag
+            text += f"disableCommandsOnPlus: %s\n" % char.disableCommandsOnPlus
+            text += f"autoExpandQuests: %s\n" % char.autoExpandQuests
+            text += f"autoExpandQuests2: %s\n" % char.autoExpandQuests2
+            text += f"burnedIn: %s\n" % char.burnedIn
+            text += f"tool: %s\n" % char.tool
 
+        text += "\n"
+        text += "\n"
+        text += "press a/d to change what information is shown"
+        text += "\n"
         text += "\npress e to view the status effect on the character"
         text += "\npress s to view the character statistics"
         return text
@@ -174,7 +182,6 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
         if key in ("rESC",):
             self.char.rememberedMenu2.append(self)
             return True
-
         if key == "e":
             submenue = src.menuFolder.statusEffectMenu.StatusEffectMenu(char=character)
             character.macroState["submenue"] = submenue
@@ -190,6 +197,15 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
         if self.skipKeypress:
             self.skipKeypress = False
             key = "~"
+
+        if key == "d":
+            self.page += 1
+        if key == "a":
+            self.page -= 1
+        if self.page < 0:
+            self.page = 1
+        if self.page > 1:
+            self.page = 0
 
         if key in ("t",):
             if not self.char.tool:

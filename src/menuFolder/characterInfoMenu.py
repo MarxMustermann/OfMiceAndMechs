@@ -37,7 +37,7 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
         if hasattr(char,"rank"):
             text += "rank:      %s\n" % char.rank
         text += "\n"
-        text += f"page: {self.page}\n"
+        text += f"page: {self.page}/3\n"
         text += "\n"
         if self.page == 1:
             text += "health:       %s" % char.health + "\n"

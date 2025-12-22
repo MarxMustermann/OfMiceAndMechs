@@ -138,7 +138,10 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
                     interactionCommand = "K"
                     if "advancedPickup" in character.interactionState:
                         interactionCommand = ""
-                    return (None, (interactionCommand+direction,"pick up item"))
+                    command = interactionCommand+direction
+                    if command == "K.":
+                        command = "k"
+                    return (None, (command,"pick up item"))
 
         return (None,(".","stand around confused"))
 

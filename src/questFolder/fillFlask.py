@@ -71,10 +71,8 @@ Flask can be refilled at a GooDispenser."""
         # handle menues
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
             submenue = character.macroState["submenue"]
-
             if not submenue.extraInfo.get("item"):
                 return (None,(["esc"],"exit submenu"))
-
             command = submenue.get_command_to_select_option("fill_empty_flask")
             return (None,(command,"fill flasks"))
 
@@ -82,9 +80,6 @@ Flask can be refilled at a GooDispenser."""
         action = self.generate_confirm_activation_command(allowedItems=["GooDispenser"])
         if action:
             return action
-
-        pos = character.getBigPosition()
-        pos = (pos[0],pos[1])
 
         if character.container.isRoom:
             offsets = [(0,0,0),(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]

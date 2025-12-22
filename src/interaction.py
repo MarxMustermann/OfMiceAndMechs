@@ -4704,6 +4704,10 @@ def renderGameDisplay(renderChar=None):
                             cap_warning = (src.pseudoUrwid.AttrSpec((255, 68, 51), (0, 0, 0)),"CAPS")
                             indicators.append(" ")
                             indicators.append(cap_warning)
+                        if char.adjustedMovementSpeed > 1 or char.attackSpeed > 1:
+                            warning = (src.pseudoUrwid.AttrSpec((255, 68, 51), (0, 0, 0)),"SLOW")
+                            indicators.append(" ")
+                            indicators.append(warning)
 
                         x = max(uiElement["offset"][0]+uiElement["width"]//2-len(indicators)//2,0)
                         y = uiElement["offset"][1]

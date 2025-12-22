@@ -98,6 +98,21 @@ Swords can range from 10 to 25 damage per hit.
                     continue
                 bestSword = item
 
+        for item in character.searchInventory("Armor"):
+            if not bestArmor:
+                bestArmor = item
+                continue
+            if bestArmor.armorValue > item.armorValue:
+                continue
+            bestArmor = item
+        for item in character.searchInventory("Sword"):
+            if not bestSword:
+                bestSword = item
+                continue
+            if bestSword.baseDamage > item.baseDamage:
+                continue
+            bestSword = item
+
         if bestArmor and character.armor and bestArmor.armorValue <= character.armor.armorValue:
             bestArmor = None
         if bestSword and character.weapon and bestSword.baseDamage <= character.weapon.baseDamage:
@@ -151,13 +166,23 @@ Swords can range from 10 to 25 damage per hit.
         '''
         generate the next step towards solving the quest
         '''
+
+        # handle weird edge cases
         if self.subQuests:
             return (None,None)
-
         if not character:
             return (None,None)
 
-        if character.macroState.get("submenue"):
+        # find what to equip
+        (bestSword,bestArmor) = self.findBestEquipment(character)
+
+        # handle menus
+        submenue = character.macroState.get("submenue")
+        if submenue:
+            if bestSword in character.inventory:
+                return (None,(submenue._get_command_to_select_item(item_to_select=bestSword),"equip from inventory"))
+            if bestArmor in character.inventory:
+                return (None,(submenue._get_command_to_select_item(item_to_select=bestArmor),"equip from inventory"))
             return (None,(["esc"],"close the menu"))
 
         # enter tile properly
@@ -172,7 +197,23 @@ Swords can range from 10 to 25 damage per hit.
             if pos == (7,0,0):
                 return (None,("s","enter room"))
 
-        (bestSword,bestArmor) = self.findBestEquipment(character)
+        if bestSword in character.inventory:
+            command = "i"
+            for item in character.inventory:
+                if item == bestSword:
+                    break
+                command += "s"
+            command += "j"
+            return (None,(command,"equip from inventory"))
+        if bestArmor in character.inventory:
+            command = "i"
+            for item in character.inventory:
+                if item == bestArmor:
+                    break
+                command += "s"
+            command += "j"
+            return (None,(command,"equip from inventory"))
+
         if bestSword and (not character.weapon or bestSword.baseDamage > character.weapon.baseDamage):
             if character.container != bestSword.container:
                 quest = src.quests.questMap["GoToTile"](targetPosition=bestSword.container.getPosition())

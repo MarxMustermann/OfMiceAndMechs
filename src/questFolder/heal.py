@@ -28,19 +28,22 @@ Press JH to auto heal.
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
 
+        # handle weird edge cases
         if self.subQuests:
             return (None,None)
-
         if not character:
             return (None,None)
 
+        # handle menus
         if character.macroState["submenue"]:
             return (None,(["esc"],"close the menu"))
 
+        # flee from enemies
         if character.getNearbyEnemies():
-            quest = src.quests.questMap["Flee"]()
+            quest = src.quests.questMap["Flee"](reason="have the opportunity to heal")
             return ([quest],None)
 
+        # properly enter rooms
         if not character.container.isRoom:
             if character.xPosition%15 == 0:
                 return (None,("d","enter room"))
@@ -86,7 +89,7 @@ Press JH to auto heal.
                 continue
 
             if not character.container == room:
-                quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition())
+                quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),reason="get to a CoalBurner")
                 return ([quest],None)
 
             for item in foundBurners:
@@ -106,9 +109,10 @@ Press JH to auto heal.
                         interactionCommand = ""
                     return (None,(interactionCommand+direction,"inhale smoke"))
 
-            quest = src.quests.questMap["GoToPosition"](targetPosition=random.choice(foundBurners).getPosition(),ignoreEndBlocked=True)
+            quest = src.quests.questMap["GoToPosition"](targetPosition=random.choice(foundBurners).getPosition(),ignoreEndBlocked=True,reason="be able to use the CoalBurner")
             return ([quest],None)
 
+        # heal by passing time
         if not self.noWaitHeal:
             if character.container.isRoom and character.container.tag == "temple":
                 regenerator = character.container.getItemByType("Regenerator",needsBolted=True)
@@ -129,16 +133,16 @@ Press JH to auto heal.
                             interactionCommand = ""
                         return (None,(interactionCommand+direction,"activate the regenerator"))
                     else:
-                        quest = src.quests.questMap["GoToPosition"](targetPosition=regenerator.getPosition(),ignoreEndBlocked=True)
+                        quest = src.quests.questMap["GoToPosition"](targetPosition=regenerator.getPosition(),ignoreEndBlocked=True,reason="be able to use the Regenerator")
                         return ([quest],None)
                 else:
                     return (None,("..........","wait to heal"))
-
             for room in rooms:
                 if room.tag == "temple":
-                    quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition())
+                    quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),reason="get to the Regenerator")
                     return ([quest],None)
 
+        # fail
         return self._solver_trigger_fail(dryRun,"no way to heal")
 
     def triggerCompletionCheck(self,character=None,dryRun=True):

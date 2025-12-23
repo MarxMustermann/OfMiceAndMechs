@@ -96,9 +96,11 @@ Set the floor plan: {self.floorPlanType}
 
             return self._solver_trigger_fail(dryRun,"no planer")
 
+        # soft fail on weird state
         if not character.container.isRoom:
             return (None,(".","stand around confused"))
 
+        # activate the CityPlaner
         cityPlaner = character.container.getItemsByType("CityPlaner")[0]
         command = None
         if character.getPosition(offset=(1,0,0)) == cityPlaner.getPosition():
@@ -111,13 +113,13 @@ Set the floor plan: {self.floorPlanType}
             command = "w"
         if character.getPosition(offset=(0,0,0)) == cityPlaner.getPosition():
             command = "."
-
         if command:
             interactionCommand = "J"
             if "advancedInteraction" in character.interactionState:
                 interactionCommand = ""
             return (None,(interactionCommand+command,"activate the CityPlaner"))
 
+        # go to the CityPlaner
         quest = src.quests.questMap["GoToPosition"](targetPosition=cityPlaner.getPosition(), description="go to CityPlaner",ignoreEndBlocked=True,reason="be able to reach the CityPlaner")
         return ([quest],None)
 

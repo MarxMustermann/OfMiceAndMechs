@@ -29,6 +29,7 @@ Set the floor plan: {self.floorPlanType}
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
 
+        # handle weird edge cases
         if self.subQuests:
             return (None,None)
 
@@ -77,10 +78,10 @@ Set the floor plan: {self.floorPlanType}
         # enter room
         if not character.container.isRoom:
             if character.getTerrain().getRoomByPosition(character.getBigPosition()):
-                quest = src.quests.questMap["EnterRoom"]()
+                quest = src.quests.questMap["EnterRoom"](reason="be able to act properly")
                 return ([quest],None)
             else:
-                quest = src.quests.questMap["GoHome"]()
+                quest = src.quests.questMap["GoHome"](reason="go inside")
                 return ([quest],None)
 
         # go to room with city planer
@@ -117,7 +118,7 @@ Set the floor plan: {self.floorPlanType}
                 interactionCommand = ""
             return (None,(interactionCommand+command,"activate the CityPlaner"))
 
-        quest = src.quests.questMap["GoToPosition"](targetPosition=cityPlaner.getPosition(), description="go to CityPlaner",ignoreEndBlocked=True)
+        quest = src.quests.questMap["GoToPosition"](targetPosition=cityPlaner.getPosition(), description="go to CityPlaner",ignoreEndBlocked=True,reason="be able to reach the CityPlaner")
         return ([quest],None)
 
     """

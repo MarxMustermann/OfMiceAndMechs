@@ -192,4 +192,5 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
                     result.append((item.getPosition(),"target"))
         return result
 
+# register the quest type
 src.quests.addType(SharpenPersonalSword)

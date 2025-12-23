@@ -22,7 +22,7 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
         reasonString = ""
         if self.reason:
             reasonString = ", to "+self.reason
-        text = f"Sharden your personal Sword{reasonString}."
+        text = f"Sharpen your personal Sword{reasonString}."
         return [text]
 
     def handleSwordSharpened(self,extraInfo=None):

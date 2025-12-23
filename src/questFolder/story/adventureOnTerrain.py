@@ -211,7 +211,7 @@ Go out and adventure on tile {self.targetTerrain}{reasonString}.
 
     def handleQuestFailure(self,extraInfo):
         if extraInfo["quest"].type == "LootRoom":
-            self.donePointsOfInterest.append(extraInfo["quest"].targetPosition)
+            self.donePointsOfInterest.append(extraInfo["quest"].targetPositionBig)
             return
 
     def handleChangedTile(self, extraInfo=None):

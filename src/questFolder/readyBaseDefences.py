@@ -30,11 +30,15 @@ class ReadyBaseDefences(src.quests.MetaQuestSequence):
         return True
 
     def getNextStep(self,character,ignoreCommands=False,dryRun=True):
+
+        # handle weird edge cases
         if self.subQuests:
             return (None,None)
         
+        # set up helper variables
         terrain = character.getTerrain()
 
+        # navigate menues
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
             submenue = character.macroState["submenue"]
 

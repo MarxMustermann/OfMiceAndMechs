@@ -430,37 +430,41 @@ class Canvas:
                     if not src.gamestate.gamestate.mainChar.specialRender and (character.health != character.adjustedMaxHealth or character.exhaustion != 0):
                         if character.dead or character.health <= 0:
                             basePos = (x*src.interaction.tileWidth*2,y*src.interaction.tileHeight)
-                            src.interaction.sdl_cache.append(("line",
+                            cross = []
+                            cross.append(                    ("line",
                                                                 basePos,
                                                                 (basePos[0]+src.interaction.tileHeight,basePos[1]+2*src.interaction.tileWidth),
                                                                 (255,0,0,255)
                                                              ))
-                            src.interaction.sdl_cache.append(("line",
+                            cross.append(                    ("line",
                                                                 (basePos[0]+1,basePos[1]),
                                                                 (basePos[0]+src.interaction.tileHeight,basePos[1]+2*src.interaction.tileWidth-1),
                                                                 (255,0,0,255)
                                                              ))
-                            src.interaction.sdl_cache.append(("line",
+                            cross.append(                    ("line",
                                                                 (basePos[0],basePos[1]+1),
                                                                 (basePos[0]+src.interaction.tileHeight-1,basePos[1]+2*src.interaction.tileWidth),
                                                                 (255,0,0,255)
                                                              ))
-                            src.interaction.sdl_cache.append(("line",
+                            cross.append(                    ("line",
                                                                 (basePos[0],basePos[1]+2*src.interaction.tileWidth),
                                                                 (basePos[0]+src.interaction.tileHeight,basePos[1]),
                                                                 (255,0,0,255)
                                                              ))
-                            src.interaction.sdl_cache.append(("line",
+                            cross.append(                    ("line",
                                                                 (basePos[0]+1,basePos[1]+2*src.interaction.tileWidth),
                                                                 (basePos[0]+src.interaction.tileHeight,basePos[1]-1),
                                                                 (255,0,0,255)
                                                              ))
-                            src.interaction.sdl_cache.append(("line",
+                            cross.append(                    ("line",
                                                                 (basePos[0],basePos[1]+2*src.interaction.tileWidth-1),
                                                                 (basePos[0]+src.interaction.tileHeight-1,basePos[1]),
                                                                 (255,0,0,255)
                                                              ))
+                            src.interaction.sdl_map[(x,y)] = cross
                         else:
+                            char_info = []
+
                             basePos = (x*src.interaction.tileWidth*2,y*src.interaction.tileHeight)
                             barHeight = src.interaction.tileHeight//8
                             if barHeight:
@@ -473,13 +477,13 @@ class Canvas:
                                 if character.health != character.adjustedMaxHealth:
                                     basePos = (basePos[0],basePos[1]+offsetTop)
 
-                                    src.interaction.sdl_cache.append(("rect",(
+                                    char_info.append(                ("rect",(
                                                                                 basePos[0],
                                                                                 basePos[1],
                                                                                 src.interaction.tileWidth*2,
                                                                                 barHeight+2*borderWidth
                                                                                      ) ,(255,255,255,255)))
-                                    src.interaction.sdl_cache.append(("rect",(
+                                    char_info.append(                ("rect",(
                                                                                 basePos[0]+borderWidth,
                                                                                 basePos[1]+borderWidth,
                                                                                 src.interaction.tileWidth*2-2*borderWidth,
@@ -487,7 +491,7 @@ class Canvas:
                                                                                     ),(0,0,0,255)))
 
                                     barwidth = int((src.interaction.tileWidth*2-borderWidth*2)*(character.health/character.adjustedMaxHealth))
-                                    src.interaction.sdl_cache.append(("rect",(
+                                    char_info.append(                ("rect",(
                                                                                 basePos[0]+borderWidth,
                                                                                 basePos[1]+borderWidth,
                                                                                 barwidth,
@@ -506,13 +510,13 @@ class Canvas:
                                         color = (255,0,0,255)
                                         borderColor = (255,0,0,255)
 
-                                    src.interaction.sdl_cache.append(("rect",(
+                                    char_info.append(                ("rect",(
                                                                                 basePos[0],
                                                                                 basePos[1],
                                                                                 src.interaction.tileWidth*2,
                                                                                 barHeight+2*borderWidth
                                                                                     ),borderColor))
-                                    src.interaction.sdl_cache.append(("rect",(
+                                    char_info.append(                ("rect",(
                                                                                 basePos[0]+borderWidth,
                                                                                 basePos[1]+borderWidth,
                                                                                 src.interaction.tileWidth*2-2*borderWidth,
@@ -520,12 +524,13 @@ class Canvas:
                                                                                     ),(0,0,0,255)))
 
                                     barwidth = int((src.interaction.tileWidth*2-borderWidth*2)*src.helpers.clamp(character.exhaustion/10,0,1))
-                                    src.interaction.sdl_cache.append(("rect",(
+                                    char_info.append(                ("rect",(
                                                                                 basePos[0]+borderWidth,
                                                                                 basePos[1]+borderWidth,
                                                                                 barwidth,
                                                                                 barHeight
                                                                                     ),color))
+                            src.interaction.sdl_map[(x,y)] = char_info
 
                     char = char.content
 

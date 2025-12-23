@@ -47,14 +47,14 @@ farm mold on the tile {self.targetPosition}"""
         return False
 
     def getNextStep(self,character,ignoreCommands=False, dryRun = True):
+
+        # handle weird edge cases
         if not character:
             return (None,None)
         if self.subQuests:
             return (None,None)
-
         if character.getTerrain().alarm and not self.tryHard:
             return self._solver_trigger_fail(dryRun,"alarm")
-
         if character.getTerrain().getRoomByPosition(self.targetPosition):
             return self._solver_trigger_fail(dryRun,"blocked by room")
 
@@ -62,10 +62,12 @@ farm mold on the tile {self.targetPosition}"""
         if character.health < 50:
             return self._solver_trigger_fail(dryRun,"low health")
 
+        # go to plot to work on
         if character.getBigPosition() != (self.targetPosition[0], self.targetPosition[1], 0):
             quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition,reason="go to target tile")
             return ([quest],None)
 
+        # process each plant
         items = self.getLeftoverItems(character)
         for item in items:
             if item.bolted:

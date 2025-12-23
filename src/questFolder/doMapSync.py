@@ -63,21 +63,10 @@ Use the MapTable to do this.
         # handle menus
         submenue = character.macroState["submenue"]
         if submenue:
-            if submenue.tag == "applyOptionSelection":
-                menuEntry = "studyMap"
-                counter = 1
-                for option in submenue.options.values():
-                    if option == menuEntry:
-                        index = counter
-                        break
-                    counter += 1
-                command = ""
-                if submenue.selectionIndex > counter:
-                    command += "w"*(submenue.selectionIndex-counter)
-                if submenue.selectionIndex < counter:
-                    command += "s"*(counter-submenue.selectionIndex)
-                command += "j"
-                return (None,(command,"study map"))
+            if submenue.tag == "applyOptionSelection" and submenue.extraInfo.get("item").type == "MapTable":
+                command = submenue.get_command_to_select_option("studyMap")
+                if command:
+                    return (None,(command,"study map"))
             return (None,(["esc"],"close the menu"))
 
         # go home

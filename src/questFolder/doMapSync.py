@@ -111,11 +111,14 @@ Use the MapTable to do this.
 
         # activate map table
         for item in room.itemsOnFloor:
+
+            # filter items
             if not item.bolted:
                 continue
             if item.type != "MapTable":
                 continue
 
+            # activate nearby map table
             interactionCommand = "J"
             if "advancedInteraction" in character.interactionState:
                 interactionCommand = ""
@@ -128,6 +131,7 @@ Use the MapTable to do this.
             if item.getPosition() == (character.xPosition,character.yPosition+1,0):
                 return (None,(interactionCommand+"s","map table"))
             
+            # got to the item
             quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to map table",reason="be able to use the MapTable")
             return  ([quest],None)
         

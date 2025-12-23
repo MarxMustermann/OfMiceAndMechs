@@ -224,7 +224,7 @@ suicidal"""
                     for item in character.container.itemsOnFloor:
                         if not item.type in ("GooFlask","Vial","Bolt","Grindstone","Implant","Corpse","MemoryFragment","ChitinPlates",):
                             continue
-                        quest = src.quests.questMap["LootRoom"](targetPosition=character.container.getPosition(),endWhenFull=True,reason="have more nice things")
+                        quest = src.quests.questMap["LootRoom"](targetPositionBig=character.container.getPosition(),endWhenFull=True,reason="have more nice things")
                         return ([quest],None)
 
             # get to the terrain the dungeon is on

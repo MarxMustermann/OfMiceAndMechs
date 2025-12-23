@@ -27,12 +27,16 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
     def handleSwordSharpened(self,extraInfo=None):
         '''
         end quest when sword was sharpened
+        Parameters:
+            extraInfo:  context information
         '''
         self.postHandler()
 
     def assignToCharacter(self, character):
         '''
         assign quest to a character
+        Parameters:
+            character:  the character to assign quest to
         '''
         if self.character:
             return
@@ -43,6 +47,11 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
     def triggerCompletionCheck(self,character=None,dryRun=True):
         '''
         check if the quest completed and end it
+        Parameters:
+            character:  the character doing the quest
+            dryRun:     flag to be stateless or not
+        Returns:
+            whether the quest ended or not
         '''
 
         if not character:
@@ -59,6 +68,12 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
         '''
         generate the next step to solve the quest
+        Parameters:
+            character:       the character doing the quest
+            ignoreCommands:  whether to generate commands or not
+            dryRun:          flag to be stateless or not
+        Returns:
+            the activity to run as next step
         '''
 
         # handle weird edge cases
@@ -153,6 +168,11 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
     def getQuestMarkersSmall(self,character,renderForTile=False):
         '''
         return the quest markers for the normal map
+        Parameters:
+            character:      the character doing the quest
+            renderForTile:  whether or not to show the markers for a room or a tile
+        Returns:
+            the quest markers to show
         '''
         if isinstance(character.container,src.rooms.Room):
             if renderForTile:

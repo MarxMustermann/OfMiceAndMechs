@@ -254,6 +254,12 @@ class InventoryMenu(src.subMenu.SubMenu):
     def get_command_to_select_item(self,item_to_select=None,item_type=None,selectionCommand="j"):
         """
         get the keystrokes needed to press to activate an item
+        Parameters:
+            item_to_select:    filter for a specific item (None for no filter)
+            item_type:         filer for item type (None for no filter)
+            selectionCommand:  to command to run on the item
+        Returns:
+            the generated command (None for no command)
         """
         command = ""
         target_index = None

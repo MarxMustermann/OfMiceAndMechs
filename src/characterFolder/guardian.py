@@ -92,7 +92,7 @@ class Guardian(src.monster.Monster):
     def lootTable(self):
         num_ManaCrystal = 0
         num_MemoryFragment = 0
-        for _i in range(0,self.modifier): 
+        for _i in range(0,int(self.modifier)):
             if random.random() < 0.5:
                 num_ManaCrystal += 1
             else:

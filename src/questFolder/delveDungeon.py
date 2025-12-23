@@ -131,11 +131,11 @@ suicidal"""
             if character.health < character.maxHealth*0.75:
                 # kill direct threats
                 if character.getNearbyEnemies():
-                    quest = src.quests.questMap["Fight"](suicidal=True)
+                    quest = src.quests.questMap["Fight"](suicidal=True,reason="protect yourself")
                     return ([quest],None)
 
                 if character.canHeal():
-                    quest = src.quests.questMap["Heal"]()
+                    quest = src.quests.questMap["Heal"](reason="be able to fight better")
                     return ([quest],None)
 
                 # wait to heal
@@ -149,7 +149,7 @@ suicidal"""
 
             # kill direct threats
             if character.getNearbyEnemies():
-                quest = src.quests.questMap["Fight"](suicidal=True)
+                quest = src.quests.questMap["Fight"](suicidal=True,reason="get rid of threats")
                 return ([quest],None)
 
             currentTerrain = character.getTerrain()
@@ -157,13 +157,13 @@ suicidal"""
                 for room in character.getTerrain().rooms:
                     for item in room.getItemsByType("SwordSharpener"):
                         if item.readyToBeUsedByCharacter(character):
-                            quest = src.quests.questMap["SharpenPersonalSword"]()
+                            quest = src.quests.questMap["SharpenPersonalSword"](reason="increase damage")
                             return ([quest],None)
 
                 for room in character.getTerrain().rooms:
                     for item in room.getItemsByType("ArmorReinforcer"):
                         if item.readyToBeUsedByCharacter(character):
-                            quest = src.quests.questMap["ReinforcePersonalArmor"]()
+                            quest = src.quests.questMap["ReinforcePersonalArmor"](reason="be better protected")
                             return ([quest],None)
 
                 if character.health < character.adjustedMaxHealth:
@@ -174,16 +174,16 @@ suicidal"""
                                 continue
                             readyCoalBurner = True
                     if readyCoalBurner:
-                        quest = src.quests.questMap["Heal"](noWaitHeal=True,noVialHeal=True)
+                        quest = src.quests.questMap["Heal"](noWaitHeal=True,noVialHeal=True,reason="adventure in good health")
                         return ([quest],None)
 
                 for item in character.inventory:
                     if item.walkable == False:
-                        quest = src.quests.questMap["ClearInventory"](returnToTile=False)
+                        quest = src.quests.questMap["ClearInventory"](returnToTile=False,reason="not be slowed down by big items")
                         return ([quest],None)
 
                 if not character.weapon or not character.armor:
-                    quest = src.quests.questMap["Equip"](tryHard=True)
+                    quest = src.quests.questMap["Equip"](tryHard=True,reason="delve the dungeon well equipped")
                     return ([quest],None)
 
                 for room in terrain.rooms:
@@ -198,7 +198,7 @@ suicidal"""
                     if numItems > 4:
                         # clean the trap room yourself
                         quests = []
-                        quest = src.quests.questMap["ClearTile"](targetPositionBig=room.getPosition())
+                        quest = src.quests.questMap["ClearTile"](targetPositionBig=room.getPosition(),reason="ensure the traps work")
                         quests.append(quest)
 
                         # ensure at least one Clone has Room building as highest prio
@@ -214,7 +214,7 @@ suicidal"""
                                 continue
                             foundClone = True
                         if not foundClone:
-                            quest = src.quests.questMap["EnsureMaindutyClone"](dutyType="cleaning")
+                            quest = src.quests.questMap["EnsureMaindutyClone"](dutyType="cleaning",reason="have somebody clean up the traps")
                             quests.append(quest)
 
                         return (list(reversed(quests)),None)
@@ -224,7 +224,7 @@ suicidal"""
                     for item in character.container.itemsOnFloor:
                         if not item.type in ("GooFlask","Vial","Bolt","Grindstone","Implant","Corpse","MemoryFragment","ChitinPlates",):
                             continue
-                        quest = src.quests.questMap["LootRoom"](targetPosition=character.container.getPosition(),endWhenFull=True)
+                        quest = src.quests.questMap["LootRoom"](targetPosition=character.container.getPosition(),endWhenFull=True,reason="have more nice things")
                         return ([quest],None)
 
             # get to the terrain the dungeon is on
@@ -239,7 +239,7 @@ suicidal"""
                             if item.charges < 5:
                                 continue
 
-                            quest = src.quests.questMap["ActivateGlassStatue"](targetPositionBig=room.getPosition(),targetPosition=item.getPosition())
+                            quest = src.quests.questMap["ActivateGlassStatue"](targetPositionBig=room.getPosition(),targetPosition=item.getPosition(),reason="get to the dungeon")
                             return ([quest],None)
 
                 try:
@@ -251,7 +251,7 @@ suicidal"""
                     return self._solver_trigger_fail(dryRun,"no GlassStatue found")
                 else:
                     # actually walk to the target terrain
-                    quest = src.quests.questMap["GoToTerrain"](targetTerrain=(self.targetTerrain[0],self.targetTerrain[1],0))
+                    quest = src.quests.questMap["GoToTerrain"](targetTerrain=(self.targetTerrain[0],self.targetTerrain[1],0),reason="reach the dungeon")
                     return ([quest],None)
 
             foundGlassHeart = None
@@ -332,7 +332,7 @@ suicidal"""
             return self._solver_trigger_fail(dryRun,"no GlassStatue found")
 
         if not terrain.alarm:
-            quest = src.quests.questMap["ReadyBaseDefences"]()
+            quest = src.quests.questMap["ReadyBaseDefences"](reason="be prepared to the wave")
             return ([quest],None)
 
         if foundGlassStatue.container != character.container:

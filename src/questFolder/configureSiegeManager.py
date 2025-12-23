@@ -153,20 +153,9 @@ class ConfigureSiegeManager(src.quests.MetaQuestSequence):
                         toSelect = desiredAction
                         break
 
-                menuEntry = toSelect
-                counter = 1
-                for option in submenue.options.values():
-                    if option == menuEntry:
-                        index = counter
-                        break
-                    counter += 1
-                command = ""
-                if submenue.selectionIndex > counter:
-                    command += "w"*(submenue.selectionIndex-counter)
-                if submenue.selectionIndex < counter:
-                    command += "s"*(counter-submenue.selectionIndex)
-                command += "j"
-                return (None,(command,"add "+toSelect+" action"))
+                command = submenue.get_command_to_select_option(toSelect)
+                if command:
+                    return (None,(command,"add "+toSelect+" action"))
 
             # close generic menues
             return (None,(["esc"],"to close menu"))

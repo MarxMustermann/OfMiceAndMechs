@@ -38,7 +38,11 @@ class OneKeystrokeMenu(src.subMenu.SubMenu):
         # show info
         if not noRender:
             src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), ""))
-            self.persistentText = self.text+"\n"
+            if isinstance(self.text,list):
+                self.text.append("\n")
+            else:
+                self.text += "\n"
+            self.persistentText = self.text
             src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.persistentText))
 
         # exit the submenu

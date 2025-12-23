@@ -1321,6 +1321,10 @@ class CityPlaner(src.items.Item):
 
         for room in terrain.rooms:
             functionMap[(room.xPosition,room.yPosition)] = {}
+
+            if room == self.container:
+                continue
+
             functionMap[(room.xPosition,room.yPosition)]["c"] = {
                 "function": {
                     "container":self,

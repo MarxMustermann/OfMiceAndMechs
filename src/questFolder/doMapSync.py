@@ -82,7 +82,7 @@ Use the MapTable to do this.
 
         # go home
         if not character.getTerrain() == character.getHomeTerrain():
-            quest = src.quests.questMap["GoHome"]()
+            quest = src.quests.questMap["GoHome"](reason="get inside")
             return  ([quest],None)
 
         # go inside
@@ -128,14 +128,14 @@ Use the MapTable to do this.
             if item.getPosition() == (character.xPosition,character.yPosition+1,0):
                 return (None,(interactionCommand+"sj","map table"))
             
-            quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to map table")
+            quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to map table",reason="be able to use the MapTable")
             return  ([quest],None)
         
         # go to room with map table
         terrain = character.getTerrain()
         for room in terrain.rooms:
             if room.getItemByType("MapTable"):
-                quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),description="go to command centre")
+                quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),description="go to command centre", reason="reach a MapTable")
                 return ([quest],None)
 
         return self._solver_trigger_fail(dryRun,"no MapTable")

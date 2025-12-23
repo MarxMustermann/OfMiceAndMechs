@@ -4334,6 +4334,21 @@ def draw_sdl():
     sdl_cache = []
     sdl_map = {}
 
+def stringifyUrwid(inData):
+    outData = ""
+    for item in inData:
+        if isinstance(item, tuple):
+            outData += stringifyUrwid(item[1])
+        if isinstance(item, list):
+            outData += stringifyUrwid(item)
+        if isinstance(item, str):
+            outData += item
+        if isinstance(item, ActionMeta):
+            outData += stringifyUrwid(item.content)
+        if isinstance(item, CharacterMeta):
+            outData += stringifyUrwid(item.content)
+    return outData
+
 last_menu_dimension = None
 def renderGameDisplay(renderChar=None):
     global last_menu_dimension
@@ -4363,22 +4378,6 @@ def renderGameDisplay(renderChar=None):
         lastTerrain = thisTerrain
     else:
         thisTerrain = lastTerrain
-
-    #bug: this fucks up performance
-    def stringifyUrwid(inData):
-        outData = ""
-        for item in inData:
-            if isinstance(item, tuple):
-                outData += stringifyUrwid(item[1])
-            if isinstance(item, list):
-                outData += stringifyUrwid(item)
-            if isinstance(item, str):
-                outData += item
-            if isinstance(item, ActionMeta):
-                outData += stringifyUrwid(item.content)
-            if isinstance(item, CharacterMeta):
-                outData += stringifyUrwid(item.content)
-        return outData
 
     # render the game
     specialRender = char.specialRender

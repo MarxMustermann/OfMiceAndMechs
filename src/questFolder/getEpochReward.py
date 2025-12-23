@@ -104,7 +104,7 @@ This will allow you to focus on other tasks.
             return (None,(["esc"],"exit submenu"))
 
         # activate production item when marked
-        action = self.generate_confirm_activation_command(allowedItems=["Shrine"])
+        action = self.generate_confirm_interaction_command(allowedItems=["Shrine"])
         if action:
             return action
 

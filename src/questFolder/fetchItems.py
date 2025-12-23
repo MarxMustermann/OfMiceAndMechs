@@ -189,7 +189,7 @@ Press d to move the cursor and show the subquests description.
 
         # pick up already selected items
         if self.toCollect:
-            action = self.generate_confirm_activation_command(allowedItems=[self.toCollect],activationCommand="k",description="pick up")
+            action = self.generate_confirm_interaction_command(allowedItems=[self.toCollect],activationCommand="k",description="pick up")
             if action:
                 return action
 

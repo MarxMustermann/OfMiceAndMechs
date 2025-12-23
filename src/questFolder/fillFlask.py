@@ -77,7 +77,7 @@ Flask can be refilled at a GooDispenser."""
             return (None,(command,"fill flasks"))
 
         # activate production item when marked
-        action = self.generate_confirm_activation_command(allowedItems=["GooDispenser"])
+        action = self.generate_confirm_interaction_command(allowedItems=["GooDispenser"])
         if action:
             return action
 

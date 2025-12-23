@@ -48,7 +48,7 @@ class ActivateRegenerator(src.quests.MetaQuestSequence):
             return (None,("d","enter the tile"))
 
         # activate correct item when marked
-        action = self.generate_confirm_activation_command(allowedItems=("Regenerator","CoalBurner"))
+        action = self.generate_confirm_interaction_command(allowedItems=("Regenerator","CoalBurner"))
         if action:
             return action
 

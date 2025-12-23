@@ -68,7 +68,7 @@ class ReinforcePersonalArmor(src.quests.MetaQuestSequence):
             return (None,(["esc"],"close the menu"))
         
         # activate item when marked
-        action = self.generate_confirm_activation_command(allowedItems=["ArmorReinforcer"])
+        action = self.generate_confirm_interaction_command(allowedItems=["ArmorReinforcer"])
         if action:
             return action
 

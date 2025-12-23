@@ -150,7 +150,7 @@ class Quest:
     def generateSubquests(self,character=None,dryRun=True):
         pass
 
-    def generate_confirm_activation_command(self,allowedItems=None,activationCommand="j",description="activate"):
+    def generate_confirm_interaction_command(self,allowedItems=None,activationCommand="j",description="activate"):
         if not self.character:
             return
         

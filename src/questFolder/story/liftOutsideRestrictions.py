@@ -65,7 +65,7 @@ class LiftOutsideRestrictions(src.quests.MetaQuestSequence):
             return (None,(["esc"],"to close menu"))
 
         # activate production item when marked
-        action = self.generate_confirm_activation_command(allowedItems=["SiegeManager"])
+        action = self.generate_confirm_interaction_command(allowedItems=["SiegeManager"])
         if action:
             return action
         

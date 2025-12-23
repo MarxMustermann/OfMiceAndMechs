@@ -93,7 +93,7 @@ Rule the world and put an end to those attacks!
                 return (None,("w","enter room"))
 
         # activate correct item when marked
-        action = self.generate_confirm_activation_command(allowedItems=("Throne","GlassThrone"))
+        action = self.generate_confirm_interaction_command(allowedItems=("Throne","GlassThrone"))
         if action:
             return action
 

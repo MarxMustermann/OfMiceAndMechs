@@ -96,7 +96,7 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
             return ([quest],None)
 
         # activate production item when marked
-        action = self.generate_confirm_activation_command(allowedItems=["SwordSharpener"])
+        action = self.generate_confirm_interaction_command(allowedItems=["SwordSharpener"])
         if action:
             return action
 

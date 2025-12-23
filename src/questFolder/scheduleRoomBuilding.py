@@ -80,7 +80,7 @@ Use a CityPlaner to do this.
             return (None,(["esc"],"exit submenu"))
 
         # activate production item when marked
-        action = self.generate_confirm_activation_command(allowedItems=["CityPlaner"])
+        action = self.generate_confirm_interaction_command(allowedItems=["CityPlaner"])
         if action:
             return action
 

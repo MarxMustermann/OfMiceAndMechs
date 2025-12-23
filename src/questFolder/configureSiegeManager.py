@@ -76,21 +76,10 @@ class ConfigureSiegeManager(src.quests.MetaQuestSequence):
         if submenue:
 
             # open the scheduling menu
-            if submenue.tag == "applyOptionSelection":
-                menuEntry = "setSchedule"
-                counter = 1
-                for option in submenue.options.values():
-                    if option == menuEntry:
-                        index = counter
-                        break
-                    counter += 1
-                command = ""
-                if submenue.selectionIndex > counter:
-                    command += "w"*(submenue.selectionIndex-counter)
-                if submenue.selectionIndex < counter:
-                    command += "s"*(counter-submenue.selectionIndex)
-                command += "j"
-                return (None,(command,"open the scheduling menu"))
+            if submenue.tag == "applyOptionSelection" and submenue.extraInfo.get("item").type == "SiegeManager":
+                command = submenue.get_command_to_select_option("setSchedule")
+                if command:
+                    return (None,(command,"open the scheduling menu"))
 
             # navigate the scheduling menu
             if submenue.tag == "configure siege manager main":

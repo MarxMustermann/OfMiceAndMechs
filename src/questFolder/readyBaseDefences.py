@@ -4,10 +4,11 @@ import src
 class ReadyBaseDefences(src.quests.MetaQuestSequence):
     type = "ReadyBaseDefences"
 
-    def __init__(self, description="ready base defences", creator=None):
+    def __init__(self, description="ready base defences", creator=None, reason=None):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
+        self.reason = reason
 
     def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
@@ -113,8 +114,11 @@ class ReadyBaseDefences(src.quests.MetaQuestSequence):
         return (None,(interactionCommand+direction+"ssj","sound the alarms"))
 
     def generateTextDescription(self):
-        text = ["""
-Prepare the base for an attack.
+        reasonString = ""
+        if self.reason:
+            reasonString = ", to "+self.reason
+        text = [f"""
+Prepare the base for an attack{reasonString}.
 """]
         return text
 

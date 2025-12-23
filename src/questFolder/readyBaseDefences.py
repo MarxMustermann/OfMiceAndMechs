@@ -39,36 +39,36 @@ class ReadyBaseDefences(src.quests.MetaQuestSequence):
         terrain = character.getTerrain()
 
         # navigate menues
-        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
-            submenue = character.macroState["submenue"]
+        submenue = character.macroState.get("submenue")
+        if submenue and not ignoreCommands:
+            if submenue and isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
 
-            if not submenue.extraInfo.get("item"):
-                return (None,(["esc"],"exit submenu"))
+                if not submenue.extraInfo.get("item"):
+                    return (None,(["esc"],"exit submenu"))
 
-            if terrain.alarm == False:
-                menuEntry = "restrict outside"
-            else:
-                menuEntry = "soundAlarms"
+                if terrain.alarm == False:
+                    menuEntry = "restrict outside"
+                else:
+                    menuEntry = "soundAlarms"
 
-            counter = 1
-            for option in submenue.options.values():
-                if option == menuEntry:
-                    index = counter
-                    break
-                counter += 1
-            command = ""
-            if submenue.selectionIndex > counter:
-                command += "w"*(submenue.selectionIndex-counter)
-            if submenue.selectionIndex < counter:
-                command += "s"*(counter-submenue.selectionIndex)
-            command += "j"
+                counter = 1
+                for option in submenue.options.values():
+                    if option == menuEntry:
+                        index = counter
+                        break
+                    counter += 1
+                command = ""
+                if submenue.selectionIndex > counter:
+                    command += "w"*(submenue.selectionIndex-counter)
+                if submenue.selectionIndex < counter:
+                    command += "s"*(counter-submenue.selectionIndex)
+                command += "j"
 
-            if terrain.alarm == False:
-                return (None,(command,"enable the outside restrictions"))
-            else:
-                return (None,(command,"sound the alarms"))
+                if terrain.alarm == False:
+                    return (None,(command,"enable the outside restrictions"))
+                else:
+                    return (None,(command,"sound the alarms"))
 
-        if character.macroState["submenue"] and not ignoreCommands:
             return (None,(["esc"],"to close menu"))
 
         # activate production item when marked

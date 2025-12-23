@@ -35,6 +35,7 @@ class Popup(ABC):
             specialKeys={"q": {"container": container, "method": "openQuestMenu", "params": {"character": character}}},
         )
         submenue.tag = "popup"
+        submenue.do_not_scale = True
         character.macroState["submenue"] = submenue
         character.runCommandString("~", nativeKey=True)
 

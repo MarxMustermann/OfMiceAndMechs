@@ -6,7 +6,6 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
     quest to sharpen your own sword
     '''
     type = "SharpenPersonalSword"
-
     def __init__(self, description="sharpen personal sword", creator=None, command=None, lifetime=None, reason=None):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
@@ -62,13 +61,13 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
         generate the next step to solve the quest
         '''
 
-        
+        # handle weird edge cases
         if self.subQuests:
             return (None,None)
-
         if not character:
             return (None,None)
 
+        # enter room properly
         if not character.container.isRoom:
             if character.xPosition%15 == 0:
                 return (None,("d","enter room"))
@@ -79,6 +78,7 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
             if character.yPosition%15 == 14:
                 return (None,("w","enter room"))
 
+        # handle submenues
         if character.macroState.get("submenue"):
             submenue = character.macroState.get("submenue")
             if submenue.tag == "applyOptionSelection" and submenue.extraInfo.get("item").type == "SwordSharpener":
@@ -90,6 +90,7 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
             
             return (None,(["esc"],"close the menu"))
 
+        # defend yourself
         if character.getNearbyEnemies():
             quest = src.quests.questMap["Fight"](description="defend yourself")
             return ([quest],None)
@@ -99,19 +100,18 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
         if action:
             return action
 
-        terrain = character.getTerrain()
-
+        # use the actual SwordSharpener
         if character.container.isRoom:
+
+            # use the SwordSharpener nearby
             offsets = [(0,0,0),(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]
             for offset in offsets:
                 pos = character.getPosition(offset=offset)
                 items = character.container.getItemByPosition(pos)
                 if not items:
                     continue
-
                 if not items[0].type == "SwordSharpener":
                     continue
-                
                 if offset == (0,0,0):
                     return (None,("jjj","sharpen personal sword"))
                 interactionCommand = "J"
@@ -126,17 +126,18 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
                 if offset == (0,-1,0):
                     return (None,(interactionCommand+"wjj","sharpen personal sword"))
 
-
+            # go to the SwordSharpener
             for item in character.container.itemsOnFloor:
                 if not item.type == "SwordSharpener":
                     continue
                 if not item.bolted:
                     continue
-
                 if character.getDistance(item.getPosition()) > 1:
                     quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),description="go to SwordSharpener",ignoreEndBlocked=True)
                     return ([quest],None)
 
+        # go to a room with a SwordSharpener
+        terrain = character.getTerrain()
         for room in terrain.rooms:
             for item in room.itemsOnFloor:
                 if not item.type == "SwordSharpener":
@@ -147,6 +148,7 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),description="go to a room having a SwordSharpener")
                 return ([quest],None)
 
+        # kind of fail
         return (None,(".","stand around confused"))
 
     def getQuestMarkersSmall(self,character,renderForTile=False):

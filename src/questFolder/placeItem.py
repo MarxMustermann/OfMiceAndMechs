@@ -250,11 +250,6 @@ Press d to move the cursor and show the subquests description.
                     quest = src.quests.questMap["CleanSpace"](targetPosition=self.targetPosition,targetPositionBig=self.targetPositionBig,pickUpBolted=True,abortOnfullInventory=False)
                     return ([quest],None)
 
-            try:
-                self.clearSpace
-            except:
-                self.clearSpace = False
-
             if self.clearSpace:
                 if items and items[-1].type != self.itemType:
                     quest = src.quests.questMap["CleanSpace"](targetPosition=self.targetPosition,targetPositionBig=self.targetPositionBig,pickUpBolted=True,abortOnfullInventory=False)

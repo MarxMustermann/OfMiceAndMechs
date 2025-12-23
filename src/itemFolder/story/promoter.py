@@ -17,14 +17,15 @@ class Promoter(src.items.Item):
         handle activation by trying to promote the user
         '''
 
-        submenu = src.menuFolder.textMenu.TextMenu(f"""
+        submenue = src.menuFolder.textMenu.TextMenu(f"""
 You put your head into the machine.
 
 Its tendrils reach out and touch your implant.
 
 """)
-        character.macroState["submenue"] = submenu
-        submenu.followUp = {
+        character.macroState["submenue"] = submenue
+        submenue.do_not_scale = True
+        submenue.followUp = {
             "container": self,
             "method": "promotion_loop",
             "params": {"character":character},
@@ -70,12 +71,13 @@ Its tendrils reach out and touch your implant.
                 if not highestAllowed:
                     character.addMessage(f"promotions locked")
 
-                    submenu = src.menuFolder.textMenu.TextMenu("""
+                    submenue = src.menuFolder.textMenu.TextMenu("""
 Promotions to rank 5 are blocked.
 
 There need to be at least 1 clone besides you on the base to allow any promptions.
 """)
-                    character.macroState["submenue"] = submenu
+                    submenue.do_not_scale = True
+                    character.macroState["submenue"] = submenue
                     character.runCommandString("~",nativeKey=True)
 
                     character.changed("promotion blocked",{"reason":"needs 2 clones on base"})
@@ -90,13 +92,14 @@ There need to be at least 1 clone besides you on the base to allow any promption
                 if not highestAllowed:
                     character.addMessage(f"promotions locked")
 
-                    submenu = src.menuFolder.textMenu.TextMenu("""
+                    submenue = src.menuFolder.textMenu.TextMenu("""
 Promotions to rank 4 are blocked.
 
 The base needs to consist out of at least 6 rooms.
 Build more rooms.
 """)
-                    character.macroState["submenue"] = submenu
+                    submenue.do_not_scale = True
+                    character.macroState["submenue"] = submenue
                     character.runCommandString("~",nativeKey=True)
 
                     character.changed("promotion blocked",{"reason":"needs base with at least 6 rooms"})
@@ -123,13 +126,14 @@ Build more rooms.
                 if not highestAllowed:
                     character.addMessage(f"promotions locked")
 
-                    submenu = src.menuFolder.textMenu.TextMenu("""
+                    submenue = src.menuFolder.textMenu.TextMenu("""
 Promotions to rank 3 are blocked.
 Enemies are nearby.
 
 Kill all enemies on this terrain, to unlock the promotions to rank 3.
 """)
-                    character.macroState["submenue"] = submenu
+                    submenue.do_not_scale = True
+                    character.macroState["submenue"] = submenue
                     character.runCommandString("~",nativeKey=True)
 
                     character.changed("promotion blocked",{"reason":"terrain needs cleared from enemies"})
@@ -163,12 +167,13 @@ Kill all enemies on this terrain, to unlock the promotions to rank 3.
                 if not highestAllowed:
                     character.addMessage(f"promotions locked")
 
-                    submenu = src.menuFolder.textMenu.TextMenu("""
+                    submenue = src.menuFolder.textMenu.TextMenu("""
 Promotions to rank 2 are blocked.
 
 There need to be at least 3 clones besides you on the base to allow any promptions.
 """)
-                    character.macroState["submenue"] = submenu
+                    submenue.do_not_scale = True
+                    character.macroState["submenue"] = submenue
                     character.runCommandString("~",nativeKey=True)
 
                     character.changed("promotion blocked",{"reason":"needs 4 clones on base"})

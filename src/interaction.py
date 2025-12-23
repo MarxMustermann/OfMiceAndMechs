@@ -4787,6 +4787,14 @@ def renderGameDisplay(renderChar=None):
             offsetLeft = max(src.interaction.tcodConsole.width//2-width//2,1)
             offsetTop = max(min(src.interaction.tcodConsole.height//2-height//2,17),1)
 
+            positions = []
+            for x in range(-1,width//2+3):
+                for y in range(-1,height+4):
+                    positions.append((offsetLeft//2+x,offsetTop+y))
+            for position in positions:
+                if position in sdl_map:
+                    del sdl_map[position]
+
             try:
                 counter = offsetTop
 

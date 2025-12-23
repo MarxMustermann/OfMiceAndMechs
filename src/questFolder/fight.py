@@ -161,6 +161,25 @@ So if an enemy is to directly east of you:
         if character.exhaustion > 1:
             return (None,(".","catch breath"))
 
+        if character.hasLineShot and character.searchInventory("Bolt") and not character.isOnHomeTerrain():
+            for enemy in character.getNearbyEnemies():
+                direction = None
+                if enemy.xPosition == character.xPosition:
+                    if enemy.yPosition > character.yPosition:
+                        direction = "s"
+                    else:
+                        direction = "w"
+                if enemy.yPosition == character.yPosition:
+                    if enemy.xPosition > character.xPosition:
+                        direction = "d"
+                    else:
+                        direction = "a"
+                if direction:
+                    fire_command = "f"
+                    if "fireDirection" in character.interactionState:
+                        fire_command = ""
+                    return (None,(fire_command+direction,"shoot enemy"))
+
         # move toward enemies (smarter)
         if isinstance(character,src.characters.characterMap["Clone"]):
             shortestPath = None

@@ -44,23 +44,15 @@ Set the floor plan: {self.floorPlanType}
 
             # select build site on map
             if isinstance(submenue,src.menuFolder.mapMenu.MapMenu) and not ignoreCommands:
-                command = ""
-                if submenue.cursor[0] > self.roomPosition[0]:
-                    command += "a"*(submenue.cursor[0]-self.roomPosition[0])
-                if submenue.cursor[0] < self.roomPosition[0]:
-                    command += "d"*(self.roomPosition[0]-submenue.cursor[0])
-                if submenue.cursor[1] > self.roomPosition[1]:
-                    command += "w"*(submenue.cursor[1]-self.roomPosition[1])
-                if submenue.cursor[1] < self.roomPosition[1]:
-                    command += "s"*(self.roomPosition[1]-submenue.cursor[1])
-                cityPlaner = character.container.getItemsByType("CityPlaner")[0]
-                if self.roomPosition in cityPlaner.plannedRooms:
-                    command += "x"
-                    return (None,(command,"remove old construction site marker"))
                 if self.roomPosition not in cityPlaner.getAvailableRoomPositions():
                     return self._solver_trigger_fail(dryRun,"room already registered")
-                command += "f"
-                return (None,(command,"set a floor plan"))
+                selection_command = "f"
+                cityPlaner = character.container.getItemsByType("CityPlaner")[0]
+                if self.roomPosition in cityPlaner.plannedRooms:
+                    selection_command = "x"
+                command = submenue.get_command_to_select_position(coordinate=self.roomPosition,selectionCommand=selection_command)
+                if command:
+                    return (None,(command,"set a floor plan"))
 
             # select floor plan
             if submenue.tag == "floorplanSelection":

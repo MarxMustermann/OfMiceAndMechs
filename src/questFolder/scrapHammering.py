@@ -51,60 +51,59 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
             if pos == (7,0,0):
                 return (None,("s","enter room"))
 
-        # use menu to set how much scrap to produce
-        if character.macroState["submenue"] and character.macroState["submenue"].tag == "anvilAmountInput":
+        # navigate menues
+        submenue = character.macroState.get("submenue")
+        if submenue and not ignoreCommands:
 
-            # confirm the selection
-            submenue = character.macroState["submenue"]
-            targetAmount = str(self.amount - self.amountDone)
-            if submenue.text == targetAmount:
-                return (None,(["enter"],"set how many of the item to produce"))
+            # use menu to set how much scrap to produce
+            if submenue.tag == "anvilAmountInput":
 
-            # type in the number to produce
-            correctIndex = 0
-            while correctIndex < len(targetAmount) and correctIndex < len(submenue.text):
-                if targetAmount[correctIndex] != submenue.text[correctIndex]:
-                    break
-                correctIndex += 1
-            if correctIndex < len(submenue.text):
-                return (None,(["backspace"],"delete input"))
-            return (None,(targetAmount[correctIndex:],"enter name of the tem to produce"))
+                # confirm the selection
+                targetAmount = str(self.amount - self.amountDone)
+                if submenue.text == targetAmount:
+                    return (None,(["enter"],"set how many of the item to produce"))
 
-        # select to produce scrap on the anvil
-        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
+                # type in the number to produce
+                correctIndex = 0
+                while correctIndex < len(targetAmount) and correctIndex < len(submenue.text):
+                    if targetAmount[correctIndex] != submenue.text[correctIndex]:
+                        break
+                    correctIndex += 1
+                if correctIndex < len(submenue.text):
+                    return (None,(["backspace"],"delete input"))
+                return (None,(targetAmount[correctIndex:],"enter name of the tem to produce"))
 
-            # set up helper variable
-            submenue = character.macroState["submenue"]
-        
-            # get index of the menu entry to select
-            index = None
-            counter = 1
-            for option in submenue.options.items():
-                if option[1] == "produce item":
-                    index = counter
-                    break
-                counter += 1
-            if index is None:
-                index = counter-1
+            # select to produce scrap on the anvil
+            if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
 
-            # select the menu entry to produce the item
-            if self.produceToInventory:
-                activationCommand = "j"
-            else:
-                activationCommand = "k"
-            if self.amount-self.amountDone > 1:
-                activationCommand = activationCommand.upper()
-            offset = index-submenue.selectionIndex
-            command = ""
-            if offset > 0:
-                command += "s"*offset
-            else:
-                command += "w"*(-offset)
-            command += activationCommand
-            return (None,(command,"hammer scrap"))
+                # get index of the menu entry to select
+                index = None
+                counter = 1
+                for option in submenue.options.items():
+                    if option[1] == "produce item":
+                        index = counter
+                        break
+                    counter += 1
+                if index is None:
+                    index = counter-1
 
-        # exit othe menues
-        if character.macroState["submenue"] and not ignoreCommands:
+                # select the menu entry to produce the item
+                if self.produceToInventory:
+                    activationCommand = "j"
+                else:
+                    activationCommand = "k"
+                if self.amount-self.amountDone > 1:
+                    activationCommand = activationCommand.upper()
+                offset = index-submenue.selectionIndex
+                command = ""
+                if offset > 0:
+                    command += "s"*offset
+                else:
+                    command += "w"*(-offset)
+                command += activationCommand
+                return (None,(command,"hammer scrap"))
+
+            # exit othe menues
             return (None,(["esc"],"exit submenu"))
 
         # handle bump item activation

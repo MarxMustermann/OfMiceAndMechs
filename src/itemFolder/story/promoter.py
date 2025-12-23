@@ -296,6 +296,7 @@ The tendrils retrive.
 
 You are rank {character.rank} now.
 """)
+        submenu.do_not_scale = True
         character.macroState["submenue"] = submenu
         character.runCommandString("~",nativeKey=True)
 

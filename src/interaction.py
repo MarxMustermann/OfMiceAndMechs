@@ -4791,7 +4791,7 @@ def renderGameDisplay(renderChar=None):
                 last_menu_dimension = (width,height)
             else:
                 last_menu_dimension = (max(width,last_menu_dimension[0]),max(height,last_menu_dimension[1]))
-                if not submenue or not submenue.tag in ("Wait","main menu",):
+                if not submenue or (submenue.tag not in ("Wait","main menu",) and not submenue.do_not_scale):
                     width = last_menu_dimension[0]
                     height = last_menu_dimension[1]
 

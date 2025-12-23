@@ -106,6 +106,14 @@ class Adventure(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["ClearInventory"](returnToTile=False,reason="make space for loot")
                 return ([quest],None)
 
+            # fetch ammo
+            if character.getFreeInventorySpace():
+                for room in currentTerrain.rooms:
+                    if not room.getNonEmptyOutputslots("Bolt"):
+                        continue
+                    quest = src.quests.questMap["FetchItems"](toCollect="Bolt",reason="have some ammo to shoot")
+                    return ([quest],None)
+
             # sync map
             if (not character.lastMapSync) or src.gamestate.gamestate.tick-character.lastMapSync > 100:
                 quest = src.quests.questMap["DoMapSync"](reason="allow the base to remember if you die")

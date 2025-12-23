@@ -255,6 +255,8 @@ track:
         tag = terrain.tag
         self.track.append({"pos":pos,"tag":tag})
 
+        self.clearSubQuests()
+
     def assignToCharacter(self, character):
         '''
         listen to the character changing the terrain

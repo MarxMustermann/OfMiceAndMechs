@@ -226,48 +226,45 @@ Press d to move the cursor and show the subquests description.
                 return ([quest],None)
 
         if not self.collectedItems:
-            if not isinstance(character.container,src.rooms.Room):
-                quest = src.quests.questMap["GoHome"](reason="orient yourself")
-                return ([quest],None)
-
-            room = character.container
-            outputSlots = room.getNonEmptyOutputslots(itemType=self.toCollect)
             foundItem = False
-            if outputSlots:
-                foundItem = True
-                offsets = [(0,0,0),(1,0,0),(0,1,0),(-1,0,0),(0,-1,0)]
-                foundDirection = None
-                for outputSlot in outputSlots:
-                    if character.getDistance(outputSlot[0]) < 2:
-                        for offset in offsets:
-                            if character.getPosition(offset=offset) == outputSlot[0]:
-                                foundDirection = offset
+            if character.container.isRoom:
+                room = character.container
+                outputSlots = room.getNonEmptyOutputslots(itemType=self.toCollect)
+                if outputSlots:
+                    foundItem = True
+                    offsets = [(0,0,0),(1,0,0),(0,1,0),(-1,0,0),(0,-1,0)]
+                    foundDirection = None
+                    for outputSlot in outputSlots:
+                        if character.getDistance(outputSlot[0]) < 2:
+                            for offset in offsets:
+                                if character.getPosition(offset=offset) == outputSlot[0]:
+                                    foundDirection = offset
 
-                if foundDirection:
-                    interactionCommand = "K"
-                    direction_command = None
-                    if "advancedPickup" in character.interactionState:
-                        interactionCommand = ""
-                    if foundDirection == (0,0,0):
-                        direction_command = "."
-                    if foundDirection == (1,0,0):
-                        direction_command = "d"
-                    if foundDirection == (-1,0,0):
-                        direction_command = "a"
-                    if foundDirection == (0,1,0):
-                        direction_command = "s"
-                    if foundDirection == (0,-1,0):
-                        direction_command = "w"
+                    if foundDirection:
+                        interactionCommand = "K"
+                        direction_command = None
+                        if "advancedPickup" in character.interactionState:
+                            interactionCommand = ""
+                        if foundDirection == (0,0,0):
+                            direction_command = "."
+                        if foundDirection == (1,0,0):
+                            direction_command = "d"
+                        if foundDirection == (-1,0,0):
+                            direction_command = "a"
+                        if foundDirection == (0,1,0):
+                            direction_command = "s"
+                        if foundDirection == (0,-1,0):
+                            direction_command = "w"
 
-                    if direction_command:
-                        command = interactionCommand+direction_command
-                        if command == "K.":
-                            command = "k"
-                        return (None,(command,"pick up item"))
+                        if direction_command:
+                            command = interactionCommand+direction_command
+                            if command == "K.":
+                                command = "k"
+                            return (None,(command,"pick up item"))
 
-                outputSlot = random.choice(outputSlots)
-                quest = src.quests.questMap["GoToPosition"](targetPosition=outputSlot[0],ignoreEndBlocked=True,description="go to "+self.toCollect,reason=f"be able to pick up the {self.toCollect}")
-                return ([quest],None)
+                    outputSlot = random.choice(outputSlots)
+                    quest = src.quests.questMap["GoToPosition"](targetPosition=outputSlot[0],ignoreEndBlocked=True,description="go to "+self.toCollect,reason=f"be able to pick up the {self.toCollect}")
+                    return ([quest],None)
 
             if self.takeAnyUnbolted:
                 candidates = []

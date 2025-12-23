@@ -80,67 +80,69 @@ This will allow you to focus on other tasks.
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
 
+        # ensure subquests are completed
         while self.subQuests:
             if not self.subQuests[-1].completed:
                 break
             self.subQuests.pop()
 
+        # handle weird edge cases
         if self.subQuests:
             return (None,None)
 
-        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
-            submenue = character.macroState["submenue"]
-            if submenue.tag == "rewardSelection":
-                rewardIndex = 0
-                if self.rewardType == "room building":
-                    rewardIndex = 8
-                if self.rewardType == "scavenging":
-                    rewardIndex = 10
-                if self.rewardType == "machine operating":
-                    rewardIndex = 3
-                if self.rewardType == "resource fetching":
-                    rewardIndex = 4
-                if self.rewardType == "resource gathering":
-                    rewardIndex = 2
-                if self.rewardType == "painting":
-                    rewardIndex = 6
+        # handle sub menus
+        submenue = character.macroState["submenue"]
+        if character.macroState["submenue"] and not ignoreCommands:
+            if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu):
+                if submenue.tag == "rewardSelection":
+                    rewardIndex = 0
+                    if self.rewardType == "room building":
+                        rewardIndex = 8
+                    if self.rewardType == "scavenging":
+                        rewardIndex = 10
+                    if self.rewardType == "machine operating":
+                        rewardIndex = 3
+                    if self.rewardType == "resource fetching":
+                        rewardIndex = 4
+                    if self.rewardType == "resource gathering":
+                        rewardIndex = 2
+                    if self.rewardType == "painting":
+                        rewardIndex = 6
 
+                    if rewardIndex == 0:
+                        counter = 1
+                        for option in submenue.options.items():
+                            if option[1] == self.rewardType:
+                                break
+                            counter += 1
+                        rewardIndex = counter
+
+                    offset = rewardIndex-submenue.selectionIndex
+                    command = ""
+                    if offset > 0:
+                        command += "s"*offset
+                    else:
+                        command += "w"*(-offset)
+                    command += "j"
+                    return (None,(command,"get your reward"))
+
+                rewardIndex = 0
                 if rewardIndex == 0:
                     counter = 1
                     for option in submenue.options.items():
-                        if option[1] == self.rewardType:
+                        if option[1] == "wish":
                             break
                         counter += 1
                     rewardIndex = counter
 
-                offset = rewardIndex-submenue.selectionIndex
                 command = ""
-                if offset > 0:
-                    command += "s"*offset
-                else:
-                    command += "w"*(-offset)
+                if submenue.selectionIndex > rewardIndex:
+                    command += "w"*(submenue.selectionIndex-rewardIndex)
+                if submenue.selectionIndex < rewardIndex:
+                    command += "s"*(rewardIndex-submenue.selectionIndex)
                 command += "j"
                 return (None,(command,"get your reward"))
 
-            submenue = character.macroState["submenue"]
-            rewardIndex = 0
-            if rewardIndex == 0:
-                counter = 1
-                for option in submenue.options.items():
-                    if option[1] == "wish":
-                        break
-                    counter += 1
-                rewardIndex = counter
-
-            command = ""
-            if submenue.selectionIndex > rewardIndex:
-                command += "w"*(submenue.selectionIndex-rewardIndex)
-            if submenue.selectionIndex < rewardIndex:
-                command += "s"*(rewardIndex-submenue.selectionIndex)
-            command += "j"
-            return (None,(command,"get your reward"))
-
-        if character.macroState["submenue"] and not ignoreCommands:
             return (None,(["esc"],"exit submenu"))
 
         pos = character.getBigPosition()

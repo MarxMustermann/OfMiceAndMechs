@@ -36,6 +36,7 @@ class SubMenu(object):
         self.default = default
         self.targetParamName = targetParamName
         self.extraDescriptions = {}
+        self.do_not_scale = False
         super().__init__()
 
         self.escape = False

@@ -100,7 +100,6 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
 
         # unpack the parameters
         character = params["character"]
-        character.changed("improved armor")
 
         # get user input on what armor to upgrade
         if "choice" not in params:

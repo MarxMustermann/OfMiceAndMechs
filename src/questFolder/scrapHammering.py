@@ -267,4 +267,5 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
         # do nothing
         return (None,None)
 
+# register quest type
 src.quests.addType(ScrapHammering)

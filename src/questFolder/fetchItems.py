@@ -166,6 +166,8 @@ Press d to move the cursor and show the subquests description.
 
 
     def getNextStep(self, character,ignoreCommands=False,dryRun=True):
+
+        # handle weird edge cases
         if self.subQuests:
             return (None,None)
 
@@ -173,6 +175,7 @@ Press d to move the cursor and show the subquests description.
         if character.macroState["submenue"] and not ignoreCommands:
             return (None,(["esc"],"to close menu"))
 
+        # enter rooms properly
         if not character.container.isRoom:
             pos = character.getSpacePosition()
             if pos == (14,7,0):
@@ -184,6 +187,7 @@ Press d to move the cursor and show the subquests description.
             if pos == (7,0,0):
                 return (None,("s","enter room"))
 
+        # free up the players inventory
         if not self.amount:
             numItemsCollected = 0
             for item in reversed(character.inventory):
@@ -193,7 +197,6 @@ Press d to move the cursor and show the subquests description.
             if (numItemsCollected+character.getFreeInventorySpace()) < 5:
                 quest = src.quests.questMap["ClearInventory"](reason="be able to store the needed amount of items",returnToTile=False,tryHard=True)
                 return ([quest],None)
-
         if self.amount:
             numItemsCollected = 0
             for item in reversed(character.inventory):

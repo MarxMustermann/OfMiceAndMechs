@@ -192,20 +192,9 @@ Press d to move the cursor and show the subquests description.
         submenue = character.macroState.get("submenue")
         if submenue and not ignoreCommands:
             if isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu) and character.getSpacePosition() == self.targetPosition:
-                targetIndex = 0
-                for item in character.inventory:
-                    if item.type == self.itemType:
-                        break
-                    targetIndex += 1
-
-                if targetIndex >= len(character.inventory):
-                    return (None,(["esc"],"exit the menu"))
-
-                inventoryCommand = ""
-                inventoryCommand += "s"*(targetIndex-submenue.cursor)
-                inventoryCommand += "w"*(submenue.cursor-targetIndex)
-                inventoryCommand += "l"
-                return (None,(inventoryCommand,"drop the item"))
+                command = submenue.get_command_to_select_item(item_type=self.itemType,selectionCommand="l")
+                if command:
+                    return (None,(command,"drop the item"))
 
             if submenue.tag == "configurationSelection":
                 return (None,("b","bolt down the item"))

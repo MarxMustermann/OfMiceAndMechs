@@ -189,30 +189,28 @@ Press d to move the cursor and show the subquests description.
             quest = src.quests.questMap["Fight"]()
             return ([quest],None)
 
-        if not ignoreCommands:
-            submenue = character.macroState.get("submenue")
+        submenue = character.macroState.get("submenue")
+        if submenue and not ignoreCommands:
+            if isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu) and character.getSpacePosition() == self.targetPosition:
+                targetIndex = 0
+                for item in character.inventory:
+                    if item.type == self.itemType:
+                        break
+                    targetIndex += 1
 
-            if submenue:
-                if isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu) and character.getSpacePosition() == self.targetPosition:
-                    targetIndex = 0
-                    for item in character.inventory:
-                        if item.type == self.itemType:
-                            break
-                        targetIndex += 1
+                if targetIndex >= len(character.inventory):
+                    return (None,(["esc"],"exit the menu"))
 
-                    if targetIndex >= len(character.inventory):
-                        return (None,(["esc"],"exit the menu"))
+                inventoryCommand = ""
+                inventoryCommand += "s"*(targetIndex-submenue.cursor)
+                inventoryCommand += "w"*(submenue.cursor-targetIndex)
+                inventoryCommand += "l"
+                return (None,(inventoryCommand,"drop the item"))
 
-                    inventoryCommand = ""
-                    inventoryCommand += "s"*(targetIndex-submenue.cursor)
-                    inventoryCommand += "w"*(submenue.cursor-targetIndex)
-                    inventoryCommand += "l"
-                    return (None,(inventoryCommand,"drop the item"))
+            if submenue.tag == "configurationSelection":
+                return (None,("b","bolt down the item"))
 
-                if submenue.tag == "configurationSelection":
-                    return (None,("b","bolt down the item"))
-
-                return (None,(["esc"],"exit the menu"))
+            return (None,(["esc"],"exit the menu"))
 
         itemFound = None
         itemPlaced = None

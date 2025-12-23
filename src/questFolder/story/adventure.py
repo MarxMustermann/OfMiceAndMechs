@@ -38,11 +38,11 @@ class Adventure(src.quests.MetaQuestSequence):
             return (None, ("w","enter the terrain"))
 
         if character.getNearbyEnemies():
-            quest = src.quests.questMap["Fight"]()
+            quest = src.quests.questMap["Fight"](reason="defend yourself")
             return ([quest],None)
 
         if character.searchInventory("MemoryFragment"):
-            quest = src.quests.questMap["ConsumeItem"](itemType="MemoryFragment",description="extract memories")
+            quest = src.quests.questMap["ConsumeItem"](itemType="MemoryFragment",description="extract memories",reason="gain insight or mana")
             return ([quest],None)
         
         currentTerrain = character.getTerrain()
@@ -50,13 +50,13 @@ class Adventure(src.quests.MetaQuestSequence):
             for room in character.getTerrain().rooms:
                 for item in room.getItemsByType("SwordSharpener"):
                     if item.readyToBeUsedByCharacter(character):
-                        quest = src.quests.questMap["SharpenPersonalSword"]()
+                        quest = src.quests.questMap["SharpenPersonalSword"](reason="be able to cut deeper")
                         return ([quest],None)
 
             for room in character.getTerrain().rooms:
                 for item in room.getItemsByType("ArmorReinforcer"):
                     if item.readyToBeUsedByCharacter(character):
-                        quest = src.quests.questMap["ReinforcePersonalArmor"]()
+                        quest = src.quests.questMap["ReinforcePersonalArmor"](reason="be able to tank more hits")
                         return ([quest],None)
 
             if character.health < character.adjustedMaxHealth:
@@ -67,7 +67,7 @@ class Adventure(src.quests.MetaQuestSequence):
                             continue
                         readyCoalBurner = True
                 if readyCoalBurner:
-                    quest = src.quests.questMap["Heal"](noWaitHeal=True,noVialHeal=True)
+                    quest = src.quests.questMap["Heal"](noWaitHeal=True,noVialHeal=True,reason="be in good health")
                     return ([quest],None)
 
             for room in currentTerrain.rooms:
@@ -82,27 +82,27 @@ class Adventure(src.quests.MetaQuestSequence):
                             continue
                         numItems += 1
                 if numItems > 4:
-                    quest = src.quests.questMap["ClearTile"](targetPositionBig=room.getPosition())
+                    quest = src.quests.questMap["ClearTile"](targetPositionBig=room.getPosition(),reason="increase chances the traps will work")
                     return ([quest],None)
 
         if not character.weapon or not character.armor:
-            quest = src.quests.questMap["Equip"](tryHard=True)
+            quest = src.quests.questMap["Equip"](tryHard=True,reason="not be defenseless")
             return ([quest],None)
 
         if character.getTerrain() == character.getHomeTerrain():
             if (not character.lastMapSync) or src.gamestate.gamestate.tick-character.lastMapSync > 100:
-                quest = src.quests.questMap["DoMapSync"]()
+                quest = src.quests.questMap["DoMapSync"](reason="allow the base to remember if you die")
                 return ([quest],None)
             for item in character.inventory:
                 if item.walkable:
                     continue
-                quest = src.quests.questMap["ClearInventory"](returnToTile=False)
+                quest = src.quests.questMap["ClearInventory"](returnToTile=False,reason="get rid of big items")
                 return ([quest],None)
 
         if currentTerrain.tag == "shrine":
             # go home directly
             if character.getFreeInventorySpace() < 2:
-                quest = src.quests.questMap["GoHome"]()
+                quest = src.quests.questMap["GoHome"](reason="bring home loot")
                 return ([quest],None)
 
         if currentTerrain.tag == "ruin":
@@ -110,7 +110,7 @@ class Adventure(src.quests.MetaQuestSequence):
                 # loot on current terrain
                 info = character.terrainInfo[currentTerrain.getPosition()]
                 if not info.get("looted"):
-                    quest = src.quests.questMap["AdventureOnTerrain"](targetTerrain=currentTerrain.getPosition())
+                    quest = src.quests.questMap["AdventureOnTerrain"](targetTerrain=currentTerrain.getPosition(),reason="get more loot")
                     return ([quest], None)
 
         if character.searchInventory("Scrap"):
@@ -193,9 +193,9 @@ class Adventure(src.quests.MetaQuestSequence):
 
         # move to the actual target terrain
         if character.getFreeInventorySpace(ignoreTypes=["Bolt"]) and (targetTerrain != homeCoordinate):
-            quest = src.quests.questMap["AdventureOnTerrain"](targetTerrain=targetTerrain,terrainsWeight = extraWeight)
+            quest = src.quests.questMap["AdventureOnTerrain"](targetTerrain=targetTerrain,terrainsWeight = extraWeight,reason="gain more nice things")
         else:
-            quest = src.quests.questMap["GoToTerrain"](targetTerrain=targetTerrain)
+            quest = src.quests.questMap["GoToTerrain"](targetTerrain=targetTerrain,reason="reach the target")
 
         return ([quest], None)
 

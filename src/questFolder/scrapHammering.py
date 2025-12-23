@@ -107,11 +107,9 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
             return (None,(["esc"],"exit submenu"))
 
         # handle bump item activation
-        if character.macroState.get("itemMarkedLast"):
-            if character.macroState["itemMarkedLast"].type == "Anvil":
-                return (None,("j","activate anvil"))
-            else:
-                return (None,(".","undo selection"))
+        action = self.generate_confirm_interaction_command(allowedItems=["Anvil"])
+        if action:
+            return action
 
         # get local anvils
         anvils = []

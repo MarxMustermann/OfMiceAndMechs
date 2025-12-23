@@ -74,7 +74,7 @@ class ReinforcePersonalArmor(src.quests.MetaQuestSequence):
 
         # defend yourself
         if character.getNearbyEnemies():
-            quest = src.quests.questMap["Fight"](description="defend yourself")
+            quest = src.quests.questMap["Fight"](description="defend yourself",reason="survive")
             return ([quest],None)
 
         # use the armor reinforcer
@@ -110,7 +110,7 @@ class ReinforcePersonalArmor(src.quests.MetaQuestSequence):
                 if not item.bolted:
                     continue
                 if character.getDistance(item.getPosition()) > 1:
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),description="go to ArmorReinforcer",ignoreEndBlocked=True)
+                    quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),description="go to ArmorReinforcer",ignoreEndBlocked=True,reason="be able to reach the ArmorReinforcer")
                     return ([quest],None)
 
         # go to a room with a armor reinforcer
@@ -122,7 +122,7 @@ class ReinforcePersonalArmor(src.quests.MetaQuestSequence):
                 if not item.bolted:
                     continue
 
-                quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),description="go to a room having a ArmorReinforcer")
+                quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),description="go to a room having a ArmorReinforcer",reason="be able to use the ArmorReinforcer")
                 return ([quest],None)
 
         # should not be reached

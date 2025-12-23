@@ -2685,11 +2685,16 @@ press any other key to attack normally"""
         mainItem = None
         if items:
             if len(items) == 1:
-                text += f"there is a {items[0].name}:\n\n"
+                text += f"there is a {items[0].name}"
+                text += f" X"
+                text += f":\n\n"
             else:
                 text += f"there are {len(items)} items:\n"
                 for item in items:
                     text += f"* {item.name}\n"
+                    if item.isBolted:
+                        text += f" X"
+                    text += f"\n"
                 text += "\nOn the top is:\n\n"
             mainItem = items[0]
         else:

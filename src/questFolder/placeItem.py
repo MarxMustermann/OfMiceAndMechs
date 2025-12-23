@@ -166,12 +166,16 @@ Press d to move the cursor and show the subquests description.
         self.fail(extraParam["reason"])
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
+
+        # handle weird edge cases
         if self.subQuests:
             return (None,None)
 
+        # end when completed
         if self.triggerCompletionCheck(dryRun=dryRun):
             return (None,(".","stand around confused"))
 
+        # go to placement location
         if self.targetPositionBig:
             terrain = character.getTerrain()
             rooms = terrain.getRoomByPosition(self.targetPositionBig)
@@ -179,6 +183,8 @@ Press d to move the cursor and show the subquests description.
                 container = rooms[0]
                 if container.alarm and not self.tryHard:
                     return self._solver_trigger_fail(dryRun,"alarm")
+
+        # defend yourself
         if character.getNearbyEnemies():
             quest = src.quests.questMap["Fight"]()
             return ([quest],None)

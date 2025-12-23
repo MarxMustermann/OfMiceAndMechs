@@ -89,16 +89,8 @@ Press d to move the cursor and show the subquests description.
             # use the menu to set how much to produce
             if submenue.tag == "metalWorkingAmountInput":
                 targetAmount = str(self.amount - self.amountDone)
-                if submenue.text == targetAmount:
-                    return (None,(["enter"],"set how many of the item to produce"))
-                correctIndex = 0
-                while correctIndex < len(targetAmount) and correctIndex < len(submenue.text):
-                    if targetAmount[correctIndex] != submenue.text[correctIndex]:
-                        break
-                    correctIndex += 1
-                if correctIndex < len(submenue.text):
-                    return (None,(["backspace"],"delete input"))
-                return (None,(targetAmount[correctIndex:],"enter name of the tem to produce"))
+                command = submenue.get_command_to_input(str(targetAmount))
+                return (None,(command,"enter how much to produce"))
 
             # use menu to select what type of item to produce
             if submenue.tag == "metalWorkingProductSelection":

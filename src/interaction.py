@@ -3386,9 +3386,6 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
     if charState["submenue"]:
 
         # set flag to not render the game
-        if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-            char.specialRender = True
-
         noRender = True
         if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
             noRender = False
@@ -4743,9 +4740,6 @@ def renderGameDisplay(renderChar=None):
                         printUrwidToTcod(chars,offset,size=size)
                         printUrwidToDummy(pseudoDisplay,chars,offset,size=size)
 
-                if not char.specialRender:
-                    tcodPresent()
-                    draw_sdl()
             if not useTiles and not tcodConsole:
                 main.set_text(
                     (
@@ -4755,12 +4749,17 @@ def renderGameDisplay(renderChar=None):
                 )
 
                 canvas = render(char)
-    if specialRender:
+    submenue = char.macroState.get("submenue")
+    if specialRender or submenue:
         if useTiles:
             pydisplay.fill((0, 0, 0))
             font = pygame.font.Font("config/DejaVuSansMono.ttf", 14)
 
-            plainText = stringifyUrwid(main.get_text())
+            if submenue:
+                plainText = stringifyUrwid(submenue.render())
+            else:
+                plainText = stringifyUrwid(main.get_text())
+            plainText = stringifyUrwid(plainText)
             counter = 0
             for line in plainText.split("\n"):
                 text = font.render(line, True, (200, 200, 200))
@@ -4840,9 +4839,10 @@ def renderGameDisplay(renderChar=None):
             #printUrwidToTcod(main.get_text(),(offsetLeft+2,offsetTop+2),size=(width,height))
             if not renderChar:
                 printUrwidToTcod(main.get_text(),(offsetLeft+2,offsetTop+2))
-                tcodPresent()
             else:
                 printUrwidToDummy(pseudoDisplay, main.get_text(),(offsetLeft+2,offsetTop+2))
+
+    tcodPresent()
 
     if renderChar:
         sendNetworkDraw(pseudoDisplay)

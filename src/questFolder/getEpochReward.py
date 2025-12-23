@@ -123,7 +123,7 @@ This will allow you to focus on other tasks.
 
             # enter room properly
             if not character.container.isRoom:
-                quest = src.quests.questMap["EnterRoom"]()
+                quest = src.quests.questMap["EnterRoom"](reason="be able to interact properly")
                 return ([quest],None)
 
             # find shrine to pray at
@@ -154,11 +154,11 @@ This will allow you to focus on other tasks.
                 return (None,(interactionCommand+command,"start praying at the shrine"))
 
             # go to shrine
-            quest = src.quests.questMap["GoToPosition"](targetPosition=foundShrine.getPosition(), description="go to shrine",ignoreEndBlocked=True)
+            quest = src.quests.questMap["GoToPosition"](targetPosition=foundShrine.getPosition(), description="go to shrine",ignoreEndBlocked=True,reason="be able to activate the shrine")
             return ([quest],None)
 
         # go to temple
-        quest = src.quests.questMap["GoToTile"](description="go to temple",targetPosition=roomPos)
+        quest = src.quests.questMap["GoToTile"](description="go to temple",targetPosition=roomPos,reason="be able to use the shrine")
         return ([quest],None)
 
     def handleGotEpochReward(self, extraInfo):

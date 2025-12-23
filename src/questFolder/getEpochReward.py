@@ -17,7 +17,7 @@ class GetEpochReward(src.quests.MetaQuestSequence):
         if self.reason:
             reason = f",\nto {self.reason}"
         text = f"""
-Claim a reward for completing the epoch challenge{reason}.
+Claim a reward for the work you have done{reason}.
 
 You accumulated some mana.
 Spend them to claim the actual reward.

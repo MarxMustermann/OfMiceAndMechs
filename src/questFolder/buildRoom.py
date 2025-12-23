@@ -266,8 +266,8 @@ Press d to move the cursor and show the subquests description.
             if character.getPosition(offset=offset) == (15*self.targetPosition[0]+7,15*self.targetPosition[1]+7,0):
                 return (None, (command,"activate the RoomBuilder"))
 
-        quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
-        return ([quest], None)
+        # kind of fail
+        return (None,(".","stand around confused"))
 
     def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:

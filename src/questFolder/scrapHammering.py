@@ -151,49 +151,64 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
         self.fail(reason)
 
     def handleHammeredScrap(self, extraInfo):
+
+        # handle weird edge cases
         if self.completed:
             1/0
         if not self.active:
             return
 
+        # register that a metal bar was completed
         self.amountDone += 1
         if self.amount is not None and self.amountDone >= self.amount:
             self.postHandler()
 
     def handleInventoryFull(self, extraInfo):
+
+        # handle weird edge cases
         if self.completed:
             1/0
         if not self.active:
             return
 
+        # clear inventory if needed
         quest = src.quests.questMap["ClearInventory"]()
         self.startWatching(quest,self.handleQuestFailure,"failed")
         self.addQuest(quest)
 
     def handleNoScrap(self, extraInfo):
+
+        # handle weird edge cases
         if self.completed:
             1/0
         if not self.active:
             return
 
+        # fetch scrap if needed
         quest = src.quests.questMap["FetchItems"](toCollect="Scrap",amount=1,reason="have some scrap to hammer")
         self.startWatching(quest,self.handleQuestFailure,"failed")
         self.addQuest(quest)
 
     def assignToCharacter(self, character):
+
+        # handle weird edge cases
         if self.character:
             return None
 
+        # register to listen for events
         self.startWatching(character,self.handleHammeredScrap, "hammered scrap")
         self.startWatching(character,self.handleInventoryFull, "inventory full error")
         self.startWatching(character,self.handleNoScrap, "no scrap error")
 
+        # do super class stuff
         return super().assignToCharacter(character)
 
     def getQuestMarkersSmall(self,character,renderForTile=False):
         '''
         return the quest markers for the normal map
         '''
+
+        # do nothing if wrong scale is requested
         if isinstance(character.container,src.rooms.Room):
             if renderForTile:
                 return []
@@ -201,6 +216,7 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
             if not renderForTile:
                 return []
 
+        # highlight anvils
         result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
         if not renderForTile:
             if isinstance(character.container,src.rooms.Room):
@@ -214,12 +230,13 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
 
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
+
+        # do planned production
         hasReadyAnvil = False
         for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
             for anvil in room.getItemsByType("Anvil"):
                 if not anvil.checkForInputScrap(character):
                     continue
-
                 hasReadyAnvil = True
                 if anvil.scheduledAmount:
                     quest = src.quests.questMap["ScrapHammering"](amount=min(10,anvil.scheduledAmount))
@@ -227,9 +244,11 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
                         beUsefull.idleCounter = 0
                     return ([quest],None)
 
+        # do nothing in case of no anvil
         if not hasReadyAnvil:
             return (None,None)
 
+        # ensure some stock of metal bars
         itemsInStorage = {}
         freeStorage = 0
         for room in character.getTerrain().rooms:
@@ -239,12 +258,13 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
                     freeStorage += 1
                 for item in items:
                     itemsInStorage[item.type] = itemsInStorage.get(item.type,0)+1
-
         if freeStorage and itemsInStorage.get("MetalBars",0) < 40:
             quest = src.quests.questMap["ScrapHammering"](amount=10)
             if not dryRun:
                 beUsefull.idleCounter = 0
             return ([quest],None)
+
+        # do nothing
         return (None,None)
 
 src.quests.addType(ScrapHammering)

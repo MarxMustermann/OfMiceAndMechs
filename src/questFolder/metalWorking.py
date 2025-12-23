@@ -110,39 +110,17 @@ Press d to move the cursor and show the subquests description.
 
             # use menu to select what type of item to produce
             if submenue.tag == "metalWorkingProductSelection":
-                index = None
-                name_input_index = None
-                counter = 1
-                for option in submenue.options.items():
-                    if option[1] == self.toProduce:
-                        index = counter
-                        break
-                    if option[1] == "byName":
-                        name_input_index = counter
-                    counter += 1
-
-                if index is None:
-                    if name_input_index:
-                        index = name_input_index
-                    else:
-                        index = counter-1
-
+                activation_command = "k"
                 if self.produceToInventory:
-                    activationCommand = "j"
-                else:
-                    activationCommand = "k"
-
+                    activation_command = "j"
                 if self.amount and self.amount - self.amountDone > 1:
-                    activationCommand = activationCommand.upper()
-
-                offset = index-submenue.selectionIndex
-                command = ""
-                if offset > 0:
-                    command += "s"*offset
-                else:
-                    command += "w"*(-offset)
-                command += activationCommand
-                return (None,(command,"produce item"))
+                    activation_command = activation_command.upper()
+                command = submenue.get_command_to_select_option(self.toProduce,selectionCommand=activation_command)
+                if command:
+                    return (None,(command,"produce item"))
+                command = submenue.get_command_to_select_option("byName",selectionCommand=activation_command)
+                if command:
+                    return (None,(command,"produce item by name"))
 
             # use menu to start producing an item
             if submenue.tag == "applyOptionSelection" and submenue.extraInfo.get("item").type == "MetalWorkingBench":

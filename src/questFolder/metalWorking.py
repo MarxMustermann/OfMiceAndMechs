@@ -77,76 +77,75 @@ Press d to move the cursor and show the subquests description.
             if pos == (7,0,0):
                 return (None,("s","enter room"))
 
-        # use the menu to set the name to produce
-        if character.macroState["submenue"] and character.macroState["submenue"].tag == "metalWorkingProductInput":
-            submenue = character.macroState["submenue"]
-            if self.toProduce == submenue.text:
-                return (None,(["enter"],"set the name of the item to produce"))
-            correctIndex = 0
-            while correctIndex < len(self.toProduce) and correctIndex < len(submenue.text):
-                if self.toProduce[correctIndex] != submenue.text[correctIndex]:
-                    break
-                correctIndex += 1
-            if correctIndex < len(submenue.text):
-                return (None,(["backspace"],"delete input"))
-            return (None,(self.toProduce[correctIndex:],"enter name of the tem to produce"))
+        # handle sub menues
+        submenue = character.macroState["submenue"]
+        if submenue and not ignoreCommands:
 
-        # use the menu to set how much to produce
-        if character.macroState["submenue"] and character.macroState["submenue"].tag == "metalWorkingAmountInput":
-            submenue = character.macroState["submenue"]
-            targetAmount = str(self.amount - self.amountDone)
-            if submenue.text == targetAmount:
-                return (None,(["enter"],"set how many of the item to produce"))
-            correctIndex = 0
-            while correctIndex < len(targetAmount) and correctIndex < len(submenue.text):
-                if targetAmount[correctIndex] != submenue.text[correctIndex]:
-                    break
-                correctIndex += 1
-            if correctIndex < len(submenue.text):
-                return (None,(["backspace"],"delete input"))
-            return (None,(targetAmount[correctIndex:],"enter name of the tem to produce"))
+            # use the menu to set the name to produce
+            if submenue.tag == "metalWorkingProductInput":
+                if self.toProduce == submenue.text:
+                    return (None,(["enter"],"set the name of the item to produce"))
+                correctIndex = 0
+                while correctIndex < len(self.toProduce) and correctIndex < len(submenue.text):
+                    if self.toProduce[correctIndex] != submenue.text[correctIndex]:
+                        break
+                    correctIndex += 1
+                if correctIndex < len(submenue.text):
+                    return (None,(["backspace"],"delete input"))
+                return (None,(self.toProduce[correctIndex:],"enter name of the tem to produce"))
 
-        # use menu to select what type of item to produce
-        if character.macroState["submenue"] and character.macroState["submenue"].tag == "metalWorkingProductSelection":
-            submenue = character.macroState["submenue"]
-            index = None
-            name_input_index = None
-            counter = 1
-            for option in submenue.options.items():
-                if option[1] == self.toProduce:
-                    index = counter
-                    break
-                if option[1] == "byName":
-                    name_input_index = counter
-                counter += 1
+            # use the menu to set how much to produce
+            if submenue.tag == "metalWorkingAmountInput":
+                targetAmount = str(self.amount - self.amountDone)
+                if submenue.text == targetAmount:
+                    return (None,(["enter"],"set how many of the item to produce"))
+                correctIndex = 0
+                while correctIndex < len(targetAmount) and correctIndex < len(submenue.text):
+                    if targetAmount[correctIndex] != submenue.text[correctIndex]:
+                        break
+                    correctIndex += 1
+                if correctIndex < len(submenue.text):
+                    return (None,(["backspace"],"delete input"))
+                return (None,(targetAmount[correctIndex:],"enter name of the tem to produce"))
 
-            if index is None:
-                if name_input_index:
-                    index = name_input_index
+            # use menu to select what type of item to produce
+            if submenue.tag == "metalWorkingProductSelection":
+                index = None
+                name_input_index = None
+                counter = 1
+                for option in submenue.options.items():
+                    if option[1] == self.toProduce:
+                        index = counter
+                        break
+                    if option[1] == "byName":
+                        name_input_index = counter
+                    counter += 1
+
+                if index is None:
+                    if name_input_index:
+                        index = name_input_index
+                    else:
+                        index = counter-1
+
+                if self.produceToInventory:
+                    activationCommand = "j"
                 else:
-                    index = counter-1
+                    activationCommand = "k"
 
-            if self.produceToInventory:
-                activationCommand = "j"
-            else:
-                activationCommand = "k"
+                if self.amount and self.amount - self.amountDone > 1:
+                    activationCommand = activationCommand.upper()
 
-            if self.amount and self.amount - self.amountDone > 1:
-                activationCommand = activationCommand.upper()
+                offset = index-submenue.selectionIndex
+                command = ""
+                if offset > 0:
+                    command += "s"*offset
+                else:
+                    command += "w"*(-offset)
+                command += activationCommand
+                return (None,(command,"produce item"))
 
-            offset = index-submenue.selectionIndex
-            command = ""
-            if offset > 0:
-                command += "s"*offset
-            else:
-                command += "w"*(-offset)
-            command += activationCommand
-            return (None,(command,"produce item"))
-
-        # use menu to start producing an item
-        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
-                submenue = character.macroState["submenue"]
-
+            # use menu to start producing an item
+            if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
                 if not submenue.extraInfo.get("item") or not submenue.extraInfo.get("item").type == "MetalWorkingBench":
                     return (None,(["esc"],"exit submenu"))
 
@@ -171,8 +170,7 @@ Press d to move the cursor and show the subquests description.
                     command += "j"
                 return (None,(command,"start producing items"))
 
-        # close other menus
-        if character.macroState["submenue"] and not ignoreCommands:
+            # close other menus
             return (None,(["esc"],"exit submenu"))
 
         # activate production item when marked

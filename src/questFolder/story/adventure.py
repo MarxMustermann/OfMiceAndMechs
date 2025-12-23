@@ -19,13 +19,17 @@ class Adventure(src.quests.MetaQuestSequence):
         generate the next step towards solving this quest
         '''
 
+        # handle weird edge cases
         if self.subQuests:
             return (None,None)
-
         if not character:
             return (None,None)
 
+        # ensure good health
         if character.is_low_health():
+            if character.can_heal():
+                quest = src.quests.questMap["Heal"](reason="be in good health")
+                return ([quest],None)
             return self._solver_trigger_fail(dryRun,"low health")
 
         if character.getBigPosition()[0] == 0:

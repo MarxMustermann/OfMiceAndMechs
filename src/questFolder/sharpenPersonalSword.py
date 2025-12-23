@@ -79,15 +79,14 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
                 return (None,("w","enter room"))
 
         # handle submenues
-        if character.macroState.get("submenue"):
-            submenue = character.macroState.get("submenue")
+        submenue = character.macroState.get("submenue")
+        if submenue:
             if submenue.tag == "applyOptionSelection" and submenue.extraInfo.get("item").type == "SwordSharpener":
                 command = submenue.get_command_to_select_option("sharpen equipped sword")
                 if command:
                     return (None,(command,"use SwordSharpener"))
             if submenue.tag == "SwordSharpenerSlider":
                 return (None,("j","sharpen the sword"))
-            
             return (None,(["esc"],"close the menu"))
 
         # defend yourself

@@ -134,10 +134,9 @@ Press d to move the cursor and show the subquests description.
             return (None,None)
 
         # close open menus
-        if not ignoreCommands:
-            submenue = character.macroState.get("submenue")
-            if submenue:
-                return (None,(["esc"],"exit submenu"))
+        submenue = character.macroState.get("submenue")
+        if submenue and not ignoreCommands:
+            return (None,(["esc"],"exit submenu"))
 
         # attack nearby enemies
         if character.getNearbyEnemies():

@@ -201,6 +201,7 @@ class ViewNPCsMenu(src.subMenu.SubMenu):
             self.persistentText.append(f"\nactive quest: {quest.description}")
         else:
             self.persistentText.append("\nactive quest: None")
+        self.persistentText.append("\n")
 
         src.interaction.main.set_text(self.persistentText)
         return None

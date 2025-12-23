@@ -97,39 +97,10 @@ This will allow you to focus on other tasks.
                 command = submenue.get_command_to_select_option("wish")
                 if command:
                     return (None,(command,"get your reward"))
-            if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu):
-                if submenue.tag == "rewardSelection":
-                    rewardIndex = 0
-                    if self.rewardType == "room building":
-                        rewardIndex = 8
-                    if self.rewardType == "scavenging":
-                        rewardIndex = 10
-                    if self.rewardType == "machine operating":
-                        rewardIndex = 3
-                    if self.rewardType == "resource fetching":
-                        rewardIndex = 4
-                    if self.rewardType == "resource gathering":
-                        rewardIndex = 2
-                    if self.rewardType == "painting":
-                        rewardIndex = 6
-
-                    if rewardIndex == 0:
-                        counter = 1
-                        for option in submenue.options.items():
-                            if option[1] == self.rewardType:
-                                break
-                            counter += 1
-                        rewardIndex = counter
-
-                    offset = rewardIndex-submenue.selectionIndex
-                    command = ""
-                    if offset > 0:
-                        command += "s"*offset
-                    else:
-                        command += "w"*(-offset)
-                    command += "j"
+            if submenue.tag == "rewardSelection":
+                command = submenue.get_command_to_select_option(self.rewardType)
+                if command:
                     return (None,(command,"get your reward"))
-
             return (None,(["esc"],"exit submenu"))
 
         # activate production item when marked

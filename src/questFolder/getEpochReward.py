@@ -108,22 +108,25 @@ This will allow you to focus on other tasks.
         if action:
             return action
 
-        pos = character.getBigPosition()
-
+        # find a temple
         roomPos = None
         for room in character.getTerrain().rooms:
             if room.tag != "temple":
                 continue
             roomPos = room.getPosition()
-
         if not roomPos:
             return self._solver_trigger_fail(dryRun,"no temple found")
 
+        # activate shrine
+        pos = character.getBigPosition()
         if pos == roomPos:
+
+            # enter room properly
             if not character.container.isRoom:
                 quest = src.quests.questMap["EnterRoom"]()
                 return ([quest],None)
 
+            # find shrine to pray at
             shrines = character.container.getItemsByType("Shrine")
             foundShrine = None
             for shrine in shrines:
@@ -131,10 +134,10 @@ This will allow you to focus on other tasks.
                     foundShrine = shrine
                 if self.rewardType == "spawn scrap" and shrine.god == 2:
                     foundShrine = shrine
-
             if not foundShrine:
                 return self._solver_trigger_fail(dryRun,"no shrine found")
 
+            # activate nearby shrine
             command = None
             if character.getPosition(offset=(1,0,0)) == foundShrine.getPosition():
                 command = "d"
@@ -144,16 +147,17 @@ This will allow you to focus on other tasks.
                 command = "s"
             if character.getPosition(offset=(0,-1,0)) == foundShrine.getPosition():
                 command = "w"
-
             if command:
                 interactionCommand = "J"
                 if "advancedInteraction" in character.interactionState:
                     interactionCommand = ""
                 return (None,(interactionCommand+command,"start praying at the shrine"))
 
+            # go to shrine
             quest = src.quests.questMap["GoToPosition"](targetPosition=foundShrine.getPosition(), description="go to shrine",ignoreEndBlocked=True)
             return ([quest],None)
 
+        # go to temple
         quest = src.quests.questMap["GoToTile"](description="go to temple",targetPosition=roomPos)
         return ([quest],None)
 

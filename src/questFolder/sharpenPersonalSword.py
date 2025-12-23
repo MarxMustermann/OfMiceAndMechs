@@ -113,18 +113,18 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
                 if not items[0].type == "SwordSharpener":
                     continue
                 if offset == (0,0,0):
-                    return (None,("jjj","sharpen personal sword"))
+                    return (None,("j","sharpen personal sword"))
                 interactionCommand = "J"
                 if "advancedInteraction" in character.interactionState:
                     interactionCommand = ""
                 if offset == (1,0,0):
-                    return (None,(interactionCommand+"djj","sharpen personal sword"))
+                    return (None,(interactionCommand+"d","sharpen personal sword"))
                 if offset == (-1,0,0):
-                    return (None,(interactionCommand+"ajj","sharpen personal sword"))
+                    return (None,(interactionCommand+"a","sharpen personal sword"))
                 if offset == (0,1,0):
-                    return (None,(interactionCommand+"sjj","sharpen personal sword"))
+                    return (None,(interactionCommand+"s","sharpen personal sword"))
                 if offset == (0,-1,0):
-                    return (None,(interactionCommand+"wjj","sharpen personal sword"))
+                    return (None,(interactionCommand+"w","sharpen personal sword"))
 
             # go to the SwordSharpener
             for item in character.container.itemsOnFloor:

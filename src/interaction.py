@@ -4791,8 +4791,9 @@ def renderGameDisplay(renderChar=None):
                 last_menu_dimension = (width,height)
             else:
                 last_menu_dimension = (max(width,last_menu_dimension[0]),max(height,last_menu_dimension[1]))
-                width = last_menu_dimension[0]
-                height = last_menu_dimension[1]
+                if not submenue or submenue.tag != "Wait":
+                    width = last_menu_dimension[0]
+                    height = last_menu_dimension[1]
 
             offsetLeft = max(src.interaction.tcodConsole.width//2-width//2,1)
             offsetTop = max(min(src.interaction.tcodConsole.height//2-height//2,17),1)

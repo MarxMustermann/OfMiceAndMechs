@@ -57,21 +57,9 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
 
             # use menu to set how much scrap to produce
             if submenue.tag == "anvilAmountInput":
-
-                # confirm the selection
                 targetAmount = str(self.amount - self.amountDone)
-                if submenue.text == targetAmount:
-                    return (None,(["enter"],"set how many of the item to produce"))
-
-                # type in the number to produce
-                correctIndex = 0
-                while correctIndex < len(targetAmount) and correctIndex < len(submenue.text):
-                    if targetAmount[correctIndex] != submenue.text[correctIndex]:
-                        break
-                    correctIndex += 1
-                if correctIndex < len(submenue.text):
-                    return (None,(["backspace"],"delete input"))
-                return (None,(targetAmount[correctIndex:],"enter name of the tem to produce"))
+                command = submenue.get_command_to_input(str(targetAmount))
+                return (None,(command,"enter how much to produce"))
 
             # select to produce scrap on the anvil
             if submenue.tag == "applyOptionSelection" and submenue.extraInfo.get("item").type == "Anvil":

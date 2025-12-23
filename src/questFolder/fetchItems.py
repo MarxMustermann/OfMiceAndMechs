@@ -251,7 +251,10 @@ Press d to move the cursor and show the subquests description.
                         direction_command = "w"
 
                     if direction_command:
-                        return (None,(interactionCommand+direction_command,"pick up item"))
+                        command = interactionCommand+direction_command
+                        if command == "K.":
+                            command = "k"
+                        return (None,(command,"pick up item"))
 
                 outputSlot = random.choice(outputSlots)
                 quest = src.quests.questMap["GoToPosition"](targetPosition=outputSlot[0],ignoreEndBlocked=True,description="go to "+self.toCollect,reason=f"be able to pick up the {self.toCollect}")
@@ -298,7 +301,9 @@ Press d to move the cursor and show the subquests description.
                             direction_command = "w"
 
                         if direction_command:
-                            return (None,(interactionCommand+direction_command,"pick up item"))
+                            if command == "K.":
+                                command = "k"
+                            return (None,(command,"pick up item"))
 
                     item = random.choice(candidates)
                     quests = []

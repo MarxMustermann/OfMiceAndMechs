@@ -32,6 +32,7 @@ class Adventure(src.quests.MetaQuestSequence):
                 return ([quest],None)
             return self._solver_trigger_fail(dryRun,"low health")
 
+        # enter rooms properly
         if character.getBigPosition()[0] == 0:
             return (None, ("d","enter the terrain"))
         if character.getBigPosition()[0] == 14:
@@ -41,28 +42,33 @@ class Adventure(src.quests.MetaQuestSequence):
         if character.getBigPosition()[1] == 14:
             return (None, ("w","enter the terrain"))
 
+        # defend yourself
         if character.getNearbyEnemies():
             quest = src.quests.questMap["Fight"](reason="defend yourself")
             return ([quest],None)
 
+        # consume memories
         if character.searchInventory("MemoryFragment"):
             quest = src.quests.questMap["ConsumeItem"](itemType="MemoryFragment",description="extract memories",reason="gain insight or mana")
             return ([quest],None)
         
+        # prepare for adventure
         currentTerrain = character.getTerrain()
         if currentTerrain == character.getHomeTerrain():
+            
+            # upgrade equipment
             for room in character.getTerrain().rooms:
                 for item in room.getItemsByType("SwordSharpener"):
                     if item.readyToBeUsedByCharacter(character):
                         quest = src.quests.questMap["SharpenPersonalSword"](reason="be able to cut deeper")
                         return ([quest],None)
-
             for room in character.getTerrain().rooms:
                 for item in room.getItemsByType("ArmorReinforcer"):
                     if item.readyToBeUsedByCharacter(character):
                         quest = src.quests.questMap["ReinforcePersonalArmor"](reason="be able to tank more hits")
                         return ([quest],None)
 
+            # heal
             if character.health < character.adjustedMaxHealth:
                 readyCoalBurner = False
                 for room in currentTerrain.rooms:
@@ -74,6 +80,7 @@ class Adventure(src.quests.MetaQuestSequence):
                     quest = src.quests.questMap["Heal"](noWaitHeal=True,noVialHeal=True,reason="be in good health")
                     return ([quest],None)
 
+            # ensure traps are clean
             for room in currentTerrain.rooms:
                 if not room.tag == "trapRoom":
                     continue

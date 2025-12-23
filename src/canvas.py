@@ -18,9 +18,7 @@ class Mapping:
     """
 
     mappedThings = {}
-    globalCounter = [
-        0
-    ]  # non intuitive: list to make counter same object for all instances
+    globalCounter = [0]  # non intuitive: list to make counter same object for all instances
 
     def buildMap(self):
         """

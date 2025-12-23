@@ -31,7 +31,7 @@ class Popup(ABC):
     @staticmethod
     def open_Popup(character, text, container=None):
         submenue = src.menuFolder.textMenu.TextMenu(
-            text,
+            text+"\n",
             specialKeys={"q": {"container": container, "method": "openQuestMenu", "params": {"character": character}}},
         )
         submenue.tag = "popup"

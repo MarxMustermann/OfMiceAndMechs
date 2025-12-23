@@ -39,12 +39,13 @@ class ReinforcePersonalArmor(src.quests.MetaQuestSequence):
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
 
+        # handle weird edge cases
         if self.subQuests:
             return (None,None)
-
         if not character:
             return (None,None)
 
+        # enter room fully
         if not character.container.isRoom:
             if character.xPosition%15 == 0:
                 return (None,("d","enter room"))
@@ -55,6 +56,7 @@ class ReinforcePersonalArmor(src.quests.MetaQuestSequence):
             if character.yPosition%15 == 14:
                 return (None,("w","enter room"))
 
+        # use menues
         if character.macroState.get("submenue"):
             submenue = character.macroState.get("submenue")
             if submenue.tag == "applyOptionSelection" and submenue.extraInfo.get("item").type == "ArmorReinforcer":
@@ -65,27 +67,28 @@ class ReinforcePersonalArmor(src.quests.MetaQuestSequence):
                 return (None,("j","reinforce the armor"))
             return (None,(["esc"],"close the menu"))
         
+        # activate item when marked
         action = self.generate_confirm_activation_command(allowedItems=["ArmorReinforcer"])
         if action:
             return action
 
+        # defend yourself
         if character.getNearbyEnemies():
             quest = src.quests.questMap["Fight"](description="defend yourself")
             return ([quest],None)
 
-        terrain = character.getTerrain()
-
+        # use the armor reinforcer
         if character.container.isRoom:
+
+            # use reachable armor reinforcer
             offsets = [(0,0,0),(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]
             for offset in offsets:
                 pos = character.getPosition(offset=offset)
                 items = character.container.getItemByPosition(pos)
                 if not items:
                     continue
-
                 if not items[0].type == "ArmorReinforcer":
                     continue
-                
                 if offset == (0,0,0):
                     return (None,("jjj","improve personal armor"))
                 interactionCommand = "J"
@@ -100,17 +103,18 @@ class ReinforcePersonalArmor(src.quests.MetaQuestSequence):
                 if offset == (0,-1,0):
                     return (None,(interactionCommand+"wjj","improve personal armor"))
 
-
+            # go to armor reinforcer
             for item in character.container.itemsOnFloor:
                 if not item.type == "ArmorReinforcer":
                     continue
                 if not item.bolted:
                     continue
-
                 if character.getDistance(item.getPosition()) > 1:
                     quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),description="go to ArmorReinforcer",ignoreEndBlocked=True)
                     return ([quest],None)
 
+        # go to a room with a armor reinforcer
+        terrain = character.getTerrain()
         for room in terrain.rooms:
             for item in room.itemsOnFloor:
                 if not item.type == "ArmorReinforcer":
@@ -121,6 +125,7 @@ class ReinforcePersonalArmor(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),description="go to a room having a ArmorReinforcer")
                 return ([quest],None)
 
+        # should not be reached
         return (None,(".","stand around confused"))
 
 src.quests.addType(ReinforcePersonalArmor)

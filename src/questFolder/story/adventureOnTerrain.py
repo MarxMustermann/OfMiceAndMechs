@@ -100,40 +100,39 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
         else:
             itemsOnFloor = character.container.getNearbyItems(character)
 
-        if not char_big_pos in self.donePointsOfInterest:
-            for item in itemsOnFloor:
-                if item.bolted or not item.walkable:
-                    continue
-                if item.xPosition == None:
-                    logger.error("found ghost item")
-                    continue
-                item_pos =item.getSmallPosition()
-                if item_pos[0] == None:
-                    logger.error("found ghost item")
-                    continue
-                if item_pos[0] > 12:
-                    continue
-                if character.container.isRoom and (item_pos[0] > 11 or item_pos[1] > 11 or item_pos[0] < 1 or item_pos[1] < 1):
-                    continue
+        for item in itemsOnFloor:
+            if item.bolted or not item.walkable:
+                continue
+            if item.xPosition == None:
+                logger.error("found ghost item")
+                continue
+            item_pos =item.getSmallPosition()
+            if item_pos[0] == None:
+                logger.error("found ghost item")
+                continue
+            if item_pos[0] > 12:
+                continue
+            if character.container.isRoom and (item_pos[0] > 11 or item_pos[1] > 11 or item_pos[0] < 1 or item_pos[1] < 1):
+                continue
 
-                if item.type in ("Scrap","MetalBars","MoldFeed"):
-                    continue
+            if item.type in ("Scrap","MetalBars","MoldFeed"):
+                continue
 
-                if item.type in ("Bolt",) and character.getFreeInventorySpace() <= 1:
-                    continue
+            if item.type in ("Bolt",) and character.getFreeInventorySpace() <= 1:
+                continue
 
-                invalidStack = False
-                for stackedItem in character.container.getItemByPosition(item.getPosition()):
-                    if stackedItem == item:
-                        break
-                    if not stackedItem.bolted:
-                        continue
-                    invalidStack = True
-                if invalidStack:
+            invalidStack = False
+            for stackedItem in character.container.getItemByPosition(item.getPosition()):
+                if stackedItem == item:
+                    break
+                if not stackedItem.bolted:
                     continue
+                invalidStack = True
+            if invalidStack:
+                continue
 
-                quest = src.quests.questMap["LootRoom"](targetPositionBig=character.getBigPosition(),endWhenFull=True,reason="gain useful items")
-                return ([quest],None)
+            quest = src.quests.questMap["LootRoom"](targetPositionBig=character.getBigPosition(),endWhenFull=True,reason="gain useful items")
+            return ([quest],None)
 
         if character.getBigPosition() in self.getRemainingPointsOfInterests():
             if not dryRun:

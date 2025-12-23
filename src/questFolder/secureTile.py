@@ -28,9 +28,8 @@ class SecureTile(src.quests.questMap["GoToTile"]):
             reasonString = f", to {self.reason}"
         storyString = ""
         if self.story:
-            storyString = self.story
-        text  = f"""{storyString}
-Secure the tile {self.targetPosition}{reasonString}.
+            storyString = self.story+"\n"
+        text  = f"""{storyString}Secure the tile {self.targetPosition}{reasonString}.
 
 This means you should go to the tile and kill all enemies you find."""
         if not self.endWhenCleared:

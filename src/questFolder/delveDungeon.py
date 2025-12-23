@@ -152,20 +152,23 @@ suicidal"""
                 quest = src.quests.questMap["Fight"](suicidal=True,reason="get rid of threats")
                 return ([quest],None)
 
+            # prepare for delving the dungeon
             currentTerrain = character.getTerrain()
             if currentTerrain == character.getHomeTerrain():
+
+                # upgrade equipment
                 for room in character.getTerrain().rooms:
                     for item in room.getItemsByType("SwordSharpener"):
                         if item.readyToBeUsedByCharacter(character):
                             quest = src.quests.questMap["SharpenPersonalSword"](reason="increase damage")
                             return ([quest],None)
-
                 for room in character.getTerrain().rooms:
                     for item in room.getItemsByType("ArmorReinforcer"):
                         if item.readyToBeUsedByCharacter(character):
                             quest = src.quests.questMap["ReinforcePersonalArmor"](reason="be better protected")
                             return ([quest],None)
 
+                # heal
                 if character.health < character.adjustedMaxHealth:
                     readyCoalBurner = False
                     for room in currentTerrain.rooms:
@@ -179,15 +182,18 @@ suicidal"""
                         quest = src.quests.questMap["Heal"](noWaitHeal=True,noVialHeal=True,reason="adventure in good health")
                         return ([quest],None)
 
+                # make sure to be unencumbered
                 for item in character.inventory:
                     if item.walkable == False:
                         quest = src.quests.questMap["ClearInventory"](returnToTile=False,reason="not be slowed down by big items")
                         return ([quest],None)
 
+                # ensure basic equipment
                 if not character.weapon or not character.armor:
                     quest = src.quests.questMap["Equip"](tryHard=True,reason="delve the dungeon well equipped")
                     return ([quest],None)
 
+                # ensure clean traps
                 for room in terrain.rooms:
                     if not room.tag == "trapRoom":
                         continue

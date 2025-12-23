@@ -189,18 +189,18 @@ Press d to move the cursor and show the subquests description.
             quest = src.quests.questMap["Fight"]()
             return ([quest],None)
 
+        # navigate menues
         submenue = character.macroState.get("submenue")
         if submenue and not ignoreCommands:
             if isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu) and character.getSpacePosition() == self.targetPosition:
                 command = submenue.get_command_to_select_item(item_type=self.itemType,selectionCommand="l")
                 if command:
                     return (None,(command,"drop the item"))
-
             if submenue.tag == "configurationSelection":
                 return (None,("b","bolt down the item"))
-
             return (None,(["esc"],"exit the menu"))
 
+        # check the conditions the quest is in
         itemFound = None
         itemPlaced = None
         if self.boltDown:
@@ -223,6 +223,7 @@ Press d to move the cursor and show the subquests description.
                 itemFound = items[-1]
                 itemPlaced = items[-1]
 
+        # place item
         if not itemPlaced:
             itemFound = None
             itemIndex = 0
@@ -276,14 +277,15 @@ Press d to move the cursor and show the subquests description.
 
                 return (None,(dropCommand,"drop the item"))
 
+        # go to item
         if self.targetPositionBig and self.targetPositionBig != character.getBigPosition():
             quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,description="go to buildsite",reason=f"be able to place the {self.itemType}")
             return ([quest],None)
-
         if character.getDistance(itemPlaced.getPosition()) > 1:
             quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,description="go to placement spot",reason=f"be able to place the {self.itemType}",ignoreEndBlocked=True)
             return ([quest],None)
 
+        # bolt down item
         pos = character.getPosition()
         targetPosition = itemPlaced.getPosition()
         if (pos[0],pos[1],pos[2]) == targetPosition:
@@ -296,7 +298,6 @@ Press d to move the cursor and show the subquests description.
             return (None,("wcb","bolt sown item"))
         if (pos[0],pos[1]+1,pos[2]) == targetPosition:
             return (None,("scb","bolt down item"))
-
         return (None,(".","stand around confused"))
 
     def triggerCompletionCheck(self,character=None,dryRun=True):

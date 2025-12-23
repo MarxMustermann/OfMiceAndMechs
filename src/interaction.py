@@ -251,6 +251,7 @@ tcodMixer = None
 sounds = {}
 settings = None
 sdl_cache = []
+sdl_map = {}
 
 def playSound(soundName,channelName,loop=False):
     if settings["sound"] != 0:
@@ -4311,10 +4312,16 @@ def printUrwidToDummy(dummy,inData,offset,color=None,internalOffset=None,size=No
     #footertext = stringifyUrwid(inData)
 
 allow_sdl = False
+sdl_map = {}
 def draw_sdl():
     global sdl_cache
+    global sdl_map
+
     #if not allow_sdl:
     #    return None
+
+    for element in sdl_map.values():
+        sdl_cache.extend(element)
 
     for element in sdl_cache:
         if element[0] == "line":
@@ -4324,6 +4331,7 @@ def draw_sdl():
             sdl_renderer2.draw_color = element[2]
             sdl_renderer2.fill_rect(element[1])
     sdl_cache = []
+    sdl_map = {}
 
 def renderGameDisplay(renderChar=None):
     pseudoDisplay = []
@@ -4781,10 +4789,13 @@ def renderGameDisplay(renderChar=None):
 
             try:
                 counter = offsetTop
+
                 tcodConsole.print(x=offsetLeft, y=counter-1, string="|",fg=(255,255,255),bg=(0,0,0))
                 pseudoDisplay[counter-1][offsetLeft] = "|"
+
                 tcodConsole.print(x=offsetLeft+width+3, y=counter-1, string="|",fg=(255,255,255),bg=(0,0,0))
                 pseudoDisplay[counter-1][offsetLeft+width+3] = "|"
+
                 #tcodConsole.print(x=offsetLeft+width+0, y=counter-1, string="<",fg=(255,255,255),bg=(0,0,0))
                 #pseudoDisplay[counter-1][offsetLeft+width+0] = "<"
                 #src.gamestate.gamestate.clickMap[(offsetLeft+width+0,counter-1)] = ["lESC"]

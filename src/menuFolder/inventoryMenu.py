@@ -261,6 +261,8 @@ class InventoryMenu(src.subMenu.SubMenu):
         Returns:
             the generated command (None for no command)
         """
+
+        # get the index of the item to select
         command = ""
         target_index = None
         counter = -1
@@ -272,6 +274,8 @@ class InventoryMenu(src.subMenu.SubMenu):
                 continue
             target_index = counter
             break
+
+        # generate the actual command
         if target_index is None:
             return None
         return "s"*(target_index-self.cursor)+"w"*(self.cursor-target_index)+selectionCommand

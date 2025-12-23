@@ -11,9 +11,9 @@ class BeUsefull(src.quests.MetaQuestSequence):
     '''
     type = "BeUsefull"
 
-    def __init__(self, description="be useful", creator=None, targetPosition=None, strict=False, reason=None, endOnIdle=False,numTasksToDo=None,failOnIdle=False):
+    def __init__(self, description="be useful", creator=None, targetPosition=None, strict=False, reason=None, endOnIdle=False,numTasksToDo=None,failOnIdle=False,lifetime=None):
         questList = []
-        super().__init__(questList, creator=creator)
+        super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = description
 
         self.targetPosition = None

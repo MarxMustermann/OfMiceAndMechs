@@ -70,12 +70,10 @@ farm mold on the tile {self.targetPosition}"""
         # process each plant
         items = self.getLeftoverItems(character)
         for item in items:
-            if item.bolted:
-                continue
-            else:
+            if item.type == "Bloom":
                 path = character.getTerrain().getPathTile(character.getTilePosition(),character.getSpacePosition() ,item.getSmallPosition(),character=character,ignoreEndBlocked =True)
                 if len(path):
-                    quest = src.quests.questMap["CleanSpace"](targetPosition=item.getSmallPosition(),targetPositionBig=self.targetPosition,reason="pick up the items")
+                    quest = src.quests.questMap["CleanSpace"](targetPosition=item.getSmallPosition(),targetPositionBig=self.targetPosition,reason="pick up the items",pickUpBolted=True)
                     return ([quest],None)
 
         if not self.stimulateMoldGrowth:

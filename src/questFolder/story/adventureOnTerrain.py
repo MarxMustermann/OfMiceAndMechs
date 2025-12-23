@@ -226,6 +226,8 @@ Go out and adventure on tile {self.targetTerrain}{reasonString}.
         if pos in self.getRemainingPointsOfInterests() and not pos in self.donePointsOfInterest:
             self.donePointsOfInterest.append(pos)
 
+        self.clearSubQuests()
+
     def assignToCharacter(self, character):
         '''
         listen to the character changing the terrain

@@ -82,37 +82,37 @@ Press d to move the cursor and show the subquests description.
         if reason and self.tryHard:
             if reason.startswith("no source for item "):
                 if reason.split(" ")[4] not in ("Wall","MetalBars","Scrap",):
-                        newQuest = src.quests.questMap["MetalWorking"](toProduce=reason.split(" ")[4],amount=1,produceToInventory=True,tryHard=self.tryHard)
+                        newQuest = src.quests.questMap["MetalWorking"](toProduce=reason.split(" ")[4],amount=1,produceToInventory=True,tryHard=self.tryHard,reason="have an item to build with")
                         self.addQuest(newQuest)
                         self.startWatching(newQuest,self.handleQuestFailure,"failed")
                         return
                 if "metal working" in self.character.duties:
                     if reason.split(" ")[4] not in ("MetalBars","Scrap",):
-                        newQuest = src.quests.questMap["MetalWorking"](toProduce=reason.split(" ")[4],amount=1,produceToInventory=True,tryHard=self.tryHard)
+                        newQuest = src.quests.questMap["MetalWorking"](toProduce=reason.split(" ")[4],amount=1,produceToInventory=True,tryHard=self.tryHard,reason="have available building material")
                         self.addQuest(newQuest)
                         self.startWatching(newQuest,self.handleQuestFailure,"failed")
                         return
 
                 if self.tryHard:
                     if reason.split(" ")[4] == "MetalBars":
-                        newQuest = src.quests.questMap["ScrapHammering"](amount=1,tryHard=self.tryHard)
+                        newQuest = src.quests.questMap["ScrapHammering"](amount=1,tryHard=self.tryHard,reason="have MetalBars to process")
                         self.addQuest(newQuest)
                         self.startWatching(newQuest,self.handleQuestFailure,"failed")
                         return
                     if reason.split(" ")[4] == ("MetalBars","Scrap",):
-                        newQuest = src.quests.questMap["GatherScrap"](tryHard=self.tryHard)
+                        newQuest = src.quests.questMap["GatherScrap"](tryHard=self.tryHard,reason="have Scrap to process")
                         self.addQuest(newQuest)
                         self.startWatching(newQuest,self.handleQuestFailure,"failed")
                         return
             if reason.startswith("full inventory"):
-                newQuest = src.quests.questMap["ClearInventory"]()
+                newQuest = src.quests.questMap["ClearInventory"](reason="be able to store items in inventory")
                 self.addQuest(newQuest)
                 self.startWatching(newQuest,self.handleQuestFailure,"failed")
                 return
 
         if reason and reason.startswith("moving failed - no path found"):
             quest = extraParam["quest"]
-            newQuest = src.quests.questMap["ClearPathToPosition"](targetPosition=quest.targetPosition)
+            newQuest = src.quests.questMap["ClearPathToPosition"](targetPosition=quest.targetPosition,reason="ensure you get where you need to be")
             self.addQuest(newQuest)
             self.startWatching(newQuest,self.handleQuestFailure,"failed")
             return
@@ -140,7 +140,7 @@ Press d to move the cursor and show the subquests description.
 
         # attack nearby enemies
         if character.getNearbyEnemies():
-            quest = src.quests.questMap["Fight"]()
+            quest = src.quests.questMap["Fight"](reason="handle enemy")
             return ([quest],None)
 
         # activate production item when marked
@@ -188,7 +188,7 @@ Press d to move the cursor and show the subquests description.
             numWalls = len(character.searchInventory("Wall"))
             if not numWalls:
                 if character.getFreeInventorySpace() < 2 and not character.searchInventory("Wall"):
-                    quest = src.quests.questMap["ClearInventory"](returnToTile=False)
+                    quest = src.quests.questMap["ClearInventory"](returnToTile=False,reason="be able to carry Walls")
                     return ([quest],None)
 
                 if not self.tryHard:
@@ -251,7 +251,7 @@ Press d to move the cursor and show the subquests description.
 
         # go to RoomBuilder
         if not character.getBigPosition() == self.targetPosition:
-            quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
+            quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition,reason="reach the build site")
             return ([quest], None)
         if character.getDistance((15*self.targetPosition[0]+7,15*self.targetPosition[1]+7,0)) > 1:
             quest = src.quests.questMap["GoToPosition"](targetPosition=(7,7,0),ignoreEndBlocked=True,reason="get next to the RoomBuilder")
@@ -302,7 +302,7 @@ Press d to move the cursor and show the subquests description.
             for y in range(1,13):
                 items = terrain.getItemByPosition((x*15+7,y*15+7,0))
                 if items and items[0].type == "RoomBuilder":
-                    quest = src.quests.questMap["BuildRoom"](targetPosition=(x,y,0),lifetime=15*15*15)
+                    quest = src.quests.questMap["BuildRoom"](targetPosition=(x,y,0),lifetime=15*15*15,reason="continue existing build site")
                     if not dryRun:
                         beUsefull.idleCounter = 0
                     return ([quest],None)
@@ -316,7 +316,7 @@ Press d to move the cursor and show the subquests description.
                 for candidate in cityPlaner.plannedRooms:
                     items = terrain.itemsByCoordinate.get((candidate[0]*15+7,candidate[1]*15+7,0))
                     if items and items[-1].type == "RoomBuilder":
-                        quest = src.quests.questMap["BuildRoom"](targetPosition=candidate,lifetime=15*15*15)
+                        quest = src.quests.questMap["BuildRoom"](targetPosition=candidate,lifetime=15*15*15,reason="continue build planned room")
                         if not dryRun:
                             beUsefull.idleCounter = 0
                         return ([quest],None)
@@ -326,7 +326,7 @@ Press d to move the cursor and show the subquests description.
                         cityPlaner.plannedRooms.remove(cityPlaner.plannedRooms[0])
                         continue
 
-                    quest= src.quests.questMap["BuildRoom"](targetPosition=cityPlaner.plannedRooms[0],lifetime=15*15*15)
+                    quest= src.quests.questMap["BuildRoom"](targetPosition=cityPlaner.plannedRooms[0],lifetime=15*15*15,reason="build a planned room")
                     if not dryRun:
                         beUsefull.idleCounter = 0
                     return ([quest],None)
@@ -374,19 +374,19 @@ Press d to move the cursor and show the subquests description.
             for candidate in possibleBuildSites:
                 items = terrain.itemsByCoordinate.get((candidate[0]*15+7,candidate[1]*15+7,0))
                 if items and items[-1].type == "RoomBuilder":
-                    quest = src.quests.questMap["BuildRoom"](targetPosition=candidate,lifetime=1000)
+                    quest = src.quests.questMap["BuildRoom"](targetPosition=candidate,lifetime=1000,reason="continue to make base bigger")
                     if not dryRun:
                         beUsefull.idleCounter = 0
                     return ([quest],None)
 
             for candidate in possibleBuildSites:
                 if len(terrain.itemsByBigCoordinate.get(candidate,[])) < 5:
-                    quest = src.quests.questMap["BuildRoom"](targetPosition=candidate,lifetime=1000)
+                    quest = src.quests.questMap["BuildRoom"](targetPosition=candidate,lifetime=1000,reason="make base bigger")
                     if not dryRun:
                         beUsefull.idleCounter = 0
                     return ([quest],None)
             for candidate in possibleBuildSites:
-                quest = src.quests.questMap["BuildRoom"](targetPosition=candidate,lifetime=1000)
+                quest = src.quests.questMap["BuildRoom"](targetPosition=candidate,lifetime=1000,reason="increase the size of the base")
                 if not dryRun:
                         beUsefull.idleCounter = 0
                 return ([quest],None)

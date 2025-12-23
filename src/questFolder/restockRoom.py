@@ -176,24 +176,24 @@ Place the items in the correct input or storage stockpile.
             return (None,(".","stand around confused"))
 
         # find stockpiles to drop things into
+        newInputs = []
         if self.toRestock:
             fullyEmpty = not character.inventory[-1].walkable
             inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny,allowStorage=False,fullyEmpty=fullyEmpty)
-            if not inputSlots:
+            if not inputSlots or self.targetPosition:
                 inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny,allowStorage=True,fullyEmpty=fullyEmpty)
             random.shuffle(inputSlots)
         else:
             for item in reversed(character.inventory):
                 fullyEmpty = not character.inventory[-1].walkable
                 inputSlots = room.getEmptyInputslots(itemType=item.type,allowAny=self.allowAny,allowStorage=False,fullyEmpty=fullyEmpty)
-                if not inputSlots:
+                if not inputSlots or self.targetPosition:
                     inputSlots = room.getEmptyInputslots(itemType=item.type,allowAny=self.allowAny,allowStorage=True,fullyEmpty=fullyEmpty)
                 random.shuffle(inputSlots)
                 if inputSlots:
                     break
 
         if self.targetPosition:
-            newInputs = []
             for slot in inputSlots:
                 if self.targetPosition != slot[0]:
                     continue

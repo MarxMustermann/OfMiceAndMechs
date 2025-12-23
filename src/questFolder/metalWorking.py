@@ -174,11 +174,9 @@ Press d to move the cursor and show the subquests description.
             return (None,(["esc"],"exit submenu"))
 
         # activate production item when marked
-        if character.macroState.get("itemMarkedLast"):
-            if character.macroState["itemMarkedLast"].type == "MetalWorkingBench":
-                return (None,("j","activate metal working bench"))
-            else:
-                return (None,(".","undo selection"))
+        action = self.generate_confirm_interaction_command(allowedItems=["MetalWorkingBench"])
+        if action:
+            return action
 
         # find local metal benches
         benches = []

@@ -12,6 +12,9 @@ class GetEpochReward(src.quests.MetaQuestSequence):
         self.reason = reason
 
     def generateTextDescription(self):
+        '''
+        generate a textual description to show on the UI
+        '''
         out = []
         reason = ""
         if self.reason:
@@ -79,6 +82,15 @@ This will allow you to focus on other tasks.
         return out
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
+        '''
+        generate the next step to solve the quest
+        Parameters:
+            character:       the character doing the quest
+            ignoreCommands:  whether to generate commands or not
+            dryRun:          flag to be stateless or not
+        Returns:
+            the activity to run as next step
+        '''
 
         # ensure subquests are completed
         while self.subQuests:
@@ -162,6 +174,12 @@ This will allow you to focus on other tasks.
         return ([quest],None)
 
     def handleGotEpochReward(self, extraInfo):
+        '''
+        end quest after having collected the reward
+        Parameters:
+            extraInfo:  context information
+        '''
+
         if self.completed:
             1/0
         if not self.active:
@@ -178,14 +196,30 @@ This will allow you to focus on other tasks.
 
         return super().assignToCharacter(character)
 
-    """
-    never complete
-    """
     def triggerCompletionCheck(self,character=None,dryRun=True):
+        '''
+        never complete
+        Parameters:
+            character:  the character doing the quest
+            dryRun:     flag to be stateless or not
+        Returns:
+            whether the quest ended or not
+        '''
         return False
 
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
+        '''
+        generate quests to be used in the duty system
+        Parameters:
+            beUsefull:   the quest to generate the duty for
+            character:   the character to generate the quest for
+            currentRoom: the room the character is currently in
+            dryRun:      flag for statelessness
+        Returns:
+            the generated quests ( (None,None) for no quest to do )
+        '''
+
         terrain = character.getTerrain()
 
         foundShrine = None

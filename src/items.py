@@ -1080,6 +1080,7 @@ class Item:
 
         submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(progressBar, targetParamName="abortKey")
         submenue.tag = "Wait"
+        submenue.do_not_scale = True
         character.macroState["submenue"] = submenue
         followUp_method = "delayedAction"
         if ticksLeft <= 1:

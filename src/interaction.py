@@ -2622,6 +2622,7 @@ def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
                ("change settings", "change settings")]
     submenu = src.menuFolder.selectionMenu.SelectionMenu("What do you want to do?", options)
     submenu.tag = "main menu"
+    submenu.do_not_scale = True
     char.macroState["submenue"] = submenu
 
     def trigger():
@@ -4791,7 +4792,7 @@ def renderGameDisplay(renderChar=None):
                 last_menu_dimension = (width,height)
             else:
                 last_menu_dimension = (max(width,last_menu_dimension[0]),max(height,last_menu_dimension[1]))
-                if not submenue or (submenue.tag not in ("Wait","main menu",) and not submenue.do_not_scale):
+                if not submenue or not submenue.do_not_scale:
                     width = last_menu_dimension[0]
                     height = last_menu_dimension[1]
 

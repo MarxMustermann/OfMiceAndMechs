@@ -150,14 +150,14 @@ class Quest:
     def generateSubquests(self,character=None,dryRun=True):
         pass
 
-    def generate_confirm_activation_command(self,allowedItems=None):
+    def generate_confirm_activation_command(self,allowedItems=None,activationCommand="j",description="activate"):
         if not self.character:
             return
         
         if self.character.macroState.get("itemMarkedLast"):
             item = self.character.macroState["itemMarkedLast"]
             if not allowedItems or item.type in allowedItems:
-                return (None,("j","activate"))
+                return (None,(activationCommand,description))
             else:
                 return (None,(".","undo selection"))
 

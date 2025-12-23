@@ -27,7 +27,7 @@ class PlaceItem(src.quests.MetaQuestSequence):
         '''
         if extraInfo["reason"] == "no path found":
             if self.tryHard or self.clearPath:
-                newQuest = src.quests.questMap["ClearPathToPosition"](targetPosition=self.targetPosition)
+                newQuest = src.quests.questMap["ClearPathToPosition"](targetPosition=self.targetPosition,reason="be able to place the item")
                 self.addQuest(newQuest)
                 self.startWatching(newQuest,self.handleQuestFailure,"failed")
                 return
@@ -186,7 +186,7 @@ Press d to move the cursor and show the subquests description.
 
         # defend yourself
         if character.getNearbyEnemies():
-            quest = src.quests.questMap["Fight"]()
+            quest = src.quests.questMap["Fight"](reason="save yourself")
             return ([quest],None)
 
         # navigate menues
@@ -247,12 +247,12 @@ Press d to move the cursor and show the subquests description.
                 else:
                     items = character.container.getItemByPosition((self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0))
                 if items and items[-1].type != self.itemType:
-                    quest = src.quests.questMap["CleanSpace"](targetPosition=self.targetPosition,targetPositionBig=self.targetPositionBig,pickUpBolted=True,abortOnfullInventory=False)
+                    quest = src.quests.questMap["CleanSpace"](targetPosition=self.targetPosition,targetPositionBig=self.targetPositionBig,pickUpBolted=True,abortOnfullInventory=False,reason="have clean spot to drop the item")
                     return ([quest],None)
 
             if self.clearSpace:
                 if items and items[-1].type != self.itemType:
-                    quest = src.quests.questMap["CleanSpace"](targetPosition=self.targetPosition,targetPositionBig=self.targetPositionBig,pickUpBolted=True,abortOnfullInventory=False)
+                    quest = src.quests.questMap["CleanSpace"](targetPosition=self.targetPosition,targetPositionBig=self.targetPositionBig,pickUpBolted=True,abortOnfullInventory=False,reason="have free space")
                     return ([quest],None)
 
             if character.getSpacePosition() != self.targetPosition:

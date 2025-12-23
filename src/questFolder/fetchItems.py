@@ -187,6 +187,12 @@ Press d to move the cursor and show the subquests description.
             if pos == (7,0,0):
                 return (None,("s","enter room"))
 
+        # pick up already selected items
+        if self.toCollect:
+            action = self.generate_confirm_activation_command(allowedItems=[self.toCollect],activationCommand="k",description="pick up")
+            if action:
+                return action
+
         # free up the players inventory
         if not self.amount:
             numItemsCollected = 0

@@ -160,11 +160,13 @@ Press d to move the cursor and show the subquests description.
             if pos == (7,0,0):
                 return (None,("s","enter room"))
 
+        # place the RoomBuilder
         items = terrain.getItemByPosition((15*self.targetPosition[0]+7,15*self.targetPosition[1]+7,0))
         if not items or items[-1].type != "RoomBuilder":
             quest = src.quests.questMap["PlaceItem"](targetPosition=(7,7,0),targetPositionBig=self.targetPosition,itemType="RoomBuilder",reason="start building the room",clearPath=True)
             return ([quest],None)
 
+        # check for missing Walls
         wallPositions = [(1,1,0),(1,13,0),(13,1,0),(13,13,0)]
         wallPositions.extend([(2,1,0),(3,1,0),(4,1,0),(5,1,0),(6,1,0)])
         wallPositions.extend([(8,1,0),(9,1,0),(10,1,0),(11,1,0),(12,1,0)])
@@ -181,6 +183,7 @@ Press d to move the cursor and show the subquests description.
                 continue
             missingWallPositions.append(wallPos)
 
+        # add missing Walls
         if missingWallPositions:
             numWalls = len(character.searchInventory("Wall"))
             if not numWalls:
@@ -214,6 +217,7 @@ Press d to move the cursor and show the subquests description.
                 counter += 1
             return (list(reversed(quests)),None)
 
+        # check for missing Doors
         doorPositions = [(7,1,0),(1,7,0),(7,13,0),(13,7,0)]
         missingDoorPositions = []
         for doorPos in doorPositions:
@@ -222,6 +226,7 @@ Press d to move the cursor and show the subquests description.
                 continue
             missingDoorPositions.append(doorPos)
 
+        # add missing Doors
         if missingDoorPositions:
             numDoors = 0
             for item in character.inventory:
@@ -244,14 +249,15 @@ Press d to move the cursor and show the subquests description.
                 counter += 1
             return (list(reversed(quests)),None)
 
+        # go to RoomBuilder
         if not character.getBigPosition() == self.targetPosition:
             quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
             return ([quest], None)
-
         if character.getDistance((15*self.targetPosition[0]+7,15*self.targetPosition[1]+7,0)) > 1:
             quest = src.quests.questMap["GoToPosition"](targetPosition=(7,7,0),ignoreEndBlocked=True,reason="get next to the RoomBuilder")
             return ([quest], None)
 
+        # activate the RoomBuilder
         interactionCommand = "J"
         if "advancedInteraction" in character.interactionState:
             interactionCommand = ""

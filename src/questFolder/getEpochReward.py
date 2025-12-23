@@ -19,7 +19,7 @@ class GetEpochReward(src.quests.MetaQuestSequence):
         text = f"""
 Claim a reward for completing the epoch challenge{reason}.
 
-You accumulated some glass tears.
+You accumulated some mana.
 Spend them to claim the actual reward.
 """
 

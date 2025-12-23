@@ -55,7 +55,7 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
             return (None, (["esc"], "exit menu"))
 
         if character.getNearbyEnemies():
-            quest = src.quests.questMap["Fight"]()
+            quest = src.quests.questMap["Fight"](reason="eliminate threats")
             return ([quest],None)
 
         currentTerrain = character.getTerrain()
@@ -64,7 +64,7 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
             return self._solver_trigger_fail(dryRun,"home is target")
 
         if not (currentTerrain.xPosition == self.targetTerrain[0] and currentTerrain.yPosition == self.targetTerrain[1]):
-            quest = src.quests.questMap["GoToTerrain"](targetTerrain=self.targetTerrain,terrainsWeight= self.terrainsWeight)
+            quest = src.quests.questMap["GoToTerrain"](targetTerrain=self.targetTerrain,terrainsWeight= self.terrainsWeight, reason="reach terrain to adventure on")
             return ([quest],None)
 
         if character.getBigPosition()[0] == 0:
@@ -132,7 +132,7 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
                 if invalidStack:
                     continue
 
-                quest = src.quests.questMap["LootRoom"](targetPositionBig=character.getBigPosition(),endWhenFull=True)
+                quest = src.quests.questMap["LootRoom"](targetPositionBig=character.getBigPosition(),endWhenFull=True,reason="gain useful items")
                 return ([quest],None)
 
         if character.getBigPosition() in self.getRemainingPointsOfInterests():
@@ -141,12 +141,15 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
             return (None,("+","register room as explored"))
 
         pointOfInterest = random.choice(pointsOfInterest)
-        quest = src.quests.questMap["LootRoom"](targetPositionBig=pointOfInterest,endWhenFull=True)
+        quest = src.quests.questMap["LootRoom"](targetPositionBig=pointOfInterest,endWhenFull=True,reason="gather loot")
         return ([quest],None)
 
     def generateTextDescription(self):
+        reasonString = ""
+        if self.reason:
+            reasonString = ", to "+self.reason
         text = [f"""
-Go out and adventure on tile {self.targetTerrain}.
+Go out and adventure on tile {self.targetTerrain}{reasonString}.
 
 """]
 

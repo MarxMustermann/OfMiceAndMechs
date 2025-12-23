@@ -172,7 +172,7 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
             return
 
         # clear inventory if needed
-        quest = src.quests.questMap["ClearInventory"]()
+        quest = src.quests.questMap["ClearInventory"](reason="be able to carry more metal bars")
         self.startWatching(quest,self.handleQuestFailure,"failed")
         self.addQuest(quest)
 
@@ -239,7 +239,7 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
                     continue
                 hasReadyAnvil = True
                 if anvil.scheduledAmount:
-                    quest = src.quests.questMap["ScrapHammering"](amount=min(10,anvil.scheduledAmount))
+                    quest = src.quests.questMap["ScrapHammering"](amount=min(10,anvil.scheduledAmount,reason="do planned production"))
                     if not dryRun:
                         beUsefull.idleCounter = 0
                     return ([quest],None)
@@ -259,7 +259,7 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
                 for item in items:
                     itemsInStorage[item.type] = itemsInStorage.get(item.type,0)+1
         if freeStorage and itemsInStorage.get("MetalBars",0) < 40:
-            quest = src.quests.questMap["ScrapHammering"](amount=10)
+            quest = src.quests.questMap["ScrapHammering"](amount=10,reason="ensure minimal stock of MetalBars")
             if not dryRun:
                 beUsefull.idleCounter = 0
             return ([quest],None)

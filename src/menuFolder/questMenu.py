@@ -221,7 +221,6 @@ class QuestMenu(src.subMenu.SubMenu):
                 "* press R to regenerate sub quests\n",
                 "* press k to check if that quest has been completed\n",
                 "* press K to mark the selected quest for auto completion\n",
-                "\n",
             ]
         )
 

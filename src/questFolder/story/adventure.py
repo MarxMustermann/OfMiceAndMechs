@@ -96,19 +96,24 @@ class Adventure(src.quests.MetaQuestSequence):
                     quest = src.quests.questMap["ClearTile"](targetPositionBig=room.getPosition(),reason="increase chances the traps will work")
                     return ([quest],None)
 
-        if not character.weapon or not character.armor:
-            quest = src.quests.questMap["Equip"](tryHard=True,reason="not be defenseless")
-            return ([quest],None)
-
-        if character.getTerrain() == character.getHomeTerrain():
-            if (not character.lastMapSync) or src.gamestate.gamestate.tick-character.lastMapSync > 100:
-                quest = src.quests.questMap["DoMapSync"](reason="allow the base to remember if you die")
-                return ([quest],None)
+            # ensure not beeing encombered
             for item in character.inventory:
                 if item.walkable:
                     continue
                 quest = src.quests.questMap["ClearInventory"](returnToTile=False,reason="get rid of big items")
                 return ([quest],None)
+            if character.getFreeInventorySpace(ignoreTypes=["Bolt"]) < 5:
+                quest = src.quests.questMap["ClearInventory"](returnToTile=False,reason="make space for loot")
+                return ([quest],None)
+
+            # sync map
+            if (not character.lastMapSync) or src.gamestate.gamestate.tick-character.lastMapSync > 100:
+                quest = src.quests.questMap["DoMapSync"](reason="allow the base to remember if you die")
+                return ([quest],None)
+
+        if not character.weapon or not character.armor:
+            quest = src.quests.questMap["Equip"](tryHard=True,reason="not be defenseless")
+            return ([quest],None)
 
         if currentTerrain.tag == "shrine":
             # go home directly

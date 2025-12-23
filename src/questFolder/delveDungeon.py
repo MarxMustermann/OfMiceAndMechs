@@ -227,6 +227,13 @@ suicidal"""
 
                         return (list(reversed(quests)),None)
 
+                # wait for wave to pass
+                if terrain.alarm:
+                    remaining_time = 15*15*15-src.gamestate.gamestate.tick%(15*15*15)
+                    if remaining_time < 1000:
+                        quest = src.quests.questMap["BeUsefull"](lifetime=remaining_time,reason="wait for wave to pass")
+                        return ([quest],None)
+
             if currentTerrain != character.getHomeTerrain():
                 if character.container.isRoom and character.getFreeInventorySpace() and isinstance(character,src.characters.characterMap["Clone"]):
                     for item in character.container.itemsOnFloor:

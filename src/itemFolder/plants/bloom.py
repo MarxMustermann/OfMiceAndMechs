@@ -62,14 +62,7 @@ class Bloom(src.items.Item):
             event.setCallback({"container": self, "method": "spawn"})
             self.container.addEvent(event)
 
-    def pickUp(self, character):
-        """
-        handle getting picked up by a character
-
-        Parameters:
-            character: the character picking the item uo
-        """
-
+    def unboltAction(self, character):
         # handle getting harversted
         if not self.dead:
 
@@ -96,10 +89,10 @@ class Bloom(src.items.Item):
                     nearby_character.hurt(5,"inhale spores")
 
             # die off
-            self.bolted = False
             self.localSpawn()
             self.dead = True
-        super().pickUp(character)
+
+        super().unboltAction(character)
 
     def spawn(self):
         """
@@ -140,10 +133,16 @@ class Bloom(src.items.Item):
 
             self.container.moistureMap[position] -= 1
 
+            own_position = self.getPosition()
+            container = self.container
+            container.removeItem(self)
+
             new = src.items.itemMap["Mold"]()
             new.charges = 4
-            self.container.addItem(new, self.getPosition())
+            container.addItem(new, own_position)
             new.startSpawn()
+
+            container.addItem(self, own_position)
 
     def getLongInfo(self):
         """

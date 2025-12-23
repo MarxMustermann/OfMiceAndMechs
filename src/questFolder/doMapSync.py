@@ -120,13 +120,13 @@ Use the MapTable to do this.
             if "advancedInteraction" in character.interactionState:
                 interactionCommand = ""
             if item.getPosition() == (character.xPosition-1,character.yPosition,0):
-                return (None,(interactionCommand+"aj","map table"))
+                return (None,(interactionCommand+"a","map table"))
             if item.getPosition() == (character.xPosition+1,character.yPosition,0):
-                return (None,(interactionCommand+"dj","map table"))
+                return (None,(interactionCommand+"d","map table"))
             if item.getPosition() == (character.xPosition,character.yPosition-1,0):
-                return (None,(interactionCommand+"wj","map table"))
+                return (None,(interactionCommand+"w","map table"))
             if item.getPosition() == (character.xPosition,character.yPosition+1,0):
-                return (None,(interactionCommand+"sj","map table"))
+                return (None,(interactionCommand+"s","map table"))
             
             quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to map table",reason="be able to use the MapTable")
             return  ([quest],None)

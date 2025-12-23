@@ -4333,7 +4333,10 @@ def draw_sdl():
     sdl_cache = []
     sdl_map = {}
 
+last_menu_dimension = None
 def renderGameDisplay(renderChar=None):
+    global last_menu_dimension
+
     pseudoDisplay = []
 
     src.gamestate.gamestate.clickMap = {}
@@ -4784,6 +4787,13 @@ def renderGameDisplay(renderChar=None):
                 height += 1
                 width = max(width,len(line))
 
+            if not last_menu_dimension:
+                last_menu_dimension = (width,height)
+            else:
+                last_menu_dimension = (max(width,last_menu_dimension[0]),max(height,last_menu_dimension[1]))
+                width = last_menu_dimension[0]
+                height = last_menu_dimension[1]
+
             offsetLeft = max(src.interaction.tcodConsole.width//2-width//2,1)
             offsetTop = max(min(src.interaction.tcodConsole.height//2-height//2,17),1)
 
@@ -4829,6 +4839,7 @@ def renderGameDisplay(renderChar=None):
                     pseudoDisplay[counter][offsetLeft+extraX] = char
                     extraX += 1
                 counter += 1
+                lines_printed = 0
                 for _line in plainText.split("\n"):
                     tcodConsole.print(x=offsetLeft, y=counter, string="| "+" "*width+" |",fg=(255,255,255),bg=(0,0,0))
                     extraX = 0
@@ -4836,6 +4847,16 @@ def renderGameDisplay(renderChar=None):
                         pseudoDisplay[counter][offsetLeft+extraX] = char
                         extraX += 1
                     counter += 1
+                    lines_printed += 1
+                while lines_printed < height:
+                    tcodConsole.print(x=offsetLeft, y=counter, string="| "+" "*width+" |",fg=(255,255,255),bg=(0,0,0))
+                    extraX = 0
+                    for char in "| "+" "*width+" |":
+                        pseudoDisplay[counter][offsetLeft+extraX] = char
+                        extraX += 1
+                    counter += 1
+                    lines_printed += 1
+
                 counter -= 1
                 tcodConsole.print(x=offsetLeft, y=counter, string="| "+" "*width+" |",fg=(255,255,255),bg=(0,0,0))
                 extraX = 0
@@ -4860,6 +4881,8 @@ def renderGameDisplay(renderChar=None):
                 printUrwidToTcod(main.get_text(),(offsetLeft+2,offsetTop+2))
             else:
                 printUrwidToDummy(pseudoDisplay, main.get_text(),(offsetLeft+2,offsetTop+2))
+    else:
+        last_menu_dimension = None
 
     tcodPresent()
 

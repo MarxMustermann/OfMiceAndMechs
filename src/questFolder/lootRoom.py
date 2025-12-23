@@ -104,7 +104,7 @@ Remove all items that are not bolted down."""
 
             # drop item from inventory
             if isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu) and character.getFreeInventorySpace() <= 1:
-                command = submenue._get_command_to_select_item(item_type="Bolt",selectionCommand="l")
+                command = submenue.get_command_to_select_item(item_type="Bolt",selectionCommand="l")
                 if command:
                     return (None,(command,"drop the item"))
 

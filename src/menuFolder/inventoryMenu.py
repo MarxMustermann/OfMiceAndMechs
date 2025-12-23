@@ -251,7 +251,7 @@ class InventoryMenu(src.subMenu.SubMenu):
                 self.min_cols = num_columns
         return txt
 
-    def _get_command_to_select_item(self,item_to_select=None,item_type=None,selectionCommand="j"):
+    def get_command_to_select_item(self,item_to_select=None,item_type=None,selectionCommand="j"):
         """
         get the keystrokes needed to press to activate an item
         """

@@ -74,34 +74,15 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
                 return (None,(targetAmount[correctIndex:],"enter name of the tem to produce"))
 
             # select to produce scrap on the anvil
-            if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
-
-                # get index of the menu entry to select
-                index = None
-                counter = 1
-                for option in submenue.options.items():
-                    if option[1] == "produce item":
-                        index = counter
-                        break
-                    counter += 1
-                if index is None:
-                    index = counter-1
-
-                # select the menu entry to produce the item
+            if submenue.tag == "applyOptionSelection" and submenue.extraInfo.get("item").type == "Anvil":
+                activation_command = "k"
                 if self.produceToInventory:
-                    activationCommand = "j"
-                else:
-                    activationCommand = "k"
+                    activation_command = "j"
                 if self.amount-self.amountDone > 1:
-                    activationCommand = activationCommand.upper()
-                offset = index-submenue.selectionIndex
-                command = ""
-                if offset > 0:
-                    command += "s"*offset
-                else:
-                    command += "w"*(-offset)
-                command += activationCommand
-                return (None,(command,"hammer scrap"))
+                    activation_command = activation_command.upper()
+                command = submenue.get_command_to_select_option("produce item",selectionCommand=activation_command)
+                if command:
+                    return (None,(command,"hammer scrap"))
 
             # exit othe menues
             return (None,(["esc"],"exit submenu"))

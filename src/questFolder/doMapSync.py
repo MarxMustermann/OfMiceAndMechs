@@ -138,6 +138,7 @@ Use the MapTable to do this.
                 quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),description="go to command centre", reason="reach a MapTable")
                 return ([quest],None)
 
+        # fail
         return self._solver_trigger_fail(dryRun,"no MapTable")
 
     def getQuestMarkersSmall(self,character,renderForTile=False):

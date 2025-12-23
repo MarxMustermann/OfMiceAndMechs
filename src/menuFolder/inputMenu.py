@@ -110,6 +110,9 @@ class InputMenu(src.subMenu.SubMenu):
         return False
 
     def get_command_to_input(self,value):
+        """
+        generates the command to type something
+        """
         if self.text == value:
             return ["enter"]
         if len(self.text) > len(value):

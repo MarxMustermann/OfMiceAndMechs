@@ -145,12 +145,9 @@ Press d to move the cursor and show the subquests description.
             return ([quest],None)
 
         # activate production item when marked
-        if character.macroState.get("itemMarkedLast"):
-            item = character.macroState["itemMarkedLast"]
-            if item.type == "RoomBuilder":
-                return (None,("j","activate RoomBuilder"))
-            else:
-                return (None,(".","undo selection"))
+        action = self.generate_confirm_interaction_command(allowedItems=["RoomBuilder"])
+        if action:
+            return action
 
         # properly enter tile
         if not character.container.isRoom:

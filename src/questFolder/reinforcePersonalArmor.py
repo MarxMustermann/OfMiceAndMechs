@@ -77,10 +77,8 @@ class ReinforcePersonalArmor(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["Fight"](description="defend yourself",reason="survive")
             return ([quest],None)
 
-        # use the armor reinforcer
+        # use reachable armor reinforcer
         if character.container.isRoom:
-
-            # use reachable armor reinforcer
             offsets = [(0,0,0),(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]
             for offset in offsets:
                 pos = character.getPosition(offset=offset)
@@ -103,7 +101,8 @@ class ReinforcePersonalArmor(src.quests.MetaQuestSequence):
                 if offset == (0,-1,0):
                     return (None,(interactionCommand+"w","improve personal armor"))
 
-            # go to armor reinforcer
+        # go to armor reinforcer in the same room
+        if character.container.isRoom:
             for item in character.container.itemsOnFloor:
                 if not item.type == "ArmorReinforcer":
                     continue

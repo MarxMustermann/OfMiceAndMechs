@@ -145,30 +145,16 @@ Press d to move the cursor and show the subquests description.
                 return (None,(command,"produce item"))
 
             # use menu to start producing an item
-            if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
-                if not submenue.extraInfo.get("item") or not submenue.extraInfo.get("item").type == "MetalWorkingBench":
-                    return (None,(["esc"],"exit submenu"))
-
+            if submenue.tag == "applyOptionSelection" and submenue.extraInfo.get("item").type == "MetalWorkingBench":
                 menuEntry = "produce item"
                 if submenue.extraInfo.get("item").lastProduction == self.toProduce:
                     menuEntry = "repeat"
-                counter = 1
-                for option in submenue.options.values():
-                    if option == menuEntry:
-                        index = counter
-                        break
-                    counter += 1
-                command = ""
-                if submenue.selectionIndex > counter:
-                    command += "w"*(submenue.selectionIndex-counter)
-                if submenue.selectionIndex < counter:
-                    command += "s"*(counter-submenue.selectionIndex)
-
+                activation_command = "j"
                 if submenue.extraInfo.get("item").lastProduction == self.toProduce and (self.amount and (self.amount-self.amountDone > 1)):
-                    command += "J"
-                else:
-                    command += "j"
-                return (None,(command,"start producing items"))
+                    activation_command = "J"
+                command = submenue.get_command_to_select_option(menuEntry,selectionCommand=activation_command)
+                if command:
+                    return (None,(command,"start producing items"))
 
             # close other menus
             return (None,(["esc"],"exit submenu"))

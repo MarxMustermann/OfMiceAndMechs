@@ -1281,6 +1281,8 @@ class CityPlaner(src.items.Item):
         """
         """
         terrain = self.getTerrain()
+        if not terrain:
+            return
 
         # render empty map
         mapContent = []

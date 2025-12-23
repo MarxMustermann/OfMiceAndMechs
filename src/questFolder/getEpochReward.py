@@ -69,10 +69,6 @@ Spawn a hauler. A hauling clone will carry items withins rooms.
 This will allow you to focus on other tasks.
 """
 
-        text += """
-(buying the wrong reward may break the tutorial, but is FUN)
-"""
-
         out.append(text)
         return out
 

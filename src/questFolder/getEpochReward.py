@@ -93,6 +93,10 @@ This will allow you to focus on other tasks.
         # handle sub menus
         submenue = character.macroState["submenue"]
         if character.macroState["submenue"] and not ignoreCommands:
+            if submenue.tag == "applyOptionSelection" and submenue.extraInfo.get("item").type == "Shrine":
+                command = submenue.get_command_to_select_option("wish")
+                if command:
+                    return (None,(command,"get your reward"))
             if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu):
                 if submenue.tag == "rewardSelection":
                     rewardIndex = 0
@@ -126,24 +130,12 @@ This will allow you to focus on other tasks.
                     command += "j"
                     return (None,(command,"get your reward"))
 
-                rewardIndex = 0
-                if rewardIndex == 0:
-                    counter = 1
-                    for option in submenue.options.items():
-                        if option[1] == "wish":
-                            break
-                        counter += 1
-                    rewardIndex = counter
-
-                command = ""
-                if submenue.selectionIndex > rewardIndex:
-                    command += "w"*(submenue.selectionIndex-rewardIndex)
-                if submenue.selectionIndex < rewardIndex:
-                    command += "s"*(rewardIndex-submenue.selectionIndex)
-                command += "j"
-                return (None,(command,"get your reward"))
-
             return (None,(["esc"],"exit submenu"))
+
+        # activate production item when marked
+        action = self.generate_confirm_activation_command(allowedItems=["Shrine"])
+        if action:
+            return action
 
         pos = character.getBigPosition()
 

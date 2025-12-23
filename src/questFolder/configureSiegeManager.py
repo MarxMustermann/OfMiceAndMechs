@@ -191,7 +191,7 @@ class ConfigureSiegeManager(src.quests.MetaQuestSequence):
         interactionCommand = "J"
         if "advancedInteraction" in character.interactionState:
             interactionCommand = ""
-        return (None,(interactionCommand+direction+"sssssj","open the configuration menu"))
+        return (None,(interactionCommand+direction,"open the configuration menu"))
 
     def generateTextDescription(self):
         '''

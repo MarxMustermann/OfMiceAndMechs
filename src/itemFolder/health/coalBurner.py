@@ -43,6 +43,8 @@ or use this item with MoldFeed in your inventory.
         '''
         if not self.container:
             return []
+        if not self.bolted:
+            return []
 
         moldFeed = []
 

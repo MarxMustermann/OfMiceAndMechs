@@ -175,4 +175,18 @@ you can eat it to gain %s satiation.
 
         super().destroy(generateScrap=False)
 
+    def getConfigurationOptions(self, character):
+        '''
+        register the configuration options with superclass
+
+        Parameters:
+            character: the character trying to conigure the machine
+        '''
+
+        options = super().getConfigurationOptions(character)
+        if self.bolted:
+            options["b"] = ("rip out", self.unboltAction)
+        return options
+
+
 src.items.addType(Bloom)

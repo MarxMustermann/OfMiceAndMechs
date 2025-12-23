@@ -145,22 +145,16 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
         # activate anvil
         pos = character.getPosition()
         anvilPos = anvilNearBy.getPosition()
-        if self.produceToInventory:
-            activationCommand = "j"
-        else:
-            activationCommand = "k"
-        if self.amount-self.amountDone > 1:
-            activationCommand = activationCommand.upper()
         if (pos[0],pos[1],pos[2]) == anvilPos:
-            return (None,("j"+activationCommand,"hammer some scrap"))
+            return (None,("j","hammer some scrap"))
         if (pos[0]-1,pos[1],pos[2]) == anvilPos:
-            return (None,("aj"+activationCommand,"hammer some scrap"))
+            return (None,("aj","hammer some scrap"))
         if (pos[0]+1,pos[1],pos[2]) == anvilPos:
-            return (None,("dj"+activationCommand,"hammer some scrap"))
+            return (None,("dj","hammer some scrap"))
         if (pos[0],pos[1]-1,pos[2]) == anvilPos:
-            return (None,("wj"+activationCommand,"hammer some scrap"))
+            return (None,("wj","hammer some scrap"))
         if (pos[0],pos[1]+1,pos[2]) == anvilPos:
-            return (None,("sj"+activationCommand,"hammer some scrap"))
+            return (None,("sj","hammer some scrap"))
 
         # fail
         return self._solver_trigger_fail(dryRun,"impossible state")

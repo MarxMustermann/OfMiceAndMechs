@@ -120,10 +120,31 @@ class MapMenu(src.subMenu.SubMenu):
         mapText.append(self.extraText)
 
         if not noRender:
+
             # show info
             src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), ""))
             self.persistentText = mapText
             src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.persistentText))
 
-
         return False
+
+    def get_command_to_select_position(self,coordinate,selectionCommand="j"):
+        """
+        generate the command to select a position
+        Parameters:
+            coordinate:        the coordinate to select
+            selectionCommand:  the command to select with
+        Returns:
+            the generated command
+        """
+        command = ""
+        cursor = self.cursor
+        if cursor[0] > coordinate[0]:
+            command += "a"*(cursor[0]-coordinate[0])
+        if cursor[0] < coordinate[0]:
+            command += "d"*(coordinate[0]-cursor[0])
+        if cursor[1] > coordinate[1]:
+            command += "w"*(cursor[1]-coordinate[1])
+        if cursor[1] < coordinate[1]:
+            command += "s"*(coordinate[1]-cursor[1])
+        return command+selectionCommand

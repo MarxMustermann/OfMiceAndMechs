@@ -241,12 +241,12 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
         text = ["""
 You reach out to your implant and it answers:
 
-Clear the terrain from all enmies, to be able to get promoted to base commander.
+Clear the terrain from all enemies, to be able to get promoted to base commander.
 This will allow you to contact main base.
 
 There are several types of enemies, that have different behaviour.
 I'll show you how to deal with each of them,
-but as long as the enmies die you get the promotion.
+but as long as the enemies die you get the promotion.
 So experiment on your own on how to best beat the enemies.
 
 Remember that the base provides you with important ressources and healing.

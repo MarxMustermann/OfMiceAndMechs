@@ -41,34 +41,15 @@ class ReadyBaseDefences(src.quests.MetaQuestSequence):
         # navigate menues
         submenue = character.macroState.get("submenue")
         if submenue and not ignoreCommands:
-            if submenue and isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
-
-                if not submenue.extraInfo.get("item"):
-                    return (None,(["esc"],"exit submenu"))
-
+            if submenue.tag == "applyOptionSelection" and submenue.extraInfo.get("item").type == "SiegeManager":
                 if terrain.alarm == False:
-                    menuEntry = "restrict outside"
+                    menuEntry = ("restrict outside","enable the outside restrictions")
                 else:
-                    menuEntry = "soundAlarms"
+                    menuEntry = ("soundAlarms","sound the alarms")
 
-                counter = 1
-                for option in submenue.options.values():
-                    if option == menuEntry:
-                        index = counter
-                        break
-                    counter += 1
-                command = ""
-                if submenue.selectionIndex > counter:
-                    command += "w"*(submenue.selectionIndex-counter)
-                if submenue.selectionIndex < counter:
-                    command += "s"*(counter-submenue.selectionIndex)
-                command += "j"
-
-                if terrain.alarm == False:
-                    return (None,(command,"enable the outside restrictions"))
-                else:
-                    return (None,(command,"sound the alarms"))
-
+                command = submenue.get_command_to_select_option(menuEntry[0])
+                if command:
+                    return (None,(command,menuEntry[1]))
             return (None,(["esc"],"to close menu"))
 
         # activate production item when marked

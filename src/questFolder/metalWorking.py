@@ -188,7 +188,7 @@ Press d to move the cursor and show the subquests description.
 
         reason = extraParam.get("reason")
         if reason and reason.startswith("no source for item MetalBars") and (self.tryHard or "scrap hammering" in self.character.duties):
-            newQuest = src.quests.questMap["ScrapHammering"](amount=self.amount,produceToInventory=True,tryHard=self.tryHard)
+            newQuest = src.quests.questMap["ScrapHammering"](amount=self.amount,produceToInventory=True,tryHard=self.tryHard,reason="have MetalBars to process")
             self.addQuest(newQuest)
             self.startWatching(newQuest,self.handleQuestFailure,"failed")
             return
@@ -214,7 +214,7 @@ Press d to move the cursor and show the subquests description.
         if not self.active:
             return
 
-        quest = src.quests.questMap["ClearInventory"]()
+        quest = src.quests.questMap["ClearInventory"](reason="be able to store items in your inventory")
         self.startWatching(quest,self.handleQuestFailure,"failed")
         self.addQuest(quest)
 
@@ -272,8 +272,8 @@ Press d to move the cursor and show the subquests description.
         random.shuffle(freeMetalWorkingBenches)
         for metalWorkingBench in freeMetalWorkingBenches:
             if metalWorkingBench.scheduledItems:
-                quests = [src.quests.questMap["ClearInventory"](),
-                          src.quests.questMap["MetalWorking"](amount=1,toProduce=metalWorkingBench.scheduledItems[0])]
+                quests = [src.quests.questMap["ClearInventory"](reason="store the product"),
+                          src.quests.questMap["MetalWorking"](amount=1,toProduce=metalWorkingBench.scheduledItems[0],resaon="produce scheduled items")]
                 if not dryRun:
                     beUsefull.idleCounter = 0
                 return (quests,None)
@@ -303,15 +303,15 @@ Press d to move the cursor and show the subquests description.
                         continue
                     if buildSite[1] in itemsInStorage:
                         continue
-                    quests = [src.quests.questMap["ClearInventory"](returnToTile=False),
-                              src.quests.questMap["MetalWorking"](toProduce=buildSite[1],amount=1,produceToInventory=False)]
+                    quests = [src.quests.questMap["ClearInventory"](returnToTile=False,reason="store the produced items"),
+                              src.quests.questMap["MetalWorking"](toProduce=buildSite[1],amount=1,produceToInventory=False,reason="have something to place on build sites")]
                     return (quests,None)
 
             checkItems = [("RoomBuilder",1,1),("Door",1,1),("Wall",1,1),("Painter",1,1),("ScrapCompactor",1,1),("Case",1,1),("Frame",1,1),("Rod",1,1),("MaggotFermenter",1,1),("Sword",1,1),("Armor",1,1),("Bolt",10,5),("CoalBurner",1,1),("BioPress",1,1),("GooProducer",1,1),("GooDispenser",1,1),("VialFiller",1,1),("Door",4,1),("Painter",2,1),("Wall",10,3),("ScrapCompactor",2,1)]
             for checkItem in checkItems:
                 if itemsInStorage.get(checkItem[0],0) < checkItem[1]:
-                    quests = [src.quests.questMap["ClearInventory"](returnToTile=False),
-                            src.quests.questMap["MetalWorking"](amount=checkItem[2],toProduce=checkItem[0])]
+                    quests = [src.quests.questMap["ClearInventory"](returnToTile=False,reason="not carry the produced items around"),
+                            src.quests.questMap["MetalWorking"](amount=checkItem[2],toProduce=checkItem[0],reason="have common items in stock")]
                     if not dryRun:
                         beUsefull.idleCounter = 0
                     return (quests,None)

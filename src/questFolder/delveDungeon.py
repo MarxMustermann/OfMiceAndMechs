@@ -172,6 +172,8 @@ suicidal"""
                         for coalBurner in room.getItemsByType("CoalBurner"):
                             if not coalBurner.getMoldFeed(character):
                                 continue
+                            if not coalBurner.bolted:
+                                continue
                             readyCoalBurner = True
                     if readyCoalBurner:
                         quest = src.quests.questMap["Heal"](noWaitHeal=True,noVialHeal=True)

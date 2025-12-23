@@ -20,6 +20,9 @@ class QuestMenu(src.subMenu.SubMenu):
         self.sidebared = False
         super().__init__()
 
+        self.min_lines = 8
+        self.min_cols = 50
+
     def setCursorToCurrentQuest(self):
         '''
         select the deepest quest that is not trivial 
@@ -175,7 +178,7 @@ class QuestMenu(src.subMenu.SubMenu):
                 + self.char.name
                 + ""
                 + addition
-                + "\n\n",
+                + "\n",
             )
         )
         self.persistentText = []
@@ -184,6 +187,26 @@ class QuestMenu(src.subMenu.SubMenu):
         )
 
         self.lockOptions = False
+
+        self.persistentText.append("\n")
+
+        num_lines = 0
+        num_cols = 0
+        unformatted_text = src.interaction.stringifyUrwid(self.persistentText)
+        for line in unformatted_text.split("\n"):
+            num_lines += 1
+            num_cols = max(num_cols,len(line))
+        num_lines += 1
+
+        rows_when_completed = num_lines+10
+        if rows_when_completed <= self.min_lines:
+            self.persistentText.append("\n"*(self.min_lines-rows_when_completed))
+        else:
+            self.min_lines = rows_when_completed
+        if num_cols <= self.min_cols:
+            self.persistentText.append(" "*(self.min_cols-num_cols))
+        else:
+            min_cols = num_cols
 
         # add interaction instructions
         self.persistentText.extend(

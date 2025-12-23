@@ -126,14 +126,19 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
         return self._solver_trigger_fail(dryRun,"impossible state")
 
     def handleQuestFailure(self,extraParam):
+
+        # handle weird edge cases
         if extraParam["quest"] not in self.subQuests:
             return
 
+        # remove completed quests
         self.subQuests.remove(extraParam["quest"])
 
+        # set up helper variables
         quest = extraParam["quest"]
-
         reason = extraParam.get("reason")
+
+        # collect missing scrap
         if (reason and reason.startswith("no source for item Scrap") and 
                 (self.tryHard or "resource gathering" in self.character.duties) and 
                 (not self.character.getTerrain().alarm or self.tryHard) ):
@@ -142,6 +147,7 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
             self.startWatching(quest,self.handleQuestFailure,"failed")
             return
 
+        # fail recursively
         self.fail(reason)
 
     def handleHammeredScrap(self, extraInfo):

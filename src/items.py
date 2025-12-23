@@ -348,6 +348,8 @@ class Item:
             terrain = self.container.container
         elif self.container:
             terrain = self.container
+        else:
+            terrain = None
         return terrain
 
     def apply(self, character):

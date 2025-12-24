@@ -175,10 +175,11 @@ Remove all items from the walkways that are not bolted down."""
         # clear items directly next to the character
         if foundOffset:
             interactionCommand = "K"
-            if submenue.tag == "advancedPickupSelection":
-                interactionCommand = ""
-            else:
-                return (None,(["esc"],"close menu"))
+            if submenue:
+                if submenue.tag == "advancedPickupSelection":
+                    interactionCommand = ""
+                else:
+                    return (None,(["esc"],"close menu"))
             if foundOffset == (0,0,0):
                 command = "k"
             if foundOffset == (1,0,0):

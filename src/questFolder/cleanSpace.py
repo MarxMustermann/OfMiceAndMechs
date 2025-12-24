@@ -80,7 +80,8 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
         if submenue:
             if submenue.tag == "configurationSelection":
                 return (None,("b","unbolt the item"))
-            return (None,(["esc"],"exit the menu"))
+            if not submenue.tag in ("advancedPickupSelection",):
+                return (None,(["esc"],"exit the menu"))
 
         terrain = character.getTerrain()
         rooms = terrain.getRoomByPosition(self.targetPositionBig)
@@ -136,8 +137,11 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
                         return (None, (direction+"cb","unbolt item"))
 
                     interactionCommand = "K"
-                    if "advancedPickup" in character.interactionState:
-                        interactionCommand = ""
+                    if submenue:
+                        if submenue.tag == "advancedPickupSelection":
+                            interactionCommand = ""
+                        else:
+                            return (None,(["esc"],"close menu"))
                     command = interactionCommand+direction
                     if command == "K.":
                         command = "k"

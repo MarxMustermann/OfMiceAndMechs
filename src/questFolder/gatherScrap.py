@@ -109,10 +109,11 @@ Scrapfields are shown on the minimap as white ss"""]
 
                     command = command*min(10-len(character.inventory),items[0].amount)
                     if command[0] == "K":
-                        if submenue.tag == "advancedPickupSelection":
-                            command = command[1:]
-                        else:
-                            return (None,(["esc"],"close menu"))
+                        if submenue:
+                            if submenue.tag == "advancedPickupSelection":
+                                command = command[1:]
+                            else:
+                                return (None,(["esc"],"close menu"))
                     return (None,(command,"pick up scrap"))
 
         foundScrap = None

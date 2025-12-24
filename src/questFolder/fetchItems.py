@@ -298,10 +298,11 @@ Press d to move the cursor and show the subquests description.
                     if foundDirection:
                         interactionCommand = "K"
                         direction_command = None
-                        if submenue.tag == "advancedPickupSelection":
-                            interactionCommand = ""
-                        else:
-                            return (None,(["esc"],"close menu"))
+                        if submenue:
+                            if submenue.tag == "advancedPickupSelection":
+                                interactionCommand = ""
+                            else:
+                                return (None,(["esc"],"close menu"))
                         if foundDirection == (0,0,0):
                             direction_command = "."
                         if foundDirection == (1,0,0):

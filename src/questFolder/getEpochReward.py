@@ -274,9 +274,8 @@ This will allow you to focus on other tasks.
                 cost += chargesUsed
                 if character.getTerrain().mana >= cost:
                     quest = src.quests.questMap["GetEpochReward"](rewardType="spawn "+duty+" NPC",reason="spawn another clone to help you out")
-                    chargesUsed += 10
+                    chargesUsed += cost
                     quests.append(quest)
-                    break
 
         # dispatch the generated quests
         if quests:

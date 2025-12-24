@@ -109,12 +109,8 @@ class GoToTerrain(src.quests.MetaQuestSequence):
         submenue = character.macroState.get("submenue")
         if submenue:
             if submenue.tag == "terrainMovementmenu":
-                movementCommand = ""
-                movementCommand += "s"*(targetTerrain[1]-submenue.cursor[1])
-                movementCommand += "w"*(submenue.cursor[1]-targetTerrain[1])
-                movementCommand += "d"*(targetTerrain[0]-submenue.cursor[0])
-                movementCommand += "a"*(submenue.cursor[0]-targetTerrain[0])
-                return (None,(movementCommand+"j","start the auto movement"))
+                command = submenue.get_command_to_select_position(targetTerrain)
+                return (None,(command,"start the auto movement"))
             if submenue.tag == "tileMovementmenu":
                 if character.getTerrain().yPosition > targetTerrain[1]:
                     if character.getBigPosition() not in ((7,1,0),(7,0,0)) and not (character.getBigPosition()[0] in (0,14,) or character.getBigPosition()[1] in (0,14,)):
@@ -135,17 +131,10 @@ class GoToTerrain(src.quests.MetaQuestSequence):
             return ([quest],None)
 
         if self.allowTerrainMenu:
-            movementCommand = ""
-            movementCommand += "s"*(targetTerrain[1]-character.getTerrain().yPosition)
-            movementCommand += "w"*(character.getTerrain().yPosition-targetTerrain[1])
-            movementCommand += "d"*(targetTerrain[0]-character.getTerrain().xPosition)
-            movementCommand += "a"*(character.getTerrain().xPosition-targetTerrain[0])
-
             menuCommand = "g"
             if "runaction" in character.interactionState:
                 menuCommand = ""
-
-            return (None,(menuCommand+"M"+movementCommand+"j","auto move to terrain"))
+            return (None,(menuCommand+"M","open terrain fast travel menu"))
 
         menu_command = "g"
         if "runaction" in character.interactionState:

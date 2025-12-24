@@ -205,7 +205,7 @@ Press control-d to stop your character from moving.
                 )
                 return ([quest], None)
             else:
-                quest = src.quests.questMap["GoToTerrain"](targetTerrain=self.getHomeLocation())
+                quest = src.quests.questMap["GoToTerrain"](targetTerrain=self.getHomeLocation(),reason="get home any way possible")
                 return ([quest], None)
 
         # workaround missing home rooms

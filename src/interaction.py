@@ -4776,7 +4776,8 @@ def renderGameDisplay(renderChar=None):
 
             pygame.display.update()
         if tcodConsole:
-            plainText = stringifyUrwid(main.get_text())
+            text = main.get_text()
+            plainText = stringifyUrwid(text)
 
             height = 0
             width = 0
@@ -4874,11 +4875,11 @@ def renderGameDisplay(renderChar=None):
             except:
                 pass
 
-            #printUrwidToTcod(main.get_text(),(offsetLeft+2,offsetTop+2),size=(width,height))
+            #printUrwidToTcod(text,(offsetLeft+2,offsetTop+2),size=(width,height))
             if not renderChar:
-                printUrwidToTcod(main.get_text(),(offsetLeft+2,offsetTop+2))
+                printUrwidToTcod(text,(offsetLeft+2,offsetTop+2))
             else:
-                printUrwidToDummy(pseudoDisplay, main.get_text(),(offsetLeft+2,offsetTop+2))
+                printUrwidToDummy(pseudoDisplay, text,(offsetLeft+2,offsetTop+2))
     else:
         last_menu_dimension = None
 

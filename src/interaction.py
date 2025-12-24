@@ -4780,7 +4780,6 @@ def renderGameDisplay(renderChar=None):
                 text = submenue.render()
             else:
                 text = main.get_text()
-            text = main.get_text()
             plainText = stringifyUrwid(text)
 
             height = 0

@@ -22,13 +22,10 @@ jobs:
         run: |
           curl -L https://www.python.org/ftp/python/3.12.8/python-3.12.8-embed-amd64.zip -o ./Game/Data.zip
           unzip Game/Data.zip -d Game/Data/
-          ls Game
           rm Game/Data.zip
-          ls Game/Data/
           Add-Content -Path ./Game/Data/python312._pth -Value "./Lib/site-packages/"
           Add-Content -Path ./Game/Data/python312._pth -Value "import site"
           curl -L https://bootstrap.pypa.io/get-pip.py -o ./Game/Data/get-pip.py
-          ls Game/Data/
           ./Game/Data/python ./Game/Data/get-pip.py
           ./Game/Data/Scripts/pip install -r ./Game/Data/requirements.txt
           echo "cd Data" | out-file ./Game/lunch_game.bat

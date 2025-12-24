@@ -88,11 +88,6 @@ So if an enemy is to directly east of you:
 
         if character.health < character.maxHealth//2 and character.canHeal():
             return (None,("Jh","heal"))
-
-        try:
-            self.suicidal
-        except:
-            self.suicidal = False
         if (not self.suicidal) and (character.health < character.maxHealth//5):
             return self._solver_trigger_fail(dryRun,"low health")
 

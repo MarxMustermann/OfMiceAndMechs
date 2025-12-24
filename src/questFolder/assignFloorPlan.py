@@ -44,10 +44,10 @@ Set the floor plan: {self.floorPlanType}
 
             # select build site on map
             if isinstance(submenue,src.menuFolder.mapMenu.MapMenu) and not ignoreCommands:
+                cityPlaner = character.container.getItemsByType("CityPlaner")[0]
                 if self.roomPosition not in cityPlaner.getAvailableRoomPositions():
                     return self._solver_trigger_fail(dryRun,"room already registered")
                 selection_command = "f"
-                cityPlaner = character.container.getItemsByType("CityPlaner")[0]
                 if self.roomPosition in cityPlaner.plannedRooms:
                     selection_command = "x"
                 command = submenue.get_command_to_select_position(coordinate=self.roomPosition,selectionCommand=selection_command)

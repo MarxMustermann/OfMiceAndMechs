@@ -79,7 +79,7 @@ farm mold{reason}."""
         # pick bloom
         if candidates:
             coord = random.choice(candidates)
-            quest = src.quests.questMap["FarmMoldTile"](targetPosition=coord,stimulateMoldGrowth=False,tryHard=self.tryHard)
+            quest = src.quests.questMap["FarmMoldTile"](targetPosition=coord,stimulateMoldGrowth=False,tryHard=self.tryHard,reason="harvest one field")
             return ([quest],None)
 
         # search for sprouts to pick
@@ -100,7 +100,7 @@ farm mold{reason}."""
         # pick sprouts
         if candidates:
             coord = random.choice(candidates)
-            quest = src.quests.questMap["FarmMoldTile"](targetPosition=coord,tryHard=self.tryHard)
+            quest = src.quests.questMap["FarmMoldTile"](targetPosition=coord,tryHard=self.tryHard,reason="encourage growth")
             return ([quest],None)
 
         # abort when nothing to do
@@ -127,12 +127,12 @@ farm mold{reason}."""
             return (None,None)
 
         if not character.getFreeInventorySpace():
-            quest = src.quests.questMap["ClearInventory"]()
+            quest = src.quests.questMap["ClearInventory"](reason="make space for blooms")
             if not dryRun:
                 beUsefull.idleCounter = 0
             return ([quest],None)
 
-        quest = src.quests.questMap["FarmMold"](lifetime=1000)
+        quest = src.quests.questMap["FarmMold"](lifetime=1000,reason="keep the fields going")
         if not dryRun:
             beUsefull.idleCounter = 0
         return ([quest],None)

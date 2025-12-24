@@ -271,7 +271,7 @@ Remove all items that are not bolted down."""
                     if submenue.tag == "advancedPickupSelection":
                         command = command[1:]
                     else:
-                        return (None,(["esc"],"close menu")
+                        return (None,(["esc"],"close menu"))
 
             return (None,(command,"clear spot"))
 

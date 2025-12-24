@@ -136,15 +136,6 @@ class Adventure(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["GoHome"](reason="bring home loot")
                 return ([quest],None)
 
-        # loot ruins
-        if currentTerrain.tag == "ruin":
-            if character.getFreeInventorySpace():
-                # loot on current terrain
-                info = character.terrainInfo[currentTerrain.getPosition()]
-                if not info.get("looted"):
-                    quest = src.quests.questMap["AdventureOnTerrain"](targetTerrain=currentTerrain.getPosition(),reason="get more loot")
-                    return ([quest], None)
-        
         # interact with most menus
         submenue = character.macroState.get("submenue")
         if submenue and not ignoreCommands:
@@ -152,7 +143,7 @@ class Adventure(src.quests.MetaQuestSequence):
                 return (None,(["esc"],"close the menu"))
 
         # clear inventory from scrap
-        if character.searchInventory("Scrap") and not character.container.getItemByPosition(character.getPosition()):
+        if character.searchInventory("Scrap") and character.container.getPositionWalkable(character.getPosition()):
 
             # drop scrap that can be easily dropped
             index = 0
@@ -177,6 +168,15 @@ class Adventure(src.quests.MetaQuestSequence):
         if submenue and not ignoreCommands:
             return (None,(["esc"],"close the menu"))
 
+        # loot ruins
+        if currentTerrain.tag == "ruin":
+            if character.getFreeInventorySpace():
+                # loot on current terrain
+                info = character.terrainInfo[currentTerrain.getPosition()]
+                if not info.get("looted"):
+                    quest = src.quests.questMap["AdventureOnTerrain"](targetTerrain=currentTerrain.getPosition(),reason="get more loot")
+                    return ([quest], None)
+        
         # get all reasonable candidates to move to
         candidates = []
         extraWeight = {}

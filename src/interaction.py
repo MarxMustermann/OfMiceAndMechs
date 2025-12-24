@@ -3044,6 +3044,7 @@ press key to set fire direction
 
                     submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text,ignoreFirstKey=False)
                     submenue.followUp = {"method":doRangedAttack,"params":{"character":char}}
+                    submenue.tag = "selectFireDirection"
                     char.macroState["submenue"] = submenue
                 return None
             elif char.hasRandomShot:

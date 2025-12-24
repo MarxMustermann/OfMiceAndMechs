@@ -3023,13 +3023,13 @@ press key to set fire direction
                     submenue.followUp = {"method":doRangedAttack,"params":{"character":char}}
                     submenue.tag = "selectFireDirection"
                     char.macroState["submenue"] = submenue
-                return None
             elif char.hasRandomShot:
                 char.doRandomRanged()
             else:
                 char.addMessage("no ranged attack")
             if charState.get("itemMarkedLast"):
                 del charState["itemMarkedLast"]
+            return None
         if key in ("K",):
             if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
                 text = """

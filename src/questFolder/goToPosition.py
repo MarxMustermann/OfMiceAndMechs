@@ -33,6 +33,12 @@ class GoToPosition(src.quests.MetaQuestSequence):
         self.idleMovement = idleMovement
 
     def generateTextDescription(self):
+        '''
+        generate a textual description to show on the UI
+        Returns:
+            the textual description
+        '''
+
         reason = ""
         if self.reason:
             reason = f",\nto {self.reason}"
@@ -63,6 +69,15 @@ Close this menu by pressing esc and follow the instructions on the left hand men
         return text
 
     def getQuestMarkersSmall(self,character,renderForTile=False):
+        '''
+        return the quest markers for the normal map
+        Parameters:
+            character:      the character doing the quest
+            renderForTile:  whether or not to show the markers for a room or a tile
+        Returns:
+            the quest markers to show
+        '''
+
         if isinstance(character.container,src.rooms.Room):
             if renderForTile:
                 return []
@@ -82,6 +97,12 @@ Close this menu by pressing esc and follow the instructions on the left hand men
         return result
 
     def handleMoved(self, extraInfo):
+        '''
+        handle character movement
+        Parameters:
+            extraInfo:  context information
+        '''
+
         if not self.active:
             return
         if self.completed:
@@ -114,6 +135,12 @@ Close this menu by pressing esc and follow the instructions on the left hand men
             self.generatePath(self.character)
 
     def handleChangedTile(self, extraInfo=None):
+        '''
+        handle tile change
+        Parameters:
+            extraInfo:  context information
+        '''
+
         if not self.active:
             return
         if self.completed:
@@ -121,6 +148,12 @@ Close this menu by pressing esc and follow the instructions on the left hand men
         self.fail()
 
     def handleCollision(self, extraInfo=None):
+        '''
+        handle collision
+        Parameters:
+            extraInfo:  context information
+        '''
+
         if not self.active:
             return
         if self.completed:
@@ -141,6 +174,12 @@ Close this menu by pressing esc and follow the instructions on the left hand men
                 del container.pathfinderCache[bigPos]
 
     def assignToCharacter(self, character):
+        '''
+        assign quest to a character
+        Parameters:
+            character:  the character to assign quest to
+        '''
+
         if self.character:
             return
 
@@ -155,6 +194,15 @@ Close this menu by pressing esc and follow the instructions on the left hand men
         super().assignToCharacter(character)
 
     def triggerCompletionCheck(self, character=None, dryRun=True):
+        '''
+        check if the quest completed and end it
+        Parameters:
+            character:  the character doing the quest
+            dryRun:     flag to be stateless or not
+        Returns:
+            whether the quest ended or not
+        '''
+
         if not self.targetPosition:
             return False
         if not character:
@@ -174,6 +222,13 @@ Close this menu by pressing esc and follow the instructions on the left hand men
         return False
 
     def generatePath(self,character,dryRun=True):
+        '''
+        generates a path to target
+        Parameter:
+            character:  the character doing the quest
+            dryRun:     flag to be stateless or not
+        '''
+
         if not character.container:
             if not dryRun:
                 self.fail()
@@ -191,6 +246,12 @@ Close this menu by pressing esc and follow the instructions on the left hand men
                 self.fail("no path found")
 
     def setParameters(self,parameters):
+        '''
+        set the quests parameters (obsolete?)
+        Parameters:
+            parameters:  the parameters to set
+        '''
+
         if "targetPosition" in parameters and "targetPosition" in parameters:
             self.targetPosition = parameters["targetPosition"]
             self.metaDescription = self.baseDescription+f" {self.targetPosition}"
@@ -199,6 +260,16 @@ Close this menu by pressing esc and follow the instructions on the left hand men
         return super().setParameters(parameters)
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
+        '''
+        generate the next step to solve the quest
+        Parameters:
+            character:       the character doing the quest
+            ignoreCommands:  whether to generate commands or not
+            dryRun:          flag to be stateless or not
+        Returns:
+            the activity to run as next step
+        '''
+
         if self.triggerCompletionCheck(character,dryRun=dryRun):
             return (None,(".","stand around confused"))
 
@@ -242,11 +313,23 @@ Close this menu by pressing esc and follow the instructions on the left hand men
         return (None,(command,"go to target position"))
 
     def getRequiredParameters(self):
+        '''
+        lists the required parameters for this quests
+        Returns:
+            the required parameters
+        '''
         parameters = super().getRequiredParameters()
         parameters.append({"name":"targetPosition","type":"coordinate"})
         return parameters
 
     def isPathSane(self,character):
+        '''
+        checks if the planed path is sane
+        Parameters:
+            character:       the character doing the quest
+        Returns:
+            whether or not the path is sane
+        '''
         if not self.path:
             return False
 
@@ -264,4 +347,5 @@ Close this menu by pressing esc and follow the instructions on the left hand men
 
         return False
 
+# register quest type
 src.quests.addType(GoToPosition)

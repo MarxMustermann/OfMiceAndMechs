@@ -160,10 +160,6 @@ class SubMenu(object):
                 self.niceOptions[str(counter)] = oldNiceOptions[str(counter - 1)]
                 counter += 1
 
-        # show question
-        out = ["\n"]
-        out.extend([self.query, "\n"])
-
         # handle the selection of options
         if not self.lockOptions:
             # change the marked option
@@ -202,33 +198,37 @@ class SubMenu(object):
         else:
             self.lockOptions = False
 
-        extraDescription = None
         if not noRender:
-            # render the options
-            counter = 0
-            for k, v in self.niceOptions.items():
-                counter += 1
-                if counter == self.selectionIndex:
-                    out.extend([" -> ", v, "\n"])
-                    if self.extraDescriptions and self.options[k] in self.extraDescriptions:
-                        extraDescription = self.extraDescriptions[self.options[k]]+"\n\n"
-                else:
-                    out.extend(["    ", v, "\n"])
-
-            if extraDescription:
-                out += extraDescription
-
             # show the rendered options
             # bad code: urwid specific code
             if src.interaction.main:
-                src.interaction.main.set_text(
-                    (
-                        src.interaction.urwid.AttrSpec("default", "default"),
-                        [self.persistentText , "\n\n" , out],
-                    )
-                )
+                src.interaction.main.set_text(self.render())
 
         return False
+
+    def render(self):
+        # show question
+        out = ["\n"]
+        out.extend([self.query, "\n"])
+
+        # render the options
+        extraDescription = None
+        counter = 0
+        for k, v in self.niceOptions.items():
+            counter += 1
+            if counter == self.selectionIndex:
+                out.extend([" -> ", v, "\n"])
+                if self.extraDescriptions and self.options[k] in self.extraDescriptions:
+                    extraDescription = self.extraDescriptions[self.options[k]]+"\n\n"
+            else:
+                out.extend(["    ", v, "\n"])
+        if extraDescription:
+            out += extraDescription
+
+        return (
+                        src.interaction.urwid.AttrSpec("default", "default"),
+                        [self.persistentText , "\n\n" , out],
+               )
 
     # bad code: should either be used everywhere or be removed
     # bad code: urwid specific code

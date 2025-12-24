@@ -81,9 +81,6 @@ So if an enemy is to directly east of you:
         if self.subQuests:
             return (None,None)
 
-        character.personality["autoCounterAttack"] = False
-        character.personality["autoFlee"] = False
-
         if not character.getNearbyEnemies():
             if not dryRun:
                 self.postHandler()

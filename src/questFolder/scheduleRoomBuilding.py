@@ -189,5 +189,10 @@ Use a CityPlaner to do this.
                     result.append((item.getPosition(),"target"))
         return result
 
+    def getQuestMarkersTile(self,character):
+        result = super().getQuestMarkersTile(character)
+        result.append(((self.roomPosition[0],self.roomPosition[1]),"target"))
+        return result
+
 # register quest
 src.quests.addType(ScheduleRoomBuilding)

@@ -24,7 +24,7 @@ class FarmMoldTile(src.quests.MetaQuestSequence):
         if self.reason:
             reason = f", to {self.reason}"
         text = f"""
-farm mold on the tile {self.targetPosition}"""
+farm mold on the tile {self.targetPosition}{reason}."""
 
         out.append(text)
         return out

@@ -130,11 +130,6 @@ class GoToTerrain(src.quests.MetaQuestSequence):
                         return (None,("D","go to east tile edge"))
             return (None,(["esc"],"close the menu"))
 
-        try:
-            self.allowTerrainMenu
-        except:
-            self.allowTerrainMenu = True
-
         if character.getNearbyEnemies():
             quest = src.quests.questMap["Fight"]()
             return ([quest],None)

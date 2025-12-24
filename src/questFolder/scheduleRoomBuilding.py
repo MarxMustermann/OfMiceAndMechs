@@ -41,13 +41,14 @@ Use a CityPlaner to do this.
         if self.subQuests:
             return (None,None)
 
+        # fail on weird states
         terrain = character.getTerrain()
         if self.roomPosition in terrain.forests or self.roomPosition in terrain.scrapFields:
             return self._solver_trigger_fail(dryRun,"target position blocked")
-
         if terrain.getRoomByPosition(self.roomPosition):
             return self._solver_trigger_fail(dryRun,"room already build")
 
+        # set up helper variables
         terrain = character.getTerrain()
 
         # navigate the build-menu and schedule building the room
@@ -61,20 +62,12 @@ Use a CityPlaner to do this.
 
             # build the build site from map
             if isinstance(submenue,src.menuFolder.mapMenu.MapMenu) and not ignoreCommands:
-                command = ""
-                if submenue.cursor[0] > self.roomPosition[0]:
-                    command += "a"*(submenue.cursor[0]-self.roomPosition[0])
-                if submenue.cursor[0] < self.roomPosition[0]:
-                    command += "d"*(self.roomPosition[0]-submenue.cursor[0])
-                if submenue.cursor[1] > self.roomPosition[1]:
-                    command += "w"*(submenue.cursor[1]-self.roomPosition[1])
-                if submenue.cursor[1] < self.roomPosition[1]:
-                    command += "s"*(self.roomPosition[1]-submenue.cursor[1])
+                selection_command = "r"
                 if self.priorityBuild:
-                    command += "R"
-                else:
-                    command += "r"
-                return (None,(command,"schedule building a room"))
+                    selection_command = "R"
+                command = submenue.get_command_to_select_position(coordinate=self.roomPosition,selectionCommand=selection_command)
+                if command:
+                    return (None,(command,"schedule building a room"))
 
             # close unkown menus
             return (None,(["esc"],"exit submenu"))

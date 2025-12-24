@@ -28,8 +28,8 @@ class FarmMold(src.quests.MetaQuestSequence):
         reason = ""
         if self.reason:
             reason = f", to {self.reason}"
-        text = """
-farm mold"""
+        text = f"""
+farm mold{reason}."""
 
         out.append(text)
         return out

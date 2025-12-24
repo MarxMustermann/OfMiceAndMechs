@@ -145,45 +145,37 @@ class Adventure(src.quests.MetaQuestSequence):
                     quest = src.quests.questMap["AdventureOnTerrain"](targetTerrain=currentTerrain.getPosition(),reason="get more loot")
                     return ([quest], None)
         
+        # interact with most menus
+        submenue = character.macroState.get("submenue")
+        if submenue and not ignoreCommands:
+            if not isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu):
+                return (None,(["esc"],"close the menu"))
+
         # clear inventory from scrap
-        if character.searchInventory("Scrap"):
-            if not character.container.getItemByPosition(character.getPosition()):
-                submenue = character.macroState["submenue"]
-                if submenue and not ignoreCommands:
-                    if not isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu):
-                        return (None,(["esc"],"close the menu"))
+        if character.searchInventory("Scrap") and not character.container.getItemByPosition(character.getPosition()):
 
-                index = 0
-                command = ""
-                while index < len(character.inventory):
-                    if character.inventory[-(1+index)].type != "Scrap":
-                        break
-                    index += 1
-                    command = "l"
-
-                if command:
-                    return (None, (command,"drop scrap"))
-
-                index = 0
-                command = []
-                if not isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu):
-                    command.append("i")
-
-                startIndex = 0
-                if isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu):
-                    startIndex = submenue.cursor
-
-                targetIndex = 0
-                for item in character.inventory:
-                    if item.type == "Scrap":
-                        break
-                    targetIndex += 1
-                
-                command.extend(["s"]*(targetIndex-startIndex))
-                command.extend(["w"]*(startIndex-targetIndex))
-                command.append("l")
-
+            # drop scrap that can be easily dropped
+            index = 0
+            command = ""
+            while index < len(character.inventory):
+                if character.inventory[-(1+index)].type != "Scrap":
+                    break
+                index += 1
+                command += "l"
+            if command:
                 return (None, (command,"drop scrap"))
+
+            # drop items from inventory
+            if submenue:
+                command = submenue.get_command_to_select_item(item_type="Scrap",selectionCommand="l")
+                if command:
+                    return (None,(command,"drop scrap"))
+            else:
+                return (None, ("i","open inventory menu"))
+
+        # close remaining menus
+        if submenue and not ignoreCommands:
+            return (None,(["esc"],"close the menu"))
 
         # get all reasonable candidates to move to
         candidates = []

@@ -4731,7 +4731,7 @@ def renderGameDisplay(renderChar=None):
                         counter = 0
                         for menu in reversed(char.rememberedMenu):
                             chars.extend(["------------- ",ActionMeta(content=">",payload=["lESC"]),"\n\n"])
-                            chars.extend(menu.render(char))
+                            chars.extend(menu.render())
                             counter += 1
                         size = uiElement["size"]
                         offset = uiElement["offset"]

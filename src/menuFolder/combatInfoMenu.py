@@ -15,7 +15,9 @@ class CombatInfoMenu(src.subMenu.SubMenu):
         self.sidebared = False
         self.skipKeypress = True
 
-    def render(self,char):
+    def render(self):
+        char = self.char
+
         if char.dead:
             return ""
 
@@ -85,9 +87,7 @@ subordinates:
             self.sidebared = True
             return True
 
-        char = self.char
-
-        text = self.render(char)
+        text = self.render()
 
         # show info
         if src.interaction.main:

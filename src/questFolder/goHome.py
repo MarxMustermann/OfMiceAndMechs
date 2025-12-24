@@ -126,25 +126,10 @@ Press control-d to stop your character from moving.
         # navigate menues
         submenue = character.macroState.get("submenue")
         if submenue and not ignoreCommands:
-            if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu):
-                targetIndex = None
-                counter = 0
-                for item in submenue.options.values():
-                    counter += 1
-                    if item == "teleport":
-                        targetIndex = counter
-                        break
-                if not targetIndex:
-                    return (None,(["esc"],"close menu"))
-
-                offset = targetIndex-submenue.selectionIndex
-                command = ""
-                if offset > 0:
-                    command += "s"*offset
-                else:
-                    command += "w"*(-offset)
-                command += "j"
-                return (None,(command,"teleport home"))
+            if submenue.tag == "applyOptionSelection" and submenue.extraInfo.get("item").type == "Shrine":
+                command = submenue.get_command_to_select_option("teleport")
+                if command:
+                    return (None,(command,"teleport home"))
             return (None,(["esc"],"close menu"))
 
         if not character.container.isRoom:

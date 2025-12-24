@@ -4776,6 +4776,10 @@ def renderGameDisplay(renderChar=None):
 
             pygame.display.update()
         if tcodConsole:
+            if submenue:
+                text = submenue.render()
+            else:
+                text = main.get_text()
             text = main.get_text()
             plainText = stringifyUrwid(text)
 

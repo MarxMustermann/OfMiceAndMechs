@@ -47,7 +47,7 @@ class QuestMenu(src.subMenu.SubMenu):
         if self.questCursor == []:
             self.questCursor.append(0)
 
-    def render(self, char):
+    def render(self):
         return self.renderQuests(char=self.char, asList=True, questCursor=self.questCursor,sidebared=self.sidebared)
 
     # overrides the superclasses method completely
@@ -183,7 +183,7 @@ class QuestMenu(src.subMenu.SubMenu):
         )
         self.persistentText = []
         self.persistentText.append(
-            self.render(self.char)
+            self.render()
         )
 
         self.lockOptions = False

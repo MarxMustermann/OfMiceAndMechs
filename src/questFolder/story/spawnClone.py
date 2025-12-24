@@ -192,11 +192,11 @@ class SpawnClone(src.quests.MetaQuestSequence):
                 return (None,("s","enter tile"))
             if character.yPosition%15 == 14:
                 return (None,("w","enter tile"))
-            quest = src.quests.questMap["GoHome"](reason="work from inside")
-            return ([quest],None)
 
         # go to room with growth tank
-        growthTank = character.container.getItemByType("GrowthTank")
+        growthTank = None
+        if character.container.isRoom:
+            growthTank = character.container.getItemByType("GrowthTank")
         if not growthTank:
             for room in character.getTerrain().rooms:
                 growthTank = room.getItemByType("GrowthTank")

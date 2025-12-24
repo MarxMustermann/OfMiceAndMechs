@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 class GoToPosition(src.quests.MetaQuestSequence):
     type = "GoToPosition"
 
-    def __init__(self, description="go to position", creator=None,targetPosition=None,ignoreEndBlocked=False,reason=None,lifetime=None):
+    def __init__(self, description="go to position", creator=None,targetPosition=None,ignoreEndBlocked=False,reason=None,lifetime=None, idleMovement=False):
         if targetPosition:
             if targetPosition[0] < 0 or targetPosition[0] > 13:
                 raise ValueError(f"target position {targetPosition} out of range")
@@ -30,6 +30,7 @@ class GoToPosition(src.quests.MetaQuestSequence):
         self.smallPath = []
         self.path = []
         self.lowLevel = True
+        self.idleMovement = idleMovement
 
     def generateTextDescription(self):
         reason = ""

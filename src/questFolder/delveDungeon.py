@@ -67,9 +67,12 @@ suicidal"""
         return False
 
     def getNextStep(self,character,ignoreCommands=False,dryRun=True):
+
+        # hande weird edge cases
         if self.subQuests:
             return (None,None)
 
+        # enter room properly
         if not character.container.isRoom:
             pos = character.getSpacePosition()
             if pos == (14,7,0):
@@ -81,6 +84,7 @@ suicidal"""
             if pos == (7,0,0):
                 return (None,("s","enter room"))
         
+        # activate GlassStatue if marked
         if character.macroState.get("itemMarkedLast"):
             if character.macroState["itemMarkedLast"].type == "GlassStatue":
                 if self.directSendback:
@@ -90,6 +94,7 @@ suicidal"""
             else:
                 return (None,(".","undo selection"))
 
+        # navigate menues
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
             submenue = character.macroState["submenue"]
 
@@ -293,6 +298,7 @@ suicidal"""
                 if not foundGlassStatue:
                     return self._solver_trigger_fail(dryRun,"no GlassStatue found")
             
+                # go to GlassStatue
                 if character.container != foundGlassStatue.container:
                     quest = src.quests.questMap["GoToTile"](targetPosition=foundGlassStatue.getBigPosition(),abortHealthPercentage=0.5,description="go to temple",reason="reach the GlassHeart")
                     quest.generatePath(character)
@@ -304,6 +310,7 @@ suicidal"""
                     quest = src.quests.questMap["GoToPosition"](targetPosition=foundGlassStatue.getPosition(),ignoreEndBlocked=True,description="go to GlasStatue", reason="be able to extract the GlassHeart")
                     return ([quest],None)
 
+                # activate GlassStatue
                 directionCommand = None
                 if character.getPosition(offset=(0,0,0)) == foundGlassStatue.getPosition():
                     directionCommand = "."
@@ -323,6 +330,7 @@ suicidal"""
                         activationCommand = ""
                     return (None,(activationCommand+directionCommand+"ssj","eject GlassHeart"))
 
+            # pick up GlassHeart
             if character.getPosition() != foundGlassHeart.getPosition():
                 quest = src.quests.questMap["GoToPosition"](targetPosition=foundGlassHeart.getPosition(),description="go to GlassHeart",reason="be able to pick up the GlassHeart")
                 return ([quest],None)
@@ -330,14 +338,15 @@ suicidal"""
                 return (None,("L"+random.choice(["w","a","s","d"]),"clear inventory"))
             return (None,("k","pick up GlassHeart"))
 
+        # go back home
         if terrain.xPosition != character.registers["HOMETx"] or terrain.yPosition != character.registers["HOMETy"]:
             quest = src.quests.questMap["GoHome"](reason="go to your home territory")
             return ([quest],None)
-
         if not character.container.isRoom:
             quest = src.quests.questMap["GoHome"](reason="get into a room")
             return ([quest],None)
 
+        # find GlassStatue to set the heart into
         foundGlassStatue = None
         for room in [character.container, *terrain.rooms]:
             for glassStatue in room.getItemsByType("GlassStatue"):
@@ -347,20 +356,24 @@ suicidal"""
             if foundGlassStatue:
                 break
 
+        # fail on weird state
         if not foundGlassStatue:
             return self._solver_trigger_fail(dryRun,"no GlassStatue found")
 
+        # prepare to defend base
         if not terrain.alarm:
             quest = src.quests.questMap["ReadyBaseDefences"](reason="be prepared to the wave")
             return ([quest],None)
 
+        # go to GlassStatue
         if foundGlassStatue.container != character.container:
             quest = src.quests.questMap["GoToTile"](targetPosition=foundGlassStatue.getBigPosition(),description="go to temple",reason="be able to set the GlassHeart")
             return ([quest],None)
-
         if character.getDistance(glassStatue.getPosition()) > 1:
             quest = src.quests.questMap["GoToPosition"](targetPosition=glassStatue.getPosition(),ignoreEndBlocked=True,description="go to GlassStatue",reason="be able to set the GlassHeart")
             return ([quest],None)
+
+        # activate GlassStatue
         directionCommand = None
         if character.getPosition(offset=(0,0,0)) == glassStatue.getPosition():
             directionCommand = "."

@@ -1256,18 +1256,9 @@ def doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags):
     del char.interactionState["advancedConfigure"]
 
 def doAdvancedPickup(params):
-    char = params[0]
-    charState = params[1]
-    flags = params[2]
-    key = params[3]
-    main = params[4]
-    header = params[5]
-    footer = params[6]
-    urwid = params[7]
 
-    if char.container is None:
-        del char.interactionState["advancedPickup"]
-        return
+    char = params["character"]
+    key = params["keyPressed"]
 
     char.takeTime(char.movementSpeed,"advanced pickup")
     if len(char.inventory) >= 10:
@@ -1379,7 +1370,6 @@ def doAdvancedPickup(params):
             else:
                 char.addMessage("no item to pick up")
                 container.addAnimation(char.getPosition(offset=(0,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
-    del char.interactionState["advancedPickup"]
 
 def doAdvancedDrop(params):
     char = params[0]
@@ -2544,10 +2534,6 @@ def handlePriorityActions(params):
         doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags)
         return None
 
-    if advancedPickupStr in char.interactionState:
-        doAdvancedPickup(params)
-        return None
-
     if advancedDropStr in char.interactionState:
         doAdvancedDrop(params)
         return None
@@ -3061,14 +3047,11 @@ press key for advanced pickup
 
 """
 
-                header.set_text(
-                    (urwid.AttrSpec("default", "default"), "advanced pick up")
-                )
-                main.set_text((urwid.AttrSpec("default", "default"), text))
-                footer.set_text((urwid.AttrSpec("default", "default"), ""))
-                char.specialRender = True
+                submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text,ignoreFirstKey=False)
+                submenue.followUp = {"method":doAdvancedPickup,"params":{"character":char}}
+                submenue.tag = "advancedPickupSelection"
+                char.macroState["submenue"] = submenue
 
-            char.interactionState["advancedPickup"] = {}
             if charState.get("itemMarkedLast"):
                 del charState["itemMarkedLast"]
             return None

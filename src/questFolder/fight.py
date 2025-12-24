@@ -86,6 +86,7 @@ So if an enemy is to directly east of you:
                 self.postHandler()
             return (None,("+","end quest"))
 
+        # heal
         if character.health < character.maxHealth//2 and character.canHeal():
             return (None,("Jh","heal"))
         if (not self.suicidal) and (character.health < character.maxHealth//5):
@@ -100,9 +101,10 @@ So if an enemy is to directly east of you:
                 return (None,(["esc"],"close menu"))
             return (None,("t","drop tool"))
 
-        if not ignoreCommands:
-            submenue = character.macroState.get("submenue")
-            if submenue and not submenue.tag == "specialAttackSelection":
+        # navigate most menues
+        submenue = character.macroState.get("submenue")
+        if submenue and not ignoreCommands:
+            if not submenue.tag == "specialAttackSelection":
                 return (None,(["esc"],"exit the menu"))
 
         # check for direct attacks

@@ -142,7 +142,7 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
         # mark current tile as explored
         if character.getBigPosition() in self.getRemainingPointsOfInterests():
             if not dryRun:
-                self.donePointsOfInterest.append(character.getBigPosition())
+                self.mark_POI_explored(character.getBigPosition())
             return (None,("+","register room as explored"))
 
         # loot a different room
@@ -226,21 +226,19 @@ Go out and adventure on tile {self.targetTerrain}{reasonString}.
 
     def handleQuestFailure(self,extraInfo):
         if extraInfo["quest"].type == "LootRoom":
-            self.donePointsOfInterest.append(extraInfo["quest"].targetPositionBig)
+            self.mark_POI_explored(extraInfo["quest"].targetPositionBig)
             return
 
-    def handleChangedTile(self, extraInfo=None):
-        pos = extraInfo.get("old_pos")
-        if pos in self.getRemainingPointsOfInterests() and not pos in self.donePointsOfInterest:
-            self.donePointsOfInterest.append(pos)
-        pos = extraInfo.get("new_pos")
+    def mark_POI_explored(self,pos):
         if pos in self.getRemainingPointsOfInterests() and not pos in self.donePointsOfInterest:
             self.donePointsOfInterest.append(pos)
 
+    def handleChangedTile(self, extraInfo=None):
+        self.mark_POI_explored(extraInfo.get("old_pos"))
+        self.mark_POI_explored(extraInfo.get("new_pos"))
+
     def handleEnteredRoom(self, extraInfo=None):
-        pos = extraInfo[1].getPosition()
-        if pos in self.getRemainingPointsOfInterests() and not pos in self.donePointsOfInterest:
-            self.donePointsOfInterest.append(pos)
+        self.mark_POI_explored(extraInfo[1].getPosition())
 
         self.clearSubQuests()
 

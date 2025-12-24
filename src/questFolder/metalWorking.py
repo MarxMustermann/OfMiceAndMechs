@@ -27,6 +27,11 @@ class MetalWorking(src.quests.MetaQuestSequence):
         self.tryHard = tryHard
 
     def generateTextDescription(self):
+        '''
+        generate a textual description to show on the UI
+        Returns:
+            the textual description
+        '''
         reason = ""
         if self.reason:
             reason = f", to {self.reason}"
@@ -49,6 +54,15 @@ Press d to move the cursor and show the subquests description.
         return out
 
     def triggerCompletionCheck(self,character=None, dryRun=True):
+        '''
+        check if the quest completed and end it
+        Parameters:
+            character:  the character doing the quest
+            dryRun:     flag to be stateless or not
+        Returns:
+            whether the quest ended or not
+        '''
+
         if not character:
             return False
 
@@ -60,6 +74,15 @@ Press d to move the cursor and show the subquests description.
         return False
 
     def getNextStep(self,character,ignoreCommands=False,dryRun=True):
+        '''
+        generate the next step to solve the quest
+        Parameters:
+            character:       the character doing the quest
+            ignoreCommands:  whether to generate commands or not
+            dryRun:          flag to be stateless or not
+        Returns:
+            the activity to run as next step
+        '''
 
         # let subquest do their thing
         if self.subQuests:
@@ -163,6 +186,12 @@ Press d to move the cursor and show the subquests description.
         return ([quest],None)
 
     def handleQuestFailure(self,extraParam):
+        '''
+        react to a subquest failing
+        Parameters:
+            extraInfo:  context information
+        '''
+
         if extraParam["quest"] not in self.subQuests:
             return
 
@@ -180,6 +209,12 @@ Press d to move the cursor and show the subquests description.
         self.fail(reason)
 
     def handleWorkedMetal(self, extraInfo):
+        '''
+        react to having produced something
+        Parameters:
+            extraInfo:  context information
+        '''
+
         if self.completed:
             1/0
         if not self.active:
@@ -193,6 +228,11 @@ Press d to move the cursor and show the subquests description.
             self.postHandler()
 
     def handleInventoryFull(self, extraInfo):
+        '''
+        react to having a production failure due to full inventory
+        Parameters:
+            extraInfo:  context information
+        '''
         if self.completed:
             1/0
         if not self.active:
@@ -203,6 +243,12 @@ Press d to move the cursor and show the subquests description.
         self.addQuest(quest)
 
     def handleNoMetalBars(self, extraInfo):
+        '''
+        react to having a production failure due to missing MetalBars
+        Parameters:
+            extraInfo:  context information
+        '''
+
         if self.completed:
             1/0
         if not self.active:
@@ -213,6 +259,12 @@ Press d to move the cursor and show the subquests description.
         self.addQuest(quest)
 
     def assignToCharacter(self, character):
+        '''
+        assign quest to a character
+        Parameters:
+            character:  the character to assign quest to
+        '''
+
         if self.character:
             return None
 
@@ -225,6 +277,11 @@ Press d to move the cursor and show the subquests description.
     def getQuestMarkersSmall(self,character,renderForTile=False):
         '''
         return the quest markers for the normal map
+        Parameters:
+            character:      the character doing the quest
+            renderForTile:  whether or not to show the markers for a room or a tile
+        Returns:
+            the quest markers to show
         '''
         if isinstance(character.container,src.rooms.Room):
             if renderForTile:
@@ -244,6 +301,17 @@ Press d to move the cursor and show the subquests description.
 
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
+        '''
+        generate the quests for doing a duty
+        Parameters:
+            beUsefull:   the quest to generate the duty for
+            character:   the character to generate the quest for
+            currentRoom: the room the character is currently in
+            dryRun:      flag for statelessness
+        Returns:
+            the generated quests ( (None,None) for no quest to do )
+        '''
+
         freeMetalWorkingBenches = []
 
         for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
@@ -302,4 +370,5 @@ Press d to move the cursor and show the subquests description.
             return (None,None)
         return (None,None)
 
+# register quest type
 src.quests.addType(MetalWorking)

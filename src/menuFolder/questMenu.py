@@ -48,7 +48,63 @@ class QuestMenu(src.subMenu.SubMenu):
             self.questCursor.append(0)
 
     def render(self):
-        return self.renderQuests(char=self.char, asList=True, questCursor=self.questCursor,sidebared=self.sidebared)
+
+        text = []
+        text.append(self.renderQuests(char=self.char, asList=True, questCursor=self.questCursor,sidebared=self.sidebared))
+        text.append("\n")
+
+        num_lines = 0
+        num_cols = 0
+        unformatted_text = src.interaction.stringifyUrwid(text)
+        for line in unformatted_text.split("\n"):
+            num_lines += 1
+            num_cols = max(num_cols,len(line))
+        num_lines += 1
+
+        if not self.sidebared:
+            rows_when_completed = num_lines+10
+            if rows_when_completed <= self.min_lines:
+                text.append("\n"*(self.min_lines-rows_when_completed))
+            else:
+                self.min_lines = rows_when_completed
+            if num_cols <= self.min_cols:
+                text.append(" "*(self.min_cols-num_cols))
+            else:
+                min_cols = num_cols
+
+        # add interaction instructions
+        if not self.sidebared:
+            text.extend(
+                [
+                    "\n",
+                    "* press esc to close this menu\n",
+                    "* press wasd to select quest\n",
+                    "* press j to make selected quest the active quest\n",
+                    "* press x to delete selected quest\n",
+                    "* press X to delete sub quests\n",
+                    "* press r to generate sub quests\n",
+                    "* press R to regenerate sub quests\n",
+                    "* press k to check if that quest has been completed\n",
+                    "* press K to mark the selected quest for auto completion\n",
+                ]
+            )
+
+        # flatten the mix of strings and urwid format so that it is less recursive to workaround an urwid bug
+        # bad code: should be elsewhere
+        def flatten(pseudotext):
+            newList = []
+            for item in pseudotext:
+                if isinstance(item, list):
+                    for subitem in flatten(item):
+                        newList.append(subitem)
+                elif isinstance(item, tuple):
+                    newList.append((item[0], flatten(item[1])))
+                else:
+                    newList.append(item)
+            return newList
+
+        text = flatten(text)
+        return text
 
     # overrides the superclasses method completely
     def handleKey(self, key, noRender=False, character = None):
@@ -62,6 +118,7 @@ class QuestMenu(src.subMenu.SubMenu):
             returns True when done
         '''
 
+        # ignore first keypress
         if self.skipKeypress:
             self.skipKeypress = False
             key = "~"
@@ -162,81 +219,10 @@ class QuestMenu(src.subMenu.SubMenu):
                     baseList = None
             quest.clearSubQuests()
 
-        # render the quests
-        addition = ""
-        if self.char == src.gamestate.gamestate.mainChar:
-            addition = " (you)"
-        src.interaction.header.set_text(
-            (
-                src.interaction.urwid.AttrSpec("default", "default"),
-                "\nquest overview for "
-                + self.char.name
-                + ""
-                + addition
-                + "\n",
-            )
-        )
-        self.persistentText = []
-        self.persistentText.append(
-            self.render()
-        )
-
         self.lockOptions = False
 
-        self.persistentText.append("\n")
-
-        num_lines = 0
-        num_cols = 0
-        unformatted_text = src.interaction.stringifyUrwid(self.persistentText)
-        for line in unformatted_text.split("\n"):
-            num_lines += 1
-            num_cols = max(num_cols,len(line))
-        num_lines += 1
-
-        rows_when_completed = num_lines+10
-        if rows_when_completed <= self.min_lines:
-            self.persistentText.append("\n"*(self.min_lines-rows_when_completed))
-        else:
-            self.min_lines = rows_when_completed
-        if num_cols <= self.min_cols:
-            self.persistentText.append(" "*(self.min_cols-num_cols))
-        else:
-            min_cols = num_cols
-
-        # add interaction instructions
-        self.persistentText.extend(
-            [
-                "\n",
-                "* press esc to close this menu\n",
-                "* press wasd to select quest\n",
-                "* press j to make selected quest the active quest\n",
-                "* press x to delete selected quest\n",
-                "* press X to delete sub quests\n",
-                "* press r to generate sub quests\n",
-                "* press R to regenerate sub quests\n",
-                "* press k to check if that quest has been completed\n",
-                "* press K to mark the selected quest for auto completion\n",
-            ]
-        )
-
-        # flatten the mix of strings and urwid format so that it is less recursive to workaround an urwid bug
-        # bad code: should be elsewhere
-        def flatten(pseudotext):
-            newList = []
-            for item in pseudotext:
-                if isinstance(item, list):
-                    for subitem in flatten(item):
-                        newList.append(subitem)
-                elif isinstance(item, tuple):
-                    newList.append((item[0], flatten(item[1])))
-                else:
-                    newList.append(item)
-            return newList
-
-        self.persistentText = flatten(self.persistentText)
-
-        # show rendered quests via urwid
-        src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.persistentText))
+        # show rendered quests
+        src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.render()))
 
         return False
 

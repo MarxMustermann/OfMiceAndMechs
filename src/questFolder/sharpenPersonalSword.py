@@ -17,6 +17,8 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         '''
         generate a textual description to show on the UI
+        Returns:
+            the textual description
         '''
         reasonString = ""
         if self.reason:

@@ -3006,15 +3006,6 @@ You have a strange feeling, but nothing happens.
             return None
 
         if key in ("f",):
-            try:
-                char.hasLineShot
-            except:
-                char.hasLineShot = False
-            try:
-                char.hasRandomShot
-            except:
-                char.hasRandomShot = False
-
             if char.hasLineShot:
                 if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
                     text = """

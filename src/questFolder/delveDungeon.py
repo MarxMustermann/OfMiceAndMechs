@@ -95,26 +95,24 @@ suicidal"""
                 return (None,(".","undo selection"))
 
         # navigate menues
-        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
-            submenue = character.macroState["submenue"]
-
-            if not submenue.extraInfo.get("item"):
-                return (None,(["esc"],"exit submenu"))
-
-            menuEntry = "getSetHeart"
-            counter = 1
-            for option in submenue.options.values():
-                if option == menuEntry:
-                    index = counter
-                    break
-                counter += 1
-            command = ""
-            if submenue.selectionIndex > counter:
-                command += "w"*(submenue.selectionIndex-counter)
-            if submenue.selectionIndex < counter:
-                command += "s"*(counter-submenue.selectionIndex)
-            command += "j"
-            return (None,(command,"get/set glass heart"))
+        submenue = character.macroState.get("submenue")
+        if submenue and not ignoreCommands:
+            if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu) and submenue.extraInfo.get("item"):
+                menuEntry = "getSetHeart"
+                counter = 1
+                for option in submenue.options.values():
+                    if option == menuEntry:
+                        index = counter
+                        break
+                    counter += 1
+                command = ""
+                if submenue.selectionIndex > counter:
+                    command += "w"*(submenue.selectionIndex-counter)
+                if submenue.selectionIndex < counter:
+                    command += "s"*(counter-submenue.selectionIndex)
+                command += "j"
+                return (None,(command,"get/set glass heart"))
+            return (None,(["esc"],"exit submenu"))
 
         # close other menus
         if not ignoreCommands and character.macroState.get("submenue"):

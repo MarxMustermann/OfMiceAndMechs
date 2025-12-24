@@ -699,7 +699,7 @@ class MetaQuestSequence(Quest,ABC):
 
     def clearSubQuests(self):
         for quest in self.subQuests[:]:
-            quest.fail()
+            quest.fail("canceled")
         self.subQuests = []
 
     """

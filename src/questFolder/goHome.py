@@ -132,6 +132,7 @@ Press control-d to stop your character from moving.
                     return (None,(command,"teleport home"))
             return (None,(["esc"],"close menu"))
 
+        # enter rooms/tiles properly
         if not character.container.isRoom:
             pos = character.getSpacePosition()
             if pos == (14,7,0):
@@ -142,7 +143,6 @@ Press control-d to stop your character from moving.
                 return (None,("w","enter room"))
             if pos == (7,0,0):
                 return (None,("s","enter room"))
-
         if character.getBigPosition()[0] == 0:
             return (None, ("d","enter the terrain"))
         if character.getBigPosition()[0] == 14:
@@ -152,13 +152,10 @@ Press control-d to stop your character from moving.
         if character.getBigPosition()[1] == 14:
             return (None, ("w","enter the terrain"))
 
-        # activate production item when marked
-        if character.macroState.get("itemMarkedLast"):
-            item = character.macroState["itemMarkedLast"]
-            if item.type == "Shrine":
-                return (None,("j","activate Shrine"))
-            else:
-                return (None,(".","undo selection"))
+        # activate item when marked
+        action = self.generate_confirm_interaction_command(allowedItems=["Shrine"])
+        if action:
+            return action
 
         currentTerrain = character.getTerrain()
 

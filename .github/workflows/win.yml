@@ -20,7 +20,6 @@ jobs:
             path: "./Game/Data"
       - name: install dep and finishing up
         run: |
-          mkdir Game
           curl -L https://www.python.org/ftp/python/3.12.8/python-3.12.8-embed-amd64.zip -o ./Game/Data.zip
           unzip Game/Data.zip
           rm unzip Game/Data.zip

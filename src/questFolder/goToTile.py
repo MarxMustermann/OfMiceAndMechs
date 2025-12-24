@@ -244,31 +244,31 @@ The target tile is {direction[4:]}
         if self.abortOnDanger and character.getNearbyEnemies():
             return self._solver_trigger_fail(dryRun,"enemies nearby")
 
-        # move using the room menu
-        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.mapMenu.MapMenu) and not ignoreCommands:
-            if self.targetPosition == (7,7,0):
-                return (None,("c","auto move to tile"))
+        # navigate menues
+        submenue = character.macroState.get("submenue")
+        if submenue and not ignoreCommands:
 
+            # move using the room menu
+            if isinstance(submenue,src.menuFolder.mapMenu.MapMenu):
+                if self.targetPosition == (7,7,0):
+                    return (None,("c","auto move to tile"))
 
-            submenue = character.macroState["submenue"]
+                if abs(self.targetPosition[0]-submenue.cursor[0])+abs(self.targetPosition[1]-submenue.cursor[1]) > 4 and self.getQuestMarkersTile(character):
+                    return (None,("q","use fast travel to current questmarker"))
 
-            if abs(self.targetPosition[0]-submenue.cursor[0])+abs(self.targetPosition[1]-submenue.cursor[1]) > 4 and self.getQuestMarkersTile(character):
-                return (None,("q","use fast travel to current questmarker"))
+                command = ""
+                if submenue.cursor[0] > self.targetPosition[0]:
+                    command += "a"*(submenue.cursor[0]-self.targetPosition[0])
+                if submenue.cursor[0] < self.targetPosition[0]:
+                    command += "d"*(self.targetPosition[0]-submenue.cursor[0])
+                if submenue.cursor[1] > self.targetPosition[1]:
+                    command += "w"*(submenue.cursor[1]-self.targetPosition[1])
+                if submenue.cursor[1] < self.targetPosition[1]:
+                    command += "s"*(self.targetPosition[1]-submenue.cursor[1])
+                command += "j"
+                return (None,(command,"auto move to tile"))
 
-            command = ""
-            if submenue.cursor[0] > self.targetPosition[0]:
-                command += "a"*(submenue.cursor[0]-self.targetPosition[0])
-            if submenue.cursor[0] < self.targetPosition[0]:
-                command += "d"*(self.targetPosition[0]-submenue.cursor[0])
-            if submenue.cursor[1] > self.targetPosition[1]:
-                command += "w"*(submenue.cursor[1]-self.targetPosition[1])
-            if submenue.cursor[1] < self.targetPosition[1]:
-                command += "s"*(self.targetPosition[1]-submenue.cursor[1])
-            command += "j"
-            return (None,(command,"auto move to tile"))
-
-        # close other menus
-        if not ignoreCommands and character.macroState.get("submenue"):
+            # close other menus
             return (None,(["esc"],"exit submenu"))
 
         # abort quest when too hurt

@@ -39,34 +39,41 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
         return result
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
+
+        # ensure the quest actually completes
         if self.triggerCompletionCheck(dryRun=dryRun):
             return (None,("+","end quest"))
 
+        # handle weird edge cases
         if self.subQuests:
             return (None,None)
-
         if not character:
             return (None,None)
-
         if character.is_low_health():
             return self._solver_trigger_fail(dryRun,"low health")
 
+        # handle menu interaction
         if character.macroState["submenue"]:
             return (None, (["esc"], "exit menu"))
 
+        # defend yourself
         if character.getNearbyEnemies():
             quest = src.quests.questMap["Fight"](reason="eliminate threats")
             return ([quest],None)
 
+        # set up helper variables
         currentTerrain = character.getTerrain()
 
+        # do not adventure at home
         if self.targetTerrain[0] == character.registers["HOMETx"] and self.targetTerrain[1] == character.registers["HOMETy"]:
             return self._solver_trigger_fail(dryRun,"home is target")
 
+        # go to the target terrain
         if not (currentTerrain.xPosition == self.targetTerrain[0] and currentTerrain.yPosition == self.targetTerrain[1]):
             quest = src.quests.questMap["GoToTerrain"](targetTerrain=self.targetTerrain,terrainsWeight= self.terrainsWeight, reason="reach terrain to adventure on")
             return ([quest],None)
 
+        # enter the playing field properly
         if character.getBigPosition()[0] == 0:
             return (None, ("d","enter the terrain"))
         if character.getBigPosition()[0] == 14:
@@ -75,7 +82,6 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
             return (None, ("s","enter the terrain"))
         if character.getBigPosition()[1] == 14:
             return (None, ("w","enter the terrain"))
-        
         if not character.container.isRoom:
             if character.getSpacePosition() == (0,7,0):
                 return (None, ("d","enter the room"))
@@ -86,6 +92,7 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
             if character.getSpacePosition() == (7,14,0):
                 return (None, ("w","enter the room"))
 
+        # mark terrain as completed
         pointsOfInterest = self.getRemainingPointsOfInterests()
         if not pointsOfInterest:
             if currentTerrain.tag == "ruin":
@@ -93,13 +100,11 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
             else:
                 return self._solver_trigger_fail(dryRun,"no POI")
 
-        char_big_pos = character.getBigPosition()
-
+        # loot current tile
         if character.container.isRoom:
             itemsOnFloor = character.container.itemsOnFloor
         else:
             itemsOnFloor = character.container.getNearbyItems(character)
-
         for item in itemsOnFloor:
             if item.bolted or not item.walkable:
                 continue
@@ -134,11 +139,13 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["LootRoom"](targetPositionBig=character.getBigPosition(),endWhenFull=True,reason="gain useful items")
             return ([quest],None)
 
+        # mark current tile as explored
         if character.getBigPosition() in self.getRemainingPointsOfInterests():
             if not dryRun:
                 self.donePointsOfInterest.append(character.getBigPosition())
             return (None,("+","register room as explored"))
 
+        # loot a different room
         pointOfInterest = random.choice(pointsOfInterest)
         quest = src.quests.questMap["LootRoom"](targetPositionBig=pointOfInterest,endWhenFull=True,reason="gather loot")
         return ([quest],None)

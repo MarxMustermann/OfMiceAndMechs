@@ -473,6 +473,8 @@ The target tile is {direction[4:]}
 
         # clear the path to target
         if extraParam["reason"] and "no path found" in extraParam["reason"]:
+            if extraParam["quest"].idleMovement:
+                return
             quest = src.quests.questMap["ClearPathToPosition"](targetPosition=extraParam["quest"].targetPosition)
             self.addQuest(quest)
             self.startWatching(quest,self.handleQuestFailure,"failed")

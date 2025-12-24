@@ -60,10 +60,13 @@ class SubMenu(object):
             # bad code: direct function calls are deprecated, but not completely removed
             callback()
         else:
-            if "container" not in callback:
-                return
-            container = callback["container"]
-            function = getattr(container, callback["method"])
+            if callable(callback["method"]):
+                function = callback["method"]
+            else:
+                if "container" not in callback:
+                    return
+                container = callback["container"]
+                function = getattr(container, callback["method"])
 
             if "params" in callback:
                 callback["params"].update(extraParams)

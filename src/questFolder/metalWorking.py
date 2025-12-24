@@ -32,9 +32,13 @@ class MetalWorking(src.quests.MetaQuestSequence):
         Returns:
             the textual description
         '''
+
+        # generate the reason string
         reason = ""
         if self.reason:
             reason = f", to {self.reason}"
+
+        # generate the basic description
         out = f"""
 Do some metal working{reason}.
 
@@ -42,6 +46,7 @@ Produce {self.amount} {self.toProduce}. {self.amountDone} done.
 
 """
 
+        # generate extra usage instructions
         out = [out]
         if not self.subQuests:
             out.append((src.interaction.urwid.AttrSpec("#f00", "black"),"""
@@ -51,6 +56,8 @@ This quest has no subquests. Press r to generate subquests for this quest."""))
 This quests has subquests.
 Press d to move the cursor and show the subquests description.
 """))
+
+        # return generated text
         return out
 
     def triggerCompletionCheck(self,character=None, dryRun=True):
@@ -63,14 +70,17 @@ Press d to move the cursor and show the subquests description.
             whether the quest ended or not
         '''
 
+        # handle weird edge cases
         if not character:
             return False
 
+        # fail on danger
         if character.getNearbyEnemies():
             if not dryRun:
                 self.fail("enemies nearby")
             return True
 
+        # continue working
         return False
 
     def getNextStep(self,character,ignoreCommands=False,dryRun=True):
@@ -192,20 +202,25 @@ Press d to move the cursor and show the subquests description.
             extraInfo:  context information
         '''
 
+        # handle weird edge cases
         if extraParam["quest"] not in self.subQuests:
             return
 
+        # remove failed sub quest
         self.subQuests.remove(extraParam["quest"])
 
+        # set up helper variables
         quest = extraParam["quest"]
-
         reason = extraParam.get("reason")
+
+        # produce missing metal bars
         if reason and reason.startswith("no source for item MetalBars") and (self.tryHard or "scrap hammering" in self.character.duties):
             newQuest = src.quests.questMap["ScrapHammering"](amount=self.amount,produceToInventory=True,tryHard=self.tryHard,reason="have MetalBars to process")
             self.addQuest(newQuest)
             self.startWatching(newQuest,self.handleQuestFailure,"failed")
             return
 
+        # fail recursively
         self.fail(reason)
 
     def handleWorkedMetal(self, extraInfo):
@@ -215,14 +230,17 @@ Press d to move the cursor and show the subquests description.
             extraInfo:  context information
         '''
 
+        # handle weird edge cases
         if self.completed:
             1/0
         if not self.active:
             return
 
+        # filter produced items
         if self.toProduce != extraInfo["item"].type:
             return
 
+        # handle production success
         self.amountDone += 1
         if self.amount is None or self.amountDone >= self.amount:
             self.postHandler()
@@ -233,11 +251,14 @@ Press d to move the cursor and show the subquests description.
         Parameters:
             extraInfo:  context information
         '''
+
+        # handle weird edge cases
         if self.completed:
             1/0
         if not self.active:
             return
 
+        # clear inventory
         quest = src.quests.questMap["ClearInventory"](reason="be able to store items in your inventory")
         self.startWatching(quest,self.handleQuestFailure,"failed")
         self.addQuest(quest)
@@ -249,11 +270,13 @@ Press d to move the cursor and show the subquests description.
             extraInfo:  context information
         '''
 
+        # handle weird edge cases
         if self.completed:
             1/0
         if not self.active:
             return
 
+        # fetch metal bars
         quest = src.quests.questMap["FetchItems"](toCollect="MetalBars",amount=1,reason="have MetalBars to work with")
         self.startWatching(quest,self.handleQuestFailure,"failed")
         self.addQuest(quest)
@@ -265,13 +288,16 @@ Press d to move the cursor and show the subquests description.
             character:  the character to assign quest to
         '''
 
+        # handle weird edge cases
         if self.character:
             return None
 
+        # watch for events
         self.startWatching(character,self.handleWorkedMetal, "worked metal")
         self.startWatching(character,self.handleInventoryFull, "inventory full error")
         self.startWatching(character,self.handleNoMetalBars, "no metalBars error")
 
+        # let super class work
         return super().assignToCharacter(character)
 
     def getQuestMarkersSmall(self,character,renderForTile=False):
@@ -283,6 +309,8 @@ Press d to move the cursor and show the subquests description.
         Returns:
             the quest markers to show
         '''
+
+        # ignore request from the wrong scale
         if isinstance(character.container,src.rooms.Room):
             if renderForTile:
                 return []
@@ -290,6 +318,7 @@ Press d to move the cursor and show the subquests description.
             if not renderForTile:
                 return []
 
+        # generate the quest markers
         result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
         if not renderForTile:
             if isinstance(character.container,src.rooms.Room):
@@ -312,15 +341,15 @@ Press d to move the cursor and show the subquests description.
             the generated quests ( (None,None) for no quest to do )
         '''
 
+        # find available MetalWorkingBenches
         freeMetalWorkingBenches = []
-
         for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
             for metalWorkingBench in room.getItemsByType("MetalWorkingBench"):
                 if not metalWorkingBench.readyToUse():
                     continue
-
                 freeMetalWorkingBenches.append(metalWorkingBench)
 
+        # do scheduled work
         random.shuffle(freeMetalWorkingBenches)
         for metalWorkingBench in freeMetalWorkingBenches:
             if metalWorkingBench.scheduledItems:
@@ -330,9 +359,11 @@ Press d to move the cursor and show the subquests description.
                     beUsefull.idleCounter = 0
                 return (quests,None)
 
+        # in doubt do nothing
         if not freeMetalWorkingBenches:
             return (None,None)
 
+        # get overview of items in storage for this base
         itemsInStorage = {}
         freeStorage = 0
         for room in character.getTerrain().rooms:
@@ -347,8 +378,9 @@ Press d to move the cursor and show the subquests description.
                 for item in items:
                     itemsInStorage[item.type] = itemsInStorage.get(item.type,0)+1
 
+        
+        # produce for build sites
         if freeStorage:
-
             for room in character.getTerrain().rooms:
                 for buildSite in room.buildSites:
                     if buildSite[1] == "Machine":
@@ -359,6 +391,8 @@ Press d to move the cursor and show the subquests description.
                               src.quests.questMap["MetalWorking"](toProduce=buildSite[1],amount=1,produceToInventory=False,reason="have something to place on build sites")]
                     return (quests,None)
 
+        # produce a minimum amount of some items
+        if freeStorage:
             checkItems = [("RoomBuilder",1,1),("Door",1,1),("Wall",1,1),("Painter",1,1),("ScrapCompactor",1,1),("Case",1,1),("Frame",1,1),("Rod",1,1),("MaggotFermenter",1,1),("Sword",1,1),("Armor",1,1),("Bolt",10,5),("CoalBurner",1,1),("BioPress",1,1),("GooProducer",1,1),("GooDispenser",1,1),("VialFiller",1,1),("Door",4,1),("Painter",2,1),("Wall",10,3),("ScrapCompactor",2,1)]
             for checkItem in checkItems:
                 if itemsInStorage.get(checkItem[0],0) < checkItem[1]:
@@ -367,7 +401,8 @@ Press d to move the cursor and show the subquests description.
                     if not dryRun:
                         beUsefull.idleCounter = 0
                     return (quests,None)
-            return (None,None)
+
+        # do nothing
         return (None,None)
 
 # register quest type

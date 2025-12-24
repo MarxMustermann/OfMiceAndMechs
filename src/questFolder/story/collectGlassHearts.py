@@ -535,12 +535,18 @@ So apease the gods and obtain their GlassHearts.
 
         # heal when bored
         if reason == "no job":
-            self.subQuests.remove(extraParam["quest"])
+            if random.random() < 0.5:
+                self.subQuests.remove(extraParam["quest"])
 
-            newQuest = src.quests.questMap["Heal"](noVialHeal=True,noWaitHeal=True)
-            self.addQuest(newQuest)
-            self.startWatching(newQuest,self.handleQuestFailure,"failed")
-            return
+                newQuest = src.quests.questMap["Heal"](noVialHeal=True,noWaitHeal=True)
+                self.addQuest(newQuest)
+                self.startWatching(newQuest,self.handleQuestFailure,"failed")
+                return
+            else:
+                self.subQuests.remove(extraParam["quest"])
+
+                newQuest = src.quests.questMap["Wait"](lifetime=100)
+                return
 
         super().handleQuestFailure(extraParam)
 

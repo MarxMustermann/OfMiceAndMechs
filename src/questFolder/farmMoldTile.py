@@ -3,8 +3,10 @@ import random
 import src
 
 class FarmMoldTile(src.quests.MetaQuestSequence):
+    '''
+    quest to farm mold on a specific tile
+    '''
     type = "FarmMoldTile"
-
     def __init__(self, description="farm mold tile", creator=None, targetPosition=None, reason=None, endOnFullInventory=False, stimulateMoldGrowth=True,tryHard=False):
         questList = []
         super().__init__(questList, creator=creator)
@@ -18,8 +20,13 @@ class FarmMoldTile(src.quests.MetaQuestSequence):
         self.targetPosition = targetPosition
 
     def generateTextDescription(self):
-        out = []
+        '''
+        generate a textual description to show on the UI
+        Returns:
+            the textual description
+        '''
 
+        out = []
         reason = ""
         if self.reason:
             reason = f", to {self.reason}"
@@ -30,6 +37,14 @@ farm mold on the tile {self.targetPosition}{reason}."""
         return out
 
     def triggerCompletionCheck(self,character=None,dryRun=True):
+        '''
+        check if the quest completed and end it
+        Parameters:
+            character:  the character doing the quest
+            dryRun:     flag to be stateless or not
+        Returns:
+            whether the quest ended or not
+        '''
 
         if not character:
             return False
@@ -47,6 +62,15 @@ farm mold on the tile {self.targetPosition}{reason}."""
         return False
 
     def getNextStep(self,character,ignoreCommands=False, dryRun = True):
+        '''
+        generate the next step to solve the quest
+        Parameters:
+            character:       the character doing the quest
+            ignoreCommands:  whether to generate commands or not
+            dryRun:          flag to be stateless or not
+        Returns:
+            the activity to run as next step
+        '''
 
         # handle weird edge cases
         if not character:
@@ -106,6 +130,9 @@ farm mold on the tile {self.targetPosition}{reason}."""
             elif foundOffset == (0,-1,0):
                 command = "Jw"
 
+            if command[0] == "J" and "advancedInteraction" in character.interactionState:
+                command = command[1:]
+
             return (None,(command,"stimulate mold growth"))
 
         items = self.getLeftoverItems(character)
@@ -117,6 +144,13 @@ farm mold on the tile {self.targetPosition}{reason}."""
         return ([quest],None)
 
     def getLeftoverItems(self,character):
+        '''
+        get what items still have to be processed
+        Parameters:
+            character:  the character doing the quest
+        Returns:
+            the list of items
+        '''
         terrain = character.getTerrain()
         if not terrain:
             return []
@@ -135,9 +169,19 @@ farm mold on the tile {self.targetPosition}{reason}."""
         return leftOverItems
 
     def pickedUpItem(self,extraInfo):
+        '''
+        react to an item being picked up
+        Parameters:
+            extraInfo:  context information
+        '''
         self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
     def handleHurt(self,extraInfo=None):
+        '''
+        react to being hurt
+        Parameters:
+            extraInfo:  context information
+        '''
         if not self.character:
             return
 
@@ -145,6 +189,12 @@ farm mold on the tile {self.targetPosition}{reason}."""
             self.fail("low health")
 
     def assignToCharacter(self, character):
+        '''
+        assign quest to a character
+        Parameters:
+            character:  the character to assign quest to
+        '''
+
         if self.character:
             return None
 
@@ -153,8 +203,16 @@ farm mold on the tile {self.targetPosition}{reason}."""
         return super().assignToCharacter(character)
 
     def getQuestMarkersTile(self,character):
+        '''
+        return the quest markers for the mini map
+        Parameters:
+            character:      the character doing the quest
+        Returns:
+            the quest markers to show
+        '''
         result = super().getQuestMarkersTile(character)
         result.append(((self.targetPosition[0],self.targetPosition[1]),"target"))
         return result
 
+# register the quest type
 src.quests.addType(FarmMoldTile)

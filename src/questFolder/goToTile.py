@@ -305,14 +305,7 @@ The target tile is {direction[4:]}
             menuCommand = "g"
             if "runaction" in character.interactionState:
                 menuCommand = ""
-
-            if self.targetPosition == (7,7,0):
-                return (None,(menuCommand+"mc","use fast travel to reach your destination"))
-            currentPos = character.getBigPosition()
-            offset = (self.targetPosition[0]-currentPos[0], self.targetPosition[1]-currentPos[1], 0)
-            if abs(offset[0])+abs(offset[1]) > 4 and self.getQuestMarkersTile(character):
-                return (None,(menuCommand+"mq","use fast travel to current questmarker"))
-            return (None,(menuCommand+"m"+"d"*offset[0]+"a"*(-offset[0])+"s"*offset[1]+"w"*(-offset[1])+"j","use fast travel to reach your destination"))
+            return (None,(menuCommand+"m","open fast travel menu"))
 
         try:
             self.ignoreEnemies

@@ -2686,7 +2686,7 @@ press any other key to attack normally"""
         if items:
             if len(items) == 1:
                 text += f"there is a {items[0].name}"
-                if item.bolted:
+                if items[0].bolted:
                     text += f" X"
                 text += f":\n\n"
             else:

@@ -157,7 +157,7 @@ Try luring enemies into landmines or detonating some bombs."""
                     (x,y,_) = character.getSpacePosition()
                     x= src.helpers.clamp(x+int(random.uniform(-3,3)),2,11)
                     y= src.helpers.clamp(y+int(random.uniform(-3,3)),2,11)
-                    quest = src.quests.questMap["GoToPosition"](targetPosition = (x,y),reason="get to a nicer spot")
+                    quest = src.quests.questMap["GoToPosition"](targetPosition = (x,y),reason="get to a nicer spot",idleMovement=True)
                     return ([quest], None)
                 if not character.rank and character.charType == "Clone":
                     return (None, ("....","wait"))
@@ -166,7 +166,7 @@ Try luring enemies into landmines or detonating some bombs."""
                         (x,y,_) = character.getSpacePosition()
                         x= src.helpers.clamp(x+int(random.uniform(-3,3)),2,11)
                         y= src.helpers.clamp(y+int(random.uniform(-3,3)),2,11)
-                        quest = src.quests.questMap["GoToPosition"](targetPosition = (x,y))
+                        quest = src.quests.questMap["GoToPosition"](targetPosition = (x,y),idleMovement=True)
                         return ([quest], None)
                     return (None, (";","wait"))
 

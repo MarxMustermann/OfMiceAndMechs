@@ -257,11 +257,6 @@ suicidal"""
                             quest = src.quests.questMap["ActivateGlassStatue"](targetPositionBig=room.getPosition(),targetPosition=item.getPosition(),reason="get to the dungeon")
                             return ([quest],None)
 
-                try:
-                    self.walkToTarget
-                except:
-                    self.walkToTarget = False
-
                 if not self.walkToTarget:
                     return self._solver_trigger_fail(dryRun,"no GlassStatue found")
                 else:

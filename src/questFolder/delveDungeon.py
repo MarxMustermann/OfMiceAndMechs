@@ -97,21 +97,10 @@ suicidal"""
         # navigate menues
         submenue = character.macroState.get("submenue")
         if submenue and not ignoreCommands:
-            if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu) and submenue.extraInfo.get("item"):
-                menuEntry = "getSetHeart"
-                counter = 1
-                for option in submenue.options.values():
-                    if option == menuEntry:
-                        index = counter
-                        break
-                    counter += 1
-                command = ""
-                if submenue.selectionIndex > counter:
-                    command += "w"*(submenue.selectionIndex-counter)
-                if submenue.selectionIndex < counter:
-                    command += "s"*(counter-submenue.selectionIndex)
-                command += "j"
-                return (None,(command,"get/set glass heart"))
+            if submenue.tag == "applyOptionSelection" and submenue.extraInfo.get("item").type == "GlassStatue":
+                command = submenue.get_command_to_select_option("getSetHeart")
+                if command:
+                    return (None,(command,"get/set glass heart"))
             return (None,(["esc"],"exit submenu"))
 
         # close other menus

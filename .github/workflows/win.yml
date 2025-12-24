@@ -21,7 +21,7 @@ jobs:
       - name: install dep and finishing up
         run: |
           curl -L https://www.python.org/ftp/python/3.12.8/python-3.12.8-embed-amd64.zip -o ./Game/Data.zip
-          unzip Game/Data.zip -d Game
+          unzip Game/Data.zip -d Game/Data/
           ls Game
           rm Game/Data.zip
           ls Game/Data/

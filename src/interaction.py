@@ -4763,10 +4763,7 @@ def renderGameDisplay(renderChar=None):
             pydisplay.fill((0, 0, 0))
             font = pygame.font.Font("config/DejaVuSansMono.ttf", 14)
 
-            if submenue:
-                plainText = stringifyUrwid(submenue.render())
-            else:
-                plainText = stringifyUrwid(main.get_text())
+            plainText = stringifyUrwid(submenue.render())
             plainText = stringifyUrwid(plainText)
             counter = 0
             for line in plainText.split("\n"):
@@ -4776,10 +4773,7 @@ def renderGameDisplay(renderChar=None):
 
             pygame.display.update()
         if tcodConsole:
-            if submenue:
-                text = submenue.render()
-            else:
-                text = main.get_text()
+            text = submenue.render()
             plainText = stringifyUrwid(text)
 
             height = 0

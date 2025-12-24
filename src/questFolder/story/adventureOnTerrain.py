@@ -225,7 +225,9 @@ Go out and adventure on tile {self.targetTerrain}{reasonString}.
         pass
 
     def handleQuestFailure(self,extraInfo):
-        if extraInfo["quest"].type == "LootRoom":
+        sub_quest = extraInfo.get("quest")
+        fail_reason = extraInfo.get("reason")
+        if sub_quest.type == "LootRoom" and not fail_reason == "canceled":
             self.mark_POI_explored(extraInfo["quest"].targetPositionBig)
             return
 

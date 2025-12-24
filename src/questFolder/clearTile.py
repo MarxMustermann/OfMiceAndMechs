@@ -124,8 +124,10 @@ Remove all items from the walkways that are not bolted down."""
             return self._solver_trigger_fail(dryRun,"nearby enemies")
 
         # close menus
-        if not ignoreCommands and character.macroState.get("submenue"):
-            return (None,(["esc"],"exit submenu"))
+        submenue = character.macroState.get("submenue")
+        if submenue and not ignoreCommands:
+            if not submenue.tag in ("advancedPickupSelection",):
+                return (None,(["esc"],"exit submenu"))
 
         # ensure inventory space
         if not character.getFreeInventorySpace() > 0:
@@ -173,8 +175,10 @@ Remove all items from the walkways that are not bolted down."""
         # clear items directly next to the character
         if foundOffset:
             interactionCommand = "K"
-            if "advancedPickup" in character.interactionState:
+            if submenue.tag == "advancedPickupSelection":
                 interactionCommand = ""
+            else:
+                return (None,(["esc"],"close menu"))
             if foundOffset == (0,0,0):
                 command = "k"
             if foundOffset == (1,0,0):

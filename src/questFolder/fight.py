@@ -76,6 +76,8 @@ So if an enemy is to directly east of you:
         '''
         generate next step towards solving this quest
         '''
+
+        # do nothing if the quest has subquests
         if self.subQuests:
             return (None,None)
 

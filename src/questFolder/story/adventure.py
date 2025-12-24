@@ -17,6 +17,12 @@ class Adventure(src.quests.MetaQuestSequence):
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
         '''
         generate the next step towards solving this quest
+        Parameters:
+            character:       the character doing the quest
+            ignoreCommands:  whether to generate commands or not
+            dryRun:          flag to be stateless or not
+        Returns:
+            the activity to run as next step
         '''
 
         # handle weird edge cases
@@ -119,16 +125,18 @@ class Adventure(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["DoMapSync"](reason="allow the base to remember if you die")
                 return ([quest],None)
 
+        # ensure basic equipment
         if not character.weapon or not character.armor:
             quest = src.quests.questMap["Equip"](tryHard=True,reason="not be defenseless")
             return ([quest],None)
 
+        # go home directly if convinient
         if currentTerrain.tag == "shrine":
-            # go home directly
             if character.getFreeInventorySpace() < 2:
                 quest = src.quests.questMap["GoHome"](reason="bring home loot")
                 return ([quest],None)
 
+        # loot ruins
         if currentTerrain.tag == "ruin":
             if character.getFreeInventorySpace():
                 # loot on current terrain
@@ -136,7 +144,8 @@ class Adventure(src.quests.MetaQuestSequence):
                 if not info.get("looted"):
                     quest = src.quests.questMap["AdventureOnTerrain"](targetTerrain=currentTerrain.getPosition(),reason="get more loot")
                     return ([quest], None)
-
+        
+        # clear inventory from scrap
         if character.searchInventory("Scrap"):
             if not character.container.getItemByPosition(character.getPosition()):
                 submenue = character.macroState["submenue"]

@@ -1534,9 +1534,8 @@ def doStackPush(key,char,charState,main,header,footer,urwid,flags):
     char.registers[key].append(0)
     char.doStackPush = False
 
-def doRangedAttack(key,char):
-    char.doRangedAttack(direction=key)
-    del char.interactionState["fireDirection"]
+def doRangedAttack(extraInfo=None):
+    extraInfo["character"].doRangedAttack(direction=extraInfo["keyPressed"])
 
 def doFunctionCall(key,char,charState,main,header,footer,urwid,flags):
     if key not in (" ", "backspace", "enter"):
@@ -2533,10 +2532,6 @@ def handlePriorityActions(params):
         handleActivitySelection(key,char)
         return None
 
-    if "fireDirection" in char.interactionState:
-        doRangedAttack(key,char)
-        return None
-
     if advancedInteractionStr in char.interactionState:
         doAdvancedInteraction(params)
         return None
@@ -3047,14 +3042,9 @@ press key to set fire direction
 
 """
 
-                    header.set_text(
-                        (urwid.AttrSpec("default", "default"), "fire menu")
-                    )
-                    main.set_text((urwid.AttrSpec("default", "default"), text))
-                    footer.set_text((urwid.AttrSpec("default", "default"), ""))
-                    char.specialRender = True
-
-                char.interactionState["fireDirection"] = {}
+                    submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text,ignoreFirstKey=False)
+                    submenue.followUp = {"method":doRangedAttack,"params":{"character":char}}
+                    char.macroState["submenue"] = submenue
                 return None
             elif char.hasRandomShot:
                 char.doRandomRanged()

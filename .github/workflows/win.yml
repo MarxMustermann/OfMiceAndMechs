@@ -28,8 +28,8 @@ jobs:
           curl -L https://bootstrap.pypa.io/get-pip.py -o ./Game/Data/get-pip.py
           ./Game/Data/python ./Game/Data/get-pip.py
           ./Game/Data/Scripts/pip install -r ./Game/Data/requirements.txt
-          echo "cd Data" | out-file ./Game/lunch_game.bat
-          echo "python.exe executeMe.py" | out-file ./Game/lunch_game.bat -Append
+          echo "cd Data" | out-file ./Game/launch_game.bat
+          echo "python.exe executeMe.py" | out-file ./Game/launch_game.bat -Append
           Compress-Archive -Path ./Game/* -Destination OfMiceAndMechs-Win.zip
       # - name: Upload Artifacts
       #   uses: actions/upload-artifact@v4

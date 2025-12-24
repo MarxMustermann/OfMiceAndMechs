@@ -85,14 +85,14 @@ suicidal"""
                 return (None,("s","enter room"))
         
         # activate GlassStatue if marked
-        if character.macroState.get("itemMarkedLast"):
-            if character.macroState["itemMarkedLast"].type == "GlassStatue":
-                if self.directSendback:
-                    return (None,("cr","return GlassHeart"))
-                else:
-                    return (None,("j","activate glass statue"))
-            else:
-                return (None,(".","undo selection"))
+        activationCommand = "j"
+        description = "activate glass statue"
+        if self.directSendback:
+            activationCommand = "cr"
+            description = "return GlassHeart"
+        command = self.generate_confirm_interaction_command(allowedItems=["GlassStatue"],activationCommand=activationCommand)
+        if command:
+            return command
 
         # navigate menues
         submenue = character.macroState.get("submenue")

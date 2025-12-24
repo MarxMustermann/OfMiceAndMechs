@@ -21,7 +21,7 @@ jobs:
       - name: install dep and finishing up
         run: |
           curl -L https://www.python.org/ftp/python/3.12.8/python-3.12.8-embed-amd64.zip -o ./Game/Data.zip
-          unzip Game/Data.zip
+          unzip Game/Data.zip -d Game
           rm Game/Data.zip
           Add-Content -Path ./Game/Data/python312._pth -Value "./Lib/site-packages/"
           Add-Content -Path ./Game/Data/python312._pth -Value "import site"

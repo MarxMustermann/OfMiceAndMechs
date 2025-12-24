@@ -116,17 +116,38 @@ Press control-d to stop your character from moving.
         '''
         get the next step towards solving the quest
         '''
+
+        # handle weird edge cases
         if self.subQuests:
             return (None,None)
-
         if not character:
             return (None,None)
 
-        if not character.container.isRoom:
-            submenue = character.macroState["submenue"]
-            if submenue:
-                return (None,(["esc"],"close menu"))
+        # navigate menues
+        submenue = character.macroState.get("submenue")
+        if submenue and not ignoreCommands:
+            if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu):
+                targetIndex = None
+                counter = 0
+                for item in submenue.options.values():
+                    counter += 1
+                    if item == "teleport":
+                        targetIndex = counter
+                        break
+                if not targetIndex:
+                    return (None,(["esc"],"close menu"))
 
+                offset = targetIndex-submenue.selectionIndex
+                command = ""
+                if offset > 0:
+                    command += "s"*offset
+                else:
+                    command += "w"*(-offset)
+                command += "j"
+                return (None,(command,"teleport home"))
+            return (None,(["esc"],"close menu"))
+
+        if not character.container.isRoom:
             pos = character.getSpacePosition()
             if pos == (14,7,0):
                 return (None,("a","enter room"))
@@ -163,28 +184,6 @@ Press control-d to stop your character from moving.
                 if items:
                     for item in items:
                         if character.getDistance(item.getPosition()) <= 1:
-
-                            if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
-                                submenue = character.macroState["submenue"]
-
-                                targetIndex = None
-                                counter = 0
-                                for item in submenue.options.values():
-                                    counter += 1
-                                    if item == "teleport":
-                                        targetIndex = counter
-                                        break
-                                if not targetIndex:
-                                    return (None,(["esc"],"close menu"))
-
-                                offset = targetIndex-submenue.selectionIndex
-                                command = ""
-                                if offset > 0:
-                                    command += "s"*offset
-                                else:
-                                    command += "w"*(-offset)
-                                command += "j"
-                                return (None,(command,"teleport home"))
 
                             direction = "."
                             if character.getPosition(offset=(1, 0, 0)) == item.getPosition():

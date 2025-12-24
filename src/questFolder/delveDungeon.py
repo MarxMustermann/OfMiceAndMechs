@@ -289,39 +289,39 @@ suicidal"""
                             continue
                         foundGlassStatue = glassStatue
 
-                if foundGlassStatue:
-                    if character.container != foundGlassStatue.container:
-                        quest = src.quests.questMap["GoToTile"](targetPosition=foundGlassStatue.getBigPosition(),abortHealthPercentage=0.5,description="go to temple",reason="reach the GlassHeart")
-                        quest.generatePath(character)
-                        path = quest.path
-                        if len(path):
-                            return self.delveToRoomIfSafe(character,path,dryRun=dryRun)
-                        return (None,None)
-                    if character.getDistance(foundGlassStatue.getPosition()) > 1:
-                        quest = src.quests.questMap["GoToPosition"](targetPosition=foundGlassStatue.getPosition(),ignoreEndBlocked=True,description="go to GlasStatue", reason="be able to extract the GlassHeart")
-                        return ([quest],None)
+                # fail on wierd state
+                if not foundGlassStatue:
+                    return self._solver_trigger_fail(dryRun,"no GlassStatue found")
+            
+                if character.container != foundGlassStatue.container:
+                    quest = src.quests.questMap["GoToTile"](targetPosition=foundGlassStatue.getBigPosition(),abortHealthPercentage=0.5,description="go to temple",reason="reach the GlassHeart")
+                    quest.generatePath(character)
+                    path = quest.path
+                    if len(path):
+                        return self.delveToRoomIfSafe(character,path,dryRun=dryRun)
+                    return (None,None)
+                if character.getDistance(foundGlassStatue.getPosition()) > 1:
+                    quest = src.quests.questMap["GoToPosition"](targetPosition=foundGlassStatue.getPosition(),ignoreEndBlocked=True,description="go to GlasStatue", reason="be able to extract the GlassHeart")
+                    return ([quest],None)
 
-                    directionCommand = None
-                    if character.getPosition(offset=(0,0,0)) == foundGlassStatue.getPosition():
-                        directionCommand = "."
-                    if character.getPosition(offset=(1,0,0)) == foundGlassStatue.getPosition():
-                        directionCommand = "d"
-                    if character.getPosition(offset=(0,1,0)) == foundGlassStatue.getPosition():
-                        directionCommand = "s"
-                    if character.getPosition(offset=(-1,0,0)) == foundGlassStatue.getPosition():
-                        directionCommand = "a"
-                    if character.getPosition(offset=(0,-1,0)) == foundGlassStatue.getPosition():
-                        directionCommand = "w"
-                    if self.directSendback:
-                        return (None,(directionCommand+"cr","return GlassHeart"))
-                    else:
-                        activationCommand = "J"
-                        if "advancedInteraction" in character.interactionState:
-                            activationCommand = ""
-                        return (None,(activationCommand+directionCommand+"ssj","eject GlassHeart"))
-
-                # fail
-                return self._solver_trigger_fail(dryRun,"no GlassStatue found")
+                directionCommand = None
+                if character.getPosition(offset=(0,0,0)) == foundGlassStatue.getPosition():
+                    directionCommand = "."
+                if character.getPosition(offset=(1,0,0)) == foundGlassStatue.getPosition():
+                    directionCommand = "d"
+                if character.getPosition(offset=(0,1,0)) == foundGlassStatue.getPosition():
+                    directionCommand = "s"
+                if character.getPosition(offset=(-1,0,0)) == foundGlassStatue.getPosition():
+                    directionCommand = "a"
+                if character.getPosition(offset=(0,-1,0)) == foundGlassStatue.getPosition():
+                    directionCommand = "w"
+                if self.directSendback:
+                    return (None,(directionCommand+"cr","return GlassHeart"))
+                else:
+                    activationCommand = "J"
+                    if "advancedInteraction" in character.interactionState:
+                        activationCommand = ""
+                    return (None,(activationCommand+directionCommand+"ssj","eject GlassHeart"))
 
             if character.getPosition() != foundGlassHeart.getPosition():
                 quest = src.quests.questMap["GoToPosition"](targetPosition=foundGlassHeart.getPosition(),description="go to GlassHeart",reason="be able to pick up the GlassHeart")

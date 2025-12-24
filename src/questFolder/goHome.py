@@ -157,9 +157,12 @@ Press control-d to stop your character from moving.
         if action:
             return action
 
+        # set up helper variables
         currentTerrain = character.getTerrain()
 
         if character.getTerrainPosition() != self.getHomeLocation():
+
+            # find nearby shrine
             foundShrine = None
             if isinstance(character.container, src.rooms.Room):
                 items = character.container.getItemsByType("Shrine")
@@ -190,12 +193,12 @@ Press control-d to stop your character from moving.
             else:
                 roomsToSearch = character.container.rooms
 
+            # return home
             for room in roomsToSearch:
                 items = room.getItemsByType("Shrine")
                 if not items:
                     continue
                 foundShrine = items[0]
-
             if foundShrine:
                 quest = src.quests.questMap["GoToTile"](
                     paranoid=self.paranoid, targetPosition=foundShrine.container.getPosition(), reason="get to a shrine"
@@ -220,6 +223,7 @@ Press control-d to stop your character from moving.
             )
             return ([quest], None)
 
+        # enter rooms properly
         charPos = (character.xPosition % 15, character.yPosition % 15, 0)
         move = ""
         if charPos in ((0, 7, 0), (0, 6, 0)):
@@ -233,6 +237,7 @@ Press control-d to stop your character from moving.
         if move != "":
             return (None, (move, "move into room"))
 
+        # soft fail
         return (None, (".","stand around confused"))
 
     def getQuestMarkersTile(self, character):

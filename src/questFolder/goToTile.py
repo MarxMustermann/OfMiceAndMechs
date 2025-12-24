@@ -236,11 +236,6 @@ The target tile is {direction[4:]}
         if self.targetPosition[1] < 1 or self.targetPosition[1] > 13:
             return self._solver_trigger_fail(dryRun,"target position out of range")
 
-        try:
-            self.abortOnDanger
-        except:
-            self.abortOnDanger = False
-
         if self.abortOnDanger and character.getNearbyEnemies():
             return self._solver_trigger_fail(dryRun,"enemies nearby")
 

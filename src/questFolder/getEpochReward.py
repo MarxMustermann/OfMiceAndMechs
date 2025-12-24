@@ -220,15 +220,16 @@ This will allow you to focus on other tasks.
             the generated quests ( (None,None) for no quest to do )
         '''
 
+        # set up helper variables
         terrain = character.getTerrain()
 
+        # get shrine
         foundShrine = None
         for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
             for checkShrine in room.getItemsByType("Shrine"):
                 if checkShrine.god != 1:
                     continue
                 foundShrine = checkShrine
-
         if not foundShrine:
             return (None,None)
 
@@ -254,10 +255,10 @@ This will allow you to focus on other tasks.
                         npcDuties[duty] = []
                     npcDuties[duty].append(otherChar)
 
+        # generate quests for all missing duty-clones
         chargesUsed = 0
         quests = []
         for duty in ["room building","cleaning","scavenging","manufacturing","resource gathering","scrap hammering","mold farming","hauling","metal working","resource fetching","painting","machining","machine placing","machine operation","maggot gathering",]:
-
             if duty not in npcDuties:
                 cost = foundShrine.getBurnedInCharacterSpawningCost(character)
                 cost *= foundShrine.get_glass_heart_rebate()
@@ -271,16 +272,17 @@ This will allow you to focus on other tasks.
                 if foundFlask:
                     cost /= 2
                 cost += chargesUsed
-
                 if character.getTerrain().mana >= cost:
                     quest = src.quests.questMap["GetEpochReward"](rewardType="spawn "+duty+" NPC",reason="spawn another clone to help you out")
                     chargesUsed += 10
                     quests.append(quest)
                     break
 
+        # dispatch the generated quests
         if quests:
             quests.reverse()
             return (quests,None)
         return (None,None)
 
+# register the quest type
 src.quests.addType(GetEpochReward)

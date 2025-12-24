@@ -7,10 +7,12 @@ class OneKeystrokeMenu(src.subMenu.SubMenu):
         text: the text to show
     '''
     type = "OneKeystrokeMenu"
-    def __init__(self, text="",targetParamName="keyPressed"):
+    def __init__(self, text="",targetParamName="keyPressed",ignoreFirstKey=True):
         super().__init__()
         self.text = text
         self.firstRun = True
+        if not ignoreFirstKey:
+            self.firstRun = False
         self.keyPressed = ""
         self.done = False
         self.targetParamName = targetParamName
@@ -35,16 +37,6 @@ class OneKeystrokeMenu(src.subMenu.SubMenu):
             returns True when done
         '''
 
-        # show info
-        if not noRender:
-            src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), ""))
-            if isinstance(self.text,list):
-                self.text.append("\n")
-            else:
-                self.text += "\n"
-            self.persistentText = self.text
-            src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.persistentText))
-
         # exit the submenu
         if key not in ("~",) and not self.firstRun:
             self.keyPressed = key
@@ -56,3 +48,10 @@ class OneKeystrokeMenu(src.subMenu.SubMenu):
         # mark that the menu was shown once
         self.firstRun = False
         return False
+
+    def render(self):
+        out = []
+        out.append(self.text)
+        out.append("\n")
+        return out
+

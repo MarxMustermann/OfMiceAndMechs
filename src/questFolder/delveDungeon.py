@@ -234,6 +234,7 @@ suicidal"""
                         quest = src.quests.questMap["BeUsefull"](lifetime=remaining_time,reason="wait for wave to pass")
                         return ([quest],None)
 
+            # loot current room
             if currentTerrain != character.getHomeTerrain():
                 if character.container.isRoom and character.getFreeInventorySpace() and isinstance(character,src.characters.characterMap["Clone"]):
                     for item in character.container.itemsOnFloor:
@@ -244,6 +245,7 @@ suicidal"""
 
             # get to the terrain the dungeon is on
             if terrain.xPosition != self.targetTerrain[0] or terrain.yPosition != self.targetTerrain[1]:
+
                 # try to teleport to the dungeon
                 if self.itemID:
                     for room in terrain.rooms:
@@ -257,13 +259,16 @@ suicidal"""
                             quest = src.quests.questMap["ActivateGlassStatue"](targetPositionBig=room.getPosition(),targetPosition=item.getPosition(),reason="get to the dungeon")
                             return ([quest],None)
 
+                # try to go to the dungeon using other means
                 if not self.walkToTarget:
                     return self._solver_trigger_fail(dryRun,"no GlassStatue found")
                 else:
+
                     # actually walk to the target terrain
                     quest = src.quests.questMap["GoToTerrain"](targetTerrain=(self.targetTerrain[0],self.targetTerrain[1],0),reason="reach the dungeon")
                     return ([quest],None)
 
+            # check for exposed GlassHeart
             foundGlassHeart = None
             for room in terrain.rooms:
                 for specialItem in room.getItemsByType("SpecialItem"):
@@ -271,7 +276,10 @@ suicidal"""
                         continue
                     foundGlassHeart = specialItem
 
+            # eject GlassHeart
             if not foundGlassHeart:
+
+                # find GlassStatue with GlassHeart
                 foundGlassStatue = None
                 for room in terrain.rooms:
                     for glassStatue in room.getItemsByType("GlassStatue"):
@@ -312,6 +320,7 @@ suicidal"""
                             activationCommand = ""
                         return (None,(activationCommand+directionCommand+"ssj","eject GlassHeart"))
 
+                # fail
                 return self._solver_trigger_fail(dryRun,"no GlassStatue found")
 
             if character.getPosition() != foundGlassHeart.getPosition():

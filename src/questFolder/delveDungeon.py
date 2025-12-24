@@ -315,7 +315,7 @@ suicidal"""
                     activationCommand = "J"
                     if "advancedInteraction" in character.interactionState:
                         activationCommand = ""
-                    return (None,(activationCommand+directionCommand+"ssj","eject GlassHeart"))
+                    return (None,(activationCommand+directionCommand,"eject GlassHeart"))
 
             # pick up GlassHeart
             if character.getPosition() != foundGlassHeart.getPosition():
@@ -375,7 +375,7 @@ suicidal"""
         activationCommand = "J"
         if "advancedInteraction" in character.interactionState:
             activationCommand = ""
-        return (None,(activationCommand+directionCommand+"ssj","insert glass heart"))
+        return (None,(activationCommand+directionCommand,"insert glass heart"))
 
     def delveToRoomIfSafe(self,character,path,dryRun=True):
         new_pos = character.getBigPosition()

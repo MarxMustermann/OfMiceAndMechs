@@ -5,7 +5,6 @@ import src.questFolder.story.goToTileStory
 import src.questFolder.story.crossTrapRoom
 import src.questFolder.story.resetFaction
 import src.questFolder.story.getCombatReady
-import src.questFolder.story.activateGlassStatue
 import src.questFolder.story.collectGlassHearts
 import src.questFolder.story.spawnClone
 import src.questFolder.story.appeaseAGod

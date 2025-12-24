@@ -172,8 +172,10 @@ Press d to move the cursor and show the subquests description.
             return (None,None)
 
         # close open menues
-        if character.macroState["submenue"] and not ignoreCommands:
-            return (None,(["esc"],"to close menu"))
+        submenue = character.macroState.get("submenue")
+        if submenue and not ignoreCommands:
+            if not submenue.tag in ("advancedPickupSelection",):
+                return (None,(["esc"],"to close menu"))
 
         # enter rooms properly
         if not character.container.isRoom:
@@ -243,8 +245,11 @@ Press d to move the cursor and show the subquests description.
                     if foundDirection:
                         interactionCommand = "K"
                         direction_command = None
-                        if "advancedPickup" in character.interactionState:
-                            interactionCommand = ""
+                        if submenue:
+                            if submenue.tag == "advancedPickupSelection":
+                                interactionCommand = ""
+                            else:
+                                return (None,(["esc"],"close menu"))
                         if foundDirection == (0,0,0):
                             direction_command = "."
                         if foundDirection == (1,0,0):
@@ -293,8 +298,10 @@ Press d to move the cursor and show the subquests description.
                     if foundDirection:
                         interactionCommand = "K"
                         direction_command = None
-                        if "advancedPickup" in character.interactionState:
+                        if submenue.tag == "advancedPickupSelection":
                             interactionCommand = ""
+                        else:
+                            return (None,(["esc"],"close menu"))
                         if foundDirection == (0,0,0):
                             direction_command = "."
                         if foundDirection == (1,0,0):

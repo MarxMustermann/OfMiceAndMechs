@@ -146,7 +146,16 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
             return (None,("+","register room as explored"))
 
         # loot a different room
+        char_big_pos = character.getBigPosition()
         pointOfInterest = random.choice(pointsOfInterest)
+        smallest_distance = None
+        for check_point in pointsOfInterest:
+            if random.random() > 0.8:
+                continue
+            distance = abs(char_big_pos[0]-check_point[0])+abs(char_big_pos[1]-check_point[1])
+            if smallest_distance is None or distance <= smallest_distance:
+                smallest_distance = distance
+                pointOfInterest = check_point
         quest = src.quests.questMap["LootRoom"](targetPositionBig=pointOfInterest,endWhenFull=True,reason="gather loot")
         return ([quest],None)
 

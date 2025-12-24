@@ -40,6 +40,7 @@ class SubMenu(object):
         super().__init__()
 
         self.escape = False
+        self.query = ""
 
     def rerender(self):
         pass

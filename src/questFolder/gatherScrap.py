@@ -85,6 +85,12 @@ Scrapfields are shown on the minimap as white ss"""]
             quest = src.quests.questMap["ClearInventory"]()
             return ([quest],None)
 
+        # close open menues
+        submenue = character.macroState.get("submenue")
+        if submenue and not ignoreCommands:
+            if not submenue.tag in ("advancedPickupSelection",):
+                return (None,(["esc"],"to close menu"))
+
         room = character.container
         if not isinstance(room,src.rooms.Room):
             directions = [(0,0,0),(-1,0,0),(1,0,0),(0,1,0),(0,-1,0)]
@@ -102,8 +108,11 @@ Scrapfields are shown on the minimap as white ss"""]
                         command = "Kw"
 
                     command = command*min(10-len(character.inventory),items[0].amount)
-                    if command[0] == "K" and "advancedPickup" in character.interactionState:
-                        command = command[1:]
+                    if command[0] == "K":
+                        if submenue.tag == "advancedPickupSelection":
+                            command = command[1:]
+                        else:
+                            return (None,(["esc"],"close menu"))
                     return (None,(command,"pick up scrap"))
 
         foundScrap = None

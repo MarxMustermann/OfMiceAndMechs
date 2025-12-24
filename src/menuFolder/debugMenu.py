@@ -396,6 +396,7 @@ class DebugMenu(src.subMenu.SubMenu):
                         src.interaction.allow_sdl = not src.interaction.allow_sdl
             text += "\n"
 
+        self.persistentText = text
         src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), text))
 
         # exit submenu

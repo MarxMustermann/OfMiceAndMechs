@@ -1,7 +1,8 @@
 import src
 
 class MessagesMenu(src.subMenu.SubMenu):
-    def render(self,char):
+    def render(self):
+        char = self.char
         if self.scrollIndex:
             return "\n".join(reversed(char.messages[-46-self.scrollIndex:-self.scrollIndex]))
         return "\n".join(reversed(char.messages[-46:]))
@@ -46,7 +47,7 @@ class MessagesMenu(src.subMenu.SubMenu):
 
         char = self.char
 
-        text = f"press a/d to scroll\noldest message on top - skipping {self.scrollIndex} messages\n\n"+self.render(char)
+        text = f"press a/d to scroll\noldest message on top - skipping {self.scrollIndex} messages\n\n"+self.render()
 
         # show info
         src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "messages"))

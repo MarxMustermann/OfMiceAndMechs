@@ -16,7 +16,10 @@ class StatusEffectMenu(src.subMenu.SubMenu):
         self.cursor = cursor
         super().__init__()
 
-    def render(self,char):
+    def render(self):
+        
+        char = self.char
+
         if char.dead:
             return ""
 
@@ -75,9 +78,7 @@ use w/s to select the status effect to show the details for.
             self.char.rememberedMenu2.append(self)
             return True
 
-        char = self.char
-
-        text = self.render(char)
+        text = self.render()
 
         # show info
         src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\ncharacter overview"))

@@ -158,7 +158,7 @@ class InventoryMenu(src.subMenu.SubMenu):
             # bad code: uses global function
             self.persistentText = (
                 src.interaction.urwid.AttrSpec("default", "default"),
-                self.render(self.char),
+                self.render(),
             )
 
             # show the render
@@ -168,13 +168,14 @@ class InventoryMenu(src.subMenu.SubMenu):
 
     # bad code: global function
     # bad code: should be abstracted
-    def render(self, char=None):
+    def render(self):
         """
         render the inventory of the player into a string
 
         Returns:
             the rendered string
         """
+        char = self.char
         character = char
         sidebared = self.sidebared
         cursor = self.cursor

@@ -4742,7 +4742,7 @@ def renderGameDisplay(renderChar=None):
                         chars = []
                         for menu in reversed(char.rememberedMenu2):
                             chars.extend(["------------- ",ActionMeta(content="<",payload=["rESC"]),"\n\n"])
-                            chars.extend(menu.render(char))
+                            chars.extend(menu.render())
                         size = uiElement["size"]
                         offset = uiElement["offset"]
                         printUrwidToTcod(chars,offset,size=size)

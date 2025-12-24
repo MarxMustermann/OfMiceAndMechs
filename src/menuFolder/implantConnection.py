@@ -42,5 +42,5 @@ class ImplantConnection(src.subMenu.SubMenu):
 
         return False
 
-    def render(self, char):
+    def render(self):
         return f"implant connection to {self.connectionTarget.type}"

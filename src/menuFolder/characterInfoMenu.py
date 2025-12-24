@@ -27,7 +27,10 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
             max_line = max(max_line,len(line))
         return (len(lines),max_line)
 
-    def render(self,char):
+    def render(self):
+
+        char = self.char
+
         if char.dead:
             return ""
 
@@ -216,9 +219,7 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
                 character.addMessage("you dropped your tool")
                 return True
 
-        char = self.char
-
-        text = self.render(char)
+        text = self.render()
 
         # show info
         src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\ncharacter overview"))

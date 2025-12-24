@@ -22,6 +22,8 @@ class FarmMold(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         '''
         get textual description of the quest
+        Returns:
+            the textual description
         '''
         out = []
 
@@ -37,6 +39,11 @@ farm mold{reason}."""
     def triggerCompletionCheck(self,character=None, dryRun=True):
         '''
         check if the quest is completed
+        Parameters:
+            character:  the character doing the quest
+            dryRun:     flag to be stateless or not
+        Returns:
+            whether the quest ended or not
         '''
         if not character:
             return False
@@ -53,6 +60,12 @@ farm mold{reason}."""
     def getNextStep(self,character,ignoreCommands=False, dryRun = True):
         '''
         generate the next step towards solving the quest
+        Parameters:
+            character:       the character doing the quest
+            ignoreCommands:  whether to generate commands or not
+            dryRun:          flag to be stateless or not
+        Returns:
+            the activity to run as next step
         '''
 
         # skip weird states
@@ -117,6 +130,13 @@ farm mold{reason}."""
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
         '''
         generate the quests for doing a duty
+        Parameters:
+            beUsefull:   the quest to generate the duty for
+            character:   the character to generate the quest for
+            currentRoom: the room the character is currently in
+            dryRun:      flag for statelessness
+        Returns:
+            the generated quests ( (None,None) for no quest to do )
         '''
         terrain = character.getTerrain()
         try:
@@ -138,6 +158,11 @@ farm mold{reason}."""
         return ([quest],None)
 
     def handleHurt(self,extraInfo=None):
+        '''
+        react to getting hurt
+        Parameters:
+            extraInfo:  context information
+        '''
         if not self.character:
             return
 
@@ -145,6 +170,12 @@ farm mold{reason}."""
             self.fail("low health")
 
     def assignToCharacter(self, character):
+        '''
+        assign quest to a character
+        Parameters:
+            character:  the character to assign quest to
+        '''
+
         if self.character:
             return None
 

@@ -109,7 +109,8 @@ Remove all items that are not bolted down."""
                     return (None,(command,"drop the item"))
 
             # close unknown submenues
-            return (None,(["esc"],"exit the menu"))
+            if not submenue.tag in ("advancedPickupSelection",):
+                return (None,(["esc"],"exit the menu"))
 
         # handle direct threats
         if character.getNearbyEnemies():
@@ -266,8 +267,11 @@ Remove all items that are not bolted down."""
                     command = command.upper()
 
             if command[0] == "K":
-                if "advancedPickup" in character.interactionState:
-                    command = command[1:]
+                if submenue:
+                    if submenue.tag == "advancedPickupSelection":
+                        command = command[1:]
+                    else:
+                        return (None,(["esc"],"close menu")
 
             return (None,(command,"clear spot"))
 

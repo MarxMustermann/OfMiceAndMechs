@@ -35,8 +35,10 @@ Press JH to auto heal.
             return (None,None)
 
         # handle menus
-        if character.macroState["submenue"]:
-            return (None,(["esc"],"close the menu"))
+        submenue = character.macroState["submenue"]
+        if submenue and not ignoreCommands:
+            if submenue.tag not in ("advancedInteractionSelection",):
+                return (None,(["esc"],"close menu"))
 
         # flee from enemies
         if character.getNearbyEnemies():
@@ -105,8 +107,11 @@ Press JH to auto heal.
 
                 if direction:
                     interactionCommand = "J"
-                    if "advancedInteraction" in character.interactionState:
-                        interactionCommand = ""
+                    if submenue:
+                        if submenue.tag == "advancedInteractionSelection":
+                            interactionCommand = ""
+                        else:
+                            return (None,(["esc"],"close menu"))
                     return (None,(interactionCommand+direction,"inhale smoke"))
 
             quest = src.quests.questMap["GoToPosition"](targetPosition=random.choice(foundBurners).getPosition(),ignoreEndBlocked=True,reason="be able to use the CoalBurner")
@@ -129,8 +134,11 @@ Press JH to auto heal.
 
                     if direction:
                         interactionCommand = "J"
-                        if "advancedInteraction" in character.interactionState:
-                            interactionCommand = ""
+                        if submenue:
+                            if submenue.tag == "advancedInteractionSelection":
+                                interactionCommand = ""
+                            else:
+                                return (None,(["esc"],"close menu"))
                         return (None,(interactionCommand+direction,"activate the regenerator"))
                     else:
                         quest = src.quests.questMap["GoToPosition"](targetPosition=regenerator.getPosition(),ignoreEndBlocked=True,reason="be able to use the Regenerator")

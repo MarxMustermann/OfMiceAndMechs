@@ -3021,8 +3021,7 @@ You have a strange feeling, but nothing happens.
 
         if key in ("f",):
             if char.hasLineShot:
-                if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-                    text = """
+                text = """
 
 press key to set fire direction
 
@@ -3033,10 +3032,10 @@ press key to set fire direction
 
 """
 
-                    submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text,ignoreFirstKey=False)
-                    submenue.followUp = {"method":doRangedAttack,"params":{"character":char}}
-                    submenue.tag = "selectFireDirection"
-                    char.macroState["submenue"] = submenue
+                submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text,ignoreFirstKey=False)
+                submenue.followUp = {"method":doRangedAttack,"params":{"character":char}}
+                submenue.tag = "selectFireDirection"
+                char.macroState["submenue"] = submenue
             elif char.hasRandomShot:
                 char.doRandomRanged()
             else:

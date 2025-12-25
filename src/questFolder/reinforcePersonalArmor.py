@@ -57,15 +57,16 @@ class ReinforcePersonalArmor(src.quests.MetaQuestSequence):
                 return (None,("w","enter room"))
 
         # use menues
-        if character.macroState.get("submenue"):
-            submenue = character.macroState.get("submenue")
+        submenue = character.macroState.get("submenue")
+        if submenue and not ignoreCommands:
             if submenue.tag == "applyOptionSelection" and submenue.extraInfo.get("item").type == "ArmorReinforcer":
                 command = submenue.get_command_to_select_option("reinforce equipped armor")
                 if command:
                     return (None,(command,"reinforce armor"))
             if submenue.tag == "ArmorReinforcerSlider":
                 return (None,("j","reinforce the armor"))
-            return (None,(["esc"],"close the menu"))
+            if submenue.tag not in ("advancedInteractionSelection",):
+                return (None,(["esc"],"close the menu"))
         
         # activate item when marked
         action = self.generate_confirm_interaction_command(allowedItems=["ArmorReinforcer"])
@@ -90,8 +91,11 @@ class ReinforcePersonalArmor(src.quests.MetaQuestSequence):
                 if offset == (0,0,0):
                     return (None,("j","improve personal armor"))
                 interactionCommand = "J"
-                if "advancedInteraction" in character.interactionState:
-                    interactionCommand = ""
+                if submenue:
+                    if submenue.tag == "advancedInteractionSelection":
+                        interactionCommand = ""
+                    else:
+                        return (None,(["esc"],"close menu"))
                 if offset == (1,0,0):
                     return (None,(interactionCommand+"d","improve personal armor"))
                 if offset == (-1,0,0):

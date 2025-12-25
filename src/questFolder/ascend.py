@@ -92,6 +92,14 @@ Rule the world and put an end to those attacks!
             if character.yPosition%15 == 14:
                 return (None,("w","enter room"))
 
+        # set up helper variables
+        currentTerrain = character.getTerrain()
+
+        # go home
+        if currentTerrain != character.getHomeTerrain() and currentTerrain.getPosition() != (7,7,0):
+            quest = src.quests.questMap["GoHome"](reason="get back to base")
+            return ([quest],None)
+
         # activate correct item when marked
         action = self.generate_confirm_interaction_command(allowedItems=("Throne","GlassThrone"))
         if action:
@@ -106,9 +114,6 @@ Rule the world and put an end to those attacks!
 
         if hasSeeker:
             
-            # set up helper variables
-            currentTerrain = character.getTerrain()
-
             # prepare for the raid
             if currentTerrain == character.getHomeTerrain():
 
@@ -132,7 +137,7 @@ Rule the world and put an end to those attacks!
 
                 # ensure there are backup NPCs
                 if num_NPCs < 3:
-                    quest = src.quests.questMap["SpawnClone"](tryHard=True,lifetime=1000,reason="ensure somebody will be left to man the base")
+                    quest = src.quests.questMap["SpawnClone"](tryHard=True,lifetime=5000,reason="ensure somebody will be left to man the base")
                     return ([quest],None)
 
                 # ensure a good strength level

@@ -183,7 +183,8 @@ Swords can range from 10 to 25 damage per hit.
                 return (None,(submenue.get_command_to_select_item(item_to_select=bestSword),"equip from inventory"))
             if bestArmor in character.inventory:
                 return (None,(submenue.get_command_to_select_item(item_to_select=bestArmor),"equip from inventory"))
-            return (None,(["esc"],"close the menu"))
+            if submenue.tag not in ("advancedInteractionSelection",):
+                return (None,(["esc"],"close menu"))
 
         # enter tile properly
         if not character.container.isRoom:
@@ -227,8 +228,11 @@ Swords can range from 10 to 25 damage per hit.
             for offset in offsets:
                 if character.getPosition(offset=offset[0]) == bestSword.getPosition():
                     interactionCommand = "J"
-                    if "advancedInteraction" in character.interactionState:
-                        interactionCommand = ""
+                    if submenue:
+                        if submenue.tag == "advancedInteractionSelection":
+                            interactionCommand = ""
+                        else:
+                            return (None,(["esc"],"close menu"))
                     command = interactionCommand+offset[1]
                     if command == "J.":
                         command = "j"
@@ -248,8 +252,11 @@ Swords can range from 10 to 25 damage per hit.
             for offset in offsets:
                 if character.getPosition(offset=offset[0]) == bestArmor.getPosition():
                     interactionCommand = "J"
-                    if "advancedInteraction" in character.interactionState:
-                        interactionCommand = ""
+                    if submenue:
+                        if submenue.tag == "advancedInteractionSelection":
+                            interactionCommand = ""
+                        else:
+                            return (None,(["esc"],"close menu"))
                     command = interactionCommand+offset[1]
                     if command == "J.":
                         command = "j"

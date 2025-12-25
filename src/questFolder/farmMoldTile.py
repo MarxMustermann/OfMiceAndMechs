@@ -32,8 +32,9 @@ class FarmMoldTile(src.quests.MetaQuestSequence):
             reason = f", to {self.reason}"
         text = f"""
 farm mold on the tile {self.targetPosition}{reason}."""
-
         out.append(text)
+        if self.stimulateMoldGrowth:
+            out.append("\n\nStimulate the mold growth by picking sprouts")
         return out
 
     def triggerCompletionCheck(self,character=None,dryRun=True):
@@ -100,9 +101,11 @@ farm mold on the tile {self.targetPosition}{reason}."""
                     quest = src.quests.questMap["CleanSpace"](targetPosition=item.getSmallPosition(),targetPositionBig=self.targetPosition,reason="pick up the items",pickUpBolted=True)
                     return ([quest],None)
 
+        # soft hang up on weird state
         if not self.stimulateMoldGrowth:
             return (None,(".","stand around confused"))
 
+        # find nearby sprouts
         offsets = [(0,0,0),(1,0,0),(0,1,0),(-1,0,0),(0,-1,0)]
         foundOffset = None
         charPos = character.getPosition()
@@ -111,13 +114,12 @@ farm mold on the tile {self.targetPosition}{reason}."""
             items = character.container.getItemByPosition(checkPos)
             if not items:
                 continue
-
             if not items[0].type == "Sprout":
                 continue
-
             foundOffset = offset
             break
 
+        # activate nearby sprouts
         if foundOffset:
             if foundOffset == (0,0,0):
                 command = "j"
@@ -129,16 +131,16 @@ farm mold on the tile {self.targetPosition}{reason}."""
                 command = "Js"
             elif foundOffset == (0,-1,0):
                 command = "Jw"
-
             if command[0] == "J" and "advancedInteraction" in character.interactionState:
                 command = command[1:]
-
             return (None,(command,"stimulate mold growth"))
 
+        # soft hang up of weird state
         items = self.getLeftoverItems(character)
         if not items:
             return (None,(".","stand around confused"))
 
+        # go to sprout
         item = random.choice(items)
         quest = src.quests.questMap["GoToPosition"](targetPosition=item.getSmallPosition(),ignoreEndBlocked=True)
         return ([quest],None)
@@ -161,13 +163,16 @@ farm mold on the tile {self.targetPosition}{reason}."""
             if item.type == "Bloom":
                 leftOverItems.append(item)
             if self.stimulateMoldGrowth:
-                items = character.container.getItemByPosition(item.getPosition())
-                if item.type == "Sprout":
-                    if not items[0].type == "Sprout":
-                        continue
-                    numSprouts += 1
-                    if numSprouts > 4:
-                        leftOverItems.append(item)
+                if item.type != "Sprout":
+                    continue
+                items = terrain.getItemByPosition(item.getPosition())
+                if len(items) != 1:
+                    continue
+                if not items[0].type == "Sprout":
+                    continue
+                numSprouts += 1
+                if numSprouts > 4:
+                    leftOverItems.append(item)
         random.shuffle(leftOverItems)
         return leftOverItems
 

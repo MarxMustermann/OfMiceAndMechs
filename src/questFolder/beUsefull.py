@@ -38,10 +38,6 @@ class BeUsefull(src.quests.MetaQuestSequence):
         '''
         generate a textual description of the quest
         '''
-        try:
-            self.dutySkipps
-        except:
-            self.dutySkipps = {}
         reason = ""
         if self.reason:
             reason = f", to {self.reason}"
@@ -289,10 +285,6 @@ Press d to move the cursor and show the subquests description.
         prioSortedRooms = {}
 
         for room in character.getTerrain().rooms:
-            try:
-                room.alarm
-            except:
-                room.alarm = False
             if room.alarm:
                 continue
             if not room.priority in prioSortedRooms:
@@ -438,14 +430,6 @@ Press d to move the cursor and show the subquests description.
 
                 quest = src.quests.questMap["GoToTile"](targetPosition=checkRoom.getPosition())
                 return ([quest],None)
-        try:
-            self.numTasksDone
-        except:
-            self.numTasksDone = 0
-        try:
-            self.numTasksToDo
-        except:
-            self.numTasksToDo = None
 
         if self.numTasksToDo and self.numTasksDone > self.numTasksToDo:
             if not dryRun:
@@ -529,10 +513,6 @@ Press d to move the cursor and show the subquests description.
             if not dryRun:
                 self.postHandler()
             return (None,("+","end quest"))
-        try:
-            self.failOnIdle
-        except:
-            self.failOnIdle = False
         if self.failOnIdle:
             return self._solver_trigger_fail(dryRun,"no job")
 

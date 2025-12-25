@@ -67,7 +67,9 @@ Use the MapTable to do this.
                 command = submenue.get_command_to_select_option("studyMap")
                 if command:
                     return (None,(command,"study map"))
-            return (None,(["esc"],"close the menu"))
+
+            if submenue.tag not in ("advancedInteractionSelection",):
+                return (None,(["esc"],"close menu"))
 
         # go home
         if not character.getTerrain() == character.getHomeTerrain():
@@ -109,8 +111,11 @@ Use the MapTable to do this.
 
             # activate nearby map table
             interactionCommand = "J"
-            if "advancedInteraction" in character.interactionState:
-                interactionCommand = ""
+            if submenue:
+                if submenue.tag == "advancedInteractionSelection":
+                    interactionCommand = ""
+                else:
+                    return (None,(["esc"],"close menu"))
             if item.getPosition() == (character.xPosition-1,character.yPosition,0):
                 return (None,(interactionCommand+"a","map table"))
             if item.getPosition() == (character.xPosition+1,character.yPosition,0):

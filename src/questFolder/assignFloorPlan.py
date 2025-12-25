@@ -60,7 +60,8 @@ Set the floor plan: {self.floorPlanType}
                 return (None,(command,"select the floor plan"))
 
             # close unkown menues
-            return (None,(["esc"],"exit submenu"))
+            if submenue.tag not in ("advancedInteractionSelection",):
+                return (None,(["esc"],"close menu"))
 
         # activate production item when marked
         action = self.generate_confirm_interaction_command(allowedItems=["CityPlaner"])
@@ -107,8 +108,11 @@ Set the floor plan: {self.floorPlanType}
             command = "."
         if command:
             interactionCommand = "J"
-            if "advancedInteraction" in character.interactionState:
-                interactionCommand = ""
+            if submenue:
+                if submenue.tag == "advancedInteractionSelection":
+                    interactionCommand = ""
+                else:
+                    return (None,(["esc"],"close menu"))
             return (None,(interactionCommand+command,"activate the CityPlaner"))
 
         # go to the CityPlaner

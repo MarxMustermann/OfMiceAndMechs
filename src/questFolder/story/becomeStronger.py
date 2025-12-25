@@ -164,13 +164,13 @@ class BecomeStronger(src.quests.MetaQuestSequence):
 
             # gather available material
             if outsideManaCrystal and (bloomAvailable or remoteBloomAvailable) and (flaskAvailable or remoteFlaskAvailable):
-                quest = src.quests.questMap["CleanSpace"](targetPosition=outsideManaCrystal[1],targetPositionBig=outsideManaCrystal[0],abortOnfullInventory=False,description="fetch mana crystal")
+                quest = src.quests.questMap["CleanSpace"](targetPosition=outsideManaCrystal[1],targetPositionBig=outsideManaCrystal[0],abortOnfullInventory=False,description="fetch mana crystal",tryHard=True,pickUpBolted=True)
                 return ([quest],None)
             if (manaCrystalAvailable or outsideManaCrystal) and remoteBloomAvailable and (flaskAvailable or remoteFlaskAvailable):
-                quest = src.quests.questMap["CleanSpace"](targetPosition=remoteBloomAvailable[1],targetPositionBig=remoteBloomAvailable[0],abortOnfullInventory=False,description="fetch bloom")
+                quest = src.quests.questMap["CleanSpace"](targetPosition=remoteBloomAvailable[1],targetPositionBig=remoteBloomAvailable[0],abortOnfullInventory=False,description="fetch bloom",tryHard=True,pickUpBolted=True)
                 return ([quest],None)
             if (manaCrystalAvailable or outsideManaCrystal) and (bloomAvailable or remoteBloomAvailable) and remoteFlaskAvailable:
-                quest = src.quests.questMap["CleanSpace"](targetPosition=remoteFlaskAvailable[1],targetPositionBig=remoteFlaskAvailable[0],abortOnfullInventory=False,description="fetch flask")
+                quest = src.quests.questMap["CleanSpace"](targetPosition=remoteFlaskAvailable[1],targetPositionBig=remoteFlaskAvailable[0],abortOnfullInventory=False,description="fetch flask",tryHard=True,pickUpBolted=True)
                 return ([quest],None)
 
             # produce max HP potion

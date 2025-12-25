@@ -130,7 +130,8 @@ Press control-d to stop your character from moving.
                 command = submenue.get_command_to_select_option("teleport")
                 if command:
                     return (None,(command,"teleport home"))
-            return (None,(["esc"],"close menu"))
+            if submenue.tag in ("advancedInteractionSelection",):
+                return (None,(["esc"],"close menu"))
 
         # enter rooms/tiles properly
         if not character.container.isRoom:
@@ -181,8 +182,11 @@ Press control-d to stop your character from moving.
                                 direction = "w"
 
                             interactionCommand = "J"
-                            if "advancedInteraction" in character.interactionState:
-                                interactionCommand = ""
+                            if submenue:
+                                if submenue.tag == "advancedInteractionSelection":
+                                    interactionCommand = ""
+                                else:
+                                    return (None,(["esc"],"close menu"))
                             return (None, (interactionCommand + direction, "activate the Shrine"))
                     foundShrine = items[0]
                     quest = src.quests.questMap["GoToPosition"](

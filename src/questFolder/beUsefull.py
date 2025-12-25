@@ -537,11 +537,14 @@ Press d to move the cursor and show the subquests description.
                 if not dryRun:
                     self.idleCounter += 1
                 return ([quest],None)
+
+        quests = []
         quest = src.quests.questMap["GoToPosition"](targetPosition=(random.randint(1,11),random.randint(1,11),0),description="wait for something to happen",reason="ensure nothing exciting will happening")
         if not dryRun:
             self.idleCounter += 1
-        if not dryRun:
-            character.takeTime(self.idleCounter,"was idle")
-        return ([quest],None)
+        quests.append(quest)
+        quest = src.quests.questMap["WaitQuest"](lifetime=self.idleCounter)
+        quests.append(quest)
+        return (list(reversed(quests)),None)
 
 src.quests.addType(BeUsefull)

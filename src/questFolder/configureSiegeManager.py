@@ -158,7 +158,8 @@ class ConfigureSiegeManager(src.quests.MetaQuestSequence):
                     return (None,(command,"add "+toSelect+" action"))
 
             # close generic menues
-            return (None,(["esc"],"to close menu"))
+            if submenue.tag not in ("advancedInteractionSelection",):
+                return (None,(["esc"],"close menu"))
 
         # do nothing if no siege manager was found
         if not siegeManager:
@@ -189,8 +190,11 @@ class ConfigureSiegeManager(src.quests.MetaQuestSequence):
 
         # generate the actual command to start using the siege manager
         interactionCommand = "J"
-        if "advancedInteraction" in character.interactionState:
-            interactionCommand = ""
+        if submenue:
+            if submenue.tag == "advancedInteractionSelection":
+                interactionCommand = ""
+            else:
+                return (None,(["esc"],"close menu"))
         return (None,(interactionCommand+direction,"open the configuration menu"))
 
     def generateTextDescription(self):

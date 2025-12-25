@@ -107,7 +107,7 @@ class ActivateGlassStatue(src.quests.MetaQuestSequence):
                 interactionCommand = ""
             else:
                 return (None,(["esc"],"close menu"))
-        return (None,(interactionCommand+direction+"sssj","activate the GlassStatue"))
+        return (None,(interactionCommand+direction,"activate the GlassStatue"))
 
     def generateTextDescription(self):
         text = ["""

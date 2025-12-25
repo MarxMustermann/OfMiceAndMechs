@@ -113,7 +113,8 @@ This will allow you to focus on other tasks.
                 command = submenue.get_command_to_select_option(self.rewardType)
                 if command:
                     return (None,(command,"get your reward"))
-            return (None,(["esc"],"exit submenu"))
+            if submenue.tag not in ("advancedInteractionSelection",):
+                return (None,(["esc"],"close menu"))
 
         # activate production item when marked
         action = self.generate_confirm_interaction_command(allowedItems=["Shrine"])
@@ -161,8 +162,11 @@ This will allow you to focus on other tasks.
                 command = "w"
             if command:
                 interactionCommand = "J"
-                if "advancedInteraction" in character.interactionState:
-                    interactionCommand = ""
+                if submenue:
+                    if submenue.tag == "advancedInteractionSelection":
+                        interactionCommand = ""
+                    else:
+                        return (None,(["esc"],"close menu"))
                 return (None,(interactionCommand+command,"start praying at the shrine"))
 
             # go to shrine

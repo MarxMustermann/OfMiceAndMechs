@@ -46,28 +46,28 @@ class ActivateGlassStatue(src.quests.MetaQuestSequence):
         if self.subQuests:
             return (None,None)
 
-        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
-            submenue = character.macroState["submenue"]
+        submenue = character.macroState["submenue"]
+        if submenue and not ignoreCommands:
+            if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu):
+                targetIndex = 1
+                for option in submenue.options.values():
+                    if option == "teleport":
+                        break
+                    targetIndex += 1
+                else:
+                    return (None,(["esc"],"close menu"))
 
-            targetIndex = 1
-            for option in submenue.options.values():
-                if option == "teleport":
-                    break
-                targetIndex += 1
-            else:
+                offset = targetIndex-submenue.selectionIndex
+                command = ""
+                if offset > 0:
+                    command += "s"*offset
+                else:
+                    command += "w"*(-offset)
+                command += "j"
+                return (None,(command,"teleport to dungeon"))
+
+            if submenue.tag not in ("advancedInteractionSelection",):
                 return (None,(["esc"],"close menu"))
-
-            offset = targetIndex-submenue.selectionIndex
-            command = ""
-            if offset > 0:
-                command += "s"*offset
-            else:
-                command += "w"*(-offset)
-            command += "j"
-            return (None,(command,"teleport to dungeon"))
-
-        if character.macroState["submenue"] and not ignoreCommands:
-            return (None,(["esc"],"to close menu"))
 
         # activate production item when marked
         if character.macroState.get("itemMarkedLast"):
@@ -102,8 +102,11 @@ class ActivateGlassStatue(src.quests.MetaQuestSequence):
         if (pos[0],pos[1]+1,pos[2]) == self.targetPosition:
             direction = "s"
         interactionCommand = "J"
-        if "advancedInteraction" in character.interactionState:
-            interactionCommand = ""
+        if submenue:
+            if submenue.tag == "advancedInteractionSelection":
+                interactionCommand = ""
+            else:
+                return (None,(["esc"],"close menu"))
         return (None,(interactionCommand+direction+"sssj","activate the GlassStatue"))
 
     def generateTextDescription(self):

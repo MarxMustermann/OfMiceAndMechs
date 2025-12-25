@@ -130,7 +130,8 @@ class EnsureMaindutyClone(src.quests.MetaQuestSequence):
                 return self._solver_trigger_fail(dryRun,"duty not found")
 
             # close generic menues
-            return (None,(["esc"],"to close menu"))
+            if submenue.tag not in ("advancedInteractionSelection",):
+                return (None,(["esc"],"close menu"))
 
         # do nothing if no duty artwork was found
         if not dutyArtwork:
@@ -161,8 +162,11 @@ class EnsureMaindutyClone(src.quests.MetaQuestSequence):
 
         # generate the actual command to start using the siege manager
         interactionCommand = "J"
-        if "advancedInteraction" in character.interactionState:
-            interactionCommand = ""
+        if submenue:
+            if submenue.tag == "advancedInteractionSelection":
+                interactionCommand = ""
+            else:
+                return (None,(["esc"],"close menu"))
         return (None,(interactionCommand+direction+"j","open the configuration menu"))
 
     def generateTextDescription(self):

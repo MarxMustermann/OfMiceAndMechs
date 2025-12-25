@@ -56,8 +56,8 @@ pray on {self.targetPosition}{reason}.
         if self.subQuests:
             return (None,None)
 
-        if character.macroState["submenue"] and not ignoreCommands:
-            submenue = character.macroState["submenue"]
+        submenue = character.macroState["submenue"]
+        if submenue and not ignoreCommands:
             if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu):
                 foundOption = False
                 rewardIndex = 0
@@ -86,8 +86,9 @@ pray on {self.targetPosition}{reason}.
                     command += "w"*(-offset)
                 command += "j"
                 return (None,(command,"pray for favour"))
-            else:
-                return (None,(["esc"],"to close menu"))
+
+            if submenue.tag not in ("advancedInteractionSelection",):
+                return (None,(["esc"],"close menu"))
 
         if self.targetPositionBig and character.getBigPosition() != self.targetPositionBig:
             quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="get to the tile the machine is on")
@@ -107,8 +108,11 @@ pray on {self.targetPosition}{reason}.
         if (pos[0],pos[1],pos[2]) == self.targetPosition:
             return (None,("j"+activationCommand,description))
         interactionCommand = "J"
-        if "advancedInteraction" in character.interactionState:
-            interactionCommand = ""
+        if submenue:
+            if submenue.tag == "advancedInteractionSelection":
+                interactionCommand = ""
+            else:
+                return (None,(["esc"],"close menu"))
         if (pos[0]-1,pos[1],pos[2]) == self.targetPosition:
             return (None,(interactionCommand+"a"+activationCommand,description))
         if (pos[0]+1,pos[1],pos[2]) == self.targetPosition:

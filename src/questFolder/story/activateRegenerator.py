@@ -24,7 +24,14 @@ class ActivateRegenerator(src.quests.MetaQuestSequence):
         if not character:
             return False
 
-        if self.regenerator and self.regenerator.activated:
+        # check if the regenerator was activated
+        regenerator = None
+        terrain = character.getTerrain()
+        for room in terrain.rooms:
+            regenerator = room.getItemByType("Regenerator",needsBolted=True)
+            if regenerator:
+                break
+        if regenerator and regenerator.activated:
             if not dryRun:
                 self.postHandler()
             return True

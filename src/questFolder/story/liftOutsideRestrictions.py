@@ -4,10 +4,11 @@ import src
 class LiftOutsideRestrictions(src.quests.MetaQuestSequence):
     type = "LiftOutsideRestrictions"
 
-    def __init__(self, description="lift outside restrictions", creator=None):
+    def __init__(self, description="lift outside restrictions", creator=None, reason=None):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
+        self.reason = reason
 
     def handleSiegeDisabled(self, extraInfo):
         self.postHandler()
@@ -107,8 +108,11 @@ class LiftOutsideRestrictions(src.quests.MetaQuestSequence):
         return (None,(interactionCommand+direction+"sj","disable the outside restrictions"))
 
     def generateTextDescription(self):
-        text = ["""
-There are many enemies left outside the base.
+        reasonSring = ""
+        if self.reason:
+            reasonSring = f", {self.reasonString}"
+        text = [f"""
+There are many enemies left outside the base{reasonSring}.
 But all enemies left will only attack when somebody enters the tile they are on.
 So they can be easily avoided by you and your clone.
 

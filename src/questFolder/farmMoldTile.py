@@ -156,12 +156,15 @@ farm mold on the tile {self.targetPosition}{reason}."""
             return []
         leftOverItems = []
         numSprouts = 0
-        items = terrain.itemsByBigCoordinate.get(self.targetPosition,[])
-        for item in items:
+        tile_items = terrain.itemsByBigCoordinate.get(self.targetPosition,[])
+        for item in tile_items:
             if item.type == "Bloom":
                 leftOverItems.append(item)
             if self.stimulateMoldGrowth:
+                items = character.container.getItemByPosition(item.getPosition())
                 if item.type == "Sprout":
+                    if not items[0].type == "Sprout":
+                        continue
                     numSprouts += 1
                     if numSprouts > 4:
                         leftOverItems.append(item)

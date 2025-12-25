@@ -104,7 +104,10 @@ farm mold{reason}."""
             for item in itemList:
                 if not item.type == "Sprout":
                     continue
-                if len(character.container.getItemByPosition(item.getPosition())) > 1:
+                items = character.container.getItemByPosition(item.getPosition())
+                if len(items) > 1:
+                    continue
+                if not items[0].type == "Sprout":
                     continue
                 numSprouts += 1
             if numSprouts > 4:

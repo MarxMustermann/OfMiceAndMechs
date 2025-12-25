@@ -189,7 +189,7 @@ class BecomeStronger(src.quests.MetaQuestSequence):
                     if character.inventory:
                         quest = src.quests.questMap["ClearInventory"](returnToTile=False,tryHard=True,reason="be able to pick up potion ingredients")
                         return ([quest],None)
-                    quest = src.quests.questMap["FarmMold"](lifetime=1000)
+                    quest = src.quests.questMap["FarmMold"](lifetime=1000,waitForGrowth=True)
                     return ([quest],None)
 
             # produce flask

@@ -1111,18 +1111,9 @@ def checkRecording(key,char,charState,main,header,footer,urwid,flags):
     return handleRecordingChar(key,char,charState,main,header,footer,urwid,flags)
 
 def doAdvancedInteraction(params):
-    char = params[0]
-    charState = params[1]
-    flags = params[2]
-    key = params[3]
-    main = params[4]
-    header = params[5]
-    footer = params[6]
-    urwid = params[7]
+    char = params["character"]
+    key = params["keyPressed"]
 
-    if not char.container:
-        del char.interactionState["advancedInteraction"]
-        return
     if key == "w":
         items = char.container.getItemByPosition(
             (char.xPosition, char.yPosition - 1, char.zPosition)
@@ -1169,7 +1160,6 @@ def doAdvancedInteraction(params):
 
         if not character.jobOrders[-1].getTask():
             character.jobOrders.pop()
-            del char.interactionState["advancedInteraction"]
             return
 
         if character.jobOrders:
@@ -1205,7 +1195,6 @@ def doAdvancedInteraction(params):
 
                 while item.uses and character.health < character.adjustedMaxHealth:
                     item.apply(character)
-    del char.interactionState["advancedInteraction"]
 
 def doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags):
     if not char.container:
@@ -2522,10 +2511,6 @@ def handlePriorityActions(params):
         handleActivitySelection(key,char)
         return None
 
-    if advancedInteractionStr in char.interactionState:
-        doAdvancedInteraction(params)
-        return None
-
     if runactionStr in char.interactionState:
         handleActivitySelection(key,char)
         return None
@@ -2930,8 +2915,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
         # bad pattern: the user has to have the choice from what item to drink from
         # bad code: drinking should happen in character
         if key in ("J",):
-            if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-                text = """
+            text = """
 
 press key for the advanced interaction
 
@@ -2946,14 +2930,11 @@ press key for the advanced interaction
 
 """
 
-                header.set_text(
-                    (urwid.AttrSpec("default", "default"), "advanced activate")
-                )
-                main.set_text((urwid.AttrSpec("default", "default"), text))
-                footer.set_text((urwid.AttrSpec("default", "default"), ""))
-                char.specialRender = True
+            submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text,ignoreFirstKey=False)
+            submenue.followUp = {"method":doAdvancedInteraction,"params":{"character":char}}
+            submenue.tag = "advancedInteractionSelection"
+            char.macroState["submenue"] = submenue
 
-            char.interactionState["advancedInteraction"] = {}
             if charState.get("itemMarkedLast"):
                 del charState["itemMarkedLast"]
             return None

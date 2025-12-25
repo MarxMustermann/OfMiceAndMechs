@@ -137,7 +137,7 @@ Rule the world and put an end to those attacks!
 
                 # ensure there are backup NPCs
                 if num_NPCs < 3:
-                    quest = src.quests.questMap["SpawnClone"](tryHard=True,lifetime=1000,reason="ensure somebody will be left to man the base")
+                    quest = src.quests.questMap["SpawnClone"](tryHard=True,lifetime=5000,reason="ensure somebody will be left to man the base")
                     return ([quest],None)
 
                 # ensure a good strength level

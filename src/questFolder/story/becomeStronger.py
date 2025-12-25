@@ -13,18 +13,22 @@ class BecomeStronger(src.quests.MetaQuestSequence):
         self.targetStrength = targetStrength
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
+
+        # handle weird edge cases
         if self.subQuests:
             return (None,None)
-
         if not character:
             return (None,None)
 
+        # set up helper variables
         terrain = character.getTerrain()
 
+        # defend yourself
         if character.getNearbyEnemies():
             quest = src.quests.questMap["Fight"](suicidal=True)
             return ([quest],None)
 
+        # ensure good health
         if character.health < character.maxHealth//2:
             if character.canHeal():
                 quest = src.quests.questMap["Heal"](noWaitHeal=True)
@@ -87,15 +91,17 @@ class BecomeStronger(src.quests.MetaQuestSequence):
 
         # increase max health
         if character.maxHealth < 500:
+
+            # consume available max HP potions
             if character.searchInventory("PermaMaxHealthPotion"):
                 quest = src.quests.questMap["ConsumeItem"](itemType="PermaMaxHealthPotion")
                 return ([quest],None)
-
             for room in terrain.rooms:
                 if room.getNonEmptyOutputslots("PermaMaxHealthPotion"):
                     quest = src.quests.questMap["FetchItems"](toCollect="PermaMaxHealthPotion")
                     return ([quest],None)
 
+            # check for available ManaCrystals
             manaCrystalAvailable = False
             if character.searchInventory("ManaCrystal"):
                 manaCrystalAvailable = True
@@ -103,7 +109,6 @@ class BecomeStronger(src.quests.MetaQuestSequence):
                 if room.getNonEmptyOutputslots("ManaCrystal"):
                     manaCrystalAvailable = True
                     break
-
             outsideManaCrystal = None
             if not manaCrystalAvailable:
                 for x in range(1,14):
@@ -116,6 +121,7 @@ class BecomeStronger(src.quests.MetaQuestSequence):
                             outsideManaCrystal = ((x,y,0),item.getSmallPosition())
                             break
 
+            # check for available Blooms
             bloomAvailable = False
             if character.searchInventory("Bloom"):
                 bloomAvailable = True
@@ -137,6 +143,7 @@ class BecomeStronger(src.quests.MetaQuestSequence):
             if remoteBloomsAvailable:
                 remoteBloomAvailable = random.choice(remoteBloomsAvailable)
 
+            # check for available Flasks
             flaskAvailable = False
             if character.searchInventory("Flask"):
                 flaskAvailable = True
@@ -155,16 +162,18 @@ class BecomeStronger(src.quests.MetaQuestSequence):
                                 continue
                             remoteFlaskAvailable = ((x,y,0),item.getSmallPosition())
 
+            # gather available material
             if outsideManaCrystal and (bloomAvailable or remoteBloomAvailable) and (flaskAvailable or remoteFlaskAvailable):
-                quest = src.quests.questMap["CleanSpace"](targetPosition=outsideManaCrystal[1],targetPositionBig=outsideManaCrystal[0],abortOnfullInventory=False,description="fetch mana crystal")
+                quest = src.quests.questMap["CleanSpace"](targetPosition=outsideManaCrystal[1],targetPositionBig=outsideManaCrystal[0],abortOnfullInventory=False,description="fetch mana crystal",tryHard=True,pickUpBolted=True)
                 return ([quest],None)
             if (manaCrystalAvailable or outsideManaCrystal) and remoteBloomAvailable and (flaskAvailable or remoteFlaskAvailable):
-                quest = src.quests.questMap["CleanSpace"](targetPosition=remoteBloomAvailable[1],targetPositionBig=remoteBloomAvailable[0],abortOnfullInventory=False,description="fetch bloom")
+                quest = src.quests.questMap["CleanSpace"](targetPosition=remoteBloomAvailable[1],targetPositionBig=remoteBloomAvailable[0],abortOnfullInventory=False,description="fetch bloom",tryHard=True,pickUpBolted=True)
                 return ([quest],None)
             if (manaCrystalAvailable or outsideManaCrystal) and (bloomAvailable or remoteBloomAvailable) and remoteFlaskAvailable:
-                quest = src.quests.questMap["CleanSpace"](targetPosition=remoteFlaskAvailable[1],targetPositionBig=remoteFlaskAvailable[0],abortOnfullInventory=False,description="fetch flask")
+                quest = src.quests.questMap["CleanSpace"](targetPosition=remoteFlaskAvailable[1],targetPositionBig=remoteFlaskAvailable[0],abortOnfullInventory=False,description="fetch flask",tryHard=True,pickUpBolted=True)
                 return ([quest],None)
 
+            # produce max HP potion
             if manaCrystalAvailable and bloomAvailable and flaskAvailable:
                 for room in terrain.rooms:
                     for item in room.getItemsByType("AlchemyTable",needsBolted=True):
@@ -174,6 +183,7 @@ class BecomeStronger(src.quests.MetaQuestSequence):
                         quest = src.quests.questMap["BrewPotion"](potionType="PermaMaxHealthPotion",amount=None)
                         return ([quest],None)
 
+            # farm for more Blooms
             if (manaCrystalAvailable or outsideManaCrystal) and not (bloomAvailable or remoteBloomAvailable):
                 if not terrain.alarm:
                     if character.inventory:
@@ -182,10 +192,12 @@ class BecomeStronger(src.quests.MetaQuestSequence):
                     quest = src.quests.questMap["FarmMold"](lifetime=1000)
                     return ([quest],None)
 
+            # produce flask
             if (manaCrystalAvailable or outsideManaCrystal) and not (flaskAvailable or remoteFlaskAvailable):
                 quest = src.quests.questMap["MetalWorking"](toProduce="Flask",amount=1,tryHard=True,produceToInventory=True)
                 return ([quest],None)
 
+        # heal
         if character.health < character.maxHealth:
             can_heal = character.canHeal()
             for room in terrain.rooms:

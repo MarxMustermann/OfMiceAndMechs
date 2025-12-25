@@ -8,7 +8,7 @@ class FarmMold(src.quests.MetaQuestSequence):
     '''
     type = "FarmMold"
     lowLevel = True
-    def __init__(self, description="farm mold", creator=None, toCollect=None, lifetime=None, reason=None, tryHard=False):
+    def __init__(self, description="farm mold", creator=None, toCollect=None, lifetime=None, reason=None, tryHard=False, waitForGrowth=False):
         self.lastMoveDirection = None
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
@@ -18,6 +18,7 @@ class FarmMold(src.quests.MetaQuestSequence):
             self.metaDescription += " for "+toCollect
         self.toCollect = toCollect
         self.tryHard = tryHard
+        self.waitForGrowth = waitForGrowth
 
     def generateTextDescription(self):
         '''
@@ -104,7 +105,7 @@ farm mold{reason}."""
             for item in itemList:
                 if not item.type == "Sprout":
                     continue
-                items = character.container.getItemByPosition(item.getPosition())
+                items = terrain.getItemByPosition(item.getPosition())
                 if len(items) != 1:
                     continue
                 if not items[0].type == "Sprout":
@@ -120,6 +121,8 @@ farm mold{reason}."""
             return ([quest],None)
 
         # abort when nothing to do
+        if self.waitForGrowth:
+            return (None,(";","wait for the plants to grow"))
         return self._solver_trigger_fail(dryRun,"no field")
 
     def pickedUpItem(self,test=None):

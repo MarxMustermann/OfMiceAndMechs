@@ -81,6 +81,12 @@ Rule the world and put an end to those attacks!
                 return (None,(["enter"],"continue"))
             return (None,(["esc"],"close menu"))
 
+        # abort on missing glass hearts
+        for (godId,god) in src.gamestate.gamestate.gods.items():
+            if (god["lastHeartPos"][0] == character.registers["HOMETx"] and god["lastHeartPos"][1] == character.registers["HOMETy"]):
+                continue
+            return self._solver_trigger_fail(dryRun,"missing glass heart")
+
         # enter rooms fully
         if not character.container.isRoom:
             if character.xPosition%15 == 0:

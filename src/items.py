@@ -306,6 +306,7 @@ class Item:
         )
         submenu.extraInfo["item"] = self
         submenu.tag = "applyOptionSelection"
+        submenu.do_not_scale = True
         character.macroState["submenue"] = submenu
         character.macroState["submenue"].followUp = {
             "method": "handleApplyMenu",

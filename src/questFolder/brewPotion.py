@@ -68,33 +68,35 @@ class BrewPotion(src.quests.MetaQuestSequence):
             return ([quest],None)
 
         submenue = character.macroState["submenue"]
-        if submenue and isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
-            if submenue.tag == "alchemyTableProductSelection":
-                selectionCommand = "j"
-                amount = self.amount
-                if amount is None:
-                    amount = submenue.extraInfo["item"].get_amount_producable(self.potionType,character)
-                if amount > 1:
-                    selectionCommand = "J"
-                action = submenue.get_command_to_select_option(self.potionType,selectionCommand=selectionCommand)
-                if action:
-                    return (None,(action,"produce item"))
-
-                action = submenue.get_command_to_select_option("byName")
-                if action:
-                    return action
-
-                return (None,(["esc"],"close menu"))
-            else:
-                return (None,(submenue.get_command_to_select_option("produce potion"),"start brewing"))
-
         if submenue and not ignoreCommands:
+            if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu):
+                if submenue.tag == "alchemyTableProductSelection":
+                    selectionCommand = "j"
+                    amount = self.amount
+                    if amount is None:
+                        amount = submenue.extraInfo["item"].get_amount_producable(self.potionType,character)
+                    if amount > 1:
+                        selectionCommand = "J"
+                    action = submenue.get_command_to_select_option(self.potionType,selectionCommand=selectionCommand)
+                    if action:
+                        return (None,(action,"produce item"))
+
+                    action = submenue.get_command_to_select_option("byName")
+                    if action:
+                        return action
+
+                    return (None,(["esc"],"close menu"))
+                else:
+                    return (None,(submenue.get_command_to_select_option("produce potion"),"start brewing"))
+
             if submenue.tag == "metalWorkingAmountInput":
                 amount = self.amount
                 if amount is None:
                     amount = submenue.extraInfo["item"].get_amount_producable(self.potionType,character)
                 return (None,(submenue.get_command_to_input(str(amount)),"enter amount to produce"))
-            return (None,(["esc"],"exit submenu"))
+
+            if submenue.tag not in ("advancedInteractionSelection",):
+                return (None,(["esc"],"close menu"))
 
         terrain = character.getTerrain()
 
@@ -126,9 +128,11 @@ class BrewPotion(src.quests.MetaQuestSequence):
                     return (None,(list("j"),message))
 
                 interactionCommand = "J"
-                if "advancedInteraction" in character.interactionState:
-                    interactionCommand = ""
-
+                if submenue:
+                    if submenue.tag == "advancedInteractionSelection":
+                        interactionCommand = ""
+                    else:
+                        return (None,(["esc"],"close menu"))
                 if offset == (1,0,0):
                     return (None,(list(interactionCommand+"d"),message))
                 if offset == (-1,0,0):

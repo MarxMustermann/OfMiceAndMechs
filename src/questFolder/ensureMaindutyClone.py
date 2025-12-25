@@ -71,6 +71,19 @@ class EnsureMaindutyClone(src.quests.MetaQuestSequence):
                 continue
             dutyArtwork = item
 
+        # fail if no character is available
+        found_npc = None
+        for check_character in terrain.getAllCharacters():
+            if check_character == character:
+                continue
+            if check_character.faction != character.faction:
+                continue
+            if check_character.burnedIn:
+                continue
+            found_npc = character
+        if not found_npc:
+            return self._solver_trigger_fail(dryRun,"no suitable clone found")
+
         # handle open menues
         submenue = character.macroState.get("submenue")
         if submenue:

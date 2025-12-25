@@ -92,7 +92,7 @@ farm mold"""
                 if not item.type == "Sprout":
                     continue
                 items = character.container.getItemByPosition(item.getPosition())
-                if len(items) > 1:
+                if len(items) != 1:
                     continue
                 if not items[0].type == "Sprout":
                     continue

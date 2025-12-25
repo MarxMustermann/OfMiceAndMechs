@@ -62,10 +62,12 @@ Use the Promotor to do this.
         if not character:
             return (None,None)
 
-        if character.macroState["submenue"]:
+        submenue = character.macroState.get("submenue")
+        if submenue and not ignoreCommands:
             if isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu):
                 return (None,(["enter"],"select reward"))
-            return (None,(["esc"],"close the menu"))
+            if submenue.tag not in ("advancedInteractionSelection",):
+                return (None,(["esc"],"close the menu"))
 
         if not character.getTerrain() == character.getHomeTerrain():
             quest = src.quests.questMap["GoHome"]()
@@ -103,8 +105,11 @@ Use the Promotor to do this.
                 continue
 
             interactionCommand = "J"
-            if "advancedInteraction" in character.interactionState:
-                interactionCommand = ""
+            if submenue:
+                if submenue.tag == "advancedInteractionSelection":
+                    interactionCommand = ""
+                else:
+                    return (None,(["esc"],"close menu"))
             if item.getPosition() == (character.xPosition-1,character.yPosition,0):
                 return (None,(interactionCommand+"a","get promotion"))
             if item.getPosition() == (character.xPosition+1,character.yPosition,0):

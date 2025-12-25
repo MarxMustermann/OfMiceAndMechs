@@ -315,6 +315,7 @@ Press d to move the cursor and show the subquests description.
                             direction_command = "w"
 
                         if direction_command:
+                            command = interactionCommand+direction_command
                             if command == "K.":
                                 command = "k"
                             return (None,(command,"pick up item"))

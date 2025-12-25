@@ -67,6 +67,8 @@ class SpawnClone(src.quests.MetaQuestSequence):
             # fetch any goo flasks lieing around
             for room in self.character.getTerrain().rooms:
                 for item in room.getItemsByType("GooFlask"):
+                    if item.getPosition()[0] > 12 or item.getPosition()[1] > 12:
+                        continue
                     newQuest = src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=item.getPosition())
                     self.addQuest(newQuest)
                     self.startWatching(newQuest,self.handleQuestFailure,"failed")

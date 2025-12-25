@@ -92,6 +92,11 @@ Rule the world and put an end to those attacks!
             if character.yPosition%15 == 14:
                 return (None,("w","enter room"))
 
+        # go home
+        if currentTerrain != character.getHomeTerrain() and currentTerrain.getPosition() == (7,7,0):
+            quest = src.quests.questMap["GoHome"](reason="get back to base")
+            return ([quest],None)
+
         # activate correct item when marked
         action = self.generate_confirm_activation_command(allowedItems=("Throne","GlassThrone"))
         if action:

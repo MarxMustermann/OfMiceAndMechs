@@ -3030,8 +3030,7 @@ press key to set fire direction
                 del charState["itemMarkedLast"]
             return None
         if key in ("K",):
-            if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-                text = """
+            text = """
 
 press key for advanced pickup
 
@@ -3047,10 +3046,10 @@ press key for advanced pickup
 
 """
 
-                submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text,ignoreFirstKey=False)
-                submenue.followUp = {"method":doAdvancedPickup,"params":{"character":char}}
-                submenue.tag = "advancedPickupSelection"
-                char.macroState["submenue"] = submenue
+            submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text,ignoreFirstKey=False)
+            submenue.followUp = {"method":doAdvancedPickup,"params":{"character":char}}
+            submenue.tag = "advancedPickupSelection"
+            char.macroState["submenue"] = submenue
 
             if charState.get("itemMarkedLast"):
                 del charState["itemMarkedLast"]

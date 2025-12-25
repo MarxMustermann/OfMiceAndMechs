@@ -110,7 +110,9 @@ Configure the manufacturing table on {self.targetPosition}{reason} to produce {s
                 else:
                     return (None,("j","select the item type to set"))
 
-            return (None,(["esc"],"close the sub menu"))
+            # close most menues
+            if submenue.tag not in ("advancedInteractionSelection",):
+                return (None,(["esc"],"close menu"))
 
         # activate production item when marked
         if character.macroState.get("itemMarkedLast"):
@@ -132,8 +134,11 @@ Configure the manufacturing table on {self.targetPosition}{reason} to produce {s
         # start configuring the manufacturing table
         message = "configure item type"
         activationCommand = "J"
-        if "advancedInteraction" in character.interactionState:
-            activationCommand = ""
+        if submenue:
+            if submenue.tag == "advancedInteractionSelection":
+                activationCommand = ""
+            else:
+                return (None,(["esc"],"close menu"))
         direction = None
         if (pos[0],pos[1],pos[2]) == self.targetPosition:
             direction = "."

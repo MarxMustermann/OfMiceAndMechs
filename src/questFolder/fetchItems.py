@@ -148,9 +148,6 @@ Press d to move the cursor and show the subquests description.
         return False
 
     def getSource(self):
-        if not isinstance(self.character.container,src.rooms.Room):
-            return None
-
         source = None
         for room in self.character.getTerrain().rooms:
             if room.getNonEmptyOutputslots(itemType=self.toCollect):
@@ -216,6 +213,7 @@ Press d to move the cursor and show the subquests description.
                 quest = src.quests.questMap["ClearInventory"](reason="be able to store the needed amount of items",returnToTile=False,tryHard=True)
                 return ([quest],None)
 
+        # return to starting position
         if self.collectedItems and self.tileToReturnTo:
             charPos = None
             if isinstance(character.container,src.rooms.Room):
@@ -227,7 +225,10 @@ Press d to move the cursor and show the subquests description.
                 self.tileToReturnTo = None
                 return ([quest],None)
 
+        # collect item
         if not self.collectedItems:
+
+            # collect items directly
             foundItem = False
             if character.container.isRoom:
                 room = character.container
@@ -271,14 +272,13 @@ Press d to move the cursor and show the subquests description.
                     quest = src.quests.questMap["GoToPosition"](targetPosition=outputSlot[0],ignoreEndBlocked=True,description="go to "+self.toCollect,reason=f"be able to pick up the {self.toCollect}")
                     return ([quest],None)
 
+            # collect any items from the base
             if self.takeAnyUnbolted:
                 candidates = []
-
                 if character.container.isRoom:
                     for item in character.container.itemsOnFloor:
                         if item.bolted is False and item.type == self.toCollect and not item.is_bolted_over():
                             candidates.append(item)
-
                 if not candidates:
                     for room in character.getTerrain().rooms:
                         for item in room.itemsOnFloor:
@@ -325,14 +325,16 @@ Press d to move the cursor and show the subquests description.
                     if character.container != item.container:
                         quests.append(src.quests.questMap["GoToTile"](targetPosition=item.container.getPosition(),description="go to "+self.toCollect+" source",reason=f"reach a source for {self.toCollect}"))
                     return (quests,None)
-            else:
-                source = self.getSource()
-                if source:
-                    quest = src.quests.questMap["GoToTile"](targetPosition=source[0],reason=f"reach a source for {self.toCollect}")
-                    if self.returnToTile:
-                        self.tileToReturnTo = (room.xPosition,room.yPosition,0)
-                    return ([quest],None)
 
+            # go to item source
+            source = self.getSource()
+            if source:
+                quest = src.quests.questMap["GoToTile"](targetPosition=source[0],reason=f"reach a source for {self.toCollect}")
+                if self.returnToTile:
+                    self.tileToReturnTo = character.getBigPosition()
+                return ([quest],None)
+
+            
             if not foundItem:
                 if self.toCollect == "Scrap":
                     if self.tryHard:
@@ -349,6 +351,7 @@ Press d to move the cursor and show the subquests description.
 
                 return self._solver_trigger_fail(dryRun,f"no source for item {self.toCollect}")
 
+        # fixed soft hangup
         return (None,(".","stand around confused"))
 
     def getQuestMarkersSmall(self,character,renderForTile=False):

@@ -92,6 +92,9 @@ Rule the world and put an end to those attacks!
             if character.yPosition%15 == 14:
                 return (None,("w","enter room"))
 
+        # set up helper variables
+        currentTerrain = character.getTerrain()
+
         # go home
         if currentTerrain != character.getHomeTerrain() and currentTerrain.getPosition() == (7,7,0):
             quest = src.quests.questMap["GoHome"](reason="get back to base")
@@ -111,9 +114,6 @@ Rule the world and put an end to those attacks!
 
         if hasSeeker:
             
-            # set up helper variables
-            currentTerrain = character.getTerrain()
-
             # prepare for the raid
             if currentTerrain == character.getHomeTerrain():
 

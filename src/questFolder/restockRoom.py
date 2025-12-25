@@ -141,8 +141,12 @@ Place the items in the correct input or storage stockpile.
             return (None,None)
 
         # handle menus
+        submenue = character.macroState.get("submenue")
         if character.macroState["submenue"] and not ignoreCommands:
-            if not isinstance(character.macroState["submenue"],src.menuFolder.inventoryMenu.InventoryMenu):
+            if not (
+                    isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu) or
+                    submenue.tag in ("advancedInteractionSelection",)
+                   ):
                 return (None,(["esc"],"close the menu"))
 
         # defend yourself
@@ -277,23 +281,35 @@ Place the items in the correct input or storage stockpile.
             else:
                 if foundDirectDrop[1] == (-1,0):
                     command = "Ja"*10
-                    if "advancedInteraction" in character.interactionState:
-                        command = command[1:]
+                    if submenue:
+                        if submenue.tag == "advancedInteractionSelection":
+                            command = command[1:]
+                        else:
+                            return (None,(["esc"],"close menu"))
                     return (None,(command,"put scrap on scrap pile"))
                 if foundDirectDrop[1] == (1,0):
                     command = "Jd"*10
-                    if "advancedInteraction" in character.interactionState:
-                        command = command[1:]
+                    if submenue:
+                        if submenue.tag == "advancedInteractionSelection":
+                            command = command[1:]
+                        else:
+                            return (None,(["esc"],"close menu"))
                     return (None,(command,"put scrap on scrap pile"))
                 if foundDirectDrop[1] == (0,-1):
                     command = "Jw"*10
-                    if "advancedInteraction" in character.interactionState:
-                        command = command[1:]
+                    if submenue:
+                        if submenue.tag == "advancedInteractionSelection":
+                            command = command[1:]
+                        else:
+                            return (None,(["esc"],"close menu"))
                     return (None,(command,"put scrap on scrap pile"))
                 if foundDirectDrop[1] == (0,1):
                     command = "Js"*10
-                    if "advancedInteraction" in character.interactionState:
-                        command = command[1:]
+                    if submenue:
+                        if submenue.tag == "advancedInteractionSelection":
+                            command = command[1:]
+                        else:
+                            return (None,(["esc"],"close menu"))
                     return (None,(command,"put scrap on scrap pile"))
                 if foundDirectDrop[1] == (0,0):
                     return (None,("j"*self.getNumDrops(character),"put scrap on scrap pile"))

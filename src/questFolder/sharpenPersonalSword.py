@@ -104,7 +104,8 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
                     return (None,(command,"use SwordSharpener"))
             if submenue.tag == "SwordSharpenerSlider":
                 return (None,("j","sharpen the sword"))
-            return (None,(["esc"],"close the menu"))
+            if submenue.tag not in ("advancedInteractionSelection",):
+                return (None,(["esc"],"close menu"))
 
         # defend yourself
         if character.getNearbyEnemies():
@@ -131,8 +132,11 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
                 if offset == (0,0,0):
                     return (None,("j","sharpen personal sword"))
                 interactionCommand = "J"
-                if "advancedInteraction" in character.interactionState:
-                    interactionCommand = ""
+                if submenue:
+                    if submenue.tag == "advancedInteractionSelection":
+                        interactionCommand = ""
+                    else:
+                        return (None,(["esc"],"close menu"))
                 if offset == (1,0,0):
                     return (None,(interactionCommand+"d","sharpen personal sword"))
                 if offset == (-1,0,0):

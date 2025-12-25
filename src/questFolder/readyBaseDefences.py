@@ -50,7 +50,8 @@ class ReadyBaseDefences(src.quests.MetaQuestSequence):
                 command = submenue.get_command_to_select_option(menuEntry[0])
                 if command:
                     return (None,(command,menuEntry[1]))
-            return (None,(["esc"],"to close menu"))
+            if submenue.tag not in ("advancedInteractionSelection",):
+                return (None,(["esc"],"close menu"))
 
         # activate production item when marked
         if character.macroState.get("itemMarkedLast"):
@@ -92,8 +93,11 @@ class ReadyBaseDefences(src.quests.MetaQuestSequence):
             direction = "s"
 
         interactionCommand = "J"
-        if "advancedInteraction" in character.interactionState:
-            interactionCommand = ""
+        if submenue:
+            if submenue.tag == "advancedInteractionSelection":
+                interactionCommand = ""
+            else:
+                return (None,(["esc"],"close menu"))
         if terrain.alarm == False:
             return (None,(interactionCommand+direction+"j","enable the outside restrictions"))
         return (None,(interactionCommand+direction+"ssj","sound the alarms"))

@@ -132,7 +132,7 @@ class Adventure(src.quests.MetaQuestSequence):
 
         # go home directly if convinient
         if currentTerrain.tag == "shrine":
-            if character.getFreeInventorySpace() < 2:
+            if character.getFreeInventorySpace(ignoreTypes=["Bolt"]) < 2:
                 quest = src.quests.questMap["GoHome"](reason="bring home loot")
                 return ([quest],None)
 

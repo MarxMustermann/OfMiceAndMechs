@@ -120,6 +120,8 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
                         if command:
                             if character.interactionState.get("advancedPickup") is None:
                                 command = "K"+command
+                            if command == "K.":
+                                command = "k"
                             return (None,(command,"pick up items"))
 
                 if len(snatchers) < 5 and character.weapon:

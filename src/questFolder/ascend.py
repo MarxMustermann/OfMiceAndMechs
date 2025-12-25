@@ -96,7 +96,7 @@ Rule the world and put an end to those attacks!
         currentTerrain = character.getTerrain()
 
         # go home
-        if currentTerrain != character.getHomeTerrain() and currentTerrain.getPosition() == (7,7,0):
+        if currentTerrain != character.getHomeTerrain() and currentTerrain.getPosition() != (7,7,0):
             quest = src.quests.questMap["GoHome"](reason="get back to base")
             return ([quest],None)
 

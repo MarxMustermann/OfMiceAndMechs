@@ -69,12 +69,15 @@ Flask can be refilled at a GooDispenser."""
             return (None,("+","end quest"))
 
         # handle menues
-        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
-            submenue = character.macroState["submenue"]
-            if not submenue.extraInfo.get("item"):
-                return (None,(["esc"],"exit submenu"))
-            command = submenue.get_command_to_select_option("fill_empty_flask")
-            return (None,(command,"fill flasks"))
+        submenue = character.macroState.get("submenue")
+        if submenue and not ignoreCommands:
+            if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
+                if not submenue.extraInfo.get("item"):
+                    return (None,(["esc"],"exit submenu"))
+                command = submenue.get_command_to_select_option("fill_empty_flask")
+                return (None,(command,"fill flasks"))
+            if submenue.tag not in ("advancedInteractionSelection",):
+                return (None,(["esc"],"close menu"))
 
         # activate production item when marked
         action = self.generate_confirm_interaction_command(allowedItems=["GooDispenser"])
@@ -103,8 +106,11 @@ Flask can be refilled at a GooDispenser."""
                 if offset == (0,0,0):
                     return (None,("jsj","fill flask"))
                 interactionCommand = "J"
-                if "advancedInteraction" in character.interactionState:
-                    interactionCommand = ""
+                if submenue:
+                    if submenue.tag == "advancedInteractionSelection":
+                        interactionCommand = ""
+                    else:
+                        return (None,(["esc"],"close menu"))
                 if offset == (1,0,0):
                     return (None,(interactionCommand+"dsj","fill flask"))
                 if offset == (-1,0,0):

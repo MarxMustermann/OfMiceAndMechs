@@ -70,7 +70,8 @@ Use a CityPlaner to do this.
                     return (None,(command,"schedule building a room"))
 
             # close unkown menus
-            return (None,(["esc"],"exit submenu"))
+            if submenue.tag not in ("advancedInteractionSelection",):
+                return (None,(["esc"],"close menu"))
 
         # activate production item when marked
         action = self.generate_confirm_interaction_command(allowedItems=["CityPlaner"])
@@ -111,8 +112,11 @@ Use a CityPlaner to do this.
             command = "."
         if command:
             interactionCommand = "J"
-            if "advancedInteraction" in character.interactionState:
-                interactionCommand = ""
+            if submenue:
+                if submenue.tag == "advancedInteractionSelection":
+                    interactionCommand = ""
+                else:
+                    return (None,(["esc"],"close menu"))
             return (None,(interactionCommand+command,"activate the CityPlaner"))
 
         # go to the city planer

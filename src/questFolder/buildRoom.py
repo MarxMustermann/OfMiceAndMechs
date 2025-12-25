@@ -136,7 +136,8 @@ Press d to move the cursor and show the subquests description.
         # close open menus
         submenue = character.macroState.get("submenue")
         if submenue and not ignoreCommands:
-            return (None,(["esc"],"exit submenu"))
+            if submenue.tag not in ("advancedInteractionSelection",):
+                return (None,(["esc"],"close menu"))
 
         # attack nearby enemies
         if character.getNearbyEnemies():
@@ -259,8 +260,11 @@ Press d to move the cursor and show the subquests description.
 
         # activate the RoomBuilder
         interactionCommand = "J"
-        if "advancedInteraction" in character.interactionState:
-            interactionCommand = ""
+        if submenue:
+            if submenue.tag == "advancedInteractionSelection":
+                interactionCommand = ""
+            else:
+                return (None,(["esc"],"close menu"))
         offsets = {(0,0,0):"j",(1,0,0):interactionCommand+"d",(-1,0,0):interactionCommand+"a",(0,1,0):interactionCommand+"s",(0,-1,0):interactionCommand+"w"}
         for (offset,command) in offsets.items():
             if character.getPosition(offset=offset) == (15*self.targetPosition[0]+7,15*self.targetPosition[1]+7,0):

@@ -51,19 +51,22 @@ Use a CityPlaner to do this.
             return (None,None)
 
         # navigate the build-menu and schedule building the room
-        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.mapMenu.MapMenu) and not ignoreCommands:
-            submenue = character.macroState["submenue"]
-            command = ""
-            if submenue.cursor[0] > self.roomPosition[0]:
-                command += "a"*(submenue.cursor[0]-self.roomPosition[0])
-            if submenue.cursor[0] < self.roomPosition[0]:
-                command += "d"*(self.roomPosition[0]-submenue.cursor[0])
-            if submenue.cursor[1] > self.roomPosition[1]:
-                command += "w"*(submenue.cursor[1]-self.roomPosition[1])
-            if submenue.cursor[1] < self.roomPosition[1]:
-                command += "s"*(self.roomPosition[1]-submenue.cursor[1])
-            command += "t"
-            return (None,(command,"convert entryRoom to a trapRoom"))
+        submenue = character.macroState["submenue"]
+        if submenue and not ignoreCommands:
+            if isinstance(submenue,src.menuFolder.mapMenu.MapMenu):
+                command = ""
+                if submenue.cursor[0] > self.roomPosition[0]:
+                    command += "a"*(submenue.cursor[0]-self.roomPosition[0])
+                if submenue.cursor[0] < self.roomPosition[0]:
+                    command += "d"*(self.roomPosition[0]-submenue.cursor[0])
+                if submenue.cursor[1] > self.roomPosition[1]:
+                    command += "w"*(submenue.cursor[1]-self.roomPosition[1])
+                if submenue.cursor[1] < self.roomPosition[1]:
+                    command += "s"*(self.roomPosition[1]-submenue.cursor[1])
+                command += "t"
+                return (None,(command,"convert entryRoom to a trapRoom"))
+            if submenue.tag not in ("advancedInteractionSelection",):
+                return (None,(["esc"],"close menu"))
 
         # select the build menu
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
@@ -131,8 +134,11 @@ Use a CityPlaner to do this.
             command = "."
         if command:
             interactionCommand = "J"
-            if "advancedInteraction" in character.interactionState:
-                interactionCommand = ""
+            if submenue:
+                if submenue.tag == "advancedInteractionSelection":
+                    interactionCommand = ""
+                else:
+                    return (None,(["esc"],"close menu"))
             return (None,(interactionCommand+command,"activate the CityPlaner"))
 
         # go to the city planer

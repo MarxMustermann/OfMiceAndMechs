@@ -101,7 +101,8 @@ suicidal"""
                 command = submenue.get_command_to_select_option("getSetHeart")
                 if command:
                     return (None,(command,"get/set glass heart"))
-            return (None,(["esc"],"exit submenu"))
+            if submenue.tag not in ("advancedInteractionSelection",):
+                return (None,(["esc"],"close menu"))
 
         # close other menus
         if not ignoreCommands and character.macroState.get("submenue"):
@@ -313,8 +314,11 @@ suicidal"""
                     return (None,(directionCommand+"cr","return GlassHeart"))
                 else:
                     activationCommand = "J"
-                    if "advancedInteraction" in character.interactionState:
-                        activationCommand = ""
+                    if submenue:
+                        if submenue.tag == "advancedInteractionSelection":
+                            activationCommand = ""
+                        else:
+                            return (None,(["esc"],"close menu"))
                     return (None,(activationCommand+directionCommand,"eject GlassHeart"))
 
             # pick up GlassHeart
@@ -373,8 +377,11 @@ suicidal"""
         if character.getPosition(offset=(0,-1,0)) == glassStatue.getPosition():
             directionCommand = "w"
         activationCommand = "J"
-        if "advancedInteraction" in character.interactionState:
-            activationCommand = ""
+        if submenue:
+            if submenue.tag == "advancedInteractionSelection":
+                activationCommand = ""
+            else:
+                return (None,(["esc"],"close menu"))
         return (None,(activationCommand+directionCommand,"insert glass heart"))
 
     def delveToRoomIfSafe(self,character,path,dryRun=True):

@@ -6967,11 +6967,7 @@ You see """,".",".",".",""" nothing
 ""","You remember ",".",".",".",""" nothing
 ""","You feel ",".",".",".",""" A sharp pain burrowing through you mind.     \n\
 You remember how tendrils of pain grew from from your implant.     \n\
-You know that something is wrong with it.     \n\
-
-It eats your mind and           \n\
-you flesh starts to burn and burn and burn and burn and burn
-and burn and burn and burn and burn and burn \n\n
+It burns your flesh and eats your mindddddddddddddddddddddddddddddddddd\n 
 """,
             ]
             text = "".join(textBase[0:subStep])

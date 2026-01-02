@@ -65,8 +65,6 @@ Use a CityPlaner to do this.
                     command += "s"*(self.roomPosition[1]-submenue.cursor[1])
                 command += "t"
                 return (None,(command,"convert entryRoom to a trapRoom"))
-            if submenue.tag not in ("advancedInteractionSelection",):
-                return (None,(["esc"],"close menu"))
 
         # select the build menu
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:

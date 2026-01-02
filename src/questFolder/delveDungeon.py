@@ -318,6 +318,9 @@ suicidal"""
                     return (None,(activationCommand+directionCommand,"eject GlassHeart"))
 
             # pick up GlassHeart
+            if character.container != foundGlassHeart.container:
+                quest = src.quests.questMap["GoToTile"](targetPosition=foundGlassHeart.getBigPosition(),description="reach GlassHeart",reason="get near the GlassHeart")
+                return ([quest],None)
             if character.getPosition() != foundGlassHeart.getPosition():
                 quest = src.quests.questMap["GoToPosition"](targetPosition=foundGlassHeart.getPosition(),description="go to GlassHeart",reason="be able to pick up the GlassHeart")
                 return ([quest],None)

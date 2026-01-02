@@ -104,10 +104,6 @@ suicidal"""
             if submenue.tag not in ("advancedInteractionSelection",):
                 return (None,(["esc"],"close menu"))
 
-        # close other menus
-        if not ignoreCommands and character.macroState.get("submenue"):
-            return (None,(["esc"],"exit submenu"))
-
         # check if the character has the glass heart
         hasSpecialItem = None
         for item in character.inventory:

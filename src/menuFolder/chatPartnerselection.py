@@ -101,3 +101,8 @@ class ChatPartnerselection(src.subMenu.SubMenu):
         # wait for input
         else:
             return False
+
+    def render(self):
+        if self.subMenu:
+            return self.subMenu.render()
+        return super().render()

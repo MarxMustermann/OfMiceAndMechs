@@ -481,6 +481,7 @@ Press d to move the cursor and show the subquests description.
                                 if character.inventory and (not amountToFetch or amountToFetch > character.getFreeInventorySpace()):
                                     quests.append(src.quests.questMap["ClearInventory"](returnToTile=False,reason="fetched6"))
                             else:
+                                quests.append(src.quests.questMap["RestockRoom"](toRestock=inputSlot[1],reason="restock the room with the items fetched1",allowAny=True,targetPositionBig=room.getPosition()))
                                 roomPos = (room.xPosition,room.yPosition,0)
                                 if source[0] != roomPos:
                                     quests.append(src.quests.questMap["GoToTile"](targetPosition=roomPos,reason="fetched7"))

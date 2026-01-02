@@ -25,7 +25,6 @@ class IdleChatNPCMenu(src.subMenu.SubMenu):
                 options.append(("charInfo","Tell me about yourself."))
                 options.append(("showQuests","What are you doing?"))
                 options.append(("showInventory","What is in your inventory?"))
-                options.append(("showFeelings","How are you feeling?"))
                 options.append(("reset","You are behaving eratically. Get yourself together!"))
                 self.subMenu = src.menuFolder.selectionMenu.SelectionMenu("", options)
                 self.handleKey("~", noRender=noRender, character=character)
@@ -69,3 +68,8 @@ class IdleChatNPCMenu(src.subMenu.SubMenu):
 
             self.npc.timeTaken = 0
         return True
+
+    def render(self):
+        if self.subMenu:
+            return self.subMenu.render()
+        return super().render()

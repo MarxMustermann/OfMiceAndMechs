@@ -6,11 +6,12 @@ class EnsureMaindutyClone(src.quests.MetaQuestSequence):
     a quest to ensure 
     '''
     type = "EnsureMaindutyClone"
-    def __init__(self, description="ensure duty", creator=None, dutyType="cleaning"):
+    def __init__(self, description="ensure duty", creator=None, dutyType="cleaning",reason=None):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = f"ensure {dutyType} duty"
         self.dutyType = dutyType
+        self.reason = reason
 
     def triggerCompletionCheck(self,character=None,dryRun=True):
         '''
@@ -173,8 +174,11 @@ class EnsureMaindutyClone(src.quests.MetaQuestSequence):
         '''
         generate text description
         '''
+        reason_string = ""
+        if self.reason:
+            reason_string += ",\nto {self.reason}"
         text = [f"""
-Ensure at least one Clone has {self.dutyType} as highest duty.
+Ensure at least one Clone has {self.dutyType} as highest duty{reason_string}.
 """]
         return text
 

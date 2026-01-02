@@ -242,6 +242,8 @@ Place the items in the correct input or storage stockpile.
                     counter = -1
                     while item.type != toRestock:
                         counter += 1
+                        if counter >= len(character.inventory):
+                            break
                         item = character.inventory[counter]
 
                     if not item.walkable:

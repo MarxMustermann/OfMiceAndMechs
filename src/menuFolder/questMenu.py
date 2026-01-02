@@ -267,7 +267,16 @@ class QuestMenu(src.subMenu.SubMenu):
                         solvingCommangString = solvingCommangString.replace("\n","\\n")
 
                 if solvingCommangString:
-                    nextstep = f"suggested action: \npress {solvingCommangString} \nto {reason}\n\n"
+                    convertedCommanString = []
+                    for letter in solvingCommangString:
+                        color = "#fff"
+                        if letter.isupper():
+                            color = "#ccd"
+                        convertedCommanString.append((src.interaction.urwid.AttrSpec(color, "default"), letter))
+                        convertedCommanString.append(" ")
+                    if solvingCommangString == "esc":
+                        convertedCommanString = [(src.interaction.urwid.AttrSpec("#bb9", "default"),solvingCommangString)]
+                    nextstep = [f"suggested action: \npress "]+convertedCommanString+[f" \nto {reason}\n\n"]
                 else:
                     nextstep = "suggested action: \npress + \nto generate subquests\n\n"
 

@@ -143,26 +143,57 @@ class Adventure(src.quests.MetaQuestSequence):
                 return (None,(["esc"],"close the menu"))
 
         # clear inventory from scrap
-        if character.searchInventory("Scrap") and character.container.getPositionWalkable(character.getPosition()):
+        if character.searchInventory("Scrap"):
+
+            # find usable drop spots
+            drop_offset = None
+            for check_offet in ((0,0,0),(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)):
+                check_position = character.getPosition(offset=check_offet)
+                items = character.container.getItemByPosition(check_position)
+                if len(items) > 1:
+                    continue
+                if items and items[0].type != "Scrap":
+                    continue
+                if items and not character.container.getPositionWalkable(items[0].getPosition()):
+                    continue
+                drop_offset = check_offet
+                break
+
+            # go to drop spot
+            move_command = None
+            if drop_offset == (1,0,0):
+                move_command = "d"
+            if drop_offset == (-1,0,0):
+                move_command = "a"
+            if drop_offset == (0,1,0):
+                move_command = "s"
+            if drop_offset == (0,-1,0):
+                move_command = "w"
+            if move_command:
+                if character.macroState.get("submenue"):
+                    return (None, (["esc"],"close menu"))
+                return (None, (move_command,"go to drop spot"))
 
             # drop scrap that can be easily dropped
-            index = 0
-            command = ""
-            while index < len(character.inventory):
-                if character.inventory[-(1+index)].type != "Scrap":
-                    break
-                index += 1
-                command += "l"
-            if command:
-                return (None, (command,"drop scrap"))
+            if drop_offset == (0,0,0):
+                index = 0
+                command = ""
+                while index < len(character.inventory):
+                    if character.inventory[-(1+index)].type != "Scrap":
+                        break
+                    index += 1
+                    command += "l"
+                if command:
+                    return (None, (command,"drop scrap"))
 
             # drop items from inventory
-            if submenue:
-                command = submenue.get_command_to_select_item(item_type="Scrap",selectionCommand="l")
-                if command:
-                    return (None,(command,"drop scrap"))
-            else:
-                return (None, ("i","open inventory menu"))
+            if drop_offset == (0,0,0):
+                if submenue:
+                    command = submenue.get_command_to_select_item(item_type="Scrap",selectionCommand="l")
+                    if command:
+                        return (None,(command,"drop scrap"))
+                else:
+                    return (None, ("i","open inventory menu"))
 
         # close remaining menus
         if submenue and not ignoreCommands:

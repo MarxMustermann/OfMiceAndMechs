@@ -25,6 +25,7 @@ Its tendrils reach out and touch your implant.
 """)
         character.macroState["submenue"] = submenue
         submenue.do_not_scale = True
+        submenue.tag = "promotionIntro"
         submenue.followUp = {
             "container": self,
             "method": "promotion_loop",

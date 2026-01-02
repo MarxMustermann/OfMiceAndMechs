@@ -90,7 +90,8 @@ Use a CityPlaner to do this.
 
         # close unkown menus
         if character.macroState["submenue"] and not ignoreCommands:
-            return (None,(["esc"],"exit submenu"))
+            if submenue.tag not in ("advancedInteractionSelection",):
+                return (None,(["esc"],"exit submenu"))
 
         # activate production item when marked
         if character.macroState.get("itemMarkedLast"):

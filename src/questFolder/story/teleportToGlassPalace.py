@@ -69,7 +69,6 @@ class TeleportToGlassPalace(src.quests.MetaQuestSequence):
             return ([quest],None)
 
         # ensure there are backup NPCs
-        print(num_NPCs)
         if num_NPCs < 3:
             quest = src.quests.questMap["SpawnClone"](tryHard=True,lifetime=1000,reason="ensure somebody will be left to man the base")
             return ([quest],None)

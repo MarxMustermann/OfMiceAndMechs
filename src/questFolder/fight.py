@@ -127,7 +127,7 @@ So if an enemy is to directly east of you:
                 directionCommand = "w"
 
             if not directionCommand:
-                return (None,("m","attack enemy (below you)"))
+                return (None,(random.choice(["m","w","a","s","d"]),"attack enemy (below you)"))
 
             if not character.hasSpecialAttacks or self.simpleOnly:
                 return (None,(directionCommand,"attack enemy"))
@@ -233,7 +233,7 @@ So if an enemy is to directly east of you:
         commands = []
         command = None
         for foundEnemy in character.getNearbyEnemies():
-            for offset in [((1,0,0),"d"),((-1,0,0),"a"),((0,1,0),"s"),((0,-1,0),"w"),((0,0,0),"m")]:
+            for offset in [((1,0,0),"d"),((-1,0,0),"a"),((0,1,0),"s"),((0,-1,0),"w"),((0,0,0),random.choice(["m","w","a","s","d"]))]:
                 if character.getPosition(offset=offset[0]) == foundEnemy.getPosition():
                     command = offset[1]
                     break

@@ -78,12 +78,12 @@ You sit on the Throne and tendril connect to you body.
 They dig through your flesh and reach you implant.
 
 It unlocks something inside you implant.
-Something you did not know about.
+You feel stronger now.
 
 = press enter to continue =
 """
             submenu = src.menuFolder.textMenu.TextMenu(text)
-            submenu.followUp = {"container":self,"method":"doMagicUpgrade","params":{"character":character}}
+            submenu.followUp = {"container":self,"method":"offerTeleport","params":{"character":character}}
             character.macroState["submenue"] = submenu
             character.runCommandString("~",nativeKey=True)
         else:

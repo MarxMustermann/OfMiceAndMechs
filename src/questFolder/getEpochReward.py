@@ -262,7 +262,7 @@ This will allow you to focus on other tasks.
         # generate quests for all missing duty-clones
         chargesUsed = 0
         quests = []
-        for duty in ["room building","cleaning","scavenging","manufacturing","resource gathering","scrap hammering","mold farming","hauling","metal working","resource fetching","painting","machining","machine placing","machine operation","maggot gathering",]:
+        for duty in ["room building","cleaning","scavenging","manufacturing","resource gathering","scrap hammering","mold farming","hauling","metal working","resource fetching","painting","machine placing","machine operation","maggot gathering",]:
             if duty not in npcDuties:
                 cost = foundShrine.getBurnedInCharacterSpawningCost(character)
                 cost *= foundShrine.get_glass_heart_rebate()

@@ -172,7 +172,7 @@ To see your items open the your inventory by pressing i."""
         # return back to original position
         if self.returnToTile and character.getBigPosition() != self.returnToTile:
             terrain = character.getTerrain()
-            rooms = terrain.getRoomsByPosition(self.tileToReturnTo)
+            rooms = terrain.getRoomByPosition(self.tileToReturnTo)
             if not rooms and terrain.alarm:
                 return self._solver_trigger_fail(dryRun, "alarm")
             if rooms and rooms[0].alarm:

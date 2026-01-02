@@ -80,7 +80,8 @@ class TeleportToGlassPalace(src.quests.MetaQuestSequence):
             if submenue.tag == "throneTeleport":
                 command = submenue.get_command_to_select_option("yes")
                 return (None,(command,"teleport"))
-            return (None,(["esc"],"close menu"))
+            if submenue.tag not in ("advancedInteractionSelection",):
+                return (None,(["esc"],"close menu"))
 
         # activate correct item when marked
         if character.macroState.get("itemMarkedLast"):
@@ -113,7 +114,7 @@ class TeleportToGlassPalace(src.quests.MetaQuestSequence):
         if (pos[0],pos[1],pos[2]) == targetPosition:
             return (None,("j","activate the Throne"))
         interactionCommand = "J"
-        if "advancedInteraction" in character.interactionState:
+        if submenue and submenue.tag in ("advancedInteractionSelection",):
             interactionCommand = ""
         if (pos[0]-1,pos[1],pos[2]) == targetPosition:
             return (None,(interactionCommand+"a","activate the Throne"))

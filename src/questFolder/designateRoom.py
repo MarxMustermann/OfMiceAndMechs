@@ -128,7 +128,9 @@ Use the CityPlaner to designate the room.
                 return (None,("w"*(-offset)+"j","show the map"))
 
         if character.macroState["submenue"] and not ignoreCommands:
-            return (None,(["esc"],"exit submenu"))
+            submenue = character.macroState["submenue"]
+            if submenue.tag not in ("advancedInteractionSelection",):
+                return (None,(["esc"],"close menu"))
 
         pos = character.getBigPosition()
 
@@ -175,7 +177,11 @@ Use the CityPlaner to designate the room.
             command = "."
 
         if command:
-            return (None,("J"+command,"activate the CityPlaner"))
+            activation_command = "J"
+            submenue = character.macroState["submenue"]
+            if submenue and submenue.tag in ("advancedInteractionSelection",):
+                activation_command = ""
+            return (None,(activation_command+command,"activate the CityPlaner"))
 
         quest = src.quests.questMap["GoToPosition"](targetPosition=cityPlaner.getPosition(), description="go to CityPlaner",ignoreEndBlocked=True)
         return ([quest],None)

@@ -279,8 +279,6 @@ class QuestMenu(src.subMenu.SubMenu):
                     nextstep = [f"suggested action: \npress "]+convertedCommanString+[f" \nto {reason}\n\n"]
                 else:
                     nextstep = "suggested action: \npress + \nto generate subquests\n\n"
-                if gamestate.gamestate.tick < 1000:
-                    nextstep = (src.interaction.urwid.AttrSpec("#ff3", "default"),nextstep)
 
                 automatic = False
                 for quest in char.getActiveQuests():

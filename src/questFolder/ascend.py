@@ -79,7 +79,8 @@ Rule the world and put an end to those attacks!
         if submenue and not ignoreCommands:
             if submenue.type == "TextMenu":
                 return (None,(["enter"],"continue"))
-            return (None,(["esc"],"close menu"))
+            if submenue.tag not in ("advancedInteractionSelection",):
+                return (None,(["esc"],"close menu"))
 
         # abort on missing glass hearts
         for (godId,god) in src.gamestate.gamestate.gods.items():
@@ -204,7 +205,7 @@ Rule the world and put an end to those attacks!
             if (pos[0],pos[1],pos[2]) == targetPosition:
                 return (None,("j","activate the Throne"))
             interactionCommand = "J"
-            if "advancedInteraction" in character.interactionState:
+            if submenue and submenue.tag in ("advancedInteractionSelection",):
                 interactionCommand = ""
             if (pos[0]-1,pos[1],pos[2]) == targetPosition:
                 return (None,(interactionCommand+"a","activate the Throne"))
@@ -239,7 +240,7 @@ Rule the world and put an end to those attacks!
         if (pos[0],pos[1],pos[2]) == targetPosition:
             return (None,("j","activate the Throne"))
         interactionCommand = "J"
-        if "advancedInteraction" in character.interactionState:
+        if submenue and submenue.tag in ("advancedInteractionSelection",):
             interactionCommand = ""
         if (pos[0]-1,pos[1],pos[2]) == targetPosition:
             return (None,(interactionCommand+"a","activate the Throne"))

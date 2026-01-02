@@ -1907,33 +1907,14 @@ class ChatMenu(Chat):
             self.skipTurn = False
             key = "."
 
-        # show interaction
-        out = "\n"
-
-        # wrap around chat submenu
-        if self.subMenu:
-            # let the submenu handle the key
-            if not self.subMenu.done:
-                self.subMenu.handleKey(key, noRender=noRender)
-                if not self.subMenu.done:
-                    return False
-                self.handleKey(config.commandChars.wait, noRender=noRender)
-
-            # return to main dialog menu
-            self.subMenu = None
-            self.state = "mainOptions"
-            self.selection = None
-            self.lockOptions = True
-            self.chatOptions = []
-
         # display greetings
         if self.state is None:
             self.state = "mainOptions"
 
         # show selection of sub chats
         if self.state == "mainOptions":
-            # set up selection for the main dialog options
-            if not self.options and not self.getSelection():
+
+            if not self.subMenu:
                 # add the chat partners special dialog options
                 options = [
                     ("showFrustration", "are you frustrated?"),
@@ -1983,25 +1964,26 @@ class ChatMenu(Chat):
                 #options.append(("exit", "let us proceed, " + self.partner.name))
 
                 # set the options
-                self.setOptions(f"You are about to start a conversation with {self.partner.name}.\n\nWhat kind of conversation do you want to start?\n", options)
+                submenu = src.menuFolder.selectionMenu.SelectionMenu(options=options, text=f"You are about to start a conversation with {self.partner.name}.\n\nWhat kind of conversation do you want to start?\n")
+                self.subMenu = submenu
 
-            # let the superclass handle the actual selection
-            if not self.getSelection():
-                super().handleKey(key, noRender=noRender)
+            if self.subMenu:
+                self.subMenu.handleKey(key, noRender=noRender)
 
             # spawn the dialog options submenu
-            if self.getSelection():
-                if not isinstance(self.selection, str):
+            if self.subMenu and self.subMenu.getSelection():
+                selection = self.subMenu.getSelection()
+                if not isinstance(selection, str):
                     # spawn the selected dialog option
-                    if not isinstance(self.selection, dict):
-                        self.subMenu = self.selection(self.partner)
+                    if not isinstance(selection, dict):
+                        self.subMenu = selection(self.partner)
                     else:
-                        self.subMenu = self.selection["chat"](self.partner)
-                        if "params" in self.selection:
-                            self.subMenu.setUp(self.selection["params"])
+                        self.subMenu = selection["chat"](self.partner)
+                        if "params" in selection:
+                            self.subMenu.setUp(selection["params"])
 
                     self.subMenu.handleKey(key, noRender=noRender)
-                elif self.selection == "come to me":
+                elif selection == "come to me":
                     vector = [character.xPosition-self.partner.xPosition,character.yPosition-self.partner.yPosition]
                     movementString = ""
                     while True:
@@ -2030,46 +2012,46 @@ class ChatMenu(Chat):
                         if vector[0] == 0 and vector[1] == 0:
                             break
                     self.partner.runCommandString(movementString)
-                elif self.selection == "run command":
+                elif selection == "run command":
                     self.partner.runCommandString("jj")
-                elif self.selection == "step east":
+                elif selection == "step east":
                     if isinstance(self.partner.container,src.rooms.Room) and self.partner.xPosition == 12:
                         self.partner.runCommandString("dd")
                     self.partner.runCommandString("d")
-                elif self.selection == "step west":
+                elif selection == "step west":
                     if isinstance(self.partner.container,src.rooms.Room) and self.partner.xPosition == 0:
                         self.partner.runCommandString("aa")
                     self.partner.runCommandString("a")
-                elif self.selection == "step north":
+                elif selection == "step north":
                     if isinstance(self.partner.container,src.rooms.Room) and self.partner.xPosition == 0:
                         self.partner.runCommandString("ww")
                     self.partner.runCommandString("w")
-                elif self.selection == "step south":
+                elif selection == "step south":
                     if isinstance(self.partner.container,src.rooms.Room) and self.partner.yPosition == 12:
                         self.partner.runCommandString("ss")
                     self.partner.runCommandString("s")
-                elif self.selection == "drop items":
+                elif selection == "drop items":
                     self.partner.runCommandString("l"*10)
-                elif self.selection == "stop":
+                elif selection == "stop":
                     self.partner.runCommandString(".",clear=True)
-                elif self.selection == "set name":
+                elif selection == "set name":
                     submenue = src.menuFolder.nameGhoulMenu.NameGhoulMenu(npc=self.partner)
                     character.macroState["submenue"] = submenue
                     submenue.handleKey("~", noRender=noRender,character=character)
                     return True
-                elif self.selection == "giveInstruction":
+                elif selection == "giveInstruction":
                     submenue = src.menuFolder.instructNPCMenu.InstructNPCMenu(npc=self.partner)
                     character.macroState["submenue"] = submenue
                     submenue.handleKey("~", noRender=noRender,character=character)
                     return True
-                elif self.selection == "talkWork":
+                elif selection == "talkWork":
                     submenue = src.menuFolder.textMenu.TextMenu(
                         text="Work is as hard as the day is long"
                     )
                     character.macroState["submenue"] = submenue
                     submenue.handleKey(key, noRender=noRender)
                     return True
-                elif self.selection == "chat":
+                elif selection == "chat":
                     submenue = src.menuFolder.idleChatNPCMenu.IdleChatNPCMenu(npc=self.partner)
                     character.macroState["submenue"] = submenue
                     submenue.handleKey("~", noRender=noRender,character=character)
@@ -2078,24 +2060,24 @@ class ChatMenu(Chat):
                     character.macroState["submenue"] = submenue
                     submenue.handleKey("~", noRender=noRender)
                     return True
-                elif self.selection == "showQuests":
+                elif selection == "showQuests":
                     # spawn quest submenu for partner
                     submenue = src.menuFolder.questMenu.QuestMenu(char=self.partner)
                     self.subMenu = submenue
                     submenue.handleKey(key, noRender=noRender)
                     return False
-                elif self.selection == "copyMacros":
+                elif selection == "copyMacros":
                     self.partner.macroState[
                         "macros"
                     ] = src.gamestate.gamestate.mainChar.macroState["macros"]
                     src.gamestate.gamestate.mainChar.addMessage("copy macros")
                     return True
-                elif self.selection == "showFrustration":
+                elif selection == "showFrustration":
                     submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(
                         text="my frustration is: %s" % self.partner.frustration
                     )
                     self.subMenu = submenue
-                elif self.selection == "goToChar":
+                elif selection == "goToChar":
                     xDiff = (
                         src.gamestate.gamestate.mainChar.xPosition
                         - self.partner.xPosition
@@ -2138,28 +2120,28 @@ class ChatMenu(Chat):
 
                     self.partner.runCommandString(moveCommand,addBack=True)
                     return True
-                elif self.selection == "activate":
+                elif selection == "activate":
                     self.partner.runCommandString("j",addBack=True)
                     return True
-                elif self.selection == "pickUp":
+                elif selection == "pickUp":
                     self.partner.runCommandString("10k",addBack=True)
                     return True
-                elif self.selection == "dropAll":
+                elif selection == "dropAll":
                     self.partner.runCommandString("10l",addBack=True)
                     return True
-                elif self.selection == "moveWest":
+                elif selection == "moveWest":
                     self.partner.runCommandString("a",addBack=True)
                     return True
-                elif self.selection == "moveNorth":
+                elif selection == "moveNorth":
                     self.partner.runCommandString("w",addBack=True)
                     return True
-                elif self.selection == "moveSouth":
+                elif selection == "moveSouth":
                     self.partner.runCommandString("s",addBack=True)
                     return True
-                elif self.selection == "moveEast":
+                elif selection == "moveEast":
                     self.partner.runCommandString("d",addBack=True)
                     return True
-                elif self.selection == "stopCommand":
+                elif selection == "stopCommand":
                     self.partner.runCommandString("",clear=True)
                     self.partner.macroState["loop"] = []
                     self.partner.macroState["replay"].clear()
@@ -2169,17 +2151,16 @@ class ChatMenu(Chat):
                         self.partner.interactionState["ifParam2"].clear()
 
                     return True
-                elif self.selection == "runMacro":
+                elif selection == "runMacro":
                     submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(
                         text="press key for the macro to run"
                     )
                     self.subMenu = submenue
                     self.subMenu.followUp = self.runMacro
                     submenue.handleKey(key, noRender=noRender)
-                elif self.selection == "exit":
+                elif selection == "exit":
                     # end the conversation
                     self.state = "done"
-                self.selection = None
                 self.lockOptions = True
                 return True
             else:
@@ -2215,6 +2196,11 @@ class ChatMenu(Chat):
             )
 
         return False
+
+    def render(self):
+        if self.subMenu:
+            return self.subMenu.render()
+        return self.persistentText
 
     def runMacro(self):
         """

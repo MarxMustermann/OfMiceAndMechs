@@ -1059,11 +1059,8 @@ class MainGame(BasicPhase):
 
         diff_increase_per_dungeon = difficultyMap["diff_increase_per_dungeon"]
 
-        self.setUpGlassHeartDungeon(dungeonPositions[0], gods[0], 1 * difficultyModifier)
-
-        for i in range(1, numDungeons):
-            dungeon_difficulty_modifier = (1 + diff_increase_per_dungeon * i) * difficultyModifier
-            self.setUpGlassHeartDungeon(dungeonPositions[i], gods[i], dungeon_difficulty_modifier)
+        for i in range(0, numDungeons):
+            self.setUpGlassHeartDungeon(dungeonPositions[i], gods[i], i)
 
         if self.preselection == "Story":
             self.sternsBasePosition = self.get_free_position("sterns base")

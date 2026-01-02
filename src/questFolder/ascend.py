@@ -79,6 +79,9 @@ Rule the world and put an end to those attacks!
         if submenue and not ignoreCommands:
             if submenue.type == "TextMenu":
                 return (None,(["enter"],"continue"))
+            if submenue.tag == "throneTeleport":
+                command = submenue.get_command_to_select_option("no")
+                return (None,(command,"teleport"))
             if submenue.tag not in ("advancedInteractionSelection",):
                 return (None,(["esc"],"close menu"))
 

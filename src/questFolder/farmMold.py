@@ -152,6 +152,9 @@ farm mold{reason}."""
         if terrain.alarm:
             return (None,None)
 
+        if character.health < 50:
+            return (None,None)
+
         if not character.getFreeInventorySpace():
             quest = src.quests.questMap["ClearInventory"](reason="make space for blooms")
             if not dryRun:

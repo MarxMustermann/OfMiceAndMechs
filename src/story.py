@@ -1790,6 +1790,7 @@ but they are likely to explode when disturbed.
                 None,
            )
         startRoom.tag = "sternslab"
+        startRoom.getItemByPosition((6,0,0))[0].walkable = False
 
         # add vial just outside the lab
         vial = src.items.itemMap["Vial"]()

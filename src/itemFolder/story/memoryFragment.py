@@ -33,7 +33,10 @@ class MemoryFragment(src.items.Item):
             terrain = character.getTerrain()
             if terrain.mana >= 2:
                 manaCrystal = src.items.itemMap["ManaCrystal"]()
-                character.container.addItem(manaCrystal,character.getPosition())
+                if self in character.inventory:
+                    character.inventory.append(manaCrystal)
+                else:
+                    character.container.addItem(manaCrystal,character.getPosition())
                 text += f"the memory fragment crystalises."
             else:
                 text += f"the memory fragment starts to crystalise. But there is no mana in this terrain"

@@ -67,6 +67,7 @@ class BrewPotion(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["ClearInventory"]()
             return ([quest],None)
 
+        # handle menu interactions
         submenue = character.macroState["submenue"]
         if submenue and not ignoreCommands:
             if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu):

@@ -3063,6 +3063,9 @@ but they are likely to explode when disturbed.
                 if not room.tag == "trapRoom":
                     continue
 
+                if room.floorPlan:
+                    continue
+
                 for walkingSpace in room.walkingSpace:
                     items = room.getItemByPosition(walkingSpace)
                     for item in items:

@@ -18,6 +18,12 @@ class EscapeLab(src.quests.MetaQuestSequence):
         if not character:
             return (None,None)
 
+        submenue = character.macroState["submenue"]
+        if submenue and not ignoreCommands:
+            if submenue.tag == "configurationSelection":
+                return (None,("x","unblock door"))
+            return (None,(["esc",],"to close the menu"))
+
         if character.yPosition == 0:
             return (None,("w","leave room"))
         if character.yPosition%15 == 14:
@@ -25,9 +31,18 @@ class EscapeLab(src.quests.MetaQuestSequence):
         if not character.container.isRoom:
             return (None,("w","gain distance to room"))
 
-        quest = src.quests.questMap["GoToPosition"](targetPosition=(6,0,0),reason="reach the door",description="reach the door")
-        return ([quest],None)
+        if not character.getPosition() == (6,1,0):
+            quest = src.quests.questMap["GoToPosition"](targetPosition=(6,1,0),reason="reach the door",description="reach the door")
+            return ([quest],None)
+        
+        if not character.container.getPositionWalkable((6,0,0)):
+            configuration_command = "C"
+            if "advancedConfigure" in character.interactionState:
+                configuration_command = ""
+            command = configuration_command + "wx"
+            return (None,(command,"open door"))
 
+        return (None,("w","step through door"))
 
     def generateTextDescription(self):
         door = src.items.itemMap["Door"]()

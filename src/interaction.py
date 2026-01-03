@@ -6951,7 +6951,7 @@ You see """,".",".",".",""" nothing
 ""","You hear ",".",".",".",""" nothing
 ""","You know ",".",".",".",""" nothing
 ""","You remember ",".",".",".",""" nothing
-""","You feel ",".",".",".",""" A sharp pain burrowing through you mind.     \n\
+""","You feel ",".",".",".",""" A sharp pain burrowing through you brain.     \n\
 You remember how tendrils of pain grew from from your implant.     \n\
 It burns your flesh and eats your mindddddddddddddddddddddddddddddddddd\n 
 """,

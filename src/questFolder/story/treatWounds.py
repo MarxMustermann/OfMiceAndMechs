@@ -45,8 +45,10 @@ class TreatWounds(src.quests.MetaQuestSequence):
         if not character:
             return (None,None)
 
-        if character.macroState["submenue"]:
-            return (None,(["esc",],"to close the menu"))
+        submenue = character.macroState["submenue"]
+        if submenue and not ignoreCommands:
+            if submenue.tag not in ("advancedInteractionSelection",):
+                return (None,(["esc",],"to close the menu"))
 
         if character.health < (character.maxHealth-10):
             # make completion smooth
@@ -56,7 +58,10 @@ class TreatWounds(src.quests.MetaQuestSequence):
             # drink Vials from inventory
             hasInventoryVial = self.characterHasVial(character)
             if hasInventoryVial:
-                return (None,("JH","drink the whole Vial"))
+                interactionCommand = "J"
+                if submenue and submenue.tag in ("advancedInteractionSelection",):
+                    interactionCommand = ""
+                return (None,(interactionCommand+"H","drink the whole Vial"))
 
         #if character.inventory and character.inventory[-1].type == "Vial" and character.inventory[-1].uses == 0:
         #    return (None,("l","drop empty vial"))

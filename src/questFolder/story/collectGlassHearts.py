@@ -545,7 +545,7 @@ So apease the gods and obtain their GlassHearts.
             else:
                 self.subQuests.remove(extraParam["quest"])
 
-                newQuest = src.quests.questMap["Wait"](lifetime=100)
+                newQuest = src.quests.questMap["WaitQuest"](lifetime=100)
                 return
 
         super().handleQuestFailure(extraParam)

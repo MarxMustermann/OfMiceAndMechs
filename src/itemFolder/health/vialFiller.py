@@ -54,7 +54,7 @@ class VialFiller(src.items.Item):
     def getDispenser(self):
         if not self.container:
             return None
-        if isinstance(self.container,src.characters.characterMap["Clone"]):
+        if isinstance(self.container,src.characters.Character):
             return None
 
         fallBackItem = None

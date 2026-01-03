@@ -17,9 +17,9 @@ class InputMenu(src.subMenu.SubMenu):
             ignoreFirst: flag to ignore first keypress
         """
 
-        self.query = query
         self.text = ""
         super().__init__(tag=tag)
+        self.query = query
         self.footerText = "enter the text press enter to confirm"
         self.firstHit = True
         self.ignoreFirst = ignoreFirst
@@ -98,7 +98,7 @@ class InputMenu(src.subMenu.SubMenu):
 
             self.persistentText = (
                 src.interaction.urwid.AttrSpec("default", "default"),
-                "\n" + self.query + "\n\n" + text,
+                "\n" + text,
             )
 
             # show the render
@@ -123,4 +123,13 @@ class InputMenu(src.subMenu.SubMenu):
                 return ["backspace"]
             index += 1
         return value[len(self.text):]
+
+    def render(self):
+        out = ["\n"]
+        out.extend([self.query, "\n\n", self.text])
+
+        return (
+                        src.interaction.urwid.AttrSpec("default", "default"),
+                        out,
+               )
 

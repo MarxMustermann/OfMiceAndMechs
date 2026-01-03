@@ -30,3 +30,4 @@ import src.itemFolder.resources.spiderEye
 import src.itemFolder.resources.grindstone
 import src.itemFolder.resources.chitinPlates
 import src.itemFolder.resources.implant
+import src.itemFolder.resources.manaCrystal

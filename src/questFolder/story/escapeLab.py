@@ -47,10 +47,11 @@ class EscapeLab(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         door = src.items.itemMap["Door"]()
         door.open = True
-        door.walkable = True
+        door.walkable = False
         door.blocked = False
 
-        return ["""
+        text = []
+        text.extend(["""
 You reach out to your implant and it answers:
 It whispers, but you understand clearly:
 
@@ -60,14 +61,26 @@ This room is not a safe place to stay.
 So get moving and leave this room.
 Use the wasd movement keys to move.
 Pass through the door (""",door.render(),""") in the north.
+"""])
 
+        text.append("""
+The Door needs to be opened before you can pass through it.
+The instructions will be shown on the lest side of the screen as
 
+"suggested action:"
 
+Type the shown characters to complete the quest.
+Uppercase letters are shown in a light grey.
+""")
+
+        text.append("""
 Right now you are looking at the quest menu.
 Detailed instructions are shown here.
 For now ignore the options below and press esc to continue.
 
-"""]
+""")
+
+        return text
 
     def assignToCharacter(self, character):
         if self.character:

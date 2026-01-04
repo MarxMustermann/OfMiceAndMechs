@@ -7304,15 +7304,12 @@ to remember"""
                 room = src.rooms.EmptyRoom(None,None,None,None)
                 room.reconfigure(13, 13, doorPos=[(12,6),(6,12),(0,6),(6,0)])
                 room.hidden = False
-                printUrwidToTcod(
-                    fixRoomRender(room.render()), (56 + 26 - offset[0] * 2 + c_offset, 15 + 13 - offset[1])
-                )
+                rendered_room = fixRoomRender(room.render())
+                printUrwidToTcod(rendered_room,((char_position[0]-6)*2,char_position[1]-5))
             if subStep == 3:
                 offset = src.gamestate.gamestate.mainChar.getPosition()
-                printUrwidToTcod(
-                    fixRoomRender(src.gamestate.gamestate.mainChar.container.render()),
-                    (56 + 26 - offset[0] * 2 + c_offset, 15 + 13 - offset[1]),
-                )
+                rendered_room = fixRoomRender(src.gamestate.gamestate.mainChar.container.render())
+                printUrwidToTcod(rendered_room,((char_position[0]-6)*2,char_position[1]-5))
             if subStep == 4:
                 offset = src.gamestate.gamestate.mainChar.getPosition()
                 roomPos = src.gamestate.gamestate.mainChar.container.getPosition()

@@ -6918,10 +6918,12 @@ def showRunIntro():
 
     ui_positions = calculate_UI_layout(src.gamestate.gamestate.mainChar)
     minimap_position = None
+    map_position = None
     for ui_position in ui_positions:
-        if ui_position["type"] != "miniMap":
-            continue
-        minimap_position = ui_position["offset"]
+        if ui_position["type"] == "miniMap":
+            minimap_position = ui_position["offset"]
+        if ui_position["type"] == "gameMap":
+            map_position = ui_position["offset"]
 
     def fixRoomRender(render):
         for row in render:
@@ -7313,7 +7315,7 @@ to remember"""
                 roomPos = src.gamestate.gamestate.mainChar.container.getPosition()
                 terrainRender = src.gamestate.gamestate.mainChar.getTerrain().render(coordinateOffset=(15*(roomPos[1]-1)-6+offset[1],15*(roomPos[0]-1)-6+offset[0]),size=(44,44))
                 terrainRender = fixRoomRender(terrainRender)
-                printUrwidToTcod(terrainRender, (38 + c_offset, 6))
+                printUrwidToTcod(terrainRender, (map_position[0]*2, map_position[1]))
 
                 miniMapChars = src.gamestate.gamestate.mainChar.getTerrain().renderTiles()
                 miniMapChars = fixRoomRender(miniMapChars)

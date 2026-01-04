@@ -33,7 +33,7 @@ class Adventure(src.quests.MetaQuestSequence):
 
         # ensure good health
         if character.is_low_health():
-            if character.can_heal():
+            if character.canHeal():
                 quest = src.quests.questMap["Heal"](reason="be in good health")
                 return ([quest],None)
             return self._solver_trigger_fail(dryRun,"low health")

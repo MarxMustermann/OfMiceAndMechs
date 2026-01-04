@@ -35,8 +35,9 @@ class Door(src.items.Item):
             options["x"] = ("block door", self.blockDoor)
         else:
             options["x"] = ("unblock door", self.unblockDoor)
-        if self.bolted:
-            options["b"] = ("unbolt", self.unboltAction)
+        if self.bolted :
+            if self.walkable:
+                options["b"] = ("unbolt", self.unboltAction)
         else:
             options["b"] = ("bolt down", self.boltAction)
         return options

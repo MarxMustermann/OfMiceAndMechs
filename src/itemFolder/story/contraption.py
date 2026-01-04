@@ -29,9 +29,10 @@ class Contraption(src.items.Item):
         if not self.container:
             return
 
-        for i in range(1,self.meltdownLevel):
-            self.container.addAnimation(self.getPosition(),"smoke",i,{})
-            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#faa", "#f00"), "%%")]})
+        if self.container.isRoom:
+            for i in range(1,self.meltdownLevel):
+                self.container.addAnimation(self.getPosition(),"smoke",i,{})
+                self.container.addAnimation(self.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#faa", "#f00"), "%%")]})
 
         if self.meltdownLevel == 10:
             self.destroy()

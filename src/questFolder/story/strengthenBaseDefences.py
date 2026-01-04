@@ -78,7 +78,7 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
             for item in room.getItemsByType("CityPlaner",needsBolted=True):
                 cityPlaner = item
         offsets = [(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]
-        roomPos = random.chpice(edgeTrapRooms).getPosition()
+        roomPos = random.choice(edgeTrapRooms).getPosition()
         plannedTraproomPositions = []
         candidateTraproomPositions = []
         obsoleteRoomMarkers = []

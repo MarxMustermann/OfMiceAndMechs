@@ -6916,6 +6916,13 @@ press enter to continue playing"""]
 
 def showRunIntro():
 
+    ui_positions = calculate_UI_layout(src.gamestate.gamestate.mainChar)
+    minimap_position = None
+    for ui_position in ui_positions:
+        if ui_position["type"] != "miniMap":
+            continue
+        minimap_position = ui_position["offset"]
+
     def fixRoomRender(render):
         for row in render:
             row.append("\n")
@@ -7310,7 +7317,7 @@ to remember"""
 
                 miniMapChars = src.gamestate.gamestate.mainChar.getTerrain().renderTiles()
                 miniMapChars = fixRoomRender(miniMapChars)
-                printUrwidToTcod(miniMapChars, (c_offset - 12, 2))
+                printUrwidToTcod(miniMapChars, (minimap_position[0]*2, minimap_position[1]+1))
 
             offset = src.gamestate.gamestate.mainChar.getPosition()
             printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "), (76 + 6 + c_offset, 22 + 6))

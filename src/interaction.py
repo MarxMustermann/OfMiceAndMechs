@@ -6925,6 +6925,9 @@ def showRunIntro():
         if ui_position["type"] == "gameMap":
             map_position = ui_position["offset"]
 
+    renderHeight = window_charheight-7
+    char_position = (map_position[0]+renderHeight//2-1,map_position[1]+renderHeight//2-1)
+
     def fixRoomRender(render):
         for row in render:
             row.append("\n")
@@ -7322,7 +7325,7 @@ to remember"""
                 printUrwidToTcod(miniMapChars, (minimap_position[0]*2, minimap_position[1]+1))
 
             offset = src.gamestate.gamestate.mainChar.getPosition()
-            printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "), (76 + 6 + c_offset, 22 + 6))
+            printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "), (char_position[0]*2,char_position[1]))
             tcodPresent()
             time.sleep(0.1)
         else:

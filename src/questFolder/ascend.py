@@ -266,6 +266,10 @@ Rule the world and put an end to those attacks!
                     newQuest = src.quests.questMap["CleanSpace"](targetPosition=item.getPosition(),targetPositionBig=room.getPosition(),tryHard=True)
                     self.addQuest(newQuest)
                     self.startWatching(newQuest,self.handleQuestFailure,"failed")
+                    if not self.character.getFreeInventorySpace():
+                        newQuest = src.quests.questMap["ClearInventory"](tryHard=True)
+                        self.addQuest(newQuest)
+                        self.startWatching(newQuest,self.handleQuestFailure,"failed")
                     return
 
 

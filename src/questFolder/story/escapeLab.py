@@ -59,17 +59,15 @@ Something has gone wrong.
 This room is not a safe place to stay.
 
 So get moving and leave this room.
-Use the wasd movement keys to move.
 Pass through the door (""",door.render(),""") in the north.
 """])
 
         text.append("""
 The Door needs to be opened before you can pass through it.
-The instructions will be shown on the lest side of the screen as
+How to move and open the Door will be shown as suggested action.
 
-"suggested action:"
-
-Type the shown characters to complete the quest.
+Typing the shown characters there should complete the quest.
+Use this as tutorial and hint function.
 Uppercase letters are shown in a light grey.
 """)
 

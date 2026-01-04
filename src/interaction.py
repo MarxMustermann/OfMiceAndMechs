@@ -3542,19 +3542,25 @@ def render(char):
     else:
         screensize = (400, 400)
     shift = (
-        screensize[1] // 2 - (viewsize - 1) // 2,
-        screensize[0] // 4 - (viewsize - 1) // 2,
+        screensize[1] // 2 - (viewsize) // 2,
+        screensize[0] // 4 - (viewsize) // 2,
     )
 
     # render the map
-    renderHeight = window_charheight-5
+    renderHeight = window_charheight-7
+    if renderHeight%15 == 1:
+        renderHeight -= 1
+    if renderHeight%15 == 1:
+        renderHeight -= 1
+    if renderHeight%15 == 1:
+        renderHeight -= 1
     if (
         char.room
         and not char.room.xPosition
     ):
         chars = char.room.render()
     else:
-        chars = thisTerrain.render(size=(renderHeight,renderHeight),coordinateOffset=(centerY - renderHeight//2 -1, centerX - renderHeight//2 -1))
+        chars = thisTerrain.render(size=(renderHeight,renderHeight),coordinateOffset=(centerY - renderHeight//2, centerX - renderHeight//2))
         miniMapChars = []
 
         '''

@@ -2219,6 +2219,22 @@ class Terrain:
 
                 if duration < 1:
                     self.animations.remove(animation)
+            elif animationType in ("smoke",):
+                    display = (src.interaction.urwid.AttrSpec("#555", "black"), "##")
+
+                    try:
+                        chars[pos[1]][pos[0]] = display
+                    except IndexError:
+                        logger.error(f"drawing outside of room {pos}")
+                        continue
+
+                    direction = random.choice([(1,0,0),(0,1,0),(-1,0,0),(1,0,0),])
+
+                    animation[2] -= 1
+
+                    self.animations.remove(animation)
+                    if duration > 0:
+                        self.addAnimation((animation[0][0]+direction[0],animation[0][1]+direction[1],animation[0][2]+direction[2],),animation[1],animation[2],extraInfo)
             else:
                 display = "??"
                 chars[pos[1]][pos[0]] = display

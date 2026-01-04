@@ -51,6 +51,13 @@ class RefillPersonalFlask(src.quests.MetaQuestSequence):
 
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
+
+        # handle menues
+        submenue = character.macroState.get("submenue")
+        if submenue and not ignoreCommands:
+            if submenue.tag not in ("advancedInteractionSelection",):
+                return (None,(["esc"],"close menu"))
+
         pos = character.getBigPosition()
         pos = (pos[0],pos[1])
 
@@ -88,16 +95,19 @@ class RefillPersonalFlask(src.quests.MetaQuestSequence):
 
                         return (None,(pickupCommand,"remove item from flask"))
                 
+                    interactionCommand = "J"
+                    if submenue and submenue.tag in ("advancedInteractionSelection",):
+                        interactionCommand = ""
                     if offset == (0,0,0):
                         return (None,("jj","refill"))
                     if offset == (1,0,0):
-                        return (None,("Jdj","refill"))
+                        return (None,(interactionCommand+"dj","refill"))
                     if offset == (-1,0,0):
-                        return (None,("Jaj","refill"))
+                        return (None,(interactionCommand+"aj","refill"))
                     if offset == (0,1,0):
-                        return (None,("Jsj","refill"))
+                        return (None,(interactionCommand+"sj","refill"))
                     if offset == (0,-1,0):
-                        return (None,("Jwj","refill"))
+                        return (None,(interactionCommand+"wj","refill"))
 
             for item in character.container.itemsOnFloor:
                 if not character.container.getItemByPosition(item.getPosition()):

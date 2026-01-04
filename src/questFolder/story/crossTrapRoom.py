@@ -20,8 +20,10 @@ class CrossTrapRoom(src.quests.MetaQuestSequence):
             return (None,None)
 
         # close open menues
-        if character.macroState["submenue"] and not ignoreCommands:
-            return (None,(["esc"],"to close menu"))
+        submenue = character.macroState["submenue"]
+        if submenue and not ignoreCommands:
+            if submenue.tag not in ("advancedInteractionSelection",):
+                return (None,(["esc"],"to close menu"))
 
         baseCommand = "d"
         nextPos = (character.xPosition+1,character.yPosition,0)
@@ -62,8 +64,11 @@ class CrossTrapRoom(src.quests.MetaQuestSequence):
             return (None,(baseCommand,"step on disabled trap"))
         
         interactionCommand = "J"
-        if "advancedInteraction" in character.interactionState:
-            interactionCommand = ""
+        if submenue:
+            if submenue.tag == "advancedInteractionSelection":
+                interactionCommand = ""
+            else:
+                return (None,(["esc"],"close menu"))
         return (None,(interactionCommand+baseCommand,"trigger trap"))
 
 

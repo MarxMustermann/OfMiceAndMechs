@@ -69,7 +69,7 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
                 break
 
         # handle a base without an outside trap room
-        if len(edgeTrapRooms) == 1:
+        if len(edgeTrapRooms) == 0:
             return self._solver_trigger_fail(dryRun,"no edge traprooms found")
 
         # search for buildsites for the trap room
@@ -78,7 +78,7 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
             for item in room.getItemsByType("CityPlaner",needsBolted=True):
                 cityPlaner = item
         offsets = [(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]
-        roomPos = random.chpice(edgeTrapRooms).getPosition()
+        roomPos = random.choice(edgeTrapRooms).getPosition()
         plannedTraproomPositions = []
         candidateTraproomPositions = []
         obsoleteRoomMarkers = []
@@ -141,6 +141,10 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
         if plannedTraproomPositions:
             quest = src.quests.questMap["BuildRoom"](targetPosition=random.choice(plannedTraproomPositions),tryHard=True)
             return ([quest],None)
+
+        # handle a base without an trap room candidate positions
+        if len(candidateTraproomPositions) == 0:
+            return self._solver_trigger_fail(dryRun,"no traproom position candidate found")
 
         # add subquest to schedule building a rooom
         offsetedPosition = (roomPos[0]+offset[0],roomPos[1]+offset[1],roomPos[2]+offset[2])

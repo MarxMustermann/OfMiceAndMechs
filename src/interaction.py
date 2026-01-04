@@ -7291,15 +7291,18 @@ to remember"""
             printUrwidToTcod(text, (2, 19))
             if subStep == 1:
                 wall = src.items.itemMap["Wall"]()
-                totalOffsetX = 56+26-offset[0]*2
-                totalOffsetY = 15+13-offset[1]
-                for i in range(13):
-                    if i == 6:
+                totalOffsetX = (char_position[0]-6)*2
+                totalOffsetY = char_position[1]-5
+                for x in range(13):
+                    if x == 6:
                         continue
-                    printUrwidToTcod(wall.render(), (totalOffsetX + 2 * i + c_offset, totalOffsetY))
-                    printUrwidToTcod(wall.render(), (totalOffsetX + c_offset, totalOffsetY + i))
-                    printUrwidToTcod(wall.render(), (totalOffsetX + 2 * i + c_offset, totalOffsetY + 12))
-                    printUrwidToTcod(wall.render(), (totalOffsetX + 12 * 2 + c_offset, totalOffsetY + i))
+                    printUrwidToTcod(wall.render(), (totalOffsetX + x*2, totalOffsetY))
+                for x in range(13):
+                    printUrwidToTcod(wall.render(), (totalOffsetX + x*2, totalOffsetY+12))
+                for y in range(13):
+                    printUrwidToTcod(wall.render(), (totalOffsetX, totalOffsetY+y))
+                for y in range(13):
+                    printUrwidToTcod(wall.render(), (totalOffsetX + 12*2, totalOffsetY+y))
             if subStep == 2:
                 room = src.rooms.EmptyRoom(None,None,None,None)
                 room.reconfigure(13, 13, doorPos=[(6,0)])

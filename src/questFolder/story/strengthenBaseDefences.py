@@ -142,6 +142,10 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["BuildRoom"](targetPosition=random.choice(plannedTraproomPositions),tryHard=True)
             return ([quest],None)
 
+        # handle a base without an trap room candidate positions
+        if len(candidateTraproomPositions) == 0:
+            return self._solver_trigger_fail(dryRun,"no traproom position candidate found")
+
         # add subquest to schedule building a rooom
         offsetedPosition = (roomPos[0]+offset[0],roomPos[1]+offset[1],roomPos[2]+offset[2])
         quest = src.quests.questMap["ScheduleRoomBuilding"](roomPosition=random.choice(candidateTraproomPositions),priorityBuild=True)

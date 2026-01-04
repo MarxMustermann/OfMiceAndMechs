@@ -109,29 +109,6 @@ class SternsContraption(src.items.Item):
             if not self.container.characters:
                 self.meltdownLevel = 1
         else:
-            if self.meltdownLevel == 1:
-                contraptions = self.container.getItemsByType("Contraption")
-                for contraption in contraptions:
-                    if random.random() < 0.5:
-                        contraption.startMeltdown()
-
-            if self.meltdownLevel > 4:
-                for character in self.container.characters[:]:
-                    if not character.dead:
-                        character.die(reason="you died from explosion")
-
-            self.container.addAnimation(self.getPosition(),"smoke",2,{})
-            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#faa", "#f00"), "%%")]})
-
-            for i in range(1*(self.meltdownLevel-3)*10):
-                pos = (random.randint(1,13),random.randint(1,13),0)
-                self.container.addAnimation(pos,"smoke",6,{})
-                self.container.addAnimation(pos,"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#faa", "#f00"), "%%")]})
-
-                self.container.addAnimation(self.getPosition(),"smoke",random.randint(1,6),{})
-                self.container.addAnimation(self.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#faa", "#f00"), "%%")]})
-
-            self.container.addAnimation(self.getPosition(),"showchar",1+tick%10,{"char":[(src.interaction.urwid.AttrSpec("#faa", "#f00"), "%%")]})
 
             if self.meltdownLevel == 8:
                 bigX = self.container.xPosition
@@ -176,6 +153,30 @@ class SternsContraption(src.items.Item):
 
                 self.container.destroy()
                 return
+
+            if self.meltdownLevel == 1:
+                contraptions = self.container.getItemsByType("Contraption")
+                for contraption in contraptions:
+                    if random.random() < 0.5:
+                        contraption.startMeltdown()
+
+            if self.meltdownLevel > 4:
+                for character in self.container.characters[:]:
+                    if not character.dead:
+                        character.die(reason="you died from explosion")
+
+            self.container.addAnimation(self.getPosition(),"smoke",2,{})
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#faa", "#f00"), "%%")]})
+
+            for i in range(1*(self.meltdownLevel-3)*10):
+                pos = (random.randint(1,13),random.randint(1,13),0)
+                self.container.addAnimation(pos,"smoke",6,{})
+                self.container.addAnimation(pos,"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#faa", "#f00"), "%%")]})
+
+                self.container.addAnimation(self.getPosition(),"smoke",random.randint(1,6),{})
+                self.container.addAnimation(self.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#faa", "#f00"), "%%")]})
+
+            self.container.addAnimation(self.getPosition(),"showchar",1+tick%10,{"char":[(src.interaction.urwid.AttrSpec("#faa", "#f00"), "%%")]})
             self.meltdownLevel += 1
 
         event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick+1)

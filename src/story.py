@@ -1792,6 +1792,29 @@ but they are likely to explode when disturbed.
         startRoom.tag = "sternslab"
         startRoom.getItemByPosition((6,0,0))[0].walkable = False
 
+        # draw path to base
+        for y in range(7,15):
+            paving = src.items.itemMap["Paving"]()
+            paving.bolted = True
+            currentTerrain.addItem(paving,(15*6+7,15*9+y,0))
+        for x in range(1,7):
+            paving = src.items.itemMap["Paving"]()
+            paving.bolted = True
+            currentTerrain.addItem(paving,(15*6+x,15*9+7,0))
+        for x in range(7,15):
+            paving = src.items.itemMap["Paving"]()
+            paving.bolted = True
+            currentTerrain.addItem(paving,(15*5+x,15*9+7,0))
+        for y in range(1,7):
+            paving = src.items.itemMap["Paving"]()
+            paving.bolted = True
+            currentTerrain.addItem(paving,(15*5+7,15*9+y,0))
+        for y in range(1,15):
+            paving = src.items.itemMap["Paving"]()
+            paving.bolted = True
+            currentTerrain.addItem(paving,(15*5+7,15*8+y,0))
+
+
         # add vial just outside the lab
         vial = src.items.itemMap["Vial"]()
         vial.uses = 2

@@ -4300,6 +4300,43 @@ def stringifyUrwid(inData):
             outData += stringifyUrwid(item.content)
     return outData
 
+def calculate_UI_layout(char):
+    uiElements = []
+    assumedScreenWidth = tcodConsole.width
+
+    mapWidth = (window_charheight-5)*2
+    if assumedScreenWidth < mapWidth:
+        assumedScreenWidth = mapWidth
+    uiElements.append({"type":"gameMap","offset":[(assumedScreenWidth-mapWidth)//4,6]})
+    
+    if tcodConsole.width > mapWidth + 15*4:
+        left = (tcodConsole.width-(mapWidth + 15*4))//8
+        uiElements.append({"type":"miniMap","offset":[left,1]})
+
+    if tcodConsole.width > mapWidth + 15*4:
+        right = (tcodConsole.width-(mapWidth + 15*4))//8
+        uiElements.append({"type":"zoneMap","offset":[tcodConsole.width//2-15-right,1]})
+
+    uiElements.append({"type":"healthInfo","offset":[(assumedScreenWidth-mapWidth)//2,1],"width":mapWidth})
+    uiElements.append({"type":"indicators","offset":[(assumedScreenWidth-mapWidth)//2,2],"width":mapWidth})
+
+    if not char.hasMagic:
+        displayString = "press ? for help"
+        displayWidth = len(displayString)
+        uiElements.append({"type":"text","offset":[(assumedScreenWidth-mapWidth)//2+(mapWidth-displayWidth)//2,3], "text":[src.interaction.ActionMeta(content=displayString,payload="z")]})
+    else:
+        terrain = char.getTerrain()
+        displayString = f" mana: {round(terrain.mana,2)}/{terrain.maxMana}"
+        displayWidth = len(displayString)
+        uiElements.append({"type":"text","offset":[(assumedScreenWidth-mapWidth)//2+(mapWidth-displayWidth)//2,3],"width":mapWidth,"text":displayString})
+    uiElements.append({"type":"time","offset":[(assumedScreenWidth//2)-10,4]})
+
+    if tcodConsole.width > mapWidth + 15*4:
+        uiElements.append({"type":"rememberedMenu","offset":[2,18],"size":(max(0,(assumedScreenWidth-mapWidth)//2-4),tcodConsole.height-18)})
+        uiElements.append({"type":"rememberedMenu2","offset":[(assumedScreenWidth+mapWidth)//2+4,18],"size":(max(0,(assumedScreenWidth-mapWidth)//2-4),tcodConsole.height-18)})
+
+    return uiElements
+
 last_menu_dimension = None
 def renderGameDisplay(renderChar=None):
     global last_menu_dimension
@@ -4432,39 +4469,7 @@ def renderGameDisplay(renderChar=None):
                     extraY += 1
 
                 uiElements = src.gamestate.gamestate.uiElements
-                uiElements = []
-                assumedScreenWidth = tcodConsole.width
-
-                mapWidth = (window_charheight-5)*2
-                if assumedScreenWidth < mapWidth:
-                    assumedScreenWidth = mapWidth
-                uiElements.append({"type":"gameMap","offset":[(assumedScreenWidth-mapWidth)//4,6]})
-                
-                if tcodConsole.width > mapWidth + 15*4:
-                    left = (tcodConsole.width-(mapWidth + 15*4))//8
-                    uiElements.append({"type":"miniMap","offset":[left,1]})
-
-                if tcodConsole.width > mapWidth + 15*4:
-                    right = (tcodConsole.width-(mapWidth + 15*4))//8
-                    uiElements.append({"type":"zoneMap","offset":[tcodConsole.width//2-15-right,1]})
-
-                uiElements.append({"type":"healthInfo","offset":[(assumedScreenWidth-mapWidth)//2,1],"width":mapWidth})
-                uiElements.append({"type":"indicators","offset":[(assumedScreenWidth-mapWidth)//2,2],"width":mapWidth})
-
-                if not char.hasMagic:
-                    displayString = "press ? for help"
-                    displayWidth = len(displayString)
-                    uiElements.append({"type":"text","offset":[(assumedScreenWidth-mapWidth)//2+(mapWidth-displayWidth)//2,3], "text":[src.interaction.ActionMeta(content=displayString,payload="z")]})
-                else:
-                    terrain = char.getTerrain()
-                    displayString = f" mana: {round(terrain.mana,2)}/{terrain.maxMana}"
-                    displayWidth = len(displayString)
-                    uiElements.append({"type":"text","offset":[(assumedScreenWidth-mapWidth)//2+(mapWidth-displayWidth)//2,3],"width":mapWidth,"text":displayString})
-                uiElements.append({"type":"time","offset":[(assumedScreenWidth//2)-10,4]})
-
-                if tcodConsole.width > mapWidth + 15*4:
-                    uiElements.append({"type":"rememberedMenu","offset":[2,18],"size":(max(0,(assumedScreenWidth-mapWidth)//2-4),tcodConsole.height-18)})
-                    uiElements.append({"type":"rememberedMenu2","offset":[(assumedScreenWidth+mapWidth)//2+4,18],"size":(max(0,(assumedScreenWidth-mapWidth)//2-4),tcodConsole.height-18)})
+                uiElements = calculate_UI_layout(char)
 
                 for uiElement in uiElements:
                     if uiElement["type"] == "gameMap":

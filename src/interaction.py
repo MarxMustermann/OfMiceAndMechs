@@ -7302,8 +7302,10 @@ to remember"""
                     printUrwidToTcod(wall.render(), (totalOffsetX + 12 * 2 + c_offset, totalOffsetY + i))
             if subStep == 2:
                 room = src.rooms.EmptyRoom(None,None,None,None)
-                room.reconfigure(13, 13, doorPos=[(12,6),(6,12),(0,6),(6,0)])
+                room.reconfigure(13, 13, doorPos=[(6,0)])
                 room.hidden = False
+                items = room.getItemByPosition((6,0,0))
+                items[0].walkable = False
                 rendered_room = fixRoomRender(room.render())
                 printUrwidToTcod(rendered_room,((char_position[0]-6)*2,char_position[1]-5))
             if subStep == 3:

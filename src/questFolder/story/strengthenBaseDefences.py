@@ -69,7 +69,7 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
                 break
 
         # handle a base without an outside trap room
-        if len(edgeTrapRooms) == 1:
+        if len(edgeTrapRooms) == 0:
             return self._solver_trigger_fail(dryRun,"no edge traprooms found")
 
         # search for buildsites for the trap room

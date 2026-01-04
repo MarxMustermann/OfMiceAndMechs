@@ -595,6 +595,7 @@ class Item:
         # spawn menu
         submenu = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
         submenu.tag = "configurationSelection"
+        submenu.do_not_scale = True
         character.macroState["submenue"] = submenu
 
         # register callback

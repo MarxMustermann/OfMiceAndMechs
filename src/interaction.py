@@ -7319,7 +7319,7 @@ to remember"""
                 roomPos = src.gamestate.gamestate.mainChar.container.getPosition()
                 terrainRender = src.gamestate.gamestate.mainChar.getTerrain().render(coordinateOffset=(15*(roomPos[1]-1)-6+offset[1],15*(roomPos[0]-1)-6+offset[0]),size=(44,44))
                 terrainRender = fixRoomRender(terrainRender)
-                printUrwidToTcod(terrainRender, (map_position[0]*2, map_position[1]))
+                printUrwidToTcod(terrainRender,((char_position[0]-22)*2,char_position[1]-22))
 
                 miniMapChars = src.gamestate.gamestate.mainChar.getTerrain().renderTiles()
                 miniMapChars = fixRoomRender(miniMapChars)

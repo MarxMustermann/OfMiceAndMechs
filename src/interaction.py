@@ -6945,7 +6945,7 @@ def showRunIntro():
             renderHeight -= 1
         if renderHeight%15 == 1:
             renderHeight -= 1
-        char_position = (map_position[0]+renderHeight//2-1,map_position[1]+renderHeight//2-1)
+        char_position = (map_position[0]+renderHeight//2,map_position[1]+renderHeight//2)
 
         tcodConsole.clear()
         c_offset = int(tcodConsole.width / 2 - 81)

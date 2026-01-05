@@ -7327,9 +7327,10 @@ to remember"""
                 terrainRender = fixRoomRender(terrainRender)
                 printUrwidToTcod(terrainRender,((char_position[0]-22)*2,char_position[1]-22))
 
-                miniMapChars = src.gamestate.gamestate.mainChar.getTerrain().renderTiles()
-                miniMapChars = fixRoomRender(miniMapChars)
-                printUrwidToTcod(miniMapChars, (minimap_position[0]*2, minimap_position[1]+1))
+                if minimap_position:
+                    miniMapChars = src.gamestate.gamestate.mainChar.getTerrain().renderTiles()
+                    miniMapChars = fixRoomRender(miniMapChars)
+                    printUrwidToTcod(miniMapChars, (minimap_position[0]*2, minimap_position[1]+1))
 
             offset = src.gamestate.gamestate.mainChar.getPosition()
             printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "), (char_position[0]*2,char_position[1]))

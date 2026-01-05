@@ -6939,6 +6939,12 @@ def showRunIntro():
             if ui_position["type"] == "gameMap":
                 map_position = ui_position["offset"]
         renderHeight = window_charheight-7
+        if renderHeight%15 == 1:
+            renderHeight -= 1
+        if renderHeight%15 == 1:
+            renderHeight -= 1
+        if renderHeight%15 == 1:
+            renderHeight -= 1
         char_position = (map_position[0]+renderHeight//2-1,map_position[1]+renderHeight//2-1)
 
         tcodConsole.clear()

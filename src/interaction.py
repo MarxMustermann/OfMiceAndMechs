@@ -6916,18 +6916,6 @@ press enter to continue playing"""]
 
 def showRunIntro():
 
-    ui_positions = calculate_UI_layout(src.gamestate.gamestate.mainChar)
-    minimap_position = None
-    map_position = None
-    for ui_position in ui_positions:
-        if ui_position["type"] == "miniMap":
-            minimap_position = ui_position["offset"]
-        if ui_position["type"] == "gameMap":
-            map_position = ui_position["offset"]
-
-    renderHeight = window_charheight-7
-    char_position = (map_position[0]+renderHeight//2-1,map_position[1]+renderHeight//2-1)
-
     def fixRoomRender(render):
         for row in render:
             row.append("\n")
@@ -6942,6 +6930,17 @@ def showRunIntro():
     sleepAmountGrow = 0.125
     painPositions = []
     while 1:
+        ui_positions = calculate_UI_layout(src.gamestate.gamestate.mainChar)
+        minimap_position = None
+        map_position = None
+        for ui_position in ui_positions:
+            if ui_position["type"] == "miniMap":
+                minimap_position = ui_position["offset"]
+            if ui_position["type"] == "gameMap":
+                map_position = ui_position["offset"]
+        renderHeight = window_charheight-7
+        char_position = (map_position[0]+renderHeight//2-1,map_position[1]+renderHeight//2-1)
+
         tcodConsole.clear()
         c_offset = int(tcodConsole.width / 2 - 81)
         if stage == 0:

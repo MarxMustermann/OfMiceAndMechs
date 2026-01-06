@@ -249,7 +249,8 @@ Press control-d to stop your character from moving.
         generate quest markers for this quest
         '''
         result = super().getQuestMarkersTile(character)
-        result.append(((self.getCityLocation()[0],self.getCityLocation()[1]),"target"))
+        if character.isOnHomeTerrain():
+            result.append(((self.getCityLocation()[0],self.getCityLocation()[1]),"target"))
         return result
 
     def handleQuestFailure(self,extraParam):

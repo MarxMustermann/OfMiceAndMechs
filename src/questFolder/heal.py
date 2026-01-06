@@ -67,7 +67,13 @@ Press JH to auto heal.
                 if item.type == "Vial" and item.uses > 0:
                     foundVial = item
             if foundVial:
-                return (None,("JH","drink from vial"))
+                interactionCommand = "J"
+                if submenue:
+                    if submenue.tag == "advancedInteractionSelection":
+                        interactionCommand = ""
+                    else:
+                        return (None,(["esc"],"close menu"))
+                return (None,(interactionCommand+"H","drink from vial"))
 
         # activate correct item when marked
         action = self.generate_confirm_interaction_command(allowedItems=("Regenerator","CoalBurner"))

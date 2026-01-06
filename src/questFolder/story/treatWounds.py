@@ -152,6 +152,10 @@ For now ignore the options below and press esc to continue.
             hasInventoryVial = self.characterHasVial(character)
             if hasInventoryVial:
                 return False
+        else:
+            if not dryRun:
+                self.postHandler()
+            return True
 
         if not character.getFreeInventorySpace():
             if not dryRun:

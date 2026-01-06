@@ -186,6 +186,19 @@ Rule the world and put an end to those attacks!
                         quest = src.quests.questMap["Heal"](noWaitHeal=True,noVialHeal=True)
                         return ([quest],None)
 
+                # make space to be able to fetch equipment
+                for item in character.inventory:
+                    if item.type in ("Scrap","Flask","ChitinPlates","MetalBars",):
+                        quest = src.quests.questMap["ClearInventory"](returnToTile=False,reason="have space for equipment")
+                        return ([quest],None)
+                for itemType in ("Vial","Bolt",):
+                    if character.getFreeInventorySpace():
+                        for room in currentTerrain.rooms:
+                            if not room.getNonEmptyOutputslots(itemType):
+                                continue
+                            quest = src.quests.questMap["FetchItems"](toCollect=itemType,reason="be properly equipped")
+                            return ([quest],None)
+
             # go to glass palace
             terrain = character.getTerrain()
             if terrain.xPosition != 7 or terrain.yPosition != 7:
@@ -194,9 +207,20 @@ Rule the world and put an end to those attacks!
                 quest = src.quests.questMap["GoToTerrain"](targetTerrain=(7,7,0),reason="get to the glass palace", description="go to glass palace")
                 return ([quest],None)
 
+            # heal
+            if character.health < character.adjustedMaxHealth:
+                if character.searchInventory("Vial"):
+                    quest = src.quests.questMap["Heal"](noWaitHeal=True,noVialHeal=False)
+                    return ([quest],None)
+
+            # fight
+            if character.getNearbyEnemies():
+                quest = src.quests.questMap["Fight"](suicidal=True)
+                return ([quest],None)
+
             # go to glass throne
             if character.getBigPosition() != (7,7,0):
-                quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),reason="get to the throne room", description="go to throne room",suicidal=True)
+                quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),reason="get to the throne room", description="go to throne room",abortOnDanger=True)
                 return ([quest],None)
             if character.getDistance((6,6,0)) > 1:
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(6,6,0),ignoreEndBlocked=True,reason="get near the glass throne", description="go to the glass throne")

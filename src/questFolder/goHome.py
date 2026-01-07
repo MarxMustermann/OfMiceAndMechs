@@ -130,7 +130,7 @@ Press control-d to stop your character from moving.
                 command = submenue.get_command_to_select_option("teleport")
                 if command:
                     return (None,(command,"teleport home"))
-            if submenue.tag in ("advancedInteractionSelection",):
+            if submenue.tag not in ("advancedInteractionSelection",):
                 return (None,(["esc"],"close menu"))
 
         # enter rooms/tiles properly

@@ -575,10 +575,7 @@ def spawnSpawnRoom(terrain, coordinate, faction, doors="0,6 6,0 6,12 12,6"):
     integrator = src.items.itemMap["Integrator"]()
     spawnedRoom.addItem(integrator, (7, 3, 0))
 
-    spawnedRoom.addStorageSlot(
-        (3, 2, 0),
-        "Implant",
-    )
+    spawnedRoom.addStorageSlot((3, 2, 0), "Implant")
     implant = src.items.itemMap["Implant"]()
     spawnedRoom.addItem(implant, (3, 2, 0))
 

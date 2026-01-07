@@ -50,12 +50,6 @@ class IdleChatNPCMenu(src.subMenu.SubMenu):
             submenue.handleKey("~", noRender=noRender,character=character)
             self.subMenu = None
             return True
-        if self.instructionType == "showFeelings":
-            submenue = src.menuFolder.inventoryMenu.InventoryMenu(char=self.npc)
-            character.macroState["submenue"] = submenue
-            submenue.handleKey("~", noRender=noRender,character=character)
-            self.subMenu = None
-            return True
         if self.instructionType == "reset":
             for quest in self.npc.quests:
                 quest.fail()

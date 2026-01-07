@@ -30,13 +30,18 @@ class CharacterStatsMenu(src.subMenu.SubMenu):
                 stat_sum = sum(stat.values())
                 text += f"{stat_name}: {stat_sum}\n"
                 if len(stat):
-                    amount_to_number = len(max(stat.keys(), key=len)) + len(":")
+                    max_length = 0
+                    for inner_stat_name in stat:
+                        inner_name = self.capitalize(inner_stat_name)
+                        if len(inner_name) > max_length:
+                            max_length = len(inner_name)
+                    amount_to_number = max_length + 1
                     for inner_stat_name in stat:
                         inner_name = self.capitalize(inner_stat_name)
                         text += (
                             f" {inner_name}:"
                             + " " * (amount_to_number - len(inner_name))
-                            + f" {stat[inner_stat_name]}\n"
+                            + f"{stat[inner_stat_name]}\n"
                         )
             text += "\n"
 

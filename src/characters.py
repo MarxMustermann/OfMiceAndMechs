@@ -264,8 +264,10 @@ class Character:
         self.stats = {
             "total enemies killed": {},
             "items produced": {},
-            "damage dealt": 0,
+            "quests completed": {},
+            "quests fail": {},
             "damage taken": {},
+            "damage dealt": 0,
             "steps taken": 0,
             "terrains visited": 0,
         }

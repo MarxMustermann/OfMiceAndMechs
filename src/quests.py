@@ -338,6 +338,13 @@ class Quest:
             self.failTrigger()
         if self.reputationReward:
             self.reputationReward *= -2
+
+        if self.character:
+            if not "quests fail" in self.character.stats:
+                self.character.stats["quests fail"] = {}
+            new_count = self.character.stats["quests fail"].get(self.type,0) + 1
+            self.character.stats["quests fail"][self.type] = new_count
+
         self.postHandler()
 
     def handleTimeOut(self):
@@ -634,6 +641,11 @@ class MetaQuestSequence(Quest,ABC):
     def postHandler(self):
         for quest in self.subQuests:
             quest.postHandler()
+        if self.character:
+            if not "quests completed" in self.character.stats:
+                self.character.stats["quests completed"] = {}
+            new_count = self.character.stats["quests completed"].get(self.type,0) + 1
+            self.character.stats["quests completed"][self.type] = new_count
         super().postHandler()
 
     def render(self,depth=0,cursor=None,sidebared=False):

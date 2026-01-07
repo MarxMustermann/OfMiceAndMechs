@@ -36,7 +36,7 @@ class CharacterStatsMenu(src.subMenu.SubMenu):
                         text += (
                             f" {inner_name}:"
                             + " " * (amount_to_number - len(inner_name))
-                            + f"{stat[inner_stat_name]}\n"
+                            + f" {stat[inner_stat_name]}\n"
                         )
             text += "\n"
 

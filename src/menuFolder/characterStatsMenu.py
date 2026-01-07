@@ -5,7 +5,7 @@ import src
 import tcod
 
 class CharacterStatsMenu(src.subMenu.SubMenu):
-    def __init__(self,char=character):
+    def __init__(self,character):
         self.type = "CharacterStatsMenu"
         self.index = 0
         self.character = character
@@ -59,4 +59,4 @@ class CharacterStatsMenu(src.subMenu.SubMenu):
         if m:
             source = r.sub(" \\g<0>", source)
 
-        return source.beautify()
+        return source.capitalize()

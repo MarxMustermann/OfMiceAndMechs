@@ -5,9 +5,10 @@ import src
 import tcod
 
 class CharacterStatsMenu(src.subMenu.SubMenu):
-    def __init__(self):
+    def __init__(self,character):
         self.type = "CharacterStatsMenu"
         self.index = 0
+        self.character = character
         super().__init__()
 
     def handleKey(self, key, noRender=False, character=None):
@@ -41,6 +42,9 @@ class CharacterStatsMenu(src.subMenu.SubMenu):
 
         text += f"terrains known: {len(character.terrainInfo)}"
         return text
+
+    def render(self):
+        return self.text(self.character)
 
     @staticmethod
     def capitalize(source: str):

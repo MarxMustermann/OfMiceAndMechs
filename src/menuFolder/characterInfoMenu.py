@@ -195,7 +195,7 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
             return True
 
         if key == "s":
-            submenue = src.menuFolder.characterStatsMenu.CharacterStatsMenu()
+            submenue = src.menuFolder.characterStatsMenu.CharacterStatsMenu(character)
             character.macroState["submenue"] = submenue
             submenue.handleKey("~", noRender=noRender, character=character)
             return True

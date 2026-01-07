@@ -207,61 +207,13 @@ class Adventure(src.quests.MetaQuestSequence):
                 if not info.get("looted"):
                     quest = src.quests.questMap["AdventureOnTerrain"](targetTerrain=currentTerrain.getPosition(),reason="get more loot")
                     return ([quest], None)
-        
-        # get all reasonable candidates to move to with desirability
-        candidates = []
-        extraWeight = {}
-        for x in range(1,14):
-            for y in range(1,14):
-                coordinate = (x, y, 0)
-                extraWeight[coordinate] = 5
-                if coordinate in character.terrainInfo:
-                    info = character.terrainInfo[coordinate]
-                    if character.getFreeInventorySpace(ignoreTypes=["Bolt"]) < 2:
-                        extraWeight[coordinate] = 1
-                        if not info.get("tag") == "shrine":
-                            continue
-                    else:
-                        if not info.get("tag") == "ruin":
-                            continue
-                        if info.get("looted"):
-                            continue
-                if coordinate == (7,7,0): # avoid endgame dungeon
-                    extraWeight[coordinate] = 32000
-                candidates.append(coordinate)
-
-        # do special handling of the characters home
-        homeCoordinate = (character.registers["HOMETx"], character.registers["HOMETy"], 0)
+        # move on
         if character.getFreeInventorySpace(ignoreTypes=["Bolt"]) < 2:
-            candidates.append(homeCoordinate)
-            extraWeight[coordinate] = 1
-        else:
-            if homeCoordinate in candidates:
-                candidates.remove(homeCoordinate)
-
-        if not len(candidates):
-            self._solver_trigger_fail(dryRun,"no candidates")
-
-        # sort nearest target candidate skewed by desirebility with slight random
-        best_candidate = None
-        best_distance = None
-        current_pos = character.getTerrainPosition()
-        for candidate in candidates:
-            distance = src.helpers.distance_between_points(current_pos, candidate)
-            distance += extraWeight[candidate]
-            distance += random.random()
-            if best_candidate is None or distance < best_distance:
-                best_distance = distance
-                best_candidate = candidate
-        targetTerrain = best_candidate
-
-        # move to the actual target terrain
-        if character.getFreeInventorySpace(ignoreTypes=["Bolt"]) and (targetTerrain != homeCoordinate):
-            quest = src.quests.questMap["AdventureOnTerrain"](targetTerrain=targetTerrain,terrainsWeight = extraWeight,reason="gain more nice things")
-        else:
-            quest = src.quests.questMap["GoToTerrain"](targetTerrain=targetTerrain,reason="reach the target")
+            quest = src.quests.questMap["GoHome"]()
+            return ([quest], None)
+        quest = src.quests.questMap["SearchForRuins"]()
         return ([quest], None)
-
+        
     def generateTextDescription(self):
         '''
         generate a textual description to be shown on the UI

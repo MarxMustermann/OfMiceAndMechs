@@ -260,7 +260,6 @@ class Adventure(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["AdventureOnTerrain"](targetTerrain=targetTerrain,terrainsWeight = extraWeight,reason="gain more nice things")
         else:
             quest = src.quests.questMap["GoToTerrain"](targetTerrain=targetTerrain,reason="reach the target")
-
         return ([quest], None)
 
     def generateTextDescription(self):

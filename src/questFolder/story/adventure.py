@@ -242,10 +242,18 @@ class Adventure(src.quests.MetaQuestSequence):
         if not len(candidates):
             self._solver_trigger_fail(dryRun,"no candidates")
 
-        # sort nearest target candidate weighted with slight random
-        random.shuffle(candidates)
-        candidates.sort(key=lambda x: src.helpers.distance_between_points(character.getTerrainPosition(), x)+random.random()+extraWeight[x])
-        targetTerrain = candidates[0]
+        # sort nearest target candidate skewed by desirebility with slight random
+        best_candidate = None
+        best_distance = None
+        current_pos = character.getTerrainPosition()
+        for candidate in candidates:
+            distance = src.helpers.distance_between_points(current_pos, candidate)
+            distance += extraWeight[candidate]
+            distance += random.random()
+            if best_candidate is None or distance < best_distance:
+                best_distance = distance
+                best_candidate = candidate
+        targetTerrain = best_candidate
 
         # move to the actual target terrain
         if character.getFreeInventorySpace(ignoreTypes=["Bolt"]) and (targetTerrain != homeCoordinate):

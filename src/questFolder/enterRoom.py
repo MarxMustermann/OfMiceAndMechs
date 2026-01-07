@@ -6,16 +6,21 @@ class EnterRoom(src.quests.MetaQuestSequence):
     '''
     type = "EnterRoom"
     lowLevel = True
-    def __init__(self, description="enter room", creator=None, command=None, lifetime=None):
+    def __init__(self, description="enter room", creator=None, command=None, lifetime=None, reason=None):
         super().__init__([], creator=creator, lifetime=lifetime)
         self.metaDescription = description
+        self.reason = reason
 
     def generateTextDescription(self):
         '''
         generate a text description for the quest
         '''
-        return """
-Enter the room.
+        resaon_string = ""
+        if self.resaon:
+            resaon_string = f", to {self.resaon}"
+
+        return f"""
+Enter the room{resaon_string}.
 
 This quest is a workaround quest.
 This means it is needed for other quests to work,

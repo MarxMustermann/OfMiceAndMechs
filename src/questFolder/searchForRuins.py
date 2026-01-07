@@ -37,10 +37,11 @@ class SearchForRuins(src.quests.MetaQuestSequence):
         for x in range(1,14):
             for y in range(1,14):
                 coordinate = (x, y, 0)
-                extraWeight[coordinate] = 5
+                extraWeight[coordinate] = 1
                 if coordinate in character.terrainInfo:
                     info = character.terrainInfo[coordinate]
                     if not info.get("tag") == "ruin":
+                        extraWeight[coordinate] = 30000
                         continue
                     if info.get("looted"):
                         extraWeight[coordinate] = 30000

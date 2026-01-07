@@ -287,6 +287,8 @@ class QuestMenu(src.subMenu.SubMenu):
                     automatic = True
                 if char.hasOwnAction or automatic:
                     nextstep = "suggested action: \n\nwait or press ctrl-d to stop auto solve\n\n"
+                if char.macroState["submenue"] and char.macroState["submenue"].tag == "Wait":
+                    nextstep = "suggested action: \n\nwait\n\n"
                 txt.append(src.interaction.ActionMeta(payload="+",content=nextstep))
 
             if not sidebared:

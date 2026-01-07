@@ -5,7 +5,7 @@ import src
 import tcod
 
 class CharacterStatsMenu(src.subMenu.SubMenu):
-    def __init__(self,character):
+    def __init__(self,char=character):
         self.type = "CharacterStatsMenu"
         self.index = 0
         self.character = character

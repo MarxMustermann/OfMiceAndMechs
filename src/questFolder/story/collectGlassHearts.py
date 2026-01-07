@@ -553,6 +553,12 @@ So apease the gods and obtain their GlassHearts.
                 self.addQuest(newQuest)
                 return
 
+        if reason == "no way to heal":
+            if self.character.getTerrain().mana > 5:
+                newQuest = src.quests.questMap["GetEpochReward"](rewardType="heal",reason="heal faster")
+                self.addQuest(newQuest)
+                return
+
         super().handleQuestFailure(extraParam)
 
 src.quests.addType(CollectGlassHearts)

@@ -73,7 +73,7 @@ Spawn a hauler. A hauling clone will carry items withins rooms.
 This will allow you to focus on other tasks.
 """
             case _:
-                text += """
+                text += f"""
 {self.rewardType}
 """
 

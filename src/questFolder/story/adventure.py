@@ -199,10 +199,9 @@ class Adventure(src.quests.MetaQuestSequence):
         if submenue and not ignoreCommands:
             return (None,(["esc"],"close the menu"))
 
-        # loot ruins
+        # loot ruins on current terrain
         if currentTerrain.tag == "ruin":
-            if character.getFreeInventorySpace():
-                # loot on current terrain
+            if character.getFreeInventorySpace(ignoreTypes=["Bolt"]):
                 info = character.terrainInfo[currentTerrain.getPosition()]
                 if not info.get("looted"):
                     quest = src.quests.questMap["AdventureOnTerrain"](targetTerrain=currentTerrain.getPosition(),reason="get more loot")

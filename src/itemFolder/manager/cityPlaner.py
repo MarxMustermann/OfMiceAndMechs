@@ -781,6 +781,7 @@ class CityPlaner(src.items.Item):
                 inputSlots.append(((7, 5, 0),"Bolt",{}))
                 buildSites.append(((7, 6, 0),"BoltTower",{}))
                 inputSlots.append(((5, 5, 0),"Bolt",{}))
+                outputSlots.append(((9, 3, 0),None,{}))
                 for x in range(1,12):
                     if x > 3 and x < 9:
                         continue

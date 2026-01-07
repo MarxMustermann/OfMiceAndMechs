@@ -175,6 +175,10 @@ class InventoryMenu(src.subMenu.SubMenu):
         Returns:
             the rendered string
         """
+
+        if self.subMenu:
+            return self.subMenu.render()
+
         char = self.char
         character = char
         sidebared = self.sidebared

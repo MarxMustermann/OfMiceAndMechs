@@ -147,6 +147,8 @@ This will allow you to focus on other tasks.
                     foundShrine = shrine
                 if self.rewardType == "spawn scrap" and shrine.god == 2:
                     foundShrine = shrine
+                if self.rewardType == "heal" and shrine.god == 6:
+                    foundShrine = shrine
             if not foundShrine:
                 return self._solver_trigger_fail(dryRun,"no shrine found")
 

@@ -126,6 +126,7 @@ class AdvancedQuestMenu(src.subMenu.SubMenu):
                     options.append(("BeUsefull", "BeUsefull"))
                     options.append(("SpawnClone", "SpawnClone"))
                     options.append(("Adventure", "Adventure"))
+                    options.append(("SearchForRuins", "SearchForRuins"))
                     options.append(("AdventureOnTerrain", "AdventureOnTerrain"))
                     options.append(("Equip", "Equip"))
                     options.append(("FarmMold", "FarmMold"))

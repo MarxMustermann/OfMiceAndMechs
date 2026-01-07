@@ -208,7 +208,7 @@ class Adventure(src.quests.MetaQuestSequence):
                     quest = src.quests.questMap["AdventureOnTerrain"](targetTerrain=currentTerrain.getPosition(),reason="get more loot")
                     return ([quest], None)
         
-        # get all reasonable candidates to move to
+        # get all reasonable candidates to move to with desirability
         candidates = []
         extraWeight = {}
         for x in range(1,14):
@@ -242,7 +242,7 @@ class Adventure(src.quests.MetaQuestSequence):
         if not len(candidates):
             self._solver_trigger_fail(dryRun,"no candidates")
 
-        # sort weighted with slight random
+        # sort nearest target candidate weighted with slight random
         random.shuffle(candidates)
         candidates.sort(key=lambda x: src.helpers.distance_between_points(character.getTerrainPosition(), x)+random.random()+extraWeight[x])
         targetTerrain = candidates[0]

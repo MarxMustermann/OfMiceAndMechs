@@ -32,12 +32,12 @@ class CharacterStatsMenu(src.subMenu.SubMenu):
                 if len(stat):
                     max_length = 0
                     for inner_stat_name in stat:
-                        inner_name = self.capitalize(inner_stat_name)
+                        inner_name = self.beautify(inner_stat_name)
                         if len(inner_name) > max_length:
                             max_length = len(inner_name)
                     amount_to_number = max_length + 1
                     for inner_stat_name in stat:
-                        inner_name = self.capitalize(inner_stat_name)
+                        inner_name = self.beautify(inner_stat_name)
                         text += (
                             f" {inner_name}:"
                             + " " * (amount_to_number - len(inner_name))
@@ -52,11 +52,11 @@ class CharacterStatsMenu(src.subMenu.SubMenu):
         return self.text(self.character)
 
     @staticmethod
-    def capitalize(source: str):
+    def beautify(source: str):
         r = regex.Regex(r"(?<!^)[A-Z]")
 
         m = r.findall(source)
         if m:
             source = r.sub(" \\g<0>", source)
 
-        return source.capitalize()
+        return source.beautify()

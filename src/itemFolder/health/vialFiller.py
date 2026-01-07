@@ -49,7 +49,7 @@ class VialFiller(src.items.Item):
         if self.readyToUse():
             baseDisplay = "o="
             return (src.interaction.urwid.AttrSpec("#fff", "black"),baseDisplay)
-        return "x="
+        return "v="
 
     def getDispenser(self):
         if not self.container:

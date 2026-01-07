@@ -43,7 +43,9 @@ class SearchForRuins(src.quests.MetaQuestSequence):
                     if not info.get("tag") == "ruin":
                         continue
                     if info.get("looted"):
+                        extraWeight[coordinate] = 30000
                         continue
+                    extraWeight[coordinate] = 0
                 if coordinate == (7,7,0): # avoid endgame dungeon
                     extraWeight[coordinate] = 32000
                 candidates.append(coordinate)
@@ -109,11 +111,16 @@ Find an unexplored ruin{reason}.
             return False
 
         currentTerrain = character.getTerrain()
-        if currentTerrain.tag == "ruin":
-            if not dryRun:
-                self.postHandler()
-            return True
-        return False
+        if not currentTerrain.tag == "ruin":
+            return False
+
+        info = character.terrainInfo[currentTerrain.getPosition()]
+        if info.get("looted"):
+            return False
+
+        if not dryRun:
+            self.postHandler()
+        return True
 
 # register the quest type
 src.quests.addType(SearchForRuins)

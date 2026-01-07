@@ -1293,6 +1293,9 @@ class Character:
             preconverted: wether or not the command is already in the internal format
         '''
 
+        if not commandString:
+            return
+
         if preconverted:
             convertedCommand = commandString
         else:

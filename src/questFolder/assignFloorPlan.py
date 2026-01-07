@@ -350,7 +350,7 @@ Set the floor plan: {self.floorPlanType}
 
         # assign basic floor plans
         if cityPlaner and cityPlaner.getAvailableRooms():
-            floorPlansToSet = ["gooProcessing","manufacturingHall","weaponProduction","smokingRoom","wallProduction","scrapCompactor","caseProduction","basicRoombuildingItemsProduction","basicMaterialsProduction"]
+            floorPlansToSet = ["gooProcessing","manufacturingHall","weaponManufacturing","smokingRoom","wallManufacturing","scrapCompactor","basicRoombuildingItemsManufacturing","basicMaterialsManufacturing"]
             for room in terrain.rooms:
                 if room.tag in floorPlansToSet:
                     floorPlansToSet.remove(room.tag)

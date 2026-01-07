@@ -542,10 +542,15 @@ So apease the gods and obtain their GlassHearts.
                 self.addQuest(newQuest)
                 self.startWatching(newQuest,self.handleQuestFailure,"failed")
                 return
+            elif random.random() < 0.5:
+                newQuest = src.quests.questMap["Adventure"]()
+                self.addQuest(newQuest)
+                return
             else:
                 self.subQuests.remove(extraParam["quest"])
 
                 newQuest = src.quests.questMap["WaitQuest"](lifetime=100)
+                self.addQuest(newQuest)
                 return
 
         super().handleQuestFailure(extraParam)

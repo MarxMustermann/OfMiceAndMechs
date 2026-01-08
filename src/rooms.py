@@ -216,41 +216,40 @@ class Room:
                 self.addItem(item,outputSlot[0])
 
     def getNonEmptyOutputslots(self,itemType=None,allowStorage=True,allowDesiredFilled=True):
+
+        # set up helper variables
         result = []
+
+        # check outputs first
         outputSlots = self.outputSlots[:]
         random.shuffle(outputSlots)
         for outputSlot in outputSlots:
             if itemType and outputSlot[1] and outputSlot[1] != itemType:
                 continue
-
             items = self.getItemByPosition(outputSlot[0])
             if not items:
                 continue
-
             if itemType and items[0].type != itemType:
                 continue
-
             result.append(outputSlot)
 
+        # check everything else
         if allowStorage:
             storageSlots = self.storageSlots[:]
             random.shuffle(storageSlots)
             for storageSlot in storageSlots:
                 if itemType and storageSlot[1] is not None and storageSlot[1] != itemType:
                     continue
-
                 if (not allowDesiredFilled) and storageSlot[2].get("desiredState",None) == "filled":
                     continue
-
                 items = self.getItemByPosition(storageSlot[0])
                 if not items:
                     continue
-
                 if itemType and items[0].type != itemType:
                     continue
-
                 result.append(storageSlot)
 
+        # return result
         return result
 
     def getEmptyInputslots(self,itemType=None,allowAny=False,allowStorage=True,fullyEmpty=False,forceGenericStorage=False):

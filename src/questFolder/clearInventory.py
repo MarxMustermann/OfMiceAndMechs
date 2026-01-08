@@ -7,7 +7,7 @@ class ClearInventory(src.quests.MetaQuestSequence):
     '''
     type = "ClearInventory"
     lowLevel = True
-    def __init__(self, description="clear inventory", creator=None, targetPosition=None, returnToTile=True,tryHard=False,reason=None):
+    def __init__(self, description="clear inventory", creator=None, targetPosition=None, returnToTile=True,tryHard=False,reason=None, disallowLocations=None):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
@@ -18,6 +18,7 @@ class ClearInventory(src.quests.MetaQuestSequence):
             self.setParameters({"returnToTile":returnToTile})
 
         self.tileToReturnTo = None
+        self.disallowLocations = disallowLocations
 
     def generateTextDescription(self):
         '''
@@ -39,6 +40,11 @@ To see your items open the your inventory by pressing i."""
                 text += "\n\nReturn to your current position afterwards."
             else:
                 text += f"\n\nReturn to the tile {self.tileToReturnTo} afterwards."
+
+        if self.disallowLocations:
+            text += f"\ndisalowed locations:\n"
+            for location in self.disallowLocations:
+                text += f"* {location}\n"
             
         return text
 
@@ -135,9 +141,9 @@ To see your items open the your inventory by pressing i."""
         # clear inventory in local room
         room = character.getRoom()
         if len(character.inventory) and room:
-            emptyInputSlots = room.getEmptyInputslots(character.inventory[-1].type, allowAny=True)
+            emptyInputSlots = room.getEmptyInputslots(character.inventory[-1].type, allowAny=True, disallowLocations=self.disallowLocations)
             if emptyInputSlots:
-                quest = src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True, reason="reduce the number of items in your inventory")
+                quest = src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True, reason="reduce the number of items in your inventory",disallowLocations=self.disallowLocations)
                 return ([quest],None)
 
         # fail if there is no home
@@ -154,10 +160,10 @@ To see your items open the your inventory by pressing i."""
                 rooms_to_check.extend(homeRoom.storageRooms)
             rooms_to_check.extend(character.getTerrain().rooms)
             for checkRoom in rooms_to_check:
-                emptyInputSlots = checkRoom.getEmptyInputslots(character.inventory[-1].type, allowAny=True)
+                emptyInputSlots = checkRoom.getEmptyInputslots(character.inventory[-1].type, allowAny=True,disallowLocations=self.disallowLocations)
                 if emptyInputSlots:
                     quest1 = src.quests.questMap["GoToTile"](targetPosition=checkRoom.getPosition(),reason="go to a room with empty stockpiles")
-                    quest2 = src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True, reason="reduce the number of item in your inventory")
+                    quest2 = src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True, reason="reduce the number of item in your inventory",disallowLocations=self.disallowLocations)
                     return ([quest2,quest1],None)
 
             # just get rid of items

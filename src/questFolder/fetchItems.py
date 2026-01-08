@@ -379,6 +379,9 @@ Press d to move the cursor and show the subquests description.
 
         for trueInput in (True,False):
             for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
+                if room.alarm:
+                    continue
+
                 checkedTypes = set()
                 emptyInputSlots = room.getEmptyInputslots(allowStorage=(not trueInput),allowAny=True)
 
@@ -416,6 +419,8 @@ Press d to move the cursor and show the subquests description.
                                 sourceRoom = sourceRoom[0]
                                 if sourceRoom == character.container:
                                     continue
+                                if sourceRoom.alarm:
+                                    continue
                                 outputSlots = sourceRoom.getNonEmptyOutputslots(itemType=inputSlot[1],allowStorage=allowStorage,allowDesiredFilled=allowDesiredFilled)
                                 if not outputSlots:
                                     continue
@@ -426,6 +431,8 @@ Press d to move the cursor and show the subquests description.
                             if not source:
                                 for otherRoom in random.sample(character.getTerrain().rooms,len(character.getTerrain().rooms)):
                                     if otherRoom == room:
+                                        continue
+                                    if otherRoom.alarm:
                                         continue
 
                                     outputSlots = otherRoom.getNonEmptyOutputslots(itemType=inputSlot[1],allowStorage=allowStorage,allowDesiredFilled=allowDesiredFilled)
@@ -495,6 +502,9 @@ Press d to move the cursor and show the subquests description.
                         return (quests,None)
 
         for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
+            if room.alarm:
+                continue
+
             checkedTypes = set()
             for storageSlot in room.storageSlots:
                 if storageSlot[2].get("desiredState") != "filled":

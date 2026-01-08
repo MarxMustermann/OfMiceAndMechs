@@ -7,7 +7,7 @@ class SearchForRuins(src.quests.MetaQuestSequence):
     quest to adventure and collect cool stuff
     '''
     type = "SearchForRuins"
-    def __init__(self, description="search for ruins", creator=None, lifetime=None, reason=None):
+    def __init__(self, description="seek out ruins", creator=None, lifetime=None, reason=None):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description

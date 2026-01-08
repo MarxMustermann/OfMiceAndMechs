@@ -21,7 +21,6 @@ class Promoter(src.items.Item):
 You put your head into the machine.
 
 Its tendrils reach out and touch your implant.
-
 """)
         character.macroState["submenue"] = submenue
         submenue.do_not_scale = True
@@ -217,6 +216,7 @@ You can only have one close combat perk
                     options=options,
                     targetParamName="rewardType"
                 )
+                submenu.do_not_scale = True
 
                 character.macroState["submenue"] = submenu
                 submenu.followUp = {
@@ -240,6 +240,7 @@ You can only have one special movement perk
                     options=options,
                     targetParamName="rewardType"
                 )
+                submenu.do_not_scale = True
 
                 character.macroState["submenue"] = submenu
                 submenu.followUp = {
@@ -263,6 +264,7 @@ You can only have one ranged attack perk
                     options=options,
                     targetParamName="rewardType"
                 )
+                submenu.do_not_scale = True
 
                 character.macroState["submenue"] = submenu
                 submenu.followUp = {
@@ -286,6 +288,7 @@ You can only have one attribute perk
                     options=options,
                     targetParamName="rewardType"
                 )
+                submenu.do_not_scale = True
 
                 character.macroState["submenue"] = submenu
                 submenu.followUp = {

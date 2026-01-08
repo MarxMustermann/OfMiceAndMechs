@@ -90,7 +90,7 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
                 if not dryRun:
                     self.fail("full inventory")
                 return (None,("+","abort quest"))
-            quest = src.quests.questMap["ClearInventory"](reason="be able to pick up more items",returnToTile=False)
+            quest = src.quests.questMap["ClearInventory"](reason="be able to pick up more items",returnToTile=False,disallowLocations=[(self.targetPositionBig, self.targetPosition)])
             return ([quest],None)
 
         if character.getBigPosition() != self.targetPositionBig:

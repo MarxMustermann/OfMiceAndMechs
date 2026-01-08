@@ -50,7 +50,7 @@ class Guardian(src.monster.Monster):
         baseMovementSpeed = 2
         baseAttackSpeed = 2
         baseRawDamage = 4
-        basehealth = 100
+        basehealth = 50
         if src.gamestate.gamestate.difficulty == "medium":
             baseMovementSpeed = 1
             baseAttackSpeed = 1
@@ -64,7 +64,7 @@ class Guardian(src.monster.Monster):
 
         self.charType = "Guardian"
         self.specialDisplay = "&&"
-        self.maxHealth = basehealth*modifier
+        self.maxHealth = basehealth*0.5+basehealth*0.5*modifier
         self.hasSpecialAttacks = True
         self.hasPushbackAttack = True
         self.health = self.maxHealth

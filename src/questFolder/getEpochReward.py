@@ -73,7 +73,7 @@ Spawn a hauler. A hauling clone will carry items withins rooms.
 This will allow you to focus on other tasks.
 """
             case _:
-                text += """
+                text += f"""
 {self.rewardType}
 """
 
@@ -146,6 +146,8 @@ This will allow you to focus on other tasks.
                 if (self.rewardType.startswith("spawn ") and self.rewardType.endswith("NPC")) and shrine.god == 1:
                     foundShrine = shrine
                 if self.rewardType == "spawn scrap" and shrine.god == 2:
+                    foundShrine = shrine
+                if self.rewardType == "heal" and shrine.god == 6:
                     foundShrine = shrine
             if not foundShrine:
                 return self._solver_trigger_fail(dryRun,"no shrine found")

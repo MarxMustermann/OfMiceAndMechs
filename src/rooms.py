@@ -215,123 +215,193 @@ class Room:
                 item.bolted = False
                 self.addItem(item,outputSlot[0])
 
-    def getNonEmptyOutputslots(self,itemType=None,allowStorage=True,allowDesiredFilled=True):
+    def getNonEmptyOutputslots(self,itemType=None,allowStorage=True,allowDesiredFilled=True,disallowLocations=None):
+
+        # set up helper variables
         result = []
+
+        # check outputs first
         outputSlots = self.outputSlots[:]
         random.shuffle(outputSlots)
         for outputSlot in outputSlots:
+
+            # filter out wrong stockpiles
             if itemType and outputSlot[1] and outputSlot[1] != itemType:
                 continue
-
             items = self.getItemByPosition(outputSlot[0])
             if not items:
                 continue
-
             if itemType and items[0].type != itemType:
                 continue
 
+            # filter out forbidden locations
+            if disallowLocations:
+                skip = False
+                for location in disallowLocations:
+                    if self.getPosition() != location[0]:
+                        continue
+                    if outputSlot[0] != location[1]:
+                        continue
+                    skip = True
+                if skip:
+                    continue
+
+            # accept sstockpile
             result.append(outputSlot)
 
+        # check everything else
         if allowStorage:
             storageSlots = self.storageSlots[:]
             random.shuffle(storageSlots)
             for storageSlot in storageSlots:
+
+                # filter out wrong stockpiles
                 if itemType and storageSlot[1] is not None and storageSlot[1] != itemType:
                     continue
-
                 if (not allowDesiredFilled) and storageSlot[2].get("desiredState",None) == "filled":
                     continue
-
                 items = self.getItemByPosition(storageSlot[0])
                 if not items:
                     continue
-
                 if itemType and items[0].type != itemType:
                     continue
 
+                # filter out forbidden locations
+                if disallowLocations:
+                    skip = False
+                    for location in disallowLocations:
+                        if self.getPosition() != location[0]:
+                            continue
+                        if storageSlot[0] != location[1]:
+                            continue
+                        skip = True
+                    if skip:
+                        continue
+
+                # accept sstockpile
                 result.append(storageSlot)
 
+        # return result
         return result
 
-    def getEmptyInputslots(self,itemType=None,allowAny=False,allowStorage=True,fullyEmpty=False,forceGenericStorage=False):
+    def getEmptyInputslots(self,itemType=None,allowAny=False,allowStorage=True,fullyEmpty=False,forceGenericStorage=False,disallowLocations=None):
+
+        # prepare helper variables
         result = []
+
+        # check input slots first
         for inputSlot in self.inputSlots:
+
+            # filter for correct stockpile types
             if forceGenericStorage:
                 continue
-
             if (itemType and inputSlot[1] != itemType) and (not allowAny or inputSlot[1] is not None):
                 continue
 
+            # filter out forbidden locations
+            if disallowLocations:
+                skip = False
+                for location in disallowLocations:
+                    if self.getPosition() != location[0]:
+                        continue
+                    if inputSlot[0] != location[1]:
+                        continue
+                    skip = True
+                if skip:
+                    continue
+
+            # get the stockpiles content
             items = self.getItemByPosition(inputSlot[0])
+
+            # accept empty stockpiles
             if not items:
                 result.append(inputSlot)
                 continue
 
-            if items[0].walkable == False and itemType != "Scrap":
-                continue
-
-            if fullyEmpty:
-                continue
-
+            # filter stockpiles by actual content
             if (itemType and not inputSlot[1] and items[0].type != itemType):
                 continue
 
+            # skip overfilled stockpiles
+            if items[0].walkable == False and itemType != "Scrap":
+                continue
+            if fullyEmpty:
+                continue
             if items[-1].type == "Scrap":
                 if items[-1].amount < 15:
                     result.append(inputSlot)
                 continue
-
             if not items[-1].walkable:
                 continue
-
             maxAmount = inputSlot[2].get("maxAmount")
             if not maxAmount:
                 maxAmount = 20
+            if len(items) >= maxAmount:
+                continue
 
-            if len(items) < maxAmount:
-                result.append(inputSlot)
+            # accept sstockpile
+            result.append(inputSlot)
 
+        # check all stockpiles
         if allowStorage:
             for storageSlot in self.storageSlots:
+
+                # filter for correct stockpile types
                 if (not forceGenericStorage) and ((itemType and storageSlot[1] != itemType) and (not allowAny or  storageSlot[1] is not None)):
                     continue
                 if forceGenericStorage and (storageSlot[1] is not None):
                     continue
 
+                # filter out forbidden locations
+                if disallowLocations:
+                    skip = False
+                    for location in disallowLocations:
+                        if self.getPosition() != location[0]:
+                            continue
+                        if storageSlot[0] != location[1]:
+                            continue
+                        skip = True
+                    if skip:
+                        continue
+
+                # get the stockpiles content
                 pos = storageSlot[0]
                 if len(pos) < 3:
                     pos = (pos[0],pos[1],0)
                 items = self.getItemByPosition(pos)
+
+                # accept empty stockpiles
                 if not items:
                     result.append(storageSlot)
                     continue
-                elif forceGenericStorage:
-                    continue
 
-                if items[0].walkable == False and itemType != "Scrap":
-                    continue
-
-                if fullyEmpty:
-                    continue
-
+                # filter stockpiles by actual content
                 if (not forceGenericStorage) and (itemType and not storageSlot[1] and items[0].type != itemType):
                     continue
 
+                # skip overfilled stockpiles
+                if forceGenericStorage:
+                    continue
+                if items[0].walkable == False and itemType != "Scrap":
+                    continue
+                if fullyEmpty:
+                    continue
                 if items[0].type == "Scrap":
                     if items[0].amount < 15:
                         result.append(storageSlot)
                     continue
-
                 if not items[0].walkable:
                     continue
-
                 maxAmount = storageSlot[2].get("maxAmount")
                 if not maxAmount:
                     maxAmount = 20
+                if len(items) >= maxAmount:
+                    continue
 
-                if len(items) < maxAmount:
-                    result.append(storageSlot)
+                # accept sstockpile
+                result.append(storageSlot)
 
+        # return result
         return result
 
     def getPosition(self):

@@ -204,6 +204,8 @@ class SpawnClone(src.quests.MetaQuestSequence):
                 growthTank = room.getItemByType("GrowthTank")
                 if not growthTank:
                     continue
+                if not growthTank.bolted:
+                    continue
                 quest = src.quests.questMap["GoToTile"](targetPosition=growthTank.getBigPosition(),reason="go to spawning room",description="go to spawning room")
                 return ([quest],None)
         if not growthTank:

@@ -214,8 +214,6 @@ class SubMenu(object):
         # show question
         out = []
         if self.query:
-            print("self.query")
-            print(self.query)
             out.extend(["\n",self.query.strip(), "\n"])
 
         # render the options

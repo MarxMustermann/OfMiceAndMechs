@@ -6,7 +6,7 @@ import src
 class RestockRoom(src.quests.MetaQuestSequence):
     type = "RestockRoom"
 
-    def __init__(self, description="restock room", creator=None, targetPositionBig=None,toRestock=None,allowAny=False,reason=None,targetPosition=None):
+    def __init__(self, description="restock room", creator=None, targetPositionBig=None,toRestock=None,allowAny=False,reason=None,targetPosition=None,disallowLocations=None):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
@@ -25,6 +25,7 @@ class RestockRoom(src.quests.MetaQuestSequence):
             self.setParameters({"allowAny":allowAny})
         self.targetPosition = targetPosition
         self.type = "RestockRoom"
+        self.disallowLocations = disallowLocations
 
         self.shortCode = "r"
 
@@ -46,6 +47,11 @@ Place the items in the correct input or storage stockpile.
         if self.targetPosition:
             text += f"""Use the stocpile in position {self.targetPosition}"""
 
+        if self.disallowLocations:
+            text += f"\ndisalowed locations:\n"
+            for location in self.disallowLocations:
+                text += f"* {location}\n"
+
         return text
 
     def setParameters(self,parameters):
@@ -64,20 +70,25 @@ Place the items in the correct input or storage stockpile.
         if self.targetPositionBig and character.getBigPosition() != self.targetPositionBig:
             return False
 
+        try:
+            self.disallowLocations
+        except:
+            self.disallowLocations = None
+
         if isinstance(character.container,src.rooms.Room):
             room = character.container
 
             foundNeighbour = None
             if self.toRestock:
-                inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny)
+                inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny,disallowLocations=self.disallowLocations)
             else:
                 inputSlots = []
                 for item in reversed(character.inventory):
-                    inputSlots = room.getEmptyInputslots(itemType=item.type,allowAny=self.allowAny)
+                    inputSlots = room.getEmptyInputslots(itemType=item.type,allowAny=self.allowAny,disallowLocations=self.disallowLocations)
                     if inputSlots:
                         break
                 if not inputSlots:
-                    inputSlots = room.getEmptyInputslots(itemType=None,allowAny=self.allowAny)
+                    inputSlots = room.getEmptyInputslots(itemType=None,allowAny=self.allowAny,disallowLocations=self.disallowLocations)
             if not inputSlots:
                 if not dryRun:
                     self.postHandler()
@@ -183,16 +194,16 @@ Place the items in the correct input or storage stockpile.
         newInputs = []
         if self.toRestock:
             fullyEmpty = not character.inventory[-1].walkable
-            inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny,allowStorage=False,fullyEmpty=fullyEmpty)
+            inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny,allowStorage=False,fullyEmpty=fullyEmpty,disallowLocations=self.disallowLocations)
             if not inputSlots or self.targetPosition:
-                inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny,allowStorage=True,fullyEmpty=fullyEmpty)
+                inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny,allowStorage=True,fullyEmpty=fullyEmpty,disallowLocations=self.disallowLocations)
             random.shuffle(inputSlots)
         else:
             for item in reversed(character.inventory):
                 fullyEmpty = not character.inventory[-1].walkable
-                inputSlots = room.getEmptyInputslots(itemType=item.type,allowAny=self.allowAny,allowStorage=False,fullyEmpty=fullyEmpty)
+                inputSlots = room.getEmptyInputslots(itemType=item.type,allowAny=self.allowAny,allowStorage=False,fullyEmpty=fullyEmpty,disallowLocations=self.disallowLocations)
                 if not inputSlots or self.targetPosition:
-                    inputSlots = room.getEmptyInputslots(itemType=item.type,allowAny=self.allowAny,allowStorage=True,fullyEmpty=fullyEmpty)
+                    inputSlots = room.getEmptyInputslots(itemType=item.type,allowAny=self.allowAny,allowStorage=True,fullyEmpty=fullyEmpty,disallowLocations=self.disallowLocations)
                 random.shuffle(inputSlots)
                 if inputSlots:
                     break
@@ -370,11 +381,16 @@ Place the items in the correct input or storage stockpile.
             if not renderForTile:
                 return []
 
+        try:
+            self.disallowLocations
+        except:
+            self.disallowLocations = None
+
         result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
         if not renderForTile:
             if isinstance(character.container,src.rooms.Room):
                 room = character.container
-                inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny,allowStorage=True)
+                inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny,allowStorage=True,disallowLocations=self.disallowLocations)
                 for inputSlot in inputSlots:
                     result.append((inputSlot[0],"target"))
         return result

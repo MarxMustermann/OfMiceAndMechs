@@ -39,8 +39,7 @@ this quest has sub quests. Press d to show subquest.
 
         match extraInfo.get("reason"):
             case "needs base with at least 6 rooms":
-                quest = src.quests.questMap["StoryExtendBase"](reason="be able to get promoted to base commander.
-This will allow you to contact main base")
+                quest = src.quests.questMap["StoryExtendBase"](reason="be able to get promoted to base commander.\nThis will allow you to contact main base")
                 self.addQuest(quest)
             case "terrain needs cleared from enemies":
                 quest = src.quests.questMap["StoryClearTerrain"](reason="get rid of the remaining enemies")

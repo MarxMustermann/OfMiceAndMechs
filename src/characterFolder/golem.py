@@ -46,16 +46,25 @@ class Golem(src.monster.Monster):
             characterId=characterId,
         )
         self.charType = "Golem"
-        self.specialDisplay = (*self.color_for_multiplier(multiplier), "@@")
-        self.baseDamage = int(10+multiplier)
-        self.baseDamage = int(self.baseDamage*(1-runModifier))
-        self.maxHealth = int(30+30*multiplier)
-        self.maxHealth = int(self.maxHealth*(1+runModifier))
-        self.health = self.maxHealth
         self.godMode = True
-        self.movementSpeed = 1.3
-        self.movementSpeed -= self.movementSpeed * 0.5 * self.multiplier_range(multiplier)
         self.waitLength = 20
+
+        modifier = multiplier
+        shade = 255-(17*modifier)
+        self.specialDisplay = (src.interaction.urwid.AttrSpec((255,shade,shade),"#000"), "@@")
+
+        baseMovementSpeed = 2
+        baseAttackSpeed = 2
+        baseRawDamage = 8
+        basehealth = 40
+
+        self.modifier = modifier
+        self.maxHealth = basehealth+basehealth*0.25*modifier
+        self.health = self.maxHealth
+        self.movementSpeed = baseMovementSpeed-(baseMovementSpeed*0.5/15*modifier)
+        self.baseAttackSpeed = baseAttackSpeed-(baseAttackSpeed*0.5/15*modifier)
+        self.rawBaseDame = baseRawDamage+(baseRawDamage*0.5*modifier)
+        self.baseDamage = baseRawDamage+(baseRawDamage*0.5*modifier)
 
     def changed(self, tag="default", info=None):
         if tag == "pickup bolted fail":

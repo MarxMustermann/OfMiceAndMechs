@@ -86,26 +86,31 @@ So if an enemy is to directly east of you:
                 self.postHandler()
             return (None,("+","end quest"))
 
+        # navigate most menues
+        submenue = character.macroState.get("submenue")
+        if submenue and not ignoreCommands:
+            if not submenue.tag in ("specialAttackSelection","selectFireDirection","advancedInteractionSelection") and not isinstance(submenue,src.menuFolder.characterInfoMenu.CharacterInfoMenu):
+                return (None,(["esc"],"exit the menu"))
+
         # heal
         if character.health < character.maxHealth//2 and character.canHeal():
-            return (None,("Jh","heal"))
+            interaction_command = "J"
+            if submenue:
+                if submenue.tag == "advancedInteractionSelection":
+                    interaction_command = ""
+                else:
+                    return (None,(["esc"],"close menu"))
+            return (None,(interaction_command+"h","heal"))
         if (not self.suicidal) and (character.health < character.maxHealth//5):
             return self._solver_trigger_fail(dryRun,"low health")
 
         # make character drop tools to fight
         if character.tool:
-            submenue = character.macroState.get("submenue")
             if not submenue:
                 return (None,("v","open character menu"))
             if not isinstance(submenue,src.menuFolder.characterInfoMenu.CharacterInfoMenu):
                 return (None,(["esc"],"close menu"))
             return (None,("t","drop tool"))
-
-        # navigate most menues
-        submenue = character.macroState.get("submenue")
-        if submenue and not ignoreCommands:
-            if not submenue.tag in ("specialAttackSelection","selectFireDirection",):
-                return (None,(["esc"],"exit the menu"))
 
         # check for direct attacks
         directEnemies = []

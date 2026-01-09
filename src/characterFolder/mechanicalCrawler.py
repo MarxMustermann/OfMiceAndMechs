@@ -35,16 +35,25 @@ class Mechanical_Crawler(src.monster.Monster):
             characterId=characterId,
         )
         self.charType = "Mechanical crawler"
-        self.specialDisplay = (*self.color_for_multiplier(multiplier), "st")
-        self.baseDamage = int(4+multiplier*0.1)
-        self.baseDamage = int(self.baseDamage*(1+runModifier))
-        self.maxHealth = int(10+10*multiplier)
-        self.maxHealth = int(self.maxHealth*(1-runModifier))
-        self.health = self.maxHealth
         self.godMode = True
-        self.movementSpeed = 1.0
-        self.movementSpeed -= self.movementSpeed * 0.5 * self.multiplier_range(multiplier)
         self.waitLength = 15
+
+        modifier = multiplier
+        shade = 255-(17*modifier)
+        self.specialDisplay = (src.interaction.urwid.AttrSpec((255,shade,shade),"#000"), "st")
+
+        baseMovementSpeed = 2
+        baseAttackSpeed = 2
+        baseRawDamage = 4
+        basehealth = 20
+
+        self.modifier = modifier
+        self.maxHealth = basehealth+basehealth*0.25*modifier
+        self.health = self.maxHealth
+        self.movementSpeed = baseMovementSpeed-(baseMovementSpeed*0.5/15*modifier)
+        self.baseAttackSpeed = baseAttackSpeed-(baseAttackSpeed*0.5/15*modifier)
+        self.rawBaseDame = baseRawDamage+(baseRawDamage*0.5*modifier)
+        self.baseDamage = baseRawDamage+(baseRawDamage*0.5*modifier)
 
     def changed(self, tag="default", info=None):
         if tag == "pickup bolted fail":

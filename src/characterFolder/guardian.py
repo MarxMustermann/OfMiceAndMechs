@@ -64,16 +64,17 @@ class Guardian(src.monster.Monster):
 
         self.charType = "Guardian"
         self.specialDisplay = "&&"
-        self.maxHealth = basehealth*0.5+basehealth*0.5*modifier
         self.hasSpecialAttacks = True
         self.hasPushbackAttack = True
-        self.health = self.maxHealth
         self.godMode = True
-        self.movementSpeed = baseMovementSpeed*0.5+baseMovementSpeed*0.5/modifier
-        self.baseAttackSpeed = baseAttackSpeed*0.5+baseAttackSpeed*0.5/modifier
-        self.rawBaseDame = baseRawDamage*modifier
-        self.baseDamage = baseRawDamage*modifier
+
         self.modifier = modifier
+        self.maxHealth = basehealth+basehealth*0.25*modifier
+        self.health = self.maxHealth
+        self.movementSpeed = baseMovementSpeed-(baseMovementSpeed*0.5/15*modifier)
+        self.baseAttackSpeed = baseAttackSpeed-(baseAttackSpeed*0.5/15*modifier)
+        self.rawBaseDame = baseRawDamage+(baseRawDamage*0.5*modifier)
+        self.baseDamage = baseRawDamage+(baseRawDamage*0.5*modifier)
 
     def changed(self, tag="default", info=None):
         if tag == "pickup bolted fail":
@@ -103,6 +104,7 @@ class Guardian(src.monster.Monster):
         """
         force static render
         """
-        return (self.color_for_multiplier(self.modifier)[0], "&&")
+        shade = 255-(17*self.modifier)
+        return (src.interaction.urwid.AttrSpec((255,shade,shade),"#000"), "&&")
 
 src.characters.add_character(Guardian)

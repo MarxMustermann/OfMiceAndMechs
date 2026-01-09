@@ -3207,7 +3207,7 @@ but they are likely to explode when disturbed.
         for room in terrain.rooms:
             regenerator = room.getItemByType("Regenerator",needsBolted=True)
             if regenerator and not regenerator.activated:
-                quest = src.quests.questMap["ActivateRegenerator"]()
+                quest = src.quests.questMap["ActivateRegenerator"](reason="have better healing available")
                 self.addQuest(quest,mainChar)
                 return
 

@@ -38,7 +38,7 @@ class StoryExtendBase(src.quests.MetaQuestSequence):
         for room in terrain.rooms:
             regenerator = room.getItemByType("Regenerator",needsBolted=True)
             if regenerator and not regenerator.activated:
-                quest = src.quests.questMap["ActivateRegenerator"]()
+                quest = src.quests.questMap["ActivateRegenerator"](reason="ensure clones get healed")
                 return ([quest],None)
 
         # count the number of enemies/allies

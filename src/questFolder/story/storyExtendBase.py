@@ -226,7 +226,7 @@ class StoryExtendBase(src.quests.MetaQuestSequence):
             if target[0] == "spider":
                 spider_lair_pos = target[1]
 
-                if target[2] > 2:
+                if target[2] > 2 or not character.weapon or not character.armor:
                     quest = src.quests.questMap["BaitSpiders"](targetPositionBig=spider_lair_pos,reason=reason)
                     return ([quest],None)
                 else:

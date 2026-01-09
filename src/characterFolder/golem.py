@@ -49,7 +49,7 @@ class Golem(src.monster.Monster):
         self.specialDisplay = (*self.color_for_multiplier(multiplier), "@@")
         self.baseDamage = int(10+multiplier)
         self.baseDamage = int(self.baseDamage*(1-runModifier))
-        self.maxHealth = int(60*multiplier)
+        self.maxHealth = int(30+30*multiplier)
         self.maxHealth = int(self.maxHealth*(1+runModifier))
         self.health = self.maxHealth
         self.godMode = True

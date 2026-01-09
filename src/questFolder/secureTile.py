@@ -104,12 +104,20 @@ Try luring enemies into landmines or detonating some bombs."""
             return (None,None)
 
         # handle most menues
-        if character.macroState["submenue"] and character.macroState["submenue"].tag != "tileMovementmenu" and not ignoreCommands:
-           return (None,(["esc"],"exit the menu")) 
+        submenue = character.macroState.get("submenue")
+        if submenue and not ignoreCommands:
+            if submenue.tag not in ("tileMovementmenu","advancedInteractionSelection",):
+                return (None,(["esc"],"exit the menu")) 
 
         # heal
         if character.health < character.maxHealth - 20 and character.canHeal():
-            return (None,("JH","heal"))
+            interaction_command = "J"
+            if submenue:
+                if submenue.tag == "advancedInteractionSelection":
+                    interaction_command = ""
+                else:
+                    return (None,(["esc"],"close menu"))
+            return (None,(interaction_command+"H","heal"))
 
         # initiate actual combat
         if not self.strict:

@@ -4,10 +4,11 @@ import random
 class StoryExtendBase(src.quests.MetaQuestSequence):
     type = "StoryExtendBase"
 
-    def __init__(self, description="extend base", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None):
+    def __init__(self, description="extend base", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True, direction=None, reason=None):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
+        self.reason = reason
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
 
@@ -257,11 +258,12 @@ class StoryExtendBase(src.quests.MetaQuestSequence):
         return ([quest],None)
 
     def generateTextDescription(self):
-        text = ["""
-You reach out to your implant and it answers:
+        reasonString = ""
+        if self.reason:
+            reasonString = f", to {self.reason}"
 
-Clear the terrain from all enemies, to be able to get promoted to base commander.
-This will allow you to contact main base.
+        text = [f"""
+Clear the terrain from all enemies{reasonString}.
 
 There are several types of enemies, that have different behaviour.
 I'll show you how to deal with each of them,

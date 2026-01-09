@@ -36,9 +36,9 @@ class Mechanical_Crawler(src.monster.Monster):
         )
         self.charType = "Mechanical crawler"
         self.specialDisplay = (*self.color_for_multiplier(multiplier), "st")
-        self.baseDamage = int(4+multiplier)
+        self.baseDamage = int(4+multiplier*0.1)
         self.baseDamage = int(self.baseDamage*(1+runModifier))
-        self.maxHealth = int(20*multiplier)
+        self.maxHealth = int(10+10*multiplier)
         self.maxHealth = int(self.maxHealth*(1-runModifier))
         self.health = self.maxHealth
         self.godMode = True

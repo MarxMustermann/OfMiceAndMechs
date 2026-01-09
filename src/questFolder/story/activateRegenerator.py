@@ -4,10 +4,11 @@ import src
 class ActivateRegenerator(src.quests.MetaQuestSequence):
     type = "ActivateRegenerator"
 
-    def __init__(self, description="activate the regenerator", creator=None):
+    def __init__(self, description="activate the regenerator", creator=None, reason=None):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
+        self.reason = reason
 
     def handleRegeneratorActivated(self, extraInfo):
         self.postHandler()
@@ -102,8 +103,11 @@ class ActivateRegenerator(src.quests.MetaQuestSequence):
         return (None,(interactionCommand+direction,"activate the Regenerator"))
 
     def generateTextDescription(self):
-        text = ["""
-You reach out to your implant and it answers:
+        reasonString = ""
+        if self.reason:
+            resonString = f", to {self.reason}"
+        text = [f"""
+Start the Regenerator{reasonString}.
 
 The base has some clones now and there are many enemies to be slain.
 There will be fights and somebody will get hurt

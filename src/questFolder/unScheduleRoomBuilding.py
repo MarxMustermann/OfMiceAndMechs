@@ -41,7 +41,7 @@ Use a CityPlaner to do this.
             return (None,None)
 
         # navigate the build-menu
-        submenue = character.macroState["submenue"]
+        submenue = character.macroState.get("submenue")
         if submenue and not ignoreCommands:
 
             # schedule building the room
@@ -58,33 +58,30 @@ Use a CityPlaner to do this.
                 command += "x"
                 return (None,(command,"unschedule building a room"))
 
-            # close other menues
+
+            # select the build menu
+            if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu):
+                submenue = character.macroState["submenue"]
+                rewardIndex = 0
+                if rewardIndex == 0:
+                    counter = 1
+                    for option in submenue.options.items():
+                        if option[1] == "showMap":
+                            break
+                        counter += 1
+                    rewardIndex = counter
+                offset = rewardIndex-submenue.selectionIndex
+                command = ""
+                if offset > 0:
+                    command += "s"*offset
+                else:
+                    command += "w"*(-offset)
+                command += "j"
+                return (None,(command,"show the map"))
+
+            # close unkown menus
             if submenue.tag not in ("advancedInteractionSelection",):
                 return (None,(["esc"],"close menu"))
-
-        # select the build menu
-        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
-            submenue = character.macroState["submenue"]
-            rewardIndex = 0
-            if rewardIndex == 0:
-                counter = 1
-                for option in submenue.options.items():
-                    if option[1] == "showMap":
-                        break
-                    counter += 1
-                rewardIndex = counter
-            offset = rewardIndex-submenue.selectionIndex
-            command = ""
-            if offset > 0:
-                command += "s"*offset
-            else:
-                command += "w"*(-offset)
-            command += "j"
-            return (None,(command,"show the map"))
-
-        # close unkown menus
-        if character.macroState["submenue"] and not ignoreCommands:
-            return (None,(["esc"],"exit submenu"))
 
         # go to room with city planer
         cityPlaner = None

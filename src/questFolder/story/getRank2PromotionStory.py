@@ -39,13 +39,14 @@ this quest has sub quests. Press d to show subquest.
 
         match extraInfo.get("reason"):
             case "needs base with at least 6 rooms":
-                quest = src.quests.questMap["StoryExtendBase"]()
+                quest = src.quests.questMap["StoryExtendBase"](reason="be able to get promoted to base commander.
+This will allow you to contact main base")
                 self.addQuest(quest)
             case "terrain needs cleared from enemies":
-                quest = src.quests.questMap["StoryClearTerrain"]()
+                quest = src.quests.questMap["StoryClearTerrain"](reason="get rid of the remaining enemies")
                 self.addQuest(quest)
             case _:
-                quest = src.quests.questMap["SpawnClone"]()
+                quest = src.quests.questMap["SpawnClone"](reason="have more clones on the base")
                 self.addQuest(quest)
 
     def assignToCharacter(self, character):
@@ -74,7 +75,7 @@ this quest has sub quests. Press d to show subquest.
         if not character:
             return (None,None)
 
-        quest = src.quests.questMap["GetPromotion"](targetRank=2)
+        quest = src.quests.questMap["GetPromotion"](targetRank=2, reason="actually get the promotion")
         return ([quest],None)
 
 
@@ -89,7 +90,7 @@ this quest has sub quests. Press d to show subquest.
         room = character.container
 
         if not isinstance(character.container, src.rooms.Room):
-            quest = src.quests.questMap["GoHome"](description="go to command centre")
+            quest = src.quests.questMap["GoHome"](description="go to command centre",reason="get inside")
             return  ([quest],None)
         
         for item in room.itemsOnFloor:
@@ -110,10 +111,10 @@ this quest has sub quests. Press d to show subquest.
             if item.getPosition() == (character.xPosition,character.yPosition+1,0):
                 return (None,(interactionCommand+"s","get promotion"))
             
-            quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to promoter ")
+            quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to promoter",reason="be able to activate the Promoter")
             return  ([quest],None)
         
-        quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),description="go to command centre")
+        quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),description="go to command centre",reason="reach the Promoter")
         return  ([quest],None)
 
 

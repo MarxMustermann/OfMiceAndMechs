@@ -64,6 +64,7 @@ It pulses every 15 ticks
 
 To heal faster you can use the Regenerator directly."""
         submenue = src.menuFolder.textMenu.TextMenu(text)
+        submenue.do_not_scale = True
         character.macroState["submenue"] = submenue
         character.runCommandString("~",nativeKey=True)
 

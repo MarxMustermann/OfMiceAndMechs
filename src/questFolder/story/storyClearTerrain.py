@@ -1,4 +1,5 @@
 import src
+
 import random
 
 class StoryClearTerrain(src.quests.MetaQuestSequence):

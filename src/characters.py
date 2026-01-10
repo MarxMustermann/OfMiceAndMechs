@@ -1750,19 +1750,13 @@ press any other key to attack normally"""
 
         enemyHP = target.health
         target.hurt(damage, reason=reason, actor=self)
-        self.addMessage(
-            f"you attack the enemy for {damage} damage {bonus}"
-        )
+        message = f"you attack the enemy for {damage} damage {bonus}"
         self.stats["damage dealt"] = self.stats.get("damage dealt", 0) + damage
         if not target.dead:
-            self.addMessage(
-                f"the enemy has {target.health}/{target.maxHealth} health left"
-                )
+            message += f"\nthe enemy has {target.health}/{target.maxHealth} health left"
         else:
             overkill = damage-enemyHP
-            self.addMessage(
-                f"the enemy is dead. You overkilled by {overkill}"
-                )
+            message += f"\nthe enemy is dead. You overkilled by {overkill}"
             if self.weapon:
                 self.weapon.degrade(multiplier=overkill,character=self)
 
@@ -1809,7 +1803,7 @@ press any other key to attack normally"""
             )
             self.addMessage("auto attack")
         if self.exhaustion != 0 or target.exhaustion != 0:
-            self.addMessage(f"exhaustion: you {self.exhaustion} enemy {target.exhaustion}")
+            message += f"\nexhaustion: you {self.exhaustion} enemy {target.exhaustion}"
 
         if target.dead:
             overkill = damage-enemyHP
@@ -1830,6 +1824,8 @@ press any other key to attack normally"""
                 numBerserk += 1
         else:
             self.applyNativeMeleeAttackEffects(target)
+        print(message)
+        self.addMessage(message)
 
     def heal(self, amount, reason=None):
         '''

@@ -109,7 +109,7 @@ class LiftOutsideRestrictions(src.quests.MetaQuestSequence):
                 interactionCommand = ""
             else:
                 return (None,(["esc"],"close menu"))
-        return (None,(interactionCommand+direction+"sj","disable the outside restrictions"))
+        return (None,(interactionCommand+direction,"disable the outside restrictions"))
 
     def generateTextDescription(self):
         reasonSring = ""

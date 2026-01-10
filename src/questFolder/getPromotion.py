@@ -65,7 +65,7 @@ Use the Promotor to do this.
         submenue = character.macroState.get("submenue")
         if submenue and not ignoreCommands:
             if isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu):
-                return (None,(["enter"],"select reward"))
+                return (None,("j","select reward"))
             if submenue.tag == "promotionIntro":
                 return (None,(["enter"],"continue"))
             if submenue.tag not in ("advancedInteractionSelection",):

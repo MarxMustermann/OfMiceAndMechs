@@ -40,14 +40,14 @@ class MessagesMenu(src.subMenu.SubMenu):
         if key in ("rESC",):
             self.char.rememberedMenu2.append(self)
             return True
-        if key == "a" and self.scrollIndex > 0:
+        if key == "w" and self.scrollIndex > 0:
             self.scrollIndex -= 1
-        if key == "d":
+        if key == "s":
             self.scrollIndex += 1
 
         char = self.char
 
-        text = f"press a/d to scroll\noldest message on top - skipping {self.scrollIndex} messages\n\n"+self.render()
+        text = f"press w/s to scroll\noldest message on top - skipping {self.scrollIndex} messages\n\n"+self.render()
 
         # show info
         src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "messages"))

@@ -44,8 +44,8 @@ class Mechanical_Crawler(src.monster.Monster):
 
         baseMovementSpeed = 2
         baseAttackSpeed = 2
-        baseRawDamage = 4
-        basehealth = 20
+        baseRawDamage = 2
+        basehealth = 10
 
         self.modifier = modifier
         self.maxHealth = basehealth+basehealth*0.25*modifier

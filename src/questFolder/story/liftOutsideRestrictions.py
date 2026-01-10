@@ -37,8 +37,8 @@ class LiftOutsideRestrictions(src.quests.MetaQuestSequence):
         if self.subQuests:
             return (None,None)
         
-        if character.macroState["submenue"] and not ignoreCommands:
-            submenue = character.macroState["submenue"]
+        submenue = character.macroState.get("submenue")
+        if submenue and not ignoreCommands:
             if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu):
                 foundOption = False
                 rewardIndex = 0
@@ -63,7 +63,8 @@ class LiftOutsideRestrictions(src.quests.MetaQuestSequence):
                 command += "j"
                 return (None,(command,"contact command"))
             
-            return (None,(["esc"],"to close menu"))
+            if submenue.tag not in "advancedInteractionSelection":
+                return (None,(["esc"],"to close menu"))
 
         # activate production item when marked
         action = self.generate_confirm_interaction_command(allowedItems=["SiegeManager"])
@@ -103,8 +104,11 @@ class LiftOutsideRestrictions(src.quests.MetaQuestSequence):
             direction = "s"
 
         interactionCommand = "J"
-        if "advancedInteraction" in character.interactionState:
-            interactionCommand = ""
+        if submenue:
+            if submenue.tag == "advancedInteractionSelection":
+                interactionCommand = ""
+            else:
+                return (None,(["esc"],"close menu"))
         return (None,(interactionCommand+direction+"sj","disable the outside restrictions"))
 
     def generateTextDescription(self):

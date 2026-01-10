@@ -42,7 +42,7 @@ this quest has sub quests. Press d to show subquest.
                 quest = src.quests.questMap["StoryExtendBase"](reason="be able to get promoted to base commander.\nThis will allow you to contact main base")
                 self.addQuest(quest)
             case "terrain needs cleared from enemies":
-                quest = src.quests.questMap["StoryClearTerrain"](reason="get rid of the remaining enemies")
+                quest = src.quests.questMap["StoryClearTerrain"](reason="be able to get promoted to base commander")
                 self.addQuest(quest)
             case _:
                 quest = src.quests.questMap["SpawnClone"](reason="have more clones on the base")

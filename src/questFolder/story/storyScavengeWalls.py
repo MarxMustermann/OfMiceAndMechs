@@ -26,7 +26,11 @@ class StoryScavengeWalls(src.quests.MetaQuestSequence):
         return ([quest],None)
 
     def generateTextDescription(self):
-        return ["""
+        reason_string = ""
+        if self.reason:
+            reason_string = f", to {self.reason}"
+        return [f"""
+Scavange for Walls{reason_string}.
 """]
 
     def triggerCompletionCheck(self,character=None, dryRun=True):

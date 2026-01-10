@@ -134,11 +134,25 @@ class StoryExtendBase(src.quests.MetaQuestSequence):
                 enemyOnBuildSite = True
 
             if not enemyOnBuildSite:
+
+                # add roombuilder
                 roomBuilderItems = terrain.getItemByPosition((8*15+7,7*15+7,0))
                 if not roomBuilderItems or roomBuilderItems[0].type != "RoomBuilder":
                     quest = src.quests.questMap["BuildRoom"](targetPosition=(8,7,0),takeAnyUnbolted=True,ignoreAlarm=True,reason="complete promotion requirements")
                     return ([quest],None)
+                roomBuilder = roomBuilderItems[0]
 
+                # check what items are missing
+                missing_items = roomBuilder.get_missing_items()
+                missing_walls = False
+                missing_doors = False
+                for entry in missing_items:
+                    if entry[0] == "Wall":
+                        missing_walls = True
+                    if entry[0] == "Door":
+                        missing_doors = True
+
+                # check if walls are in storage
                 wallsInStorage = False
                 for room in character.getTerrain().rooms:
                     if room.getNonEmptyOutputslots("Wall"):
@@ -146,15 +160,18 @@ class StoryExtendBase(src.quests.MetaQuestSequence):
                 if character.inventory and character.inventory[-1].type == "Wall":
                     wallsInStorage = True
 
+                # check if doors are in storage
                 numDoorsInStorage = 0
                 for room in character.getTerrain().rooms:
                     numDoorsInStorage += len(room.getItemsByType("Door",needsUnbolted=True))
 
-                if wallsInStorage and numDoorsInStorage >= 4:
+                # add mssing material 
+                if (missing_walls and wallsInStorage) or (missing_doors and numDoorsInStorage >= 4):
                     quest = src.quests.questMap["BuildRoom"](targetPosition=(8,7,0),takeAnyUnbolted=True,ignoreAlarm=True,reason="have more space to work with")
                     return ([quest],None)
 
-                if not wallsInStorage:
+                # find more walls
+                if missing_walls and not wallsInStorage:
                     if not character.getFreeInventorySpace():
                         quest = src.quests.questMap["ClearInventory"](tryHard=True, reason="have space for storing Walls")
                         return ([quest],None)

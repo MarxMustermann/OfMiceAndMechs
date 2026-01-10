@@ -37,6 +37,8 @@ The room has to be a rectangle.
         missing_items = []
         for x in range(1,14):
             for y in range(1,14):
+                if x not in (1,13,) and y not in (1,13,):
+                    continue
                 item_type = "Wall"
                 if x == 7 or y == 7:
                     item_type = "Door"

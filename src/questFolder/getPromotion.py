@@ -72,7 +72,7 @@ Use the Promotor to do this.
                 return (None,(["esc"],"close the menu"))
 
         if not character.getTerrain() == character.getHomeTerrain():
-            quest = src.quests.questMap["GoHome"]()
+            quest = src.quests.questMap["GoHome"](reason="get back to base")
             return  ([quest],None)
 
         # activate production item when marked

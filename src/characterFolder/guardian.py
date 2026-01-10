@@ -104,7 +104,7 @@ class Guardian(src.monster.Monster):
         """
         force static render
         """
-        shade = 255-(17*self.modifier)
+        shade = int(255-((255/7)*self.modifier))
         return (src.interaction.urwid.AttrSpec((255,shade,shade),"#000"), "&&")
 
 src.characters.add_character(Guardian)

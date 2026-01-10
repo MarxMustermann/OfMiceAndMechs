@@ -39,7 +39,7 @@ class Mechanical_Crawler(src.monster.Monster):
         self.waitLength = 15
 
         modifier = multiplier
-        shade = 255-(17*modifier)
+        shade = int(255-((255/7)*modifier))
         self.specialDisplay = (src.interaction.urwid.AttrSpec((255,shade,shade),"#000"), "st")
 
         baseMovementSpeed = 2

@@ -1,11 +1,18 @@
 import src
 
 class MessagesMenu(src.subMenu.SubMenu):
+
     def render(self):
         char = self.char
+        out = ""
+
         if self.scrollIndex:
-            return "\n".join(reversed(char.messages[-46-self.scrollIndex:-self.scrollIndex]))
-        return "\n".join(reversed(char.messages[-46:]))
+            to_print = char.messages[-46-self.scrollIndex:-self.scrollIndex]
+        else:
+            to_print = char.messages[-46:]
+        for message in reversed(to_print):
+            out += "- "+message+"\n"
+        return out
 
     type = "MessagesMenu"
 

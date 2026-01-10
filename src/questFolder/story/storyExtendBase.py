@@ -20,7 +20,7 @@ class StoryExtendBase(src.quests.MetaQuestSequence):
 
         # defend yourself
         if character.getNearbyEnemies():
-            quest = src.quests.questMap["Fight"](suicidal=True)
+            quest = src.quests.questMap["Fight"](suicidal=True,reason="defend yourself")
             return ([quest],None)
 
         # loot tile
@@ -31,7 +31,7 @@ class StoryExtendBase(src.quests.MetaQuestSequence):
                         continue
                     if item.type in ("Wall","Scrap",):
                         continue
-                    quest = src.quests.questMap["LootRoom"](targetPositionBig=character.getBigPosition())
+                    quest = src.quests.questMap["LootRoom"](targetPositionBig=character.getBigPosition(),reason="collect useful stuff")
                     return ([quest],None)
 
         # ensure healing for the clones
@@ -69,7 +69,7 @@ class StoryExtendBase(src.quests.MetaQuestSequence):
                     npcCount += 1 
 
         if npcCount < 2:
-            quest = src.quests.questMap["SpawnClone"]()
+            quest = src.quests.questMap["SpawnClone"](reason="have a backup clone in case you die")
             return ([quest],None)
 
         # ensure the character has good health
@@ -88,23 +88,23 @@ class StoryExtendBase(src.quests.MetaQuestSequence):
                     readyCoalBurner = True
 
             if characterHasVial or readyCoalBurner:
-                quest = src.quests.questMap["Heal"](noWaitHeal=True,noVialHeal=True)
+                quest = src.quests.questMap["Heal"](noWaitHeal=True,noVialHeal=True,reason="be able to fight")
                 return ([quest],None)
 
             if not character.getFreeInventorySpace():
-                quest = src.quests.questMap["ClearInventory"](returnToTile=False)
+                quest = src.quests.questMap["ClearInventory"](returnToTile=False,reason="be able to carry more loot")
                 return ([quest],None)
 
             if not terrain.alarm:
-                quest = src.quests.questMap["Scavenge"](lifetime=500)
+                quest = src.quests.questMap["Scavenge"](lifetime=500,reason="collect useful items")
                 return ([quest],None)
 
-            quest = src.quests.questMap["Heal"](noVialHeal=True)
+            quest = src.quests.questMap["Heal"](noVialHeal=True,reason="not be a easy victim")
             return ([quest],None)
 
         # kill snatchers (redundant to GetRank2Promotion)
         if snatcherCount:
-            quest = src.quests.questMap["ConfrontSnatchers"]()
+            quest = src.quests.questMap["ConfrontSnatchers"](reason="reduce threats")
             return ([quest],None)
 
         # handle an ongoing wave
@@ -136,7 +136,7 @@ class StoryExtendBase(src.quests.MetaQuestSequence):
             if not enemyOnBuildSite:
                 roomBuilderItems = terrain.getItemByPosition((8*15+7,7*15+7,0))
                 if not roomBuilderItems or roomBuilderItems[0].type != "RoomBuilder":
-                    quest = src.quests.questMap["BuildRoom"](targetPosition=(8,7,0),takeAnyUnbolted=True,ignoreAlarm=True)
+                    quest = src.quests.questMap["BuildRoom"](targetPosition=(8,7,0),takeAnyUnbolted=True,ignoreAlarm=True,reason="complete promotion requirements")
                     return ([quest],None)
 
                 wallsInStorage = False
@@ -151,19 +151,19 @@ class StoryExtendBase(src.quests.MetaQuestSequence):
                     numDoorsInStorage += len(room.getItemsByType("Door",needsUnbolted=True))
 
                 if wallsInStorage and numDoorsInStorage >= 4:
-                    quest = src.quests.questMap["BuildRoom"](targetPosition=(8,7,0),takeAnyUnbolted=True,ignoreAlarm=True)
+                    quest = src.quests.questMap["BuildRoom"](targetPosition=(8,7,0),takeAnyUnbolted=True,ignoreAlarm=True,reason="have more space to work with")
                     return ([quest],None)
 
                 if not wallsInStorage:
                     if not character.getFreeInventorySpace():
-                        quest = src.quests.questMap["ClearInventory"](tryHard=True)
+                        quest = src.quests.questMap["ClearInventory"](tryHard=True, reason="have space for storing Walls")
                         return ([quest],None)
-                    quest = src.quests.questMap["StoryScavengeWalls"]()
+                    quest = src.quests.questMap["StoryScavengeWalls"](reason="have Walls to complete building the room")
                     return ([quest],None)
         else:
             room = terrain.getRoomByPosition((8,7,0))[0]
             if not room.tag and not room.floorPlan:
-                quest = src.quests.questMap["AssignFloorPlan"](floorPlanType="storage",roomPosition=(8,7,0))
+                quest = src.quests.questMap["AssignFloorPlan"](floorPlanType="storage",roomPosition=(8,7,0),reason="make the newly built room useful")
                 return ([quest],None)
 
             foundCityPlaner = None
@@ -178,11 +178,11 @@ class StoryExtendBase(src.quests.MetaQuestSequence):
                 for position in [(8,6,0),(8,8,0)]:
                     if not foundCityPlaner.plannedRooms:
                         rooms = terrain.getRoomByPosition(position)
-                        quest = src.quests.questMap["ScheduleRoomBuilding"](roomPosition=position)
+                        quest = src.quests.questMap["ScheduleRoomBuilding"](roomPosition=position,reason="ensure the base keeps expanding")
                         return ([quest],None)
 
         if not character.getFreeInventorySpace():
-            quest = src.quests.questMap["ClearInventory"](returnToTile=False)
+            quest = src.quests.questMap["ClearInventory"](returnToTile=False,reason="have space to store items")
             return ([quest],None)
 
         # check for spider lairs
@@ -213,7 +213,7 @@ class StoryExtendBase(src.quests.MetaQuestSequence):
         if targets_found:
             # clear first spider spot
             if specialSpiderBlockersFound:
-                quest = src.quests.questMap["BaitSpiders"](targetPositionBig=specialSpiderBlockersFound[0])
+                quest = src.quests.questMap["BaitSpiders"](targetPositionBig=specialSpiderBlockersFound[0],reason="clear build site")
                 return ([quest],None)
 
             # select target
@@ -251,10 +251,10 @@ class StoryExtendBase(src.quests.MetaQuestSequence):
             targets_pos = list(targets_found.keys())
             targets_pos.sort(key=lambda x: src.helpers.distance_between_points(x,character.getTilePosition()))
             target = targets_pos[0]
-            quest = src.quests.questMap["SecureTile"](toSecure=target,endWhenCleared=True)
+            quest = src.quests.questMap["SecureTile"](toSecure=target,endWhenCleared=True,reason="reduce threats")
             return ([quest],None)
 
-        quest = src.quests.questMap["ClearTerrain"]()
+        quest = src.quests.questMap["ClearTerrain"](reason="get rid of remaining enemies")
         return ([quest],None)
 
     def generateTextDescription(self):

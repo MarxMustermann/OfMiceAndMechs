@@ -409,7 +409,7 @@ suicidal"""
             quest = src.quests.questMap["GoToTile"](targetPosition=new_pos,description="go to temple",reason="reach the GlassHeart")
             return ([quest],None)
 
-        if rooms:
+        if rooms and not dryRun:
             character.addMessage(f"char strength: {character.getStrengthSelfEstimate()}")
             character.addMessage(f"room strength: {rooms[0].getEstimatedStrength()}")
 

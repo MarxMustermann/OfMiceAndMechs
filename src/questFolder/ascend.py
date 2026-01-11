@@ -232,8 +232,11 @@ Rule the world and put an end to those attacks!
             if (pos[0],pos[1],pos[2]) == targetPosition:
                 return (None,("j","activate the Throne"))
             interactionCommand = "J"
-            if submenue and submenue.tag in ("advancedInteractionSelection",):
-                interactionCommand = ""
+            if submenue:
+                if submenue.tag in ("advancedInteractionSelection",):
+                    interactionCommand = ""
+                else:
+                    return (None,(["esc"],"close menu"))
             if (pos[0]-1,pos[1],pos[2]) == targetPosition:
                 return (None,(interactionCommand+"a","activate the Throne"))
             if (pos[0]+1,pos[1],pos[2]) == targetPosition:
@@ -267,8 +270,11 @@ Rule the world and put an end to those attacks!
         if (pos[0],pos[1],pos[2]) == targetPosition:
             return (None,("j","activate the Throne"))
         interactionCommand = "J"
-        if submenue and submenue.tag in ("advancedInteractionSelection",):
-            interactionCommand = ""
+        if submenue:
+            if submenue.tag in ("advancedInteractionSelection",):
+                interactionCommand = ""
+            else:
+                return (None,(["esc"],"close menu"))
         if (pos[0]-1,pos[1],pos[2]) == targetPosition:
             return (None,(interactionCommand+"a","activate the Throne"))
         if (pos[0]+1,pos[1],pos[2]) == targetPosition:

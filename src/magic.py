@@ -1119,7 +1119,7 @@ def setUpThroneDungeon(pos):
     glassHeart = src.items.itemMap["GlassThrone"]()
     mainRoom.addItem(glassHeart,(6,6,0))
 
-    enemy = src.characters.characterMap["Guardian"](4,4,modifier=10)
+    enemy = src.characters.characterMap["Guardian"](4,4,modifier=15)
     guardRoom.addCharacter(enemy,11,6)
 
     quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0))

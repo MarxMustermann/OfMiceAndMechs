@@ -120,9 +120,11 @@ class ActivateGlassStatue(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         reason_string = ""
         if self.reason:
-            reason_string = f",\nto {self.reason}"
+            reason_string = f", to {self.reason}"
         text = [f"""
-The GlassStatues are connected to the heart of their god{reason_string}.
+Activate a GlassStatue{reason_string}.
+
+The GlassStatues are connected to the heart of their god.
 Use the GlassStatue to be teleported to the dungeon the heart is in.
 
 Expect combat after the teleport.

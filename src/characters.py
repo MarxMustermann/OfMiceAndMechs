@@ -1824,7 +1824,6 @@ press any other key to attack normally"""
                 numBerserk += 1
         else:
             self.applyNativeMeleeAttackEffects(target)
-        print(message)
         self.addMessage(message)
 
     def heal(self, amount, reason=None):

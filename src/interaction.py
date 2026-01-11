@@ -893,6 +893,25 @@ def handleActivitySelection(key,char):
             else:
                 mapContent[room.yPosition][room.xPosition] = room.displayChar
 
+        for x in range(1,14):
+            for y in range(1,14):
+                check_characters = terrain.getCharactersOnTile((x,y,0))[:]
+                rooms = terrain.getRoomByPosition((x,y,0))
+                if rooms:
+                    check_characters.extend(rooms[0].characters)
+                for check_character in check_characters:
+                    if check_character.faction == char.faction:
+                        continue
+                    if (x,y) == (7,7):
+                        print("found character")
+                    front_color = "#fff"
+                    content = mapContent[y][x]
+                    if not isinstance(content,str):
+                        front_color = content[0].fg
+                        content = content[1]
+                    mapContent[y][x] = (src.interaction.urwid.AttrSpec(front_color,"#722"),content)
+                    break
+
         extraText = "\n\n"
 
         submenue = src.menuFolder.mapMenu.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText, cursor=char.getBigPosition())

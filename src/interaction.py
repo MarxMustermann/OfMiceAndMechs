@@ -737,6 +737,7 @@ press key to select action
 * h = get emergency heatlh
 * c = mark terrain as explored
 * t = wait till end of epoch
+* x = hurt yourself
 """
         header.set_text(
             (urwid.AttrSpec("default", "default"), "action menu")
@@ -921,6 +922,8 @@ def handleActivitySelection(key,char):
 
     if key == "t":
         char.startWaitForEnemy(15*15*15-(src.gamestate.gamestate.tick%(15*15*15)))
+    if key == "x":
+        char.hurt(20,reason="you hurt yourself on purpose")
 
     del char.interactionState["runaction"]
 

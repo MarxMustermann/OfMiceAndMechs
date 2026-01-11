@@ -84,7 +84,7 @@ class ActivateGlassStatue(src.quests.MetaQuestSequence):
                 break
 
         if character.getBigPosition() != self.targetPositionBig:
-            quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,description="go to the temple",reason="to reach the GlassStatue")
+            quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,description="go to the temple",reason="reach the GlassStatue")
             return ([quest],None)
 
         if character.getDistance(self.targetPosition) > 1:

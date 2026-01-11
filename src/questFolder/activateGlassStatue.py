@@ -83,13 +83,6 @@ class ActivateGlassStatue(src.quests.MetaQuestSequence):
             else:
                 return (None,(".","undo selection"))
 
-        # find throne (wtf, why?)
-        terrain = character.getTerrain()
-        for room in terrain.rooms:
-            throne = room.getItemByType("Throne",needsBolted=True)
-            if throne:
-                break
-
         # go to glass statue
         if character.getBigPosition() != self.targetPositionBig:
             quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,description="go to the temple",reason="reach the GlassStatue")

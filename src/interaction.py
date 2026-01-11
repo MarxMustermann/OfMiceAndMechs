@@ -2884,6 +2884,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
                     if entry:
                         entry[0].apply(char)
                         char.takeTime(char.movementSpeed,"activate item not marked")
+            return None
 
         # examine an item
         if key in (commandChars.examine,):

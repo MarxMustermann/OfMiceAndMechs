@@ -63,6 +63,12 @@ operate the machine on {self.targetPosition}{reason}.
         if self.subQuests:
             return (None,None)
 
+        # handle menus
+        submenue = character.macroState["submenue"]
+        if submenue and not ignoreCommands:
+            if submenue.tag not in ("advancedInteractionSelection",):
+                return (None,(["esc"],"close menu"))
+
         if self.targetPositionBig and character.getBigPosition() != self.targetPositionBig:
             quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="get to the tile the machine is on")
             return ([quest],None)
@@ -72,16 +78,22 @@ operate the machine on {self.targetPosition}{reason}.
             quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True,reason="get near the machine")
             return ([quest],None)
 
+        interactionCommand = "J"
+        if submenue:
+            if submenue.tag == "advancedInteractionSelection":
+                interactionCommand = ""
+            else:
+                return (None,(["esc"],"close menu"))
         if (pos[0],pos[1],pos[2]) == self.targetPosition:
             return (None,("j","activate machine"))
         if (pos[0]-1,pos[1],pos[2]) == self.targetPosition:
-            return (None,("Ja","activate machine"))
+            return (None,(interactionCommand+"a","activate machine"))
         if (pos[0]+1,pos[1],pos[2]) == self.targetPosition:
-            return (None,("Jd","activate machine"))
+            return (None,(interactionCommand+"d","activate machine"))
         if (pos[0],pos[1]-1,pos[2]) == self.targetPosition:
-            return (None,("Jw","activate machine"))
+            return (None,(interactionCommand+"w","activate machine"))
         if (pos[0],pos[1]+1,pos[2]) == self.targetPosition:
-            return (None,("Js","activate machine"))
+            return (None,(interactionCommand+"s","activate machine"))
         return (None,(".","stand around confused"))
 
     def getQuestMarkersTile(self,character):

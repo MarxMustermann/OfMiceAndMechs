@@ -43,11 +43,16 @@ class ActivateGlassStatue(src.quests.MetaQuestSequence):
         return True
 
     def getNextStep(self,character,ignoreCommands=False,dryRun=True):
+
+        # handle weird edge cases
         if self.subQuests:
             return (None,None)
 
+        # handle menues
         submenue = character.macroState["submenue"]
         if submenue and not ignoreCommands:
+
+            # do the teleport (convert to new pattern)
             if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu):
                 targetIndex = 1
                 for option in submenue.options.values():
@@ -66,6 +71,7 @@ class ActivateGlassStatue(src.quests.MetaQuestSequence):
                 command += "j"
                 return (None,(command,"teleport to dungeon"))
 
+            # close unknown menues
             if submenue.tag not in ("advancedInteractionSelection",):
                 return (None,(["esc"],"close menu"))
 
@@ -77,20 +83,22 @@ class ActivateGlassStatue(src.quests.MetaQuestSequence):
             else:
                 return (None,(".","undo selection"))
 
+        # find throne (wtf, why?)
         terrain = character.getTerrain()
         for room in terrain.rooms:
             throne = room.getItemByType("Throne",needsBolted=True)
             if throne:
                 break
 
+        # go to glass statue
         if character.getBigPosition() != self.targetPositionBig:
             quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,description="go to the temple",reason="reach the GlassStatue")
             return ([quest],None)
-
         if character.getDistance(self.targetPosition) > 1:
             quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True,description="go to the GlassStatue",reason="be able to activae the GlassStatue")
             return ([quest],None)
 
+        # activate the glass statue
         pos = character.getPosition()
         direction = "."
         if (pos[0]-1,pos[1],pos[2]) == self.targetPosition:

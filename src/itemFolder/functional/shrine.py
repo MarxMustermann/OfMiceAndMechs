@@ -369,8 +369,11 @@ class Shrine(src.items.Item):
         return baseCost
 
     def getRewards(self,character,selected=None):
+        
+        # check if there is a rebate for controlling the glass heart
         glassHeartRebate = self.get_glass_heart_rebate()
 
+        # prepare the appropriate options to seletc from
         options = []
         options.append(("None","(  0  ) None (exit)"))
         if self.god == 1:
@@ -495,14 +498,16 @@ class Shrine(src.items.Item):
             options.append(("spawn personnel tracker","(0) spawn personnel tracker"))
             options.append(("spawn PerformanceTester","(0) spawn PerformanceTester"))
             pass
-        submenue = src.menuFolder.selectionMenu.SelectionMenu(f"what do you wish for? You currently have {self.getTerrain().mana} mana",options,targetParamName="rewardType")
 
+        # reformat the options to select from
         counter = 0
         for option in options:
             counter += 1
             if option[0] == selected:
                 submenue.selectionIndex = counter
 
+        # show the selection menu to the user
+        submenue = src.menuFolder.selectionMenu.SelectionMenu(f"what do you wish for? You currently have {self.getTerrain().mana} mana",options,targetParamName="rewardType")
         submenue.tag = "rewardSelection"
         character.macroState["submenue"] = submenue
         character.macroState["submenue"].followUp = {"container":self,"method":"dispenseRewards","params":{"character":character}}

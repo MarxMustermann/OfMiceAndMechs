@@ -52,24 +52,11 @@ class ActivateGlassStatue(src.quests.MetaQuestSequence):
         submenue = character.macroState["submenue"]
         if submenue and not ignoreCommands:
 
-            # do the teleport (convert to new pattern)
-            if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu):
-                targetIndex = 1
-                for option in submenue.options.values():
-                    if option == "teleport":
-                        break
-                    targetIndex += 1
-                else:
-                    return (None,(["esc"],"close menu"))
-
-                offset = targetIndex-submenue.selectionIndex
-                command = ""
-                if offset > 0:
-                    command += "s"*offset
-                else:
-                    command += "w"*(-offset)
-                command += "j"
-                return (None,(command,"teleport to dungeon"))
+            # do the teleport
+            if submenue.tag == "applyOptionSelection":
+                command = submenue.get_command_to_select_option("teleport")
+                if command:
+                    return (None,(command,"teleport to dungeon"))
 
             # close unknown menues
             if submenue.tag not in ("advancedInteractionSelection",):

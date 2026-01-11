@@ -289,7 +289,10 @@ suicidal"""
                     path = quest.path
                     if len(path):
                         return self.delveToRoomIfSafe(character,path,dryRun=dryRun)
-                    return (None,None)
+                    interaction_command = "g"
+                    if "runaction" in character.interactionState:
+                        interaction_command = ""
+                    return (None,(interaction_command+"x","kill yourself"))
                 if character.getDistance(foundGlassStatue.getPosition()) > 1:
                     quest = src.quests.questMap["GoToPosition"](targetPosition=foundGlassStatue.getPosition(),ignoreEndBlocked=True,description="go to GlasStatue", reason="be able to extract the GlassHeart")
                     return ([quest],None)

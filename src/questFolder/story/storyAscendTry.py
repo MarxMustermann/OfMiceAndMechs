@@ -54,6 +54,12 @@ Take the place of supreme leader and rule the world!
         if self.subQuests:
             return (None,None)
 
+        # handle menus
+        submenue = character.macroState["submenue"]
+        if submenue:
+            if submenue.tag not in ("advancedInteractionSelection",):
+                return (None,(["esc"],"close menu"))
+
         if not character.container.isRoom:
             if character.xPosition%15 == 0:
                 return (None,("d","enter room"))
@@ -86,8 +92,11 @@ Take the place of supreme leader and rule the world!
         if (pos[0],pos[1],pos[2]) == targetPosition:
             return (None,("j","activate the Throne"))
         interactionCommand = "J"
-        if "advancedInteraction" in character.interactionState:
-            interactionCommand = ""
+        if submenue:
+            if submenue.tag in ("advancedInteractionSelection",):
+                interactionCommand = ""
+            else:
+                return (None,(["esc"],"close menu"))
         if (pos[0]-1,pos[1],pos[2]) == targetPosition:
             return (None,(interactionCommand+"a","activate the Throne"))
         if (pos[0]+1,pos[1],pos[2]) == targetPosition:

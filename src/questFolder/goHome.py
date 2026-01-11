@@ -190,7 +190,7 @@ Go there and be ready for action.
             else:
                 roomsToSearch = character.container.rooms
 
-            # return home
+            # teleport home
             for room in roomsToSearch:
                 items = room.getItemsByType("Shrine")
                 if not items:
@@ -201,9 +201,44 @@ Go there and be ready for action.
                     paranoid=self.paranoid, targetPosition=foundShrine.container.getPosition(), reason="get to a shrine"
                 )
                 return ([quest], None)
-            else:
-                quest = src.quests.questMap["GoToTerrain"](targetTerrain=self.getHomeLocation(),reason="get home any way possible")
-                return ([quest], None)
+
+            # check for closest point to return
+            candidates = []
+            extraWeight = {}
+            for x in range(1,14):
+                for y in range(1,14):
+                    coordinate = (x, y, 0)
+                    extraWeight[coordinate] = 30000
+                    if coordinate in character.terrainInfo:
+                        info = character.terrainInfo[coordinate]
+                        if coordinate == character.getHomeTerrain().getPosition():
+                            extraWeight[coordinate] = 0
+                        if info.get("tag") == "shrine":
+                            extraWeight[coordinate] = 1
+                    if coordinate == (7,7,0): # avoid endgame dungeon
+                        extraWeight[coordinate] = 32000
+                    candidates.append(coordinate)
+
+            # sort nearest target candidate skewed by desirebility with slight random
+            best_candidate = None
+            best_distance = None
+            current_pos = character.getTerrainPosition()
+            for candidate in candidates:
+                distance = src.helpers.distance_between_points(current_pos, candidate)
+                distance += extraWeight[candidate]
+                distance += random.random()
+                if best_candidate is None or distance < best_distance:
+                    print(best_distance)
+                    best_distance = distance
+                    best_candidate = candidate
+            targetTerrain = best_candidate
+
+            # move to selected target
+            reason = "have to opportunity to teleport home"
+            if targetTerrain == character.getHomeTerrain().getPosition():
+                reason = "get home any way possible"
+            quest = src.quests.questMap["GoToTerrain"](targetTerrain=targetTerrain,reason=reason)
+            return ([quest], None)
 
         # workaround missing home rooms
         homeRoom = character.getHomeRoom()

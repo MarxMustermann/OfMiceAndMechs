@@ -38,7 +38,7 @@ class Command(src.items.Item):
         if isinstance(character, src.characters.characterMap["Monster"]):
                 return
 
-        character.macroState["submenue"] = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu("press j to confirm the activation of the commands")
+        character.macroState["submenue"] = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu("press j to confirm the activation of the commands",ignoreFirstKey=False)
         character.macroState["submenue"].followUp = {"container":self,"method":"activate","params":{"character":character}}
 
     def activate(self,params):

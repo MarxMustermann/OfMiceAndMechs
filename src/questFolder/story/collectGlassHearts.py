@@ -471,12 +471,15 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
         return ([quest],None)
 
     def generateTextDescription(self):
-        text = ["""
+        reason_string = ""
+        if self.reason:
+            reason_string = f", {self.reason}"
+        text = [f"""
 You reach out to your implant and it answers:
 
 You were not accepted by the Throne as the supreme leader.
 As long as you don't control all Glasshearts you can't ascend.
-Fetch all GlassHearts, to be able to take the throne and rule the world.
+Fetch all GlassHearts{reason_string}.
 
 The GlassHearts can be found in dungeons and are guarded.
 Those dungeons can be accessed using the GlassStatues in the Temple.

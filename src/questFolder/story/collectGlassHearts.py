@@ -42,12 +42,12 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
 
         # defend yourself directly
         if character.getNearbyEnemies():
-            quest = src.quests.questMap["Fight"]()
+            quest = src.quests.questMap["Fight"](reason="defend yourself")
             return ([quest],None)
 
         # ensure the character is at home
         if not character.isOnHomeTerrain():
-            quest = src.quests.questMap["GoHome"]()
+            quest = src.quests.questMap["GoHome"](reason="get back to base")
             return ([quest],None)
 
         # defend the base
@@ -60,14 +60,14 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,lifetime=100,description="defend the arena",reason="ensure no attackers get into the base")
                 return ([quest],None)
             else:
-                quest = src.quests.questMap["ClearTerrain"]()
+                quest = src.quests.questMap["ClearTerrain"](reason="eliminate remaining enemies")
                 return ([quest],None)
 
         # ensure a good amount of health
         if character.health < character.maxHealth*0.75:
             if not (terrain.xPosition == character.registers["HOMETx"] and
                     terrain.yPosition == character.registers["HOMETy"]):
-                quest = src.quests.questMap["GoHome"]()
+                quest = src.quests.questMap["GoHome"](reason="heal in safety")
                 return ([quest],None)
             else:
                 for room in terrain.rooms:
@@ -75,15 +75,15 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                     for item in items:
                         if not item.getMoldFeed(character):
                             continue
-                        quest = src.quests.questMap["Heal"](noWaitHeal=True)
+                        quest = src.quests.questMap["Heal"](noWaitHeal=True,reason="be able to fight better")
                         return ([quest],None)
 
-                quest = src.quests.questMap["BeUsefull"](numTasksToDo=1,failOnIdle=True)
+                quest = src.quests.questMap["BeUsefull"](numTasksToDo=1,failOnIdle=True,reason="pass time")
                 return ([quest],None)
 
         # ensure that you are not starving 
         if character.flask.uses < 2:
-            quest = src.quests.questMap["RefillPersonalFlask"]()
+            quest = src.quests.questMap["RefillPersonalFlask"](reason="have a goo reserve")
             return ([quest],None)
 
         # get number of glass hearts
@@ -114,7 +114,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                 if otherChar.faction != character.faction:
                     enemyCount += 1
                     if not room.alarm:
-                        quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition(),endWhenCleared=True,description="kill enemies that breached the defences")
+                        quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition(),endWhenCleared=True,reasoreason="kill enemies that breached the defences")
                         return ([quest],None)
                 else:
                     if otherChar.charType != "Ghoul" and not otherChar.burnedIn:
@@ -126,7 +126,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
 
                 enemyCount += 1
                 if not terrain.alarm and enemyCount > 2:
-                    quest = src.quests.questMap["ReadyBaseDefences"]()
+                    quest = src.quests.questMap["ReadyBaseDefences"](reason="be prepared for the enxt wave")
                     return ([quest],None)
             else:
                 if otherChar.charType != "Ghoul" and not otherChar.burnedIn:
@@ -172,7 +172,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                         candidates.remove(checkRoom.tag)
                 
                 if candidates:
-                    quest = src.quests.questMap["AssignFloorPlan"](floorPlanType=candidates[0],roomPosition=room.getPosition())
+                    quest = src.quests.questMap["AssignFloorPlan"](floorPlanType=candidates[0],roomPosition=room.getPosition(),reason="make use of the available rooms")
                     return ([quest],None)
 
         # ensure some items are set to be produced in the manufacturing halls
@@ -191,13 +191,13 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                 for manufacturingTable in room.getItemsByType("ManufacturingTable",needsBolted=True):
                     if manufacturingTable.toProduce:
                         continue
-                    quest = src.quests.questMap["ConfigureManufacturingTable"](targetPosition=manufacturingTable.getPosition(), targetPositionBig=room.getPosition(), itemType=to_produce[0])
+                    quest = src.quests.questMap["ConfigureManufacturingTable"](targetPosition=manufacturingTable.getPosition(), targetPositionBig=room.getPosition(), itemType=to_produce[0], reason="ensure basic production")
                     return ([quest],None)
 
         # ensure some exploaring happens
         if len(character.terrainInfo) < numGlassHearts*3:
             if character.getFreeInventorySpace() < 3:
-                quest = src.quests.questMap["ClearInventory"](returnToTile=False)
+                quest = src.quests.questMap["ClearInventory"](returnToTile=False,reason="have space for loot")
                 return ([quest],None)
             quest = src.quests.questMap["Adventure"](description="explore the surroundings",reason="get some map awareness")
             return ([quest],None)
@@ -221,10 +221,10 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                                 continue
                             numItems += 1
                     if numItems > 4:
-                        quest = src.quests.questMap["ClearTile"](targetPositionBig=room.getPosition())
+                        quest = src.quests.questMap["ClearTile"](targetPositionBig=room.getPosition(),reason="ensure the traps work")
                         return ([quest],None)
 
-            quest = src.quests.questMap["SpawnClone"]()
+            quest = src.quests.questMap["SpawnClone"](reason="ensure there is a backup Clone")
             return ([quest],None)
 
         # ensure the siege manager is configured
@@ -245,7 +245,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                     existingActions.append(scheduledAction[2]["type"])
 
                 if "restrict outside" not in existingActions or "sound alarms" not in existingActions or "unrestrict outside" not in existingActions or "silence alarms" not in existingActions:
-                    quest = src.quests.questMap["ConfigureSiegeManager"]()
+                    quest = src.quests.questMap["ConfigureSiegeManager"](reason="ensure the base will react to sieges")
                     return ([quest],None)
 
         # ensure there is enough trap rooms
@@ -297,7 +297,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                 if (random.random() < 0.5 or forceBuildRoom) and not forceAdventure:
                     if not dryRun:
                         self.room_building_streak_length += 1
-                    quest = src.quests.questMap["StrengthenBaseDefences"](numTrapRoomsBuild=numGlassHearts//2,numTrapRoomsPlanned=numGlassHearts//2+1,lifetime=random.randint(100,500))
+                    quest = src.quests.questMap["StrengthenBaseDefences"](numTrapRoomsBuild=numGlassHearts//2,numTrapRoomsPlanned=numGlassHearts//2+1,lifetime=random.randint(100,500),reason="be prepared for the next wave")
                     return ([quest],None)
                 else:
                     if not dryRun:
@@ -316,7 +316,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                             continue
                         foundClone = True
                     if not foundClone:
-                        quest = src.quests.questMap["EnsureMaindutyClone"](dutyType="room building")
+                        quest = src.quests.questMap["EnsureMaindutyClone"](dutyType="room building",reason="ensure some Clone will build rooms")
                         return ([quest],None)
 
                     # beat people up for fun .... erh to gather ressources
@@ -326,7 +326,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
         # ensure the base is set to auto expand
         if foundCityPlaner:
             if not foundCityPlaner.autoExtensionThreashold:
-                quest = src.quests.questMap["SetBaseAutoExpansion"](targetLevel=2)
+                quest = src.quests.questMap["SetBaseAutoExpansion"](targetLevel=2,reason="ensure your base gets expanded")
                 return ([quest],None)
 
         # ensure an appropriate number of economic rooms
@@ -346,9 +346,9 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                         break
                 if not hasWall and character.getTerrain().search_item_by_type("Wall"):
                     if not character.getFreeInventorySpace():
-                        quest = src.quests.questMap["ClearInventory"](tryHard=True)
+                        quest = src.quests.questMap["ClearInventory"](tryHard=True,reason="have space for carrying Walls")
                         return ([quest],None)
-                    quest = src.quests.questMap["Scavenge"](toCollect="Wall",lifetime=1000,tryHard=True)
+                    quest = src.quests.questMap["Scavenge"](toCollect="Wall",lifetime=1000,tryHard=True,reason="have Walls to build with")
                     return ([quest],None)
 
                 # continue building existing room building sites
@@ -419,7 +419,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                         baseNeighbours.append(checkPos)
                 if baseNeighbours:
                     random.shuffle(baseNeighbours)
-                    quest = src.quests.questMap["ScheduleRoomBuilding"](roomPosition=baseNeighbours[0])
+                    quest = src.quests.questMap["ScheduleRoomBuilding"](roomPosition=baseNeighbours[0],reason="make the Clones expand the base")
                     return ([quest],None)
 
         # get statues ready for teleport
@@ -453,21 +453,21 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                 if not bestDungeon or bestDungeon[0] > readyStatues[godId].numTeleportsDone:
                     bestDungeon = (readyStatues[godId].numTeleportsDone,god,godId)
         if bestDungeon:
-            quest = src.quests.questMap["DelveDungeon"](targetTerrain=bestDungeon[1]["lastHeartPos"],itemID=bestDungeon[2])
+            quest = src.quests.questMap["DelveDungeon"](targetTerrain=bestDungeon[1]["lastHeartPos"],itemID=bestDungeon[2],reason="gain an additional GlassHeart")
             return ([quest],None)
 
         # get to the needed power level
         if easiestTooHardDungeon and random.random() < 0.5:
-            quest = src.quests.questMap["BecomeStronger"](targetStrength=easiestTooHardDungeon+0.1,lifetime=15*15*15)
+            quest = src.quests.questMap["BecomeStronger"](targetStrength=easiestTooHardDungeon+0.1,lifetime=15*15*15,reason="be able to beat the dungeon")
             return ([quest],None)
 
         # unlock more statues
         if len(readyStatues) < 7:
-            quest = src.quests.questMap["AppeaseAGod"](targetNumGods=len(readyStatues)+1, lifetime=random.randint(800,1500))
+            quest = src.quests.questMap["AppeaseAGod"](targetNumGods=len(readyStatues)+1, lifetime=random.randint(800,1500),reason="unlock more dungeons")
             return ([quest],None)
 
         # get stronger to be able to complete the unlocked dungeons
-        quest = src.quests.questMap["BecomeStronger"](targetStrength=strengthRating+0.1)
+        quest = src.quests.questMap["BecomeStronger"](targetStrength=strengthRating+0.1,reason="be able to complete harder dungeons")
         return ([quest],None)
 
     def generateTextDescription(self):

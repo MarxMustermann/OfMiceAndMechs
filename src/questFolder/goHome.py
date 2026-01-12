@@ -55,6 +55,10 @@ Go there and be ready for action.
         if character.getTerrainPosition() != self.getHomeLocation():
             return False
 
+        try:
+            self.endOnHomeTerrain
+        except:
+            self.endOnHomeTerrain = False
         if self.endOnHomeTerrain:
             if not dryRun:
                 self.postHandler()

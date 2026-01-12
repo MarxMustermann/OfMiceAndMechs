@@ -7,7 +7,6 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
     quest to collect glass hearts
     '''
     type = "CollectGlassHearts"
-
     def __init__(self, description="collect glass hearts", creator=None, lifetime=None):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
@@ -21,6 +20,8 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
             return (None,None)
         if not character:
             return (None,None)
+
+        # close menues
         if character.macroState["submenue"] and not ignoreCommands:
             return (None,(["esc"],"close menu"))
 

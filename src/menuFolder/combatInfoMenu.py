@@ -48,7 +48,7 @@ class CombatInfoMenu(src.subMenu.SubMenu):
             text += "-------------  \n"
             text += f"name:        {enemy.name} {enemy.getSpacePosition()}\n"
             text += f"health:      {enemy.health}/{enemy.adjustedMaxHealth}\n"
-            if char.level:
+            if enemy.level:
                 text += f"level:       {enemy.level}\n"
             text += f"exhaustion:  {enemy.exhaustion}\n"
             text += f"timeTaken:   {round(enemy.timeTaken,2)}\n"
@@ -62,7 +62,7 @@ subordinates:
             text += "-------------  \n"
             text += f"name:        {ally.name} {ally.getSpacePosition()}\n"
             text += f"health:      {ally.health}/{ally.adjustedMaxHealth}\n"
-            if char.level:
+            if ally.level:
                 text += f"level:       {ally.level}\n"
             text += f"exhaustion:  {ally.exhaustion}\n"
             text += f"timeTaken:   {round(ally.timeTaken,2)}\n"

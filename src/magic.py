@@ -1042,10 +1042,10 @@ def setUpRuin(pos):
 
                     # add monster
                     pos = (random.randint(1,11),random.randint(1,11),0)
-                    multiplier = src.monster.Monster.get_random_multiplier(monsterType)
+                    level = random.random(1,7)
                     if src.gamestate.gamestate.difficulty == "easy":
-                        multiplier = 1
-                    golem = src.characters.characterMap[monsterType](multiplier=multiplier)
+                        level = 1
+                    golem = src.characters.characterMap[monsterType](level=level)
                     golem.godMode = True
                     quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
                     quest.autoSolve = True
@@ -1119,7 +1119,7 @@ def setUpThroneDungeon(pos):
     glassHeart = src.items.itemMap["GlassThrone"]()
     mainRoom.addItem(glassHeart,(6,6,0))
 
-    enemy = src.characters.characterMap["Guardian"](4,4,modifier=15)
+    enemy = src.characters.characterMap["Guardian"](4,4,level=15)
     guardRoom.addCharacter(enemy,11,6)
 
     quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0))

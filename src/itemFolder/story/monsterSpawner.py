@@ -34,7 +34,7 @@ class MonsterSpawner(src.items.Item):
         # spawn the monster
         pos = self.getPosition()
         room = self.container
-        enemy = src.characters.characterMap["Guardian"](modifier=self.strength)
+        enemy = src.characters.characterMap["Guardian"](level=self.strength)
         enemy.runCommandString("..ddd10.")
         room.addCharacter(enemy,pos[0]+1,pos[1])
 

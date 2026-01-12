@@ -30,7 +30,7 @@ class EnemyCaller(src.items.Item):
                         monsterType = random.choice(["Golem", "ShieldBug"])
                         pos = (random.randint(1, 11), random.randint(1, 11), 0)
                         golem = src.characters.characterMap[monsterType](
-                            multiplier=src.monster.Monster.get_random_multiplier(monsterType)
+                            level=random.randint(1,7)
                         )
                         golem.godMode = True
                         quest = src.quests.questMap["SecureTile"](toSecure=(x, y), wandering=False)

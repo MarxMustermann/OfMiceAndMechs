@@ -73,7 +73,6 @@ class Guardian(src.monster.Monster):
         self.health = self.maxHealth
         self.movementSpeed = baseMovementSpeed-(baseMovementSpeed*0.5/15*self.level)
         self.baseAttackSpeed = baseAttackSpeed-(baseAttackSpeed*0.5/15*self.level)
-        self.rawBaseDame = baseRawDamage+(baseRawDamage*0.5*self.level)
         self.baseDamage = baseRawDamage+(baseRawDamage*0.5*self.level)
 
     def changed(self, tag="default", info=None):

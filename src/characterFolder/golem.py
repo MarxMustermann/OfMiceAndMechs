@@ -61,8 +61,6 @@ class Golem(src.monster.Monster):
         self.movementSpeed = baseMovementSpeed
         self.baseAttackSpeed = baseAttackSpeed
 
-        self.rawBaseDame = baseRawDamage+(baseRawDamage*0.5*self.level)
-
         self.baseDamage = round(baseRawDamage+(baseRawDamage*0.5*self.level),2)
         self.maxHealth = int(basehealth+basehealth*0.25*self.level)
         self.health = self.maxHealth

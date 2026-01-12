@@ -499,15 +499,13 @@ class Shrine(src.items.Item):
             options.append(("spawn PerformanceTester","(0) spawn PerformanceTester"))
             pass
 
-        # reformat the options to select from
+        # show the selection menu to the user
+        submenue = src.menuFolder.selectionMenu.SelectionMenu(f"what do you wish for? You currently have {self.getTerrain().mana} mana",options,targetParamName="rewardType")
         counter = 0
         for option in options:
             counter += 1
             if option[0] == selected:
                 submenue.selectionIndex = counter
-
-        # show the selection menu to the user
-        submenue = src.menuFolder.selectionMenu.SelectionMenu(f"what do you wish for? You currently have {self.getTerrain().mana} mana",options,targetParamName="rewardType")
         submenue.tag = "rewardSelection"
         character.macroState["submenue"] = submenue
         character.macroState["submenue"].followUp = {"container":self,"method":"dispenseRewards","params":{"character":character}}

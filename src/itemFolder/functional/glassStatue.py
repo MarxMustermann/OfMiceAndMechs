@@ -152,6 +152,7 @@ class GlassStatue(src.items.Item):
 
 
         submenue = src.menuFolder.textMenu.TextMenu(text)
+        submenue.do_not_scale = True
         character.macroState["submenue"] = submenue
         character.addMessage(text)
 

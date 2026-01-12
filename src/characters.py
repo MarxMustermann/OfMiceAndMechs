@@ -104,6 +104,8 @@ class Character:
 
         self.foodPerRound = 0
 
+        self.level = None
+
         super().__init__()
 
         if name is None and seed:

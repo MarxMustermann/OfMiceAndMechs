@@ -47,7 +47,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
 
         # ensure the character is at home
         if not character.isOnHomeTerrain():
-            quest = src.quests.questMap["GoHome"](reason="get back to base")
+            quest = src.quests.questMap["GoHome"](reason="get back to base",endOnHomeTerrain=True)
             return ([quest],None)
 
         # defend the base

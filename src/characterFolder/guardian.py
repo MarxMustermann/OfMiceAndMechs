@@ -104,6 +104,10 @@ class Guardian(src.monster.Monster):
         """
         force static render
         """
+        try:
+            self.level
+        except:
+            self.level = 1
         if self.level <= 7:
             shade = int(255-((255/7)*self.level))
             color = (255,shade,shade)

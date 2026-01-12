@@ -24,7 +24,7 @@ class CombatInfoMenu(src.subMenu.SubMenu):
         text = ""
 
         try:
-            char.level:
+            char.level
         except:
             char.level = None
 

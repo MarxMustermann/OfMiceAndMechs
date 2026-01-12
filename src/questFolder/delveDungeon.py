@@ -411,7 +411,7 @@ suicidal"""
             tryNextTile = True
 
         if tryNextTile:
-            quest = src.quests.questMap["GoToTile"](targetPosition=new_pos,description="go to temple",reason="reach the GlassHeart")
+            quest = src.quests.questMap["GoToTile"](targetPosition=new_pos,description="go to next room",reason="reach the GlassHeart")
             return ([quest],None)
 
         if rooms and not dryRun:

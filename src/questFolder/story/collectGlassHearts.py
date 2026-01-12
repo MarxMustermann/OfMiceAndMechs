@@ -44,7 +44,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
             return ([quest],None)
 
         # ensure the character is at home
-        if terrain.xPosition != character.registers["HOMETx"] or terrain.yPosition != character.registers["HOMETy"]:
+        if not character.isOnHomeTerrain():
             quest = src.quests.questMap["GoHome"]()
             return ([quest],None)
 

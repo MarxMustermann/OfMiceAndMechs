@@ -1,6 +1,5 @@
 import src
 
-
 class Pray(src.quests.MetaQuestSequence):
     type = "Pray"
 
@@ -91,12 +90,12 @@ pray on {self.targetPosition}{reason}.
                 return (None,(["esc"],"close menu"))
 
         if self.targetPositionBig and character.getBigPosition() != self.targetPositionBig:
-            quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="get to the tile the machine is on")
+            quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="get to the tile the shrine is on")
             return ([quest],None)
 
         pos = character.getPosition()
         if self.targetPosition not in (pos,(pos[0],pos[1]+1,pos[2]),(pos[0]-1,pos[1],pos[2]),(pos[0]+1,pos[1],pos[2]),(pos[0],pos[1]-1,pos[2])):
-            quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True,reason="get near the machine")
+            quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True,reason="get near the shrine")
             return ([quest],None)
 
         if self.shrine:
@@ -138,7 +137,7 @@ pray on {self.targetPosition}{reason}.
             if not foundStatue:
                 continue
 
-            quest = src.quests.questMap["Pray"](targetPosition=foundStatue.getPosition(),targetPositionBig=foundStatue.getBigPosition(),shrine=False)
+            quest = src.quests.questMap["Pray"](targetPosition=foundStatue.getPosition(),targetPositionBig=foundStatue.getBigPosition(),shrine=False,reason="complete the prying duty")
             if not dryRun:
                 beUsefull.idleCounter = 0
             return ([quest],None)

@@ -4,7 +4,7 @@ import random
 class DelveDungeon(src.quests.MetaQuestSequence):
     type = "DelveDungeon"
 
-    def __init__(self, description="delve dungeon",targetTerrain=None,itemID=None,storyText=None, directSendback=False, suicidal=False, walkToTarget=False):
+    def __init__(self, description="delve dungeon",targetTerrain=None,itemID=None,storyText=None, directSendback=False, suicidal=False, walkToTarget=False, reason=None):
         questList = []
         super().__init__(questList, creator=None)
         self.metaDescription = description
@@ -14,8 +14,13 @@ class DelveDungeon(src.quests.MetaQuestSequence):
         self.directSendback = directSendback
         self.suicidal = suicidal
         self.walkToTarget = walkToTarget
+        self.reason = reason
 
     def generateTextDescription(self):
+        reason_string = ""
+        if self.reason:
+            reason_string = f", to {self.reason}"
+
         text = ""
 
         godname = src.gamestate.gamestate.gods[self.itemID]["name"]
@@ -29,11 +34,11 @@ class DelveDungeon(src.quests.MetaQuestSequence):
         if self.itemID:
             text += f"""
 This dungeon is home of the god {godname} and holds its heart.
-Remove the heart from the GlassStatue holding it.
+Remove the heart from the GlassStatue holding it{reason_string}.
 """
         else:
-            text += """
-Fetch any glass heart.
+            text += f"""
+Fetch any glass heart{reason_string}.
 """
         text += """
 After fetching the glass heart return the glass heart to your base and set it into the glass statue.

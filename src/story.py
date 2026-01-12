@@ -3307,7 +3307,7 @@ but they are likely to explode when disturbed.
             if (god["lastHeartPos"][0] == mainChar.registers["HOMETx"] and god["lastHeartPos"][1] == mainChar.registers["HOMETy"]):
                 continue
 
-            quest = src.quests.questMap["CollectGlassHearts"]()
+            quest = src.quests.questMap["CollectGlassHearts"](reason="be able to take the throne and rule the world")
             self.addQuest(quest,mainChar)
             return
 

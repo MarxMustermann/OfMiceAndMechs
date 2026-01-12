@@ -2158,7 +2158,7 @@ but they are likely to explode when disturbed.
             monsterType = random.choice(["Golem", "ShieldBug"])
             pos = (random.randint(1, 11), random.randint(1, 11), 0)
             golem = src.characters.characterMap[monsterType](
-                level=random.random(1,7)
+                level=random.randint(1,7)
             )
             golem.godMode = True
             quest = src.quests.questMap["SecureTile"](toSecure=(8, 7), wandering=False)

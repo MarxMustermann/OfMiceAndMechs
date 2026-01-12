@@ -471,10 +471,6 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
         return ([quest],None)
 
     def generateTextDescription(self):
-        try:
-             self.room_building_streak_length
-        except:
-             self.room_building_streak_length = 0
         text = ["""
 You reach out to your implant and it answers:
 

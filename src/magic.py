@@ -1042,7 +1042,7 @@ def setUpRuin(pos):
 
                     # add monster
                     pos = (random.randint(1,11),random.randint(1,11),0)
-                    level = random.random(1,7)
+                    level = random.randint(1,7)
                     if src.gamestate.gamestate.difficulty == "easy":
                         level = 1
                     golem = src.characters.characterMap[monsterType](level=level)

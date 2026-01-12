@@ -471,6 +471,10 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
         return ([quest],None)
 
     def generateTextDescription(self):
+        try:
+            self.reason
+        except:
+            self.reason = None
         reason_string = ""
         if self.reason:
             reason_string = f", {self.reason}"

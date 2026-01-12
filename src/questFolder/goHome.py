@@ -7,7 +7,7 @@ class GoHome(src.quests.MetaQuestSequence):
     quest to go home
     '''
     type = "GoHome"
-    def __init__(self, description="go home", creator=None, paranoid=False,reason=None):
+    def __init__(self, description="go home", creator=None, paranoid=False,reason=None,endOnHomeTerrain=False):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
@@ -17,6 +17,7 @@ class GoHome(src.quests.MetaQuestSequence):
         self.addedSubQuests = False
         self.paranoid = paranoid
         self.reason = reason
+        self.endOnHomeTerrain = endOnHomeTerrain
 
     def generateTextDescription(self):
         '''
@@ -36,6 +37,12 @@ other important artworks like the quest artwork.
 Many activities can be started from the command centre.
 Go there and be ready for action.
 """
+        try:
+            self.endOnHomeTerrain
+        except:
+            self.endOnHomeTerrain = False
+        if self.endOnHomeTerrain:
+            text += "\nThis quest will end once you reach the home terrain."
         return text
 
     def triggerCompletionCheck(self, character=None, dryRun=True):
@@ -47,6 +54,11 @@ Go there and be ready for action.
 
         if character.getTerrainPosition() != self.getHomeLocation():
             return False
+
+        if self.endOnHomeTerrain:
+            if not dryRun:
+                self.postHandler()
+            return True
 
         homeRoom = character.getHomeRoom()
         if homeRoom:

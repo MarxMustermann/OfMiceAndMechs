@@ -39,9 +39,6 @@ class Mechanical_Crawler(src.monster.Monster):
         self.waitLength = 15
         self.level = level
 
-        shade = int(255-((255/7)*self.level))
-        self.specialDisplay = (src.interaction.urwid.AttrSpec((255,shade,shade),"#000"), "st")
-
         baseMovementSpeed = 1
         baseAttackSpeed = 1
         baseRawDamage = 2
@@ -61,5 +58,9 @@ class Mechanical_Crawler(src.monster.Monster):
 
     def die(self, reason=None, addCorpse=True, killer=None):
         super().die(reason, addCorpse=False, killer=killer)
+
+    def render(self):
+        shade = int(255-((255/7)*self.level))
+        return (src.interaction.urwid.AttrSpec((255,shade,shade),"#000"), "st")
 
 src.characters.add_character(Mechanical_Crawler)

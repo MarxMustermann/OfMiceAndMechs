@@ -29,7 +29,7 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
 
         # defend yourself
         if character.getNearbyEnemies():
-            quest = src.quests.questMap["Fight"]()
+            quest = src.quests.questMap["Fight"](reason="defend yoursef")
             return ([quest],None)
 
         # prepare common used variables
@@ -95,7 +95,7 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
 
         # remove obsolete room markers
         if obsoleteRoomMarkers:
-            quest = src.quests.questMap["UnScheduleRoomBuilding"](roomPosition=random.choice(obsoleteRoomMarkers))
+            quest = src.quests.questMap["UnScheduleRoomBuilding"](roomPosition=random.choice(obsoleteRoomMarkers),reason="remove obsolete marker")
             return ([quest],None)
 
         # find convertable entry rooms
@@ -109,7 +109,7 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
 
         # convert entry room
         if convertableRooms:
-            quest = src.quests.questMap["ConvertToTrapRoom"](roomPosition=random.choice(convertableRooms))
+            quest = src.quests.questMap["ConvertToTrapRoom"](roomPosition=random.choice(convertableRooms),reason="have stronger defences")
             return ([quest],None)
 
         # add subquest to help complete drawings of trap rooms 
@@ -121,10 +121,10 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
             if room.alarm:
                 continue
             if random.random() < 0.5:
-                quest = src.quests.questMap["Adventure"]()
+                quest = src.quests.questMap["Adventure"](reason="pass some time")
                 return ([quest],None)
             else:
-                quest = src.quests.questMap["DrawFloorPlan"](targetPosition=room.getPosition(),tryHard=True, onlyDrawOneBatch=True)
+                quest = src.quests.questMap["DrawFloorPlan"](targetPosition=room.getPosition(),tryHard=True, onlyDrawOneBatch=True, reason="help completing the trapRoom")
                 return ([quest],None)
 
         # add subquest to help furnishing the unfinished trap rooms
@@ -135,12 +135,12 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
                 continue
             if not room.buildSites:
                 continue
-            quest = src.quests.questMap["FurnishRoom"](targetPositionBig=room.getPosition(),tryHard=True)
+            quest = src.quests.questMap["FurnishRoom"](targetPositionBig=room.getPosition(),tryHard=True, reason="help set up the trap room")
             return ([quest],None)
 
-        # add subquest to built a rooom already scheduled
+        # add subquest to built a room already scheduled
         if plannedTraproomPositions:
-            quest = src.quests.questMap["BuildRoom"](targetPosition=random.choice(plannedTraproomPositions),tryHard=True)
+            quest = src.quests.questMap["BuildRoom"](targetPosition=random.choice(plannedTraproomPositions),tryHard=True,reason="build the room for a new trapRoom")
             return ([quest],None)
 
         # handle a base without an trap room candidate positions
@@ -149,7 +149,7 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
 
         # add subquest to schedule building a rooom
         offsetedPosition = (roomPos[0]+offset[0],roomPos[1]+offset[1],roomPos[2]+offset[2])
-        quest = src.quests.questMap["ScheduleRoomBuilding"](roomPosition=random.choice(candidateTraproomPositions),priorityBuild=True)
+        quest = src.quests.questMap["ScheduleRoomBuilding"](roomPosition=random.choice(candidateTraproomPositions),priorityBuild=True,reason="make the Clones set up a room to build the trapRoom in")
         return ([quest],None)
 
     def handleQuestFailure(self,extraParam):

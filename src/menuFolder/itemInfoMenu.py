@@ -24,9 +24,11 @@ class ItemInfoMenu(src.subMenu.SubMenu):
         text = ""
 
         if char.container.isRoom:
-            room = char.container
-            for item in room.getItems():
-                text += f"{item.getPosition()}:  {item.type}\n"
+            items_list = char.container.getItems()
+        else:
+            items_list = char.container.getNearbyItems(char)
+        for item in items_list:
+            text += f"{item.getPosition()}:  {item.type}\n"
 
         return text
 

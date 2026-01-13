@@ -50,9 +50,6 @@ class Golem(src.monster.Monster):
         self.waitLength = 20
         self.level = level
 
-        shade = int(255-((255/7)*self.level))
-        self.specialDisplay = (src.interaction.urwid.AttrSpec((255,shade,shade),"#000"), "@@")
-
         baseMovementSpeed = 1
         baseAttackSpeed = 1
         baseRawDamage = 4
@@ -91,5 +88,9 @@ class Golem(src.monster.Monster):
 
     def description(self):
         return self.getLoreDescription()+"\n\n---- "+self.getFunctionalDescription()
+
+    def render(self):
+        shade = int(255-((255/7)*self.level))
+        return (src.interaction.urwid.AttrSpec((255,shade,shade),"#000"), "@@")
 
 src.characters.add_character(Golem)

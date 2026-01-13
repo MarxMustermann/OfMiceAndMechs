@@ -338,7 +338,7 @@ suicidal"""
 
         # go back home
         if terrain.xPosition != character.registers["HOMETx"] or terrain.yPosition != character.registers["HOMETy"]:
-            quest = src.quests.questMap["GoHome"](reason="go to your home territory")
+            quest = src.quests.questMap["GoHome"](reason="go to your home territory", endOnHomeTerrain=True)
             return ([quest],None)
         if not character.container.isRoom:
             quest = src.quests.questMap["GoHome"](reason="get into a room")

@@ -3117,7 +3117,7 @@ press key for advanced drop
                 char.container.addAnimation(char.getPosition(offset=(0,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
                 char.addMessage("you cannot carry more items")
             else:
-                item = charState["itemMarkedLast"]
+                item = charState.get("itemMarkedLast")
 
                 if not item:
                     if not char.container:

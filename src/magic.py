@@ -995,6 +995,7 @@ def setUpRuin(pos):
             continue
         filled_cord.append(rand_pos)
         if make_room:
+
             # create the basic room
             room = architect.doAddRoom(
                     {
@@ -1027,7 +1028,7 @@ def setUpRuin(pos):
                             continue
                         room.addItem(mana_crystal,position)
                     else:
-                        position = (random.randint(1,13),random.randint(1,13),0)
+                        position = (random.randint(1,12),random.randint(1,12),0)
                         item = src.items.itemMap[random.choice(loot_types)]()
                         if item.type == "GooFlask":
                             item.uses = 100

@@ -140,6 +140,14 @@ class Room:
             result.append(item)
         return result
 
+    def getItems(self,floorItemsOnly=True):
+        result = []
+        for item in self.itemsOnFloor:
+            if floorItemsOnly and (item.xPosition in (0,12,) or item.yPosition in (0,12,)):
+                continue
+            result.append(item)
+        return result
+
     def addAnimation(self,coordinate,animationType,duration,extraInfo):
         if src.interaction.noFlicker:
             return

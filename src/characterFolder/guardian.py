@@ -90,6 +90,9 @@ class Guardian(src.monster.Monster):
         super().die(reason, addCorpse=True, killer=killer)
 
     def lootTable(self):
+        if self.level is None:
+            self.level = 1
+
         num_ManaCrystal = 0
         num_MemoryFragment = 0
         for _i in range(0,int(self.level)):
@@ -106,6 +109,8 @@ class Guardian(src.monster.Monster):
         try:
             self.level
         except:
+            self.level = 1
+        if self.level is None:
             self.level = 1
         if self.level <= 7:
             shade = int(255-((255/7)*self.level))

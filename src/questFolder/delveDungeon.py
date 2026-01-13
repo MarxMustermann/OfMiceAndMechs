@@ -241,6 +241,23 @@ suicidal"""
             # get to the terrain the dungeon is on
             if terrain.xPosition != self.targetTerrain[0] or terrain.yPosition != self.targetTerrain[1]:
 
+                # stock up on consumables
+                itemType = "Vial"
+                if not character.searchInventory(itemType,):
+                    if character.getFreeInventorySpace():
+                        for room in currentTerrain.rooms:
+                            if not room.getNonEmptyOutputslots(itemType):
+                                continue
+                            quest = src.quests.questMap["FetchItems"](toCollect=itemType,reason="have some healing",amount=1)
+                            return ([quest],None)
+                for itemType in ("Bolt",):
+                    if character.getFreeInventorySpace():
+                        for room in currentTerrain.rooms:
+                            if not room.getNonEmptyOutputslots(itemType):
+                                continue
+                            quest = src.quests.questMap["FetchItems"](toCollect=itemType,reason="have ammo",topUpInventory=True)
+                            return ([quest],None)
+
                 # try to teleport to the dungeon
                 if self.itemID:
                     for room in terrain.rooms:

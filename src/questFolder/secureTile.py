@@ -82,20 +82,22 @@ Try luring enemies into landmines or detonating some bombs."""
         if not self.endWhenCleared:
             return False
 
-        if isinstance(character.container,src.rooms.Room):
-            if character.container.xPosition == self.targetPosition[0] and character.container.yPosition == self.targetPosition[1]:
-                if not character.getNearbyEnemies():
-                    if not dryRun:
-                        self.postHandler(character)
-                    return True
+        terrain = character.getTerrain()
+        rooms = terrain.getRoomByPosition(self.targetPosition)
+        if rooms:
+            room = rooms[0]
+            for check_char in room.characters:
+                if check_char.faction != character.faction:
+                    return False
         else:
-            if character.xPosition//15 == self.targetPosition[0] and character.yPosition//15 == self.targetPosition[1]:
-                if not character.getNearbyEnemies():
-                    if not dryRun:
-                        self.postHandler(character)
-                    return True
+            check_characters = terrain.getCharactersOnTile(self.targetPosition)
+            for check_char in check_characters:
+                if check_char.faction != character.faction:
+                    return False
 
-        return False
+        if not dryRun:
+            self.postHandler(character)
+        return True
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
 

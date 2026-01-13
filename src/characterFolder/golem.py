@@ -90,6 +90,10 @@ class Golem(src.monster.Monster):
         return self.getLoreDescription()+"\n\n---- "+self.getFunctionalDescription()
 
     def render(self):
+        try:
+            self.level
+        except:
+            self.level = 1
         shade = int(255-((255/7)*self.level))
         return (src.interaction.urwid.AttrSpec((255,shade,shade),"#000"), "@@")
 

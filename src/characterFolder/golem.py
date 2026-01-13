@@ -94,6 +94,8 @@ class Golem(src.monster.Monster):
             self.level
         except:
             self.level = 1
+        if not self.level:
+            self.level = 1
         shade = int(255-((255/7)*self.level))
         return (src.interaction.urwid.AttrSpec((255,shade,shade),"#000"), "@@")
 

@@ -63,7 +63,7 @@ class LiftOutsideRestrictions(src.quests.MetaQuestSequence):
                 command += "j"
                 return (None,(command,"contact command"))
             
-            if submenue.tag not in "advancedInteractionSelection":
+            if submenue.tag not in ("advancedInteractionSelection",):
                 return (None,(["esc"],"to close menu"))
 
         # activate production item when marked

@@ -151,6 +151,24 @@ suicidal"""
             currentTerrain = character.getTerrain()
             if currentTerrain == character.getHomeTerrain():
 
+                # check in what state the base is
+                num_NPCs = 0
+                num_enemies = 0
+                for check_character in currentTerrain.getAllCharacters():
+                    if character.is_ally(check_character):
+                        if not character.burnedIn and character.charType == "Clone":
+                            num_NPCs += 1
+                    else:
+                        num_enemies += 1
+
+                # defend the base
+                if num_enemies:
+                    if src.gamestate.gamestate.tick > 1000:
+                        quest = src.quests.questMap["ClearTerrain"]()
+                        return ([quest],None)
+                    quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,lifetime=100,description="defend the arena",reason="ensure no attackers get into the base")
+                    return ([quest],None)
+
                 # upgrade equipment
                 for room in character.getTerrain().rooms:
                     for item in room.getItemsByType("SwordSharpener"):
@@ -226,7 +244,7 @@ suicidal"""
                 if terrain.alarm:
                     remaining_time = 15*15*15-src.gamestate.gamestate.tick%(15*15*15)
                     if remaining_time < 1000:
-                        quest = src.quests.questMap["BeUsefull"](lifetime=remaining_time,reason="wait for wave to pass")
+                        quest = src.quests.questMap["BeUsefull"](lifetime=remaining_time,reason="wait for wave to come")
                         return ([quest],None)
 
             # loot current room

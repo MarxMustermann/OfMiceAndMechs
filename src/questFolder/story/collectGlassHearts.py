@@ -565,6 +565,12 @@ So apease the gods and obtain their GlassHearts.
                 self.addQuest(newQuest)
                 return
 
+        if reason == "no source for item RoomBuilder":
+            newQuest = src.quests.questMap["MetalWorking"](toProduce="RoomBuilder",reason="be able to build rooms",tryHard=True)
+            self.addQuest(newQuest)
+            self.startWatching(newQuest,self.handleQuestFailure,"failed")
+            return
+
         super().handleQuestFailure(extraParam)
 
 src.quests.addType(CollectGlassHearts)

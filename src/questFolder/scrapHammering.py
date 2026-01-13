@@ -66,7 +66,7 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
                 activation_command = "k"
                 if self.produceToInventory:
                     activation_command = "j"
-                if self.amount-self.amountDone > 1:
+                if self.amount and self.amount-self.amountDone > 1:
                     activation_command = activation_command.upper()
                 command = submenue.get_command_to_select_option("produce item",selectionCommand=activation_command)
                 if command:

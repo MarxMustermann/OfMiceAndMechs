@@ -84,11 +84,11 @@ class LiftOutsideRestrictions(src.quests.MetaQuestSequence):
             return self._solver_trigger_fail(dryRun,"no siege manager")
 
         if character.getBigPosition() != siegeManager.container.getPosition():
-            quest = src.quests.questMap["GoToTile"](targetPosition=siegeManager.container.getPosition(),description="go to the command centre",reason="to reach the SiegeManager")
+            quest = src.quests.questMap["GoToTile"](targetPosition=siegeManager.container.getPosition(),description="go to the command centre",reason="reach the SiegeManager")
             return ([quest],None)
 
         if character.getDistance(siegeManager.getPosition()) > 1:
-            quest = src.quests.questMap["GoToPosition"](targetPosition=siegeManager.getPosition(),ignoreEndBlocked=True,description="go to the SiegeManager",reason="to be able to activate the SiegeManager")
+            quest = src.quests.questMap["GoToPosition"](targetPosition=siegeManager.getPosition(),ignoreEndBlocked=True,description="go to the SiegeManager",reason="be able to activate the SiegeManager")
             return ([quest],None)
         
         target_pos = siegeManager.getPosition()

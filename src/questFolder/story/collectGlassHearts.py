@@ -7,11 +7,12 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
     quest to collect glass hearts
     '''
     type = "CollectGlassHearts"
-    def __init__(self, description="collect glass hearts", creator=None, lifetime=None):
+    def __init__(self, description="collect glass hearts", creator=None, lifetime=None, reason=None):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
         self.room_building_streak_length = 0
+        self.reason = reason
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
 

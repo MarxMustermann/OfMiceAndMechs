@@ -7,16 +7,20 @@ class ClearTerrain(src.quests.MetaQuestSequence):
     type = "ClearTerrain"
     lowLevel = True
 
-    def __init__(self, description="clear terrain", creator=None, command=None, lifetime=None,outsideOnly=False,insideOnly=False):
+    def __init__(self, description="clear terrain", creator=None, command=None, lifetime=None,outsideOnly=False,insideOnly=False,reason=None):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = description
         self.outsideOnly = outsideOnly
         self.insideOnly = insideOnly
+        self.reason = reason
 
     def generateTextDescription(self):
-        text = ["""
-Clear the whole terrain from enemies.
+        reason_string = ""
+        if self.reason:
+            reason_string = f", to {self.reason}"
+        text = [f"""
+Clear the whole terrain from enemies{reason_string}.
 
 Just clear the whole terrain tile for tile.
 """]

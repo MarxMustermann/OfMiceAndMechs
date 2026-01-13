@@ -109,14 +109,14 @@ Just clear the whole terrain tile for tile.
                         continue
                     if otherChar.yPosition//15 in (0,14):
                         continue
-                    quest = src.quests.questMap["SecureTile"](toSecure=(otherChar.xPosition//15,otherChar.yPosition//15),endWhenCleared=True)
+                    quest = src.quests.questMap["SecureTile"](toSecure=(otherChar.xPosition//15,otherChar.yPosition//15),endWhenCleared=True,reason="kill the remaining enemies")
                     return ([quest],None)
             if step == "clearRooms":
                 for room in terrain.rooms:
                     for otherChar in room.characters:
                         if otherChar.faction == character.faction:
                             continue
-                        quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition(),endWhenCleared=True)
+                        quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition(),endWhenCleared=True,reason="secure the base")
                         return ([quest],None)
 
         return (None,(".","stand around confused"))

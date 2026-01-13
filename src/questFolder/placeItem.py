@@ -189,17 +189,6 @@ Press d to move the cursor and show the subquests description.
             quest = src.quests.questMap["Fight"](reason="save yourself")
             return ([quest],None)
 
-        # navigate menues
-        submenue = character.macroState.get("submenue")
-        if submenue and not ignoreCommands:
-            if isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu) and character.getSpacePosition() == self.targetPosition:
-                command = submenue.get_command_to_select_item(item_type=self.itemType,selectionCommand="l")
-                if command:
-                    return (None,(command,"drop the item"))
-            if submenue.tag == "configurationSelection":
-                return (None,("b","bolt down the item"))
-            return (None,(["esc"],"exit the menu"))
-
         # check the conditions the quest is in
         itemFound = None
         itemPlaced = None
@@ -222,6 +211,19 @@ Press d to move the cursor and show the subquests description.
             if items and items[-1].type == self.itemType:
                 itemFound = items[-1]
                 itemPlaced = items[-1]
+
+        # navigate menues
+        submenue = character.macroState.get("submenue")
+        if submenue and not ignoreCommands:
+            if not itemPlaced:
+                if isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu) and character.getSpacePosition() == self.targetPosition:
+                    command = submenue.get_command_to_select_item(item_type=self.itemType,selectionCommand="l")
+                    if command:
+                        return (None,(command,"drop the item"))
+            else:
+                if submenue.tag == "configurationSelection":
+                    return (None,("b","bolt down the item"))
+            return (None,(["esc"],"exit the menu"))
 
         # place item
         if not itemPlaced:

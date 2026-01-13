@@ -1132,6 +1132,16 @@ type the macro name you want to record to
 def checkRecording(key,char,charState,main,header,footer,urwid,flags):
     return handleRecordingChar(key,char,charState,main,header,footer,urwid,flags)
 
+def doObserveSelection(params):
+    char = params["character"]
+    key = params["keyPressed"]
+
+    if key == "c":
+        submenue = src.menuFolder.combatInfoMenu.CombatInfoMenu(char=char)
+        char.macroState["submenue"] = submenue
+    else:
+        char.addMessage("unknown option")
+
 def doAdvancedInteraction(params):
     char = params["character"]
     key = params["keyPressed"]
@@ -3187,7 +3197,23 @@ press key for advanced drop
 
     # open the character information
     if key in ("o",):
-        charState["submenue"] = src.menuFolder.combatInfoMenu.CombatInfoMenu(char=char)
+        text = """
+
+press key for what to observe
+
+* c =  observe combat
+
+"""
+
+        submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text,ignoreFirstKey=False)
+        submenue.followUp = {"method":doObserveSelection,"params":{"character":char}}
+        submenue.tag = "observeSelection"
+        char.macroState["submenue"] = submenue
+
+        if charState.get("itemMarkedLast"):
+            del charState["itemMarkedLast"]
+        return None
+        #charState["submenue"] = src.menuFolder.combatInfoMenu.CombatInfoMenu(char=char)
 
     # open the character information
     if key in ("x",):

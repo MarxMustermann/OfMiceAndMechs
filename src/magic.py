@@ -137,7 +137,8 @@ def teleportToTerrain(character, terrainPosition, spawnOutside=False):
     else:
         terrain.addCharacter(character, 15 * target_tile_position[0] + 7, 15 * target_tile_position[1] + 7)
     character.changed("changedTerrain",{"character":character})
-    character.interactionState["itemMarkedLast"] = None
+    if "itemMarkedLast" in character.macroState:
+        del character.macroState["itemMarkedLast"]
 
 def spawnCharacter(terrain, bigCoordinate=None, coordinate=None, monsterType=None, faction=None):
     if not faction:

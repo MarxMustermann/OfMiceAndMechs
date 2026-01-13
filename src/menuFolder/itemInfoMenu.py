@@ -21,14 +21,36 @@ class ItemInfoMenu(src.subMenu.SubMenu):
         if char.dead:
             return ""
 
-        text = ""
+        text = []
 
         if char.container.isRoom:
             items_list = char.container.getItems()
         else:
             items_list = char.container.getNearbyItems(char)
+
+        compressed_items = {}
         for item in items_list:
-            text += f"{item.getPosition()}:  {item.type}\n"
+            item_type = item.type
+            if not item_type in compressed_items:
+                compressed_items[item_type] = []
+            compressed_items[item_type].append(item)
+
+        for item_type,item_list in compressed_items.items():
+            text.append(f"{item_type} ({len(item_list)}):\n")
+            counter = 0
+            details = ""
+            for item in item_list:
+                details += f"{item.getPosition()},"
+                counter += 1
+                if counter == 10:
+                    if item != item_list[-1]:
+                        details += "\n"
+                    counter = 0
+                else:
+                    details += " "
+            details += f"\n"
+
+            text.append((src.interaction.urwid.AttrSpec("#888", "black"),details))
 
         return text
 

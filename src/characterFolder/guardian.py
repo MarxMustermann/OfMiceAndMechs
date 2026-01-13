@@ -47,13 +47,13 @@ class Guardian(src.monster.Monster):
             characterId=characterId,
         )
 
-        baseMovementSpeed = 2
-        baseAttackSpeed = 2
+        baseMovementSpeed = 1
+        baseAttackSpeed = 1
         baseRawDamage = 4
         basehealth = 50
         if src.gamestate.gamestate.difficulty == "medium":
-            baseMovementSpeed = 1
-            baseAttackSpeed = 1
+            baseMovementSpeed = 0.8
+            baseAttackSpeed = 0.8
             baseRawDamage = 8
             basehealth = 400
         if src.gamestate.gamestate.difficulty == "difficult":
@@ -69,10 +69,11 @@ class Guardian(src.monster.Monster):
         self.godMode = True
         self.level = level
 
+        self.movementSpeed = baseMovementSpeed
+        self.baseAttackSpeed = baseAttackSpeed
+
         self.maxHealth = basehealth+basehealth*0.25*self.level
         self.health = self.maxHealth
-        self.movementSpeed = baseMovementSpeed-(baseMovementSpeed*0.5/15*self.level)
-        self.baseAttackSpeed = baseAttackSpeed-(baseAttackSpeed*0.5/15*self.level)
         self.baseDamage = baseRawDamage+(baseRawDamage*0.5*self.level)
 
     def changed(self, tag="default", info=None):

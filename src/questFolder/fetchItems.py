@@ -7,7 +7,7 @@ class FetchItems(src.quests.MetaQuestSequence):
     type = "FetchItems"
     lowLevel = True
 
-    def __init__(self, description="fetch items", creator=None, toCollect=None, amount=None, returnToTile=True,lifetime=None,takeAnyUnbolted=False,tryHard=False,reason=None):
+    def __init__(self, description="fetch items", creator=None, toCollect=None, amount=None, returnToTile=True,lifetime=None,takeAnyUnbolted=False,tryHard=False,reason=None,topUpInventory=False):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
@@ -19,6 +19,7 @@ class FetchItems(src.quests.MetaQuestSequence):
         self.takeAnyUnbolted = takeAnyUnbolted
         self.tryHard = tryHard
         self.reason = reason
+        self.topUpInventory = topUpInventory
 
         if toCollect:
             self.setParameters({"toCollect":toCollect})
@@ -193,7 +194,7 @@ Press d to move the cursor and show the subquests description.
                 return action
 
         # free up the players inventory
-        if not self.amount:
+        if not self.amount and not self.topUpInventory:
             numItemsCollected = 0
             for item in reversed(character.inventory):
                 if item.type != self.toCollect:

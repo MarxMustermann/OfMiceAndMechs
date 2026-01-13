@@ -361,6 +361,10 @@ class Item:
             character: the character using the item
         """
 
+        # remove interaction markings
+        if "itemMarkedLast" in character.macroState:
+            del character.macroState["itemMarkedLast"]
+
         # gather actions
         actions = self.gatherApplyActions(character)
         character.takeTime(1,"used item")

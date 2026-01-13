@@ -42,15 +42,16 @@ class Mechanical_Crawler(src.monster.Monster):
         shade = int(255-((255/7)*self.level))
         self.specialDisplay = (src.interaction.urwid.AttrSpec((255,shade,shade),"#000"), "st")
 
-        baseMovementSpeed = 2
-        baseAttackSpeed = 2
+        baseMovementSpeed = 1
+        baseAttackSpeed = 1
         baseRawDamage = 2
         basehealth = 10
 
+        self.movementSpeed = baseMovementSpeed
+        self.baseAttackSpeed = baseAttackSpeed
+
         self.maxHealth = basehealth+basehealth*0.25*self.level
         self.health = self.maxHealth
-        self.movementSpeed = baseMovementSpeed-(baseMovementSpeed*0.5/15*self.level)
-        self.baseAttackSpeed = baseAttackSpeed-(baseAttackSpeed*0.5/15*self.level)
         self.baseDamage = baseRawDamage+(baseRawDamage*0.5*self.level)
 
     def changed(self, tag="default", info=None):

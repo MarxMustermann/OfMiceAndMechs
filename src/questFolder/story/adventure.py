@@ -99,8 +99,9 @@ class Adventure(src.quests.MetaQuestSequence):
                             continue
                         numItems += 1
                 if numItems > 4:
-                    quest = src.quests.questMap["ClearTile"](targetPositionBig=room.getPosition(),reason="increase chances the traps will work")
-                    return ([quest],None)
+                    quest1 = src.quests.questMap["ClearTile"](targetPositionBig=room.getPosition(),reason="increase chances the traps will work")
+                    quest2 = src.quests.questMap["EnsureMaindutyClone"](dutyType="cleaning",reason="have somebody clean up the traps")
+                    return ([quest2,quest1],None)
 
             # ensure not beeing encombered
             for item in character.inventory:

@@ -33,7 +33,7 @@ class MemoryFragment(src.items.Item):
             terrain = character.getTerrain()
             if terrain.mana >= 2:
                 manaCrystal = src.items.itemMap["ManaCrystal"]()
-                if self in character.inventory:
+                if character.inventory.getFreeInventorySpace():
                     character.inventory.append(manaCrystal)
                 else:
                     character.container.addItem(manaCrystal,character.getPosition())

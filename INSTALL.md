@@ -15,6 +15,7 @@ The game will take some moments to start and a console window may open, just giv
   * `sudo apt-get install python3 python3-venv`
 
 * clone or download the game
+  * `sudo apt-get install git`
   * `git clone https://github.com/MarxMustermann/OfMiceAndMechs.git`
   * or use the download as ZIP button and unzip
 

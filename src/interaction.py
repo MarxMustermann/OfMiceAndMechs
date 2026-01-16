@@ -903,8 +903,6 @@ def handleActivitySelection(key,char):
                 for check_character in check_characters:
                     if check_character.faction == char.faction:
                         continue
-                    if (x,y) == (7,7):
-                        print("found character")
                     front_color = "#fff"
                     content = mapContent[y][x]
                     if not isinstance(content,str):

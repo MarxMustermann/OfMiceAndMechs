@@ -20,8 +20,8 @@ The game will take some moments to start and a console window may open, just giv
 
 * install the game with:
   * `cd OfMiceAndMechs`
-  * `python3 -m venv venvFolder` set up venv
-  * `venvFolder/bin/python3 -m pip install -r requirements.txt` install dependencies
+  * `python3 -m venv venvFolder`
+  * `venvFolder/bin/python3 -m pip install -r requirements.txt`
 
 * run the game with:
   * `venvFolder/bin/python3 executeMe.py`

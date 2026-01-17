@@ -35,6 +35,11 @@ class HelpMenu(src.subMenu.SubMenu):
         # show info
         src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\n\nhelp\n\n"))
 
+        src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.render()))
+
+        return False
+
+    def render(self):
         txt = ""
         txt += "\n= movement =\n"
         txt += " w/a/s/d: move north/east/south/west (up/left/down/right)\n"
@@ -64,6 +69,4 @@ class HelpMenu(src.subMenu.SubMenu):
         txt += "\n"
         txt += ""
 
-        src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), txt))
-
-        return False
+        return txt

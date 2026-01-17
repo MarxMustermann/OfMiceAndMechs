@@ -87,7 +87,7 @@ class ContactMainBase(src.quests.MetaQuestSequence):
         if character.getPosition(offset=(0,-1,0)) == itemPos:
             direction = "w"
 
-        return (None,(direction+"jsj","activate communicator"))
+        return (None,(direction+"j","activate communicator"))
 
     def generateTextDescription(self):
         return ["""

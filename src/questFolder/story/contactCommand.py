@@ -32,8 +32,8 @@ class ContactCommand(src.quests.MetaQuestSequence):
             if character.yPosition%15 == 14:
                 return (None,("w","enter room"))
 
-        if character.macroState.get("submenue"):
-            submenue = character.macroState.get("submenue")
+        submenue = character.macroState.get("submenue")
+        if submenue and not ignoreCommands:
             if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu):
                 foundOption = False
                 rewardIndex = 0
@@ -92,7 +92,7 @@ class ContactCommand(src.quests.MetaQuestSequence):
         if character.getPosition(offset=(0,-1,0)) == itemPos:
             direction = "w"
 
-        return (None,(direction+"jj","activate communicator"))
+        return (None,(direction+"j","activate communicator"))
 
     def generateTextDescription(self):
         return ["""

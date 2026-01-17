@@ -2953,7 +2953,7 @@ but they are likely to explode when disturbed.
 
         # heal
         # triggers at any time
-        if mainChar.health < mainChar.maxHealth - 10:
+        if mainChar.health < mainChar.maxHealth // 2:
 
             if len(mainChar.rememberedMenu2) < 2:
                 inventoryMenu = src.menuFolder.inventoryMenu.InventoryMenu(mainChar)

@@ -66,6 +66,17 @@ The room has to be a rectangle.
             character.addMessage("this machine can not be used within rooms")
             return
 
+        # abort if items are missing
+        missing_items = self.get_missing_items()
+        if missing_items:
+            text = "Could not build room, there are items missing:\n\n"
+            for entry in missing_items:
+                text += f"{entry[0]}: "
+                text += f"({entry[1][0]%15}, {entry[1][1]%15}, {entry[1][2]%15})"
+                text += f"\n"
+            character.showTextMenu(text)
+            return
+
         # find room edges
         wallLeft = False
         for offset in range(6, 7):

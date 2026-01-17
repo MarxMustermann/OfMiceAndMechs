@@ -222,7 +222,7 @@ if __name__ == '__main__':
                                 if isinstance(event, tcod.event.KeyDown):
                                     if event.sym == tcod.event.KeySym.y:
                                         import webbrowser
-                                        webbrowser.open_new_tab("https://discord.gg/wQAcXBDqk8")
+                                        webbrowser.open_new_tab("https://discord.gg/z5QfwfzWCn")
                                         return
                                     if event.sym == tcod.event.KeySym.n:
                                         return

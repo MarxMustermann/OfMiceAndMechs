@@ -166,7 +166,7 @@ class StoryExtendBase(src.quests.MetaQuestSequence):
                     numDoorsInStorage += len(room.getItemsByType("Door",needsUnbolted=True))
 
                 # add mssing material 
-                if (missing_walls and wallsInStorage) or (missing_doors and numDoorsInStorage >= 4):
+                if (missing_walls and wallsInStorage) or ((not missing_walls) and missing_doors and numDoorsInStorage >= 4):
                     quest = src.quests.questMap["BuildRoom"](targetPosition=(8,7,0),takeAnyUnbolted=True,ignoreAlarm=True,reason="have more space to work with")
                     return ([quest],None)
 

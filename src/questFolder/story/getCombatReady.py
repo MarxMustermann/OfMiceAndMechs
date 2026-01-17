@@ -21,8 +21,10 @@ class GetCombatReady(src.quests.MetaQuestSequence):
         if not isinstance(character.container,src.rooms.Room):
             return (None,None)
 
-        if character.macroState["submenue"]:
-            return (None,(["esc"],"close the menu"))
+        submenue = character.macroState.get("submenue")
+        if submenue and not ignoreCommands:
+            if submenue.tag not in ("advancedInteractionSelection",):
+                return (None,(["esc"],"close the menu"))
 
         if not character.weapon:
             items = character.container.getItemsByType("Sword")
@@ -75,7 +77,13 @@ class GetCombatReady(src.quests.MetaQuestSequence):
                     if character.getPosition(offset=(0,-1,0)) == item.getPosition():
                         direction = "w"
 
-                    return (None,("J"+direction,"heal"))
+                    interaction_command = "J"
+                    if submenue:
+                        if submenue.tag == "advancedInteractionSelection":
+                            interaction_command = ""
+                        else:
+                            return (None,(["esc"],"close menu"))
+                    return (None,(interaction_command+direction,"heal"))
 
                 quest = src.quests.questMap["GoToPosition"](targetPosition=validCoalBurners[0].getPosition(),reason="be able to heal",description="go to a coal burner",ignoreEndBlocked=True)
                 return ([quest],None)

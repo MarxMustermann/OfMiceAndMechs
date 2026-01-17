@@ -6,11 +6,12 @@ class SetBaseAutoExpansion(src.quests.MetaQuestSequence):
     quest to set the amount of rooms the NPCs should build automatically
     '''
     type = "SetBaseAutoExpansion"
-    def __init__(self, description="set base expansion parameter", creator=None, targetLevel=2):
+    def __init__(self, description="set base expansion parameter", creator=None, targetLevel=2, reason=None):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
         self.targetLevel = targetLevel
+        self.reason = reason
 
     def triggerCompletionCheck(self,character=None, dryRun=True):
         '''
@@ -105,7 +106,13 @@ class SetBaseAutoExpansion(src.quests.MetaQuestSequence):
         '''
         generate a text description to show on the UI
         '''
-        text = ["""
+        reason_string = ""
+        if self.reason:
+            reason_string = f", to {self.reason}"
+
+        text = [f"""
+Configure the base expansion threashold{reason_string}.
+
 To set up new production lines or facilities a base needs empty rooms.
 Clones can ensure there are always new rooms to build it.
 

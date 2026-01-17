@@ -69,11 +69,42 @@ The room has to be a rectangle.
         # abort if items are missing
         missing_items = self.get_missing_items()
         if missing_items:
-            text = "Could not build room, there are items missing:\n\n"
+
+            # set up basic text
+            text = ["Could not build room, there are items missing:\n\n"]
+
+            # add graphical representation to text
+            map_view = []
+            base_position = (self.xPosition//15*15,self.yPosition//15*15,0)
+            for y in range(1,14):
+                for x in range(1,14):
+                    display = "  "
+                    color = "#666"
+                    if y in (1,13) or x in (1,13):
+                        if y == 7 or x == 7:
+                            display = "[]"
+                            items = self.container.getItemByPosition((x+base_position[0],y+base_position[1],0))
+                            if (not len(items) == 1) or (not items[0].type == "Door"):
+                                color = "#e22"
+                        else:
+                            display = "XX"
+                            items = self.container.getItemByPosition((x+base_position[0],y+base_position[1],0))
+                            if (not len(items) == 1) or (not items[0].type == "Wall"):
+                                color = "#e22"
+                    elif (x,y) == (7,7):
+                        display = "RB"
+                    map_view.append((src.interaction.urwid.AttrSpec(color,"#000"), display))
+                map_view.append("\n")
+            text.append(map_view)
+            text.append("\n")
+
+            # add list to text
             for entry in missing_items:
-                text += f"{entry[0]}: "
-                text += f"({entry[1][0]%15}, {entry[1][1]%15}, {entry[1][2]%15})"
-                text += f"\n"
+                text.append(f"{entry[0]}: ")
+                text.append(f"({entry[1][0]%15}, {entry[1][1]%15}, {entry[1][2]%15})")
+                text.append(f"\n")
+
+            # show text to the user
             character.showTextMenu(text)
             return
 

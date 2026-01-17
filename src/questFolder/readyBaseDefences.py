@@ -98,9 +98,7 @@ class ReadyBaseDefences(src.quests.MetaQuestSequence):
                 interactionCommand = ""
             else:
                 return (None,(["esc"],"close menu"))
-        if terrain.alarm == False:
-            return (None,(interactionCommand+direction+"j","enable the outside restrictions"))
-        return (None,(interactionCommand+direction+"ssj","sound the alarms"))
+        return (None,(interactionCommand+direction,"activate the siege manager"))
 
     def generateTextDescription(self):
         reasonString = ""

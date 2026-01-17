@@ -7,7 +7,7 @@ class GoHome(src.quests.MetaQuestSequence):
     quest to go home
     '''
     type = "GoHome"
-    def __init__(self, description="go home", creator=None, paranoid=False,reason=None):
+    def __init__(self, description="go home", creator=None, paranoid=False,reason=None,endOnHomeTerrain=False):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
@@ -17,6 +17,7 @@ class GoHome(src.quests.MetaQuestSequence):
         self.addedSubQuests = False
         self.paranoid = paranoid
         self.reason = reason
+        self.endOnHomeTerrain = endOnHomeTerrain
 
     def generateTextDescription(self):
         '''
@@ -35,14 +36,13 @@ other important artworks like the quest artwork.
 
 Many activities can be started from the command centre.
 Go there and be ready for action.
-
-
-
-Quests like this can be pretty boring.
-Press c now to use auto move to complete this quest.
-Be careful with auto move, while danger is nearby.
-Press control-d to stop your character from moving.
 """
+        try:
+            self.endOnHomeTerrain
+        except:
+            self.endOnHomeTerrain = False
+        if self.endOnHomeTerrain:
+            text += "\nThis quest will end once you reach the home terrain."
         return text
 
     def triggerCompletionCheck(self, character=None, dryRun=True):
@@ -54,6 +54,15 @@ Press control-d to stop your character from moving.
 
         if character.getTerrainPosition() != self.getHomeLocation():
             return False
+
+        try:
+            self.endOnHomeTerrain
+        except:
+            self.endOnHomeTerrain = False
+        if self.endOnHomeTerrain:
+            if not dryRun:
+                self.postHandler()
+            return True
 
         homeRoom = character.getHomeRoom()
         if homeRoom:
@@ -197,7 +206,7 @@ Press control-d to stop your character from moving.
             else:
                 roomsToSearch = character.container.rooms
 
-            # return home
+            # teleport home
             for room in roomsToSearch:
                 items = room.getItemsByType("Shrine")
                 if not items:
@@ -208,9 +217,44 @@ Press control-d to stop your character from moving.
                     paranoid=self.paranoid, targetPosition=foundShrine.container.getPosition(), reason="get to a shrine"
                 )
                 return ([quest], None)
-            else:
-                quest = src.quests.questMap["GoToTerrain"](targetTerrain=self.getHomeLocation(),reason="get home any way possible")
-                return ([quest], None)
+
+            # check for closest point to return
+            candidates = []
+            extraWeight = {}
+            for x in range(1,14):
+                for y in range(1,14):
+                    coordinate = (x, y, 0)
+                    extraWeight[coordinate] = 30000
+                    if coordinate in character.terrainInfo:
+                        info = character.terrainInfo[coordinate]
+                        if coordinate == character.getHomeTerrain().getPosition():
+                            extraWeight[coordinate] = 0
+                        if info.get("tag") == "shrine":
+                            extraWeight[coordinate] = 1
+                    if coordinate == (7,7,0): # avoid endgame dungeon
+                        extraWeight[coordinate] = 32000
+                    candidates.append(coordinate)
+
+            # sort nearest target candidate skewed by desirebility with slight random
+            best_candidate = None
+            best_distance = None
+            current_pos = character.getTerrainPosition()
+            for candidate in candidates:
+                distance = src.helpers.distance_between_points(current_pos, candidate)
+                distance += extraWeight[candidate]
+                distance += random.random()
+                if best_candidate is None or distance < best_distance:
+                    print(best_distance)
+                    best_distance = distance
+                    best_candidate = candidate
+            targetTerrain = best_candidate
+
+            # move to selected target
+            reason = "have to opportunity to teleport home"
+            if targetTerrain == character.getHomeTerrain().getPosition():
+                reason = "get home any way possible"
+            quest = src.quests.questMap["GoToTerrain"](targetTerrain=targetTerrain,reason=reason)
+            return ([quest], None)
 
         # workaround missing home rooms
         homeRoom = character.getHomeRoom()

@@ -523,11 +523,11 @@ Press d to move the cursor and show the subquests description.
                     if not dryRun:
                         self.idleCounter += 1
                     return ([quest],None)
-                quest = src.quests.questMap["GoToPosition"](targetPosition=(random.randint(1,11),random.randint(1,11),0),description="wait for something to happen",reason="ensure nothing exciting will happening")
+                quest1 = src.quests.questMap["GoToPosition"](targetPosition=(random.randint(1,11),random.randint(1,11),0),description="wait for something to happen",reason="ensure nothing exciting will happening")
                 if not dryRun:
                     self.idleCounter += 1
-                character.takeTime(self.idleCounter,"was idle")
-                return ([quest],None)
+                quest2 = src.quests.questMap["WaitQuest"](lifetime=self.idleCounter,reason="wait for something to happen")
+                return ([quest2,quest1],None)
 
         homePos = character.getHomeRoomCord()
         if homePos:

@@ -73,15 +73,14 @@ Set the floor plan: {self.floorPlanType}
             if character.getTerrain().getRoomByPosition(character.getBigPosition()):
                 quest = src.quests.questMap["EnterRoom"](reason="be able to act properly")
                 return ([quest],None)
-            else:
-                quest = src.quests.questMap["GoHome"](reason="go inside")
-                return ([quest],None)
 
         # go to room with city planer
-        cityPlaner = character.container.getItemByType("CityPlaner")
+        cityPlaner = None
+        if character.container.isRoom:
+            cityPlaner = character.container.getItemByType("CityPlaner",needsBolted=True)
         if not cityPlaner:
             for room in character.getTerrain().rooms:
-                cityPlaner = room.getItemByType("CityPlaner")
+                cityPlaner = room.getItemByType("CityPlaner",needsBolted=True)
                 if not cityPlaner:
                     continue
                 quest = src.quests.questMap["GoToTile"](targetPosition=cityPlaner.getBigPosition(),description="go to command centre",reason="go to command centre")

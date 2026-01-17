@@ -43,29 +43,22 @@ class ActivateGlassStatue(src.quests.MetaQuestSequence):
         return True
 
     def getNextStep(self,character,ignoreCommands=False,dryRun=True):
+
+        # handle weird edge cases
         if self.subQuests:
             return (None,None)
 
+        # handle menues
         submenue = character.macroState["submenue"]
         if submenue and not ignoreCommands:
-            if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu):
-                targetIndex = 1
-                for option in submenue.options.values():
-                    if option == "teleport":
-                        break
-                    targetIndex += 1
-                else:
-                    return (None,(["esc"],"close menu"))
 
-                offset = targetIndex-submenue.selectionIndex
-                command = ""
-                if offset > 0:
-                    command += "s"*offset
-                else:
-                    command += "w"*(-offset)
-                command += "j"
-                return (None,(command,"teleport to dungeon"))
+            # do the teleport
+            if submenue.tag == "applyOptionSelection":
+                command = submenue.get_command_to_select_option("teleport")
+                if command:
+                    return (None,(command,"teleport to dungeon"))
 
+            # close unknown menues
             if submenue.tag not in ("advancedInteractionSelection",):
                 return (None,(["esc"],"close menu"))
 
@@ -77,20 +70,15 @@ class ActivateGlassStatue(src.quests.MetaQuestSequence):
             else:
                 return (None,(".","undo selection"))
 
-        terrain = character.getTerrain()
-        for room in terrain.rooms:
-            throne = room.getItemByType("Throne",needsBolted=True)
-            if throne:
-                break
-
+        # go to glass statue
         if character.getBigPosition() != self.targetPositionBig:
-            quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,description="go to the temple",reason="to reach the GlassStatue")
+            quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,description="go to the temple",reason="reach the GlassStatue")
             return ([quest],None)
-
         if character.getDistance(self.targetPosition) > 1:
             quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True,description="go to the GlassStatue",reason="be able to activae the GlassStatue")
             return ([quest],None)
 
+        # activate the glass statue
         pos = character.getPosition()
         direction = "."
         if (pos[0]-1,pos[1],pos[2]) == self.targetPosition:
@@ -110,8 +98,13 @@ class ActivateGlassStatue(src.quests.MetaQuestSequence):
         return (None,(interactionCommand+direction,"activate the GlassStatue"))
 
     def generateTextDescription(self):
-        text = ["""
-The GlassStatues are connected to the heart of their god. 
+        reason_string = ""
+        if self.reason:
+            reason_string = f", to {self.reason}"
+        text = [f"""
+Activate a GlassStatue{reason_string}.
+
+The GlassStatues are connected to the heart of their god.
 Use the GlassStatue to be teleported to the dungeon the heart is in.
 
 Expect combat after the teleport.

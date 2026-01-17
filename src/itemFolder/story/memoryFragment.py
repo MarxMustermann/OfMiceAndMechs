@@ -37,9 +37,9 @@ class MemoryFragment(src.items.Item):
                     character.inventory.append(manaCrystal)
                 else:
                     character.container.addItem(manaCrystal,character.getPosition())
-                text += f"the memory fragment crystalises."
+                text += f"\nThe memory fragment crystalises."
             else:
-                text += f"the memory fragment starts to crystalise. But there is no mana in this terrain"
+                text += f"\nthe memory fragment starts to crystalise. But there is no mana in this terrain"
 
         if is_new_info:
             pseudo_map = []

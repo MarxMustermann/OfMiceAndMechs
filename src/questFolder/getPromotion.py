@@ -65,14 +65,14 @@ Use the Promotor to do this.
         submenue = character.macroState.get("submenue")
         if submenue and not ignoreCommands:
             if isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu):
-                return (None,(["enter"],"select reward"))
+                return (None,("j","select reward"))
             if submenue.tag == "promotionIntro":
-                return (None,(["enter"],"continue"))
+                return (None,("j","continue"))
             if submenue.tag not in ("advancedInteractionSelection",):
                 return (None,(["esc"],"close the menu"))
 
         if not character.getTerrain() == character.getHomeTerrain():
-            quest = src.quests.questMap["GoHome"]()
+            quest = src.quests.questMap["GoHome"](reason="get back to base")
             return  ([quest],None)
 
         # activate production item when marked
@@ -94,36 +94,33 @@ Use the Promotor to do this.
             if pos == (7,0,0):
                 return (None,("s","enter room"))
 
-        room = character.container
-
-        if not isinstance(character.container, src.rooms.Room):
-            quest = src.quests.questMap["GoHome"](description="go inside")
-            return  ([quest],None)
-        
-        for item in room.itemsOnFloor:
-            if not item.bolted:
-                continue
-            if item.type != "Promoter":
-                continue
-
-            interactionCommand = "J"
-            if submenue:
-                if submenue.tag == "advancedInteractionSelection":
-                    interactionCommand = ""
-                else:
-                    return (None,(["esc"],"close menu"))
-            if item.getPosition() == (character.xPosition-1,character.yPosition,0):
-                return (None,(interactionCommand+"a","get promotion"))
-            if item.getPosition() == (character.xPosition+1,character.yPosition,0):
-                return (None,(interactionCommand+"d","get promotion"))
-            if item.getPosition() == (character.xPosition,character.yPosition-1,0):
-                return (None,(interactionCommand+"w","get promotion"))
-            if item.getPosition() == (character.xPosition,character.yPosition+1,0):
-                return (None,(interactionCommand+"s","get promotion"))
+        if isinstance(character.container, src.rooms.Room):
+            room = character.container
             
-            quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to promoter ")
-            return  ([quest],None)
-        
+            for item in room.itemsOnFloor:
+                if not item.bolted:
+                    continue
+                if item.type != "Promoter":
+                    continue
+
+                interactionCommand = "J"
+                if submenue:
+                    if submenue.tag == "advancedInteractionSelection":
+                        interactionCommand = ""
+                    else:
+                        return (None,(["esc"],"close menu"))
+                if item.getPosition() == (character.xPosition-1,character.yPosition,0):
+                    return (None,(interactionCommand+"a","get promotion"))
+                if item.getPosition() == (character.xPosition+1,character.yPosition,0):
+                    return (None,(interactionCommand+"d","get promotion"))
+                if item.getPosition() == (character.xPosition,character.yPosition-1,0):
+                    return (None,(interactionCommand+"w","get promotion"))
+                if item.getPosition() == (character.xPosition,character.yPosition+1,0):
+                    return (None,(interactionCommand+"s","get promotion"))
+                
+                quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to promoter ")
+                return  ([quest],None)
+            
         terrain = character.getTerrain()
         for room in terrain.rooms:
             if room.getItemByType("Promoter"):

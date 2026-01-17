@@ -34,7 +34,7 @@ class ConfigureManufacturingTable(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         reason = ""
         if self.reason:
-            reason = f", to {self.reason}"
+            reason = f",\nto {self.reason}"
         return f"""
 Configure the manufacturing table on {self.targetPosition}{reason} to produce {self.itemType}.
 

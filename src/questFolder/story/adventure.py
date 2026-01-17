@@ -208,9 +208,9 @@ class Adventure(src.quests.MetaQuestSequence):
                     return ([quest], None)
         # move on
         if character.getFreeInventorySpace(ignoreTypes=["Bolt"]) < 2:
-            quest = src.quests.questMap["GoHome"]()
+            quest = src.quests.questMap["GoHome"](reason="get back to base")
             return ([quest], None)
-        quest = src.quests.questMap["SearchForRuins"]()
+        quest = src.quests.questMap["SearchForRuins"](reason="find more places to loot")
         return ([quest], None)
         
     def generateTextDescription(self):

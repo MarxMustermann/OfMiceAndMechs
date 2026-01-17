@@ -1,22 +1,25 @@
-import random
-
 import src
 
+import random
 
 class ClearTerrain(src.quests.MetaQuestSequence):
     type = "ClearTerrain"
     lowLevel = True
 
-    def __init__(self, description="clear terrain", creator=None, command=None, lifetime=None,outsideOnly=False,insideOnly=False):
+    def __init__(self, description="clear terrain", creator=None, command=None, lifetime=None,outsideOnly=False,insideOnly=False,reason=None):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = description
         self.outsideOnly = outsideOnly
         self.insideOnly = insideOnly
+        self.reason = reason
 
     def generateTextDescription(self):
-        text = ["""
-Clear the whole terrain from enemies.
+        reason_string = ""
+        if self.reason:
+            reason_string = f", to {self.reason}"
+        text = [f"""
+Clear the whole terrain from enemies{reason_string}.
 
 Just clear the whole terrain tile for tile.
 """]
@@ -106,14 +109,14 @@ Just clear the whole terrain tile for tile.
                         continue
                     if otherChar.yPosition//15 in (0,14):
                         continue
-                    quest = src.quests.questMap["SecureTile"](toSecure=(otherChar.xPosition//15,otherChar.yPosition//15),endWhenCleared=True)
+                    quest = src.quests.questMap["SecureTile"](toSecure=(otherChar.xPosition//15,otherChar.yPosition//15),endWhenCleared=True,reason="kill the remaining enemies")
                     return ([quest],None)
             if step == "clearRooms":
                 for room in terrain.rooms:
                     for otherChar in room.characters:
                         if otherChar.faction == character.faction:
                             continue
-                        quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition(),endWhenCleared=True)
+                        quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition(),endWhenCleared=True,reason="secure the base")
                         return ([quest],None)
 
         return (None,(".","stand around confused"))

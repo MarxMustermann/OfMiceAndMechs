@@ -152,6 +152,7 @@ class GlassStatue(src.items.Item):
 
 
         submenue = src.menuFolder.textMenu.TextMenu(text)
+        submenue.do_not_scale = True
         character.macroState["submenue"] = submenue
         character.addMessage(text)
 
@@ -363,6 +364,7 @@ The GlassHeart scream and its agony takes physical form.
 
 A wave of enemies is approaching to steal the GlassHeart.
 """)
+        submenue.do_not_scale = True
         character.macroState["submenue"] = submenue
 
         src.magic.spawnWaves()

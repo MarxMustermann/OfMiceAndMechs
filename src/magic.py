@@ -137,7 +137,8 @@ def teleportToTerrain(character, terrainPosition, spawnOutside=False):
     else:
         terrain.addCharacter(character, 15 * target_tile_position[0] + 7, 15 * target_tile_position[1] + 7)
     character.changed("changedTerrain",{"character":character})
-    character.interactionState["itemMarkedLast"] = None
+    if "itemMarkedLast" in character.macroState:
+        del character.macroState["itemMarkedLast"]
 
 def spawnCharacter(terrain, bigCoordinate=None, coordinate=None, monsterType=None, faction=None):
     if not faction:
@@ -994,6 +995,7 @@ def setUpRuin(pos):
             continue
         filled_cord.append(rand_pos)
         if make_room:
+
             # create the basic room
             room = architect.doAddRoom(
                     {
@@ -1026,7 +1028,7 @@ def setUpRuin(pos):
                             continue
                         room.addItem(mana_crystal,position)
                     else:
-                        position = (random.randint(1,13),random.randint(1,13),0)
+                        position = (random.randint(1,12),random.randint(1,12),0)
                         item = src.items.itemMap[random.choice(loot_types)]()
                         if item.type == "GooFlask":
                             item.uses = 100
@@ -1042,10 +1044,10 @@ def setUpRuin(pos):
 
                     # add monster
                     pos = (random.randint(1,11),random.randint(1,11),0)
-                    multiplier = src.monster.Monster.get_random_multiplier(monsterType)
+                    level = random.randint(1,7)
                     if src.gamestate.gamestate.difficulty == "easy":
-                        multiplier = 1
-                    golem = src.characters.characterMap[monsterType](multiplier=multiplier)
+                        level = 1
+                    golem = src.characters.characterMap[monsterType](level=level)
                     golem.godMode = True
                     quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
                     quest.autoSolve = True
@@ -1062,10 +1064,10 @@ def setUpRuin(pos):
             for i in range(random.randint(1,3)):
                 monsterType = random.choice(["Golem","ShieldBug"])
                 pos = (random.randint(1,11),random.randint(1,11),0)
-                multiplier = src.monster.Monster.get_random_multiplier(monsterType)
+                level = random.randint(1,7)
                 if src.gamestate.gamestate.difficulty == "easy":
-                    multiplier = 1
-                golem = src.characters.characterMap[monsterType](multiplier=multiplier)
+                    level = 1
+                golem = src.characters.characterMap[monsterType](level=level)
                 golem.godMode = True
                 quest = src.quests.questMap["SecureTile"](toSecure=rand_pos)
                 quest.autoSolve = True
@@ -1119,7 +1121,7 @@ def setUpThroneDungeon(pos):
     glassHeart = src.items.itemMap["GlassThrone"]()
     mainRoom.addItem(glassHeart,(6,6,0))
 
-    enemy = src.characters.characterMap["Guardian"](4,4,modifier=15)
+    enemy = src.characters.characterMap["Guardian"](4,4,level=15)
     guardRoom.addCharacter(enemy,11,6)
 
     quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0))

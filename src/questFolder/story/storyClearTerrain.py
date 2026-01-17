@@ -1,16 +1,14 @@
 import src
+
 import random
-
-import src.helpers
-
 
 class StoryClearTerrain(src.quests.MetaQuestSequence):
     type = "StoryClearTerrain"
-
-    def __init__(self, description="secure terrain", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None):
+    def __init__(self, description="secure terrain", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None,reason=None):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
+        self.reason = reason
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
 
@@ -33,7 +31,7 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
                         continue
                     if item.type in ("Wall","Scrap","MoldFeed","Bolt"):
                         continue
-                    quest = src.quests.questMap["LootRoom"](targetPositionBig=character.getBigPosition(),endWhenFull=True)
+                    quest = src.quests.questMap["LootRoom"](targetPositionBig=character.getBigPosition(),endWhenFull=True, reason="gather useful items")
                     return ([quest],None)
 
         # ensure healing for the clones
@@ -238,10 +236,11 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
         return ([quest],None)
 
     def generateTextDescription(self):
-        text = ["""
-You reach out to your implant and it answers:
-
-Clear the terrain from all enemies, to be able to get promoted to base commander.
+        reason_string = ""
+        if self.reason:
+            reason_string = f", {self.reason}"
+        text = [f"""
+Clear the terrain from all enemies{reason_string}.
 This will allow you to contact main base.
 
 There are several types of enemies, that have different behaviour.

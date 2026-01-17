@@ -11,11 +11,13 @@ class ShieldBug(src.characters.characterMap["Insect"]):
         name="ShieldBug",
         creator=None,
         characterId=None,
-        multiplier=1,
+        level=1,
         runModifier=0,
     ):
         if quests is None:
             quests = []
+
+        multiplier = level
 
         super().__init__(
             display,

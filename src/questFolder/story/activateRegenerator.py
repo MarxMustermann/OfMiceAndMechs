@@ -4,10 +4,11 @@ import src
 class ActivateRegenerator(src.quests.MetaQuestSequence):
     type = "ActivateRegenerator"
 
-    def __init__(self, description="activate the regenerator", creator=None):
+    def __init__(self, description="activate the regenerator", creator=None, reason=None):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
+        self.reason = reason
 
     def handleRegeneratorActivated(self, extraInfo):
         self.postHandler()
@@ -39,12 +40,18 @@ class ActivateRegenerator(src.quests.MetaQuestSequence):
         return False
 
     def getNextStep(self,character,ignoreCommands=False,dryRun=True):
+
+        # handle weird edge cases
         if self.subQuests:
             return (None,None)
         
-        if character.macroState["submenue"] and not ignoreCommands:
-            return (None,(["esc"],"to close menu"))
+        # handle most menus
+        submenue = character.macroState["submenue"]
+        if submenue and not ignoreCommands:
+            if submenue.tag not in ("advancedInteractionSelection",):
+                return (None,(["esc"],"close menu"))
         
+        # enter rooms properly
         if character.xPosition%15 == 7 and character.yPosition%15 == 14:
             return (None,("w","enter the tile"))
         if character.xPosition%15 == 7 and character.yPosition%15 == 0:
@@ -59,6 +66,7 @@ class ActivateRegenerator(src.quests.MetaQuestSequence):
         if action:
             return action
 
+        # find regenerator
         regenerator = None
         terrain = character.getTerrain()
         for room in terrain.rooms:
@@ -66,14 +74,15 @@ class ActivateRegenerator(src.quests.MetaQuestSequence):
             if regenerator:
                 break
 
+        # go to regenerator
         if character.getBigPosition() != regenerator.container.getPosition():
             quest = src.quests.questMap["GoToTile"](targetPosition=regenerator.container.getPosition(),description="go to the temple",reason="to reach the regenerator")
             return ([quest],None)
-
         if character.getDistance(regenerator.getPosition()) > 1:
             quest = src.quests.questMap["GoToPosition"](targetPosition=regenerator.getPosition(),ignoreEndBlocked=True,description="go to the Regenerator",reason="to activate the regenerator")
             return ([quest],None)
         
+        # use regenerator
         t_pos = regenerator.getPosition()
         pos = character.getPosition()
         direction = "."
@@ -85,15 +94,20 @@ class ActivateRegenerator(src.quests.MetaQuestSequence):
             direction = "w"
         if (pos[0],pos[1]+1,pos[2]) == t_pos:
             direction = "s"
-
         interactionCommand = "J"
-        if "advancedInteraction" in character.interactionState:
-            interactionCommand = ""
+        if submenue:
+            if submenue.tag == "advancedInteractionSelection":
+                interactionCommand = ""
+            else:
+                return (None,(["esc"],"close menu"))
         return (None,(interactionCommand+direction,"activate the Regenerator"))
 
     def generateTextDescription(self):
-        text = ["""
-You reach out to your implant and it answers:
+        reasonString = ""
+        if self.reason:
+            resonString = f", to {self.reason}"
+        text = [f"""
+Start the Regenerator{reasonString}.
 
 The base has some clones now and there are many enemies to be slain.
 There will be fights and somebody will get hurt

@@ -16,7 +16,7 @@ class Golem(src.monster.Monster):
         name="Golem",
         creator=None,
         characterId=None,
-        multiplier = 1,
+        level = 1,
         runModifier = 0
     ):
         """
@@ -48,23 +48,19 @@ class Golem(src.monster.Monster):
         self.charType = "Golem"
         self.godMode = True
         self.waitLength = 20
+        self.level = level
 
-        modifier = multiplier
-        shade = int(255-((255/7)*modifier))
-        self.specialDisplay = (src.interaction.urwid.AttrSpec((255,shade,shade),"#000"), "@@")
-
-        baseMovementSpeed = 2
-        baseAttackSpeed = 2
+        baseMovementSpeed = 1
+        baseAttackSpeed = 1
         baseRawDamage = 4
         basehealth = 20
 
-        self.modifier = modifier
-        self.maxHealth = basehealth+basehealth*0.25*modifier
+        self.movementSpeed = baseMovementSpeed
+        self.baseAttackSpeed = baseAttackSpeed
+
+        self.baseDamage = round(baseRawDamage+(baseRawDamage*0.5*self.level),2)
+        self.maxHealth = int(basehealth+basehealth*0.25*self.level)
         self.health = self.maxHealth
-        self.movementSpeed = baseMovementSpeed-(baseMovementSpeed*0.5/15*modifier)
-        self.baseAttackSpeed = baseAttackSpeed-(baseAttackSpeed*0.5/15*modifier)
-        self.rawBaseDame = baseRawDamage+(baseRawDamage*0.5*modifier)
-        self.baseDamage = baseRawDamage+(baseRawDamage*0.5*modifier)
 
     def changed(self, tag="default", info=None):
         if tag == "pickup bolted fail":
@@ -92,5 +88,13 @@ class Golem(src.monster.Monster):
 
     def description(self):
         return self.getLoreDescription()+"\n\n---- "+self.getFunctionalDescription()
+
+    def render(self):
+        try:
+            self.level
+        except:
+            self.level = 1
+        shade = int(255-((255/7)*self.level))
+        return (src.interaction.urwid.AttrSpec((255,shade,shade),"#000"), "@@")
 
 src.characters.add_character(Golem)

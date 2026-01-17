@@ -7,7 +7,7 @@ class FetchItems(src.quests.MetaQuestSequence):
     type = "FetchItems"
     lowLevel = True
 
-    def __init__(self, description="fetch items", creator=None, toCollect=None, amount=None, returnToTile=True,lifetime=None,takeAnyUnbolted=False,tryHard=False,reason=None):
+    def __init__(self, description="fetch items", creator=None, toCollect=None, amount=None, returnToTile=True,lifetime=None,takeAnyUnbolted=False,tryHard=False,reason=None,topUpInventory=False):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
@@ -19,6 +19,7 @@ class FetchItems(src.quests.MetaQuestSequence):
         self.takeAnyUnbolted = takeAnyUnbolted
         self.tryHard = tryHard
         self.reason = reason
+        self.topUpInventory = topUpInventory
 
         if toCollect:
             self.setParameters({"toCollect":toCollect})
@@ -193,7 +194,7 @@ Press d to move the cursor and show the subquests description.
                 return action
 
         # free up the players inventory
-        if not self.amount:
+        if not self.amount and not self.topUpInventory:
             numItemsCollected = 0
             for item in reversed(character.inventory):
                 if item.type != self.toCollect:
@@ -379,6 +380,9 @@ Press d to move the cursor and show the subquests description.
 
         for trueInput in (True,False):
             for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
+                if room.alarm:
+                    continue
+
                 checkedTypes = set()
                 emptyInputSlots = room.getEmptyInputslots(allowStorage=(not trueInput),allowAny=True)
 
@@ -416,6 +420,8 @@ Press d to move the cursor and show the subquests description.
                                 sourceRoom = sourceRoom[0]
                                 if sourceRoom == character.container:
                                     continue
+                                if sourceRoom.alarm:
+                                    continue
                                 outputSlots = sourceRoom.getNonEmptyOutputslots(itemType=inputSlot[1],allowStorage=allowStorage,allowDesiredFilled=allowDesiredFilled)
                                 if not outputSlots:
                                     continue
@@ -426,6 +432,8 @@ Press d to move the cursor and show the subquests description.
                             if not source:
                                 for otherRoom in random.sample(character.getTerrain().rooms,len(character.getTerrain().rooms)):
                                     if otherRoom == room:
+                                        continue
+                                    if otherRoom.alarm:
                                         continue
 
                                     outputSlots = otherRoom.getNonEmptyOutputslots(itemType=inputSlot[1],allowStorage=allowStorage,allowDesiredFilled=allowDesiredFilled)
@@ -495,6 +503,9 @@ Press d to move the cursor and show the subquests description.
                         return (quests,None)
 
         for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
+            if room.alarm:
+                continue
+
             checkedTypes = set()
             for storageSlot in room.storageSlots:
                 if storageSlot[2].get("desiredState") != "filled":

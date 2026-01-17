@@ -5,6 +5,7 @@
 ### windows
 
 Download zip from  https://github.com/MarxMustermann/OfMiceAndMechs/releases/latest/download/OfMiceAndMechs-Win.zip and double click launch_game.bat
+The game will take some moments to start and a console window may open, just give it some time to load.
 
 ### Linux
 

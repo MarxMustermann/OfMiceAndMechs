@@ -571,7 +571,7 @@ class Canvas:
                     try:
                         console.print(x=2*x+numPrinted,y=y,fg=item[0],bg=item[1],string=text)
                     except:
-                        logger.error("cound not draw",item,text)
+                        logger.error(f"cound not draw {item} {text}")
 
                     if actionMeta:
                         src.gamestate.gamestate.clickMap[(2*x+numPrinted,y)] = actionMeta

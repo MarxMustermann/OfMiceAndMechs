@@ -15,7 +15,7 @@ class Mechanical_Crawler(src.monster.Monster):
         name="mechanical crawler",
         creator=None,
         characterId=None,
-        multiplier = 1,
+        level = 1,
         runModifier = 0
     ):
         """
@@ -37,23 +37,19 @@ class Mechanical_Crawler(src.monster.Monster):
         self.charType = "Mechanical crawler"
         self.godMode = True
         self.waitLength = 15
+        self.level = level
 
-        modifier = multiplier
-        shade = int(255-((255/7)*modifier))
-        self.specialDisplay = (src.interaction.urwid.AttrSpec((255,shade,shade),"#000"), "st")
-
-        baseMovementSpeed = 2
-        baseAttackSpeed = 2
+        baseMovementSpeed = 1
+        baseAttackSpeed = 1
         baseRawDamage = 2
         basehealth = 10
 
-        self.modifier = modifier
-        self.maxHealth = basehealth+basehealth*0.25*modifier
+        self.movementSpeed = baseMovementSpeed
+        self.baseAttackSpeed = baseAttackSpeed
+
+        self.maxHealth = basehealth+basehealth*0.25*self.level
         self.health = self.maxHealth
-        self.movementSpeed = baseMovementSpeed-(baseMovementSpeed*0.5/15*modifier)
-        self.baseAttackSpeed = baseAttackSpeed-(baseAttackSpeed*0.5/15*modifier)
-        self.rawBaseDame = baseRawDamage+(baseRawDamage*0.5*modifier)
-        self.baseDamage = baseRawDamage+(baseRawDamage*0.5*modifier)
+        self.baseDamage = baseRawDamage+(baseRawDamage*0.5*self.level)
 
     def changed(self, tag="default", info=None):
         if tag == "pickup bolted fail":
@@ -62,5 +58,13 @@ class Mechanical_Crawler(src.monster.Monster):
 
     def die(self, reason=None, addCorpse=True, killer=None):
         super().die(reason, addCorpse=False, killer=killer)
+
+    def render(self):
+        try:
+            self.level
+        except:
+            self.level = 1
+        shade = int(255-((255/7)*self.level))
+        return (src.interaction.urwid.AttrSpec((255,shade,shade),"#000"), "st")
 
 src.characters.add_character(Mechanical_Crawler)

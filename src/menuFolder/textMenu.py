@@ -38,6 +38,8 @@ class TextMenu(src.subMenu.SubMenu):
             "enter",
             "space",
             " ",
+            "j",
+            "k",
         ):
             if self.followUp:
                 self.callIndirect(self.followUp)

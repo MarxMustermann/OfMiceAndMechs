@@ -1,10 +1,11 @@
 import src
+
 import random
 
 class DelveDungeon(src.quests.MetaQuestSequence):
     type = "DelveDungeon"
 
-    def __init__(self, description="delve dungeon",targetTerrain=None,itemID=None,storyText=None, directSendback=False, suicidal=False, walkToTarget=False):
+    def __init__(self, description="delve dungeon",targetTerrain=None,itemID=None,storyText=None, directSendback=False, suicidal=False, walkToTarget=False, reason=None):
         questList = []
         super().__init__(questList, creator=None)
         self.metaDescription = description
@@ -14,8 +15,13 @@ class DelveDungeon(src.quests.MetaQuestSequence):
         self.directSendback = directSendback
         self.suicidal = suicidal
         self.walkToTarget = walkToTarget
+        self.reason = reason
 
     def generateTextDescription(self):
+        reason_string = ""
+        if self.reason:
+            reason_string = f", to {self.reason}"
+
         text = ""
 
         godname = src.gamestate.gamestate.gods[self.itemID]["name"]
@@ -29,11 +35,11 @@ class DelveDungeon(src.quests.MetaQuestSequence):
         if self.itemID:
             text += f"""
 This dungeon is home of the god {godname} and holds its heart.
-Remove the heart from the GlassStatue holding it.
+Remove the heart from the GlassStatue holding it{reason_string}.
 """
         else:
-            text += """
-Fetch any glass heart.
+            text += f"""
+Fetch any glass heart{reason_string}.
 """
         text += """
 After fetching the glass heart return the glass heart to your base and set it into the glass statue.
@@ -145,6 +151,24 @@ suicidal"""
             currentTerrain = character.getTerrain()
             if currentTerrain == character.getHomeTerrain():
 
+                # check in what state the base is
+                num_NPCs = 0
+                num_enemies = 0
+                for check_character in currentTerrain.getAllCharacters():
+                    if character.is_ally(check_character):
+                        if not character.burnedIn and character.charType == "Clone":
+                            num_NPCs += 1
+                    else:
+                        num_enemies += 1
+
+                # defend the base
+                if num_enemies:
+                    if src.gamestate.gamestate.tick > 1000:
+                        quest = src.quests.questMap["ClearTerrain"]()
+                        return ([quest],None)
+                    quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,lifetime=100,description="defend the arena",reason="ensure no attackers get into the base")
+                    return ([quest],None)
+
                 # upgrade equipment
                 for room in character.getTerrain().rooms:
                     for item in room.getItemsByType("SwordSharpener"):
@@ -220,7 +244,7 @@ suicidal"""
                 if terrain.alarm:
                     remaining_time = 15*15*15-src.gamestate.gamestate.tick%(15*15*15)
                     if remaining_time < 1000:
-                        quest = src.quests.questMap["BeUsefull"](lifetime=remaining_time,reason="wait for wave to pass")
+                        quest = src.quests.questMap["BeUsefull"](lifetime=remaining_time,reason="wait for wave to come")
                         return ([quest],None)
 
             # loot current room
@@ -234,6 +258,23 @@ suicidal"""
 
             # get to the terrain the dungeon is on
             if terrain.xPosition != self.targetTerrain[0] or terrain.yPosition != self.targetTerrain[1]:
+
+                # stock up on consumables
+                itemType = "Vial"
+                if not character.searchInventory(itemType,):
+                    if character.getFreeInventorySpace():
+                        for room in currentTerrain.rooms:
+                            if not room.getNonEmptyOutputslots(itemType):
+                                continue
+                            quest = src.quests.questMap["FetchItems"](toCollect=itemType,reason="have some healing",amount=1)
+                            return ([quest],None)
+                for itemType in ("Bolt",):
+                    if character.getFreeInventorySpace():
+                        for room in currentTerrain.rooms:
+                            if not room.getNonEmptyOutputslots(itemType):
+                                continue
+                            quest = src.quests.questMap["FetchItems"](toCollect=itemType,reason="have ammo",topUpInventory=True)
+                            return ([quest],None)
 
                 # try to teleport to the dungeon
                 if self.itemID:
@@ -333,7 +374,7 @@ suicidal"""
 
         # go back home
         if terrain.xPosition != character.registers["HOMETx"] or terrain.yPosition != character.registers["HOMETy"]:
-            quest = src.quests.questMap["GoHome"](reason="go to your home territory")
+            quest = src.quests.questMap["GoHome"](reason="go to your home territory", endOnHomeTerrain=True)
             return ([quest],None)
         if not character.container.isRoom:
             quest = src.quests.questMap["GoHome"](reason="get into a room")
@@ -406,10 +447,10 @@ suicidal"""
             tryNextTile = True
 
         if tryNextTile:
-            quest = src.quests.questMap["GoToTile"](targetPosition=new_pos,description="go to temple",reason="reach the GlassHeart")
+            quest = src.quests.questMap["GoToTile"](targetPosition=new_pos,description="go to next room",reason="reach the GlassHeart")
             return ([quest],None)
 
-        if rooms:
+        if rooms and not dryRun:
             character.addMessage(f"char strength: {character.getStrengthSelfEstimate()}")
             character.addMessage(f"room strength: {rooms[0].getEstimatedStrength()}")
 

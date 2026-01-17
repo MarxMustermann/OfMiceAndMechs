@@ -92,14 +92,6 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
             if character.getSpacePosition() == (7,14,0):
                 return (None, ("w","enter the room"))
 
-        # mark terrain as completed
-        pointsOfInterest = self.getRemainingPointsOfInterests()
-        if not pointsOfInterest:
-            if currentTerrain.tag == "ruin":
-                return (None,("gc","mark terrain as explored"))
-            else:
-                return self._solver_trigger_fail(dryRun,"no POI")
-
         # loot current tile
         if character.container.isRoom:
             itemsOnFloor = character.container.itemsOnFloor
@@ -138,6 +130,14 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
 
             quest = src.quests.questMap["LootRoom"](targetPositionBig=character.getBigPosition(),endWhenFull=True,reason="gain useful items")
             return ([quest],None)
+
+        # mark terrain as completed
+        pointsOfInterest = self.getRemainingPointsOfInterests()
+        if not pointsOfInterest:
+            if currentTerrain.tag == "ruin":
+                return (None,("gc","mark terrain as explored"))
+            else:
+                return self._solver_trigger_fail(dryRun,"no POI")
 
         # mark current tile as explored
         if character.getBigPosition() in self.getRemainingPointsOfInterests():

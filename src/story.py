@@ -2024,7 +2024,7 @@ but they are likely to explode when disturbed.
         for genericEnemyGroupPosition in genericEnemyGroups:
             # add enemies
             for _i in range(0,random.randint(1,2)):
-                enemy = src.characters.characterMap["Golem"](multiplier=1)
+                enemy = src.characters.characterMap["Golem"](level=1)
                 enemy.faction = "insects"
                 enemy.baseDamage = 6
                 quest = src.quests.questMap["SecureTile"](toSecure=genericEnemyGroupPosition)
@@ -2158,7 +2158,7 @@ but they are likely to explode when disturbed.
             monsterType = random.choice(["Golem", "ShieldBug"])
             pos = (random.randint(1, 11), random.randint(1, 11), 0)
             golem = src.characters.characterMap[monsterType](
-                multiplier=src.monster.Monster.get_random_multiplier(monsterType)
+                level=random.randint(1,7)
             )
             golem.godMode = True
             quest = src.quests.questMap["SecureTile"](toSecure=(8, 7), wandering=False)
@@ -2168,7 +2168,7 @@ but they are likely to explode when disturbed.
             golem.quests.append(quest)
             caller_room.addCharacter(golem, pos[0], pos[1])
 
-    def setUpGlassHeartDungeon(self,pos,itemID,multiplier):
+    def setUpGlassHeartDungeon(self,pos,itemID,level):
         # bad code: should be named function: setUpGod
         # generate a random sacrifice requirement
         sacrificeCandidates = [
@@ -2452,7 +2452,7 @@ but they are likely to explode when disturbed.
 
             for _i in range(1):
                 pos = (random.randint(1,11),random.randint(1,11),0)
-                golem = src.characters.characterMap["Golem"](4,4,multiplier = multiplier,runModifier = runModifier)
+                golem = src.characters.characterMap["Golem"](4,4,level = level,runModifier = runModifier)
                 quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
                 quest.autoSolve = True
                 quest.assignToCharacter(golem)
@@ -2463,7 +2463,7 @@ but they are likely to explode when disturbed.
 
             for _i in range(counter-1):
                 pos = (random.randint(1,11),random.randint(1,11),0)
-                mechanical_crawler = src.characters.characterMap["Mechanical_Crawler"](4,4,multiplier = multiplier,runModifier = runModifier)
+                mechanical_crawler = src.characters.characterMap["Mechanical_Crawler"](4,4,level = level,runModifier = runModifier)
 
                 quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
                 quest.autoSolve = True
@@ -2478,7 +2478,7 @@ but they are likely to explode when disturbed.
         # add guardian room
         room = rooms[0]
         pos = (7,7,0)
-        guardian = src.characters.characterMap["Guardian"](7,7,modifier=multiplier)
+        guardian = src.characters.characterMap["Guardian"](7,7,level=level)
         quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
         quest.autoSolve = True
         quest.assignToCharacter(guardian)
@@ -2493,7 +2493,7 @@ but they are likely to explode when disturbed.
         for room in reversed(extraRooms):
             for _i in range(1):
                 pos = (random.randint(1,11),random.randint(1,11),0)
-                golem = src.characters.characterMap["Golem"](4,4,multiplier = multiplier,runModifier = runModifier)
+                golem = src.characters.characterMap["Golem"](4,4,level = level,runModifier = runModifier)
 
                 quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
                 quest.autoSolve = True
@@ -2505,7 +2505,7 @@ but they are likely to explode when disturbed.
 
             for _i in range(random.randint(3,8)):
                 pos = (random.randint(1,11),random.randint(1,11),0)
-                mechanical_crawler = src.characters.characterMap["Mechanical_Crawler"](4,4,multiplier = multiplier,runModifier = runModifier)
+                mechanical_crawler = src.characters.characterMap["Mechanical_Crawler"](4,4,level = level,runModifier = runModifier)
 
                 quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
                 quest.autoSolve = True
@@ -2604,8 +2604,8 @@ but they are likely to explode when disturbed.
                 pos = (random.randint(1,11),random.randint(1,11),0)
 
                 enemy = src.characters.characterMap["Monster"](4,4)
-                enemy.baseDamage = 2+multiplier
-                enemy.maxHealth = 20*multiplier
+                enemy.baseDamage = 2+level
+                enemy.maxHealth = 20*level
                 enemy.health = enemy.maxHealth
                 enemy.godMode = True
                 enemy.movementSpeed = 1.1-random.random()/4
@@ -3207,7 +3207,7 @@ but they are likely to explode when disturbed.
         for room in terrain.rooms:
             regenerator = room.getItemByType("Regenerator",needsBolted=True)
             if regenerator and not regenerator.activated:
-                quest = src.quests.questMap["ActivateRegenerator"]()
+                quest = src.quests.questMap["ActivateRegenerator"](reason="have better healing available")
                 self.addQuest(quest,mainChar)
                 return
 
@@ -3307,7 +3307,7 @@ but they are likely to explode when disturbed.
             if (god["lastHeartPos"][0] == mainChar.registers["HOMETx"] and god["lastHeartPos"][1] == mainChar.registers["HOMETy"]):
                 continue
 
-            quest = src.quests.questMap["CollectGlassHearts"]()
+            quest = src.quests.questMap["CollectGlassHearts"](reason="be able to take the throne and rule the world")
             self.addQuest(quest,mainChar)
             return
 

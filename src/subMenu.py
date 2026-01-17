@@ -212,8 +212,9 @@ class SubMenu(object):
 
     def render(self):
         # show question
-        out = ["\n"]
-        out.extend([self.query, "\n"])
+        out = []
+        if self.query:
+            out.extend(["\n",self.query.strip(), "\n"])
 
         # render the options
         extraDescription = None
@@ -229,9 +230,13 @@ class SubMenu(object):
         if extraDescription:
             out += extraDescription
 
+        if self.persistentText:
+            out.insert(0,"\n\n")
+            out.insert(0,self.persistentText)
+
         return (
                         src.interaction.urwid.AttrSpec("default", "default"),
-                        [self.persistentText , "\n\n" , out],
+                        out
                )
 
     # bad code: should either be used everywhere or be removed

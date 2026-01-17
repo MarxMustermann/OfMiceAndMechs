@@ -6,9 +6,10 @@ import src
 class WaitQuest(src.quests.MetaQuestSequence):
     type = "WaitQuest"
 
-    def __init__(self, description="wait", followUp=None, startCinematics=None, lifetime=None, creator=None):
+    def __init__(self, description="wait", followUp=None, startCinematics=None, lifetime=None, creator=None, reason=None):
         super().__init__(lifetime=lifetime, creator=creator)
         self.metaDescription = description
+        self.reson = reason
 
         # save initial state and register
 
@@ -17,8 +18,12 @@ class WaitQuest(src.quests.MetaQuestSequence):
     """
 
     def generateTextDescription(self):
-        text = """
-Wait."""
+        reason_string = ""
+        if self.reason:
+            reason_string = f", to {self.reason}"
+
+        text = f"""
+Wait{reason_string}."""
         if self.lifetimeEvent:
             text += f"""
 

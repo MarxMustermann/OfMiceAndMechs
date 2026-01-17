@@ -1,5 +1,6 @@
 import src
 
+import random
 
 class Equip(src.quests.MetaQuestSequence):
     '''
@@ -183,7 +184,7 @@ Swords can range from 10 to 25 damage per hit.
                 return (None,(submenue.get_command_to_select_item(item_to_select=bestSword),"equip from inventory"))
             if bestArmor in character.inventory:
                 return (None,(submenue.get_command_to_select_item(item_to_select=bestArmor),"equip from inventory"))
-            if submenue.tag not in ("advancedInteractionSelection",):
+            if submenue.tag not in ("advancedInteractionSelection","advancedPickupSelection",):
                 return (None,(["esc"],"close menu"))
 
         # enter tile properly
@@ -227,15 +228,28 @@ Swords can range from 10 to 25 damage per hit.
             offsets = [((1,0,0),"d"),((-1,0,0),"a"),((0,1,0),"s"),((0,-1,0),"w"),((0,0,0),".")]
             for offset in offsets:
                 if character.getPosition(offset=offset[0]) == bestSword.getPosition():
-                    interactionCommand = "J"
-                    if submenue:
-                        if submenue.tag == "advancedInteractionSelection":
-                            interactionCommand = ""
-                        else:
-                            return (None,(["esc"],"close menu"))
+                    items = bestSword.container.getItemByPosition(bestSword.getPosition())
+                    if items[-1] == bestSword:
+                        interactionCommand = "J"
+                        if submenue:
+                            if submenue.tag == "advancedInteractionSelection":
+                                interactionCommand = ""
+                            else:
+                                return (None,(["esc"],"close menu"))
+                    else:
+                        if not character.getFreeInventorySpace():
+                            return (None,(random.choice(["l","Ld","Lw","Ls","La"]),"free up inventory"))
+                        interactionCommand = "K"
+                        if submenue:
+                            if submenue.tag == "advancedPickupSelection":
+                                interactionCommand = ""
+                            else:
+                                return (None,(["esc"],"close menu"))
                     command = interactionCommand+offset[1]
                     if command == "J.":
                         command = "j"
+                    if command == "K.":
+                        command = "k"
                     return (None,(command,"equip the item"))
             1/0
 
@@ -251,15 +265,28 @@ Swords can range from 10 to 25 damage per hit.
             offsets = [((1,0,0),"d"),((-1,0,0),"a"),((0,1,0),"s"),((0,-1,0),"w"),((0,0,0),".")]
             for offset in offsets:
                 if character.getPosition(offset=offset[0]) == bestArmor.getPosition():
-                    interactionCommand = "J"
-                    if submenue:
-                        if submenue.tag == "advancedInteractionSelection":
-                            interactionCommand = ""
-                        else:
-                            return (None,(["esc"],"close menu"))
+                    items = bestArmor.container.getItemByPosition(bestArmor.getPosition())
+                    if items[-1] == bestArmor:
+                        interactionCommand = "J"
+                        if submenue:
+                            if submenue.tag == "advancedInteractionSelection":
+                                interactionCommand = ""
+                            else:
+                                return (None,(["esc"],"close menu"))
+                    else:
+                        if not character.getFreeInventorySpace():
+                            return (None,(random.choice(["l","Ld","Lw","Ls","La"]),"free up inventory"))
+                        interactionCommand = "K"
+                        if submenue:
+                            if submenue.tag == "advancedPickupSelection":
+                                interactionCommand = ""
+                            else:
+                                return (None,(["esc"],"close menu"))
                     command = interactionCommand+offset[1]
                     if command == "J.":
                         command = "j"
+                    if command == "K.":
+                        command = "k"
                     return (None,(command,"equip the item"))
             2/0
 

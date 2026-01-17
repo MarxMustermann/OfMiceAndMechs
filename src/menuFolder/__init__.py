@@ -37,3 +37,4 @@ import src.menuFolder.directionMenu
 import src.menuFolder.terrainMenu
 import src.menuFolder.shoutMenu
 import src.menuFolder.characterStatsMenu
+import src.menuFolder.itemInfoMenu

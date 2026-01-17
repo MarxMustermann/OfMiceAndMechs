@@ -894,6 +894,25 @@ def handleActivitySelection(key,char):
             else:
                 mapContent[room.yPosition][room.xPosition] = room.displayChar
 
+        for x in range(1,14):
+            for y in range(1,14):
+                check_characters = terrain.getCharactersOnTile((x,y,0))[:]
+                rooms = terrain.getRoomByPosition((x,y,0))
+                if rooms:
+                    check_characters.extend(rooms[0].characters)
+                for check_character in check_characters:
+                    if check_character.faction == char.faction:
+                        continue
+                    if (x,y) == (7,7):
+                        print("found character")
+                    front_color = "#fff"
+                    content = mapContent[y][x]
+                    if not isinstance(content,str):
+                        front_color = content[0].fg
+                        content = content[1]
+                    mapContent[y][x] = (src.interaction.urwid.AttrSpec(front_color,"#722"),content)
+                    break
+
         extraText = "\n\n"
 
         submenue = src.menuFolder.mapMenu.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText, cursor=char.getBigPosition())
@@ -1112,6 +1131,19 @@ type the macro name you want to record to
 
 def checkRecording(key,char,charState,main,header,footer,urwid,flags):
     return handleRecordingChar(key,char,charState,main,header,footer,urwid,flags)
+
+def doObserveSelection(params):
+    char = params["character"]
+    key = params["keyPressed"]
+
+    if key == "c":
+        submenue = src.menuFolder.combatInfoMenu.CombatInfoMenu(char=char)
+        char.macroState["submenue"] = submenue
+    elif key == "i":
+        submenue = src.menuFolder.itemInfoMenu.ItemInfoMenu(char=char)
+        char.macroState["submenue"] = submenue
+    else:
+        char.addMessage("unknown option")
 
 def doAdvancedInteraction(params):
     char = params["character"]
@@ -2887,6 +2919,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
                     if entry:
                         entry[0].apply(char)
                         char.takeTime(char.movementSpeed,"activate item not marked")
+            return None
 
         # examine an item
         if key in (commandChars.examine,):
@@ -3167,7 +3200,24 @@ press key for advanced drop
 
     # open the character information
     if key in ("o",):
-        charState["submenue"] = src.menuFolder.combatInfoMenu.CombatInfoMenu(char=char)
+        text = """
+
+press key for what to observe
+
+* c =  observe combat
+* i =  observe items
+
+"""
+
+        submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text,ignoreFirstKey=False)
+        submenue.followUp = {"method":doObserveSelection,"params":{"character":char}}
+        submenue.tag = "observeSelection"
+        char.macroState["submenue"] = submenue
+
+        if charState.get("itemMarkedLast"):
+            del charState["itemMarkedLast"]
+        return None
+        #charState["submenue"] = src.menuFolder.combatInfoMenu.CombatInfoMenu(char=char)
 
     # open the character information
     if key in ("x",):

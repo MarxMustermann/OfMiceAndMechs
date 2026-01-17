@@ -18,7 +18,7 @@ class Guardian(src.monster.Monster):
         name="Guardian",
         creator=None,
         characterId=None,
-        modifier=1,
+        level=1,
     ):
         """
         basic state setting
@@ -47,13 +47,13 @@ class Guardian(src.monster.Monster):
             characterId=characterId,
         )
 
-        baseMovementSpeed = 2
-        baseAttackSpeed = 2
+        baseMovementSpeed = 1
+        baseAttackSpeed = 1
         baseRawDamage = 4
         basehealth = 50
         if src.gamestate.gamestate.difficulty == "medium":
-            baseMovementSpeed = 1
-            baseAttackSpeed = 1
+            baseMovementSpeed = 0.8
+            baseAttackSpeed = 0.8
             baseRawDamage = 8
             basehealth = 400
         if src.gamestate.gamestate.difficulty == "difficult":
@@ -67,14 +67,14 @@ class Guardian(src.monster.Monster):
         self.hasSpecialAttacks = True
         self.hasPushbackAttack = True
         self.godMode = True
+        self.level = level
 
-        self.modifier = modifier
-        self.maxHealth = basehealth+basehealth*0.25*modifier
+        self.movementSpeed = baseMovementSpeed
+        self.baseAttackSpeed = baseAttackSpeed
+
+        self.maxHealth = basehealth+basehealth*0.25*self.level
         self.health = self.maxHealth
-        self.movementSpeed = baseMovementSpeed-(baseMovementSpeed*0.5/15*modifier)
-        self.baseAttackSpeed = baseAttackSpeed-(baseAttackSpeed*0.5/15*modifier)
-        self.rawBaseDame = baseRawDamage+(baseRawDamage*0.5*modifier)
-        self.baseDamage = baseRawDamage+(baseRawDamage*0.5*modifier)
+        self.baseDamage = baseRawDamage+(baseRawDamage*0.5*self.level)
 
     def changed(self, tag="default", info=None):
         if tag == "pickup bolted fail":
@@ -91,9 +91,12 @@ class Guardian(src.monster.Monster):
         super().die(reason, addCorpse=True, killer=killer)
 
     def lootTable(self):
+        if self.level is None:
+            self.level = 1
+
         num_ManaCrystal = 0
         num_MemoryFragment = 0
-        for _i in range(0,int(self.modifier)):
+        for _i in range(0,int(self.level)):
             if random.random() < 0.5:
                 num_ManaCrystal += 1
             else:
@@ -104,8 +107,14 @@ class Guardian(src.monster.Monster):
         """
         force static render
         """
-        if self.modifier <= 7:
-            shade = int(255-((255/7)*self.modifier))
+        try:
+            self.level
+        except:
+            self.level = 1
+        if self.level is None:
+            self.level = 1
+        if self.level <= 7:
+            shade = int(255-((255/7)*self.level))
             color = (255,shade,shade)
         else:
             color = (150,150,255)

@@ -4,7 +4,7 @@ import src
 class TerrainMenu(src.subMenu.SubMenu):
     type = "TerrainMenu"
 
-    def __init__(self, functionMap=None, extraText="", cursor=None, applyKey="coordinate", gridSize=15, limits=(1, 13)):
+    def __init__(self, functionMap=None, extraText="", cursor=None, applyKey="coordinate", gridSize=15, limits=(1, 13), char=None):
         self.functionMap = functionMap
         self.extraText = extraText
         self.applyKey = applyKey
@@ -17,6 +17,7 @@ class TerrainMenu(src.subMenu.SubMenu):
             )
         else:
             self.cursor = (int(self.gridSize / 2), int(self.gridSize / 2))
+        self.character = char
 
         super().__init__()
 
@@ -47,25 +48,27 @@ class TerrainMenu(src.subMenu.SubMenu):
                 self.followUp()
             return True
 
+        # show info
         if not noRender:
-            mapText = self.renderZoneInfo(character)
-            mapText[self.cursor[1]][self.cursor[0]] = "██"
-            mapText.append(f"\n press wasd to move cursor {self.cursor}")
-
-            mappedFunctions = self.functionMap.get(self.cursor, {})
-            for key, item in mappedFunctions.items():
-                mapText.append(
-                    "\n press {} to {}".format(
-                        key,
-                        item["description"],
-                    )
-                )
-
-            # show info
             src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "TerrainMenu"))
-            src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), mapText))
+            src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.render()))
 
         return False
+
+    def render(self):
+        mapText = self.renderZoneInfo(self.character)
+        mapText[self.cursor[1]][self.cursor[0]] = "██"
+        mapText.append(f"\n press wasd to move cursor {self.cursor}")
+
+        mappedFunctions = self.functionMap.get(self.cursor, {})
+        for key, item in mappedFunctions.items():
+            mapText.append(
+                "\n press {} to {}".format(
+                    key,
+                    item["description"],
+                )
+            )
+        return mapText
 
     @staticmethod
     def renderZoneInfo(character):

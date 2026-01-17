@@ -360,6 +360,7 @@ class DebugMenu(src.subMenu.SubMenu):
                             functionMap=functionMap,
                             cursor=character.getTerrain().getPosition(),
                             applyKey="big_coordinate",
+                            char=character
                         )
                         character.macroState["submenue"] = submenue
                         return True

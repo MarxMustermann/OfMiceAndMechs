@@ -32,6 +32,7 @@ You touch the throne and a shock runns through you.
 
 You need to be rank 2 to interact with the throne.
 """)
+            submenu.do_not_scale = True
             character.macroState["submenue"] = submenu
             character.runCommandString("~",nativeKey=True)
             character.hurt(40,reason="touching the throne")
@@ -55,6 +56,7 @@ The throne rejects you.
 
 You need to collect all GlassHarts to be accepted as supreme leader.
 """)
+            submenu.do_not_scale = True
             character.macroState["submenue"] = submenu
             character.runCommandString("~",nativeKey=True)
 
@@ -84,6 +86,7 @@ You feel stronger now.
 """
             submenu = src.menuFolder.textMenu.TextMenu(text)
             submenu.followUp = {"container":self,"method":"offerTeleport","params":{"character":character}}
+            submenu.do_not_scale = True
             character.macroState["submenue"] = submenu
             character.runCommandString("~",nativeKey=True)
         else:
@@ -108,6 +111,7 @@ The amount of mana available on the current terrain should be shown on you HUD n
 = press enter to continue =
 """
         submenu = src.menuFolder.textMenu.TextMenu(text)
+        submenu.do_not_scale = True
         submenu.followUp = {"container":self,"method":"offerTeleport","params":{"character":character}}
         character.macroState["submenue"] = submenu
         character.runCommandString("~",nativeKey=True)
@@ -124,6 +128,7 @@ Do you you want to teleport there now?
         options = [("yes","yes"),("no","no")]
         submenu = src.menuFolder.selectionMenu.SelectionMenu(text,options)
         submenu.tag = "throneTeleport"
+        submenu.do_not_scale = True
         submenu.followUp = {"container":self,"method":"teleport","params":{"character":character}}
         character.macroState["submenue"] = submenu
         character.runCommandString("~",nativeKey=True)

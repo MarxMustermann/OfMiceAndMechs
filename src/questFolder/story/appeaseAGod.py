@@ -28,7 +28,7 @@ class AppeaseAGod(src.quests.MetaQuestSequence):
                 if otherChar.faction != character.faction:
                     enemyCount += 1
                     if not room.alarm:
-                        quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition(),endWhenCleared=True,description="kill enemies that breached the defences")
+                        quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition(),endWhenCleared=True,reason="kill enemies that breached the defences")
                         return ([quest],None)
                 else:
                     if otherChar.charType != "Ghoul" and not otherChar.burnedIn:
@@ -39,7 +39,7 @@ class AppeaseAGod(src.quests.MetaQuestSequence):
                     continue
                 enemyCount += 1
                 if not terrain.alarm and enemyCount > 2:
-                    quest = src.quests.questMap["ReadyBaseDefences"]()
+                    quest = src.quests.questMap["ReadyBaseDefences"](reason="prepare for an enemy wave")
                     return ([quest],None)
             else:
                 if otherChar.charType != "Ghoul" and not otherChar.burnedIn:
@@ -48,7 +48,7 @@ class AppeaseAGod(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,lifetime=100,description="defend the arena",reason="ensure no attackers get into the base")
             return ([quest],None)
         if npcCount < 2:
-            quest = src.quests.questMap["SpawnClone"]()
+            quest = src.quests.questMap["SpawnClone"](reason="ensure you have backup Clones")
             return ([quest],None)
 
         # pray if possible
@@ -67,7 +67,7 @@ class AppeaseAGod(src.quests.MetaQuestSequence):
             if not foundStatue:
                 continue
 
-            quest = src.quests.questMap["Pray"](targetPosition=foundStatue.getPosition(),targetPositionBig=foundStatue.getBigPosition(),shrine=False)
+            quest = src.quests.questMap["Pray"](targetPosition=foundStatue.getPosition(),targetPositionBig=foundStatue.getBigPosition(),shrine=False,reason="unlock more GlassStatues")
             return ([quest],None)
 
         # clear any input stockpiles with wrong content
@@ -79,7 +79,7 @@ class AppeaseAGod(src.quests.MetaQuestSequence):
             for inputSlot in checkRoom.inputSlots:
                 for item in checkRoom.getItemByPosition(inputSlot[0]):
                     if item.type != inputSlot[1]:
-                        quest = src.quests.questMap["CleanSpace"](targetPosition=item.getPosition(),targetPositionBig=checkRoom.getPosition(),pickUpBolted=True,abortOnfullInventory=False)
+                        quest = src.quests.questMap["CleanSpace"](targetPosition=item.getPosition(),targetPositionBig=checkRoom.getPosition(),pickUpBolted=True,abortOnfullInventory=False,reason="remove wrong items")
                         return ([quest],None)
 
         # saccrifice from inventory if possible
@@ -97,7 +97,7 @@ class AppeaseAGod(src.quests.MetaQuestSequence):
                 for item in character.inventory:
                     if not item.type == saccrificeType:
                         continue
-                    quest = src.quests.questMap["RestockRoom"](toRestock=saccrificeType,targetPositionBig=checkRoom.getPosition())
+                    quest = src.quests.questMap["RestockRoom"](toRestock=saccrificeType,targetPositionBig=checkRoom.getPosition(),reason="place items to saccrifice")
                     return ([quest],None)
 
         # fetch items from storage if possible
@@ -122,21 +122,21 @@ class AppeaseAGod(src.quests.MetaQuestSequence):
         for saccrificeType in saccrificesNeeded:
             for checkRoom in character.getTerrain().rooms:
                 if checkRoom.getNonEmptyOutputslots(itemType=saccrificeType,allowStorage=True,allowDesiredFilled=True):
-                    quest = src.quests.questMap["FetchItems"](toCollect=saccrificeType)
+                    quest = src.quests.questMap["FetchItems"](toCollect=saccrificeType,reason="have items to saccrifice")
                     return ([quest],None)
 
         if random.random() < 0.5:
-            quest = src.quests.questMap["BeUsefull"](endOnIdle=True)
+            quest = src.quests.questMap["BeUsefull"](endOnIdle=True,reason="ensure the base is running properly")
             return ([quest],None)
 
         # produce scrap
         if "Scrap" in saccrificesNeeded:
-            quest = src.quests.questMap["GatherScrap"](amount=saccrificeAmountNeeded["Scrap"])
+            quest = src.quests.questMap["GatherScrap"](amount=saccrificeAmountNeeded["Scrap"],reason="have Scrap to saccrifice")
             return ([quest],None)
 
         # produce metal bars
         if "MetalBars" in saccrificesNeeded:
-            quest = src.quests.questMap["ScrapHammering"](amount=saccrificeAmountNeeded["MetalBars"], tryHard=True)
+            quest = src.quests.questMap["ScrapHammering"](amount=saccrificeAmountNeeded["MetalBars"], tryHard=True,reason="have MetalBars to saccrifice")
             return ([quest],None)
 
         # produce items
@@ -162,7 +162,7 @@ class AppeaseAGod(src.quests.MetaQuestSequence):
 
         if character.getTerrain().alarm:
             if src.gamestate.gamestate.tick%(15*15*15) < 2000 and src.gamestate.gamestate.tick%(15*15*15) > 10:
-                quest = src.quests.questMap["LiftOutsideRestrictions"]()
+                quest = src.quests.questMap["LiftOutsideRestrictions"](reason="allow the Clones to work outside")
                 return ([quest],None)
             return (None,(";","wait for the wave of enemies"))
         return (None,("...........","wait for something to happen"))

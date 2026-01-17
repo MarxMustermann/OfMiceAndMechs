@@ -58,12 +58,14 @@ The room has to be a rectangle.
             character: the character trying to use this item
         """
 
-        if self.xPosition is None:
-            character.addMessage("this machine can not be used within rooms")
+        if self.xPosition is None or self.container is None or self.container.isRoom:
+            character.addMessage("this machine can only be used in open terrain")
             return
 
-        if self.container is None:
-            character.addMessage("this machine can not be used within rooms")
+        if (self.xPosition%15, self.yPosition%15, 0) != (7,7,0):
+            text = "the room builder needs to be placed in the middle of the tile.\n\n required position: (7,7,0)"
+            character.showTextMenu(text)
+            character.addMessage(text)
             return
 
         # abort if items are missing

@@ -5865,7 +5865,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                         key = event.sym
                         if key == tcod.event.KeySym.z:
                             import webbrowser
-                            webbrowser.open_new_tab("https://discord.gg/wQAcXBDqk8")
+                            webbrowser.open_new_tab("https://discord.gg/z5QfwfzWCn")
                         if key == tcod.event.KeySym.x:
                             import webbrowser
                             webbrowser.open_new_tab("http://ofmiceandmechs.com/")

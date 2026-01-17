@@ -22,7 +22,7 @@ So [download](INSTALL.md) the game and try it today.
 
 # be part of it
 
-discord: https://discord.gg/uUMWHbS
+discord: https://discord.gg/z5QfwfzWCn
 mail: marxmustermann@riseup.net
 
 * [credits](CREDITS.md)

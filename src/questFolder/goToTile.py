@@ -293,7 +293,9 @@ The target tile is {direction[4:]}
                 y= src.helpers.clamp(y+int(random.uniform(-3,3)),2,12)
                 quest = src.quests.questMap["GoToPosition"](targetPosition = (x,y))
                 return ([quest], None)
-            return self._solver_trigger_fail(dryRun,"no tile path")
+            #return self._solver_trigger_fail(dryRun,"no tile path")
+            quest = src.quests.questMap["ClearPathToTile"](targetPositionBig=self.targetPosition, reason="be able to reach the target")
+            return ([quest], None)
 
         # open map menu
         if not character.getNearbyEnemies() and self.allowMapMenu and len(self.path) > 3:

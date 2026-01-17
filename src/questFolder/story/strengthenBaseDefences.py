@@ -6,12 +6,13 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
     quest to build up the base defences
     '''
     type = "StrengthenBaseDefences"
-    def __init__(self, description="strengthen base defences", creator=None, lifetime=None, numTrapRoomsBuild=None, numTrapRoomsPlanned=None):
+    def __init__(self, description="strengthen base defences", creator=None, lifetime=None, numTrapRoomsBuild=None, numTrapRoomsPlanned=None, reason=None):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
         self.numTrapRoomsBuild = numTrapRoomsBuild
         self.numTrapRoomsPlanned = numTrapRoomsPlanned
+        self.reason = reason
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
         '''
@@ -166,8 +167,12 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
         '''
         generate a text description
         '''
-        text = ["""
-Strengthen the base defences
+        reason_string = ""
+        if self.reason:
+            reason_string = ", to {self.reason}"
+
+        text = [f"""
+Strengthen the base defences{reason_string}.
 """]
         if self.lifetimeEvent:
             text.append(f"""\nlifetime: {self.lifetimeEvent.tick - src.gamestate.gamestate.tick} / {self.lifetime}\n""")

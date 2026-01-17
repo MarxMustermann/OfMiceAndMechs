@@ -70,18 +70,6 @@ class RodTower(src.items.Item):
             return False
 
     def render(self):
-        try:
-            self.weapon
-        except:
-            self.weapon = None
-        try:
-            self.lastUsed
-        except:
-            self.lastUsed = 0
-        try:
-            self.coolDown
-        except:
-            self.coolDown = 10
 
         if self.isInCoolDown():
             return (src.interaction.urwid.AttrSpec("#444", "#000"), "RT")
@@ -123,10 +111,6 @@ class RodTower(src.items.Item):
         return options
 
     def replaceWeapon(self,character):
-        try:
-            self.weapon
-        except:
-            self.weapon = None
 
         bestSword = None
         for item in character.inventory:
@@ -151,17 +135,15 @@ class RodTower(src.items.Item):
             self.weapon = None
 
     def getLongInfo(self):
-        try:
-            self.weapon
-        except:
-            self.weapon = None
 
+        result = ""
+        result += "A contraption that hits all neighbouring fields when activated\n"
         if self.weapon:
-            result = f"""
+            result += f"""
 weapon: {self.weapon.baseDamage}
 """
         else:
-            result = f"""
+            result += f"""
 weapon: None
 """
         return result

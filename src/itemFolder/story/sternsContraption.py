@@ -45,7 +45,7 @@ class SternsContraption(src.items.Item):
 
             if tick == 2:
                 for character in self.container.characters[:]:
-                    character.hurt(20,reason="hit by shrapnel")
+                    character.hurt(character.health//2,reason="hit by shrapnel")
 
             if tick > 6:
                 self.container.addAnimation(self.getPosition(),"smoke",2,{})

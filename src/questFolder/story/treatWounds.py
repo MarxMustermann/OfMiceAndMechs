@@ -157,6 +157,11 @@ For now ignore the options below and press esc to continue.
                 self.postHandler()
             return True
 
+        if character.health > (character.maxHealth//2):
+            if not dryRun:
+                self.postHandler()
+            return True
+
         if not character.getFreeInventorySpace():
             if not dryRun:
                 self.postHandler()

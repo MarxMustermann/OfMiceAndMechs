@@ -6,10 +6,11 @@ class ConfigureSiegeManager(src.quests.MetaQuestSequence):
     a quest to configure the siege manager with a typical configuration
     '''
     type = "ConfigureSiegeManager"
-    def __init__(self, description="configure siege manager", creator=None):
+    def __init__(self, description="configure siege manager", creator=None, reason=None):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
+        self.reason = reason
 
     def triggerCompletionCheck(self,character=None,dryRun=True):
         '''
@@ -201,7 +202,12 @@ class ConfigureSiegeManager(src.quests.MetaQuestSequence):
         '''
         generate text description
         '''
+        reason_string = ""
+        if self.reason:
+            reason_string = f", to {self.reason}"
+
         text = ["""
+Configure the SiegeManager{reason_string}.
 Waves of enemies appear at the start of each epoch.
 Handling those repeating waves can be automated.
 

@@ -32,17 +32,15 @@ press q to get more detailed information.
     ),
     (
         "arena",
-        """Your implant interrupts:
+        ["""Your implant interrupts:
 
 You made it through the trap room into the base.
 
-There is an enemy (""",
-        (src.interaction.urwid.AttrSpec("#f00", "black"), "EE"),
-        """) in the base. Be careful.
+There is an enemy (""",(src.pseudoUrwid.AttrSpec("#f00", "black"), "EE"),""") in the base. Be careful.
 
 Use the quest menu by pressing q to get more information how to beat this enemy.
 
-""",
+"""],
     ),
 ]
 

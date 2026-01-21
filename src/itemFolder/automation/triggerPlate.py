@@ -25,6 +25,8 @@ class TriggerPlate(src.items.Item):
         self.active = True
         self.targets = []
         self.faction = None
+        self.coolDown = 10
+        self.lastUsed = 0
 
     def toggleActive(self,character):
         if self.active:
@@ -41,6 +43,12 @@ class TriggerPlate(src.items.Item):
             return self.display
         else:
             return "_~"
+
+    def isInCoolDown(self):
+        if not (src.gamestate.gamestate.tick - self.lastUsed) > self.coolDown:
+            return True
+        else:
+            return False
 
     def apply(self, character):
         self.trigger(character,checkFaction=False)
@@ -59,6 +67,15 @@ class TriggerPlate(src.items.Item):
         if checkFaction and self.faction == character.faction:
             return
 
+        try:
+            self.lastUsed
+        except:
+            self.lastUsed = 0
+        try:
+            self.coolDown
+        except:
+            self.coolDown = 10
+
         items = self.container.getItemByPosition(self.getPosition())
         if not (items[0] == self):
             return
@@ -69,6 +86,12 @@ class TriggerPlate(src.items.Item):
             self.targets
         except:
             self.targets = []
+
+        if self.isInCoolDown():
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#f00", "black"), "XX")]})
+            return
+
+        self.lastUsed = src.gamestate.gamestate.tick
 
         if not self.targets:
             return

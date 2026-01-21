@@ -47,6 +47,8 @@ class RodTower(src.items.Item):
             neighbours.append(self.getPosition(offset=offset))
 
         for neighbour in neighbours:
+            if not self.container.getPositionWalkable(neighbour):
+                continue
             self.container.addAnimation(neighbour,"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#fff", "black"), "%%")]})
             targets = self.container.getCharactersOnPosition(neighbour)
             baseDamage = 2

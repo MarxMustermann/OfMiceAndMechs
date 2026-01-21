@@ -2951,34 +2951,34 @@ but they are likely to explode when disturbed.
             self.addQuest(quest,mainChar)
             return
 
-        # heal
-        # triggers at any time
-        if mainChar.health < mainChar.maxHealth // 2:
+        # assimilate into base
+        if mainChar.faction != "city #1":
+            terrain = mainChar.getTerrain()
 
-            if len(mainChar.rememberedMenu2) < 2:
-                inventoryMenu = src.menuFolder.inventoryMenu.InventoryMenu(mainChar)
-                inventoryMenu.sidebared = True
-                mainChar.rememberedMenu2.append(inventoryMenu)
+            # heal
+            # triggers at any time
+            if mainChar.health < mainChar.maxHealth // 2:
 
-            for item in mainChar.inventory:
-                if item.type != "Vial":
-                    continue
-                if not item.uses:
-                    continue
-                quest = src.quests.questMap["TreatWounds"]()
-                self.addQuest(quest,mainChar)
-                return
+                if len(mainChar.rememberedMenu2) < 2:
+                    inventoryMenu = src.menuFolder.inventoryMenu.InventoryMenu(mainChar)
+                    inventoryMenu.sidebared = True
+                    mainChar.rememberedMenu2.append(inventoryMenu)
 
-            # pick up nearby vials
-            if mainChar.getFreeInventorySpace() > 0:
-                if src.quests.questMap["TreatWounds"].getTileVials(mainChar):
+                for item in mainChar.inventory:
+                    if item.type != "Vial":
+                        continue
+                    if not item.uses:
+                        continue
                     quest = src.quests.questMap["TreatWounds"]()
                     self.addQuest(quest,mainChar)
                     return
 
-        # assimilate into base
-        if mainChar.faction != "city #1":
-            terrain = mainChar.getTerrain()
+                # pick up nearby vials
+                if mainChar.getFreeInventorySpace() > 0:
+                    if src.quests.questMap["TreatWounds"].getTileVials(mainChar):
+                        quest = src.quests.questMap["TreatWounds"]()
+                        self.addQuest(quest,mainChar)
+                        return
 
             # grab nearby vial
             if mainChar.getBigPosition() == (6,9,0):

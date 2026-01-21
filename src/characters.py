@@ -1336,6 +1336,13 @@ class Character:
         '''
         self.macroState["commandKeyQueue"] = []
 
+    def clear_quests(self):
+        '''
+        clear the characters quests
+        '''
+        for quest in self.quests[:]:
+            quest.abort()
+
     def addJobOrder(self, jobOrder):
         '''
         add a job order to the characters queue of job orders and run it

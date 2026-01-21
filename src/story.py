@@ -2955,14 +2955,14 @@ but they are likely to explode when disturbed.
         if mainChar.faction != "city #1":
             terrain = mainChar.getTerrain()
 
-            # get to control room
-            if not (mainChar.getBigPosition() in [(7,7,0),(7,8,0)]):
-                quest = src.quests.questMap["ReachSafety"]()
-                self.addQuest(quest,mainChar)
-                return
-
-            # steal faction id
             if mainChar.container.isRoom:
+                # get to control room
+                if not (mainChar.getBigPosition() in [(7,7,0),(7,8,0)]):
+                    quest = src.quests.questMap["ReachSafety"]()
+                    self.addQuest(quest,mainChar)
+                    return
+
+                # steal faction id
                 quest = src.quests.questMap["ResetFaction"]()
                 self.addQuest(quest,mainChar)
                 return

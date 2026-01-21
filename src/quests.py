@@ -347,6 +347,12 @@ class Quest:
 
         self.postHandler()
 
+    def abort(self):
+        '''
+        abort the quest
+        '''
+        self.fail("abort")
+
     def handleTimeOut(self):
         self.fail()
 

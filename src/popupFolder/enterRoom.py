@@ -22,21 +22,6 @@ class EnterRoom(src.popups.Popup):
     def conditionMet(self, params) -> bool:
         return self.character.container.tag == self.roomType
 
-def arena_message():
-    return [
-        """Your implant interrupts:
-
-You made it through the trap room into the base.
-
-There is an enemy (""",
-        (src.interaction.urwid.AttrSpec("#f00", "black"), "EE"),
-        """) in the base. Be careful.
-
-Use the quest menu by pressing q to get more information how to beat this enemy.
-
-""",
-    ]
-
 
 room_message = [
     (
@@ -51,7 +36,17 @@ press q to get more detailed information.
     ),
     (
         "arena",
-        arena_message,
+        """Your implant interrupts:
+
+You made it through the trap room into the base.
+
+There is an enemy (""",
+        (src.interaction.urwid.AttrSpec("#f00", "black"), "EE"),
+        """) in the base. Be careful.
+
+Use the quest menu by pressing q to get more information how to beat this enemy.
+
+""",
     ),
 ]
 

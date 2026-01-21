@@ -14,10 +14,7 @@ class EnterRoom(src.popups.Popup):
         return "entered room"
 
     def text(self):
-        if isinstance(self.message, str):
-            return self.message
-        else:
-            return self.message()
+        return self.message
 
     def conditionMet(self, params) -> bool:
         return self.character.container.tag == self.roomType

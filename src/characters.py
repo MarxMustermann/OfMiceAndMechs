@@ -108,40 +108,40 @@ class Character:
 
         super().__init__()
 
-        if name is None and seed:
-            firstName = config.names.characterFirstNames[
-                    seed % len(config.names.characterFirstNames)
-                ]
-            lastName = config.names.characterLastNames[
-                    (seed * 10) % len(config.names.characterLastNames)
-                ]
-            name = f"{firstName} {lastName}"
+        firstName = random.choice([
+                "Isla","Charlotte","Olivia","Amelia","Ava","Mia","Grace","Willow","Matilda","Ella","Harper",
+                "Chloe","Lily","Ivy","Isabella","Evie","Sophie","Zoe","Mila","Sophia","Ruby","Evelyn",
+                "Sienna","Hazel","Lucy","Aria","Audrey","Violet","Layla","Scarlett","Frankie","Georgia",
+                "Florence","Daisy","Ellie","Emily","Luna","Poppy","Sofia","Isabelle","Hannah","Ayla",
+                "Zara","Elsie","Aurora","Alice","Billie","Maya","Eleanor","Penelope","Mackenzie","Abigail",
+                "Freya","Emilia","Emma","Sadie","Eva","Stella","Bonnie","Remi","Millie","Harriet",
+                "Eloise","Olive","Piper","Lola","Summer","Savannah","Addison","Maeve","Delilah","Phoebe",
+                "Quinn","Pippa","Imogen","Elizabeth","Eden","Jasmine","Bella","Charlie","Rose","Hallie",
+                "Adeline","Ariana","Harlow","Riley","Aaliyah","Claire","Elena","Eliza","Anna","Lyla",
+                "Indiana","Maggie","Lara","Nora","Heidi","Peyton","Rosie","Zoey","Oliver",
+                "Noah","Jack","Henry","William","Leo","Charlie","Theodore","Lucas","Thomas","Elijah",
+                "Hudson","Archie","Levi","Luca","James","Oscar","Liam","Alexander","Harrison","Max",
+                "Harry","Ethan","Mason","Lachlan","Harvey","George","Archer","Hunter","Arlo","Hugo",
+                "Cooper","Xavier","Isaac","Sebastian","Arthur","Finn","Samuel","Benjamin","Kai","Lincoln",
+                "Patrick","Jacob","Joshua","Louis","Sonny","Beau","Riley","Jasper","Carter","Ryan",
+                "Eli","Jordan","Edward","Austin","Logan","Flynn","Angus","Jackson","River","Joseph",
+                "Daniel","Spencer","Ezra","Asher","Jaxon","Luka","Muhammad","Ari","Bodhi","Jayden",
+                "Michael","Theo","Billy","Charles","Felix","Aiden","Owen","Gabriel","Matthew","Adam",
+                "Parker","Caleb","Leon","Jude","Hamish","Fletcher","Zachary","Miles","Darcy","Ryder",
+                "Ali","Leonardo","Ashton","Lennox","Nicholas","Luke","Connor","Elias","Vincent",
+        ])
 
-        if display is None and name is not None:
-            display = src.canvas.displayChars.staffCharactersByLetter[name[0].lower()]
+        mainNameCore = random.choice([
+            "Mountain","Steel","Hammer","Herb","Bar","Oak","Seven","Iron","Bear","Dog","Chain","Rock",
+            "Fire","Cat"
+        ])
 
-        if name is None:
+        postfix = random.choice([
+            "beater","breaker","power","stone","ember","thrower","drinker","smith","bender","lover","fiend",
+            "crown","hammerer"
+        ])
 
-            firstName = random.choice([
-                "Siegfried","Ernst","Alfred","Herrmann","Friedrich","Helmut","Karl","Gunnar","Berthold","Dietrich",
-                "Friedhelm","Horst","Edmund","Wilhelm","Albert","Johann","Herbert","Bertram","Hans","Jochen","Ludwig",
-                "Raimund","Thorsten","Ulrich","Veit","Lutz","Anton","Alwin","Sigmund","Kurt","Heidrun","Elfriede",
-                "Gunhilde","Hildegard","Gudrun","Gertrude","Brunhilde","Adelheid","Sieglinde","Kunigunde","Herta",
-                "Frieda","Ursula","Katharina","Johanna","Clara","Isolde","Hermine","Berta","Gisela","Lina","Irmgard",
-                "Marlene","Mathilde","Monika","Frieda","Gerlinde","Rita","Clementine","Brigitte","Adalbert","Jörg",
-                "Moritz","Maximillian","Gundula","Renate","Udo","Fritz","Susanne","Guido"])
-
-            mainNameCore = random.choice([
-                "Berg","Stahl","Hammer","Kraut","Barren","Eichen","Sieben","Eisen","Bären","Hunde","Ketten","Felsen",
-                "Feuer","Glut","Stein",
-            ])
-
-            postfix = random.choice([
-                "brecher","wurst","schmidt","maier","bach","burg","treu","kraft","schmied","hans","schimmel",
-                "hauer","schläger","feind","kranz","fels",
-            ])
-
-            name = firstName+" "+mainNameCore+postfix
+        name = firstName+" "+mainNameCore+postfix
 
         if display is None:
             display = src.canvas.displayChars.staffCharacters[0]

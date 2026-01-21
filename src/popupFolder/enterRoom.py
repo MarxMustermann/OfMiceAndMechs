@@ -1,8 +1,6 @@
 from functools import partial
 
 import src
-import src.popups
-
 
 class EnterRoom(src.popups.Popup):
     def __init__(self, roomType, message):
@@ -14,6 +12,7 @@ class EnterRoom(src.popups.Popup):
         return "entered room"
 
     def text(self):
+        self.character.clear_quests()
         return self.message
 
     def conditionMet(self, params) -> bool:

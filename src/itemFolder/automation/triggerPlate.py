@@ -173,7 +173,10 @@ class TriggerPlate(src.items.Item):
         roomRender[cursor[1]][cursor[0]] = "XX"
 
         for target in self.targets:
-            roomRender[target[1]][target[0]] = "OO"
+            display = "OO"
+            if target == cursor:
+                display = "oo"
+            roomRender[target[1]][target[0]] = display
 
         for line in roomRender:
             line.append("\n")

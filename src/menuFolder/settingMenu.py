@@ -4,7 +4,7 @@ import src
 
 class SettingMenu(src.subMenu.SubMenu):
     type = "SettingMenu"
-    setting_options = ["auto save", "enable sound", "set sound volume", "toggle fullscreen", "change npc rendering"]
+    setting_options = ["auto save", "sound", "set sound volume", "fullscreen", "change npc rendering"]
 
     def __init__(self, default=None, targetParamName="selection"):
         self.index = 0
@@ -32,13 +32,13 @@ class SettingMenu(src.subMenu.SubMenu):
         for i,setting in enumerate(self.setting_options):
             if change_event and self.index == i:
                 match setting:
-                    case "enable sound":
+                    case "sound":
                         src.interaction.settings["sound"] = 32 if src.interaction.settings["sound"] == 0 else 0
                     case "set sound volume":
                         src.interaction.settings["sound"] += -1 if key in ("a","left") else +1
                         src.interaction.settings["sound"] = src.helpers.clamp(src.interaction.settings["sound"], 0, 32)
                         src.interaction.changeVolume()
-                    case "toggle fullscreen":
+                    case "fullscreen":
                         src.interaction.settings["fullscreen"] = not src.interaction.settings["fullscreen"]
                         src.interaction.sdl_window.fullscreen = not src.interaction.sdl_window.fullscreen
                     case "auto save":
@@ -57,24 +57,24 @@ class SettingMenu(src.subMenu.SubMenu):
         for i,setting in enumerate(self.setting_options):
             text+= ">" if self.index == i else ""
             match setting:
-                case "enable sound":
-                    text += setting + ": "
+                case "sound":
+                    text += setting + ":               "
                     if src.interaction.settings["sound"] == 0:
                         text += "Off"
                     else:
                         text += "On"
                 case "set sound volume":
-                    text += setting + ":"
+                    text += setting + ":   "
                     text += " " + src.interaction.settings["sound"] * "║"
                     text += (32 - src.interaction.settings["sound"]) * "|"
-                case "toggle fullscreen":
-                    text += setting + ":    "
+                case "fullscreen":
+                    text += setting + ":          "
                     if src.interaction.settings["fullscreen"]:
                         text += "On"
                     else:
                         text += "Off"
                 case "auto save":
-                    text+= "auto save:    "
+                    text+= "auto save:           "
                     if src.interaction.settings.get("auto save"):
                         text += "On"
                     else:

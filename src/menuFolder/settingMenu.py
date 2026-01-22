@@ -40,7 +40,7 @@ class SettingMenu(src.subMenu.SubMenu):
                         src.interaction.changeVolume()
                     case "fullscreen":
                         src.interaction.settings["fullscreen"] = not src.interaction.settings["fullscreen"]
-                        src.interaction.sdl_window.fullscreen = not src.interaction.sdl_window.fullscreen
+                        src.interaction.sdl_window.fullscreen = src.interaction.settings["fullscreen"]
                     case "auto save":
                         src.interaction.settings["auto save"] = not src.interaction.settings.get("auto save",False)
 

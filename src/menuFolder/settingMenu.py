@@ -55,7 +55,8 @@ class SettingMenu(src.subMenu.SubMenu):
     def render(self):
         text = ""
         for i,setting in enumerate(self.setting_options):
-            text+= ">" if self.index == i else ""
+            if self.index == i:
+                text+= ">"
             match setting:
                 case "sound":
                     text += setting + ":               "

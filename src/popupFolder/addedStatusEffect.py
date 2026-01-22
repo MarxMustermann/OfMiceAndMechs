@@ -20,7 +20,7 @@ class AddedStatusEffect(src.popups.Popup):
         short_name = instance.getShortCode()
         description = instance.getLoreDescription()
 
-        output = f"{status_name} ({short_name})\n\n{description}"
+        output = f"{status_name} ({short_name})\n\n{description}\n"
 
         if not hasattr(self.character,"notFirstTimeEffect"):
             self.character.notFirstTimeEffect = True

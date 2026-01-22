@@ -59,17 +59,26 @@ class SettingMenu(src.subMenu.SubMenu):
             match setting:
                 case "enable sound":
                     text += setting + ": "
-                    text += "Off" if src.interaction.settings["sound"] == 0 else "On"
+                    if src.interaction.settings["sound"] == 0:
+                        text += "Off"
+                    else:
+                        text += "On"
                 case "set sound volume":
                     text += setting + ":"
                     text += " " + src.interaction.settings["sound"] * "║"
                     text += (32 - src.interaction.settings["sound"]) * "|"
                 case "toggle fullscreen":
                     text += setting + ":    "
-                    text += "On" if src.interaction.settings["fullscreen"] else "Off"
+                    if src.interaction.settings["fullscreen"]:
+                        text += "On"
+                    else:
+                        text += "Off"
                 case "auto save":
                     text+= "auto save:    "
-                    text += "On" if src.interaction.settings.get("auto save") else "Off"
+                    if src.interaction.settings.get("auto save"):
+                        text += "On"
+                    else:
+                        text += "Off"
                 case "change npc rendering":
                     text += "change npc rendering"
 

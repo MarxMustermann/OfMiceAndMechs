@@ -28,7 +28,6 @@ class SettingMenu(src.subMenu.SubMenu):
 
         # show info
         src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\n\nsettings\n\n"))
-        text = ""
 
         for i,setting in enumerate(self.setting_options):
             if change_event and self.index == i:
@@ -48,6 +47,13 @@ class SettingMenu(src.subMenu.SubMenu):
                     case "change npc rendering":
                         character.macroState["submenue"] = src.menuFolder.changeViewsMenu.ChangeViewsMenu()
 
+        text = self.render()
+        src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), text))
+
+        return False
+
+    def render(self):
+        text = ""
         for i,setting in enumerate(self.setting_options):
             text+= ">" if self.index == i else ""
             match setting:
@@ -68,6 +74,4 @@ class SettingMenu(src.subMenu.SubMenu):
                     text += "change npc rendering"
 
             text+="\n"
-        src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), text))
-
-        return False
+        return text

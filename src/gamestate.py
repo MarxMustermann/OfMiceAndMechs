@@ -1,6 +1,7 @@
 
 import json
 import zlib
+import tcod
 
 import src.canvas
 import src.characters
@@ -150,14 +151,39 @@ class GameState:
         # get context for drawing stuff
         tcodConsole = src.interaction.tcodConsole
         printUrwidToTcod = src.interaction.printUrwidToTcod
+        tileWidth = src.interaction.tileWidth
+        tileHeight = src.interaction.tileHeight
+        sdl_renderer2 = src.interaction.sdl_renderer2
+        tileset = src.interaction.tileset
 
-        # draw an info that saving is in progress
-        offsetX = 51
-        offsetY = 10
-        printUrwidToTcod("+-------------+",(offsetX+3+16,offsetY+13))
-        printUrwidToTcod("| saving game |",(offsetX+3+16,offsetY+14))
-        printUrwidToTcod("+-------------+",(offsetX+3+16,offsetY+15))
-        src.interaction.tcodPresent()
+        text = " saving game "
+
+        offsetX = src.interaction.window_charwidth//2-len(text)//2
+        offsetY = src.interaction.window_charheight//2
+        offsetLeft = offsetX*tileWidth
+        offsetTop = offsetY*tileHeight
+
+        root_console = tcod.console.Console(len(text), 1, order="F")
+        printUrwidToTcod(text,(0,0),explecitConsole=root_console)
+
+        atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset)
+        console_render = tcod.render.SDLConsoleRender(atlas)
+        renderedToTexture = console_render.render(root_console)
+
+        padding = 20
+        sdl_renderer2.draw_color = (0,0,0,255)
+        sdl_renderer2.fill_rect((offsetLeft-padding,offsetTop-padding,renderedToTexture.width+padding*2,renderedToTexture.height+padding*2))
+
+        sdl_renderer2.draw_color = (255,255,255,255)
+        border_thickness = 5
+        sdl_renderer2.fill_rect((offsetLeft-padding-border_thickness,offsetTop-padding-border_thickness,renderedToTexture.width+padding*2+border_thickness*2,border_thickness))
+        sdl_renderer2.fill_rect((offsetLeft-padding-border_thickness,offsetTop-padding-border_thickness,border_thickness,renderedToTexture.height+padding*2+border_thickness*2))
+        sdl_renderer2.fill_rect((offsetLeft-padding-border_thickness,offsetTop+padding+renderedToTexture.height,renderedToTexture.width+padding*2+border_thickness*2,border_thickness))
+        sdl_renderer2.fill_rect((offsetLeft+padding+renderedToTexture.width,offsetTop-padding-border_thickness,border_thickness,renderedToTexture.height+padding*2+border_thickness*2))
+
+        sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
+        sdl_renderer2.present()
+
 
         # import stuff. (should not be within a function -_-)
         import os
@@ -190,7 +216,6 @@ class GameState:
         rawState["lastGameIndex"] = self.gameIndex
         with open("gamestate/globalInfo.json", "w") as globalInfoFile:
             json.dump(rawState,globalInfoFile)
-
 
     def loadP(self,gameIndex):
         '''

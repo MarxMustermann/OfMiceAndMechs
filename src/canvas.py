@@ -412,10 +412,6 @@ class Canvas:
                 mapped = None
                 basePos = (offsetX+x*tileWidth*2,offsetY+y*tileHeight)
 
-                actionMeta = None
-                if isinstance(char, src.interaction.ActionMeta):
-                    actionMeta = char.payload
-                    char = char.content
                 if isinstance(char, src.interaction.CharacterMeta):
                     character = char.character
 

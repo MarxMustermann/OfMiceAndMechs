@@ -4763,137 +4763,121 @@ def renderGameDisplay(renderChar=None):
                 )
 
                 canvas = render(char)
+
     submenue = char.macroState.get("submenue")
     if specialRender or submenue:
-        if useTiles:
-            pydisplay.fill((0, 0, 0))
-            font = pygame.font.Font("config/DejaVuSansMono.ttf", 14)
+        if submenue:
+            text = submenue.render()
+        else:
+            text = main.get_text()
+        plainText = stringifyUrwid(text)
 
+        height = 0
+        width = 0
+        for line in plainText.split("\n"):
+            height += 1
+            width = max(width,len(line))
+
+        if not last_menu_dimension:
+            last_menu_dimension = (width,height)
+        else:
+            last_menu_dimension = (max(width,last_menu_dimension[0]),max(height,last_menu_dimension[1]))
             if submenue:
-                plainText = stringifyUrwid(submenue.render())
-            else:
-                plainText = stringifyUrwid(main.get_text())
-            plainText = stringifyUrwid(plainText)
-            counter = 0
-            for line in plainText.split("\n"):
-                text = font.render(line, True, (200, 200, 200))
-                pydisplay.blit(text, (30, 110 + 15 * counter))
-                counter += 1
+                try:
+                    submenue.do_not_scale
+                except:
+                    submenue.do_not_scale = False
+            if not submenue or not submenue.do_not_scale:
+                width = last_menu_dimension[0]
+                height = last_menu_dimension[1]
 
-            pygame.display.update()
-        if tcodConsole:
-            if submenue:
-                text = submenue.render()
-            else:
-                text = main.get_text()
-            plainText = stringifyUrwid(text)
+        offsetLeft = max(src.interaction.tcodConsole.width//2-width//2,1)
+        offsetTop = max(min(src.interaction.tcodConsole.height//2-height//2,17),1)
 
-            height = 0
-            width = 0
-            for line in plainText.split("\n"):
-                height += 1
-                width = max(width,len(line))
+        positions = []
+        for x in range(-1,width//2+3):
+            for y in range(-1,height+4):
+                positions.append((offsetLeft//2+x,offsetTop+y))
+        for position in positions:
+            if position in sdl_map:
+                del sdl_map[position]
 
-            if not last_menu_dimension:
-                last_menu_dimension = (width,height)
-            else:
-                last_menu_dimension = (max(width,last_menu_dimension[0]),max(height,last_menu_dimension[1]))
-                if submenue:
-                    try:
-                        submenue.do_not_scale
-                    except:
-                        submenue.do_not_scale = False
-                if not submenue or not submenue.do_not_scale:
-                    width = last_menu_dimension[0]
-                    height = last_menu_dimension[1]
+        try:
+            counter = offsetTop
 
-            offsetLeft = max(src.interaction.tcodConsole.width//2-width//2,1)
-            offsetTop = max(min(src.interaction.tcodConsole.height//2-height//2,17),1)
+            tcodConsole.print(x=offsetLeft, y=counter-1, string="|",fg=(255,255,255),bg=(0,0,0))
+            pseudoDisplay[counter-1][offsetLeft] = "|"
 
-            positions = []
-            for x in range(-1,width//2+3):
-                for y in range(-1,height+4):
-                    positions.append((offsetLeft//2+x,offsetTop+y))
-            for position in positions:
-                if position in sdl_map:
-                    del sdl_map[position]
+            tcodConsole.print(x=offsetLeft+width+3, y=counter-1, string="|",fg=(255,255,255),bg=(0,0,0))
+            pseudoDisplay[counter-1][offsetLeft+width+3] = "|"
 
-            try:
-                counter = offsetTop
+            #tcodConsole.print(x=offsetLeft+width+0, y=counter-1, string="<",fg=(255,255,255),bg=(0,0,0))
+            #pseudoDisplay[counter-1][offsetLeft+width+0] = "<"
+            #src.gamestate.gamestate.clickMap[(offsetLeft+width+0,counter-1)] = ["lESC"]
+            #tcodConsole.print(x=offsetLeft+width+1, y=counter-1, string="X",fg=(255,255,255),bg=(0,0,0))
+            #pseudoDisplay[counter-1][offsetLeft+width+1] = "X"
+            #src.gamestate.gamestate.clickMap[(offsetLeft+width+1,counter-1)] = ["esc"]
+            #tcodConsole.print(x=offsetLeft+width+2, y=counter-1, string=">",fg=(255,255,255),bg=(0,0,0))
+            #pseudoDisplay[counter-1][offsetLeft+width+2] = ">"
+            #src.gamestate.gamestate.clickMap[(offsetLeft+width+2,counter-1)] = ["rESC"]
 
-                tcodConsole.print(x=offsetLeft, y=counter-1, string="|",fg=(255,255,255),bg=(0,0,0))
-                pseudoDisplay[counter-1][offsetLeft] = "|"
-
-                tcodConsole.print(x=offsetLeft+width+3, y=counter-1, string="|",fg=(255,255,255),bg=(0,0,0))
-                pseudoDisplay[counter-1][offsetLeft+width+3] = "|"
-
-                #tcodConsole.print(x=offsetLeft+width+0, y=counter-1, string="<",fg=(255,255,255),bg=(0,0,0))
-                #pseudoDisplay[counter-1][offsetLeft+width+0] = "<"
-                #src.gamestate.gamestate.clickMap[(offsetLeft+width+0,counter-1)] = ["lESC"]
-                #tcodConsole.print(x=offsetLeft+width+1, y=counter-1, string="X",fg=(255,255,255),bg=(0,0,0))
-                #pseudoDisplay[counter-1][offsetLeft+width+1] = "X"
-                #src.gamestate.gamestate.clickMap[(offsetLeft+width+1,counter-1)] = ["esc"]
-                #tcodConsole.print(x=offsetLeft+width+2, y=counter-1, string=">",fg=(255,255,255),bg=(0,0,0))
-                #pseudoDisplay[counter-1][offsetLeft+width+2] = ">"
-                #src.gamestate.gamestate.clickMap[(offsetLeft+width+2,counter-1)] = ["rESC"]
-
-                #tcodConsole.print(x=offsetLeft+width+5, y=counter-1, string=stringifyUrwid(header.get_text()),fg=(255,255,255),bg=(0,0,0))
-                #pseudoDisplay[counter-1][offsetLeft+width+5] = stringifyUrwid(header.get_text())
-                tcodConsole.print(x=offsetLeft-2, y=counter, string="--+-"+"-"*width+"-+--",fg=(255,255,255),bg=(0,0,0))
-                pseudoDisplay[counter][offsetLeft-2] = "--+-"+"-"*width+"-+--"
-                extraX = 0
-                for char in "--+-"+"-"*width+"-+--":
-                    pseudoDisplay[counter][offsetLeft-2+extraX] = char
-                    extraX += 1
-                counter += 1
+            #tcodConsole.print(x=offsetLeft+width+5, y=counter-1, string=stringifyUrwid(header.get_text()),fg=(255,255,255),bg=(0,0,0))
+            #pseudoDisplay[counter-1][offsetLeft+width+5] = stringifyUrwid(header.get_text())
+            tcodConsole.print(x=offsetLeft-2, y=counter, string="--+-"+"-"*width+"-+--",fg=(255,255,255),bg=(0,0,0))
+            pseudoDisplay[counter][offsetLeft-2] = "--+-"+"-"*width+"-+--"
+            extraX = 0
+            for char in "--+-"+"-"*width+"-+--":
+                pseudoDisplay[counter][offsetLeft-2+extraX] = char
+                extraX += 1
+            counter += 1
+            tcodConsole.print(x=offsetLeft, y=counter, string="| "+" "*width+" |",fg=(255,255,255),bg=(0,0,0))
+            extraX = 0
+            for char in "| "+" "*width+" |":
+                pseudoDisplay[counter][offsetLeft+extraX] = char
+                extraX += 1
+            counter += 1
+            lines_printed = 0
+            for _line in plainText.split("\n"):
                 tcodConsole.print(x=offsetLeft, y=counter, string="| "+" "*width+" |",fg=(255,255,255),bg=(0,0,0))
                 extraX = 0
                 for char in "| "+" "*width+" |":
                     pseudoDisplay[counter][offsetLeft+extraX] = char
                     extraX += 1
                 counter += 1
-                lines_printed = 0
-                for _line in plainText.split("\n"):
-                    tcodConsole.print(x=offsetLeft, y=counter, string="| "+" "*width+" |",fg=(255,255,255),bg=(0,0,0))
-                    extraX = 0
-                    for char in "| "+" "*width+" |":
-                        pseudoDisplay[counter][offsetLeft+extraX] = char
-                        extraX += 1
-                    counter += 1
-                    lines_printed += 1
-                while lines_printed < height:
-                    tcodConsole.print(x=offsetLeft, y=counter, string="| "+" "*width+" |",fg=(255,255,255),bg=(0,0,0))
-                    extraX = 0
-                    for char in "| "+" "*width+" |":
-                        pseudoDisplay[counter][offsetLeft+extraX] = char
-                        extraX += 1
-                    counter += 1
-                    lines_printed += 1
-
-                counter -= 1
+                lines_printed += 1
+            while lines_printed < height:
                 tcodConsole.print(x=offsetLeft, y=counter, string="| "+" "*width+" |",fg=(255,255,255),bg=(0,0,0))
                 extraX = 0
                 for char in "| "+" "*width+" |":
                     pseudoDisplay[counter][offsetLeft+extraX] = char
                     extraX += 1
                 counter += 1
-                tcodConsole.print(x=offsetLeft-2, y=counter, string="--+-"+"-"*width+"-+--",fg=(255,255,255),bg=(0,0,0))
-                extraX = 0
-                for char in "--+-"+"-"*width+"-+--":
-                    pseudoDisplay[counter][offsetLeft-2+extraX] = char
-                    extraX += 1
-                tcodConsole.print(x=offsetLeft, y=counter+1, string="|",fg=(255,255,255),bg=(0,0,0))
-                pseudoDisplay[counter+1][offsetLeft] = "|"
-                tcodConsole.print(x=offsetLeft+width+3, y=counter+1, string="|",fg=(255,255,255),bg=(0,0,0))
-                pseudoDisplay[counter+1][offsetLeft+width+3] = "|"
-            except:
-                pass
+                lines_printed += 1
 
-            #printUrwidToTcod(text,(offsetLeft+2,offsetTop+2),size=(width,height))
-            if not renderChar:
-                printUrwidToTcod(text,(offsetLeft+2,offsetTop+2))
-            else:
-                printUrwidToDummy(pseudoDisplay, text,(offsetLeft+2,offsetTop+2))
+            counter -= 1
+            tcodConsole.print(x=offsetLeft, y=counter, string="| "+" "*width+" |",fg=(255,255,255),bg=(0,0,0))
+            extraX = 0
+            for char in "| "+" "*width+" |":
+                pseudoDisplay[counter][offsetLeft+extraX] = char
+                extraX += 1
+            counter += 1
+            tcodConsole.print(x=offsetLeft-2, y=counter, string="--+-"+"-"*width+"-+--",fg=(255,255,255),bg=(0,0,0))
+            extraX = 0
+            for char in "--+-"+"-"*width+"-+--":
+                pseudoDisplay[counter][offsetLeft-2+extraX] = char
+                extraX += 1
+            tcodConsole.print(x=offsetLeft, y=counter+1, string="|",fg=(255,255,255),bg=(0,0,0))
+            pseudoDisplay[counter+1][offsetLeft] = "|"
+            tcodConsole.print(x=offsetLeft+width+3, y=counter+1, string="|",fg=(255,255,255),bg=(0,0,0))
+            pseudoDisplay[counter+1][offsetLeft+width+3] = "|"
+        except:
+            pass
+
+        #printUrwidToTcod(text,(offsetLeft+2,offsetTop+2),size=(width,height))
+        if not renderChar:
+            printUrwidToTcod(text,(offsetLeft+2,offsetTop+2))
+        else:
+            printUrwidToDummy(pseudoDisplay, text,(offsetLeft+2,offsetTop+2))
     else:
         last_menu_dimension = None
 

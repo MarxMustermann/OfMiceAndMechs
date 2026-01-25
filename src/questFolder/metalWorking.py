@@ -354,7 +354,7 @@ Press d to move the cursor and show the subquests description.
         for metalWorkingBench in freeMetalWorkingBenches:
             if metalWorkingBench.scheduledItems:
                 quests = [src.quests.questMap["ClearInventory"](reason="store the product"),
-                          src.quests.questMap["MetalWorking"](amount=1,toProduce=metalWorkingBench.scheduledItems[0],resaon="produce scheduled items")]
+                          src.quests.questMap["MetalWorking"](amount=1,toProduce=metalWorkingBench.scheduledItems[0],reason="produce scheduled items")]
                 if not dryRun:
                     beUsefull.idleCounter = 0
                 return (quests,None)

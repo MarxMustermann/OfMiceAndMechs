@@ -419,11 +419,6 @@ class Canvas:
                 if isinstance(char, src.interaction.CharacterMeta):
                     character = char.character
 
-                    #renderer.draw_color = (255,7*16,255,255)
-                    #renderer.fill_rect((offsetX,offsetY,tileWidth*2,tileHeight))
-                    #renderer.fill_rect((basePos[0],basePos[1],tileWidth*2,tileHeight))
-                    #src.interactrion.sdl_renderer2.draw_line(element[1],element[2])
-
                     if not src.gamestate.gamestate.mainChar.specialRender and (character.health != character.adjustedMaxHealth or character.exhaustion != 0):
                         if character.dead or character.health <= 0:
                             renderer.draw_color = (255,0,0,255)

@@ -402,17 +402,6 @@ class Canvas:
 
     def printTcod(self, console, offsetX, offsetY, warning):
 
-        def stringifyUrwid(inData):
-            outData = ""
-            for item in inData:
-                if isinstance(item, tuple):
-                    outData += stringifyUrwid(item[1])
-                if isinstance(item, list):
-                    outData += stringifyUrwid(item)
-                if isinstance(item, str):
-                    outData += item
-            return outData
-
         y = offsetY
         out = []
         for line in self.chars:

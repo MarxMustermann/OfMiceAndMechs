@@ -4524,12 +4524,6 @@ def renderGameDisplay(renderChar=None):
                 uiElements = calculate_UI_layout(char)
 
                 for uiElement in uiElements:
-                    if uiElement["type"] == "gameMap":
-                        canvas = render(char)
-                        if not renderChar:
-                            canvas.printTcod(tcodConsole,uiElement["offset"][0],uiElement["offset"][1],warning=warning)
-                        else:
-                            canvas.getAsDummy(pseudoDisplay,uiElement["offset"][0],uiElement["offset"][1],warning=warning)
 
                     if uiElement["type"] == "miniMap":
                         miniMapChars = thisTerrain.renderTiles()
@@ -4765,7 +4759,31 @@ def renderGameDisplay(renderChar=None):
 
                 canvas = render(char)
 
-    #tcodPresent(noPresent=True)
+    tcodPresent(noPresent=True)
+
+    uiElements = src.gamestate.gamestate.uiElements
+    uiElements = calculate_UI_layout(char)
+
+    for uiElement in uiElements:
+        if uiElement["type"] == "gameMap":
+            offsetLeft = uiElement["offset"][0]*tileWidth*2
+            offsetTop = uiElement["offset"][1]*tileHeight
+
+            map_size = (50,50)
+
+            sdl_renderer2.draw_color = (255,0,0,255)
+            sdl_renderer2.fill_rect((offsetLeft,offsetTop,500,500))
+
+            root_console = tcod.console.Console(map_size[0]*2, map_size[1], order="F")
+            canvas = render(char)
+            canvas.printTcod(root_console,0,0,warning=warning)
+
+            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset)
+            console_render = tcod.render.SDLConsoleRender(atlas)
+            renderedToTexture = console_render.render(root_console)
+            sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
+
+            canvas.drawSdl(sdl_renderer2,offsetLeft,offsetTop,warning=warning)
 
     submenue = char.macroState.get("submenue")
     if specialRender or submenue:
@@ -4833,7 +4851,6 @@ def renderGameDisplay(renderChar=None):
         sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
 
     else:
-        tcodPresent(noPresent=True)
         last_menu_dimension = None
 
     sdl_renderer2.present()

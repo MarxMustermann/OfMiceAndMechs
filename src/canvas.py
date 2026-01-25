@@ -400,6 +400,86 @@ class Canvas:
                 x += 1
             y += 1
 
+    def drawSdl(self, renderer, offsetX, offsetY, warning):
+
+        tileWidth = src.interaction.tileWidth
+        tileHeight = src.interaction.tileHeight
+        y = 0
+        out = []
+        for line in self.chars:
+            x = 0
+            for char in line:
+                mapped = None
+                basePos = (offsetX+x*tileWidth*2,offsetY+y*tileHeight)
+
+                actionMeta = None
+                if isinstance(char, src.interaction.ActionMeta):
+                    actionMeta = char.payload
+                    char = char.content
+                if isinstance(char, src.interaction.CharacterMeta):
+                    character = char.character
+
+                    #renderer.draw_color = (255,7*16,255,255)
+                    #renderer.fill_rect((offsetX,offsetY,tileWidth*2,tileHeight))
+                    #renderer.fill_rect((basePos[0],basePos[1],tileWidth*2,tileHeight))
+                    #src.interactrion.sdl_renderer2.draw_line(element[1],element[2])
+
+                    if not src.gamestate.gamestate.mainChar.specialRender and (character.health != character.adjustedMaxHealth or character.exhaustion != 0):
+                        if character.dead or character.health <= 0:
+                            renderer.draw_color = (255,0,0,255)
+
+                            renderer.fill_rect((basePos[0],basePos[1]), (basePos[0]+tileHeight,basePos[1]+2*tileWidth))
+                            renderer.fill_rect((basePos[0]+1,basePos[1]), (basePos[0]+tileHeight,basePos[1]+2*tileWidth-1))
+                            renderer.fill_rect((basePos[0],basePos[1]+1), (basePos[0]+tileHeight-1,basePos[1]+2*tileWidth))
+
+                            renderer.fill_rect((basePos[0],basePos[1]+2*tileWidth), (basePos[0]+tileHeight,basePos[1]))
+                            renderer.fill_rect((basePos[0]+1,basePos[1]+2*tileWidth), (basePos[0]+tileHeight,basePos[1]-1))
+                            renderer.fill_rect((basePos[0],basePos[1]+2*tileWidth-1), (basePos[0]+tileHeight-1,basePos[1]))
+                        else:
+                            barHeight = src.interaction.tileHeight//8
+                            if barHeight:
+                                distanceTop = src.interaction.tileHeight//8
+
+                                borderWidth = 1
+                                if src.interaction.tileHeight < 20:
+                                    borderWidth = 0
+                                
+                                if character.health != character.adjustedMaxHealth:
+                                    barBasePos = (basePos[0],basePos[1]+distanceTop)
+
+                                    renderer.draw_color = (255,255,255,255)
+                                    renderer.fill_rect((barBasePos[0],barBasePos[1],tileWidth*2,barHeight+2*borderWidth))
+                                    renderer.draw_color = (0,0,0,255)
+                                    renderer.fill_rect((barBasePos[0]+borderWidth,barBasePos[1]+borderWidth,tileWidth*2-2*borderWidth,barHeight))
+
+                                    barWidth = int((tileWidth*2-borderWidth*2)*(character.health/character.adjustedMaxHealth))
+                                    renderer.draw_color = (255,0,0,255)
+                                    renderer.fill_rect((barBasePos[0]+borderWidth,barBasePos[1]+borderWidth,barWidth,barHeight))
+
+                                if character.exhaustion != 0:
+                                    barBasePos = (basePos[0],basePos[1]+src.interaction.tileHeight-distanceTop-barHeight-2*borderWidth)
+
+                                    color = (255,255,255,255)
+                                    borderColor = (255,255,255,255)
+                                    if character.exhaustion-1 > 4:
+                                        color = (255,153,0,255)
+                                    if character.exhaustion-1 > 8:
+                                        color = (255,85,0,255)
+                                    if character.exhaustion-1 > 9:
+                                        color = (255,0,0,255)
+                                        borderColor = (255,0,0,255)
+
+                                    renderer.draw_color = borderColor
+                                    renderer.fill_rect((barBasePos[0],barBasePos[1],tileWidth*2,barHeight+2*borderWidth))
+                                    renderer.draw_color = (0,0,0,255)
+                                    renderer.fill_rect((barBasePos[0]+borderWidth,barBasePos[1]+borderWidth,tileWidth*2-2*borderWidth,barHeight))
+
+                                    barwidth = int((src.interaction.tileWidth*2-borderWidth*2)*src.helpers.clamp(character.exhaustion/10,0,1))
+                                    renderer.draw_color = color
+                                    renderer.fill_rect((barBasePos[0]+borderWidth,barBasePos[1]+borderWidth,barwidth,barHeight))
+                x += 1
+            y += 1
+
     def printTcod(self, console, offsetX, offsetY, warning):
 
         y = offsetY
@@ -414,113 +494,6 @@ class Canvas:
                     actionMeta = char.payload
                     char = char.content
                 if isinstance(char, src.interaction.CharacterMeta):
-                    character = char.character
-
-                    if not src.gamestate.gamestate.mainChar.specialRender and (character.health != character.adjustedMaxHealth or character.exhaustion != 0):
-                        if character.dead or character.health <= 0:
-                            basePos = (x*src.interaction.tileWidth*2,y*src.interaction.tileHeight)
-                            cross = []
-                            cross.append(                    ("line",
-                                                                basePos,
-                                                                (basePos[0]+src.interaction.tileHeight,basePos[1]+2*src.interaction.tileWidth),
-                                                                (255,0,0,255)
-                                                             ))
-                            cross.append(                    ("line",
-                                                                (basePos[0]+1,basePos[1]),
-                                                                (basePos[0]+src.interaction.tileHeight,basePos[1]+2*src.interaction.tileWidth-1),
-                                                                (255,0,0,255)
-                                                             ))
-                            cross.append(                    ("line",
-                                                                (basePos[0],basePos[1]+1),
-                                                                (basePos[0]+src.interaction.tileHeight-1,basePos[1]+2*src.interaction.tileWidth),
-                                                                (255,0,0,255)
-                                                             ))
-                            cross.append(                    ("line",
-                                                                (basePos[0],basePos[1]+2*src.interaction.tileWidth),
-                                                                (basePos[0]+src.interaction.tileHeight,basePos[1]),
-                                                                (255,0,0,255)
-                                                             ))
-                            cross.append(                    ("line",
-                                                                (basePos[0]+1,basePos[1]+2*src.interaction.tileWidth),
-                                                                (basePos[0]+src.interaction.tileHeight,basePos[1]-1),
-                                                                (255,0,0,255)
-                                                             ))
-                            cross.append(                    ("line",
-                                                                (basePos[0],basePos[1]+2*src.interaction.tileWidth-1),
-                                                                (basePos[0]+src.interaction.tileHeight-1,basePos[1]),
-                                                                (255,0,0,255)
-                                                             ))
-                            src.interaction.sdl_map[(x,y)] = cross
-                        else:
-                            char_info = []
-
-                            basePos = (x*src.interaction.tileWidth*2,y*src.interaction.tileHeight)
-                            barHeight = src.interaction.tileHeight//8
-                            if barHeight:
-                                offsetTop = src.interaction.tileHeight//8
-
-                                borderWidth = 1
-                                if src.interaction.tileHeight < 20:
-                                    borderWidth = 0
-                                
-                                if character.health != character.adjustedMaxHealth:
-                                    basePos = (basePos[0],basePos[1]+offsetTop)
-
-                                    char_info.append(                ("rect",(
-                                                                                basePos[0],
-                                                                                basePos[1],
-                                                                                src.interaction.tileWidth*2,
-                                                                                barHeight+2*borderWidth
-                                                                                     ) ,(255,255,255,255)))
-                                    char_info.append(                ("rect",(
-                                                                                basePos[0]+borderWidth,
-                                                                                basePos[1]+borderWidth,
-                                                                                src.interaction.tileWidth*2-2*borderWidth,
-                                                                                barHeight
-                                                                                    ),(0,0,0,255)))
-
-                                    barwidth = int((src.interaction.tileWidth*2-borderWidth*2)*(character.health/character.adjustedMaxHealth))
-                                    char_info.append(                ("rect",(
-                                                                                basePos[0]+borderWidth,
-                                                                                basePos[1]+borderWidth,
-                                                                                barwidth,
-                                                                                barHeight
-                                                                                    ),(255,0,0,255)))
-                                if character.exhaustion != 0:
-                                    basePos = (basePos[0],basePos[1]+src.interaction.tileHeight-offsetTop-barHeight-2*borderWidth)
-
-                                    color = (255,255,255,255)
-                                    borderColor = (255,255,255,255)
-                                    if character.exhaustion-1 > 4:
-                                        color = (255,153,0,255)
-                                    if character.exhaustion-1 > 8:
-                                        color = (255,85,0,255)
-                                    if character.exhaustion-1 > 9:
-                                        color = (255,0,0,255)
-                                        borderColor = (255,0,0,255)
-
-                                    char_info.append(                ("rect",(
-                                                                                basePos[0],
-                                                                                basePos[1],
-                                                                                src.interaction.tileWidth*2,
-                                                                                barHeight+2*borderWidth
-                                                                                    ),borderColor))
-                                    char_info.append(                ("rect",(
-                                                                                basePos[0]+borderWidth,
-                                                                                basePos[1]+borderWidth,
-                                                                                src.interaction.tileWidth*2-2*borderWidth,
-                                                                                barHeight
-                                                                                    ),(0,0,0,255)))
-
-                                    barwidth = int((src.interaction.tileWidth*2-borderWidth*2)*src.helpers.clamp(character.exhaustion/10,0,1))
-                                    char_info.append(                ("rect",(
-                                                                                basePos[0]+borderWidth,
-                                                                                basePos[1]+borderWidth,
-                                                                                barwidth,
-                                                                                barHeight
-                                                                                    ),color))
-                            src.interaction.sdl_map[(x,y)] = char_info
-
                     char = char.content
 
                 if isinstance(char, int):

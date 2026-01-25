@@ -412,6 +412,54 @@ class Canvas:
                 mapped = None
                 basePos = (offsetX+x*tileWidth*2,offsetY+y*tileHeight)
 
+                if isinstance(char, src.interaction.ItemMeta):
+                    item = char.item
+                    if item.type == "Wall":
+                        if item.bolted:
+                            border_width = 4
+
+                            renderer.draw_color = (0,0,0,255)
+                            renderer.fill_rect((basePos[0],basePos[1],tileHeight,tileWidth*2))
+
+                            renderer.draw_color = (5*16,5*16,6*16,255)
+
+                            renderer.fill_rect((basePos[0],basePos[1],border_width*2,border_width*2))
+                            renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width*2,border_width*2,border_width*2))
+                            renderer.fill_rect((basePos[0]+2*tileWidth-border_width*2,basePos[1],border_width*2,border_width*2))
+                            renderer.fill_rect((basePos[0]+2*tileWidth-border_width*2,basePos[1]+tileHeight-border_width*2,border_width*2,border_width*2))
+
+                            renderer.draw_line((basePos[0]+border_width,basePos[1]+border_width), (basePos[0]+tileHeight-border_width,basePos[1]+2*tileWidth-border_width))
+                            renderer.draw_line((basePos[0]+border_width+1,basePos[1]+border_width), (basePos[0]+tileHeight-border_width,basePos[1]+2*tileWidth-border_width-1))
+                            renderer.draw_line((basePos[0]+border_width,basePos[1]+border_width+1), (basePos[0]+tileHeight-border_width-1,basePos[1]+2*tileWidth-border_width))
+
+                            renderer.draw_line((basePos[0]+2*tileWidth-border_width,basePos[1]+border_width), (basePos[0]+border_width,basePos[1]+tileHeight-border_width))
+                            renderer.draw_line((basePos[0]+2*tileWidth-border_width-1,basePos[1]+border_width), (basePos[0]+border_width,basePos[1]+tileHeight-border_width-1))
+                            renderer.draw_line((basePos[0]+2*tileWidth-border_width,basePos[1]+border_width+1), (basePos[0]+border_width+1,basePos[1]+tileHeight-border_width))
+
+                            items = item.container.getItemByPosition(item.getPosition(offset=(0,-1,0)))
+                            if not (len(items) == 1 and items[0].type == "Wall" and items[0].bolted):
+                                renderer.fill_rect((basePos[0],basePos[1],tileHeight,border_width))
+                            else:
+                                renderer.fill_rect((basePos[0]+tileWidth-border_width//2,basePos[1],border_width,border_width))
+
+                            items = item.container.getItemByPosition(item.getPosition(offset=(-1,0,0)))
+                            if not (len(items) == 1 and items[0].type == "Wall" and items[0].bolted):
+                                renderer.fill_rect((basePos[0],basePos[1],border_width,tileHeight))
+                            else:
+                                renderer.fill_rect((basePos[0],basePos[1]+tileHeight//2-border_width//2,border_width,border_width))
+
+                            items = item.container.getItemByPosition(item.getPosition(offset=(0,1,0)))
+                            if not (len(items) == 1 and items[0].type == "Wall" and items[0].bolted):
+                                renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,tileHeight,border_width))
+                            else:
+                                renderer.fill_rect((basePos[0]+tileWidth-border_width//2,basePos[1]+tileHeight-border_width,border_width,border_width))
+
+                            items = item.container.getItemByPosition(item.getPosition(offset=(1,0,0)))
+                            if not (len(items) == 1 and items[0].type == "Wall" and items[0].bolted):
+                                renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,tileHeight))
+                            else:
+                                renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1]+tileHeight//2-border_width//2,border_width,border_width))
+
                 if isinstance(char, src.interaction.CharacterMeta):
                     character = char.character
 
@@ -419,13 +467,13 @@ class Canvas:
                         if character.dead or character.health <= 0:
                             renderer.draw_color = (255,0,0,255)
 
-                            renderer.fill_rect((basePos[0],basePos[1], basePos[0]+tileHeight,basePos[1]+2*tileWidth))
-                            renderer.fill_rect((basePos[0]+1,basePos[1], basePos[0]+tileHeight,basePos[1]+2*tileWidth-1))
-                            renderer.fill_rect((basePos[0],basePos[1]+1, basePos[0]+tileHeight-1,basePos[1]+2*tileWidth))
+                            renderer.draw_line((basePos[0],basePos[1]), (basePos[0]+tileHeight,basePos[1]+2*tileWidth))
+                            renderer.draw_line((basePos[0]+1,basePos[1]), (basePos[0]+tileHeight,basePos[1]+2*tileWidth-1))
+                            renderer.draw_line((basePos[0],basePos[1]+1), (basePos[0]+tileHeight-1,basePos[1]+2*tileWidth))
 
-                            renderer.fill_rect((basePos[0],basePos[1]+2*tileWidth, basePos[0]+tileHeight,basePos[1]))
-                            renderer.fill_rect((basePos[0]+1,basePos[1]+2*tileWidth, basePos[0]+tileHeight,basePos[1]-1))
-                            renderer.fill_rect((basePos[0],basePos[1]+2*tileWidth-1, basePos[0]+tileHeight-1,basePos[1]))
+                            renderer.draw_line((basePos[0],basePos[1]+2*tileWidth), (basePos[0]+tileHeight,basePos[1]))
+                            renderer.draw_line((basePos[0]+1,basePos[1]+2*tileWidth), (basePos[0]+tileHeight,basePos[1]-1))
+                            renderer.draw_line((basePos[0],basePos[1]+2*tileWidth-1), (basePos[0]+tileHeight-1,basePos[1]))
                         else:
                             barHeight = src.interaction.tileHeight//8
                             if barHeight:

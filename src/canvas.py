@@ -419,13 +419,13 @@ class Canvas:
                         if character.dead or character.health <= 0:
                             renderer.draw_color = (255,0,0,255)
 
-                            renderer.fill_rect((basePos[0],basePos[1]), (basePos[0]+tileHeight,basePos[1]+2*tileWidth))
-                            renderer.fill_rect((basePos[0]+1,basePos[1]), (basePos[0]+tileHeight,basePos[1]+2*tileWidth-1))
-                            renderer.fill_rect((basePos[0],basePos[1]+1), (basePos[0]+tileHeight-1,basePos[1]+2*tileWidth))
+                            renderer.fill_rect((basePos[0],basePos[1], basePos[0]+tileHeight,basePos[1]+2*tileWidth))
+                            renderer.fill_rect((basePos[0]+1,basePos[1], basePos[0]+tileHeight,basePos[1]+2*tileWidth-1))
+                            renderer.fill_rect((basePos[0],basePos[1]+1, basePos[0]+tileHeight-1,basePos[1]+2*tileWidth))
 
-                            renderer.fill_rect((basePos[0],basePos[1]+2*tileWidth), (basePos[0]+tileHeight,basePos[1]))
-                            renderer.fill_rect((basePos[0]+1,basePos[1]+2*tileWidth), (basePos[0]+tileHeight,basePos[1]-1))
-                            renderer.fill_rect((basePos[0],basePos[1]+2*tileWidth-1), (basePos[0]+tileHeight-1,basePos[1]))
+                            renderer.fill_rect((basePos[0],basePos[1]+2*tileWidth, basePos[0]+tileHeight,basePos[1]))
+                            renderer.fill_rect((basePos[0]+1,basePos[1]+2*tileWidth, basePos[0]+tileHeight,basePos[1]-1))
+                            renderer.fill_rect((basePos[0],basePos[1]+2*tileWidth-1, basePos[0]+tileHeight-1,basePos[1]))
                         else:
                             barHeight = src.interaction.tileHeight//8
                             if barHeight:

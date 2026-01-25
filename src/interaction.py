@@ -4169,7 +4169,7 @@ class CharacterMeta:
         self.character = character
         self.content = content
 
-def tcodPresent():
+def tcodPresent(noPresent=False):
     atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset)
     console_render = tcod.render.SDLConsoleRender(atlas)
 
@@ -4182,7 +4182,8 @@ def tcodPresent():
 
     draw_sdl()
 
-    sdl_renderer2.present()
+    if not noPresent:
+        sdl_renderer2.present()
 
 def printUrwidToTcod(inData,offset,color=None,internalOffset=None,size=None, actionMeta=None, explecitConsole=None):
     if explecitConsole:
@@ -4764,6 +4765,8 @@ def renderGameDisplay(renderChar=None):
 
                 canvas = render(char)
 
+    #tcodPresent(noPresent=True)
+
     submenue = char.macroState.get("submenue")
     if specialRender or submenue:
         if submenue:
@@ -4791,8 +4794,8 @@ def renderGameDisplay(renderChar=None):
                 width = last_menu_dimension[0]
                 height = last_menu_dimension[1]
 
-        offsetLeft = max(src.interaction.tcodConsole.width//2-width//2,1)
-        offsetTop = max(min(src.interaction.tcodConsole.height//2-height//2,17),1)
+        offsetLeft = max(src.interaction.tcodConsole.width//2-width//2,1)*tileWidth
+        offsetTop = max(min(src.interaction.tcodConsole.height//2-height//2,17),1)*tileHeight
 
         positions = []
         for x in range(-1,width//2+3):
@@ -4802,86 +4805,38 @@ def renderGameDisplay(renderChar=None):
             if position in sdl_map:
                 del sdl_map[position]
 
-        try:
-            counter = offsetTop
+        display_height = tileHeight*height
+        display_width = tileWidth*width
 
-            tcodConsole.print(x=offsetLeft, y=counter-1, string="|",fg=(255,255,255),bg=(0,0,0))
-            pseudoDisplay[counter-1][offsetLeft] = "|"
+        padding = 15
+        line_width = 5
+        overhang = 25
+        outline = 4
+        sdl_renderer2.draw_color = (0,0,0,255)
+        sdl_renderer2.fill_rect((offsetLeft-padding-outline,offsetTop-padding-outline,display_width+2*padding+2*outline,display_height+2*padding+2*outline))
+        sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop-padding-line_width-outline,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
+        sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop+padding+display_height-outline,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
+        sdl_renderer2.fill_rect((offsetLeft-padding-line_width-outline,offsetTop-padding-overhang-outline,line_width+2*outline,display_height+2*(padding+overhang+2*outline)))
+        sdl_renderer2.fill_rect((offsetLeft+padding+display_width-outline,offsetTop-padding-overhang-outline,line_width+2*outline,display_height+2*(padding+overhang)+2*outline))
+        sdl_renderer2.draw_color = (255,255,255,255)
+        sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop-padding-line_width,display_width+2*(padding+overhang),line_width))
+        sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop+padding+display_height,display_width+2*(padding+overhang),line_width))
+        sdl_renderer2.fill_rect((offsetLeft-padding-line_width,offsetTop-padding-overhang,line_width,display_height+2*(padding+overhang)))
+        sdl_renderer2.fill_rect((offsetLeft+padding+display_width,offsetTop-padding-overhang,line_width,display_height+2*(padding+overhang)))
 
-            tcodConsole.print(x=offsetLeft+width+3, y=counter-1, string="|",fg=(255,255,255),bg=(0,0,0))
-            pseudoDisplay[counter-1][offsetLeft+width+3] = "|"
+        root_console = tcod.console.Console(width, height, order="F")
+        printUrwidToTcod(text,(0,0),explecitConsole=root_console)
 
-            #tcodConsole.print(x=offsetLeft+width+0, y=counter-1, string="<",fg=(255,255,255),bg=(0,0,0))
-            #pseudoDisplay[counter-1][offsetLeft+width+0] = "<"
-            #src.gamestate.gamestate.clickMap[(offsetLeft+width+0,counter-1)] = ["lESC"]
-            #tcodConsole.print(x=offsetLeft+width+1, y=counter-1, string="X",fg=(255,255,255),bg=(0,0,0))
-            #pseudoDisplay[counter-1][offsetLeft+width+1] = "X"
-            #src.gamestate.gamestate.clickMap[(offsetLeft+width+1,counter-1)] = ["esc"]
-            #tcodConsole.print(x=offsetLeft+width+2, y=counter-1, string=">",fg=(255,255,255),bg=(0,0,0))
-            #pseudoDisplay[counter-1][offsetLeft+width+2] = ">"
-            #src.gamestate.gamestate.clickMap[(offsetLeft+width+2,counter-1)] = ["rESC"]
+        atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset)
+        console_render = tcod.render.SDLConsoleRender(atlas)
+        renderedToTexture = console_render.render(root_console)
+        sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
 
-            #tcodConsole.print(x=offsetLeft+width+5, y=counter-1, string=stringifyUrwid(header.get_text()),fg=(255,255,255),bg=(0,0,0))
-            #pseudoDisplay[counter-1][offsetLeft+width+5] = stringifyUrwid(header.get_text())
-            tcodConsole.print(x=offsetLeft-2, y=counter, string="--+-"+"-"*width+"-+--",fg=(255,255,255),bg=(0,0,0))
-            pseudoDisplay[counter][offsetLeft-2] = "--+-"+"-"*width+"-+--"
-            extraX = 0
-            for char in "--+-"+"-"*width+"-+--":
-                pseudoDisplay[counter][offsetLeft-2+extraX] = char
-                extraX += 1
-            counter += 1
-            tcodConsole.print(x=offsetLeft, y=counter, string="| "+" "*width+" |",fg=(255,255,255),bg=(0,0,0))
-            extraX = 0
-            for char in "| "+" "*width+" |":
-                pseudoDisplay[counter][offsetLeft+extraX] = char
-                extraX += 1
-            counter += 1
-            lines_printed = 0
-            for _line in plainText.split("\n"):
-                tcodConsole.print(x=offsetLeft, y=counter, string="| "+" "*width+" |",fg=(255,255,255),bg=(0,0,0))
-                extraX = 0
-                for char in "| "+" "*width+" |":
-                    pseudoDisplay[counter][offsetLeft+extraX] = char
-                    extraX += 1
-                counter += 1
-                lines_printed += 1
-            while lines_printed < height:
-                tcodConsole.print(x=offsetLeft, y=counter, string="| "+" "*width+" |",fg=(255,255,255),bg=(0,0,0))
-                extraX = 0
-                for char in "| "+" "*width+" |":
-                    pseudoDisplay[counter][offsetLeft+extraX] = char
-                    extraX += 1
-                counter += 1
-                lines_printed += 1
-
-            counter -= 1
-            tcodConsole.print(x=offsetLeft, y=counter, string="| "+" "*width+" |",fg=(255,255,255),bg=(0,0,0))
-            extraX = 0
-            for char in "| "+" "*width+" |":
-                pseudoDisplay[counter][offsetLeft+extraX] = char
-                extraX += 1
-            counter += 1
-            tcodConsole.print(x=offsetLeft-2, y=counter, string="--+-"+"-"*width+"-+--",fg=(255,255,255),bg=(0,0,0))
-            extraX = 0
-            for char in "--+-"+"-"*width+"-+--":
-                pseudoDisplay[counter][offsetLeft-2+extraX] = char
-                extraX += 1
-            tcodConsole.print(x=offsetLeft, y=counter+1, string="|",fg=(255,255,255),bg=(0,0,0))
-            pseudoDisplay[counter+1][offsetLeft] = "|"
-            tcodConsole.print(x=offsetLeft+width+3, y=counter+1, string="|",fg=(255,255,255),bg=(0,0,0))
-            pseudoDisplay[counter+1][offsetLeft+width+3] = "|"
-        except:
-            pass
-
-        #printUrwidToTcod(text,(offsetLeft+2,offsetTop+2),size=(width,height))
-        if not renderChar:
-            printUrwidToTcod(text,(offsetLeft+2,offsetTop+2))
-        else:
-            printUrwidToDummy(pseudoDisplay, text,(offsetLeft+2,offsetTop+2))
     else:
+        tcodPresent(noPresent=True)
         last_menu_dimension = None
 
-    tcodPresent()
+    sdl_renderer2.present()
 
     if renderChar:
         sendNetworkDraw(pseudoDisplay)

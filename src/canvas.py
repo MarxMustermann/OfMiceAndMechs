@@ -490,6 +490,9 @@ class Canvas:
                     char = char.content
                 if isinstance(char, src.interaction.CharacterMeta):
                     char = char.content
+                if isinstance(char, src.interaction.ItemMeta):
+                    item = char.item
+                    char = char.content
 
                 if isinstance(char, int):
                     mapped = self.displayChars.indexedMapping[char]

@@ -1044,7 +1044,7 @@ class Room:
                     logger.error("drawing non positioned item")
                     continue
                 try:
-                    chars[item.yPosition][item.xPosition] = display
+                    chars[item.yPosition][item.xPosition] = src.interaction.ItemMeta(content=display,item=item)
                 except:
                     logger.error(f"item placed outside of room {item.yPosition}/{item.xPosition}")
                     continue
@@ -1088,9 +1088,9 @@ class Room:
 
                         newDisplay = []
                         for display in displayList:
-                            actionMeta = None
-                            if isinstance(display,src.interaction.ActionMeta):
-                                actionMeta = display
+                            meta = None
+                            if isinstance(display,src.interaction.ActionMeta) or isinstance(display,src.interaction.CharacterMeta) or isinstance(display,src.interaction.ItemMeta):
+                                meta = display
                                 display = display.content
 
                             if isinstance(display,int):
@@ -1104,11 +1104,13 @@ class Room:
                                 if not isinstance(display[0],tuple):
                                     display = (src.interaction.urwid.AttrSpec(display[0].foreground,color),display[1])
 
-                            if actionMeta:
-                                actionMeta.content = display
-                                display = actionMeta
+                            if meta:
+                                meta.content = display
+                                display = meta
 
                             newDisplay.append(display)
+                            if len(newDisplay):
+                                newDisplay = newDisplay[0]
 
                         chars[pos[1]][pos[0]] = newDisplay
 

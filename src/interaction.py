@@ -4169,6 +4169,11 @@ class CharacterMeta:
         self.character = character
         self.content = content
 
+class ItemMeta:
+    def __init__(self, item ,content=None):
+        self.item = item
+        self.content = content
+
 def tcodPresent(noPresent=False):
     atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset)
     console_render = tcod.render.SDLConsoleRender(atlas)
@@ -4245,6 +4250,9 @@ def printUrwidToTcod(inData,offset,color=None,internalOffset=None,size=None, act
         printUrwidToTcod(inData.content,offset,color,internalOffset,size,inData.payload,explecitConsole = tcodConsole_local)
 
     if isinstance(inData, CharacterMeta):
+        printUrwidToTcod(inData.content,offset,color,internalOffset,size,actionMeta,explecitConsole = tcodConsole_local)
+
+    if isinstance(inData, ItemMeta):
         printUrwidToTcod(inData.content,offset,color,internalOffset,size,actionMeta,explecitConsole = tcodConsole_local)
 
     #footertext = stringifyUrwid(inData)

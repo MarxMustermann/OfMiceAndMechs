@@ -2005,7 +2005,7 @@ class Terrain:
                     if item.zPosition != src.gamestate.gamestate.mainChar.zPosition:
                         continue
 
-                    chars[item.yPosition-coordinateOffset[0]][item.xPosition-coordinateOffset[1]] = item.render()
+                    chars[item.yPosition-coordinateOffset[0]][item.xPosition-coordinateOffset[1]] = src.interaction.ItemMeta(content=item.render(),item=item)
 
             # render each room
             for room in self.rooms:
@@ -2070,12 +2070,9 @@ class Terrain:
                         else:
                             color = "#880"
 
-                    actionMeta = None
-                    if isinstance(display,src.interaction.ActionMeta):
-                        actionMeta = display
-                        display = display.content
-                    if isinstance(display,src.interaction.CharacterMeta):
-                        actionMeta = display
+                    meta = None
+                    if isinstance(display,src.interaction.ActionMeta) or isinstance(display,src.interaction.CharacterMeta) or isinstance(display,src.interaction.ItemMeta):
+                        meta = display
                         display = display.content
 
                     if isinstance(display,int):
@@ -2091,9 +2088,9 @@ class Terrain:
                     else:
                         display = (src.interaction.urwid.AttrSpec(display[0].foreground,color),display[1])
 
-                    if actionMeta:
-                        actionMeta.content = display
-                        display = actionMeta
+                    if meta:
+                        meta.content = display
+                        display = meta
 
                     chars[pos[1]][pos[0]] = display
                 pass

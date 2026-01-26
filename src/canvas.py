@@ -4,6 +4,8 @@ bad code: drawstuff is everywhere
 """
 
 import logging
+import tcod
+import numpy as np
 
 import src.gamestate
 import src.helpers
@@ -404,6 +406,7 @@ class Canvas:
 
         tileWidth = src.interaction.tileWidth
         tileHeight = src.interaction.tileHeight
+
         y = 0
         out = []
         for line in self.chars:
@@ -414,14 +417,69 @@ class Canvas:
 
                 if isinstance(char, src.interaction.ItemMeta):
                     item = char.item
-                    if item.type == "Wall":
+                    content = char.content
+                    if isinstance(content, int):
+                        content = self.displayChars.indexedMapping[content]
+
+                    if item.type == "Door":
+
+                        colors = content[0].get_rgb_values()
+                        fg_color = (colors[0],colors[1],colors[2],255)
+                        bg_color = (colors[3],colors[4],colors[5],255)
 
                         border_width = 4
 
-                        renderer.draw_color = (0,0,0,255)
+                        renderer.draw_color = bg_color
                         renderer.fill_rect((basePos[0],basePos[1],tileHeight,tileWidth*2))
 
-                        renderer.draw_color = (5*16,5*16,6*16,255)
+                        base_path = "/home/user/OfMiceAndMechs/config/tiles/"
+                        path = base_path
+                        if item.walkable:
+                            path += "Door.png"
+                        else:
+                            path += "Door_closed.png"
+                        circle = tcod.image.Image.from_file(path)
+                        for x_index in range(0,circle.width):
+                            for y_index in range(0,circle.height):
+                                color = circle.get_pixel(x_index,y_index)
+                                if color == (255, 255, 255):
+                                    circle.put_pixel(x_index,y_index,fg_color[:3])
+                                if color == (0, 0, 0):
+                                    circle.put_pixel(x_index,y_index,bg_color[:3])
+                        texture = renderer.upload_texture(np.asarray(circle))
+                        renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileWidth*2,tileHeight),)
+
+                        renderer.draw_color = fg_color
+
+                        if item.bolted and not item.walkable:
+                            items = item.container.getItemByPosition(item.getPosition(offset=(0,-1,0)))
+                            if not (len(items) == 1 and items[0].type == "Wall" and items[0].bolted):
+                                renderer.fill_rect((basePos[0],basePos[1],tileHeight,border_width))
+
+                            items = item.container.getItemByPosition(item.getPosition(offset=(-1,0,0)))
+                            if not (len(items) == 1 and items[0].type == "Wall" and items[0].bolted):
+                                renderer.fill_rect((basePos[0],basePos[1],border_width,tileHeight))
+
+                            items = item.container.getItemByPosition(item.getPosition(offset=(0,1,0)))
+                            if not (len(items) == 1 and items[0].type == "Wall" and items[0].bolted):
+                                renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,tileHeight,border_width))
+
+                            items = item.container.getItemByPosition(item.getPosition(offset=(1,0,0)))
+                            if not (len(items) == 1 and items[0].type == "Wall" and items[0].bolted):
+                                renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,tileHeight))
+
+                    if item.type == "Wall":
+
+                        colors = content[0].get_rgb_values()
+                        fg_color = (colors[0],colors[1],colors[2],255)
+                        bg_color = (colors[3],colors[4],colors[5],255)
+
+                        border_width = 4
+
+                        renderer.draw_color = bg_color
+                        renderer.fill_rect((basePos[0],basePos[1],tileHeight,tileWidth*2))
+
+                        renderer.draw_color = fg_color
 
                         renderer.fill_rect((basePos[0],basePos[1],border_width*2,border_width*2))
                         renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width*2,border_width*2,border_width*2))
@@ -579,7 +637,7 @@ class Canvas:
                     text = text.replace("┓","+")
                     text = text.replace("┛","+")
                     try:
-                        console.print(x=2*x+numPrinted,y=y,fg=item[0],bg=item[1],string=text)
+                       console.print(x=2*x+numPrinted,y=y,fg=item[0],bg=item[1],string=text)
                     except:
                         logger.error(f"cound not draw {item} {text}")
 

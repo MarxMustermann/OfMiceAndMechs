@@ -969,7 +969,7 @@ class Room:
                 return item
         return None
 
-    def render(self,advanceAnimations=True):
+    def render(self,advanceAnimations=True,padding=0):
         """
         render the room
 
@@ -979,6 +979,7 @@ class Room:
 
         # render room
         if not self.hidden or src.gamestate.gamestate.mainChar.room == self:
+
             # fill the area with floor tiles
             chars = []
             fixedChar = None
@@ -1605,6 +1606,14 @@ class Room:
                     or item.yPosition == self.sizeY - 1
                 ):
                     chars[item.yPosition][item.xPosition] = item.render()
+
+        for _i in range(0,padding):
+            chars.insert(0,["  "]*13)
+            chars.append(["  "]*13)
+
+            for line in chars:
+                line.insert(0,"  ")
+                line.append("  ")
 
         return chars
 

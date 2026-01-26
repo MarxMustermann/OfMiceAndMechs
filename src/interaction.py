@@ -3198,6 +3198,15 @@ press key for advanced drop
 
     # open the character information
     if key in ("o",):
+
+        submenue = src.menuFolder.observeMenu.ObserveMenu(char)
+        submenue.tag = "observe"
+        char.macroState["submenue"] = submenue
+
+        if charState.get("itemMarkedLast"):
+            del charState["itemMarkedLast"]
+        return None
+    if key in ("O",):
         text = """
 
 press key for what to observe

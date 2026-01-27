@@ -2235,7 +2235,7 @@ type the macro that should be run in case the condition is false
                 else:
                     conditionTrue = False
             if char.interactionState["ifCondition"][-1] == "b":
-                if charState["itemMarkedLast"]:
+                if charState.get("itemMarkedLast"):
                     conditionTrue = True
                 else:
                     conditionTrue = False

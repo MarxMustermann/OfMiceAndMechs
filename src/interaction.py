@@ -2921,7 +2921,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
 
         # examine an item
         if key in (commandChars.examine,):
-            if charState["itemMarkedLast"]:
+            if charState.get("itemMarkedLast"):
                 # examine an item on floor
                 char.examinePosition(charState["itemMarkedLast"].getPosition())
             else:

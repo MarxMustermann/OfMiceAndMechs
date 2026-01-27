@@ -721,7 +721,8 @@ def handleCollision(char,charState):
     char.changed("itemCollision")
     if not char.container:
         return
-    char.container.addAnimation(charState["itemMarkedLast"].getPosition(),"showchar",4,{"char":(urwid.AttrSpec("#fff", "#000"), "XX")})
+    if charState.get("itemMarkedLast"):
+        char.container.addAnimation(charState["itemMarkedLast"].getPosition(),"showchar",4,{"char":(urwid.AttrSpec("#fff", "#000"), "XX")})
 
 
 def handleActivityKeypress(char, header, main, footer, flags):

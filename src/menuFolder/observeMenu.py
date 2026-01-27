@@ -130,18 +130,6 @@ class ObserveMenu(src.subMenu.SubMenu):
         if not rooms:
             pos = (self.index_big[0]*15+self.index[0], self.index_big[1]*15+self.index[1], 0)
 
-        # list found items
-        text.append("\n")
-        items = container.getItemByPosition(pos)
-        if not items:
-            text.append("no items found\n")
-        else:
-            text.append("items:\n\n")
-        for item in items:
-            text.append("- ")
-            text.append(item.name)
-            text.append("\n")
-
         # list characters on postion
         text.append("\n")
         show_characters = container.getCharactersOnPosition(pos)
@@ -159,6 +147,18 @@ class ObserveMenu(src.subMenu.SubMenu):
             else:
                 text.append(" (enemy)")
 
+            text.append("\n")
+
+        # list found items
+        text.append("\n")
+        items = container.getItemByPosition(pos)
+        if not items:
+            text.append("no items found\n")
+        else:
+            text.append("items:\n\n")
+        for item in items:
+            text.append("- ")
+            text.append(item.name)
             text.append("\n")
 
         # list markers on floor

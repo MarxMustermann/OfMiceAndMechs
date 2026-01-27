@@ -712,10 +712,10 @@ def moveCharacter(direction,char,noAdvanceGame,header,urwid,dash=False):
         return char.terrain.moveCharacterDirection(char, direction, dash=dash)
 
 def handleCollision(char,charState):
-    if charState["itemMarkedLast"] and char.personality["moveItemsOnCollision"]:
+    if charState.get("itemMarkedLast") and char.personality["moveItemsOnCollision"]:
         char.runCommandString("kl")
         return
-    if charState["itemMarkedLast"] and char.personality["avoidItems"]:
+    if charState.get("itemMarkedLast") and char.personality["avoidItems"]:
         char.runCommandString(random.choice(("a","w","s","d",)))
         return
     char.changed("itemCollision")

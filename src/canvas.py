@@ -421,13 +421,13 @@ class Canvas:
                     if isinstance(content, int):
                         content = self.displayChars.indexedMapping[content]
 
+                    border_width = tileHeight//10+1
+
                     if item.type == "Door":
 
                         colors = content[0].get_rgb_values()
                         fg_color = (colors[0],colors[1],colors[2],255)
                         bg_color = (colors[3],colors[4],colors[5],255)
-
-                        border_width = 4
 
                         renderer.draw_color = bg_color
                         renderer.fill_rect((basePos[0],basePos[1],tileHeight,tileWidth*2))
@@ -474,7 +474,6 @@ class Canvas:
                         fg_color = (colors[0],colors[1],colors[2],255)
                         bg_color = (colors[3],colors[4],colors[5],255)
 
-                        border_width = 4
 
                         renderer.draw_color = bg_color
                         renderer.fill_rect((basePos[0],basePos[1],tileHeight,tileWidth*2))

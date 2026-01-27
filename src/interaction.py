@@ -1496,7 +1496,6 @@ def doStateChange(key,char,charState,main,header,footer,urwid,flags):
         char.interactionState["replay"] = charState["replay"]
         char.interactionState["submenue"] = charState["submenue"]
         char.interactionState["number"] = charState["number"]
-        char.interactionState["itemMarkedLast"] = charState["itemMarkedLast"]
         char.interactionState["macrostate"] = charState
         char.interactionStateBackup.append(char.interactionState)
         char.interactionState = {}
@@ -1510,7 +1509,8 @@ def doStateChange(key,char,charState,main,header,footer,urwid,flags):
             charState["replay"] = char.interactionState["replay"]
             charState["submenue"] = char.interactionState["submenue"]
             charState["number"] = char.interactionState["number"]
-            charState["itemMarkedLast"] = char.interactionState["itemMarkedLast"]
+            if "itemMarkedLast" in char.interactionState:
+                charState["itemMarkedLast"] = char.interactionState["itemMarkedLast"]
         else:
             char.addMessage("nothing to restore")
         del char.interactionState["stateChange"]

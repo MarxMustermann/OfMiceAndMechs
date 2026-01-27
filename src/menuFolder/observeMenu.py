@@ -70,7 +70,16 @@ class ObserveMenu(src.subMenu.SubMenu):
 
         # set the besaic text
         text = []
-        text.append(f"  {self.index} {self.index_big}                                                \n\n")
+
+        # show the coordinate line
+        coordinate_line = ""
+        first_coordinate = f"  {self.index}"
+        first_coordinate_bit = f"{first_coordinate}"+" "*(34-len(first_coordinate))
+        coordinate_line = first_coordinate_bit
+        if self.index_big != self.character.getBigPosition():
+            coordinate_line += f"|  {self.index_big}"
+        coordinate_line += " "*(68-len(coordinate_line))+"\n"
+        text.append(coordinate_line)
 
         # render rooms
         if rooms:
@@ -89,9 +98,13 @@ class ObserveMenu(src.subMenu.SubMenu):
             # show local map
             maprender.append("  ")
             x = 0
+            actual_y = y
+            if rooms:
+                x -= 1
+                actual_y -= 1
             for entry in line:
                 char = entry
-                if (x,y,0) == self.index:
+                if (x,actual_y,0) == self.index:
                     char = "XX"
                 maprender.append(char)
                 x += 1
@@ -112,17 +125,54 @@ class ObserveMenu(src.subMenu.SubMenu):
             y += 1
         text.extend(maprender)
 
-        # get the items to display
+        # get actual postion
         pos = self.index
         if not rooms:
             pos = (self.index_big[0]*15+self.index[0], self.index_big[1]*15+self.index[1], 0)
-        items = container.getItemByPosition(pos)
 
         # list found items
+        text.append("\n")
+        items = container.getItemByPosition(pos)
         if not items:
             text.append("no items found\n")
+        else:
+            text.append("items:\n\n")
         for item in items:
+            text.append("- ")
             text.append(item.name)
+            text.append("\n")
+
+        # list characters on postion
+        text.append("\n")
+        show_characters = container.getCharactersOnPosition(pos)
+        if not show_characters:
+            text.append("no characters found\n")
+        else:
+            text.append("characters:\n\n")
+        for show_character in show_characters:
+            text.append("- ")
+            text.append(show_character.charType)
+            if show_character == self.character:
+                text.append(" (You)")
+            elif show_character.faction == self.character.faction:
+                text.append(" (ally)")
+            else:
+                text.append(" (enemy)")
+
+            text.append("\n")
+
+        # list markers on floor
+        text.append("\n")
+        markers = []
+        if rooms:
+            markers = container.getMarkersOnPosition(pos)
+        if not markers:
+            text.append("no markers found\n")
+        else:
+            text.append("markers:\n\n")
+        for marker in markers:
+            text.append("- ")
+            text.append(str(marker[0]))
             text.append("\n")
 
         # return rendered text

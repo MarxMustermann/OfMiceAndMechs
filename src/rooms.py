@@ -2373,6 +2373,21 @@ XXX
                 return True
         return None
 
+    def getMarkersOnPosition(self,position):
+        markers = []
+        if position in self.walkingSpace:
+            markers.append(("walkingSpace",position))
+        for storageSlot in self.storageSlots:
+            if storageSlot[0] == position:
+                markers.append(("storageSlot",storageSlot))
+        for inputSlot in self.inputSlots:
+            if inputSlot[0] == position:
+                markers.append(("inputSlot",inputSlot))
+        for outputSlot in self.outputSlots:
+            if outputSlot[0] == position:
+                markers.append(("outputSlot",outputSlot))
+        return markers
+
     def magic_drawFloorplan(self):
         if self.floorPlan:
             if "inputSlots" in self.floorPlan:

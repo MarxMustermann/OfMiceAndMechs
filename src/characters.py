@@ -2727,7 +2727,7 @@ press any other key to attack normally"""
             # notify listeners
             self.changed("examine", mainItem)
 
-        self.submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
+        submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
         self.add_submenu(submenue)
 
     def examine(self, item):

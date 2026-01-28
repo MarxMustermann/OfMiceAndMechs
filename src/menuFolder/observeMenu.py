@@ -59,6 +59,9 @@ class ObserveMenu(src.subMenu.SubMenu):
         if self.index_big[1] > 13:
             self.index_big = (self.index_big[0],1,0)
 
+        # emit event
+        self.character.changed("lookedAt",{"index":self.index,"index_big":self.index_big})
+
         # signal menu is still active
         return False
 

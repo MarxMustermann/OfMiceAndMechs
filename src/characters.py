@@ -393,6 +393,9 @@ class Character:
         self.macroState["submenue"] = submenu
         self.runCommandString("~",nativeKey=True)
 
+    def add_submenu(self,submenu):
+        self.macroState["submenue"] = submenu
+
     def callIndirect(self, callback, extraParams=None):
         '''
         call a callback that is stored in a savable format

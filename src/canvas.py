@@ -495,25 +495,25 @@ class Canvas:
 
                         if item.bolted:
                             items = item.container.getItemByPosition(item.getPosition(offset=(0,-1,0)))
-                            if not (len(items) == 1 and items[0].type == "Wall" and items[0].bolted):
+                            if not (len(items) == 1 and items[0].type in ("Door","Wall",) and items[0].bolted):
                                 renderer.fill_rect((basePos[0],basePos[1],tileHeight,border_width))
                             else:
                                 renderer.fill_rect((basePos[0]+tileWidth-border_width//2,basePos[1],border_width,border_width))
 
                             items = item.container.getItemByPosition(item.getPosition(offset=(-1,0,0)))
-                            if not (len(items) == 1 and items[0].type == "Wall" and items[0].bolted):
+                            if not (len(items) == 1 and items[0].type in ("Door","Wall",) and items[0].bolted):
                                 renderer.fill_rect((basePos[0],basePos[1],border_width,tileHeight))
                             else:
                                 renderer.fill_rect((basePos[0],basePos[1]+tileHeight//2-border_width//2,border_width,border_width))
 
                             items = item.container.getItemByPosition(item.getPosition(offset=(0,1,0)))
-                            if not (len(items) == 1 and items[0].type == "Wall" and items[0].bolted):
+                            if not (len(items) == 1 and items[0].type in ("Door","Wall",) and items[0].bolted):
                                 renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,tileHeight,border_width))
                             else:
                                 renderer.fill_rect((basePos[0]+tileWidth-border_width//2,basePos[1]+tileHeight-border_width,border_width,border_width))
 
                             items = item.container.getItemByPosition(item.getPosition(offset=(1,0,0)))
-                            if not (len(items) == 1 and items[0].type == "Wall" and items[0].bolted):
+                            if not (len(items) == 1 and items[0].type in ("Door","Wall",) and items[0].bolted):
                                 renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,tileHeight))
                             else:
                                 renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1]+tileHeight//2-border_width//2,border_width,border_width))

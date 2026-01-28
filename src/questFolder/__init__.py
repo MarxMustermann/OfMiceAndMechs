@@ -75,3 +75,4 @@ import src.questFolder.configureManufacturingTable
 import src.questFolder.activateGlassStatue
 import src.questFolder.searchForRuins
 import src.questFolder.goInside
+import src.questFolder.decide

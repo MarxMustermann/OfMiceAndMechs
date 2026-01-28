@@ -3102,6 +3102,10 @@ Please select on what to focus next:
             )
             submenu.followUp = {"container":self,"method":"handle_player_quest_choice","params":{"character":mainChar}}
             mainChar.add_submenu(submenu)
+
+            quest = src.quests.questMap["Decide"]()
+            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
             return
 
         # try to contact base leader
@@ -3335,6 +3339,8 @@ Please select on what to focus next:
         room = extraParameters.get("room")
         terrain = character.getTerrain()
 
+        character.clear_quests()
+
         if quest_type == "maintain base defences":
 
             # start the actual cleanup
@@ -3342,6 +3348,7 @@ Please select on what to focus next:
             if found_rooms:
                 room = random.choice(found_rooms)
                 quest = src.quests.questMap["EnsureMaindutyClone"](dutyType="cleaning")
+                quest.endTrigger = {"container": self, "method": "reachImplant"}
                 self.addQuest(quest,character)
                 quest = src.quests.questMap["ClearTile"](description="clean up trap room",targetPositionBig=room.getPosition(),reason="clean the trap room.\n\nThe trap room relies on TriggerPlates to work.\nThose only work, if there are no items ontop of them.\nRestore the defence by removing the enemies remains.\nAvoid any enemies entering the trap room while you work",story="You reach out to your implant and it answers:\n\nThe main defence of the base is the trap room,\nit needs to be cleaned to ensure it works correctly.")
                 self.addQuest(quest,character)
@@ -3354,15 +3361,18 @@ Please select on what to focus next:
             found_spiders = terrain.getEnemiesOnTile(character,pos)
             if found_spiders:
                 quest = src.quests.questMap["BaitSpiders"](targetPositionBig=pos)
+                quest.endTrigger = {"container": self, "method": "reachImplant"}
                 self.addQuest(quest,character)
                 return
 
             character.showTextMenu("nothing to be done right now")
+            self.reachImplant()
             return
 
         if quest_type == "something different":
             character.showTextMenu("Very well, do as you please.\n\nRemember that you reach out to me by pressing q")
             return
+        self.reachImplant()
 
     def openedQuestsTravel(self):
         mainChar = self.activeStory["mainChar"]

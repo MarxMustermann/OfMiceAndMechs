@@ -26,18 +26,18 @@ class ObserveMenu(src.subMenu.SubMenu):
             self.index = (self.index[0]+1,self.index[1],0)
 
         # handle out of bounds by small cursor
-        if self.index[0] < 1:
+        if self.index[0] < 0:
             self.index_big = (self.index_big[0]-1,self.index_big[1],0)
             self.index = (13,self.index[1],0)
         if self.index[0] > 13:
             self.index_big = (self.index_big[0]+1,self.index_big[1],0)
-            self.index = (1,self.index[1],0)
-        if self.index[1] < 1:
+            self.index = (0,self.index[1],0)
+        if self.index[1] < 0:
             self.index_big = (self.index_big[0],self.index_big[1]-1,0)
             self.index = (self.index[0],13,0)
         if self.index[1] > 13:
             self.index_big = (self.index_big[0],self.index_big[1]+1,0)
-            self.index = (self.index[0],1,0)
+            self.index = (self.index[0],0,0)
 
         # move big cursor
         if key in ("W",):

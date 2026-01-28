@@ -297,7 +297,7 @@ class Character:
         text += " k - temporary speed\n"
         submenu = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
         submenu.followUp = {"container":self,"method":"castMagic","params":{}}
-        self.macroState["submenue"] = submenu
+        self.add_submenu(submenu)
         self.runCommandString("~",nativeKey=True)
 
     def castMagic(self,extraInformation):
@@ -324,7 +324,7 @@ class Character:
                 text += " d - east\n"
                 submenu = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
                 submenu.followUp = {"container":self,"method":"castLineDamageSpell","params":{}}
-                self.macroState["submenue"] = submenu
+                self.add_submenu(submenu)
                 self.runCommandString("~",nativeKey=True)
             case None | "esc" | "enter":
                 return
@@ -390,7 +390,7 @@ class Character:
         show a popup to the character
         '''
         submenu = src.menuFolder.textMenu.TextMenu(text)
-        self.macroState["submenue"] = submenu
+        self.add_submenu(submenu)
         self.runCommandString("~",nativeKey=True)
 
     def add_submenu(self,submenu):
@@ -1561,8 +1561,8 @@ press l/L for light attack
 press any other key to attack normally"""
         submenu = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
         submenu.tag = "specialAttackSelection"
-        self.macroState["submenue"] = submenu
-        self.macroState["submenue"].followUp = {"container":self,"method":"doSpecialAttack","params":{"target":target,"attacksOffered":attacksOffered}}
+        submenu.followUp = {"container":self,"method":"doSpecialAttack","params":{"target":target,"attacksOffered":attacksOffered}}
+        self.add_submenu(submenu)
         self.runCommandString("~",nativeKey=True)
 
     def doSpecialAttack(self,extraParam):
@@ -2728,7 +2728,7 @@ press any other key to attack normally"""
             self.changed("examine", mainItem)
 
         self.submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
-        self.macroState["submenue"] = self.submenue
+        self.add_submenu(submenue)
 
     def examine(self, item):
         '''
@@ -2748,7 +2748,7 @@ press any other key to attack normally"""
         if info:
             info += "\n\nregisterinformation:\n\n" + registerInfo
             self.submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(info)
-            self.macroState["submenue"] = self.submenue
+            self.add_submenu(submenue)
 
         # notify listeners
         self.changed("examine", item)

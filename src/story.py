@@ -3085,51 +3085,24 @@ but they are likely to explode when disturbed.
                 self.addQuest(quest,mainChar)
                 return
 
-        # keep trap rooms clean
-        if not ghulCount:
-            for room in terrain.rooms:
-                if not room.tag == "trapRoom":
-                    continue
+        if self._get_traprooms_to_clean(mainChar):
+            text = """
+the base is safe for the moment, but there is a lot left to do.
 
-                if room.floorPlan:
-                    continue
+Please select on what to focus next:
+"""
+            options = [
+                    ("maintain base defences", "maintain base defences"),
+                    ("break the siege", "break the siege"),
+                    ("something different", "something different"),
+                    ]
 
-                for walkingSpace in room.walkingSpace:
-                    items = room.getItemByPosition(walkingSpace)
-                    for item in items:
-                        if item.bolted:
-                            continue
-
-                        """
-                        foundCorpse = False
-                        for check_room in terrain.rooms:
-                            if check_room.tag == "shelter":
-                                continue
-                            if check_room.getItemByType("Corpse"):
-                                foundCorpse = True
-
-                        if not hunterCount and foundCorpse:
-                            # spawn trap cleaning ghul
-                            quest = src.quests.questMap["SpawnGhul"]()
-                            self.addQuest(quest,mainChar)
-                            return
-                        """
-
-                        # clear room yourself
-                        hasEnemy = False
-                        hasNPC = False
-                        for other_character in room.characters:
-                            if other_character.faction == character.faction:
-                                if not other_character == character and not other_character.burnedIn and other_character.charType == "Clone":
-                                    hasNPC = True
-                                continue
-                            hasEnemy = True
-                        if not hasEnemy:
-                            quest = src.quests.questMap["EnsureMaindutyClone"](dutyType="cleaning")
-                            self.addQuest(quest,mainChar)
-                            quest = src.quests.questMap["ClearTile"](description="clean up trap room",targetPositionBig=room.getPosition(),reason="clean the trap room.\n\nThe trap room relies on TriggerPlates to work.\nThose only work, if there are no items ontop of them.\nRestore the defence by removing the enemies remains.\nAvoid any enemies entering the trap room while you work",story="You reach out to your implant and it answers:\n\nThe main defence of the base is the trap room,\nit needs to be cleaned to ensure it works correctly.")
-                            self.addQuest(quest,mainChar)
-                            return
+            submenu = src.menuFolder.selectionMenu.SelectionMenu(
+                text, options, tag="player_quest_selection", targetParamName="quest_type",
+            )
+            submenu.followUp = {"container":self,"method":"handle_player_quest_choice","params":{"character":mainChar}}
+            mainChar.add_submenu(submenu)
+            return
 
         # try to contact base leader
         if not src.gamestate.gamestate.stern.get("failedContact1"):
@@ -3322,6 +3295,73 @@ but they are likely to explode when disturbed.
         if mainChar.rank != 1:
             quest = src.quests.questMap["Ascend"]()
             self.addQuest(quest,mainChar)
+            return
+
+    def _get_traprooms_to_clean(self,character):
+        terrain = character.getTerrain()
+
+        # keep trap rooms clean
+        found_rooms = []
+        for room in terrain.rooms:
+            if not room.tag == "trapRoom":
+                continue
+
+            if room.floorPlan:
+                continue
+
+            # check all walkingSpace for cleanup
+            for walkingSpace in room.walkingSpace:
+                items = room.getItemByPosition(walkingSpace)
+                for item in items:
+                    if item.bolted:
+                        continue
+
+                    # check for danger that prevents cleanup
+                    hasEnemy = False
+                    for other_character in room.characters:
+                        if other_character.faction == character.faction:
+                            continue
+                        hasEnemy = True
+
+                    # schedule the actual cleanup
+                    if not hasEnemy:
+                        if not room in found_rooms:
+                            found_rooms.append(room)
+        return found_rooms
+
+    def handle_player_quest_choice(self,extraParameters):
+        quest_type = extraParameters.get("quest_type")
+        character = extraParameters.get("character")
+        room = extraParameters.get("room")
+        terrain = character.getTerrain()
+
+        if quest_type == "maintain base defences":
+
+            # start the actual cleanup
+            found_rooms = self._get_traprooms_to_clean(character)
+            if found_rooms:
+                room = random.choice(found_rooms)
+                quest = src.quests.questMap["EnsureMaindutyClone"](dutyType="cleaning")
+                self.addQuest(quest,character)
+                quest = src.quests.questMap["ClearTile"](description="clean up trap room",targetPositionBig=room.getPosition(),reason="clean the trap room.\n\nThe trap room relies on TriggerPlates to work.\nThose only work, if there are no items ontop of them.\nRestore the defence by removing the enemies remains.\nAvoid any enemies entering the trap room while you work",story="You reach out to your implant and it answers:\n\nThe main defence of the base is the trap room,\nit needs to be cleaned to ensure it works correctly.")
+                self.addQuest(quest,character)
+                return
+
+        if quest_type == "break the siege":
+
+            # start the actual cleanup
+            pos = (5,8,0)
+            found_spiders = terrain.getEnemiesOnTile(character,pos)
+            if found_spiders:
+                quest = src.quests.questMap["BaitSpiders"](targetPositionBig=pos)
+                self.addQuest(quest,character)
+                return
+
+            character.showTextMenu("nothing to be done right now")
+            return
+
+        if quest_type == "something different":
+            character.showTextMenu("Very well, do as you please.\n\nRemember that you reach out to me by pressing q")
             return
 
     def openedQuestsTravel(self):

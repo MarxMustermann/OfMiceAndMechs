@@ -85,7 +85,7 @@ class SternsContraption(src.items.Item):
                 self.container.addAnimation(self.getPosition(),"smoke",6,{})
                 self.container.addAnimation(self.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#faa", "#f00"), "%%")]})
 
-            if tick == 20:
+            if tick == 18:
                 for character in self.container.characters[:]:
                     character.hurt(10,reason="hit by shrapnel")
                 for i in range(1,5):
@@ -104,13 +104,33 @@ class SternsContraption(src.items.Item):
                 self.container.addAnimation(self.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#faa", "#f00"), "%%")]})
             self.container.addAnimation(self.getPosition(),"showchar",1+tick%10,{"char":[(src.interaction.urwid.AttrSpec("#faa", "#f00"), "%%")]})
 
+            if tick == 22:
+                contraptions = self.container.getItemsByType("Contraption")
+                for contraption in contraptions:
+                    if not contraption.meltdownLevel:
+                        contraption.startMeltdown()
+
             if tick == 25:
                 self.meltdownLevel = 1
             if not self.container.characters:
-                self.meltdownLevel = 1
+                contraptions = self.container.getItemsByType("Contraption")
+                intact_contraptions = []
+                for contraption in contraptions:
+                    if contraption.meltdownLevel:
+                        continue
+                    intact_contraptions.append(contraption)
+                if len(intact_contraptions) < 7:
+                    self.meltdownLevel = 1
+                else:
+                    for i in range(1,5):
+                        random.choice(intact_contraptions).startMeltdown()
         else:
+            contraptions = self.container.getItemsByType("Contraption")
+            for contraption in contraptions:
+                if not contraption.meltdownLevel:
+                    contraption.startMeltdown()
 
-            if self.meltdownLevel == 8:
+            if self.meltdownLevel == 6:
                 bigX = self.container.xPosition
                 bigY = self.container.yPosition
                 terrain = self.getTerrain()

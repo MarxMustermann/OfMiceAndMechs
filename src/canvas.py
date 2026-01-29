@@ -423,6 +423,94 @@ class Canvas:
 
                     border_width = tileHeight//10+1
 
+                    if item.type == "SternsContraption":
+                        fg_color = (255,255,255,255)
+                        bg_color = (0,0,0,255)
+
+                        renderer.draw_color = bg_color
+                        renderer.fill_rect((basePos[0],basePos[1],tileHeight,tileWidth*2))
+
+                        base_path = "/home/user/OfMiceAndMechs/config/tiles/"
+                        path = base_path+"SternsContraption.png"
+                        circle = tcod.image.Image.from_file(path)
+                        for x_index in range(0,circle.width):
+                            for y_index in range(0,circle.height):
+                                color = circle.get_pixel(x_index,y_index)
+                                if color == (255, 255, 255):
+                                    circle.put_pixel(x_index,y_index,fg_color[:3])
+                                if color == (0, 0, 0):
+                                    circle.put_pixel(x_index,y_index,bg_color[:3])
+                        texture = renderer.upload_texture(np.asarray(circle))
+                        renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileWidth*2,tileHeight),)
+
+                        renderer.draw_color = fg_color
+
+                        if item.bolted:
+                            items = item.container.getItemByPosition(item.getPosition(offset=(0,-1,0)))
+                            if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","SternsContraption",)):
+                                renderer.fill_rect((basePos[0],basePos[1],tileHeight,border_width))
+
+                            items = item.container.getItemByPosition(item.getPosition(offset=(-1,0,0)))
+                            if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","SternsContraption",)):
+                                renderer.fill_rect((basePos[0],basePos[1],border_width,tileHeight))
+
+                            items = item.container.getItemByPosition(item.getPosition(offset=(0,1,0)))
+                            if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","SternsContraption",)):
+                                renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,tileHeight,border_width))
+
+                            items = item.container.getItemByPosition(item.getPosition(offset=(1,0,0)))
+                            if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","SternsContraption",)):
+                                renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,tileHeight))
+                        else:
+                            renderer.fill_rect((basePos[0],basePos[1],tileHeight,border_width))
+                            renderer.fill_rect((basePos[0],basePos[1],border_width,tileHeight))
+                            renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,tileHeight,border_width))
+                            renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,tileHeight))
+
+                    if item.type == "Contraption":
+                        fg_color = (255,255,255,255)
+                        bg_color = (0,0,0,255)
+
+                        renderer.draw_color = bg_color
+                        renderer.fill_rect((basePos[0],basePos[1],tileHeight,tileWidth*2))
+
+                        base_path = "/home/user/OfMiceAndMechs/config/tiles/"
+                        path = base_path+"Contraption.png"
+                        circle = tcod.image.Image.from_file(path)
+                        for x_index in range(0,circle.width):
+                            for y_index in range(0,circle.height):
+                                color = circle.get_pixel(x_index,y_index)
+                                if color == (255, 255, 255):
+                                    circle.put_pixel(x_index,y_index,fg_color[:3])
+                                if color == (0, 0, 0):
+                                    circle.put_pixel(x_index,y_index,bg_color[:3])
+                        texture = renderer.upload_texture(np.asarray(circle))
+                        renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileWidth*2,tileHeight),)
+
+                        renderer.draw_color = fg_color
+
+                        if item.bolted:
+                            items = item.container.getItemByPosition(item.getPosition(offset=(0,-1,0)))
+                            if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","SternsContraption",)):
+                                renderer.fill_rect((basePos[0],basePos[1],tileHeight,border_width))
+
+                            items = item.container.getItemByPosition(item.getPosition(offset=(-1,0,0)))
+                            if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","SternsContraption",)):
+                                renderer.fill_rect((basePos[0],basePos[1],border_width,tileHeight))
+
+                            items = item.container.getItemByPosition(item.getPosition(offset=(0,1,0)))
+                            if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","SternsContraption",)):
+                                renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,tileHeight,border_width))
+
+                            items = item.container.getItemByPosition(item.getPosition(offset=(1,0,0)))
+                            if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","SternsContraption",)):
+                                renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,tileHeight))
+                        else:
+                            renderer.fill_rect((basePos[0],basePos[1],tileHeight,border_width))
+                            renderer.fill_rect((basePos[0],basePos[1],border_width,tileHeight))
+                            renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,tileHeight,border_width))
+                            renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,tileHeight))
+
                     if item.type == "Door":
 
                         colors = content[0].get_rgb_values()

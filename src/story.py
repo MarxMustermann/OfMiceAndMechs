@@ -3457,7 +3457,9 @@ Please select on what to focus next:
 
         if quest_type == "something different":
             character.showTextMenu("Very well, do as you please.\n\nRemember that you reach out to me by pressing q")
+            src.gamestate.gamestate.stern["first_silenced"] = True
             return
+
         self.reachImplant()
 
     def openedQuestsTravel(self):

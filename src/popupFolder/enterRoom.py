@@ -13,6 +13,7 @@ class EnterRoom(src.popups.Popup):
 
     def text(self):
         self.character.clear_quests()
+        src.gamestate.gamestate.stern["reached_base"] = True
         return self.message
 
     def conditionMet(self, params) -> bool:

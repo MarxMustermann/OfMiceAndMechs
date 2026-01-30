@@ -2982,8 +2982,10 @@ It will explode soon.
 
 Let me properly introduce myself:
 
+
 I'm your implant and i'll be helping you with your tasks.
 My advice is shown on the left side of the screen.
+
 
 What can i help you with?
 """

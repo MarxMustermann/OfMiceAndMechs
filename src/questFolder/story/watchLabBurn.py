@@ -29,7 +29,7 @@ class WatchLabBurn(src.quests.MetaQuestSequence):
                 if not dryRun:
                     self.postHandler()
                 return (None,("+","end quest"))
-            return (None,(".","move on"))
+            return (None,(".","stop watching the explosion"))
 
         if character.getSpacePosition()[1] > 11:
             return (None,("w","distance yourself from the lab"))

@@ -8,6 +8,7 @@ class ReachOutStory(src.quests.MetaQuestSequence):
         questList = []
         super().__init__(creator=creator)
         self.metaDescription = description
+        self.type = "ReachOutStory"
 
     def triggerCompletionCheck(self,character=None,dryRun=True):
         return False

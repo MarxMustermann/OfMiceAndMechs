@@ -23,6 +23,15 @@ class EscapeLab(src.quests.MetaQuestSequence):
             submenue = character.macroState["submenue"]
             if submenue and not ignoreCommands:
                 if isinstance(submenue,src.menuFolder.observeMenu.ObserveMenu):
+                    6, 10, 0
+                    if submenue.index_big[0] < 6:
+                        return (None,("D","move cursor onte tile east"))
+                    if submenue.index_big[0] > 6:
+                        return (None,("A","move cursor onte tile west"))
+                    if submenue.index_big[1] > 10:
+                        return (None,("W","move cursor onte tile north"))
+                    if submenue.index_big[1] < 10:
+                        return (None,("S","move cursor onte tile south"))
                     if submenue.index[0] < 6:
                         return (None,("d","move cursor east"))
                     if submenue.index[0] > 6:
@@ -125,15 +134,14 @@ Instructions to do that will be shown on the left of the screen as "suggested ac
         if not character:
             return False
 
-        for room in character.getTerrain().rooms:
-            if not room.tag == "sternslab":
-                continue
+        if character.container.isRoom:
             return False
 
         if character.yPosition%15 in (0,14):
             return False
 
         if not dryRun:
+            self.character.runCommandString("q")
             self.postHandler()
         return True
 

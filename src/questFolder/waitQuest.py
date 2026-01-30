@@ -44,8 +44,9 @@ This quest will end in {self.lifetimeEvent.tick - src.gamestate.gamestate.tick} 
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
         self.randomSeed = random.random()
+        wait_time = 10
         if self.lifetimeEvent:
-            return (None,(str(self.lifetimeEvent.tick - src.gamestate.gamestate.tick)+".","wait"))
-        return (None,("10.","wait"))
+            wait_time = min(self.lifetimeEvent.tick - src.gamestate.gamestate.tick,10)
+        return (None,("."*wait_time,"wait"))
 
 src.quests.addType(WaitQuest)

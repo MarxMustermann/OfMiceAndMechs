@@ -2864,6 +2864,7 @@ but they are likely to explode when disturbed.
         return storyStartInfo
 
     def openedQuests(self):
+        print("openedQuests")
         if self.activeStory["type"] == "dungeon crawl":
             self.openedQuestsDungeonCrawl()
             return
@@ -2967,73 +2968,44 @@ but they are likely to explode when disturbed.
                 self.addQuest(quest,mainChar)
                 return
 
-            # heal
-            # triggers at any time
-            if mainChar.health < mainChar.maxHealth // 2:
+            if len(mainChar.rememberedMenu2) < 2:
+                inventoryMenu = src.menuFolder.inventoryMenu.InventoryMenu(mainChar)
+                inventoryMenu.sidebared = True
+                mainChar.rememberedMenu2.append(inventoryMenu)
 
-                if len(mainChar.rememberedMenu2) < 2:
-                    inventoryMenu = src.menuFolder.inventoryMenu.InventoryMenu(mainChar)
-                    inventoryMenu.sidebared = True
-                    mainChar.rememberedMenu2.append(inventoryMenu)
+            text = """
+Congratulations! You made it out of the lab.
 
-                for item in mainChar.inventory:
-                    if item.type != "Vial":
-                        continue
-                    if not item.uses:
-                        continue
-                    quest = src.quests.questMap["TreatWounds"]()
-                    self.addQuest(quest,mainChar)
-                    return
+Let me properly introduce myself:
 
-                # pick up nearby vials
-                if mainChar.getFreeInventorySpace() > 0:
-                    if src.quests.questMap["TreatWounds"].getTileVials(mainChar):
-                        quest = src.quests.questMap["TreatWounds"]()
-                        self.addQuest(quest,mainChar)
-                        return
+I'm your implant and i'll be helping you with your tasks.
+My advice is shown on the left side of the screen.
+Currenty i recommend watching the lab explode.
 
-            # grab nearby vial
-            if mainChar.getBigPosition() == (6,9,0):
-                vialTile = (6,8,0)
+What can i help you with?
+"""
+            options = []
+            if terrain.getRoomByPosition((6,10,0)):
+                options.append(("explosion", "watch the explosion"))
+            if mainChar.health < mainChar.maxHealth // 2 and mainChar.searchInventory("Vial"):
+                options.append(("heal", "help me heal"))
+            if self.get_nearby_intro_loot_location(mainChar):
+                options.append(("loot", "find equipment"))
+            options.append(("get to saftey", "help me get to safety"))
+            if mainChar.health >= mainChar.maxHealth // 2 and mainChar.health < mainChar.maxHealth:
+                options.append(("heal", "help me heal"))
+            options.append(("leave me alone", "leave me alone"))
 
-                # check for enemies on vial tile
-                hasEnemy = False
-                for character in terrain.charactersByTile.get(vialTile,[]):
-                    if character.faction == mainChar.faction:
-                        continue
-                    hasEnemy = True
+            submenu = src.menuFolder.selectionMenu.SelectionMenu(
+                text, options, tag="player_quest_selection", targetParamName="quest_type",
+            )
+            submenu.followUp = {"container":self,"method":"handle_player_intro_quest_choice","params":{"character":mainChar}}
+            mainChar.add_submenu(submenu)
 
-                # check for vial on vial tile
-                hasVial = False
-                rooms = terrain.getRoomByPosition(vialTile)
-                if rooms:
-                    items = rooms[0].itemsOnFloor
-                else:
-                    items = terrain.itemsByBigCoordinate.get(vialTile,[])
-                for item in items:
-                    if not item.type == "Vial":
-                        continue
-                    if not item.uses > 0:
-                        continue
-                    hasVial = True
-
-                # fight for vial from tile
-                if hasVial and hasEnemy:
-                    quest = src.quests.questMap["SecureTile"](toSecure=vialTile,endWhenCleared=True,reason="be able to fetch the Vial from that tile",story="You reach out to your implant and it answers:\n\nThere is a Corpse and a Vial on the tile to the north.",simpleAttacksOnly=True)
-                    self.addQuest(quest,mainChar)
-                    return
-
-                # go to vial from tile
-                if hasVial:
-                    quest = src.quests.questMap["GoToTile"](targetPosition=vialTile,reason="be able to fetch the Vial from that tile",story="You reach out to your implant and it answers:\n\nThere is a Vial on the tile to the north.")
-                    self.addQuest(quest,mainChar)
-                    return
-
-            # go to base
-            quest = src.quests.questMap["ReachSafety"]()
+            quest = src.quests.questMap["Decide"]()
+            quest.endTrigger = {"container": self, "method": "reachImplant"}
             self.addQuest(quest,mainChar)
             return
-
 
         # get the players environment
         terrain = mainChar.getTerrain()
@@ -3299,6 +3271,89 @@ Please select on what to focus next:
         if mainChar.rank != 1:
             quest = src.quests.questMap["Ascend"]()
             self.addQuest(quest,mainChar)
+            return
+
+    def get_nearby_intro_loot_location(self,character):
+        terrain = character.getTerrain()
+        offsets = [(-1,0,0),(1,0,0),(0,-1,0),(0,1,0)]
+        base_pos = character.getBigPosition()
+        candidates = []
+        for offset in offsets:
+            candidates.append((base_pos[0]+offset[0],base_pos[1]+offset[1],base_pos[2]+offset[2]))
+        random.shuffle(candidates)
+        candidates.insert(0,base_pos)
+
+        for candidate in candidates:
+        
+            items = terrain.itemsByBigCoordinate.get(candidate,[])
+            has_loot = False
+            for item in items:
+                if not item.type == "Vial":
+                    continue
+                has_loot = True
+            if not has_loot:
+                continue
+
+            has_strong_enemy = False
+            for enemy in terrain.getEnemiesOnTile(character,candidate):
+                if enemy.charType == "Spiderling":
+                    continue
+                has_strong_enemy = True
+            if has_strong_enemy:
+                continue
+
+            return candidate
+
+    def respawnQuest(self):
+        print("respawnQuest")
+        self.openedQuestsStory()
+
+    def handle_player_intro_quest_choice(self,extraParameters):
+        quest_type = extraParameters.get("quest_type")
+        character = extraParameters.get("character")
+        room = extraParameters.get("room")
+        terrain = character.getTerrain()
+
+        character.clear_quests()
+
+        if quest_type == "explosion":
+            quest = src.quests.questMap["WaitQuest"](lifetime=10)
+            self.addQuest(quest,character)
+            quest.failTrigger = {"container": self, "method": "respawnQuest"}
+            quest.endTrigger = {"container": self, "method": "respawnQuest"}
+            return
+
+        if quest_type == "heal":
+            quest = src.quests.questMap["TreatWounds"]()
+            quest.failTrigger = {"container": self, "method": "respawnQuest"}
+            quest.endTrigger = {"container": self, "method": "respawnQuest"}
+            self.addQuest(quest,character)
+            return
+
+        if quest_type == "loot":
+            loot_spot = self.get_nearby_intro_loot_location(character)
+            if not loot_spot:
+                character.showTextMenu("no loot spot found")
+                self.reachImplant()
+                return
+
+            # fight for vial from tile
+            if terrain.getEnemiesOnTile(character,loot_spot):
+                quest = src.quests.questMap["SecureTile"](toSecure=loot_spot,endWhenCleared=True,reason="be able to loot that tile",simpleAttacksOnly=True)
+                quest.failTrigger = {"container": self, "method": "respawnQuest"}
+                quest.endTrigger = {"container": self, "method": "respawnQuest"}
+                self.addQuest(quest,character)
+                return
+
+            quest = src.quests.questMap["LootRoom"](targetPositionBig=loot_spot,reason="collect equipment")
+            quest.failTrigger = {"container": self, "method": "respawnQuest"}
+            quest.endTrigger = {"container": self, "method": "respawnQuest"}
+            self.addQuest(quest,character)
+            return
+
+        if quest_type == "get to saftey":
+            quest = src.quests.questMap["ReachSafety"]()
+            self.addQuest(quest,character)
             return
 
     def _get_traprooms_to_clean(self,character):

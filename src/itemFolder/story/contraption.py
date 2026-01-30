@@ -34,7 +34,7 @@ class Contraption(src.items.Item):
                 self.container.addAnimation(self.getPosition(),"smoke",i,{})
                 self.container.addAnimation(self.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#faa", "#f00"), "%%")]})
 
-        if self.meltdownLevel == 10:
+        if self.meltdownLevel == 5:
             self.destroy()
             return
 

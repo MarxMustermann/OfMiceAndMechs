@@ -3362,6 +3362,7 @@ Please select on what to focus next:
             return
 
         if quest_type == "help":
+            character.showTextMenu("\nfollow the instructions given on the left side of the screen\n",do_not_scale=True)
             self.has_shown_HelpMenu = True
             quest = src.quests.questMap["OpenHelpMenu"]()
             quest.failTrigger = {"container": self, "method": "respawnQuest"}

@@ -40,9 +40,16 @@ class TriggerPlate(src.items.Item):
 
     def render(self):
         if self.active and self.faction != src.gamestate.gamestate.mainChar.faction:
-            return self.display
+            if not self.isInCoolDown():
+                color = "#f00"
+            else:
+                color = "#600"
         else:
-            return "_~"
+            if not self.isInCoolDown():
+                color = "#aaa"
+            else:
+                color = "#666"
+        return (src.interaction.urwid.AttrSpec(color, "black"), "_~")
 
     def isInCoolDown(self):
         if not (src.gamestate.gamestate.tick - self.lastUsed) > self.coolDown:

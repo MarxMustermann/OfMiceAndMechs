@@ -990,6 +990,7 @@ class MainGame(BasicPhase):
         self.preselection = preselection
         self.listeners = {"default": []}
         self.watched = []
+        self.has_shown_HelpMenu = False
         super().__init__("MainGame", seed=seed)
 
     def get_free_position(self,tag):
@@ -2864,7 +2865,6 @@ but they are likely to explode when disturbed.
         return storyStartInfo
 
     def openedQuests(self):
-        print("openedQuests")
         if self.activeStory["type"] == "dungeon crawl":
             self.openedQuestsDungeonCrawl()
             return
@@ -2986,6 +2986,10 @@ What can i help you with?
             options = []
             if terrain.getRoomByPosition((6,10,0)):
                 options.append(("explosion", "let watch the lab burn"))
+            shown_help_option = False
+            if not self.has_shown_HelpMenu and src.gamestate.gamestate.tick < 30:
+                options.append(("help", "show me how play the game"))
+                shown_help_option = True
             if mainChar.health < mainChar.maxHealth // 2 and mainChar.searchInventory("Vial"):
                 options.append(("heal", "help me heal"))
             if self.get_nearby_intro_loot_location(mainChar):
@@ -2993,7 +2997,8 @@ What can i help you with?
             options.append(("get to saftey", "help me get to safety"))
             if mainChar.health >= mainChar.maxHealth // 2 and mainChar.health < mainChar.maxHealth:
                 options.append(("heal", "help me heal"))
-            options.append(("help", "tell me how play the game"))
+            if not shown_help_option:
+                options.append(("help", "show me how play the game"))
             options.append(("leave me alone", "leave me alone"))
 
             submenu = src.menuFolder.selectionMenu.SelectionMenu(
@@ -3305,7 +3310,6 @@ Please select on what to focus next:
             return candidate
 
     def respawnQuest(self):
-        print("respawnQuest")
         self.openedQuestsStory()
 
     def handle_player_intro_quest_choice(self,extraParameters):
@@ -3357,6 +3361,7 @@ Please select on what to focus next:
             return
 
         if quest_type == "help":
+            self.has_shown_HelpMenu = True
             quest = src.quests.questMap["OpenHelpMenu"]()
             quest.failTrigger = {"container": self, "method": "respawnQuest"}
             quest.endTrigger = {"container": self, "method": "respawnQuest"}

@@ -2974,7 +2974,8 @@ but they are likely to explode when disturbed.
                 mainChar.rememberedMenu2.append(inventoryMenu)
 
             text = """
-Congratulations! You made it out of the lab.
+Congratulations! You made it out of the burning lab.
+It will explode soon.
 
 Let me properly introduce myself:
 

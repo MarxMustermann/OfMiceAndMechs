@@ -7749,7 +7749,7 @@ def advanceChar(char,render=True, pull_events = True, singleStep=False):
         elif char.autoExpandQuests2 and char.autoExpandCounter < 10 and char.getActiveQuest() and char.getActiveQuest().getSolvingCommandString(char) == "+":
             char.autoExpandCounter += 1
             char.runCommandString("+",nativeKey=True)
-        elif char.autoExpandQuests2 and char.autoExpandCounter < 10 and char.getActiveQuest() and char.getActiveQuest().type == "ReachOutStory" and char.getActiveQuest().getSolvingCommandString(char)[0] == "q" and src.gamestate.gamestate.stern.get("first_reachout_done"):
+        elif char.autoExpandQuests2 and char.autoExpandCounter < 10 and char.getActiveQuest() and char.getActiveQuest().type == "ReachOutStory" and char.getActiveQuest().getSolvingCommandString(char)[0] == "q" and src.gamestate.gamestate.stern.get("first_reachout_done") and not src.gamestate.gamestate.stern.get("first_silenced"):
             char.autoExpandCounter += 1
             char.runCommandString("+",nativeKey=True)
         else:

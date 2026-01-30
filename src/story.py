@@ -3383,6 +3383,10 @@ Please select on what to focus next:
             self.clear_implant_quest(character)
             return
 
+        if quest_type == "leave me alone":
+            character.showTextMenu("\nAs you wish.\n\nRemember that you can contact me again by following the instructions the left side of the screen.\n",do_not_scale=True)
+            src.gamestate.gamestate.stern["first_silenced"] = True
+
     def _get_traprooms_to_clean(self,character):
         terrain = character.getTerrain()
 

@@ -2263,7 +2263,7 @@ press any other key to attack normally"""
                     hasComand = True
 
                 if hasComand:
-                    if commandString[0] != "+":
+                    if commandString[0] != "+" and commandString[0] != "q":
                         self.runCommandString(".")
                         return
 

@@ -3456,7 +3456,7 @@ Please select on what to focus next:
             return
 
         if quest_type == "something different":
-            character.showTextMenu("Very well, do as you please.\n\nRemember that you reach out to me by pressing q")
+            character.showTextMenu("Very well, do as you please.\n\nRemember that you can reach out to me by pressing q",do_not_scale=True)
             src.gamestate.gamestate.stern["first_silenced"] = True
             return
 

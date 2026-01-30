@@ -2986,7 +2986,7 @@ What can i help you with?
 """
             options = []
             if terrain.getRoomByPosition((6,10,0)):
-                options.append(("explosion", "let watch the lab burn"))
+                options.append(("explosion", "let me watch the lab burn"))
             shown_help_option = False
             if not self.has_shown_HelpMenu and src.gamestate.gamestate.tick < 30:
                 options.append(("help", "show me how play the game"))

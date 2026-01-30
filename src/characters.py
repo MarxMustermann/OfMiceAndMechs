@@ -385,11 +385,12 @@ class Character:
 
         return resultList
 
-    def showTextMenu(self,text):
+    def showTextMenu(self,text,do_not_scale=False):
         '''
         show a popup to the character
         '''
         submenu = src.menuFolder.textMenu.TextMenu(text)
+        submenu.do_not_scale = do_not_scale
         self.add_submenu(submenu)
         self.runCommandString("~",nativeKey=True)
 

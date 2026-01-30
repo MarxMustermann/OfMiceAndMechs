@@ -2993,6 +2993,7 @@ What can i help you with?
             options.append(("get to saftey", "help me get to safety"))
             if mainChar.health >= mainChar.maxHealth // 2 and mainChar.health < mainChar.maxHealth:
                 options.append(("heal", "help me heal"))
+            options.append(("help", "tell me how play the game"))
             options.append(("leave me alone", "leave me alone"))
 
             submenu = src.menuFolder.selectionMenu.SelectionMenu(
@@ -3352,6 +3353,13 @@ Please select on what to focus next:
 
         if quest_type == "get to saftey":
             quest = src.quests.questMap["ReachSafety"]()
+            self.addQuest(quest,character)
+            return
+
+        if quest_type == "help":
+            quest = src.quests.questMap["OpenHelpMenu"]()
+            quest.failTrigger = {"container": self, "method": "respawnQuest"}
+            quest.endTrigger = {"container": self, "method": "respawnQuest"}
             self.addQuest(quest,character)
             return
 

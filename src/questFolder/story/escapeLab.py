@@ -140,7 +140,6 @@ Instructions to do that will be shown on the left of the screen as "suggested ac
             return False
 
         if not dryRun:
-            self.character.runCommandString("q")
             self.postHandler()
         return True
 

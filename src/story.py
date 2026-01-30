@@ -2937,6 +2937,9 @@ but they are likely to explode when disturbed.
             self.stopWatching(listenItem[0], listenItem[1], listenItem[2])
 
     def openedQuestsStory(self):
+        if not src.gamestate.gamestate.stern.get("first_reachout_done"):
+            src.gamestate.gamestate.stern["first_reachout_done"] = True
+
         mainChar = self.activeStory["mainChar"]
         homeTerrain = src.gamestate.gamestate.terrainMap[mainChar.registers["HOMETy"]][mainChar.registers["HOMETx"]]
 

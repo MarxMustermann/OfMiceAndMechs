@@ -332,7 +332,7 @@ class Quest:
     """
     def fail(self,reason=None):
         self.changed("failed",{"reason":reason,"quest":self})
-        if reason and self.character:
+        if reason and self.character and not reason == "abort":
             self.character.addMessage(f"failed quest {self.description},\nbecause of {reason}")
         if self.failTrigger:
             self.failTrigger()

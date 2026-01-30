@@ -5960,7 +5960,7 @@ def showIntro():
     src.gamestate.gamestate.mainChar.registers["HOMETy"] = 7
     src.gamestate.gamestate.mainChar.faction = "city demo"
 
-    stage = 0
+    stage = -1
     stageState = None
     room = None
     skip = False
@@ -5970,6 +5970,46 @@ def showIntro():
         if not skip:
             tcodConsole.clear()
 
+        if stage == -1:
+            stageState = {"wait":True}
+            text = []
+            logoText = """
+
+OOO FFF          AAA N N DD
+O O FF   mice    AAA NNN D D
+OOO F            A A N N DD
+
+
+MMM   MMM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
+MMMM MMMM  EE      CC      HH   HH  SS
+MM MMM MM  EEEE    CC      HHHHHHH  SSSSSSS
+MM  M  MM  EEEE    CC      HHHHHHH  SSSSSSS
+MM     MM  EE      CC      HH   HH        S
+MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
+
+
+- a pipedream
+
+
+
+
+"""
+
+            text.append(src.urwidSpecials.makeRusty(logoText))
+            text.append("Hello, i'm MarxMustermann and you are about to try my game.\nIt would be really cool, if you'd do me a favour and give me feedback.\n\n")
+            text.append("press esc to skip to main menu\n")
+            text.append("press enter to show the intro cutscene\n\n")
+            text.append("in cutscenes:\n")
+            text.append("    press esc to skip cutscenes fully\n")
+            text.append("    press enter to skip to the next part of a cutscene\n")
+            printUrwidToTcod(text, (64, 4))
+            tcodPresent()
+            if not skip:
+                time.sleep(0.01)
+            if skip:
+                stage = 0
+                stageState = None
+                skip = False
         if stage == 0:
             if stageState is None:
                 stageState = {"substep":1,"lastChange":time.time()}

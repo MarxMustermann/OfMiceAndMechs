@@ -44,6 +44,12 @@ You can attack enemies by walking into them.
 But you can use your environment to your advantage, too.
 Try luring enemies into landmines or detonating some bombs."""
 
+        if self.simpleAttacksOnly:
+            text += """
+
+Use simple attacks only.
+"""
+
         return text
 
     def wrapedTriggerCompletionCheck2(self, extraInfo):

@@ -3322,7 +3322,7 @@ Please select on what to focus next:
         character.clear_quests()
 
         if quest_type == "explosion":
-            quest = src.quests.questMap["WaitQuest"](lifetime=10)
+            quest = src.quests.questMap["WatchLabBurn"]()
             self.addQuest(quest,character)
             quest.failTrigger = {"container": self, "method": "respawnQuest"}
             quest.endTrigger = {"container": self, "method": "respawnQuest"}

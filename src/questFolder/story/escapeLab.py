@@ -23,7 +23,6 @@ class EscapeLab(src.quests.MetaQuestSequence):
             submenue = character.macroState["submenue"]
             if submenue and not ignoreCommands:
                 if isinstance(submenue,src.menuFolder.observeMenu.ObserveMenu):
-                    6, 10, 0
                     if submenue.index_big[0] < 6:
                         return (None,("D","move cursor onte tile east"))
                     if submenue.index_big[0] > 6:
@@ -49,7 +48,7 @@ Now that you found the Door, exit the room before it explodes.
 
 The instructions on how to do this will be shown on the left side on the screen.
 Keep in mind that capital letters have to be pressed as shift+letter.
-Cappital letters will be shown in blueish tint.
+Capital letters will be shown in blueish tint.
 
 For example:
 

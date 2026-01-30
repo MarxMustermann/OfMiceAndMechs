@@ -2940,6 +2940,9 @@ but they are likely to explode when disturbed.
         mainChar = self.activeStory["mainChar"]
         homeTerrain = src.gamestate.gamestate.terrainMap[mainChar.registers["HOMETy"]][mainChar.registers["HOMETx"]]
 
+        if len(mainChar.quests) > 1 or (mainChar.quests and mainChar.quests[0].type != "ReachOutStory"):
+            return
+
         # go home when lost
         if not mainChar.getTerrain() == homeTerrain:
             quest = src.quests.questMap["GoHome"]()
@@ -3313,6 +3316,15 @@ Please select on what to focus next:
     def respawnQuest(self):
         self.openedQuestsStory()
 
+    def clear_implant_quest(self,character):
+        if len(character.quests) < 2:
+            return
+        for quest in character.quests[:]:
+            if len(character.quests) == 1:
+                return
+            if quest.type == "ReachOutStory":
+                quest.abort()
+
     def handle_player_intro_quest_choice(self,extraParameters):
         quest_type = extraParameters.get("quest_type")
         character = extraParameters.get("character")
@@ -3324,15 +3336,13 @@ Please select on what to focus next:
         if quest_type == "explosion":
             quest = src.quests.questMap["WatchLabBurn"]()
             self.addQuest(quest,character)
-            quest.failTrigger = {"container": self, "method": "respawnQuest"}
-            quest.endTrigger = {"container": self, "method": "respawnQuest"}
+            self.clear_implant_quest(character)
             return
 
         if quest_type == "heal":
             quest = src.quests.questMap["TreatWounds"]()
-            quest.failTrigger = {"container": self, "method": "respawnQuest"}
-            quest.endTrigger = {"container": self, "method": "respawnQuest"}
             self.addQuest(quest,character)
+            self.clear_implant_quest(character)
             return
 
         if quest_type == "loot":
@@ -3345,29 +3355,27 @@ Please select on what to focus next:
             # fight for vial from tile
             if terrain.getEnemiesOnTile(character,loot_spot):
                 quest = src.quests.questMap["SecureTile"](toSecure=loot_spot,endWhenCleared=True,reason="be able to loot that tile",simpleAttacksOnly=True)
-                quest.failTrigger = {"container": self, "method": "respawnQuest"}
-                quest.endTrigger = {"container": self, "method": "respawnQuest"}
                 self.addQuest(quest,character)
+                self.clear_implant_quest(character)
                 return
 
             quest = src.quests.questMap["LootRoom"](targetPositionBig=loot_spot,reason="collect equipment")
-            quest.failTrigger = {"container": self, "method": "respawnQuest"}
-            quest.endTrigger = {"container": self, "method": "respawnQuest"}
             self.addQuest(quest,character)
+            self.clear_implant_quest(character)
             return
 
         if quest_type == "get to saftey":
             quest = src.quests.questMap["ReachSafety"]()
             self.addQuest(quest,character)
+            self.clear_implant_quest(character)
             return
 
         if quest_type == "help":
             character.showTextMenu("\nfollow the instructions given on the left side of the screen\n",do_not_scale=True)
             self.has_shown_HelpMenu = True
             quest = src.quests.questMap["OpenHelpMenu"]()
-            quest.failTrigger = {"container": self, "method": "respawnQuest"}
-            quest.endTrigger = {"container": self, "method": "respawnQuest"}
             self.addQuest(quest,character)
+            self.clear_implant_quest(character)
             return
 
     def _get_traprooms_to_clean(self,character):

@@ -27,3 +27,4 @@ import src.questFolder.story.setBaseAutoExpansion
 import src.questFolder.story.storyExtendBase
 import src.questFolder.story.storyScavengeWalls
 import src.questFolder.story.teleportToGlassPalace
+import src.questFolder.story.openHelpMenu

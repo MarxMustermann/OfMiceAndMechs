@@ -423,6 +423,94 @@ class Canvas:
 
                     border_width = tileHeight//10+1
 
+                    """
+                    if item.type == "RodTower":
+                        if isinstance(content[0],str):
+                            fg_color = (255,255,255,255)
+                            bg_color = (0,0,0,255)
+                        else:
+                            colors = content[0].get_rgb_values()
+                            fg_color = (colors[0],colors[1],colors[2],255)
+                            bg_color = (colors[3],colors[4],colors[5],255)
+
+                        base_path = "/home/user/OfMiceAndMechs/config/tiles/"
+                        path = base_path+"RodTower.png"
+                        circle = tcod.image.Image.from_file(path)
+                        for x_index in range(0,circle.width):
+                            for y_index in range(0,circle.height):
+                                color = circle.get_pixel(x_index,y_index)
+                                if color == (255, 255, 255):
+                                    circle.put_pixel(x_index,y_index,fg_color[:3])
+                                if color == (0, 0, 0):
+                                    circle.put_pixel(x_index,y_index,bg_color[:3])
+                        texture = renderer.upload_texture(np.asarray(circle))
+                        renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileWidth*2,tileHeight),)
+
+                        renderer.draw_color = fg_color
+
+                        renderer.fill_rect((basePos[0],basePos[1],border_width,border_width))
+                        renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,border_width,border_width))
+                        renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,border_width))
+                        renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1]+tileHeight-border_width,border_width,border_width))
+
+                        rod_color = (80,80,80,255)
+
+                        if item.bolted:
+                            if item.container.getPositionWalkable(item.getPosition(offset=(0,-1,0))):
+                                renderer.fill_rect((basePos[0],basePos[1],tileHeight,border_width))
+                                renderer.draw_color = rod_color
+                                renderer.fill_rect((basePos[0]+tileWidth-border_width//2,basePos[1],border_width,border_width*2))
+                                renderer.draw_color = fg_color
+
+                            if item.container.getPositionWalkable(item.getPosition(offset=(-1,0,0))):
+                                renderer.fill_rect((basePos[0],basePos[1],border_width,tileHeight))
+                                renderer.draw_color = rod_color
+                                renderer.fill_rect((basePos[0],basePos[1]+tileHeight//2-border_width//2,border_width*2,border_width))
+                                renderer.draw_color = fg_color
+
+                            if item.container.getPositionWalkable(item.getPosition(offset=(0,1,0))):
+                                renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,tileHeight,border_width))
+                                renderer.draw_color = rod_color
+                                renderer.fill_rect((basePos[0]+tileWidth-border_width//2,basePos[1]+tileHeight-border_width*2,border_width,border_width*2))
+                                renderer.draw_color = fg_color
+
+                            if item.container.getPositionWalkable(item.getPosition(offset=(1,0,0))):
+                                renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,tileHeight))
+                                renderer.draw_color = rod_color
+                                renderer.fill_rect((basePos[0]+2*tileWidth-border_width*2,basePos[1]+tileHeight//2-border_width//2,border_width*2,border_width))
+                                renderer.draw_color = fg_color
+                        else:
+                            renderer.fill_rect((basePos[0],basePos[1],tileHeight,border_width))
+                            renderer.fill_rect((basePos[0],basePos[1],border_width,tileHeight))
+                            renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,tileHeight,border_width))
+                            renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,tileHeight))
+
+
+                    if item.type == "TriggerPlate":
+                        if isinstance(content[0],str):
+                            fg_color = (255,255,255,255)
+                            bg_color = (0,0,0,255)
+                        else:
+                            colors = content[0].get_rgb_values()
+                            fg_color = (colors[0],colors[1],colors[2],255)
+                            bg_color = (colors[3],colors[4],colors[5],255)
+
+                        renderer.draw_color = bg_color
+                        renderer.fill_rect((basePos[0],basePos[1],tileHeight,tileWidth*2))
+
+                        base_path = "/home/user/OfMiceAndMechs/config/tiles/"
+                        path = base_path+"TriggerPlate.png"
+                        circle = tcod.image.Image.from_file(path)
+                        for x_index in range(0,circle.width):
+                            for y_index in range(0,circle.height):
+                                color = circle.get_pixel(x_index,y_index)
+                                if color == (255, 255, 255):
+                                    circle.put_pixel(x_index,y_index,fg_color[:3])
+                                if color == (0, 0, 0):
+                                    circle.put_pixel(x_index,y_index,bg_color[:3])
+                        texture = renderer.upload_texture(np.asarray(circle))
+                        renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileWidth*2,tileHeight),)
+
                     if item.type == "SternsContraption":
                         fg_color = (255,255,255,255)
                         bg_color = (0,0,0,255)
@@ -493,18 +581,26 @@ class Canvas:
                             items = item.container.getItemByPosition(item.getPosition(offset=(0,-1,0)))
                             if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","SternsContraption",)):
                                 renderer.fill_rect((basePos[0],basePos[1],tileHeight,border_width))
+                            else:
+                                renderer.fill_rect((basePos[0]+tileWidth-border_width//2,basePos[1]+tileHeight//4,border_width,border_width*3))
 
                             items = item.container.getItemByPosition(item.getPosition(offset=(-1,0,0)))
                             if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","SternsContraption",)):
                                 renderer.fill_rect((basePos[0],basePos[1],border_width,tileHeight))
+                            else:
+                                renderer.fill_rect((basePos[0]+tileWidth//2,basePos[1]+tileHeight//2-border_width//2,border_width*3,border_width))
 
                             items = item.container.getItemByPosition(item.getPosition(offset=(0,1,0)))
                             if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","SternsContraption",)):
                                 renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,tileHeight,border_width))
+                            else:
+                                renderer.fill_rect((basePos[0]+tileWidth-border_width//2,basePos[1]+tileHeight-border_width*3-tileHeight//4,border_width,border_width*3))
 
                             items = item.container.getItemByPosition(item.getPosition(offset=(1,0,0)))
                             if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","SternsContraption",)):
                                 renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,tileHeight))
+                            else:
+                                renderer.fill_rect((basePos[0]+tileWidth//2+tileHeight//4,basePos[1]+tileHeight//2-border_width//2,border_width*3,border_width))
                         else:
                             renderer.fill_rect((basePos[0],basePos[1],tileHeight,border_width))
                             renderer.fill_rect((basePos[0],basePos[1],border_width,tileHeight))
@@ -610,6 +706,7 @@ class Canvas:
                             renderer.fill_rect((basePos[0],basePos[1],border_width,tileHeight))
                             renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,tileHeight,border_width))
                             renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,tileHeight))
+                    """
 
                 if isinstance(char, src.interaction.CharacterMeta):
                     character = char.character

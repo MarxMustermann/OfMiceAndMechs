@@ -2980,13 +2980,13 @@ Let me properly introduce myself:
 
 I'm your implant and i'll be helping you with your tasks.
 My advice is shown on the left side of the screen.
-Currenty i recommend watching the lab explode.
+For now my advice is to watch the lab burn.
 
 What can i help you with?
 """
             options = []
             if terrain.getRoomByPosition((6,10,0)):
-                options.append(("explosion", "watch the explosion"))
+                options.append(("explosion", "watch the lab burn"))
             if mainChar.health < mainChar.maxHealth // 2 and mainChar.searchInventory("Vial"):
                 options.append(("heal", "help me heal"))
             if self.get_nearby_intro_loot_location(mainChar):

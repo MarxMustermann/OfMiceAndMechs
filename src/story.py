@@ -3354,7 +3354,7 @@ Please select on what to focus next:
 
             # fight for vial from tile
             if terrain.getEnemiesOnTile(character,loot_spot):
-                quest = src.quests.questMap["SecureTile"](toSecure=loot_spot,endWhenCleared=True,reason="be able to loot that tile",simpleAttacksOnly=True)
+                quest = src.quests.questMap["SecureTile"](toSecure=loot_spot,endWhenCleared=True,reason="be able to loot that tile",simpleAttacksOnly=True,noHeal=True)
                 self.addQuest(quest,character)
                 self.clear_implant_quest(character)
                 return

@@ -8,7 +8,8 @@ class EscapeLab(src.quests.MetaQuestSequence):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
-
+        self.lookedAtDoor = False
+        self.shownGoToDoor = False
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
 
@@ -18,11 +19,45 @@ class EscapeLab(src.quests.MetaQuestSequence):
         if not character:
             return (None,None)
 
+        if not self.shownGoToDoor:
+            submenue = character.macroState["submenue"]
+            if submenue and not ignoreCommands:
+                if isinstance(submenue,src.menuFolder.observeMenu.ObserveMenu):
+                    if submenue.index[0] < 6:
+                        return (None,("d","move cursor east"))
+                    if submenue.index[0] > 6:
+                        return (None,("a","move cursor west"))
+                    if submenue.index[1] > 0:
+                        return (None,("w","move cursor north"))
+                return (None,(["esc",],"close the menu"))
+            if not self.lookedAtDoor:
+                return (None,("o","open observe menu"))
+
+        if not self.shownGoToDoor and not character.macroState.get("submenue"):
+            if not dryRun:
+                self.character.showTextMenu("""
+Now that you found the Door, exit the room before it explodes.
+
+The instructions on how to do this will be shown on the left side on the screen.
+Keep in mind that capital letters have to be pressed as shift+letter.
+Cappital letters will be shown in blueish tint.
+
+For example:
+
+if the suggested action is "C w x":
+
+    press shift+c then
+    press w then
+    press x
+""")
+                self.shownGoToDoor = True
+                return (None,("~","reach out to implant"))
+
         submenue = character.macroState["submenue"]
         if submenue and not ignoreCommands:
             if submenue.tag == "configurationSelection":
                 return (None,("x","unblock door"))
-            return (None,(["esc",],"to close the menu"))
+            return (None,(["esc",],"close the menu"))
 
         if character.yPosition == 0:
             return (None,("w","leave room"))
@@ -53,31 +88,15 @@ class EscapeLab(src.quests.MetaQuestSequence):
         text = []
         text.extend(["""
 You reach out to your implant and it answers:
-It whispers, but you understand clearly:
 
-Something has gone wrong.
-This room is not a safe place to stay.
 
-So get moving and leave this room.
-Pass through the door (""",door.render(),""") in the north.
+This room is exploding! We need to leave fast.
+
+Look for the door first then move.
+
+Instructions to do that will be shown on the left of the screen as "suggested action"
+
 """])
-
-        text.append("""
-The Door needs to be opened before you can pass through it.
-How to move and open the Door will be shown as suggested action.
-
-Typing the shown characters there should complete the quest.
-Use this as tutorial and hint function.
-Uppercase letters are shown in a light grey.
-""")
-
-        text.append("""
-Right now you are looking at the quest menu.
-Detailed instructions are shown here.
-For now ignore the options below and press esc to continue.
-
-""")
-
         return text
 
     def assignToCharacter(self, character):
@@ -85,7 +104,14 @@ For now ignore the options below and press esc to continue.
             return
 
         self.startWatching(character,self.wrapedTriggerCompletionCheck, "moved")
+        self.startWatching(character,self.lookedAt, "lookedAt")
         super().assignToCharacter(character)
+
+    def lookedAt(self, extraInfo):
+        if extraInfo["index"] == (6,0,0) and extraInfo["index_big"] == (6,10,0):
+            if not self.lookedAtDoor:
+                self.lookedAtDoor = True
+                self.character.addMessage("You found the Door. Close the menu now")
 
     def wrapedTriggerCompletionCheck(self, extraInfo):
         if self.completed:

@@ -23,6 +23,8 @@ class HelpMenu(src.subMenu.SubMenu):
             returns True when done
         """
 
+        character.changed("opened help menu",{})
+
         if self.skipKeypress:
             self.skipKeypress = False
             key = "~"

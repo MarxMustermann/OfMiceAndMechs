@@ -3079,7 +3079,7 @@ What can i help you with?
                 self.addQuest(quest,mainChar)
                 return
 
-        if not mainChar.rank or mainChar.rank > 5:
+        if not src.gamestate.gamestate.stern.get("failedContact2"):
             text = """
 the base is safe for the moment, but there is a lot left to do.
 
@@ -3090,8 +3090,10 @@ Please select on what to focus next:
                 options.append(("maintain base defences", "maintain base defences"))
             if not src.gamestate.gamestate.stern.get("failedContact1"):
                 options.append(("contact command", "contact command"))
-            else:
+            elif not mainChar.rank or mainChar.rank > 5:
                 options.append(("rank 5 promotion", "rank 5 promotion"))
+            else:
+                options.append(("contact command", "contact command"))
             options.append(("break the siege", "break the siege"))
             options.append(("something different", "something different"))
 
@@ -3103,18 +3105,6 @@ Please select on what to focus next:
 
             quest = src.quests.questMap["Decide"]()
             quest.endTrigger = {"container": self, "method": "reachImplant"}
-            self.addQuest(quest,mainChar)
-            return
-
-        # get promoted to rank 5 to unlock Communicator
-        if not mainChar.rank or mainChar.rank > 5:
-            quest = src.quests.questMap["GetRank5PromotionStory"]()
-            self.addQuest(quest,mainChar)
-            return
-
-        # try to contact base leader
-        if not src.gamestate.gamestate.stern.get("failedContact2"):
-            quest = src.quests.questMap["ContactCommand"]()
             self.addQuest(quest,mainChar)
             return
 

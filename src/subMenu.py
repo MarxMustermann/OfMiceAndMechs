@@ -30,6 +30,7 @@ class SubMenu(object):
         self.done = False
         self.tag = tag
         self.extraInfo ={}
+        self.shift = 0
 
         self.options = collections.OrderedDict()
         self.niceOptions = collections.OrderedDict()
@@ -134,6 +135,10 @@ class SubMenu(object):
             return True
 
         if key == "a":
+            self.shift += -1
+            if self.shift < 0:
+                self.shift += len(self.options)
+
             # convert options to ordered dict
             oldOptions = self.options
             oldNiceOptions = self.niceOptions
@@ -149,6 +154,10 @@ class SubMenu(object):
             self.niceOptions[str(counter)] = oldNiceOptions[str(1)]
 
         if key == "d":
+            self.shift += 1
+            if self.shift >= len(self.options):
+                self.shift -= len(self.options)
+
             # convert options to ordered dict
             oldOptions = self.options
             oldNiceOptions = self.niceOptions

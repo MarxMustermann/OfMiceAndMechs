@@ -3451,13 +3451,13 @@ Please select on what to focus next:
 
         if quest_type == "contact command":
             quest = src.quests.questMap["ContactCommand"]()
-            self.addQuest(quest,mainChar)
+            self.addQuest(quest,character)
             self.clear_implant_quest(character)
             return
 
         if quest_type == "rank 5 promotion":
             quest = src.quests.questMap["GetRank5PromotionStory"]()
-            self.addQuest(quest,mainChar)
+            self.addQuest(quest,character)
             return
 
         if quest_type == "break the siege":

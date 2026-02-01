@@ -3079,7 +3079,7 @@ What can i help you with?
                 self.addQuest(quest,mainChar)
                 return
 
-        if mainChar.rank > 2:
+        if not src.gamestate.gamestate.stern.get("failedBaseContact2"):
             text = """
 the base is safe for the moment, but there is a lot left to do.
 
@@ -3096,8 +3096,10 @@ Please select on what to focus next:
                 options.append(("contact command", "contact command"))
             elif not src.gamestate.gamestate.stern.get("failedBaseContact1"):
                 options.append(("contact main base", "contact main base"))
-            else:
+            elif mainChar.rank > 2:
                 options.append(("rank 2 promotion", "rank 2 promotion"))
+            else:
+                options.append(("contact main base", "contact main base"))
             options.append(("break the siege", "break the siege"))
             options.append(("something different", "something different"))
 
@@ -3109,12 +3111,6 @@ Please select on what to focus next:
 
             quest = src.quests.questMap["Decide"]()
             quest.endTrigger = {"container": self, "method": "reachImplant"}
-            self.addQuest(quest,mainChar)
-            return
-
-        # try to contact main base
-        if not src.gamestate.gamestate.stern.get("failedBaseContact2"):
-            quest = src.quests.questMap["ContactMainBase"]()
             self.addQuest(quest,mainChar)
             return
 

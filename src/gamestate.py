@@ -149,7 +149,6 @@ class GameState:
         self.savedThisTurn = True
 
         # get context for drawing stuff
-        tcodConsole = src.interaction.tcodConsole
         printUrwidToTcod = src.interaction.printUrwidToTcod
         tileWidth = src.interaction.tileWidth
         tileHeight = src.interaction.tileHeight

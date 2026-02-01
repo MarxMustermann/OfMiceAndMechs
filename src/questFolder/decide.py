@@ -49,12 +49,12 @@ Decide{reasonString}.
         if not character:
             return False
 
-        if character.health < character.adjustedMaxHealth:
-            return False
+        submenue = character.macroState["submenue"]
+        if not submenue or submenue.tag != "player_quest_selection":
+            if not dryRun:
+                self.postHandler()
+            return True
 
-        if not dryRun:
-            self.postHandler()
-        return True
-
+        return False
 
 src.quests.addType(Decide)

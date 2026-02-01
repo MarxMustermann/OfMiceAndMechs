@@ -3079,7 +3079,7 @@ What can i help you with?
                 self.addQuest(quest,mainChar)
                 return
 
-        if not src.gamestate.gamestate.stern.get("failedContact1"):
+        if not mainChar.rank or mainChar.rank > 5:
             text = """
 the base is safe for the moment, but there is a lot left to do.
 
@@ -3088,7 +3088,10 @@ Please select on what to focus next:
             options = []
             if self._get_traprooms_to_clean(mainChar):
                 options.append(("maintain base defences", "maintain base defences"))
-            options.append(("contact command", "contact command"))
+            if not src.gamestate.gamestate.stern.get("failedContact1"):
+                options.append(("contact command", "contact command"))
+            else:
+                options.append(("rank 5 promotion", "rank 5 promotion"))
             options.append(("break the siege", "break the siege"))
             options.append(("something different", "something different"))
 
@@ -3100,12 +3103,6 @@ Please select on what to focus next:
 
             quest = src.quests.questMap["Decide"]()
             quest.endTrigger = {"container": self, "method": "reachImplant"}
-            self.addQuest(quest,mainChar)
-            return
-
-        # try to contact base leader
-        if not src.gamestate.gamestate.stern.get("failedContact1"):
-            quest = src.quests.questMap["ContactCommand"]()
             self.addQuest(quest,mainChar)
             return
 
@@ -3456,6 +3453,11 @@ Please select on what to focus next:
             quest = src.quests.questMap["ContactCommand"]()
             self.addQuest(quest,mainChar)
             self.clear_implant_quest(character)
+            return
+
+        if quest_type == "rank 5 promotion":
+            quest = src.quests.questMap["GetRank5PromotionStory"]()
+            self.addQuest(quest,mainChar)
             return
 
         if quest_type == "break the siege":

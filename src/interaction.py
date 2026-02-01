@@ -7043,10 +7043,9 @@ def showRunIntro():
 You see """,".",".",".",""" nothing
 ""","You hear ",".",".",".",""" nothing
 ""","You know ",".",".",".",""" nothing
-""","You remember ",".",".",".",""" nothing
 ""","You feel ",".",".",".",""" A sharp pain burrowing through your brain.     \n\
 You remember how tendrils of pain grew from from your implant.     \n\
-It burns your flesh and eats your mindddddddddddddddddddddddddddddddddd\n 
+It burned your flesh and eats your mindddddddddddddddddddddddddddddddddd\n 
 """,
             ]
             text = "".join(textBase[0:subStep])
@@ -7283,12 +7282,12 @@ grows and grows and grows and grows
             printUrwidToTcod(text, (36 + c_offset, 13))
             text = ""
             text += """
-until something breaks."""
+But then something breaks."""
             if subStep > 15:
                 baseText = """
 
-Your implant stops emitting pain
-and for a moment you hear terrible silence."""
+and your implant stops emitting pain
+For a moment you hear terrible silence,"""
                 #text += " ".join(baseText.split(" ")[:(subStep-15)])
                 text += "".join(list(baseText)[:(subStep*3-15*3)])
             if subStep > 55:

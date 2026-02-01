@@ -77,6 +77,9 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
             character: the character trying to something with the growth tank
         """
 
+        if character.macroState.get("itemMarkedLast"):
+            del character.macroState["itemMarkedLast"]
+
         if self.filled:
             self.eject(character)
             character.changed("spawned clone")

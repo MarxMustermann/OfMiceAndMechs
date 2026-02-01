@@ -35,6 +35,12 @@ Decide{reasonString}.
                 self.postHandler()
             return (None,("+","end quest"))
 
+        if submenue.selectionIndex > 1+submenue.shift:
+            return (None,("w","move cursor up"))
+        if submenue.selectionIndex < 1+submenue.shift:
+            return (None,("s","move cursor down"))
+
+
         # select current option
         return (None,("j","select current option"))
 

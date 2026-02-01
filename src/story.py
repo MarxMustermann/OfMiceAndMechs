@@ -3079,7 +3079,7 @@ What can i help you with?
                 self.addQuest(quest,mainChar)
                 return
 
-        if not src.gamestate.gamestate.stern.get("failedContact2"):
+        if mainChar.rank > 2:
             text = """
 the base is safe for the moment, but there is a lot left to do.
 
@@ -3092,8 +3092,12 @@ Please select on what to focus next:
                 options.append(("contact command", "contact command"))
             elif not mainChar.rank or mainChar.rank > 5:
                 options.append(("rank 5 promotion", "rank 5 promotion"))
-            else:
+            elif not src.gamestate.gamestate.stern.get("failedContact2"):
                 options.append(("contact command", "contact command"))
+            elif not src.gamestate.gamestate.stern.get("failedBaseContact1"):
+                options.append(("contact main base", "contact main base"))
+            else:
+                options.append(("rank 2 promotion", "rank 2 promotion"))
             options.append(("break the siege", "break the siege"))
             options.append(("something different", "something different"))
 
@@ -3105,18 +3109,6 @@ Please select on what to focus next:
 
             quest = src.quests.questMap["Decide"]()
             quest.endTrigger = {"container": self, "method": "reachImplant"}
-            self.addQuest(quest,mainChar)
-            return
-
-        # try to contact main base
-        if not src.gamestate.gamestate.stern.get("failedBaseContact1"):
-            quest = src.quests.questMap["ContactMainBase"]()
-            self.addQuest(quest,mainChar)
-            return
-
-        # get promoted to rank 5 to unlock Communicator
-        if mainChar.rank > 2:
-            quest = src.quests.questMap["GetRank2PromotionStory"]()
             self.addQuest(quest,mainChar)
             return
 
@@ -3447,6 +3439,16 @@ Please select on what to focus next:
 
         if quest_type == "rank 5 promotion":
             quest = src.quests.questMap["GetRank5PromotionStory"]()
+            self.addQuest(quest,character)
+            return
+
+        if quest_type == "rank 2 promotion":
+            quest = src.quests.questMap["GetRank2PromotionStory"]()
+            self.addQuest(quest,character)
+            return
+
+        if quest_type == "contact main base":
+            quest = src.quests.questMap["ContactMainBase"]()
             self.addQuest(quest,character)
             return
 

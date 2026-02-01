@@ -3001,25 +3001,62 @@ You should get to safety before they start to hunt.
 What can i help you with?
 """
             options = []
+            extraDescriptions = {}
             if terrain.getRoomByPosition((6,10,0)):
-                options.append(("explosion", "let me watch the lab burn"))
+                name = "explosion"
+                options.append((name, "let me watch the lab burn"))
+                extraDescriptions[name] = """
+The lab burning down will surely be spectacular.
+"""
             shown_help_option = False
             if not self.has_shown_HelpMenu and src.gamestate.gamestate.tick < 30:
-                options.append(("help", "show me how play the game"))
+                name = "help"
+                options.append((name, "show me how play the game"))
+                extraDescriptions[name] = """
+This will show you how to access the help menu.
+The help menu will show you the keybindings.
+"""
                 shown_help_option = True
             if mainChar.health < mainChar.maxHealth // 2 and mainChar.searchInventory("Vial"):
-                options.append(("heal", "help me heal"))
+                name = "heal"
+                options.append((name, "help me heal"))
+                extraDescriptions[name] = """
+You are hurt and should heal yourself.
+"""
             if self.get_nearby_intro_loot_location(mainChar):
-                options.append(("loot", "help me find equipment"))
-            options.append(("get to saftey", "help me get to safety"))
+                name = "loot"
+                options.append((name, "help me find useful items"))
+                extraDescriptions[name] = """
+There are Vials nearby. You can heal yourself with those.
+Fetch them to have some healing items available.
+"""
+            name = "get to safety"
+            options.append((name, "help me get to safety"))
+            extraDescriptions[name] = """
+Beeing outside is dangerous. There is an abandoned base nearby.
+This will lead you into the base.
+"""
+
             if mainChar.health >= mainChar.maxHealth // 2 and mainChar.health < mainChar.maxHealth:
-                options.append(("heal", "help me heal"))
+                name = "heal"
+                options.append((name, "help me heal"))
+                extraDescriptions[name] = """
+It is never a bad idea to have full health.
+"""
             if not shown_help_option:
-                options.append(("help", "show me how play the game"))
-            options.append(("leave me alone", "leave me alone"))
+                name = "help"
+                options.append((name, "show me how play the game"))
+                extraDescriptions[name] = """
+This will show  you the keybindings.
+"""
+            name = "leave me alone"
+            options.append((name, "leave me alone"))
+            extraDescriptions[name] = """
+This will close the tutorial and let you do your own thing.
+"""
 
             submenu = src.menuFolder.selectionMenu.SelectionMenu(
-                text, options, tag="player_quest_selection", targetParamName="quest_type",
+                text, options, tag="player_quest_selection", targetParamName="quest_type",extraDescriptions=extraDescriptions
             )
             submenu.followUp = {"container":self,"method":"handle_player_intro_quest_choice","params":{"character":mainChar}}
             mainChar.add_submenu(submenu)

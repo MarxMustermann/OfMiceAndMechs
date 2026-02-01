@@ -3079,17 +3079,18 @@ What can i help you with?
                 self.addQuest(quest,mainChar)
                 return
 
-        if self._get_traprooms_to_clean(mainChar):
+        if not src.gamestate.gamestate.stern.get("failedContact1"):
             text = """
 the base is safe for the moment, but there is a lot left to do.
 
 Please select on what to focus next:
 """
-            options = [
-                    ("maintain base defences", "maintain base defences"),
-                    ("break the siege", "break the siege"),
-                    ("something different", "something different"),
-                    ]
+            options = []
+            if self._get_traprooms_to_clean(mainChar):
+                options.append(("maintain base defences", "maintain base defences"))
+            options.append(("contact command", "contact command"))
+            options.append(("break the siege", "break the siege"))
+            options.append(("something different", "something different"))
 
             submenu = src.menuFolder.selectionMenu.SelectionMenu(
                 text, options, tag="player_quest_selection", targetParamName="quest_type",
@@ -3448,7 +3449,14 @@ Please select on what to focus next:
                 self.addQuest(quest,character)
                 quest = src.quests.questMap["ClearTile"](description="clean up trap room",targetPositionBig=room.getPosition(),reason="clean the trap room.\n\nThe trap room relies on TriggerPlates to work.\nThose only work, if there are no items ontop of them.\nRestore the defence by removing the enemies remains.\nAvoid any enemies entering the trap room while you work",story="You reach out to your implant and it answers:\n\nThe main defence of the base is the trap room,\nit needs to be cleaned to ensure it works correctly.")
                 self.addQuest(quest,character)
+                self.clear_implant_quest(character)
                 return
+
+        if quest_type == "contact command":
+            quest = src.quests.questMap["ContactCommand"]()
+            self.addQuest(quest,mainChar)
+            self.clear_implant_quest(character)
+            return
 
         if quest_type == "break the siege":
 
@@ -3459,6 +3467,7 @@ Please select on what to focus next:
                 quest = src.quests.questMap["BaitSpiders"](targetPositionBig=pos)
                 quest.endTrigger = {"container": self, "method": "reachImplant"}
                 self.addQuest(quest,character)
+                self.clear_implant_quest(character)
                 return
 
             character.showTextMenu("nothing to be done right now")

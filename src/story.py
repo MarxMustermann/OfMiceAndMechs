@@ -3063,7 +3063,7 @@ What can i help you with?
                 if character.charType == "Ghoul":
                     ghulCount += 1
 
-        # defent base against the implant wave
+        # defend base against the implant wave
         coordinates = [(6,7,0),(5,7,0),(4,7,0)]
         for coordinate in coordinates:
             rooms = homeTerrain.getRoomByPosition(coordinate)

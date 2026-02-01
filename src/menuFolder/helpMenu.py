@@ -60,7 +60,7 @@ class HelpMenu(src.subMenu.SubMenu):
         txt += "uppercase keys open a secondary menu for selection what to interact with\n"
         txt += "\n= fighting =\n"
         txt += " w/a/s/d - attack north/east/south/west\n"
-        txt += " W/A/S/D - alternate attack north/east/south/west\n"
+        txt += " use shift for alternate attacks\n"
         txt += " f - shoot\n"
         txt += " m - attack enemy on the same square\n"
         txt += "\n= user interface =\n"

@@ -2979,7 +2979,8 @@ but they are likely to explode when disturbed.
                 inventoryMenu.sidebared = True
                 mainChar.rememberedMenu2.append(inventoryMenu)
 
-            text = """
+            if terrain.getRoomByPosition((6,10,0)):
+                text = """
 Congratulations! You made it out of the burning lab.
 It will explode soon.
 
@@ -2988,7 +2989,14 @@ Let me properly introduce myself:
 
 I'm your implant and i'll be helping you with your tasks.
 My advice is shown on the left side of the screen.
+"""
+            else:
+                text = """
+The explosion of the lab woke up the local insects.
+You should get to safety before they start to hunt.
+"""
 
+            text += """
 
 What can i help you with?
 """
@@ -3359,6 +3367,8 @@ Please select on what to focus next:
 
             # fight for vial from tile
             if terrain.getEnemiesOnTile(character,loot_spot):
+                quest = src.quests.questMap["LootRoom"](targetPositionBig=loot_spot,reason="collect equipment")
+                self.addQuest(quest,character)
                 quest = src.quests.questMap["SecureTile"](toSecure=loot_spot,endWhenCleared=True,reason="be able to loot that tile",simpleAttacksOnly=True,noHeal=True)
                 self.addQuest(quest,character)
                 self.clear_implant_quest(character)

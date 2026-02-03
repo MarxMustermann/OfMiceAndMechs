@@ -6521,7 +6521,7 @@ You """+"."*stageState["substep"]+"""
             terrain.lastRender = None
 
             if stageState is None:
-                stageState = {"lastChange":time.time(),"substep":0,"endless":False}
+                stageState = {"lastChange":time.time(),"substep":0,"endless":True}
 
                 npc = src.characters.Character()
                 npc.faction = "city demo"
@@ -6572,10 +6572,7 @@ You """+"."*stageState["substep"]+"""
             printUrwidToTcod(terrainRender, (19 + c_offset, 5))
 
             if src.gamestate.gamestate.tick > 10400:
-                if stageState["endless"]:
-                    printUrwidToTcod("press space to stop watching", (47 + c_offset, 4))
-                else:
-                    printUrwidToTcod("press space to continue watching", (46 + c_offset, 4))
+                printUrwidToTcod("press enter to stop watching", (50 + c_offset, 4))
             tcodPresent()
 
             if stageState["substep"] < 1 and time.time()-stageState["lastChange"] > 0:
@@ -6592,10 +6589,6 @@ You """+"."*stageState["substep"]+"""
                     for character in room.characters+terrain.characters:
                         character.timeTaken -= 1
                         advanceChar(character,render=False, pull_events = False)
-
-                if src.gamestate.gamestate.tick > 10470 and not stageState["endless"]:
-                    stageState = None
-                    skip = False
 
             if skip:
                 stageState = None
@@ -7041,14 +7034,19 @@ You see """,".",".",".",""" nothing
 ""","You hear ",".",".",".",""" nothing
 ""","You know ",".",".",".",""" nothing
 ""","You feel ",".",".",".",""" A sharp pain burrowing through your brain.     \n\
-You remember how tendrils of pain grew from from your implant.     \n\
-It burned your flesh and eats your mindddddddddddddddddddddddddddddddddd\n 
+You remember how tendrils of pain grew from from your implant.     \n\n
+It burned your flesh and eats your minddddddddddddddddddddddddddddddddd
+ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
 """,
             ]
             text = "".join(textBase[0:subStep])
             if not subStep < len(textBase)-1:
                 text += textBase[-1][0:subStep2]
             printUrwidToTcod(text, (45 + c_offset, 17))
+            if subStep2 > 170:
+                printUrwidToTcod("press enter to stop struggling", (45 + c_offset, 29))
             tcodPresent()
             if subStep < len(textBase)-1:
                 time.sleep(0.5)
@@ -7056,10 +7054,10 @@ It burned your flesh and eats your mindddddddddddddddddddddddddddddddddd\n
             elif subStep2 < len(textBase[-1]):
                 subStep2 += 1
                 time.sleep(0.03)
-            else:
-                stage += 2 # skip one stage
-                subStep = 0
-                subStep2 = 0
+            #else:
+            #    stage += 2 # skip one stage
+            #    subStep = 0
+            #    subStep2 = 0
         elif stage == 1:
             tcodConsole.clear()
             painChars = ["#","%","&","*","+","`"]
@@ -7279,11 +7277,11 @@ grows and grows and grows and grows
             printUrwidToTcod(text, (36 + c_offset, 13))
             text = ""
             text += """
-But then something breaks."""
+But then something breaks"""
             if subStep > 15:
                 baseText = """
 
-and your implant stops emitting pain
+and your implant stops emitting pain.
 For a moment you hear terrible silence,"""
                 #text += " ".join(baseText.split(" ")[:(subStep-15)])
                 text += "".join(list(baseText)[:(subStep*3-15*3)])

@@ -3392,7 +3392,7 @@ Please select on what to focus next:
             self.clear_implant_quest(character)
             return
 
-        if quest_type == "get to saftey":
+        if quest_type == "get to safety":
             quest = src.quests.questMap["ReachSafety"]()
             self.addQuest(quest,character)
             self.clear_implant_quest(character)

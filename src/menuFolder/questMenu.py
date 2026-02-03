@@ -328,7 +328,8 @@ class QuestMenu(src.subMenu.SubMenu):
                     counter += 1
 
             if sidebared:
-                txt.append("press q to see detailed descriptions\n\n")
+                txt.append("press q to see detailed descriptions\n")
+                txt.append("press ? to see keybindings\n\n")
         else:
             txt.append("No Quest\n\n")
 

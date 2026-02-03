@@ -1269,8 +1269,8 @@ and feel the touch of the cold hard floor.
 The room is filled with various items.
 You recognise your hostile suroundings and
 try to remember how you got here ..."""
-                self.activeStory["mainChar"].messages.insert(0,(text))
-            self.activeStory["mainChar"].messages.append("""until the explosions fully wake you.""")
+                self.activeStory["mainChar"].messages.insert(0,(text,0))
+            self.activeStory["mainChar"].messages.append(("""until the explosions fully wake you.""",0))
             self.activeStory["sternsContraption"].startMeltdown()
 
     def gotEpochReward(self,extraParam):

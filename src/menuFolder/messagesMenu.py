@@ -11,7 +11,7 @@ class MessagesMenu(src.subMenu.SubMenu):
         else:
             to_print = char.messages[-46:]
         for message in reversed(to_print):
-            out += "- "+message+"\n"
+            out += f"- {message[0]}\n"
         return out
 
     type = "MessagesMenu"

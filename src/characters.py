@@ -1183,7 +1183,7 @@ class Character:
             foundItems.append(item)
         return foundItems
 
-    def addMessage(self, message):
+    def addMessage(self, message, tick=None):
         '''
         add a message to the characters message log
         basically only for player UI
@@ -1191,20 +1191,23 @@ class Character:
         Parameters:
             message: the message
         '''
+
+        if not tick:
+            tick = src.gamestate.gamestate.tick
         
         if len(self.messages):
-            last_message:str = self.messages[-1]
+            last_message:str = self.messages[-1][0]
 
             if last_message.startswith(str(message)):
                 m = regex.search("x(\\d+)", last_message)
                 if m:
-                    self.messages[-1]= self.messages[-1][:-len(m.group())] +"x" +str(int(m.group()[1:]) + 1)
+                    self.messages[-1] = (self.messages[-1][0][:-len(m.group())] +"x" +str(int(m.group()[1:]) + 1), tick)
                 else:
-                    self.messages[-1]+= " x2"
+                    self.messages[-1] = (self.messages[-1][0]+" x2", tick)
             else:
-                self.messages.append(str(message))
+                self.messages.append((str(message),tick))
         else:
-            self.messages.append(str(message))
+            self.messages.append((str(message),tick))
 
     def convertCommandString(self,commandString,nativeKey=False, extraFlags=None):
         '''

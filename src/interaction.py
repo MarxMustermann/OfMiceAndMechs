@@ -7241,17 +7241,25 @@ grows and grows and grows and grows
             part2 = backgroundText[index]
             part3 = backgroundText[index+1:]
 
-            x = 0
+            window_charwidth
+            window_charheight
+            start_offset = -7
+            x = start_offset
             y = 0
-            for _i in range(150):
-                printUrwidToTcod((attrSpec, part1), (x + c_offset, y))
-                printUrwidToTcod((attrSpec3, part2), (x + part1len + c_offset, y))
-                printUrwidToTcod((attrSpec2, part3), (x + part1len + 1 + c_offset, y))
-                offset = 200 - x
-                x += width
-                if x > 200:
+            while True:
+                printUrwidToTcod((attrSpec, part1), (x, y))
+                printUrwidToTcod((attrSpec3, part2), (x + part1len, y))
+                printUrwidToTcod((attrSpec2, part3), (x + part1len + 1, y))
+                
+                x += len(backgroundText)
+                if x > window_charwidth:
+                    start_offset -= 3
                     y += 2
-                    x = -offset
+                    x = start_offset
+
+                if y > window_charheight:
+                    break
+
             text = """
                                                                                        \n\
       |                                                                         |      \n\
@@ -7277,23 +7285,24 @@ grows and grows and grows and grows
             printUrwidToTcod(text, (36 + c_offset, 13))
             text = ""
             text += """
-But then something breaks"""
+Something breaks"""
             if subStep > 15:
                 baseText = """
-
 and your implant stops emitting pain.
+
 For a moment you hear terrible silence,"""
                 #text += " ".join(baseText.split(" ")[:(subStep-15)])
                 text += "".join(list(baseText)[:(subStep*3-15*3)])
             if subStep > 55:
                 baseText = """
-
-But it slowly comes back
-and you hear that familiar voice again."""
+but slowly you hear that familiar voice again."""
                 #text += " ".join(baseText.split(" ")[:(subStep-35)])
                 text += "".join(list(baseText)[:(subStep*3-55*3)])
             if subStep > 100:
                 text += """
+
+
+
 
 
 suggested action:

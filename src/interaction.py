@@ -5997,11 +5997,8 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
             text.append(src.urwidSpecials.makeRusty(logoText))
             text.append("Hello, i'm MarxMustermann and you are about to try my game.\nIt would be really cool, if you'd do me a favour and give me feedback.\n\n")
-            text.append("press esc to skip to main menu\n")
+            text.append("press esc to skip the intro cutscene\n")
             text.append("press enter to show the intro cutscene\n\n")
-            text.append("in cutscenes:\n")
-            text.append("    press esc to skip cutscenes fully\n")
-            text.append("    press enter to skip to the next part of a cutscene\n")
             printUrwidToTcod(text, (64, 4))
             tcodPresent()
             if not skip:

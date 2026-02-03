@@ -35,7 +35,8 @@ class MoldFeed(src.items.Item):
             character: the character eating this item
         """
 
-        character.addSatiation(1000,reason="ate mold feed")
-        self.destroy()
+        #character.addSatiation(1000,reason="ate mold feed")
+        #self.destroy()
+        super().apply(character)
 
 src.items.addType(MoldFeed)

@@ -875,7 +875,6 @@ class Terrain:
                     self.charactersByTile.get((bigX, bigY, 0)).remove(other)
                     continue
 
-                char.messages.append("*thump*")
                 char.collidedWith(other,actor=char)
                 other.collidedWith(char,actor=char)
                 return None

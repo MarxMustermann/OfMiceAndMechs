@@ -104,7 +104,7 @@ class Door(src.items.Item):
                 return
 
         # open the door
-        self.walkable = True
+        #self.walkable = True
 
     def close(self, character=None):
         """

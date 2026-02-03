@@ -2660,7 +2660,7 @@ but they are likely to explode when disturbed.
         self.factionCounter += 1
 
         vial = src.items.itemMap["Vial"]()
-        vial.uses = 1
+        vial.uses = 2
         mainChar.inventory.append(vial)
 
         mainChar.registers["HOMETx"] = self.playerBasePosition[0]

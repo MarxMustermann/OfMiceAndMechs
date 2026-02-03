@@ -1340,10 +1340,6 @@ Bring the GlassHeart back to your base to lift that curse."""
 
                     self.showedGlassHeartInfo = True
                     return
-            try:
-                self.showedVialInfo
-            except:
-                self.showedVialInfo = False
 
             if not self.showedVialInfo:
                 if item.type == "Vial":
@@ -1367,11 +1363,6 @@ The less health you have the stronger the Vials healing effect.
 
                     self.showedVialInfo = True
                     return
-
-            try:
-                self.showedGooFlaskInfo
-            except:
-                self.showedGooFlaskInfo = False
 
             if not self.showedGooFlaskInfo:
                 if item.type == "GooFlask":

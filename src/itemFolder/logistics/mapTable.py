@@ -11,6 +11,7 @@ class MapTable(src.items.Item):
     name = "MapTable"
     bolted = True
     walkable = False
+    description = "Stores a map of the wider world"
     def __init__(self):
         self.terrainInfo = {}
         super().__init__(display="MP")

@@ -39,3 +39,4 @@ import src.menuFolder.shoutMenu
 import src.menuFolder.characterStatsMenu
 import src.menuFolder.itemInfoMenu
 import src.menuFolder.observeMenu
+import src.menuFolder.examineMenu

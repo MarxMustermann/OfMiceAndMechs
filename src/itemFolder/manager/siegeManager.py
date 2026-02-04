@@ -9,6 +9,7 @@ class SiegeManager(src.items.Item):
         name: the name of the item to be shown in the UI
     '''
     type = "SiegeManager"
+    description = "Managment item for restricting movement and handling sieges"
     def __init__(self, name="SiegeManager"):
         super().__init__(display="SM", name=name)
 

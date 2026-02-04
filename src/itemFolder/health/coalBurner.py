@@ -13,7 +13,7 @@ class CoalBurner(src.items.Item):
         super().__init__(display="##")
 
         self.name = "coal burner"
-        self.description = "the smoke heals you"
+        self.description = "Emits healing smoke"
 
         self.walkable = False
         self.bolted = False

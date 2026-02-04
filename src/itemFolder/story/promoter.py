@@ -6,6 +6,7 @@ class Promoter(src.items.Item):
     ingame item for marking official progress in the hierarchy
     '''
     type = "Promoter"
+    description = "Allows to get promotions"
     def __init__(self,):
         super().__init__(display="PR")
         self.faction = None

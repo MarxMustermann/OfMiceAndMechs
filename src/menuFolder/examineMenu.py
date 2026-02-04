@@ -7,7 +7,7 @@ class ExamineMenu(src.subMenu.SubMenu):
 
     type = "ExamineMenu"
 
-    def __init__(self, character, text="",specialKeys=None):
+    def __init__(self, character, offset=(0,0,0)):
         """
         initialise internal state
 
@@ -16,10 +16,8 @@ class ExamineMenu(src.subMenu.SubMenu):
         """
 
         super().__init__()
-        if not specialKeys:
-            specialKeys = {}
-        self.specialKeys = specialKeys
         self.character = character
+        self.offset = offset
 
     def handleKey(self, key, noRender=False, character = None):
         """
@@ -46,9 +44,26 @@ class ExamineMenu(src.subMenu.SubMenu):
             self.done = True
             return True
 
-        if key in self.specialKeys:
-            self.callIndirect(self.specialKeys[key])
-            return True
+        if key == "W":
+            if self.offset == (0,1,0):
+                self.offset = (0,0,0)
+            else:
+                self.offset = (0,-1,0)
+        if key == "A":
+            if self.offset == (1,0,0):
+                self.offset = (0,0,0)
+            else:
+                self.offset = (-1,0,0)
+        if key == "S":
+            if self.offset == (0,-1,0):
+                self.offset = (0,0,0)
+            else:
+                self.offset = (0,1,0)
+        if key == "D":
+            if self.offset == (-1,0,0):
+                self.offset = (0,0,0)
+            else:
+                self.offset = (1,0,0)
 
         if not noRender:
             # show info
@@ -59,8 +74,14 @@ class ExamineMenu(src.subMenu.SubMenu):
         return False
 
     def render(self):
-        pos = self.character.getPosition()
-        text = [f"you are examining the position: {pos}\n\n"]
+        pos = self.character.getPosition(offset=self.offset)
+        direction_map = {(0,0,0):"downwards",(1,0,0):"west",(-1,0,0):"east",(0,1,0):"south",(0,-1,0):"north"}
+        small_pos = self.character.getSpacePosition(offset=self.offset)
+        text = [f"you are looking {direction_map[self.offset]} and examining the position: {small_pos}\n\n"]
+        cursoview = []
+        cursoview.extend([["  ","OO","\n"],["OO","@@","OO","\n"],["  ","OO","\n","\n"]])
+        cursoview[self.offset[1]+1][self.offset[0]+1] = "XX"
+        text.append(cursoview)
 
         if isinstance(self.character.container,src.rooms.Room):
             room = self.character.container

@@ -334,12 +334,6 @@ def spawnTrapRoom(terrain, coordinate, faction, doors="0,6 6,0 6,12 12,6"):
     alarmBell.bolted = True
     trapRoom2.addItem(alarmBell, (11, 5, 0))
 
-    # block some of the trap
-    for pos in ((1, 6, 0), (2, 6, 0), (6, 1, 0), (6, 2, 0), (6, 11, 0), (6, 10, 0)):
-        moldFeed = src.items.itemMap["MoldFeed"]()
-        trapRoom2.addItem(moldFeed, pos)
-
-
 def spawnArenaRoom(terrain, coordinate, difficulty, doors="0,6 6,0 6,12 12,6"):
     '''
     generates an arena room

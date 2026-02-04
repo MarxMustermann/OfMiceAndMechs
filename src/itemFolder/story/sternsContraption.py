@@ -6,7 +6,7 @@ class SternsContraption(src.items.Item):
     """
 
     type = "SternsContraption"
-
+    description = "very weird machinery. It looks important"
     def __init__(self,epoch=0):
         """
         configure the superclass

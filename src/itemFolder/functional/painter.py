@@ -9,7 +9,7 @@ class Painter(src.items.Item):
     ingame item ment to be an ingame way to draw stock and buildsites
     '''
     type = "Painter"
-    self.description = "Can be used to draw markers on the floor"
+    description = "Can be used to draw markers on the floor"
     def __init__(self):
         self.activated = False
         super().__init__(src.canvas.displayChars.markerBean_inactive)

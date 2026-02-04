@@ -6,11 +6,11 @@ class Vial(src.items.Item):
     ingame item with health to carry around and drink from
     '''
     type = "Vial"
+    description = "A vial containing health"
     def __init__(self, name="vial", noId=False):
         super().__init__(display=src.canvas.displayChars.gooflask_empty, name=name)
         self.walkable = True
         self.bolted = False
-        self.description = "A vial containing health"
         self.usageInfo = "use the vial to heal yourself"
         self.maxUses = 10
         self.uses = 0

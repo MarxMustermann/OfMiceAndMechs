@@ -2668,72 +2668,10 @@ press any other key to attack normally"""
         Parameters:
             pos: the position to examine
         '''
-        text = f"you are examining the position: {pos}\n\n"
 
-        if isinstance(self.container,src.rooms.Room):
-            room = self.container
-
-            text += "special fields:\n"
-            found = False
-            if pos in room.walkingSpace:
-                found = True
-                text += "is walking space\n"
-            for inputSlot in room.inputSlots:
-                if pos == inputSlot[0]:
-                    found = True
-                    text += f"is input slot for {inputSlot[1]} ({inputSlot[2]})\n"
-            for outputSlot in room.outputSlots:
-                if pos == outputSlot[0]:
-                    found = True
-                    text += f"is output slot for {outputSlot[1]} ({outputSlot[2]})\n"
-            for storageSlot in room.storageSlots:
-                if pos[0] == storageSlot[0][0] and pos[1] == storageSlot[0][1]:
-                    found = True
-                    text += f"is storage slot for {storageSlot[1]} ({storageSlot[2]})\n"
-            for buildSite in room.buildSites:
-                if pos == buildSite[0]:
-                    found = True
-                    text += f"is build site for {buildSite[1]} ({buildSite[2]})\n"
-            if not found:
-                text += "this field is not special\n"
-            text += "\n"
-
-        items = self.container.getItemByPosition(pos)
-        mainItem = None
-        if items:
-            if len(items) == 1:
-                text += f"there is a {items[0].name}"
-                if items[0].bolted:
-                    text += f" X"
-                text += f":\n\n"
-            else:
-                text += f"there are {len(items)} items:\n"
-                for item in items:
-                    text += f"* {item.name}"
-                    if item.bolted:
-                        text += f" X"
-                    text += f"\n"
-                text += "\nOn the top is:\n\n"
-            mainItem = items[0]
-        else:
-            text += "there are no items"
-
-        if mainItem:
-            registerInfo = ""
-            for (key, value) in mainItem.fetchSpecialRegisterInformation().items():
-                self.setRegisterValue(key, value)
-                registerInfo += f"{key}: {value}\n"
-
-            # print info
-            info = mainItem.getLongInfo()
-            if info:
-                text += info
-
-            # notify listeners
-            self.changed("examine", mainItem)
-
-        submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
-        self.add_submenu(submenue)
+        submenu = src.menuFolder.examineMenu.ExamineMenu(self)
+        self.add_submenu(submenu)
+        return
 
     def examine(self, item):
         '''

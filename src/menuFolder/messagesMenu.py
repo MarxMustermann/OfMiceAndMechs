@@ -4,14 +4,36 @@ class MessagesMenu(src.subMenu.SubMenu):
 
     def render(self):
         char = self.char
-        out = ""
+        out = []
 
         if self.scrollIndex:
             to_print = char.messages[-46-self.scrollIndex:-self.scrollIndex]
         else:
             to_print = char.messages[-46:]
         for message in reversed(to_print):
-            out += f"- {message[0]}\n"
+            if message[1] == src.gamestate.gamestate.tick:
+                color = "#fff"
+            elif message[1] > src.gamestate.gamestate.tick - 2:
+                color = "#eee"
+            elif message[1] > src.gamestate.gamestate.tick - 3:
+                color = "#eee"
+            elif message[1] > src.gamestate.gamestate.tick - 4:
+                color = "#ddd"
+            elif message[1] > src.gamestate.gamestate.tick - 5:
+                color = "#ccc"
+            elif message[1] > src.gamestate.gamestate.tick - 15:
+                color = "#bbb"
+            elif message[1] > src.gamestate.gamestate.tick - 30:
+                color = "#aaa"
+            elif message[1] > src.gamestate.gamestate.tick - 45:
+                color = "#999"
+            elif message[1] > src.gamestate.gamestate.tick - 60:
+                color = "#888"
+            elif message[1] > src.gamestate.gamestate.tick - 75:
+                color = "#888"
+            else:
+                color = "#666"
+            out.append((src.interaction.urwid.AttrSpec(color, "default"),f"- {message[0]}\n"))
         return out
 
     type = "MessagesMenu"
@@ -54,7 +76,7 @@ class MessagesMenu(src.subMenu.SubMenu):
 
         char = self.char
 
-        text = f"press w/s to scroll\noldest message on top - skipping {self.scrollIndex} messages\n\n"+self.render()
+        text = [f"press w/s to scroll\noldest message on top - skipping {self.scrollIndex} messages\n\n",self.render()]
 
         # show info
         src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "messages"))

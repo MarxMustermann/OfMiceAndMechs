@@ -6,11 +6,11 @@ class ScrapCompactor(src.items.Item):
     ingame item that converts scrap to metal bars
     '''
     type = "ScrapCompactor"
+    description = "This machine converts scrap into metal bars"
     def __init__(self):
         super().__init__()
         self.display = src.canvas.displayChars.scrapCompactor
         self.name = "scrap compactor"
-        self.description = "This machine converts scrap into metal bars"
         self.coolDown = 10
         self.coolDownTimer = -self.coolDown
         self.charges = 3

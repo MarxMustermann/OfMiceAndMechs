@@ -7,7 +7,7 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
 
     type = "ManufacturingTable"
     name = "ManufacturingTable"
-    description = "Use it to build simple things"
+    description = "Use it to manufacture item"
     walkable = False
     bolted = True
 

@@ -113,7 +113,7 @@ class ExamineMenu(src.subMenu.SubMenu):
             else:
                 text.append(f"there are {len(items)} items:\n")
                 for item in items:
-                    text.append(f"* {item.name}")
+                    text.append(f"* {item.name} => {item.description}")
                     if item.bolted:
                         text.append(f" X")
                     text.append(f"\n")

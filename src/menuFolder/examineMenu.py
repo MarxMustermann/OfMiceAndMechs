@@ -86,9 +86,9 @@ class ExamineMenu(src.subMenu.SubMenu):
                 if pos == buildSite[0]:
                     found = True
                     text += f"is build site for {buildSite[1]} ({buildSite[2]})\n"
-            if not found:
-                text += "this field is not special\n"
             text += "\n"
+        else:
+            text += "this field is not special\n"
 
         items = self.character.container.getItemByPosition(pos)
         mainItem = None

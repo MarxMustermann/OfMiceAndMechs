@@ -7,7 +7,7 @@ class LightningRod(src.items.Item):
     """
     type = "LightningRod"
     name = "lightning rod"
-    description = "used to recharge shockers"
+    description = "a metal Rod with static electricity running through it"
     walkable = True
     bolted = False
 

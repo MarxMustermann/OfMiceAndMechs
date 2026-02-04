@@ -82,6 +82,7 @@ class ExamineMenu(src.subMenu.SubMenu):
         cursoview.extend([["  ","OO","\n"],["OO","@@","OO","\n"],["  ","OO","\n","\n"]])
         cursoview[self.offset[1]+1][self.offset[0]+1] = "XX"
         text.append(cursoview)
+        text.append("press W/A/S/D to move cursor")
 
         # list characters on postion
         text.append("\n")

@@ -18,7 +18,7 @@ class GooDispenser(src.items.Item):
         self.display = src.canvas.displayChars.gooDispenser
 
         self.name = "goo dispenser"
-        self.description = "A goo dispenser can fill goo flasks"
+        self.description = "fills GooFlasks with goo"
         self.usageInfo = """
 Activate it with a goo flask in you inventory.
 The goo flask will be filled by the goo dispenser.

@@ -10,7 +10,7 @@ class Vial(src.items.Item):
         super().__init__(display=src.canvas.displayChars.gooflask_empty, name=name)
         self.walkable = True
         self.bolted = False
-        self.description = "a vial containing health"
+        self.description = "A vial containing health"
         self.usageInfo = "use the vial to heal yourself"
         self.maxUses = 10
         self.uses = 0

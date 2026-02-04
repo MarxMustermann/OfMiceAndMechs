@@ -6,6 +6,7 @@ class Throne(src.items.Item):
     ingame item repesesenting the starting point to ascend to world leader
     '''
     type = "Throne"
+    description = "a throne fit for a leader"
     def __init__(self):
         self.activated = False
         super().__init__("TT")

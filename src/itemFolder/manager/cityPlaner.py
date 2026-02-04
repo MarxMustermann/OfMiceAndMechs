@@ -7,6 +7,7 @@ class CityPlaner(src.items.Item):
     ingame item that should offer an easy interface
     '''
     type = "CityPlaner"
+    description = "Management item to plan how the base should be built"
     def __init__(self, name="CityPlaner", noId=False):
         super().__init__(display="CP", name=name)
         self.applyOptions.extend(

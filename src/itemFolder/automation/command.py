@@ -8,7 +8,7 @@ class Command(src.items.Item):
     """
 
     type = "Command"
-
+    self.description = "a Sheet with a command is written on it"
     def __init__(self):
         """
         configure super class
@@ -17,7 +17,6 @@ class Command(src.items.Item):
         super().__init__(display=src.canvas.displayChars.command)
 
         self.name = "command"
-        self.description = "A sheet with a command is written on it"
         self.usageInfo = "Activate it to run command"
 
         self.bolted = False

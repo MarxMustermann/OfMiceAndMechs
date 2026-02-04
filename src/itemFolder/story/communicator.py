@@ -25,6 +25,7 @@ class Communicator(src.items.Item):
         submenue = src.menuFolder.selectionMenu.SelectionMenu("what do you want to do?",options,targetParamName="type")
         character.macroState["submenue"] = submenue
         character.macroState["submenue"].followUp = {"container":self,"method":"makeContact","params":{"character":character}}
+        character.runCommandString("~")
 
     def makeContact(self,extraParams):
         character = extraParams["character"]

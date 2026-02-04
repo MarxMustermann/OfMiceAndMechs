@@ -17,7 +17,7 @@ class Command(src.items.Item):
         super().__init__(display=src.canvas.displayChars.command)
 
         self.name = "command"
-        self.description = "A command is written on it"
+        self.description = "A sheet with a command is written on it"
         self.usageInfo = "Activate it to run command"
 
         self.bolted = False

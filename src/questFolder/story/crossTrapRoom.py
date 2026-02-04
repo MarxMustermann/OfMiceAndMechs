@@ -22,6 +22,8 @@ class CrossTrapRoom(src.quests.MetaQuestSequence):
         # close open menues
         submenue = character.macroState["submenue"]
         if submenue and not ignoreCommands:
+            if submenue.tag == "confirm_TriggerPlate":
+                return (None,("j","confirm activation"))
             if submenue.tag not in ("advancedInteractionSelection",):
                 return (None,(["esc"],"to close menu"))
 

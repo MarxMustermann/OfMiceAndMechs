@@ -58,7 +58,7 @@ class TriggerPlate(src.items.Item):
             return False
 
     def apply(self, character):
-        character.macroState["submenue"] = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu("press j to confirm manually triggering the TriggerPlate",ignoreFirstKey=False,do_not_scale=True)
+        character.macroState["submenue"] = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu("\npress j to confirm manually triggering the TriggerPlate",ignoreFirstKey=False,do_not_scale=True,tag="confirm_TriggerPlate")
         character.macroState["submenue"].followUp = {"container":self,"method":"activate","params":{"character":character}}
 
     def activate(self,extraParams):

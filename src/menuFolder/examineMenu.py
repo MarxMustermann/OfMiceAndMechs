@@ -78,11 +78,40 @@ class ExamineMenu(src.subMenu.SubMenu):
         direction_map = {(0,0,0):"downwards",(1,0,0):"west",(-1,0,0):"east",(0,1,0):"south",(0,-1,0):"north"}
         small_pos = self.character.getSpacePosition(offset=self.offset)
         text = [f"you are looking {direction_map[self.offset]} and examining the position: {small_pos}\n\n"]
-        cursoview = []
-        cursoview.extend([["  ","OO","\n"],["OO","@@","OO","\n"],["  ","OO","\n","\n"]])
-        cursoview[self.offset[1]+1][self.offset[0]+1] = "XX"
-        text.append(cursoview)
-        text.append("press W/A/S/D to move cursor")
+        cursorview = []
+        cursorview.extend([["  ","  "],["  ","  ","  "],["  ","  "]])
+        under_cursor = "  "
+
+        if isinstance(self.character.container,src.rooms.Room):
+            room = self.character.container
+            room_render = room.render(advanceAnimations=False)
+            for local_offset in [(0,0,0),(1,0,0),(0,1,0),(-1,0,0),(0,-1,0)]:
+                x = self.character.xPosition+local_offset[0]
+                y = self.character.yPosition+local_offset[1]
+                if y < 0 or y >= len(room_render) or x < 0 or x >= len(room_render[y]):
+                    continue
+
+                render = room_render[y][x]
+                cursorview[local_offset[1]+1][local_offset[0]+1] = render
+                if local_offset == self.offset:
+                    under_cursor = render
+
+        cursorview[self.offset[1]+1][self.offset[0]+1] = "XX"
+        counter = 0
+        while counter < len(cursorview):
+            line = cursorview[counter]
+            text.append("           ")
+            if counter == 1:
+                text.append(under_cursor)
+            else:
+                text.append("  ")
+            text.append("           ")
+            text.extend(line)
+            text.append("\n")
+
+            counter += 1
+        text.append("\n")
+        text.append("press W/A/S/D to change what spot you look at\n\n")
 
         # list characters on postion
         text.append("\n")

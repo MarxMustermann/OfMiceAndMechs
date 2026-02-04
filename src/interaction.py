@@ -7035,10 +7035,10 @@ You see """,".",".",".",""" nothing
 ""","You know ",".",".",".",""" nothing
 ""","You feel ",".",".",".",""" A sharp pain burrowing through your brain.     \n\
 You remember how tendrils of pain grew from from your implant.     \n\n
-It burned your flesh and eats your minddddddddddddddddddddddddddddddddd
-ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
-ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
-ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+It burned your flesh and eats your minddddddddddddddddddddddddddddddddd.
+d.d..ddd.dd..d.d.d...ddd.d..d.dd.dd.d..d....d....d.....d.....dd.....d...
+.d..d.....d....d...d....d.......d.d............d............d...........
+..d.....................................................................
 """,
             ]
             text = "".join(textBase[0:subStep])

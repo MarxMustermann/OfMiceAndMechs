@@ -162,6 +162,8 @@ class ObserveMenu(src.subMenu.SubMenu):
         for item in items:
             text.append("- ")
             text.append(item.name)
+            text.append(" => ")
+            text.append(item.description)
             text.append("\n")
 
         # list markers on floor

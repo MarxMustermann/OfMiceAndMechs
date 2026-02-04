@@ -74,25 +74,11 @@ class TriggerPlate(src.items.Item):
         if checkFaction and self.faction == character.faction:
             return
 
-        try:
-            self.lastUsed
-        except:
-            self.lastUsed = 0
-        try:
-            self.coolDown
-        except:
-            self.coolDown = 10
-
         items = self.container.getItemByPosition(self.getPosition())
         if not (items[0] == self):
             return
 
         character.addMessage("you step on a trigger plate")
-
-        try:
-            self.targets
-        except:
-            self.targets = []
 
         if self.isInCoolDown():
             self.container.addAnimation(self.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#f00", "black"), "XX")]})

@@ -117,7 +117,6 @@ class ExamineMenu(src.subMenu.SubMenu):
                     if item.bolted:
                         text.append(f" X")
                     text.append(f"\n")
-                text.append("\nOn the top is:\n\n")
             mainItem = items[0]
         else:
             text.append("there are no items")

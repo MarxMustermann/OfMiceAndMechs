@@ -692,12 +692,13 @@ def moveCharacter(direction,char,noAdvanceGame,header,urwid,dash=False):
             char.addMessage("You cannot walk there " + str(direction))
             char.addMessage("press " + commandChars.activate + " to apply")
             if not noAdvanceGame:
-                header.set_text(
-                    (
-                        urwid.AttrSpec("default", "default"),
-                        renderHeader(char),
+                if header:
+                    header.set_text(
+                        (
+                            urwid.AttrSpec("default", "default"),
+                            renderHeader(char),
+                        )
                     )
-                )
             return item
         else:
             char.changed("moved", (char, direction))

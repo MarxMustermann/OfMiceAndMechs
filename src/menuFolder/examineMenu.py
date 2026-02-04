@@ -83,6 +83,26 @@ class ExamineMenu(src.subMenu.SubMenu):
         cursoview[self.offset[1]+1][self.offset[0]+1] = "XX"
         text.append(cursoview)
 
+        items = self.character.container.getItemByPosition(pos)
+        mainItem = None
+        if items:
+            if len(items) == 1:
+                text.append(f"there is a {items[0].name}")
+                if items[0].bolted:
+                    text.append(f" X")
+                text.append(f":\n\n")
+            else:
+                text.append(f"there are {len(items)} items:\n")
+                for item in items:
+                    text.append(f"* {item.name}")
+                    if item.bolted:
+                        text.append(f" X")
+                    text.append(f"\n")
+                text.append("\nOn the top is:\n\n")
+            mainItem = items[0]
+        else:
+            text.append("there are no items")
+
         if isinstance(self.character.container,src.rooms.Room):
             room = self.character.container
 
@@ -110,26 +130,6 @@ class ExamineMenu(src.subMenu.SubMenu):
             text.append("\n")
         else:
             text.append("this field is not special\n")
-
-        items = self.character.container.getItemByPosition(pos)
-        mainItem = None
-        if items:
-            if len(items) == 1:
-                text.append(f"there is a {items[0].name}")
-                if items[0].bolted:
-                    text.append(f" X")
-                text.append(f":\n\n")
-            else:
-                text.append(f"there are {len(items)} items:\n")
-                for item in items:
-                    text.append(f"* {item.name}")
-                    if item.bolted:
-                        text.append(f" X")
-                    text.append(f"\n")
-                text.append("\nOn the top is:\n\n")
-            mainItem = items[0]
-        else:
-            text.append("there are no items")
 
         if mainItem:
             registerInfo = ""

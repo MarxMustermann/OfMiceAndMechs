@@ -21,15 +21,15 @@ class MessagesMenu(src.subMenu.SubMenu):
                 color = "#ddd"
             elif message[1] > src.gamestate.gamestate.tick - 5:
                 color = "#ccc"
-            elif message[1] > src.gamestate.gamestate.tick - 15:
+            elif message[1] > src.gamestate.gamestate.tick - 6:
                 color = "#bbb"
-            elif message[1] > src.gamestate.gamestate.tick - 30:
+            elif message[1] > src.gamestate.gamestate.tick - 7:
                 color = "#aaa"
-            elif message[1] > src.gamestate.gamestate.tick - 45:
+            elif message[1] > src.gamestate.gamestate.tick - 8:
                 color = "#999"
-            elif message[1] > src.gamestate.gamestate.tick - 60:
+            elif message[1] > src.gamestate.gamestate.tick - 9:
                 color = "#888"
-            elif message[1] > src.gamestate.gamestate.tick - 75:
+            elif message[1] > src.gamestate.gamestate.tick - 10:
                 color = "#888"
             else:
                 color = "#666"

@@ -7,7 +7,7 @@ class BloomShredder(src.items.Item):
     """
 
     type = "BloomShredder"
-    description = "produces bio mass from blooms"
+    description = "produces BioMass from Blooms"
     def __init__(self):
         """
         simple superclass configuration

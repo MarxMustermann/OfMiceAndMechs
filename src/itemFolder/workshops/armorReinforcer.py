@@ -12,7 +12,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
     '''
     type = "ArmorReinforcer"
     name = "armor Reinforcer"
-    description = "Use it to upgrade armors"
+    description = "Use it to upgrade Armor"
     walkable = False
     bolted = True
     def __init__(self):

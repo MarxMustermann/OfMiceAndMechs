@@ -83,6 +83,25 @@ class ExamineMenu(src.subMenu.SubMenu):
         cursoview[self.offset[1]+1][self.offset[0]+1] = "XX"
         text.append(cursoview)
 
+        # list characters on postion
+        text.append("\n")
+        show_characters = self.character.container.getCharactersOnPosition(pos)
+        if not show_characters:
+            text.append("no characters found\n\n")
+        else:
+            text.append("characters:\n\n")
+        for show_character in show_characters:
+            text.append("- ")
+            text.append(show_character.charType)
+            if show_character == self.character:
+                text.append(" (You)")
+            elif show_character.faction == self.character.faction:
+                text.append(" (ally)")
+            else:
+                text.append(" (enemy)")
+
+            text.append("\n")
+
         items = self.character.container.getItemByPosition(pos)
         mainItem = None
         if items:

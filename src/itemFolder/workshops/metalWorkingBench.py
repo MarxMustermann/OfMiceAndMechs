@@ -6,7 +6,7 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
     '''
     type = "MetalWorkingBench"
     name = "MetalWorkingBench"
-    description = "Use it to build simple things"
+    description = "Use it to build things"
     walkable = False
     bolted = True
     def __init__(self):

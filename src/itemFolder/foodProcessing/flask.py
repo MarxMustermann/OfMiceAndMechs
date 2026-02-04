@@ -2,7 +2,7 @@ import src
 
 class Flask(src.items.Item):
     type = "Flask"
-
+    description = "Can hold liquids"
     def __init__(self,uses=0):
         """
         configure super class
@@ -14,7 +14,6 @@ class Flask(src.items.Item):
         self.name = "flask"
         self.walkable = True
         self.bolted = False
-        self.description = "Can hold liquids"
 
     def render(self):
         """

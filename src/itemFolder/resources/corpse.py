@@ -11,7 +11,7 @@ class Corpse(src.items.Item):
 
     type = "Corpse"
     name = "corpse"
-    description = "something dead"
+    description = "The remains of a dead Clone"
     usageInfo = """
 Activate it to eat from it. Eating from a corpse will gain you 15 satiation and may hurt your stomage for 1 damage.
 

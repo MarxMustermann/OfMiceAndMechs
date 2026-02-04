@@ -11,7 +11,7 @@ class Sword(src.items.Item):
     type = "Sword"
 
     name = "sword"
-    description = "used to hit people"
+    description = "Used to hit people"
 
     bolted = False
     walkable = True

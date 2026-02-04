@@ -7,6 +7,7 @@ class PersonnelTracker(src.items.Item):
 
 
     type = "PersonnelTracker"
+    description = "Managment item to track the workers on the base"
 
     def __init__(self, name="PersonnelTracker", noId=False):
         """

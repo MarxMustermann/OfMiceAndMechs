@@ -11,7 +11,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
     '''
     type = "SwordSharpener"
     name = "sword Sharpener"
-    description = "Use it to upgrade swords"
+    description = "Use it to upgrade Swords"
     walkable = False
     bolted = True
     def __init__(self):

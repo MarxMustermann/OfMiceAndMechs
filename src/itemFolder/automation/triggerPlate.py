@@ -14,7 +14,7 @@ class TriggerPlate(src.items.Item):
     name = "TriggerPlate"
     isStepOnActive = True
     bolted = False
-
+    description = "Triggers an action when stepped on"
     def __init__(self):
         """
         set up internal state

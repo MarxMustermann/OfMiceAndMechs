@@ -9,7 +9,7 @@ class AlarmBell(src.items.Item):
     name = "AlarmBell"
     bolted = True
     walkable = False
-
+    description = "Can sound the alarm for the room it is in"
     def __init__(self):
         """
         set up internal state

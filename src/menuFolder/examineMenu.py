@@ -47,21 +47,29 @@ class ExamineMenu(src.subMenu.SubMenu):
         if key == "W":
             if self.offset == (0,1,0):
                 self.offset = (0,0,0)
+            elif self.offset == (0,-1,0):
+                src.interaction.moveCharacter("north",self.character,False,None,None)
             else:
                 self.offset = (0,-1,0)
         if key == "A":
             if self.offset == (1,0,0):
                 self.offset = (0,0,0)
+            elif self.offset == (-1,0,0):
+                src.interaction.moveCharacter("west",self.character,False,None,None)
             else:
                 self.offset = (-1,0,0)
         if key == "S":
             if self.offset == (0,-1,0):
                 self.offset = (0,0,0)
+            elif self.offset == (0,1,0):
+                src.interaction.moveCharacter("south",self.character,False,None,None)
             else:
                 self.offset = (0,1,0)
         if key == "D":
             if self.offset == (-1,0,0):
                 self.offset = (0,0,0)
+            elif self.offset == (1,0,0):
+                src.interaction.moveCharacter("east",self.character,False,None,None)
             else:
                 self.offset = (1,0,0)
 
@@ -145,7 +153,7 @@ class ExamineMenu(src.subMenu.SubMenu):
             text.append("\n")
             mainItem = items[0]
         else:
-            text.append("there are no items\n\n")
+            text.append("no items found\n\n")
 
         if isinstance(self.character.container,src.rooms.Room):
             room = self.character.container
@@ -159,7 +167,7 @@ class ExamineMenu(src.subMenu.SubMenu):
                 text.append(str(marker[0]))
                 text.append("\n")
             if not markers:
-                text.append("this field is not special\n")
+                text.append("no markers found\n")
             text.append("\n")
 
         if mainItem:

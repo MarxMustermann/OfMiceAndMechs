@@ -8,7 +8,7 @@ class ShockTower(src.items.Item):
     """
 
     type = "ShockTower"
-
+    description = "a tower that can arch static electricity towards a target"
     def __init__(self):
         """
         set up internal state
@@ -163,7 +163,7 @@ press . to wait"""]
 
     def getLongInfo(self):
         return """
-The shocker has %s charges
+The shock tower has %s charges
 """ % (
             self.charges
         )

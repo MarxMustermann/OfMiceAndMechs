@@ -11,7 +11,7 @@ class MotionSensor(src.items.Item):
     walkable = False
     name = "MotionSensor"
     bolted = False
-
+    description = "a sensor that can trigger an action when something moves within the room"
     def __init__(self):
         """
         set up internal state

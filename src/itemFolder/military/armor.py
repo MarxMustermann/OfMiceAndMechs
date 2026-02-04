@@ -13,7 +13,7 @@ class Armor(src.items.Item):
     bolted = False
     walkable = True
     damageType = "attacked"
-
+    description = "Can protect against attacks"
     def __init__(self,badQuality=False):
         """
         set up internal state

@@ -7,8 +7,8 @@ class Paving(src.items.Item):
     """
 
     type = "Paving"
-    name = "floor plate"
-    description = "Used as building material for roads"
+    name = "paving"
+    description = "used as building material for roads"
     bolted = False
     walkable = True
 

@@ -60,55 +60,55 @@ class ExamineMenu(src.subMenu.SubMenu):
 
     def render(self):
         pos = self.character.getPosition()
-        text = f"you are examining the position: {pos}\n\n"
+        text = [f"you are examining the position: {pos}\n\n"]
 
         if isinstance(self.character.container,src.rooms.Room):
             room = self.character.container
 
-            text += "special fields:\n"
+            text.append("special fields:\n")
             found = False
             if pos in room.walkingSpace:
                 found = True
-                text += "is walking space\n"
+                text.append("is walking space\n")
             for inputSlot in room.inputSlots:
                 if pos == inputSlot[0]:
                     found = True
-                    text += f"is input slot for {inputSlot[1]} ({inputSlot[2]})\n"
+                    text.append(f"is input slot for {inputSlot[1]} ({inputSlot[2]})\n")
             for outputSlot in room.outputSlots:
                 if pos == outputSlot[0]:
                     found = True
-                    text += f"is output slot for {outputSlot[1]} ({outputSlot[2]})\n"
+                    text.append(f"is output slot for {outputSlot[1]} ({outputSlot[2]})\n")
             for storageSlot in room.storageSlots:
                 if pos[0] == storageSlot[0][0] and pos[1] == storageSlot[0][1]:
                     found = True
-                    text += f"is storage slot for {storageSlot[1]} ({storageSlot[2]})\n"
+                    text.append(f"is storage slot for {storageSlot[1]} ({storageSlot[2]})\n")
             for buildSite in room.buildSites:
                 if pos == buildSite[0]:
                     found = True
-                    text += f"is build site for {buildSite[1]} ({buildSite[2]})\n"
-            text += "\n"
+                    text.append(f"is build site for {buildSite[1]} ({buildSite[2]})\n")
+            text.append("\n")
         else:
-            text += "this field is not special\n"
+            text.append("this field is not special\n")
 
         items = self.character.container.getItemByPosition(pos)
         mainItem = None
         if items:
             if len(items) == 1:
-                text += f"there is a {items[0].name}"
+                text.append(f"there is a {items[0].name}")
                 if items[0].bolted:
-                    text += f" X"
-                text += f":\n\n"
+                    text.append(f" X")
+                text.append(f":\n\n")
             else:
-                text += f"there are {len(items)} items:\n"
+                text.append(f"there are {len(items)} items:\n")
                 for item in items:
-                    text += f"* {item.name}"
+                    text.append(f"* {item.name}")
                     if item.bolted:
-                        text += f" X"
-                    text += f"\n"
-                text += "\nOn the top is:\n\n"
+                        text.append(f" X")
+                    text.append(f"\n")
+                text.append("\nOn the top is:\n\n")
             mainItem = items[0]
         else:
-            text += "there are no items"
+            text.append("there are no items")
 
         if mainItem:
             registerInfo = ""
@@ -119,12 +119,9 @@ class ExamineMenu(src.subMenu.SubMenu):
             # print info
             info = mainItem.getLongInfo()
             if info:
-                text += info
+                text.append(info)
 
             # notify listeners
             self.character.changed("examine", mainItem)
 
-        submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
-        self.character.add_submenu(submenue)
-
-        return "examine stuff"
+        return text

@@ -14,7 +14,7 @@ class Flask(src.items.Item):
         self.name = "flask"
         self.walkable = True
         self.bolted = False
-        self.description = "A flask that can hold liquids"
+        self.description = "Can hold liquids"
 
     def render(self):
         """

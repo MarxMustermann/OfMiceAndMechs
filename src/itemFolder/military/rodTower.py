@@ -9,7 +9,7 @@ class RodTower(src.items.Item):
 
     type = "RodTower"
     name = "rod tower"
-
+    description = "Hits the surrounding fields when activated"
     def __init__(self):
         """
         set up internal state

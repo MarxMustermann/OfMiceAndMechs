@@ -7,7 +7,7 @@ class DutyBeacon(src.items.Item):
     """
 
     type = "DutyBeacon"
-
+    description = "signals that the rooms duty should be done with priority"
     def __init__(self):
         """
         configure super class

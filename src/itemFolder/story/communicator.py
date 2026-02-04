@@ -6,7 +6,7 @@ class Communicator(src.items.Item):
     """
 
     type = "Communicator"
-
+    description = "Contact leadership here"
     def __init__(self,):
         """
         configure the superclass

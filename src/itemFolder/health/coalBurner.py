@@ -9,11 +9,11 @@ class CoalBurner(src.items.Item):
     '''
 
     type = "CoalBurner"
+    description = "Emits healing smoke"
     def __init__(self):
         super().__init__(display="##")
 
         self.name = "coal burner"
-        self.description = "Emits healing smoke"
 
         self.walkable = False
         self.bolted = False

@@ -3,10 +3,10 @@ import src
 
 class KnowledgeBase(src.items.Item):
     type = "KnowledgeBase"
+    description = "Holds information about many things"
 
     def __init__(self):
         super().__init__(display="KB")
-
         self.name = "knowledge base"
 
     def apply(self, character):
@@ -54,15 +54,5 @@ class KnowledgeBase(src.items.Item):
         else:
             options["b"] = ("bolt down", self.boltAction)
         return options
-
-    def getLongInfo(self):
-        return """
-item: Spawner
-
-description:
-spawner with %s charges
-""" % (
-            self.charges
-        )
 
 src.items.addType(KnowledgeBase)

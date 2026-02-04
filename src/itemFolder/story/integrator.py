@@ -7,6 +7,7 @@ class Integrator(src.items.Item):
     ingame item to set to baic values a NPC needs to work in a base
     '''
     type = "Integrator"
+    description = "integrates Clones properly into the base"
     def __init__(self,epoch=0):
         super().__init__(display="IT")
         self.faction = None

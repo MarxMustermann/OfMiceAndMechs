@@ -100,7 +100,7 @@ class ExamineMenu(src.subMenu.SubMenu):
             else:
                 text.append(" (enemy)")
 
-            text.append("\n")
+            text.append("\n\n")
 
         items = self.character.container.getItemByPosition(pos)
         mainItem = None
@@ -157,6 +157,7 @@ class ExamineMenu(src.subMenu.SubMenu):
                 registerInfo += f"{key}: {value}\n"
 
             # print info
+            text.append("\n\n")
             info = mainItem.getLongInfo()
             if info:
                 text.append(info)

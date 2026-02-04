@@ -8,7 +8,7 @@ class Command(src.items.Item):
     """
 
     type = "Command"
-    self.description = "a Sheet with a command is written on it"
+    description = "a Sheet with a command is written on it"
     def __init__(self):
         """
         configure super class

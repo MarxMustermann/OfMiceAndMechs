@@ -15,7 +15,7 @@ class GooProducer(src.items.Item):
 
         super().__init__(display=src.canvas.displayChars.gooProducer)
         self.name = "goo producer"
-        self.description = "A goo producer produces goo from press cakes"
+        self.description = "produces goo from PressCakes"
         self.usageInfo = """
 Place 10 press cakes to the left/west of the goo producer and a goo dispenser to the rigth/east.
 Activate the maggot fermenter to add a charge to the goo dispenser.

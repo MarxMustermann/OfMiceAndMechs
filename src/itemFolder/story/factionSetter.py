@@ -6,6 +6,7 @@ class FactionSetter(src.items.Item):
     ingame item to set the factions of NPCs
     '''
     type = "FactionSetter"
+    description = "sets the faction marker for Clones"
     def __init__(self,epoch=0):
         super().__init__(display="FS")
         self.faction = None

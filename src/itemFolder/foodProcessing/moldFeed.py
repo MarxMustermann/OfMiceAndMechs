@@ -7,6 +7,7 @@ class MoldFeed(src.items.Item):
     """
 
     type = "MoldFeed"
+    description = "Something dead or parts of it"
 
     def __init__(self):
         """
@@ -15,7 +16,6 @@ class MoldFeed(src.items.Item):
 
         super().__init__(display=src.canvas.displayChars.moldFeed)
         self.name = "mold feed"
-        self.description = "This is a good base for mold growth."
 
         self.walkable = True
         self.bolted = False

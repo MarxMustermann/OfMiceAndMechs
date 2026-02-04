@@ -16,7 +16,7 @@ class BloomShredder(src.items.Item):
         self.activated = False
         super().__init__(display=src.canvas.displayChars.bloomShredder)
         self.name = "bloom shredder"
-        self.description = "A bloom shredder produces bio mass from blooms"
+        self.description = "produces bio mass from blooms"
         self.usageInfo = """
 Place bloom to the left/west of the bloom shredder.
 Activate the bloom shredder to produce biomass.

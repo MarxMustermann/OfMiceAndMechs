@@ -6,7 +6,7 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
     '''
     type = "AlchemyTable"
     name = "AlchemyTable"
-    description = "Use it to build brew potions"
+    description = "used to build brew potions"
     walkable = False
     bolted = True
     def __init__(self):

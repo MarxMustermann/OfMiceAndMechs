@@ -9,6 +9,7 @@ class Shrine(src.items.Item):
     ingame item to interact with the gods
     '''
     type = "Shrine"
+    description = "a place to pray"
     def __init__(self,name="shrine",god=None):
         super().__init__(display="\\/", name=name)
         self.god = god

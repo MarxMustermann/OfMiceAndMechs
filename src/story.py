@@ -2524,6 +2524,7 @@ but they are likely to explode when disturbed.
                 item = src.items.itemMap["Implant"]()
                 room.addItem(item, (random.randint(1, 11), random.randint(1, 11), 0))
                 implants += 1
+
         # spawn special items
         endIndex = len(rooms)-3
         counter = 0

@@ -8,7 +8,7 @@ class RoomBuilder(src.items.Item):
     """
 
     type = "RoomBuilder"
-
+    description = "Creates rooms from basic items"
     def __init__(self):
         """
         set up internal state
@@ -16,7 +16,6 @@ class RoomBuilder(src.items.Item):
 
         super().__init__(display=src.canvas.displayChars.roomBuilder)
         self.name = "RoomBuilder"
-        self.description = "Creates rooms from basic items"
         self.usageInfo = """
 Place Walls and and Doors around the room builder and activate the room builder to create a room.
 

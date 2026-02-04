@@ -7,16 +7,14 @@ class BioPress(src.items.Item):
     """
 
     type = "BioPress"
-
+    description = "produces PressCake from BioMass"
     """
     call superclass constructor with modified paramters and set some state
     """
-
     def __init__(self):
         super().__init__(display=src.canvas.displayChars.bioPress)
         self.activated = False
         self.name = "bio press"
-        self.description = "produces PressCake from BioMass"
         self.usageInfo = """
 Place 10 bio mass to the left/west of the bio press.
 Activate the bio press to produce press cake.

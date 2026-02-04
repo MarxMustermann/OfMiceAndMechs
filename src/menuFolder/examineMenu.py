@@ -18,6 +18,7 @@ class ExamineMenu(src.subMenu.SubMenu):
         super().__init__()
         self.character = character
         self.offset = offset
+        self.last_move_blocked = False
 
     def handleKey(self, key, noRender=False, character = None):
         """
@@ -44,32 +45,37 @@ class ExamineMenu(src.subMenu.SubMenu):
             self.done = True
             return True
 
+        self.last_move_blocked = False
         if key == "W":
             if self.offset == (0,1,0):
                 self.offset = (0,0,0)
             elif self.offset == (0,-1,0):
-                src.interaction.moveCharacter("north",self.character,False,None,None)
+                if src.interaction.moveCharacter("north",self.character,False,None,None):
+                    self.last_move_blocked = True
             else:
                 self.offset = (0,-1,0)
         if key == "A":
             if self.offset == (1,0,0):
                 self.offset = (0,0,0)
             elif self.offset == (-1,0,0):
-                src.interaction.moveCharacter("west",self.character,False,None,None)
+                if src.interaction.moveCharacter("west",self.character,False,None,None):
+                    self.last_move_blocked = True
             else:
                 self.offset = (-1,0,0)
         if key == "S":
             if self.offset == (0,-1,0):
                 self.offset = (0,0,0)
             elif self.offset == (0,1,0):
-                src.interaction.moveCharacter("south",self.character,False,None,None)
+                if src.interaction.moveCharacter("south",self.character,False,None,None):
+                    self.last_move_blocked = True
             else:
                 self.offset = (0,1,0)
         if key == "D":
             if self.offset == (-1,0,0):
                 self.offset = (0,0,0)
             elif self.offset == (1,0,0):
-                src.interaction.moveCharacter("east",self.character,False,None,None)
+                if src.interaction.moveCharacter("east",self.character,False,None,None):
+                    self.last_move_blocked = True
             else:
                 self.offset = (1,0,0)
 
@@ -104,7 +110,10 @@ class ExamineMenu(src.subMenu.SubMenu):
                 if local_offset == self.offset:
                     under_cursor = render
 
-        cursorview[self.offset[1]+1][self.offset[0]+1] = "XX"
+        color = "#fff"
+        if self.last_move_blocked:
+            color = "#f00"
+        cursorview[self.offset[1]+1][self.offset[0]+1] = (src.interaction.urwid.AttrSpec(color, "black"),"XX")
         counter = 0
         while counter < len(cursorview):
             line = cursorview[counter]

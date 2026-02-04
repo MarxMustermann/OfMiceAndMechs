@@ -6,7 +6,7 @@ class Contraption(src.items.Item):
     """
 
     type = "Contraption"
-
+    description = "weird machinery. You don't know what it is used for"
     def __init__(self,epoch=0):
         """
         configure the superclass

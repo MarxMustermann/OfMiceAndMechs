@@ -17,7 +17,7 @@ class GrowthTank(src.items.Item):
         super().__init__()
 
         self.name = "growth tank"
-        self.description = "A growth tank produces NPCs."
+        self.description = "Produces Clones"
         self.usageInfo = """
 Fill a growth tank to prepare it for generating an npc.
 You can fill it by activating it with a full goo flask in your inventory.

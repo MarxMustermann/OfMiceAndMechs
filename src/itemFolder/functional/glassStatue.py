@@ -10,7 +10,7 @@ class GlassStatue(src.items.Item):
     '''
 
     type = "GlassStatue"
-    description = "Used to pray to the gods."
+    description = "the image of a god made from glass"
     name = "glassStatue"
 
     def __init__(self,itemID=None):

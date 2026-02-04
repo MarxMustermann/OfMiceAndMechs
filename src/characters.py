@@ -1862,12 +1862,13 @@ press any other key to attack normally"""
 
         if not amount:
             return
-        if reason:
-            self.addMessage(reason)
 
         self.health += amount
         self.changed("healed",{})
-        self.addMessage(f"you heal for {amount} and have {self.health} health")
+        message = f"you heal for {amount} and have {self.health} health"
+        if reason:
+            message += f"\nbecause {reason}"
+        self.addMessage(message)
 
     # bad code: only works in a certain room type
     def collidedWith(self, other, actor=None):

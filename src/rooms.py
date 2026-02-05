@@ -1070,7 +1070,7 @@ class Room:
                         try:
                             display = chars[pos[1]][pos[0]]
                         except IndexError:
-                            logger.error(f"drawing outside of room {pos}")
+                            logger.warn(f"drawing outside of room {pos}")
                             continue
 
                         if isinstance(display,list):
@@ -1560,7 +1560,7 @@ class Room:
                     try:
                         chars[pos[1]][pos[0]] = display
                     except IndexError:
-                        logger.error(f"drawing outside of room {pos}")
+                        logger.warn(f"drawing outside of room {pos}")
                         continue
 
                     direction = random.choice([(1,0,0),(0,1,0),(-1,0,0),(1,0,0),])

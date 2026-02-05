@@ -392,7 +392,7 @@ class Canvas:
                         try:
                             out[y][2*x+numPrinted+extraX] = [[list(item[0]),list(item[1])],char]
                         except:
-                            logger.error("drawing off screen")
+                            logger.warn("drawing off screen")
                         extraX += 1
                     #console.print(x=2*x+numPrinted,y=y,fg=item[0],bg=item[1],string=text)
                     #if actionMeta:

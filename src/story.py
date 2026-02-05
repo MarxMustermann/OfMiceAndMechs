@@ -1262,14 +1262,17 @@ class MainGame(BasicPhase):
     def kickoff(self):
         if self.activeStory["type"] == "story start":
             if len(self.activeStory["mainChar"].messages) == 0:
-                text = """
-You.
-You see walls made out of solid steel
-and feel the touch of the cold hard floor.
-The room is filled with various items.
-You recognise your hostile suroundings and
+                text = "You."
+                self.activeStory["mainChar"].addMessage(text)
+                text = "You see walls made out of solid steel."
+                self.activeStory["mainChar"].addMessage(text)
+                text = "You feel the touch of the cold hard floor."
+                self.activeStory["mainChar"].addMessage(text)
+                text = "The room is filled with various items."
+                self.activeStory["mainChar"].addMessage(text)
+                text = """You recognise your hostile suroundings and
 try to remember how you got here ..."""
-                self.activeStory["mainChar"].messages.insert(0,(text,0))
+                self.activeStory["mainChar"].addMessage(text)
             self.activeStory["mainChar"].messages.append(("""until the explosions fully wake you.""",0))
             self.activeStory["sternsContraption"].startMeltdown()
 

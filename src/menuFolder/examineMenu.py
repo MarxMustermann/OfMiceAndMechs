@@ -219,7 +219,9 @@ class ExamineMenu(src.subMenu.SubMenu):
 
         text.append("\n\ndetails for the currently selected thing:\n\n")
 
-        if self.index <= len(show_characters)-1:
+        if self.index < 0:
+            text.append("nothing selected")
+        elif self.index <= len(show_characters)-1:
             show_character = show_characters[self.index]
 
             char = show_character

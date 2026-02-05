@@ -1064,7 +1064,7 @@ class MainGame(BasicPhase):
             self.setUpGlassHeartDungeon(dungeonPositions[i], gods[i], i+1)
 
         if self.preselection == "Story":
-            self.sternsBasePosition = self.get_free_position("sterns base")
+            self.sternsBasePosition = self.get_free_position("the architects base")
             self.setUpSternsBase(self.sternsBasePosition)
         elif self.preselection == "baseBuilder":
             self.playerBasePosition = self.get_free_position("player base")
@@ -1650,7 +1650,7 @@ but they are likely to explode when disturbed.
 
     def setUpSternsBase(self,pos):
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
-        currentTerrain.tag = "sterns base"
+        currentTerrain.tag = "the architects base"
         currentTerrain.alarm = True
         currentTerrain.maxMana = 50
 

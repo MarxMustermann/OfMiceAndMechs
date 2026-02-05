@@ -5364,7 +5364,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
         color = "#fff"
         if saves[gameIndex]:
             color = "#333"
-        printUrwidToTcod((src.interaction.urwid.AttrSpec(color, "black"),f"(s)cenario   - {selectedScenario}"),(offsetX+3,offsetY+24))
+        #printUrwidToTcod((src.interaction.urwid.AttrSpec(color, "black"),f"(s)cenario   - {selectedScenario}"),(offsetX+3,offsetY+24))
         printUrwidToTcod(f"(g)ameslot   - {gameIndex}",(offsetX+3,offsetY+25))
 
         for menu in submenu:
@@ -5912,9 +5912,9 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                             startGame = True
                         if key == tcod.event.KeySym.g:
                             submenu.append("gameslot")
-                        if key == tcod.event.KeySym.s:
-                            if not canLoad:
-                                submenu.append("scenario")
+                        #if key == tcod.event.KeySym.s:
+                        #    if not canLoad:
+                        #        submenu.append("scenario")
                         if key == tcod.event.KeySym.d:
                             if event.mod & tcod.event.Modifier.SHIFT:
                                 submenu.append("delete")

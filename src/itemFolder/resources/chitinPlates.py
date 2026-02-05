@@ -4,7 +4,7 @@ import src
 class ChitinPlates(src.items.Item):
     type = "ChitinPlates"
     name = "chitin plates"
-    description = "item dropped from golems that can be used to improve armors"
+    description = "a solid chitin plate, it can be used to improve Armor"
     walkable = True
     bolted = False
 

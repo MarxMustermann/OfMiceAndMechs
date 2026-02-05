@@ -49,7 +49,7 @@ class ExamineMenu(src.subMenu.SubMenu):
         if key == "W":
             if self.offset == (0,1,0):
                 self.offset = (0,0,0)
-            elif self.offset == (0,-1,0):
+            elif self.offset in ((0,-1,0),(1,0,0),(-1,0,0),):
                 if src.interaction.moveCharacter("north",self.character,False,None,None):
                     self.last_move_blocked = True
             else:
@@ -57,7 +57,7 @@ class ExamineMenu(src.subMenu.SubMenu):
         if key == "A":
             if self.offset == (1,0,0):
                 self.offset = (0,0,0)
-            elif self.offset == (-1,0,0):
+            elif self.offset in ((-1,0,0),(0,-1,0),(0,1,0),):
                 if src.interaction.moveCharacter("west",self.character,False,None,None):
                     self.last_move_blocked = True
             else:
@@ -65,7 +65,7 @@ class ExamineMenu(src.subMenu.SubMenu):
         if key == "S":
             if self.offset == (0,-1,0):
                 self.offset = (0,0,0)
-            elif self.offset == (0,1,0):
+            elif self.offset in ((0,1,0),(1,0,0),(-1,0,0),):
                 if src.interaction.moveCharacter("south",self.character,False,None,None):
                     self.last_move_blocked = True
             else:
@@ -73,7 +73,7 @@ class ExamineMenu(src.subMenu.SubMenu):
         if key == "D":
             if self.offset == (-1,0,0):
                 self.offset = (0,0,0)
-            elif self.offset == (1,0,0):
+            elif self.offset in ((1,0,0),(0,-1,0),(0,1,0),):
                 if src.interaction.moveCharacter("east",self.character,False,None,None):
                     self.last_move_blocked = True
             else:

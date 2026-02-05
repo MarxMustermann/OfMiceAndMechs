@@ -7,7 +7,7 @@ class Wall(src.items.Item):
     '''
 
     type = "Wall"
-    description = "Used to build rooms."
+    description = "used to build rooms"
     name = "wall"
 
     def __init__(self):

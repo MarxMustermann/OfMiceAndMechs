@@ -69,6 +69,7 @@ class HelpMenu(src.subMenu.SubMenu):
         txt += " Q: open advanced quest menu\n"
         txt += " i: show inventory\n"
         txt += " F11: toggle fullscreen\n"
+        txt += " ctrl +/-: zoom in/out\n"
         txt += "\n"
         txt += "sadly the controls cannot be changed at the moment\n"
         txt += "if you have issues with the character running into walls, tap the keys instead of holding them\n"

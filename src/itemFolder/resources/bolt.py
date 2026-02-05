@@ -8,7 +8,7 @@ class Bolt(src.items.Item):
 
     type = "Bolt"
     name = "bolt"
-    description = "Simple building material"""
+    description = "ammonition and simple building material"
 
     bolted = False
     walkable = True

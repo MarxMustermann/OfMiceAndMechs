@@ -15,7 +15,7 @@ class GooFlask(src.items.Item):
         self.name = "goo flask"
         self.walkable = True
         self.bolted = False
-        self.description = "A flask that holds goo. Goo is nourishment for you"
+        self.description = "a flask that holds goo"
         self.level = 1
         self.maxUses = 100
 

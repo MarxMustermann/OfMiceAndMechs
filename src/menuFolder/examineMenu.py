@@ -93,27 +93,32 @@ class ExamineMenu(src.subMenu.SubMenu):
         small_pos = self.character.getSpacePosition(offset=self.offset)
         text = [f"you are looking {direction_map[self.offset]} and examining the position: {small_pos}\n\n"]
         cursorview = []
-        cursorview.extend([["  ","  "],["  ","  ","  "],["  ","  "]])
+        for y in range(-2,3):
+            cursorview.append([])
+            for x in range(-2,3):
+                cursorview[y+2].append(" ")
         under_cursor = "  "
 
         if isinstance(self.character.container,src.rooms.Room):
             room = self.character.container
             room_render = room.render(advanceAnimations=False)
-            for local_offset in [(0,0,0),(1,0,0),(0,1,0),(-1,0,0),(0,-1,0)]:
-                x = self.character.xPosition+local_offset[0]
-                y = self.character.yPosition+local_offset[1]
-                if y < 0 or y >= len(room_render) or x < 0 or x >= len(room_render[y]):
-                    continue
+            for x in range(-2,3):
+                for y in range(-2,3):
+                    local_offset = (x,y,0)
+                    adapted_x = self.character.xPosition+local_offset[0]
+                    adapted_y = self.character.yPosition+local_offset[1]
+                    if adapted_y < 0 or adapted_y >= len(room_render) or adapted_x < 0 or adapted_x >= len(room_render[adapted_y]):
+                        continue
 
-                render = room_render[y][x]
-                cursorview[local_offset[1]+1][local_offset[0]+1] = render
-                if local_offset == self.offset:
-                    under_cursor = render
+                    render = room_render[adapted_y][adapted_x]
+                    cursorview[local_offset[1]+2][local_offset[0]+2] = render
+                    if local_offset == self.offset:
+                        under_cursor = render
 
         color = "#fff"
         if self.last_move_blocked:
             color = "#f00"
-        cursorview[self.offset[1]+1][self.offset[0]+1] = (src.interaction.urwid.AttrSpec(color, "black"),"XX")
+        cursorview[self.offset[1]+2][self.offset[0]+2] = (src.interaction.urwid.AttrSpec(color, "black"),"XX")
         counter = 0
         while counter < len(cursorview):
             line = cursorview[counter]

@@ -3,7 +3,7 @@ import src
 
 class GooFlask(src.items.Item):
     type = "GooFlask"
-
+    description = "a flask that holds goo"
     def __init__(self,uses=0):
         """
         configure super class
@@ -15,7 +15,6 @@ class GooFlask(src.items.Item):
         self.name = "goo flask"
         self.walkable = True
         self.bolted = False
-        self.description = "a flask that holds goo"
         self.level = 1
         self.maxUses = 100
 

@@ -6757,7 +6757,6 @@ def showRunOutro(endingType="bad"):
     room = None
     subStep = 0
     subStep2 = 1
-    addedText = False
     sleepAmountGrow = 0.125
     painPositions = []
     while 1:
@@ -7030,7 +7029,6 @@ def showRunIntro():
     room = None
     subStep = 0
     subStep2 = 1
-    addedText = False
     sleepAmountGrow = 0.125
     painPositions = []
     while 1:
@@ -7373,9 +7371,6 @@ press enter to continue
             if subStep > 3:
                 text = """- You recognise your hostile suroundings and
 try to remember how you got here ...\n""" + text
-                if not addedText:
-                    src.gamestate.gamestate.mainChar.addMessage("----------\n\n"+text)
-                    addedText = True
 
             printUrwidToTcod(text, (131 + c_offset, 22))
             if subStep == 0:

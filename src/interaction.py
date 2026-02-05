@@ -4420,7 +4420,7 @@ def calculate_UI_layout(char):
     mapWidth = (window_charheight-5)*2
     if assumedScreenWidth < mapWidth:
         assumedScreenWidth = mapWidth
-    uiElements.append({"type":"gameMap","offset":[(assumedScreenWidth-mapWidth)//4,6]})
+    uiElements.append({"type":"gameMap","offset":[(assumedScreenWidth-mapWidth)//4,6],"map_width":mapWidth//2})
     
     if tcodConsole.width > mapWidth + 15*4:
         left = (tcodConsole.width-(mapWidth + 15*4))//8
@@ -4830,7 +4830,7 @@ def renderGameDisplay(renderChar=None):
             offsetLeft = uiElement["offset"][0]*tileWidth*2
             offsetTop = uiElement["offset"][1]*tileHeight
 
-            map_size = (50,50)
+            map_size = (uiElement["map_width"],uiElement["map_width"])
 
             sdl_renderer2.draw_color = (255,0,0,255)
             sdl_renderer2.fill_rect((offsetLeft,offsetTop,500,500))

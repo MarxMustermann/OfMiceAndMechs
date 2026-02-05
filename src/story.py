@@ -2851,7 +2851,7 @@ but they are likely to explode when disturbed.
             startRoom = room
         startRoom.addCharacter(mainChar,6,5)
 
-        contraption = src.items.itemMap["SternsContraption"]()
+        contraption = src.items.itemMap["MainContraption"]()
         startRoom.addItem(contraption,(6,6,0))
         storyStartInfo["sternsContraption"] = contraption
 

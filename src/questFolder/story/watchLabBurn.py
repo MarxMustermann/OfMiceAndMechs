@@ -34,7 +34,7 @@ class WatchLabBurn(src.quests.MetaQuestSequence):
         if character.getSpacePosition()[1] > 11:
             return (None,("w","distance yourself from the lab"))
         lab = self._get_lab()
-        sterns_contraption = lab.getItemByType("SternsContraption")
+        sterns_contraption = lab.getItemByType("MainContraption")
         num_wait = 1
         if sterns_contraption:
             num_wait = 8-sterns_contraption.meltdownLevel-1

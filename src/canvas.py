@@ -585,7 +585,7 @@ class Canvas:
                         texture = renderer.upload_texture(np.asarray(circle))
                         renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileWidth*2,tileHeight),)
 
-                    if item.type == "SternsContraption":
+                    if item.type == "MainContraption":
                         fg_color = (255,255,255,255)
                         bg_color = (0,0,0,255)
 
@@ -593,7 +593,7 @@ class Canvas:
                         renderer.fill_rect((basePos[0],basePos[1],tileHeight,tileWidth*2))
 
                         base_path = "/home/user/OfMiceAndMechs/config/tiles/"
-                        path = base_path+"SternsContraption.png"
+                        path = base_path+"MainContraption.png"
                         circle = tcod.image.Image.from_file(path)
                         for x_index in range(0,circle.width):
                             for y_index in range(0,circle.height):
@@ -609,19 +609,19 @@ class Canvas:
 
                         if item.bolted:
                             items = item.container.getItemByPosition(item.getPosition(offset=(0,-1,0)))
-                            if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","SternsContraption",)):
+                            if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","MainContraption",)):
                                 renderer.fill_rect((basePos[0],basePos[1],tileHeight,border_width))
 
                             items = item.container.getItemByPosition(item.getPosition(offset=(-1,0,0)))
-                            if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","SternsContraption",)):
+                            if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","MainContraption",)):
                                 renderer.fill_rect((basePos[0],basePos[1],border_width,tileHeight))
 
                             items = item.container.getItemByPosition(item.getPosition(offset=(0,1,0)))
-                            if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","SternsContraption",)):
+                            if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","MainContraption",)):
                                 renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,tileHeight,border_width))
 
                             items = item.container.getItemByPosition(item.getPosition(offset=(1,0,0)))
-                            if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","SternsContraption",)):
+                            if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","MainContraption",)):
                                 renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,tileHeight))
                         else:
                             renderer.fill_rect((basePos[0],basePos[1],tileHeight,border_width))
@@ -653,25 +653,25 @@ class Canvas:
 
                         if item.bolted:
                             items = item.container.getItemByPosition(item.getPosition(offset=(0,-1,0)))
-                            if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","SternsContraption",)):
+                            if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","MainContraption",)):
                                 renderer.fill_rect((basePos[0],basePos[1],tileHeight,border_width))
                             else:
                                 renderer.fill_rect((basePos[0]+tileWidth-border_width//2,basePos[1]+tileHeight//4,border_width,border_width*3))
 
                             items = item.container.getItemByPosition(item.getPosition(offset=(-1,0,0)))
-                            if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","SternsContraption",)):
+                            if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","MainContraption",)):
                                 renderer.fill_rect((basePos[0],basePos[1],border_width,tileHeight))
                             else:
                                 renderer.fill_rect((basePos[0]+tileWidth//2,basePos[1]+tileHeight//2-border_width//2,border_width*3,border_width))
 
                             items = item.container.getItemByPosition(item.getPosition(offset=(0,1,0)))
-                            if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","SternsContraption",)):
+                            if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","MainContraption",)):
                                 renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,tileHeight,border_width))
                             else:
                                 renderer.fill_rect((basePos[0]+tileWidth-border_width//2,basePos[1]+tileHeight-border_width*3-tileHeight//4,border_width,border_width*3))
 
                             items = item.container.getItemByPosition(item.getPosition(offset=(1,0,0)))
-                            if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","SternsContraption",)):
+                            if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","MainContraption",)):
                                 renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,tileHeight))
                             else:
                                 renderer.fill_rect((basePos[0]+tileWidth//2+tileHeight//4,basePos[1]+tileHeight//2-border_width//2,border_width*3,border_width))

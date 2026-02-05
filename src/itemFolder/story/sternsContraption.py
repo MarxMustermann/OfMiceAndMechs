@@ -1,11 +1,11 @@
 import src
 import random
 
-class SternsContraption(src.items.Item):
+class MainContraption(src.items.Item):
     """
     """
 
-    type = "SternsContraption"
+    type = "MainContraption"
     description = "very weird machinery. It looks important"
     def __init__(self,epoch=0):
         """
@@ -13,7 +13,7 @@ class SternsContraption(src.items.Item):
         """
 
         super().__init__(display="!!")
-        self.name = "sterns contraption"
+        self.name = "main contraption"
 
         self.walkable = False
         self.bolted = True
@@ -219,4 +219,4 @@ class SternsContraption(src.items.Item):
             ]
         return display
 
-src.items.addType(SternsContraption)
+src.items.addType(MainContraption)

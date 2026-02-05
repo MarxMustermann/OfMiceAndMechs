@@ -1145,6 +1145,26 @@ def doObserveSelection(params):
     else:
         char.addMessage("unknown option")
 
+def doAdvancedExamine(params):
+    char = params["character"]
+    key = params["keyPressed"]
+
+    if key == "w":
+        submenu = src.menuFolder.examineMenu.ExamineMenu(char,offset=(0,-1,0))
+        char.add_submenu(submenu)
+    elif key == "s":
+        submenu = src.menuFolder.examineMenu.ExamineMenu(char,offset=(0,1,0))
+        char.add_submenu(submenu)
+    elif key == "d":
+        submenu = src.menuFolder.examineMenu.ExamineMenu(char,offset=(1,0,0))
+        char.add_submenu(submenu)
+    elif key == "a":
+        submenu = src.menuFolder.examineMenu.ExamineMenu(char,offset=(-1,0,0))
+        char.add_submenu(submenu)
+    elif key == ".":
+        submenu = src.menuFolder.examineMenu.ExamineMenu(char,offset=(0,0,0))
+        char.add_submenu(submenu)
+
 def doAdvancedInteraction(params):
     char = params["character"]
     key = params["keyPressed"]
@@ -2998,6 +3018,28 @@ press key for the configuration interaction
                 char.specialRender = True
 
             char.interactionState["advancedConfigure"] = {}
+            if charState.get("itemMarkedLast"):
+                del charState["itemMarkedLast"]
+            return None
+
+        if key in ("E",):
+            text = """
+
+press key for the configuration interaction
+
+* w = examine north
+* a = examine west
+* s = examine south
+* d = examine east
+* . = examine your position
+
+"""
+
+            submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text,ignoreFirstKey=False)
+            submenue.followUp = {"method":doAdvancedExamine,"params":{"character":char}}
+            submenue.tag = "advancedExamineSelection"
+            char.macroState["submenue"] = submenue
+
             if charState.get("itemMarkedLast"):
                 del charState["itemMarkedLast"]
             return None

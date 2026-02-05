@@ -19,6 +19,7 @@ class ExamineMenu(src.subMenu.SubMenu):
         self.character = character
         self.offset = offset
         self.last_move_blocked = False
+        self.index = 0
 
     def handleKey(self, key, noRender=False, character = None):
         """
@@ -78,6 +79,10 @@ class ExamineMenu(src.subMenu.SubMenu):
                     self.last_move_blocked = True
             else:
                 self.offset = (1,0,0)
+        if key == "w":
+            self.index -= 1
+        if key == "s":
+            self.index += 1
 
         if not noRender:
             # show info
@@ -85,7 +90,23 @@ class ExamineMenu(src.subMenu.SubMenu):
             self.persistentText = self.render()
             src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.persistentText))
 
+        (show_characters,items,markers) = self.get_things_to_whow()
+        if self.index < 0:
+            self.index = len(show_characters)+len(items)+len(markers)-1
+        if self.index >= len(show_characters)+len(items)+len(markers):
+            self.index = 0
+
         return False
+
+    def get_things_to_whow(self):
+        pos = self.character.getPosition(offset=self.offset)
+        show_characters = self.character.container.getCharactersOnPosition(pos)
+        items = self.character.container.getItemByPosition(pos)
+        markers = []
+        if isinstance(self.character.container,src.rooms.Room):
+            room = self.character.container
+            markers = self.character.container.getMarkersOnPosition(pos)
+        return (show_characters,items,markers)
 
     def render(self):
         pos = self.character.getPosition(offset=self.offset)
@@ -123,7 +144,7 @@ class ExamineMenu(src.subMenu.SubMenu):
         while counter < len(cursorview):
             line = cursorview[counter]
             text.append("           ")
-            if counter == 1:
+            if counter == 2:
                 text.append(under_cursor)
             else:
                 text.append("  ")
@@ -135,68 +156,115 @@ class ExamineMenu(src.subMenu.SubMenu):
         text.append("\n")
         text.append("press W/A/S/D to change what spot you look at\n\n")
 
+        # collect things to display
+        (show_characters,items,markers) = self.get_things_to_whow()
+        total_amount_shown = len(items)+len(show_characters)+len(markers)
+        text.append(f"{total_amount_shown} things were found on the selected spot:\n(press w/s to view details for a different thing)\n\n")
+        display_counter = 0
+
         # list characters on postion
         text.append("\n")
-        show_characters = self.character.container.getCharactersOnPosition(pos)
-        if not show_characters:
-            text.append("no characters found\n\n")
-        else:
-            text.append("characters:\n\n")
         for show_character in show_characters:
-            text.append("- ")
-            text.append(show_character.charType)
+            color = "#666"
+            if display_counter == self.index:
+                color = "#fff"
+
+            line = "- "
+            line += show_character.charType
             if show_character == self.character:
-                text.append(" (You)")
+                line += " (You)"
             elif show_character.faction == self.character.faction:
-                text.append(" (ally)")
+                line += " (ally)"
             else:
-                text.append(" (enemy)")
+                line += " (enemy)"
+            line += "\n"
 
-            text.append("\n\n")
+            text.append((src.interaction.urwid.AttrSpec(color, "default"),line))
 
-        items = self.character.container.getItemByPosition(pos)
-        mainItem = None
+            display_counter += 1
+
         if items:
-            text.append(f"there are {len(items)} items:\n")
             for item in items:
-                text.append(f"- {item.name}")
+                color = "#666"
+                if display_counter == self.index:
+                    color = "#fff"
+
+                line = f"- {item.name}"
                 if item.bolted:
-                    text.append(f" (bolted)")
-                text.append(f" => {item.description}")
-                text.append(f"\n")
-            text.append("\n")
-            mainItem = items[0]
-        else:
-            text.append("no items found\n\n")
+                    line += " (bolted)"
+                line += f" => {item.description}"
+                line += "\n"
+
+                text.append((src.interaction.urwid.AttrSpec(color, "default"),line))
+
+                display_counter += 1
 
         if isinstance(self.character.container,src.rooms.Room):
             room = self.character.container
 
             # list markers on floor
             markers = self.character.container.getMarkersOnPosition(pos)
-            if markers:
-                text.append(f"there markings on the floor:\n")
             for marker in markers:
-                text.append("- ")
-                text.append(str(marker[0]))
-                text.append("\n")
-            if not markers:
-                text.append("no markers found\n")
-            text.append("\n")
+                color = "#666"
+                if display_counter == self.index:
+                    color = "#fff"
 
-        if mainItem:
-            registerInfo = ""
-            for (key, value) in mainItem.fetchSpecialRegisterInformation().items():
-                self.character.setRegisterValue(key, value)
-                registerInfo += f"{key}: {value}\n"
+                line = "- "
+                line += str(marker[0])
+                line += "\n"
+
+                text.append((src.interaction.urwid.AttrSpec(color, "default"),line))
+
+                display_counter += 1
+
+        text.append("\n\ndetails for the currently selected thing:\n\n")
+
+        if self.index <= len(show_characters)-1:
+            show_character = show_characters[self.index]
+
+            char = show_character
+            text.append(f"name:        {char.name}")
+            if char == self.character:
+                text.append(" (You)")
+            elif char.faction == self.character.faction:
+                text.append(" (ally)")
+            else:
+                text.append(" (enemy)")
+            text.append("\n")
+            text.append(f"health:      {char.health}/{char.adjustedMaxHealth}\n")
+            text.append(f"faction:     {char.faction}\n")
+            if char.level:
+                text.append(f"level:       {char.level}\n")
+            text.append(f"exhaustion:  {char.exhaustion}\n")
+            text.append(f"timeTaken:   {round(char.timeTaken,2)}\n")
+            text.append(f"movemmentsp: {char.adjustedMovementSpeed}\n")
+            text.append(f"attacksp:    {char.attackSpeed}\n")
+            text.append("\n")
+        elif self.index <= len(show_characters)+len(items)-1:
+            show_item = items[self.index-len(show_characters)]
+
+            #registerInfo = ""
+            #for (key, value) in mainItem.fetchSpecialRegisterInformation().items():
+            #    self.character.setRegisterValue(key, value)
+            #    registerInfo += f"{key}: {value}\n"
 
             # print info
             text.append("\n\n")
-            info = mainItem.getLongInfo()
+            info = show_item.getLongInfo()
             if info:
                 text.append(info)
 
             # notify listeners
-            self.character.changed("examine", mainItem)
+            self.character.changed("examine", show_item)
+
+        elif self.index <= len(show_characters)+len(items)+len(markers)-1:
+            marker_to_show = markers[self.index-len(show_characters)-len(items)]
+
+            text.append(marker_to_show[0])
+            text.append("\n")
+            text.append(str(marker_to_show[1]))
+            text.append("\n")
+        else:
+            text.append("nothing to show details on")
 
         return text

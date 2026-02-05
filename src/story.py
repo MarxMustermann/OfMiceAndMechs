@@ -1784,7 +1784,7 @@ but they are likely to explode when disturbed.
                 },
                 None,
            )
-        startRoom.tag = "sternslab"
+        startRoom.tag = "the architects lab"
         startRoom.getItemByPosition((6,0,0))[0].walkable = False
 
         # draw path to base
@@ -2846,7 +2846,7 @@ but they are likely to explode when disturbed.
 
         startRoom = None
         for room in homeTerrain.rooms:
-            if not room.tag == "sternslab":
+            if not room.tag == "the architects lab":
                 continue
             startRoom = room
         startRoom.addCharacter(mainChar,6,5)
@@ -2949,7 +2949,7 @@ but they are likely to explode when disturbed.
             return
         
         # flee initial room
-        if mainChar.container.tag == "sternslab":
+        if mainChar.container.tag == "the architects lab":
             quest = src.quests.questMap["EscapeLab"]()
             self.addQuest(quest,mainChar)
             return

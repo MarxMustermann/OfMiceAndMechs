@@ -84,7 +84,7 @@ Instructions to do that will be shown on the left of the screen as "suggested ac
 
     def _get_lab(self):
         for room in self.character.getTerrain().rooms:
-            if room.tag == "sternslab":
+            if room.tag == "the architects lab":
                 return room
         return None
 

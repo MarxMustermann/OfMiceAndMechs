@@ -9,7 +9,7 @@ class Explosive(src.items.Item):
     type = "Explosive"
 
     name = "explosive"
-    description = "simple building material. Used to build bombs."
+    description = "simple building material. Used to build bombs"
 
     bolted = False
     walkable = True

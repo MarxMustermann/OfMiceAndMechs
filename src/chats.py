@@ -550,98 +550,6 @@ class FurnaceChat(Chat):
 
         return False
 
-# obsolete: needs serious reintegration to work again
-class SternChat(Chat):
-    """
-    a monologue explaining automovement
-    bad code: should be abstracted
-    """
-
-    id = "SternChat"
-    type = "SternChat"
-
-    """
-    straight forward state setting
-    """
-
-    def __init__(self, partner):
-        """
-        initialise the internal state
-
-        Parameters:
-            partner: the chat partner
-        """
-
-        self.submenue = None
-        self.firstRun = True
-        self.done = False
-        super().__init__()
-
-    # bad pattern: chat option stored as references to class complicates this
-    def setUp(self, state):
-        """
-        actually set up the internal state
-
-        Parameters:
-            state: the state to set
-        """
-
-        self.firstOfficer = state["firstOfficer"]
-
-    def handleKey(self, key, noRender=False):
-        """
-        show the dialog for one keystroke
-
-        Parameters:
-            key: the keystroke
-            noRender: flag to skip actually rendering stuff
-        """
-
-        # show information on first run
-        if self.firstRun:
-            # show fluffed up information
-            self.persistentText = (
-                """Stern did not actually modify the implant. The modification was done elsewhere.
-But that is concerning the artworks, thats nothing you need to know.
-
-You need to know however that Sterns modification enhanced the implants guidance, control and communication abilities.
-If you stop thinking and allow the implant to take control, it will do so and continue your task.
-You can do so by pressing """
-                + config.commandChars.autoAdvance
-                + """
-
-It is of limited practicality though. It is mainly useful for stupid manual labor and often does not
-do things the most efficient way. It will even try to handle conversion, which does not always lead to optimal results"""
-            )
-            src.gamestate.gamestate.mainChar.addMessage(
-                "press "
-                + config.commandChars.autoAdvance
-                + " to let the implant take control "
-            )
-            self.set_text(self.persistentText)
-            self.firstRun = False
-
-            # punish / reward player
-            src.gamestate.gamestate.mainChar.revokeReputation(
-                fraction=2, reason="asking a question"
-            )
-            src.gamestate.gamestate.mainChar.awardReputation(
-                amount=2, reason="gaining knowledge"
-            )
-            return False
-
-        # tear down on second run
-        else:
-            # remove chat option
-            self.removeFromChatOptions(self.firstOfficer)
-            self.removeFromChatOptions(
-                src.gamestate.gamestate.terrain.waitingRoom.firstOfficer
-            )
-
-            # finish
-            self.done = True
-            return True
-
 # obsolete: needs to be reintegrated
 # bad code: should be abstracted
 class InfoChat(Chat):
@@ -711,22 +619,6 @@ for a brain.\n\n"""
         else:
             # remove chat option
             self.removeFromChatOptions(self.firstOfficer)
-
-            # add follow up chat
-            self.firstOfficer.basicChatOptions.append(
-                {
-                    "dialogName": "What did Stern modify on the implant?",
-                    "chat": SternChat,
-                    "params": {"firstOfficer": self.firstOfficer},
-                }
-            )
-            src.gamestate.gamestate.terrain.waitingRoom.firstOfficer.basicChatOptions.append(
-                {
-                    "dialogName": "What did Stern modify on the implant?",
-                    "chat": SternChat,
-                    "params": {"firstOfficer": self.firstOfficer},
-                }
-            )
 
             self.done = True
             return True
@@ -2223,7 +2115,6 @@ chatMap = {
     "TutorialSpeechTest": TutorialSpeechTest,
     "GrowthTankRefillChat": GrowthTankRefillChat,
     "FurnaceChat": FurnaceChat,
-    "SternChat": SternChat,
     "StartChat": StartChat,
     "StopChat": StopChat,
     "InfoChat": InfoChat,

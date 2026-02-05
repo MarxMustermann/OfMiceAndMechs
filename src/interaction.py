@@ -6007,6 +6007,7 @@ def showIntro():
     stageState = None
     room = None
     skip = False
+    first_render = True
     while 1:
         c_offset = int(tcodConsole.width / 2 - 64)
 
@@ -6043,8 +6044,12 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
             text.append("press enter to show the intro cutscene\n")
             text.append("press esc to skip the intro cutscene\n")
             text.append("press F11 to toggle fullscreen\n\n")
-            printUrwidToTcod(text, (64, 4))
-            tcodPresent()
+
+            if not first_render:
+                printUrwidToTcod(text, (64, 4))
+                tcodPresent()
+            first_render = False
+
             if not skip:
                 time.sleep(0.01)
             if skip:

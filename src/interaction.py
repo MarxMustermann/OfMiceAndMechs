@@ -7363,15 +7363,15 @@ press enter to continue
             subStep += 1
         elif stage ==  3:
             c_offset -= 2
-            text = """You."""
+            text = """- You."""
             if subStep > 0:
-                text = """You see walls made out of solid steel.\n""" + text
+                text = """- You see walls made out of solid steel.\n""" + text
             if subStep > 1:
-                text = """You feel the touch of the cold hard floor.\n""" + text
+                text = """- You feel the touch of the cold hard floor.\n""" + text
             if subStep > 2:
-                text = """The room is filled with various items.\n""" + text
+                text = """- The room is filled with various items.\n""" + text
             if subStep > 3:
-                text = """You recognise your hostile suroundings and
+                text = """- You recognise your hostile suroundings and
 try to remember how you got here ...\n""" + text
                 if not addedText:
                     src.gamestate.gamestate.mainChar.addMessage("----------\n\n"+text)

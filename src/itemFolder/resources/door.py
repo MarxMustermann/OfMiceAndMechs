@@ -9,7 +9,7 @@ class Door(src.items.Item):
     type = "Door"
     name = "door"
     walkable = False
-    description = "Used to enter and leave rooms."
+    description = "used to enter and leave rooms."
 
     def __init__(self, bio=False):
         """

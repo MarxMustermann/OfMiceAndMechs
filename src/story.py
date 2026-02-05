@@ -2858,6 +2858,9 @@ but they are likely to explode when disturbed.
         item = src.items.itemMap["PotionOfSpeed"]()
         startRoom.addItem(item,(10,6,0))
 
+        spider = src.characters.characterMap["Spiderling"]()
+        homeTerrain.addCharacter(spider,5*15+9,8*15+5)
+
         return storyStartInfo
 
     def openedQuests(self):

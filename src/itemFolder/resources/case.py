@@ -8,7 +8,7 @@ class Case(src.items.Item):
 
     type = "Case"
     name = "case"
-    description = "a complex building item"
+    description = "main construction material for big items"
 
     def __init__(self):
         """

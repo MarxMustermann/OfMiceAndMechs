@@ -600,7 +600,7 @@ class Character:
         returns:
             the offset
         '''
-        return (self.xPosition-position[0],self.yPosition-position[1],self.zPosition-position[2])
+        return (position[0]-self.xPosition,position[1]-self.yPosition,position[2]-self.zPosition)
 
     def getDistance(self,position):
         '''
@@ -2669,7 +2669,7 @@ press any other key to attack normally"""
             pos: the position to examine
         '''
 
-        submenu = src.menuFolder.examineMenu.ExamineMenu(self)
+        submenu = src.menuFolder.examineMenu.ExamineMenu(self,offset=self.getOffset(pos))
         self.add_submenu(submenu)
         return
 

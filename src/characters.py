@@ -385,11 +385,18 @@ class Character:
 
         return resultList
 
-    def showTextMenu(self,text,do_not_scale=False):
+    def openQuestMenu(self, extraInfo = None):
+        self.macroState["submenue"] = src.menuFolder.questMenu.QuestMenu()
+
+    def showTextMenu(self,text,do_not_scale=False,allowQuests=True):
         '''
         show a popup to the character
         '''
-        submenu = src.menuFolder.textMenu.TextMenu(text)
+
+        specialKeys = None
+        if allowQuests:
+            specialKeys = {"q": {"container": self, "method": "openQuestMenu"}}
+        submenu = src.menuFolder.textMenu.TextMenu(text,specialKeys=specialKeys)
         submenu.do_not_scale = do_not_scale
         self.add_submenu(submenu)
         self.runCommandString("~",nativeKey=True)

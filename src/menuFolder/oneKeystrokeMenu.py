@@ -39,6 +39,9 @@ class OneKeystrokeMenu(src.subMenu.SubMenu):
             returns True when done
         '''
 
+        if key == "+":
+            return False
+
         # exit the submenu
         if key not in ("~",) and not self.firstRun:
             self.keyPressed = key

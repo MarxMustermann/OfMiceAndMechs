@@ -84,17 +84,17 @@ class ExamineMenu(src.subMenu.SubMenu):
         if key == "s":
             self.index += 1
 
-        if not noRender:
-            # show info
-            src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), ""))
-            self.persistentText = self.render()
-            src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.persistentText))
-
         (show_characters,items,markers) = self.get_things_to_show()
         if self.index < 0:
             self.index = len(show_characters)+len(items)+len(markers)-1
         if self.index >= len(show_characters)+len(items)+len(markers):
             self.index = 0
+
+        if not noRender:
+            # show info
+            src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), ""))
+            self.persistentText = self.render()
+            src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.persistentText))
 
         return False
 

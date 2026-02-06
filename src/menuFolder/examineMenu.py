@@ -161,7 +161,7 @@ class ExamineMenu(src.subMenu.SubMenu):
         text.append("press W/A/S/D to change what spot you look at\n\n")
 
         # collect things to display
-        (show_characters,items,markers) = self.get_things_to_whow()
+        (show_characters,items,markers) = self.get_things_to_show()
         total_amount_shown = len(items)+len(show_characters)+len(markers)
         text.append(f"{total_amount_shown} things were found on the selected spot:\n(press w/s to view details for a different thing)\n\n")
         display_counter = 0

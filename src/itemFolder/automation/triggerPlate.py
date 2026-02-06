@@ -88,7 +88,7 @@ class TriggerPlate(src.items.Item):
         character.addMessage("you step on a trigger plate")
 
         if self.isInCoolDown():
-            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#f00", "black"), "XX")]})
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#f00", "black"), "tt")]})
             return
 
         self.lastUsed = src.gamestate.gamestate.tick

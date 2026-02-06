@@ -1,13 +1,13 @@
 import src
 
 
-class PoissonTower(src.items.Item):
+class PoisonTower(src.items.Item):
     """
     ingame item used as ressource to build bombs and stuff
     should have the habit to explode at inconvienent times
     """
 
-    type = "PoissonTower"
+    type = "PoisonTower"
 
     def __init__(self):
         """
@@ -28,7 +28,7 @@ class PoissonTower(src.items.Item):
         while foundChars:
             target = foundChars.pop()
             self.container.addAnimation(target.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#afa", "black"), "%%")]})
-            target.hurt(70,reason="poission")
+            target.hurt(70,reason="poision")
         self.destroy()
 
     def remoteActivate(self,extraParams=None):
@@ -37,4 +37,4 @@ class PoissonTower(src.items.Item):
     def render(self):
         return (src.interaction.urwid.AttrSpec("#fff", "#000"), "PT")
 
-src.items.addType(PoissonTower)
+src.items.addType(PoisonTower)

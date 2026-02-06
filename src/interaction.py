@@ -4860,56 +4860,57 @@ def renderGameDisplay(renderChar=None):
             height += 1
             width = max(width,len(line))
 
-        if not last_menu_dimension:
-            last_menu_dimension = (width,height)
-        else:
-            last_menu_dimension = (max(width,last_menu_dimension[0]),max(height,last_menu_dimension[1]))
-            if submenue:
-                try:
-                    submenue.do_not_scale
-                except:
-                    submenue.do_not_scale = False
-            if not submenue or not submenue.do_not_scale:
-                width = last_menu_dimension[0]
-                height = last_menu_dimension[1]
+        if width and height:
+            if not last_menu_dimension:
+                last_menu_dimension = (width,height)
+            else:
+                last_menu_dimension = (max(width,last_menu_dimension[0]),max(height,last_menu_dimension[1]))
+                if submenue:
+                    try:
+                        submenue.do_not_scale
+                    except:
+                        submenue.do_not_scale = False
+                if not submenue or not submenue.do_not_scale:
+                    width = last_menu_dimension[0]
+                    height = last_menu_dimension[1]
 
-        offsetLeft = max(src.interaction.tcodConsole.width//2-width//2,1)*tileWidth
-        offsetTop = max(min(src.interaction.tcodConsole.height//2-height//2,17),1)*tileHeight
+            offsetLeft = max(src.interaction.tcodConsole.width//2-width//2,1)*tileWidth
+            offsetTop = max(min(src.interaction.tcodConsole.height//2-height//2,17),1)*tileHeight
 
-        positions = []
-        for x in range(-1,width//2+3):
-            for y in range(-1,height+4):
-                positions.append((offsetLeft//2+x,offsetTop+y))
-        for position in positions:
-            if position in sdl_map:
-                del sdl_map[position]
+            positions = []
+            for x in range(-1,width//2+3):
+                for y in range(-1,height+4):
+                    positions.append((offsetLeft//2+x,offsetTop+y))
+            for position in positions:
+                if position in sdl_map:
+                    del sdl_map[position]
 
-        display_height = tileHeight*height
-        display_width = tileWidth*width
+            display_height = tileHeight*height
+            display_width = tileWidth*width
 
-        padding = 15
-        line_width = 5
-        overhang = 25
-        outline = 4
-        sdl_renderer2.draw_color = (0,0,0,255)
-        sdl_renderer2.fill_rect((offsetLeft-padding-outline,offsetTop-padding-outline,display_width+2*padding+2*outline,display_height+2*padding+2*outline))
-        sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop-padding-line_width-outline,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
-        sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop+padding+display_height-outline,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
-        sdl_renderer2.fill_rect((offsetLeft-padding-line_width-outline,offsetTop-padding-overhang-outline,line_width+2*outline,display_height+2*(padding+overhang+2*outline)))
-        sdl_renderer2.fill_rect((offsetLeft+padding+display_width-outline,offsetTop-padding-overhang-outline,line_width+2*outline,display_height+2*(padding+overhang)+2*outline))
-        sdl_renderer2.draw_color = (255,255,255,255)
-        sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop-padding-line_width,display_width+2*(padding+overhang),line_width))
-        sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop+padding+display_height,display_width+2*(padding+overhang),line_width))
-        sdl_renderer2.fill_rect((offsetLeft-padding-line_width,offsetTop-padding-overhang,line_width,display_height+2*(padding+overhang)))
-        sdl_renderer2.fill_rect((offsetLeft+padding+display_width,offsetTop-padding-overhang,line_width,display_height+2*(padding+overhang)))
+            padding = 15
+            line_width = 5
+            overhang = 25
+            outline = 4
+            sdl_renderer2.draw_color = (0,0,0,255)
+            sdl_renderer2.fill_rect((offsetLeft-padding-outline,offsetTop-padding-outline,display_width+2*padding+2*outline,display_height+2*padding+2*outline))
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop-padding-line_width-outline,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop+padding+display_height-outline,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
+            sdl_renderer2.fill_rect((offsetLeft-padding-line_width-outline,offsetTop-padding-overhang-outline,line_width+2*outline,display_height+2*(padding+overhang+2*outline)))
+            sdl_renderer2.fill_rect((offsetLeft+padding+display_width-outline,offsetTop-padding-overhang-outline,line_width+2*outline,display_height+2*(padding+overhang)+2*outline))
+            sdl_renderer2.draw_color = (255,255,255,255)
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop-padding-line_width,display_width+2*(padding+overhang),line_width))
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop+padding+display_height,display_width+2*(padding+overhang),line_width))
+            sdl_renderer2.fill_rect((offsetLeft-padding-line_width,offsetTop-padding-overhang,line_width,display_height+2*(padding+overhang)))
+            sdl_renderer2.fill_rect((offsetLeft+padding+display_width,offsetTop-padding-overhang,line_width,display_height+2*(padding+overhang)))
 
-        root_console = tcod.console.Console(width, height, order="F")
-        printUrwidToTcod(text,(0,0),explecitConsole=root_console)
+            root_console = tcod.console.Console(width, height, order="F")
+            printUrwidToTcod(text,(0,0),explecitConsole=root_console)
 
-        atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset)
-        console_render = tcod.render.SDLConsoleRender(atlas)
-        renderedToTexture = console_render.render(root_console)
-        sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
+            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset)
+            console_render = tcod.render.SDLConsoleRender(atlas)
+            renderedToTexture = console_render.render(root_console)
+            sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
 
     else:
         last_menu_dimension = None

@@ -90,6 +90,10 @@ class ExamineMenu(src.subMenu.SubMenu):
         if self.index >= len(show_characters)+len(items)+len(markers):
             self.index = 0
 
+        if self.index > len(show_characters)-1 and self.index <= len(show_characters)+len(items)-1:
+            item = items[self.index-len(show_characters)]
+            character.changed("examined",{"item":item})
+
         if not noRender:
             # show info
             src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), ""))

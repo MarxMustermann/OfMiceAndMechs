@@ -90,7 +90,7 @@ class ExamineMenu(src.subMenu.SubMenu):
             self.persistentText = self.render()
             src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.persistentText))
 
-        (show_characters,items,markers) = self.get_things_to_whow()
+        (show_characters,items,markers) = self.get_things_to_show()
         if self.index < 0:
             self.index = len(show_characters)+len(items)+len(markers)-1
         if self.index >= len(show_characters)+len(items)+len(markers):
@@ -98,7 +98,7 @@ class ExamineMenu(src.subMenu.SubMenu):
 
         return False
 
-    def get_things_to_whow(self):
+    def get_things_to_show(self):
         pos = self.character.getPosition(offset=self.offset)
         show_characters = self.character.container.getCharactersOnPosition(pos)
         items = self.character.container.getItemByPosition(pos)

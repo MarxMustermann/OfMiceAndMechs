@@ -8,7 +8,9 @@ class ReachSafety(src.quests.MetaQuestSequence):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
-
+        self.got_trapped = False
+        self.trap_tick = None
+        self.shown_examine_popup = False
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
 
@@ -28,7 +30,37 @@ class ReachSafety(src.quests.MetaQuestSequence):
             return (None,("d","enter the tile"))
 
         if character.getBigPosition() == (5,7,0):
-            quest = src.quests.questMap["CrossTrapRoom"](targetPosition=(6,7,0),reason="cross trap room",description="cross trap room")
+            if not self.got_trapped:
+                quest = src.quests.questMap["GoToTile"](targetPosition=(6,7,0),reason="go into the base",description="go into the base")
+                return ([quest],None)
+            if self.trap_tick and self.trap_tick+2 > src.gamestate.gamestate.tick:
+                return (None,(".","stand around confused"))
+            if not src.gamestate.gamestate.stern.get("examined_trap"):
+                if not self.shown_examine_popup:
+                    if not dryRun:
+                        self.character.showTextMenu("""
+Your implant interrupts:
+
+You just activated a trap. This should not have happened.
+Examine the TriggerPlate to find out what is wrong.
+""")
+                        self.shown_examine_popup = True
+
+                quest = src.quests.questMap["Examine"](targetPosition=(1,6,0),targetPositionBig=(5,7,0),reason="find out what is wrong",description="examine trap",itemType="TriggerPlate")
+                return ([quest],None)
+            if character.macroState.get("submenue"):
+                return (None,(["esc"],"close menu"))
+            if not dryRun:
+                self.character.showTextMenu("""
+Your implant interrupts:
+
+It seems like your faction marker got corrupted.
+This means traps detect you as enemy and attack you.
+We need to bypass the traps in this trap room.
+
+press q to see details
+""")
+            quest = src.quests.questMap["CrossTrapRoom"](targetPosition=(6,7,0),reason="get inside the base",description="cross trap room")
             return ([quest],None)
         if character.getBigPosition() == (6,7,0):
             if not character.armor or not character.weapon:
@@ -77,7 +109,15 @@ To make things easier this quest splits into subquests.
             return
 
         self.startWatching(character,self.wrapedTriggerCompletionCheck, "moved")
+        self.startWatching(character,self.triggeredTrap, "triggered trigger plate")
         super().assignToCharacter(character)
+
+    def triggeredTrap(self, extraInfo):
+        if self.got_trapped:
+            return
+        self.clearSubQuests()
+        self.got_trapped = True
+        self.trap_tick = src.gamestate.gamestate.tick
 
     def wrapedTriggerCompletionCheck(self, extraInfo):
         if self.completed:

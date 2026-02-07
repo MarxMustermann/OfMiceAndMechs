@@ -96,6 +96,8 @@ class TriggerPlate(src.items.Item):
         if not self.targets:
             return
 
+        character.changed("triggered trigger plate",{})
+
         for target in self.targets:
             self.container.addAnimation(self.getPosition(),"showchar",1,{"char":"tt"})
             self.container.addAnimation(target,"showchar",1,{"char":"TT"})

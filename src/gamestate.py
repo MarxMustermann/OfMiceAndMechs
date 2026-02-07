@@ -38,7 +38,7 @@ class GameState:
         self.savedThisTurn = False
         self.saveAtTheTurnEnd = False
         self.waitedForInputThisTurn = False
-        self.stern = {"first_reachout_done":False,"first_silenced":False,"reached_base":False}
+        self.stern = {"first_reachout_done":False,"first_silenced":False,"reached_base":False,"examined_trap":False}
         self.gods = {}
         self.theOldOne = {
                 "throneTaken":False

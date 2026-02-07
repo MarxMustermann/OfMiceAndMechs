@@ -17,6 +17,7 @@ class EnterRoom(src.popups.Popup):
         return self.message
 
     def conditionMet(self, params) -> bool:
+        return False
         return self.character.container.tag == self.roomType
 
 

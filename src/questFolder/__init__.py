@@ -76,3 +76,4 @@ import src.questFolder.activateGlassStatue
 import src.questFolder.searchForRuins
 import src.questFolder.goInside
 import src.questFolder.decide
+import src.questFolder.examine

@@ -2999,14 +2999,14 @@ press key for the advanced interaction
             if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
                 text = """
 
-press key for the configuration interaction
+press key for the advanced complex interaction
 
-* w = configure north
-* a = configure west
-* s = configure south
-* d = configure east
-* . = configure item on floor
-* i = configure last item in inventory
+* w = complex interact north
+* a = complex interact west
+* s = complex interact south
+* d = complex interact east
+* . = complex interact item on floor
+* i = complex interact last item in inventory
 
 """
 

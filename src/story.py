@@ -3124,7 +3124,13 @@ Please select on what to focus next:
             options = []
             extraDescriptions = {}
             if self._get_traprooms_to_clean(mainChar):
-                options.append(("maintain base defences", "maintain base defences"))
+                name = "maintain base defences"
+                options.append((name, "maintain base defences"))
+                extraDescriptions[name] = """
+Something is cluttering the trap rooms.
+The trap rooms don't work properly when cluttered.
+So it probably is a good idea to clean up the trap rooms.
+"""
             if not src.gamestate.gamestate.stern.get("failedContact1"):
                 options.append(("contact command", "contact command"))
             elif not mainChar.rank or mainChar.rank > 5:

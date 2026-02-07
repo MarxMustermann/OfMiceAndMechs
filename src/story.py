@@ -3122,6 +3122,7 @@ the base is safe for the moment, but there is a lot left to do.
 Please select on what to focus next:
 """
             options = []
+            extraDescriptions = {}
             if self._get_traprooms_to_clean(mainChar):
                 options.append(("maintain base defences", "maintain base defences"))
             if not src.gamestate.gamestate.stern.get("failedContact1"):
@@ -3140,7 +3141,7 @@ Please select on what to focus next:
             options.append(("something different", "something different"))
 
             submenu = src.menuFolder.selectionMenu.SelectionMenu(
-                text, options, tag="player_quest_selection", targetParamName="quest_type",
+                text, options, tag="player_quest_selection", targetParamName="quest_type",extraDescriptions=extraDescriptions
             )
             submenu.followUp = {"container":self,"method":"handle_player_quest_choice","params":{"character":mainChar}}
             mainChar.add_submenu(submenu)

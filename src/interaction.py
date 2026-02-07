@@ -1262,7 +1262,7 @@ def doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags):
         if items:
             items[0].configure(char)
             char.runCommandString("~",nativeKey=True)
-            char.takeTime(char.movementSpeed,"advanced configuration m")
+            char.takeTime(char.movementSpeed,"advanced complex interact w")
     elif key == "s":
         items = char.container.getItemByPosition(
             (char.xPosition, char.yPosition + 1, char.zPosition)
@@ -1270,7 +1270,7 @@ def doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags):
         if items:
             items[0].configure(char)
             char.runCommandString("~",nativeKey=True)
-            char.takeTime(char.movementSpeed,"advanced configuration m")
+            char.takeTime(char.movementSpeed,"advanced complex interact s")
     elif key == "d":
         items = char.container.getItemByPosition(
             (char.xPosition + 1, char.yPosition, char.zPosition)
@@ -1278,7 +1278,7 @@ def doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags):
         if items:
             items[0].configure(char)
             char.runCommandString("~",nativeKey=True)
-            char.takeTime(char.movementSpeed,"advanced configuration m")
+            char.takeTime(char.movementSpeed,"advanced complex interact d")
     elif key == "a":
         items = char.container.getItemByPosition(
             (char.xPosition - 1, char.yPosition, char.zPosition)
@@ -1286,7 +1286,7 @@ def doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags):
         if items:
             items[0].configure(char)
             char.runCommandString("~",nativeKey=True)
-            char.takeTime(char.movementSpeed,"advanced configuration m")
+            char.takeTime(char.movementSpeed,"advanced complex interact a")
     elif key == ".":
         items = char.container.getItemByPosition(
             (char.xPosition, char.yPosition, char.zPosition)
@@ -1294,7 +1294,7 @@ def doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags):
         if items:
             items[0].configure(char)
             char.runCommandString("~",nativeKey=True)
-            char.takeTime(char.movementSpeed,"advanced configuration m")
+            char.takeTime(char.movementSpeed,"advanced complex interact .")
     elif key == "i" and char.inventory:
         char.inventory[-1].configure(char)
     del char.interactionState["advancedConfigure"]

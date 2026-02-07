@@ -487,7 +487,7 @@ class Item:
             string: the description text
         """
 
-        text = "item: " + self.type + " \n\n"
+        text = "item type: " + self.type + " \n\n"
         if self.description:
             text += "description: \n" + self.description + "\n\n"
         if self.usageInfo:

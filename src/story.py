@@ -3144,7 +3144,11 @@ So it probably is a good idea to clean up the trap rooms.
             else:
                 options.append(("contact main base", "contact main base"))
             options.append(("break the siege", "break the siege"))
-            options.append(("something different", "something different"))
+            name = "something different"
+            options.append((name, "something different"))
+            extraDescriptions[name] = """
+This will close the tutorial and let you do your own thing.
+"""
 
             submenu = src.menuFolder.selectionMenu.SelectionMenu(
                 text, options, tag="player_quest_selection", targetParamName="quest_type",extraDescriptions=extraDescriptions

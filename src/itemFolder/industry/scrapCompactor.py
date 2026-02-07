@@ -226,7 +226,7 @@ class ScrapCompactor(src.items.Item):
             options["b"] = ("bolt down", self.boltAction)
         return options
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         '''
         returns a longer than normal description text
 
@@ -234,7 +234,7 @@ class ScrapCompactor(src.items.Item):
            a longer than normal description text
         '''
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
 
         directions = "west"
         if self.level > 1:

@@ -43,7 +43,7 @@ class Bush(src.items.Item):
         else:
             self.destroy()
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         returns a longer than normal description text
 
@@ -51,7 +51,7 @@ class Bush(src.items.Item):
             the description text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
 
         text += """
 charges: %s""" % (self.charges)

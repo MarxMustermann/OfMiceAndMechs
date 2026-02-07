@@ -479,7 +479,7 @@ class Item:
     def getUsageInformation(self):
         return self.usageInfo
 
-    def getLongInfo(self):
+    def getLongInfo(self,character=None):
         """
         returns a long text description to show to the player
 

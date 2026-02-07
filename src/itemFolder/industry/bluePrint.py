@@ -64,7 +64,7 @@ After loading the blueprint the machine machine is able to produce a machine tha
 
         character.addMessage("a blueprint for " + str(self.endProduct))
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         Returns a longer than normal description text
 
@@ -72,7 +72,7 @@ After loading the blueprint the machine machine is able to produce a machine tha
             the description text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
         text += f"""
 
 this blueprint is for {self.endProduct}

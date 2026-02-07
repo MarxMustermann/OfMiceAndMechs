@@ -75,7 +75,7 @@ class Boiler(src.items.Item):
         # notify listeners
         self.changed()
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         returns a longer than normal desription text
 
@@ -83,7 +83,7 @@ class Boiler(src.items.Item):
             the description text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
         text += """
 a boiler can be heated by a furnace to produce steam. Steam is the basis for energy generation.
 

@@ -187,7 +187,7 @@ class PortableChallenger(src.items.Item):
         if not len(self.challenges):
             self.done = True
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         returns a description text
 

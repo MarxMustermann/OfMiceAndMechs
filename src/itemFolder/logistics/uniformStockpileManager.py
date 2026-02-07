@@ -38,7 +38,7 @@ class UniformStockpileManager(src.items.Item):
         self.character = None
         self.blocked = False
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         return a longer than normal description text
 
@@ -46,7 +46,7 @@ class UniformStockpileManager(src.items.Item):
             the description
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
 
         text += f"""
 lastAction: {self.lastAction}

@@ -36,7 +36,7 @@ class ObjectDispenser(src.items.Item):
         else:
             logger.debug("the object dispenser is empty")
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         text = """
 item: ObjectDispenser
 

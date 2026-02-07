@@ -37,7 +37,7 @@ class Sword(src.items.Item):
             if character:
                 character.addMessage(f"your weapon degrades and now has {self.baseDamage} damage")
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         return a longer than normal description text
 
@@ -45,7 +45,7 @@ class Sword(src.items.Item):
             the description text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
         text += f"""
 baseDamage:
 {self.baseDamage}

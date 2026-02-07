@@ -81,7 +81,7 @@ class Tree(src.items.Item):
         self.container.addAnimation(self.getPosition(),"showchar",1,{"char":"~-"})
         self.container.addAnimation(self.getPosition(offset=(1,0,0)),"showchar",1,{"char":"~-"})
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         returns a longer than normal description text
         this recalculates the internal state and has side effects
@@ -93,7 +93,7 @@ class Tree(src.items.Item):
         self.regenerateMaggots()
         self.lastUse = src.gamestate.gamestate.tick
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
         text += f"""
 numMaggots: {self.numMaggots}
 

@@ -160,7 +160,7 @@ class Command(src.items.Item):
         else:
             return super().getDetailedInfo() + " - " + self.extraName
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         returns a longer than normal description of the item
 
@@ -168,7 +168,7 @@ class Command(src.items.Item):
             the description
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
 
         compressedMacro = ""
         for keystroke in self.command:

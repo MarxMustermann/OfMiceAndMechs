@@ -60,7 +60,7 @@ class Armor(src.items.Item):
             return self.armorValue*5
         return 0
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         try:
             self.damageTaken
         except:
@@ -72,7 +72,7 @@ class Armor(src.items.Item):
             the description text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
 
         text += f"""
 armorvalue:

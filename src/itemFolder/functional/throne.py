@@ -159,7 +159,7 @@ Do you you want to teleport there now?
             options["b"] = ("bolt down", self.boltAction)
         return options
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         if self.wavesSpawned:
             return f"""The Throne did not attune to you.
 

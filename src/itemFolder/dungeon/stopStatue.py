@@ -19,7 +19,7 @@ class StopStatue(src.items.Item):
         self.walkable = False
         self.bolted = True
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         return a longer than normal description text
 
@@ -27,7 +27,7 @@ class StopStatue(src.items.Item):
             the description text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
         text += f"""
 This item obliterates all statues in the room.
 

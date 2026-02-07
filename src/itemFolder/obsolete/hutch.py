@@ -36,7 +36,7 @@ class Hutch(src.items.Item):
         else:
             self.activated = False
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         text = """
 item: Hutch
 

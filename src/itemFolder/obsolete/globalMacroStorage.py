@@ -114,7 +114,7 @@ class GlobalMacroStorage(src.items.Item):
 
         self.character.addMessage("you store the macro in the global macro storage")
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         text = """
 
 This device is a one of a kind machine. It allows to store and load marcos between gamestates.

@@ -78,7 +78,7 @@ You can use it to loose 100 satiation.
             new = itemMap["PoisonBloom"]()
             self.container.addItem(new,newPos)
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         returns a longer than normal description text
 
@@ -86,7 +86,7 @@ You can use it to loose 100 satiation.
             the description text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
         text += "poison charges: %s" % (self.charges)
         return text
 

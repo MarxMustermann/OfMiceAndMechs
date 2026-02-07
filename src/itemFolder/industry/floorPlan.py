@@ -99,7 +99,7 @@ class FloorPlan(src.items.Item):
         for slot in self.buildSites:
             self.container.addAnimation(slot[0],"showchar",3,{"char":"XX"})
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         return a longer than normal description text
 
@@ -107,7 +107,7 @@ class FloorPlan(src.items.Item):
             the text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
         text += f"""
 
 information:

@@ -136,7 +136,7 @@ class RodTower(src.items.Item):
         else:
             self.weapon = None
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
 
         result = ""
         result += "A contraption that hits all neighbouring fields when activated\n"

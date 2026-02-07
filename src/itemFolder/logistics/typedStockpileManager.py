@@ -104,7 +104,7 @@ needs to be placed in the center of a tile. The tile should be emtpy and mold fr
             self.character.runCommandString("se.")
             jobOrder.popTask()
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         return a longer than normal description text
 
@@ -112,7 +112,7 @@ needs to be placed in the center of a tile. The tile should be emtpy and mold fr
             the description text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
 
         text += f"""
 slotsByItemtype

@@ -23,7 +23,7 @@ class PotionOfSpeed(src.items.itemMap["BuffPotion"]):
                    src.statusEffects.statusEffectMap["Frenzy"](speedUp=self.speedUp,duration=self.duration),
                ]
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         '''
         generate a description of this item to be shown on the UI
         '''

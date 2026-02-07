@@ -24,7 +24,7 @@ class LandMine(src.items.Item):
 
         self.active = True
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         return a longer than normal description text
 
@@ -32,7 +32,7 @@ class LandMine(src.items.Item):
             the description text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
         text += f"""
 
 This item explodes when stepped on.

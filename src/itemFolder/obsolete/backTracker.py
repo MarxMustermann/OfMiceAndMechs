@@ -42,7 +42,7 @@ class BackTracker(src.items.Item):
             character.addMessage("it starts to track")
             self.tracking = True
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         text = """
 
 This device tracks ticks since creation. You can use it to measure time.

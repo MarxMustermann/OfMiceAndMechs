@@ -42,7 +42,7 @@ Sheets are also needed as resource to create a blueprint in the blueprinter mach
 
         super().__init__(display=src.canvas.displayChars.sheet)
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         returns a longer than normal description text
 
@@ -50,7 +50,7 @@ Sheets are also needed as resource to create a blueprint in the blueprinter mach
             the description text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
         text += f"""
 Sheets can be produced from metal bars.
 

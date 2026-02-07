@@ -29,7 +29,7 @@ can be processed in a corpse shredder
 
         self.charges = 1000
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         return a longer than normal description text
 
@@ -37,7 +37,7 @@ can be processed in a corpse shredder
             the description text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
         text += """The lifeless remains of something that looks a loot like you."""
         return text
 

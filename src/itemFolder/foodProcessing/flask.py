@@ -32,7 +32,7 @@ class Flask(src.items.Item):
 
         return super().getDetailedInfo() + " (" + str(self.uses) + " charges)"
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         return a longer than normal description text
 
@@ -40,7 +40,7 @@ class Flask(src.items.Item):
             the description text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
         return text
 
 src.items.addType(Flask)

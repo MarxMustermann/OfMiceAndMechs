@@ -21,7 +21,7 @@ class SpecialItem(src.items.Item):
         self.itemID = None
         self.epoch = epoch
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         return f"{self.itemID}"
 
     def render(self):

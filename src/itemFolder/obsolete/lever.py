@@ -58,7 +58,7 @@ class Lever(src.items.Item):
         else:
             return src.canvas.displayChars.lever_notPulled
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         text = """
 item: Lever
 

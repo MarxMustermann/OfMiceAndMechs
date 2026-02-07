@@ -36,7 +36,7 @@ class Watch(src.items.Item):
 
         character.addMessage("it shows %s ticks" % (character.registers["t"][-1]))
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         text = """
 This device tracks ticks since creation. You can use it to measure time.
 Activate it to get a message with the number of ticks passed.

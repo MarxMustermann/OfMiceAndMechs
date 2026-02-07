@@ -409,7 +409,7 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
         character.addMessage("you disable the Machine")
         self.disabled = True
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         generate simple text description
 
@@ -417,7 +417,7 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
             the decription text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
         text += f"""
 
 toProduce: {self.toProduce}

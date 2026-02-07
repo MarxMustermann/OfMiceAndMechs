@@ -56,7 +56,7 @@ class ReactionChamber(src.items.Item):
         self.character.addMessage("the reaction chambers contents are boiled")
         self.contents = self.contents[19] + self.contents[0:19]
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
 
         text = (
             """

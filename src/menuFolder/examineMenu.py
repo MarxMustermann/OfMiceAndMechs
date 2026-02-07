@@ -256,7 +256,7 @@ class ExamineMenu(src.subMenu.SubMenu):
 
             # print info
             text.append("\n\n")
-            info = show_item.getLongInfo()
+            info = show_item.getLongInfo(self.character)
             if info:
                 text.append(info)
 

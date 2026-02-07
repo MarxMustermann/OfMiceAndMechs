@@ -32,7 +32,7 @@ class Tumbler(src.items.Item):
         character.addMessage(f"tumbling {direction} {strength} ")
         self.tracking = True
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         text = """
 
 This device tracks ticks since creation. You can use it to measure time.

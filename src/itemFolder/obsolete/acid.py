@@ -21,7 +21,7 @@ class Acid(src.items.Item):
 
         self.name = "acid"
 
-    def getLongInfo(self):
+    def getLongInfo(self,character=None):
         text = """
 item: Acid
 

@@ -531,7 +531,7 @@ class HiveMind(src.items.Item):
 
         return (command, secondToLastNode)
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         get a longer than normal description text
 
@@ -539,7 +539,7 @@ class HiveMind(src.items.Item):
             the description text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
         text += f"""
 charges: {self.charges}
 createdAt: {self.createdAt}

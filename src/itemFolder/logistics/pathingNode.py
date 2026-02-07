@@ -72,8 +72,8 @@ class PathingNode(src.items.Item):
 
         self.nodeName = self.submenue.text
 
-    def getLongInfo(self):
-        text = super().getLongInfo()
+    def getLongInfo(self, character=None):
+        text = super().getLongInfo(character)
 
         text += f"""
 name:

@@ -187,7 +187,7 @@ Filling a flask will use up a charge from your goo dispenser.
         self.charges += 1
         self.description = self.baseName + " (%s charges)" % (self.charges)
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         return a longer than normal descriotion text for this item
 

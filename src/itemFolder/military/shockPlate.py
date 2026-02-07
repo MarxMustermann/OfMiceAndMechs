@@ -26,7 +26,7 @@ class ShockPlate(src.items.Item):
         self.charges = 0
         self.faction = None
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         return a longer than normal description text
 
@@ -34,7 +34,7 @@ class ShockPlate(src.items.Item):
             the description text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
         text += f"""
 
 This item shocks enemies when stepped on.

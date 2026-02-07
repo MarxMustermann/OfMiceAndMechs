@@ -32,7 +32,7 @@ Activate the bloom container and select the option "unload bloom" to unload the 
         self.maxCharges = 15
         self.level = 1
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         returns a log text description of the item
 
@@ -40,7 +40,7 @@ Activate the bloom container and select the option "unload bloom" to unload the 
             the description
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
 
         text += f"""
 it has {self.charges} blooms (charges) in it. It can hold a maximum of {self.maxCharges} blooms.

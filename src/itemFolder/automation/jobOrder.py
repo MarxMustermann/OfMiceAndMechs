@@ -172,7 +172,7 @@ tasks:
             character.runCommandString("Jj.j")
         character.runCommandString(command)
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         return a longer than normal description text
 
@@ -180,7 +180,7 @@ tasks:
             the text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
         text += f"""
 
 information:

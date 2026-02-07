@@ -385,7 +385,7 @@ A wave of enemies is approaching to steal the GlassHeart.
         character.addMessage("you unbolt the Statue")
         character.changed("unboltedItem",{"character":character,"item":self})
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         '''
         generate a text description to show on the UI
         '''

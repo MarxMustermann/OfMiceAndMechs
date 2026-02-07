@@ -22,7 +22,7 @@ class PermaMaxHealthPotion(src.items.itemMap["Potion"]):
 
         super().apply(character)
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         return f"This Potion increases your max health by {self.healingamount}"
 
     def ingredients():

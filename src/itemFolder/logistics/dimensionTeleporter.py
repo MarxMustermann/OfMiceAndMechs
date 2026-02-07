@@ -293,10 +293,10 @@ class DimensionTeleporter(src.items.Item):
             network == "no netwrok is connected to the teleporter"
 
         character.macroState["submenue"] = src.menuFolder.textMenu.TextMenu(
-            self.getLongInfo() + f"\ncharges: {self.charges}\n\n{network}"
+            self.getLongInfo(character) + f"\ncharges: {self.charges}\n\n{network}"
         )
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         '''
         generate string with information
         '''

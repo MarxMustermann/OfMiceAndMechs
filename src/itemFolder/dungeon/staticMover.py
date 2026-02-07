@@ -48,7 +48,7 @@ class StaticMover(src.items.Item):
             "you use a static spark on the static wall and it dissapears"
         )
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         return a longer than normal description text
 
@@ -56,7 +56,7 @@ class StaticMover(src.items.Item):
             the description text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
 
         text += """
 energy:

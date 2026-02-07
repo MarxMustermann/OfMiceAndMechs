@@ -92,7 +92,7 @@ class GhoulFeeder(src.items.Item):
         self.charges += 1
         self.description = self.baseName + " (%s charges)" % (self.charges)
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         return a longer than normal descriotion text for this item
 

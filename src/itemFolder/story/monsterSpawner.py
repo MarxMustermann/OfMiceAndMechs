@@ -62,7 +62,7 @@ class MonsterSpawner(src.items.Item):
         color = (255,shade,shade)
         return (src.interaction.urwid.AttrSpec(color, "black"), "MS")
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         '''
         generate simple text description
 
@@ -70,7 +70,7 @@ class MonsterSpawner(src.items.Item):
             the decription text
         '''
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
         text += f"""
 strength: {self.strength}
 """

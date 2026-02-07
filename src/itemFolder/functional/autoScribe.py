@@ -136,7 +136,7 @@ The level of the copied command is the minimum level of the input command, sheet
         self.container.addItem(new,(self.xPosition+1,self.yPosition,self.zPosition))
         self.container.addItem(itemFound,(self.xPosition,self.yPosition+1,self.zPosition))
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         return a longer than normal description text
 
@@ -144,7 +144,7 @@ The level of the copied command is the minimum level of the input command, sheet
             the description text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
         text += """
 This is a level %s item
 

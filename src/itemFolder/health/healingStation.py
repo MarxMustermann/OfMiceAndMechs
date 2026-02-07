@@ -94,7 +94,7 @@ class HealingStation(src.items.Item):
 
         character.addMessage("you have no vial in your inventory")
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         return a longer than normal description text
 
@@ -102,7 +102,7 @@ class HealingStation(src.items.Item):
             the description text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
 
         text +="""
 charges:

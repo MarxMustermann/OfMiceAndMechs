@@ -220,14 +220,14 @@ class TradingArtwork(src.items.Item):
             if trade["numOffered"] == 0:
                 self.availableTrades.remove(trade)
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         return a longer than normal description of the item
 
         Returns:
             the description
         """
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
         text += f"""
 tradingHistory:
 {self.tradingHistory}

@@ -211,7 +211,7 @@ Activate the machine to produce.
             src.interaction.playSound("machineUsed","machines")
         self.runCommand("success", character)
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         returns a longer than normal description text
 

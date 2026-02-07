@@ -391,7 +391,7 @@ This should be used in cases where you can not place the Painter on the position
         character.addMessage("you paint a marking on the floor")
         character.addMessage((self.paintMode,self.paintType,str(self.paintExtraInfo)))
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         '''
         generate simple text description
 
@@ -399,7 +399,7 @@ This should be used in cases where you can not place the Painter on the position
             the decription text
         '''
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
         text += f"""
 
 mode: {self.paintMode}

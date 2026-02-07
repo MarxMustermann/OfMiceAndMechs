@@ -83,7 +83,7 @@ class Statue(src.items.Item):
         character.addMessage("you unbolt the Statue")
         character.changed("unboltedItem",{"character":character,"item":self})
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         return f"""Statues are mainly of decorative purposes.
 
 It also serves a religious use.

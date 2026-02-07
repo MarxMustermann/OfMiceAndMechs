@@ -13,7 +13,7 @@ class AntiSlowPotion(src.items.itemMap["Potion"]):
                 character.addMessage("the potion remove a \"slowed\" debuff")
         super().apply(character)
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         return f"This Potion removes \"slowed\" effect from you"
 
 src.items.addType(AntiSlowPotion,potion=True)

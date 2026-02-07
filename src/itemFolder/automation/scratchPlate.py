@@ -61,7 +61,7 @@ class ScratchPlate(src.items.Item):
             self.runCommand("noscratch",character)
             return
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         returns a longer than normal description of the item
 
@@ -69,7 +69,7 @@ class ScratchPlate(src.items.Item):
             the description
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
 
         text += """
 

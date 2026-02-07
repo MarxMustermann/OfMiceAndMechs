@@ -42,7 +42,7 @@ class Spawner(src.items.Item):
         quest.activate()
         enemy.quests.append(quest)
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         return """
 item: Spawner
 

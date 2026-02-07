@@ -23,7 +23,7 @@ class ProductionManager(src.items.Item):
         self.bolted = False
         self.walkable = False
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         return a longer than normal description text
 
@@ -31,7 +31,7 @@ class ProductionManager(src.items.Item):
             the text description
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
 
         commandsString = ""
         for (itemType, command) in self.commands.items():

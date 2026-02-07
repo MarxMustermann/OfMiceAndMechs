@@ -74,7 +74,7 @@ class Pile(src.items.Item):
             + str(self.numContained)
         )
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         text = """
 item: Pile
 

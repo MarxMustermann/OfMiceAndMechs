@@ -24,7 +24,7 @@ activate the note to read it.
         self.walkable = True
         self.text = ""
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         return a longer than normal description text
 
@@ -32,7 +32,7 @@ activate the note to read it.
             the description text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
 
         text += f"""
 it holds the text:

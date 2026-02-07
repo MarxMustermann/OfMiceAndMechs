@@ -47,7 +47,7 @@ class Spray(src.items.Item):
                 return src.canvas.displayChars.spray_right_stage3
             return None
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         text = """
 item: Boiler
 

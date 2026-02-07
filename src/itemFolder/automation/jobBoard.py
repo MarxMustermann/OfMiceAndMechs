@@ -140,7 +140,7 @@ class JobBoard(src.items.Item):
             character.addJobOrder(jobOrder)
             character.addMessage("you take a job order from the job board")
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         return a longer than normal description text
 
@@ -148,7 +148,7 @@ class JobBoard(src.items.Item):
             the text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
         text += """
 
 todo:

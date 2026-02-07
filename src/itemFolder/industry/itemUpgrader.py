@@ -108,7 +108,7 @@ If the upgrade fails the remains of the item will be placed to the south.
             self.container.addItem(inputItem,(self.xPosition,self.yPosition+1,self.zPosition))
             inputItem.destroy()
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         return a longer than normal descritio text
 
@@ -116,7 +116,7 @@ If the upgrade fails the remains of the item will be placed to the south.
             the desription text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
 
         text += """
 it has %s charges.

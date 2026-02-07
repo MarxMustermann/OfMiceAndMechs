@@ -831,7 +831,7 @@ class CommandBloom(src.items.Item):
 
         return newCharacter
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         return a longer than normal description text
 
@@ -839,7 +839,7 @@ class CommandBloom(src.items.Item):
             the description text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
         text += f"""
 
 charges: {self.charges}

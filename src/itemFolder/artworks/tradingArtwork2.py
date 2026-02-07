@@ -322,14 +322,14 @@ class TradingArtwork2(src.items.Item):
 
         return True
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         return a longer than normal description of the item
 
         Returns:
             the description
         """
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
         text += f"""
 tradingHistory:
 {self.tradingHistory}

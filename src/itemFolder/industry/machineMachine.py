@@ -307,7 +307,7 @@ Select the thing to produce and confirm.
 
         self.container.addItem(new,(self.xPosition + 1,self.yPosition,self.zPosition))
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         shows a longer than normal description text
 
@@ -315,7 +315,7 @@ Select the thing to produce and confirm.
             the description text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
 
         text += f"""
 After using this machine you need to wait {self.coolDown} ticks till you can use this machine again.

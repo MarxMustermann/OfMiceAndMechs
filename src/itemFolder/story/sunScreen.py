@@ -34,7 +34,7 @@ class SunScreen(src.items.Item):
         character.heatResistance += 1
         self.destroy()
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         returns a description text
 

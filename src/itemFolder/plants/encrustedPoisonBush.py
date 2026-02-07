@@ -35,7 +35,7 @@ class EncrustedPoisonBush(src.items.Item):
             "you give your blood to the encrusted poison bush and loose 100 satiation"
         )
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         returns a longer than normal description text
 
@@ -43,7 +43,7 @@ class EncrustedPoisonBush(src.items.Item):
             the description text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
 
         text += """
 description:

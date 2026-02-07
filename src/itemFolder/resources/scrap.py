@@ -128,7 +128,7 @@ class Scrap(src.items.Item):
 
         self.container.removeItems(toRemove)
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         generate simple text description
 
@@ -136,7 +136,7 @@ class Scrap(src.items.Item):
             the decription text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
         text += f"""
 
 There is {self.amount} in this pile

@@ -866,7 +866,7 @@ class Shrine(src.items.Item):
             options["b"] = ("bolt down", self.boltAction)
         return options
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         return f"""
 A shrine allows to interact with a god.
 

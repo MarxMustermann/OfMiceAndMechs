@@ -339,12 +339,12 @@ class RoadManager(src.items.Item):
                 toRemove.extend(terrain.getItemByPosition((x, y, 0)))
         terrain.removeItems(toRemove)
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         return a longer than normal description text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
         text += f"""
 roadNetwork:
 {self.roadNetwork}

@@ -144,7 +144,7 @@ class Bloom(src.items.Item):
 
             container.addItem(self, own_position)
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         return a longer description text than usual
 
@@ -152,7 +152,7 @@ class Bloom(src.items.Item):
             the description text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
 
         satiation = 115
         if self.dead:

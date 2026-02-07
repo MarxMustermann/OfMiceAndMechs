@@ -161,7 +161,7 @@ press . to wait"""]
     def render(self):
         return (src.interaction.urwid.AttrSpec("#fff", "#000"), "ST")
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         return """
 The shock tower has %s charges
 """ % (

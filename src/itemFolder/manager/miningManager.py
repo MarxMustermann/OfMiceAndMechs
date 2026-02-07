@@ -434,7 +434,7 @@ class MiningManager(src.items.Item):
             "ArchitectArtwork",
         )
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         get longer than normal description text
 

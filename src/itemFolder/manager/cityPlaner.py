@@ -1559,7 +1559,7 @@ class CityPlaner(src.items.Item):
             room.addItem(command,(9,11,0))
             bigMachinesToAdd = bigMachinesToAdd[2:]
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         generate simple text description
 
@@ -1567,7 +1567,7 @@ class CityPlaner(src.items.Item):
             the decription text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
         text += f"""
 
 autoExtensionThreashold: {self.autoExtensionThreashold}

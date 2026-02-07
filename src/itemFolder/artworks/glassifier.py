@@ -602,7 +602,7 @@ class Glassifier(src.items.Item):
             return "()"
         return "()"
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         returns a longer than normal description text
 
@@ -610,7 +610,7 @@ class Glassifier(src.items.Item):
            a longer than normal description text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
 
         text += f"""
 The Glassifier is needed to build a temple.

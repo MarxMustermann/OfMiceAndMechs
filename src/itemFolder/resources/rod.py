@@ -20,14 +20,14 @@ class Rod(src.items.Item):
         else:
             self.baseDamage = int(random.triangular(8,12,10))
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         '''
         return a longer than normal description text
 
         Returns:
             the description text
         '''
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
         text += f"""
 baseDamage:
 {self.baseDamage}

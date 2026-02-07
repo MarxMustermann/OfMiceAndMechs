@@ -16,7 +16,7 @@ class Pipe(src.items.Item):
         super().__init__(display=src.canvas.displayChars.pipe)
         self.name = "pipe"
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         text = """
 item: Pipe
 

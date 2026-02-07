@@ -114,7 +114,7 @@ class DutyBell(src.items.Item):
         self.bolted = False
         character.addMessage("you unbolt the Machine")
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         returns a longer than normal description of the item
 
@@ -122,7 +122,7 @@ class DutyBell(src.items.Item):
             the description
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
 
         text += f"this bell signals the duty:\n{self.duty}"
 

@@ -31,7 +31,7 @@ class PositioningDevice(src.items.Item):
             f"your position is {character.xPosition}/{character.yPosition}"
         )
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         text = """
 
 this device allows you to determine your postion. Use it to get your position.

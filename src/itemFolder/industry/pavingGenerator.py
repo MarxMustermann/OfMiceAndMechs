@@ -116,7 +116,7 @@ class PavingGenerator(src.items.Item):
 
         self.runCommand("success", character)
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         returns a longer than normal description text
 

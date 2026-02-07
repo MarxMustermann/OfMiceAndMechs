@@ -174,7 +174,7 @@ class Electrifier(src.items.itemMap["WorkShop"]):
         character.addMessage("you disable the Machine")
         self.disabled = True
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         generate simple text description
 
@@ -182,7 +182,7 @@ class Electrifier(src.items.itemMap["WorkShop"]):
             the decription text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
         if not self.processing:
             text += f"""
 status: idle

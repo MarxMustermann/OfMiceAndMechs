@@ -82,7 +82,7 @@ class DutyBeacon(src.items.Item):
             options["b"] = ("bolt down", self.boltAction)
         return options
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         returns a longer than normal description of the item
 
@@ -90,7 +90,7 @@ class DutyBeacon(src.items.Item):
             the description
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
 
         text += f"the duty beacon is set to:\n{self.container.priority}"
 

@@ -13,7 +13,7 @@ class HealthPotion(src.items.itemMap["Potion"]):
         character.heal(self.healingamount, "Drank Potion")
         super().apply(character)
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         return f"This Potion heals you for {self.healingamount}"
 
     def ingredients():

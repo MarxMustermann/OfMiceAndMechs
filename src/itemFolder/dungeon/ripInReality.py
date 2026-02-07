@@ -370,7 +370,7 @@ class RipInReality(src.items.Item):
             self.character.addMessage("Rip in reality was stabilized")
         self.submenue = None
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         return a longer than normal description text
 
@@ -378,7 +378,7 @@ class RipInReality(src.items.Item):
             the description text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
 
         text += f"""
 

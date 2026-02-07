@@ -18,7 +18,7 @@ class CoalBurner(src.items.Item):
         self.walkable = False
         self.bolted = False
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         '''
         return a longer than normal description text
 
@@ -26,7 +26,7 @@ class CoalBurner(src.items.Item):
             the description text
         '''
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
         text += f"""
 This item can heal you.
 Collect MoldFeed and burn it to heal.

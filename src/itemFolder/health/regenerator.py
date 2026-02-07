@@ -107,14 +107,14 @@ To heal faster you can use the Regenerator directly."""
             # pay mana cost
             self.mana_charges -= 1
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         '''
         generate simple text description
 
         Returns:
             the description text
         '''
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
         text += f"""
 
 charges: {self.mana_charges}

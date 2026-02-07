@@ -132,7 +132,7 @@ class SickBloom(src.items.Item):
 
         self.charges -= 1
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         satiation = 115
         if self.dead:
             satiation = 100

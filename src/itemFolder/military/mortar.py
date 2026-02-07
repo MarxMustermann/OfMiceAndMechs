@@ -102,7 +102,7 @@ class Mortar(src.items.Item):
 
             bomb.destroy()
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         returns a longer than normal description text
 

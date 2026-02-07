@@ -977,7 +977,7 @@ class StockpileMetaManager(src.items.Item):
 
         character.runCommandString(command)
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         get a longer than normal description text
 
@@ -985,7 +985,7 @@ class StockpileMetaManager(src.items.Item):
             the description text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
         stockPileInfo = ""
         for (stockpile, info) in self.stockPileInfo.items():
             stockPileInfo += f"\n  {stockpile}: "

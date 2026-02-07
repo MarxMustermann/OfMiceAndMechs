@@ -1477,7 +1477,7 @@ class CityBuilder(src.items.Item):
             self.tasks.extend(self.runningTasks)
             self.runningTasks = []
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         return a longer than normal description text
 

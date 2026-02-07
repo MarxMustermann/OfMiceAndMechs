@@ -47,7 +47,7 @@ class Commlink(src.items.Item):
 
         character.addMessage("you have payed tribute yay")
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         text = """
 item: CommLink
 

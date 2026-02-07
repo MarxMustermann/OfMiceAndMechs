@@ -91,7 +91,7 @@ class WaterCondenser(src.items.Item):
                     return
             self.character.addMessage("you have no rods in your inventory")
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         returns a longer than usual description text
 
@@ -99,7 +99,7 @@ class WaterCondenser(src.items.Item):
             the description text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
         text += f"""
 
 it generates {self.rods + 1 + 5} satiation for every 100 ticks left alone

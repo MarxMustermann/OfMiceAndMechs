@@ -19,7 +19,7 @@ class Winch(src.items.Item):
 
         self.name = "winch"
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         text = """
 item: Winch
 

@@ -245,12 +245,12 @@ Select the thing to produce and confirm."""
 
         return self.coolDown - (src.gamestate.gamestate.tick - self.coolDownTimer)
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         returns a longer than normal text description
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
 
         text += f"""
 After using this machine you need to wait {self.coolDown} ticks till you can use this machine again.

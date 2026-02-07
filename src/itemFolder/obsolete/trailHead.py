@@ -11,7 +11,7 @@ class TrailHead(src.items.Item):
         self.walkable = False
         targets = []
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         return """
 item: TrailHead
 

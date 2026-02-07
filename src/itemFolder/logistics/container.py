@@ -33,7 +33,7 @@ Activate the container and select the option "unload items" to unload the items.
         self.maxItems = 10
         self.level = 1
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         """
         returns a longer than normal description text
 
@@ -41,7 +41,7 @@ Activate the container and select the option "unload items" to unload the items.
             the description text
         """
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
 
         text += f"""
 it holds the items. It can hold a maximum of {self.maxItems} items.

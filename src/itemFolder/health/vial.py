@@ -87,7 +87,7 @@ class Vial(src.items.Item):
 
         return super().getDetailedInfo() + " (" + str(self.uses) + " charges)"
 
-    def getLongInfo(self):
+    def getLongInfo(self, character=None):
         '''
         returns a longer than normal description text
 
@@ -95,7 +95,7 @@ class Vial(src.items.Item):
             the description text
         '''
 
-        text = super().getLongInfo()
+        text = super().getLongInfo(character)
 
         text += f"""
 A goo flask can be refilled at a health station and can hold a maximum of {self.maxUses} charges.

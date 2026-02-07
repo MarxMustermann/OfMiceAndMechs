@@ -190,6 +190,11 @@ class TriggerPlate(src.items.Item):
     def getLongInfo(self, character=None):
         text = [super().getLongInfo(character)]
 
+        if character and self.faction != character.faction:
+            warning_line = []
+            warning_line.append((src.interaction.urwid.AttrSpec("#f00", "black"), "!!! THIS TRIGGER PLATE DETECTS YOU AS ENEMY AND WILL TRIGGER WHEN YOU STEP ON IT !!!\n\n"))
+            text = warning_line + text
+
         if self.faction:
             faction_line.append(f"{self.faction}")
         else:

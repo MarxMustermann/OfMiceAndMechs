@@ -4426,9 +4426,10 @@ def calculate_UI_layout(char):
         left = (tcodConsole.width-(mapWidth + 15*4))//8
         uiElements.append({"type":"miniMap","offset":[left,1]})
 
-    if tcodConsole.width > mapWidth + 15*4:
-        right = (tcodConsole.width-(mapWidth + 15*4))//8
-        uiElements.append({"type":"zoneMap","offset":[tcodConsole.width//2-15-right,1]})
+    if len(char.terrainInfo) > 0:
+        if tcodConsole.width > mapWidth + 15*4:
+            right = (tcodConsole.width-(mapWidth + 15*4))//8
+            uiElements.append({"type":"zoneMap","offset":[tcodConsole.width//2-15-right,1]})
 
     uiElements.append({"type":"healthInfo","offset":[(assumedScreenWidth-mapWidth)//2,1],"width":mapWidth})
     #uiElements.append({"type":"indicators","offset":[(assumedScreenWidth-mapWidth)//2,2],"width":mapWidth})

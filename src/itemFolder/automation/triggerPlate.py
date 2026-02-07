@@ -195,6 +195,7 @@ class TriggerPlate(src.items.Item):
             warning_line.append((src.interaction.urwid.AttrSpec("#f00", "black"), "!!! THIS TRIGGER PLATE DETECTS YOU AS ENEMY AND WILL TRIGGER WHEN YOU STEP ON IT !!!\n\n"))
             text = warning_line + text
 
+        faction_line = [f"faction: "]
         if self.faction:
             faction_line.append(f"{self.faction}")
         else:

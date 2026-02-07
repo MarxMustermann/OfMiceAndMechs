@@ -187,4 +187,15 @@ class TriggerPlate(src.items.Item):
         character.macroState["submenue"] = submenue
         character.macroState["submenue"].followUp = {"container":self,"method":"configureTargetPosition","params":params}
 
+    def getLongInfo(self):
+        text = [super().getLongInfo()]
+        faction_line = [f"faction: "]
+        if self.faction:
+            faction_line.append(f"{self.faction}")
+        else:
+            faction_line.append("this item has not set a faction yet")
+        faction_line.append("\n\n")
+        text = faction_line + text
+        return text
+
 src.items.addType(TriggerPlate)

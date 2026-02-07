@@ -3143,7 +3143,13 @@ So it probably is a good idea to clean up the trap rooms.
                 options.append(("rank 2 promotion", "rank 2 promotion"))
             else:
                 options.append(("contact main base", "contact main base"))
+
+            name = "break the siege"
             options.append(("break the siege", "break the siege"))
+            extraDescriptions[name] = """
+Defeat the Insects besieging the base.
+"""
+
             name = "something different"
             options.append((name, "something different"))
             extraDescriptions[name] = """

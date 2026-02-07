@@ -4431,7 +4431,7 @@ def calculate_UI_layout(char):
         uiElements.append({"type":"zoneMap","offset":[tcodConsole.width//2-15-right,1]})
 
     uiElements.append({"type":"healthInfo","offset":[(assumedScreenWidth-mapWidth)//2,1],"width":mapWidth})
-    uiElements.append({"type":"indicators","offset":[(assumedScreenWidth-mapWidth)//2,2],"width":mapWidth})
+    #uiElements.append({"type":"indicators","offset":[(assumedScreenWidth-mapWidth)//2,2],"width":mapWidth})
 
     if not char.hasMagic:
         displayString = "press ? for help"

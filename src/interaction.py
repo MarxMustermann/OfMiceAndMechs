@@ -4432,7 +4432,7 @@ def calculate_UI_layout(char):
             uiElements.append({"type":"zoneMap","offset":[tcodConsole.width//2-15-right,1]})
 
     uiElements.append({"type":"healthInfo","offset":[(assumedScreenWidth-mapWidth)//2,1],"width":mapWidth})
-    #uiElements.append({"type":"indicators","offset":[(assumedScreenWidth-mapWidth)//2,2],"width":mapWidth})
+    uiElements.append({"type":"indicators","offset":[(assumedScreenWidth-mapWidth)//2,2],"width":mapWidth})
 
     if not char.hasMagic:
         displayString = "press ? for help"
@@ -4762,7 +4762,8 @@ def renderGameDisplay(renderChar=None):
                             autoIndicator = ActionMeta(content=(urwid.AttrSpec("#f00", "default"),"*"),payload=test)
                             """
 
-                        indicators = [ActionMeta(content="x",payload="x~")," ",ActionMeta(content="q",payload="q~")," ",ActionMeta(content="v",payload="v~")," ",autoIndicator," ",ActionMeta(content="t",payload="t~")]
+                        #indicators = [ActionMeta(content="x",payload="x~")," ",ActionMeta(content="q",payload="q~")," ",ActionMeta(content="v",payload="v~")," ",autoIndicator," ",ActionMeta(content="t",payload="t~")]
+                        indicators = []
                         if tcod.event.get_modifier_state() & tcod.event.Modifier.CAPS:
                             cap_warning = (src.pseudoUrwid.AttrSpec((255, 68, 51), (0, 0, 0)),"CAPS")
                             indicators.append(" ")

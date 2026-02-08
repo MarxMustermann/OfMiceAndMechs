@@ -177,6 +177,9 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
             returns True when done
         """
 
+        character.changed("opened character menu",{})
+        src.gamestate.gamestate.stern["opened character menu"] = True
+
         # workaround bug
         if self.skipKeypress:
             self.skipKeypress = False

@@ -115,17 +115,6 @@ def advanceGame():
         src.gamestate.gamestate.mainLoop["counter"] = counter
         src.gamestate.gamestate.mainLoop["character_queue"] = character_queue
 
-    # workaroud for backwards compability
-    # TODO: removeme
-    try:
-        src.gamestate.gamestate.itemToUpdatePerTick
-    except:
-        src.gamestate.gamestate.itemToUpdatePerTick = []
-    try:
-        src.gamestate.gamestate.teleporterGroups
-    except:
-        src.gamestate.gamestate.teleporterGroups = {}
-
     # update the items that actually do time based things
     for item in src.gamestate.gamestate.itemToUpdatePerTick:
         item.tick()
@@ -187,11 +176,6 @@ def advanceGame():
     # mark completion of the round as it should be
     src.gamestate.gamestate.savedThisTurn = False
 
-    try:
-        src.gamestate.gamestate.saveAtTheTurnEnd
-    except:
-        src.gamestate.gamestate.saveAtTheTurnEnd = False
-        
     if src.gamestate.gamestate.saveAtTheTurnEnd:
         src.gamestate.gamestate.saveAtTheTurnEnd = False
         src.gamestate.gamestate.save()

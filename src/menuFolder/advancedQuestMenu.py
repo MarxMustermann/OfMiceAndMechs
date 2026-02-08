@@ -20,6 +20,9 @@ class AdvancedQuestMenu(src.subMenu.SubMenu):
         self.activeChar = activeChar
         super().__init__()
 
+    def getTitle(self):
+        return "ADVANCED QUEST MENU"
+
     def handleKey(self, key, noRender=False, character = None):
         """
         gather the quests parameters and assign the quest

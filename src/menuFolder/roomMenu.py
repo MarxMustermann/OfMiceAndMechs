@@ -13,6 +13,9 @@ class RoomMenu(src.subMenu.SubMenu):
         self.submenu = None
         self.firstKey = True
 
+    def getTitle(self):
+        return "ROOM MANAGEMENT"
+
     def handleKey(self, key, noRender=False, character = None):
         self.persistentText = "room menu \n\n"
 

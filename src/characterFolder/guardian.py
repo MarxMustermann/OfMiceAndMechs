@@ -120,4 +120,13 @@ class Guardian(src.monster.Monster):
             color = (150,150,255)
         return (src.interaction.urwid.AttrSpec(color,"#000"), "&&")
 
+    def getLoreDescription(self):
+        return f"You see a Guardian. A huge humanoid figure, that doesn't look quite correct when looking closer"
+
+    def getFunctionalDescription(self):
+        return f"Guardians are pretty dangerous, some more than others"
+
+    def description(self):
+        return self.getLoreDescription()+"\n\n---- "+self.getFunctionalDescription()
+
 src.characters.add_character(Guardian)

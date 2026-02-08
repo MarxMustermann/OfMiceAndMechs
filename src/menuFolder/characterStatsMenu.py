@@ -19,6 +19,9 @@ class CharacterStatsMenu(src.subMenu.SubMenu):
         # exit submenu
         return key == "esc"
 
+    def getTitle(self):
+        return "CHARACTER STATISTICS"
+
     def text(self, character):
         text = "Character Statistics:\n\n"
 

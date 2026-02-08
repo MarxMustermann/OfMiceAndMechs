@@ -44,6 +44,9 @@ class DebugMenu(src.subMenu.SubMenu):
         self.index = 0
         super().__init__()
 
+    def getTitle(self):
+        return "DEBUG"
+
     def handleKey(self, key, noRender=False, character=None):
         if key in ("w", "s","up","down"):
             self.index += 1 if key in ("s","down") else -1

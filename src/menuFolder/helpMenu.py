@@ -12,6 +12,9 @@ class HelpMenu(src.subMenu.SubMenu):
         self.skipKeypress = True
         super().__init__()
 
+    def getTitle(self):
+        return "HELP"
+
     def handleKey(self, key, noRender=False, character = None):
         """
         show the help text and ignore keypresses

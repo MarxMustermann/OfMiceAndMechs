@@ -17,6 +17,9 @@ class ChatPartnerselection(src.subMenu.SubMenu):
         self.skipKeypress = True
         super().__init__()
 
+    def getTitle(self):
+        return "CHAT PARTNER SELECTION"
+
     def handleKey(self, key, noRender=False, character = None):
         """
         set up the selection and spawn the chat

@@ -3227,6 +3227,20 @@ Fight the Insects besieging the base.
 The more Clones are available to work, the more work gets done.
 """
 
+            if terrain.alarm:
+                name = "disable alarm"
+                options.append((name, "disable alarm"))
+                extraDescriptions[name] = """
+Sirens are ringing and going outside is forbidden rigt now.
+You can change that.
+"""
+            else:
+                name = "start alarm"
+                options.append((name, "start alarm"))
+                extraDescriptions[name] = """
+Clones are allowed to go outside right now.
+You can ring the alarm to change that.
+"""
             name = "something different"
             options.append((name, "something different"))
             extraDescriptions[name] = """
@@ -3638,6 +3652,17 @@ This will close the tutorial and let you do your own thing.
             quest = src.quests.questMap["StoryClearTerrain"]()
             self.addQuest(quest,character)
             return
+
+        if quest_type == "disable alarm":
+            quest = src.quests.questMap["LiftOutsideRestrictions"]()
+            self.addQuest(quest,character)
+            return
+
+        if quest_type == "start alarm":
+            quest = src.quests.questMap["ReadyBaseDefences"]()
+            self.addQuest(quest,character)
+            return
+
 
         if quest_type == "free build site":
             pos = (8,7,0)

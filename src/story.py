@@ -3149,8 +3149,6 @@ To get a rank 5 promotion you need a clone as backup.
 Spawn a Clone to fulfill that requirement.
 """
             elif not mainChar.rank or mainChar.rank > 5:
-                #name = "rank 5 promotion"
-                #options.append((name, "rank 5 promotion"))
                 name = "get promotion"
                 options.append((name, "get promotion"))
                 extraDescriptions[name] = """

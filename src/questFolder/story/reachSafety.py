@@ -11,6 +11,7 @@ class ReachSafety(src.quests.MetaQuestSequence):
         self.got_trapped = False
         self.trap_tick = None
         self.shown_examine_popup = False
+        self.shown_self_check_popup = False
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
 
@@ -50,6 +51,20 @@ Examine the TriggerPlate to find out what is wrong.
                 return ([quest],None)
             if character.macroState.get("submenue"):
                 return (None,(["esc"],"close menu"))
+
+            if not self.shown_self_check_popup:
+                    if not dryRun:
+                        self.character.showTextMenu("""
+Your implant interrupts:
+
+The triggerplate detects you as enemy, but has the right faction marker.
+Check your faction marker to see if something is wrong with it.
+""")
+                        self.shown_self_check_popup = True
+            if not src.gamestate.gamestate.stern.get("opened character menu"):
+                quest = src.quests.questMap["OpenCharacterMenu"](reason="check your faction marker")
+                return ([quest],None)
+
             if not dryRun:
                 self.character.showTextMenu("""
 Your implant interrupts:

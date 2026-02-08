@@ -64,6 +64,8 @@ Its tendrils reach out and touch your implant.
                     character.addMessage(f"promotions locked")
                     character.changed("failed promotion",{"rank":5})
 
+                    src.gamestate.gamestate.stern["rank5promotionfailed"] = True
+
                     submenue = src.menuFolder.textMenu.TextMenu("""
 Promotions to rank 5 are blocked.
 

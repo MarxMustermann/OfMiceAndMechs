@@ -3132,9 +3132,28 @@ The trap rooms don't work properly when cluttered.
 So it probably is a good idea to clean up the trap rooms.
 """
             if not src.gamestate.gamestate.stern.get("failedContact1"):
-                options.append(("contact command", "contact command"))
+                name = "contact command"
+                options.append((name, "contact command"))
+                extraDescriptions[name] = """
+This base seems to be abandoned.
+We shoud get into contact with the base commander.
+This should help us to find out what happened.
+"""
+            elif not src.gamestate.gamestate.stern.get("rank5promotionfailed") and not self._get_free_clones(mainChar):
+                name = "spawn clone"
+                options.append((name, "spawn clone"))
+                extraDescriptions[name] = """
+To get a rank 5 promotion you need a clone as backup.
+Spawn a Clone to fulfill that requirement.
+"""
             elif not mainChar.rank or mainChar.rank > 5:
-                options.append(("rank 5 promotion", "rank 5 promotion"))
+                #name = "rank 5 promotion"
+                #options.append((name, "rank 5 promotion"))
+                name = "get promotion"
+                options.append((name, "get promotion"))
+                extraDescriptions[name] = """
+Get a promotion to be able to contact the base commander.
+"""
             elif not src.gamestate.gamestate.stern.get("failedContact2"):
                 options.append(("contact command", "contact command"))
             elif not src.gamestate.gamestate.stern.get("failedBaseContact1"):
@@ -3147,7 +3166,7 @@ So it probably is a good idea to clean up the trap rooms.
             name = "break the siege"
             options.append(("break the siege", "break the siege"))
             extraDescriptions[name] = """
-Defeat the Insects besieging the base.
+Fight the Insects besieging the base.
 """
 
             name = "something different"
@@ -3426,6 +3445,21 @@ This will close the tutorial and let you do your own thing.
             character.showTextMenu("\nAs you wish.\n\nRemember that you can contact me again by following the instructions the left side of the screen.\n",do_not_scale=True)
             src.gamestate.gamestate.stern["first_silenced"] = True
 
+    def _get_free_clones(self,character):
+        free_clones = []
+        terrain = character.getTerrain()
+        for check_character in terrain.getAllCharacters():
+            if check_character == character:
+                continue
+            if check_character.faction != character.faction:
+                continue
+            if not isinstance(check_character,src.characters.characterMap["Clone"]):
+                continue
+            if check_character.burnedIn:
+                continue
+            free_clones.append(check_character)
+        return free_clones
+
     def _get_traprooms_to_clean(self,character):
         terrain = character.getTerrain()
 
@@ -3486,6 +3520,11 @@ This will close the tutorial and let you do your own thing.
             self.clear_implant_quest(character)
             return
 
+        if quest_type == "get promotion":
+            quest = src.quests.questMap["GetPromotion"](5)
+            self.addQuest(quest,character)
+            return
+
         if quest_type == "rank 5 promotion":
             quest = src.quests.questMap["GetRank5PromotionStory"]()
             self.addQuest(quest,character)
@@ -3498,6 +3537,11 @@ This will close the tutorial and let you do your own thing.
 
         if quest_type == "contact main base":
             quest = src.quests.questMap["ContactMainBase"]()
+            self.addQuest(quest,character)
+            return
+
+        if quest_type == "spawn clone":
+            quest = src.quests.questMap["SpawnClone"]()
             self.addQuest(quest,character)
             return
 

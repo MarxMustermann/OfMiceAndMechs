@@ -21,6 +21,9 @@ class ExamineMenu(src.subMenu.SubMenu):
         self.last_move_blocked = False
         self.index = 0
 
+    def getTitle(self):
+        return "EXAMINE"
+
     def handleKey(self, key, noRender=False, character = None):
         """
         show the text and ignore keypresses

@@ -69,4 +69,13 @@ class Spectre(src.monster.Monster):
 
         super().advance(advanceMacros=advanceMacros)
 
+    def getLoreDescription(self):
+        return f"The Spectre seems not quite real. It seems to phase in and out of reality"
+
+    def getFunctionalDescription(self):
+        return f"Spectres have different strength. In general they are stronger when apearing in groups"
+
+    def description(self):
+        return self.getLoreDescription()+"\n\n---- "+self.getFunctionalDescription()
+
 src.characters.add_character(Spectre)

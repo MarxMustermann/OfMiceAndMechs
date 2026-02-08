@@ -3167,11 +3167,13 @@ Now that you have the right
             else:
                 options.append(("contact main base", "contact main base"))
 
+            '''
             name = "break the siege"
             options.append(("break the siege", "break the siege"))
             extraDescriptions[name] = """
 Fight the Insects besieging the base.
 """
+            '''
 
             if not showed_spawn_option:
                 name = "spawn clone"

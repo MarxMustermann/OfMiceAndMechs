@@ -9,6 +9,9 @@ class ObserveMenu(src.subMenu.SubMenu):
         self.index_big = character.getBigPosition()
         self.character = character
 
+    def getTitle(self):
+        return "OBSERVE"
+
     def handleKey(self, key, noRender=False, character = None):
 
         # exit the submenu

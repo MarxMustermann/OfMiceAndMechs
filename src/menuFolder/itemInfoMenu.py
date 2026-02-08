@@ -15,6 +15,9 @@ class ItemInfoMenu(src.subMenu.SubMenu):
         self.sidebared = False
         self.skipKeypress = True
 
+    def getTitle(self):
+        return "NEARBY ITEMS"
+
     def render(self):
         char = self.char
 

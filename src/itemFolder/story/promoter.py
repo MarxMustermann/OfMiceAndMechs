@@ -71,6 +71,7 @@ Its tendrils reach out and touch your implant.
             if numCharacters < 2:
                 if not highestAllowed:
                     character.addMessage(f"promotions locked")
+                    character.changed("failed promotion",{"rank":5})
 
                     submenue = src.menuFolder.textMenu.TextMenu("""
 Promotions to rank 5 are blocked.
@@ -92,6 +93,7 @@ There need to be at least 1 clone besides you on the base to allow any promption
             if len(terrain.rooms) < 7:
                 if not highestAllowed:
                     character.addMessage(f"promotions locked")
+                    character.changed("failed promotion",{"rank":4})
 
                     submenue = src.menuFolder.textMenu.TextMenu("""
 Promotions to rank 4 are blocked.
@@ -126,6 +128,7 @@ Build more rooms.
             if foundEnemies:
                 if not highestAllowed:
                     character.addMessage(f"promotions locked")
+                    character.changed("failed promotion",{"rank":3})
 
                     submenue = src.menuFolder.textMenu.TextMenu("""
 Promotions to rank 3 are blocked.
@@ -167,6 +170,7 @@ Kill all enemies on this terrain, to unlock the promotions to rank 3.
             if numCharacters < 4:
                 if not highestAllowed:
                     character.addMessage(f"promotions locked")
+                    character.changed("failed promotion",{"rank":2})
 
                     submenue = src.menuFolder.textMenu.TextMenu("""
 Promotions to rank 2 are blocked.

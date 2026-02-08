@@ -3141,7 +3141,7 @@ This base seems to be abandoned.
 We shoud get into contact with the base commander.
 This should help us to find out what happened.
 """
-            elif not src.gamestate.gamestate.stern.get("rank5promotionfailed") and not self._get_free_clones(mainChar):
+            elif src.gamestate.gamestate.stern.get("rank5promotionfailed") and not self._get_free_clones(mainChar):
                 name = "spawn clone"
                 options.append((name, "spawn clone"))
                 extraDescriptions[name] = """
@@ -3162,8 +3162,47 @@ Now that you have the right
 """
             elif not src.gamestate.gamestate.stern.get("failedBaseContact1"):
                 options.append(("contact main base", "contact main base"))
+            elif src.gamestate.gamestate.stern.get("rank4promotionfailed") and self._get_snatchers(mainChar):
+                name = "confront snatchers"
+                options.append((name, "confront snatcher"))
+                extraDescriptions[name] = """
+There are insects outside snatching every Clone that goes outside.
+All of those insects need to be killed or nothing can be done outside the base. 
+"""
+            elif src.gamestate.gamestate.stern.get("rank4promotionfailed") and terrain.getEnemiesOnTile(mainChar,(8,7,0)):
+                name = "free build site"
+                options.append((name, "clear build site"))
+                extraDescriptions[name] = """
+You need to build a room to get a promotion.
+You need to clear the build site before building it.
+"""
+            elif src.gamestate.gamestate.stern.get("rank4promotionfailed") and not terrain.getRoomByPosition((8,7,0)):
+                name = "complete build site"
+                options.append((name, "build the room on the build site"))
+                extraDescriptions[name] = """
+You need to build a room to get a promotion.
+You need to clear the build site before building it.
+"""
+            elif src.gamestate.gamestate.stern.get("rank3promotionfailed") and self._get_enemies(mainChar):
+                name = "clear terrain"
+                options.append((name, "clear terrain"))
+                extraDescriptions[name] = """
+You need to clear the terrain from enemies a room to get a promotion.
+"""
+            elif src.gamestate.gamestate.stern.get("rank2promotionfailed") and len(self._get_free_clones(mainChar)) < 4:
+                name = "spawn clone"
+                options.append((name, "spawn clone"))
+                extraDescriptions[name] = """
+To get a rank 2 promotion you need at least 3 clones beside you on the base.
+Spawn a Clone to fulfill that requirement.
+"""
             elif mainChar.rank > 2:
-                options.append(("rank 2 promotion", "rank 2 promotion"))
+                #options.append(("rank 2 promotion", "rank 2 promotion"))
+                name = "get promotion"
+                options.append((name, "get promotion"))
+                extraDescriptions[name] = """
+Get a promotion to be able to contact the base commander.
+"""
             else:
                 options.append(("contact main base", "contact main base"))
 
@@ -3458,6 +3497,24 @@ This will close the tutorial and let you do your own thing.
             character.showTextMenu("\nAs you wish.\n\nRemember that you can contact me again by following the instructions the left side of the screen.\n",do_not_scale=True)
             src.gamestate.gamestate.stern["first_silenced"] = True
 
+    def _get_enemies(self,character):
+        enemies = []
+        terrain = character.getTerrain()
+        for check_character in terrain.getAllCharacters():
+            if check_character.faction == character.faction:
+                continue
+            enemies.append(check_character)
+        return enemies
+
+    def _get_snatchers(self,character):
+        snatchers = []
+        terrain = character.getTerrain()
+        for check_character in terrain.getAllCharacters():
+            if not isinstance(check_character,src.characters.characterMap["Snatcher"]):
+                continue
+            snatchers.append(check_character)
+        return snatchers
+
     def _get_free_clones(self,character):
         free_clones = []
         terrain = character.getTerrain()
@@ -3534,7 +3591,10 @@ This will close the tutorial and let you do your own thing.
             return
 
         if quest_type == "get promotion":
-            quest = src.quests.questMap["GetPromotion"](5)
+            if character.rank == 2:
+                character.addMessage("you can't be promoted further")
+                return
+            quest = src.quests.questMap["GetPromotion"](character.rank-1)
             self.addQuest(quest,character)
             return
 
@@ -3558,7 +3618,36 @@ This will close the tutorial and let you do your own thing.
             self.addQuest(quest,character)
             return
 
+        if quest_type == "confront snatchers":
+            quest = src.quests.questMap["ConfrontSnatchers"]()
+            self.addQuest(quest,character)
+            return
+
+        if quest_type == "complete build site":
+            quest = src.quests.questMap["StoryExtendBase"](reason="be able to get promoted to base commander.\nThis will allow you to contact main base")
+            self.addQuest(quest,character)
+            return
+
+        if quest_type == "clear terrain":
+            quest = src.quests.questMap["StoryClearTerrain"]()
+            self.addQuest(quest,character)
+            return
+
+        if quest_type == "free build site":
+            pos = (8,7,0)
+            found_spiders = terrain.getEnemiesOnTile(character,pos)
+            if found_spiders:
+                quest = src.quests.questMap["BaitSpiders"](targetPositionBig=pos)
+                quest.endTrigger = {"container": self, "method": "reachImplant"}
+                self.addQuest(quest,character)
+                self.clear_implant_quest(character)
+                return
+
         if quest_type == "break the siege":
+            if self._get_snatchers():
+                quest = src.quests.questMap["ConfrontSnatchers"]()
+                self.addQuest(quest,character)
+                return
 
             # start the actual cleanup
             pos = (5,8,0)

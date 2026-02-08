@@ -4838,7 +4838,8 @@ def renderGameDisplay(renderChar=None):
             text = submenue.render()
         else:
             text = main.get_text()
-        text = [submenue.getTitle(),"\n\n",text]
+        if submenue:
+            text = [submenue.getTitle(),"\n\n",text]
         plainText = stringifyUrwid(text)
 
         height = 0

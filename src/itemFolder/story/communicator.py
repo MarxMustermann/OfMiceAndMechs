@@ -30,6 +30,9 @@ class Communicator(src.items.Item):
     def makeContact(self,extraParams):
         character = extraParams["character"]
 
+        if character.macroState.get("itemMarkedLast"):
+            del character.macroState["itemMarkedLast"]
+
         if extraParams["type"] == "contact base leader":
             if not character.rank or character.rank > 5:
                 character.addMessage("You need to be at least rank 5.")

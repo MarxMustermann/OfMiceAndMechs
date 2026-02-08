@@ -20,6 +20,9 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
         self.min_lines = 8
         self.min_cols = 50
 
+    def getTitle(self):
+        return "CHARACTER INFORMATION"
+
     def _get_text_dimensions(self,text):
         lines = text.split("\n")
         max_line = 0

@@ -10,6 +10,9 @@ class SettingMenu(src.subMenu.SubMenu):
         self.index = 0
         super().__init__(default, targetParamName)
 
+    def getTitle(self):
+        return "SETTINGS"
+
     def handleKey(self, key, noRender=False, character=None):
         if key in ("esc", " "):
             with open("config/globalSettings.json", "w") as f:

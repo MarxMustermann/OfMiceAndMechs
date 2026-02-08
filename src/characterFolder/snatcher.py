@@ -54,4 +54,13 @@ class Snatcher(src.monster.Monster):
         )
         super().applyNativeMeleeAttackEffects(target)
 
+    def getLoreDescription(self):
+        return f"The Snatchers greedy eyes track everything in the swamp. It also looks pretty hungry."
+
+    def getFunctionalDescription(self):
+        return f"The Snatchers will attack anything outside of the base, but usually do not chase into rooms"
+
+    def description(self):
+        return self.getLoreDescription()+"\n\n---- "+self.getFunctionalDescription()
+
 src.characters.add_character(Snatcher)

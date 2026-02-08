@@ -88,6 +88,8 @@ There need to be at least 1 clone besides you on the base to allow any promption
                     character.addMessage(f"promotions locked")
                     character.changed("failed promotion",{"rank":4})
 
+                    src.gamestate.gamestate.stern["rank4promotionfailed"] = True
+
                     submenue = src.menuFolder.textMenu.TextMenu("""
 Promotions to rank 4 are blocked.
 
@@ -122,6 +124,8 @@ Build more rooms.
                 if not highestAllowed:
                     character.addMessage(f"promotions locked")
                     character.changed("failed promotion",{"rank":3})
+
+                    src.gamestate.gamestate.stern["rank3promotionfailed"] = True
 
                     submenue = src.menuFolder.textMenu.TextMenu("""
 Promotions to rank 3 are blocked.
@@ -164,6 +168,8 @@ Kill all enemies on this terrain, to unlock the promotions to rank 3.
                 if not highestAllowed:
                     character.addMessage(f"promotions locked")
                     character.changed("failed promotion",{"rank":2})
+
+                    src.gamestate.gamestate.stern["rank2promotionfailed"] = True
 
                     submenue = src.menuFolder.textMenu.TextMenu("""
 Promotions to rank 2 are blocked.

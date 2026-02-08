@@ -4838,6 +4838,7 @@ def renderGameDisplay(renderChar=None):
             text = submenue.render()
         else:
             text = main.get_text()
+        text = [submenue.getTitle(),"\n\n",text]
         plainText = stringifyUrwid(text)
 
         height = 0
@@ -4879,15 +4880,28 @@ def renderGameDisplay(renderChar=None):
             overhang = 25
             outline = 4
             sdl_renderer2.draw_color = (0,0,0,255)
+
+            # draw backgound
             sdl_renderer2.fill_rect((offsetLeft-padding-outline,offsetTop-padding-outline,display_width+2*padding+2*outline,display_height+2*padding+2*outline))
+            # draw upper line background
             sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop-padding-line_width-outline,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
+            # draw tile line background
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop-padding-line_width-outline+2*tileHeight,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
+            # draw lower line backgound
             sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop+padding+display_height-outline,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
+            # left line background
             sdl_renderer2.fill_rect((offsetLeft-padding-line_width-outline,offsetTop-padding-overhang-outline,line_width+2*outline,display_height+2*(padding+overhang+2*outline)))
+            # right line background
             sdl_renderer2.fill_rect((offsetLeft+padding+display_width-outline,offsetTop-padding-overhang-outline,line_width+2*outline,display_height+2*(padding+overhang)+2*outline))
+
             sdl_renderer2.draw_color = (255,255,255,255)
+            # draw upper line
             sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop-padding-line_width,display_width+2*(padding+overhang),line_width))
+            # draw lower line
             sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop+padding+display_height,display_width+2*(padding+overhang),line_width))
+            # left line
             sdl_renderer2.fill_rect((offsetLeft-padding-line_width,offsetTop-padding-overhang,line_width,display_height+2*(padding+overhang)))
+            # right line
             sdl_renderer2.fill_rect((offsetLeft+padding+display_width,offsetTop-padding-overhang,line_width,display_height+2*(padding+overhang)))
 
             root_console = tcod.console.Console(width, height, order="F")
@@ -4898,6 +4912,9 @@ def renderGameDisplay(renderChar=None):
             renderedToTexture = console_render.render(root_console)
             sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
 
+            # draw title line
+            sdl_renderer2.draw_color = (255,255,255,255)
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop-padding-line_width+2*tileHeight,display_width+2*(padding+overhang),line_width))
     else:
         last_menu_dimension = None
 

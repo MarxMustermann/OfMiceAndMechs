@@ -43,6 +43,9 @@ class SubMenu(object):
         self.escape = False
         self.query = ""
 
+    def getTitle(self):
+        return ""
+
     def rerender(self):
         pass
 

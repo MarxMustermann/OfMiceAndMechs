@@ -66,4 +66,13 @@ class Mouse(src.characters.Character):
         self.container.removeCharacter(self)
         self.vanished = True
 
+    def getLoreDescription(self):
+        return f"Just a mice, its fur is stiff enough to cut your skin"
+
+    def getFunctionalDescription(self):
+        return f"You never know how Mice act."
+
+    def description(self):
+        return self.getLoreDescription()+"\n\n---- "+self.getFunctionalDescription()
+
 src.characters.add_character(Mouse)

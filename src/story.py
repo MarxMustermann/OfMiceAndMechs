@@ -3121,6 +3121,8 @@ the base is safe for the moment, but there is a lot left to do.
 
 Please select on what to focus next:
 """
+
+            showed_spawn_option = False
             options = []
             extraDescriptions = {}
             if self._get_traprooms_to_clean(mainChar):
@@ -3155,7 +3157,11 @@ Spawn a Clone to fulfill that requirement.
 Get a promotion to be able to contact the base commander.
 """
             elif not src.gamestate.gamestate.stern.get("failedContact2"):
+                name = "contact command"
                 options.append(("contact command", "contact command"))
+                extraDescriptions[name] = """
+Now that you have the right 
+"""
             elif not src.gamestate.gamestate.stern.get("failedBaseContact1"):
                 options.append(("contact main base", "contact main base"))
             elif mainChar.rank > 2:
@@ -3167,6 +3173,13 @@ Get a promotion to be able to contact the base commander.
             options.append(("break the siege", "break the siege"))
             extraDescriptions[name] = """
 Fight the Insects besieging the base.
+"""
+
+            if not showed_spawn_option:
+                name = "spawn clone"
+                options.append((name, "spawn clone"))
+                extraDescriptions[name] = """
+The more Clones are available to work, the more work gets done.
 """
 
             name = "something different"

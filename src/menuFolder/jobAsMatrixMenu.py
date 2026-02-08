@@ -9,6 +9,9 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
         self.index = [0,0]
         self.cached_npc_order = []
 
+    def getTitle(self):
+        return "JOB MANAGEMENT"
+
     def get_duties(self):
         """
         returns what duties can be managed at this item

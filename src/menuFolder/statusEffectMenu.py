@@ -16,6 +16,9 @@ class StatusEffectMenu(src.subMenu.SubMenu):
         self.cursor = cursor
         super().__init__()
 
+    def getTitle(self):
+        return "STATUS EFFECTS"
+
     def render(self):
         
         char = self.char

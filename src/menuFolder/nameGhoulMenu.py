@@ -7,6 +7,9 @@ class NameGhoulMenu(src.subMenu.SubMenu):
         self.subMenu = None
         super().__init__()
 
+    def getTitle(self):
+        return "NAME GHUL"
+
     def handleKey(self, key, noRender=False, character = None):
         if self.subMenu:
             subMenuDone = self.subMenu.handleKey(key, noRender=noRender, character=character)

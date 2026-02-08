@@ -44,6 +44,9 @@ class MessagesMenu(src.subMenu.SubMenu):
         self.skipKeypress = True
         super().__init__()
 
+    def getTitle(self):
+        return "MESSAGE LOG"
+
     def handleKey(self, key, noRender=False, character = None):
         """
         show the attributes and ignore keystrokes

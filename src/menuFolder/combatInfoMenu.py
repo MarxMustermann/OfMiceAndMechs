@@ -15,6 +15,9 @@ class CombatInfoMenu(src.subMenu.SubMenu):
         self.sidebared = False
         self.skipKeypress = True
 
+    def getTitle(self):
+        return "COMBAT INFORMATION"
+
     def render(self):
         char = self.char
 

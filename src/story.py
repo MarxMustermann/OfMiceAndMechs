@@ -3183,6 +3183,12 @@ You need to clear the build site before building it.
 You need to build a room to get a promotion.
 You need to clear the build site before building it.
 """
+            elif len(self._get_free_clones(mainChar)) < 3:
+                name = "spawn clone"
+                options.append((name, "spawn clone"))
+                extraDescriptions[name] = """
+Increase the amount of workers available.
+"""
             elif src.gamestate.gamestate.stern.get("rank3promotionfailed") and self._get_enemies(mainChar):
                 name = "clear terrain"
                 options.append((name, "clear terrain"))

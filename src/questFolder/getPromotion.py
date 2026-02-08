@@ -31,6 +31,9 @@ Use the Promotor to do this.
         '''
         self.postHandler()
 
+    def failedPromotion(self,extraInfo):
+        self.fail("got no promotion")
+
     def assignToCharacter(self, character):
         '''
         start watching the character for getting promotions
@@ -38,6 +41,7 @@ Use the Promotor to do this.
         if self.character:
             return
         self.startWatching(character,self.handleGotPromotion, "got promotion")
+        self.startWatching(character,self.failedPromotion, "failed promotion")
         super().assignToCharacter(character)
 
     def triggerCompletionCheck(self,character=None,dryRun=True):

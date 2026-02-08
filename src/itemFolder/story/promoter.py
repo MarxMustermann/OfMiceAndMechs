@@ -50,7 +50,7 @@ Its tendrils reach out and touch your implant.
         if not character.rank or character.rank > 5:
             numCharacters = 0
             terrain = character.getTerrain()
-            for checkChar in terrain.characters:
+            for checkChar in terrain.getAllCharacters():
                 if not checkChar.faction == character.faction:
                     continue
                 if not checkChar.charType == "Clone":
@@ -58,15 +58,6 @@ Its tendrils reach out and touch your implant.
                 if checkChar.burnedIn:
                     continue
                 numCharacters += 1
-            for room in terrain.rooms:
-                for checkChar in room.characters:
-                    if not checkChar.faction == character.faction:
-                        continue
-                    if not checkChar.charType == "Clone":
-                        continue
-                    if checkChar.burnedIn:
-                        continue
-                    numCharacters += 1
 
             if numCharacters < 2:
                 if not highestAllowed:

@@ -32,6 +32,9 @@ class InventoryMenu(src.subMenu.SubMenu):
         self.min_lines = 8
         self.min_cols = 20
 
+    def getTitle(self):
+        return "INVENTORY"
+
     def handleKey(self, key, noRender=False, character=None):
         """
         show the inventory

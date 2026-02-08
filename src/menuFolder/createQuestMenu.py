@@ -18,6 +18,9 @@ class CreateQuestMenu(src.subMenu.SubMenu):
         self.parameterValue = None
         self.activeChar = activeChar
 
+    def getTitle(self):
+        return "CREATE QUEST"
+
     def handleKey(self, key, noRender=False, character = None):
         # exit submenu
         if key == "esc":

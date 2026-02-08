@@ -34,7 +34,7 @@ class Regenerator(src.items.Item):
 
         # do nothing when already running
         if self.activated:
-            text = "your place your hand on the Regenerator" 
+            text = "\nyour place your hand on the Regenerator" 
             if character.health >= character.adjustedMaxHealth:
                 text += ", but you do not need healing."
             elif not self.mana_charges:
@@ -47,6 +47,7 @@ class Regenerator(src.items.Item):
                 if heal_amount%self.healing_amount:
                     self.mana_charges -= 1
                 text += f"\nThe regenerator now has {self.mana_charges} charges left."
+            text += "\n"
             submenue = src.menuFolder.textMenu.TextMenu(text)
             submenue.do_not_scale = True
             character.macroState["submenue"] = submenue
@@ -58,11 +59,13 @@ class Regenerator(src.items.Item):
 
         # show user feedback
         character.addMessage("You activated the regenerator")
-        text = f"""You activated the Regenerator.
+        text = f"""
+You activated the Regenerator.
 It will heal every creature in this room when it pulses.
 It pulses every 15 ticks
 
-To heal faster you can use the Regenerator directly."""
+To heal faster you can use the Regenerator directly.
+"""
         submenue = src.menuFolder.textMenu.TextMenu(text)
         submenue.do_not_scale = True
         character.macroState["submenue"] = submenue

@@ -23,6 +23,9 @@ class QuestMenu(src.subMenu.SubMenu):
         self.min_lines = 8
         self.min_cols = 50
 
+    def getTitle(self):
+        return "QUESTS"
+
     def setCursorToCurrentQuest(self):
         '''
         select the deepest quest that is not trivial 

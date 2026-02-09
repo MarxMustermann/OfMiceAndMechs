@@ -3123,8 +3123,32 @@ Please select on what to focus next:
 """
 
             showed_spawn_option = False
+            showed_start_alarm_option = False
+            showed_stop_alarm_option = False
             options = []
             extraDescriptions = {}
+
+            if self._get_available_rooms(mainChar) and self._get_floorplans_to_set(mainChar):
+                name = "set floor plan"
+                options.append((name, "set floor plan"))
+                extraDescriptions[name] = """
+You should make use of the rooms you have built.
+"""
+            if not terrain.alarm and self._get_snatchers(mainChar):
+                name = "start alarm"
+                options.append((name, "start alarm"))
+                extraDescriptions[name] = """
+The alarm should probably be activated while there are Snatchers out there.
+"""
+                showed_start_alarm_option = True
+            if terrain.alarm and not self._get_snatchers(mainChar) and terrain.getRoomByPosition((8,7,0)):
+                name = "disable alarm"
+                options.append((name, "stop alarm"))
+                extraDescriptions[name] = """
+Now that the Snatchers are dead the environment outside the base can be accessed somewhat safely.
+
+"""
+                showed_stop_alarm_option = True
             if self._get_traprooms_to_clean(mainChar):
                 name = "maintain base defences"
                 options.append((name, "maintain base defences"))
@@ -3148,6 +3172,7 @@ This should help us to find out what happened.
 To get a rank 5 promotion you need a clone as backup.
 Spawn a Clone to fulfill that requirement.
 """
+                showed_spawn_option = True
             elif not mainChar.rank or mainChar.rank > 5:
                 name = "get promotion"
                 options.append((name, "get promotion"))
@@ -3183,25 +3208,27 @@ You need to clear the build site before building it.
 You need to build a room to get a promotion.
 You need to clear the build site before building it.
 """
-            elif len(self._get_free_clones(mainChar)) < 3:
+            elif len(self._get_free_clones(mainChar)) < 3 and not showed_spawn_option:
                 name = "spawn clone"
                 options.append((name, "spawn clone"))
                 extraDescriptions[name] = """
 Increase the amount of workers available.
 """
+                showed_spawn_option = True
             elif src.gamestate.gamestate.stern.get("rank3promotionfailed") and self._get_enemies(mainChar):
                 name = "clear terrain"
                 options.append((name, "clear terrain"))
                 extraDescriptions[name] = """
 You need to clear the terrain from enemies a room to get a promotion.
 """
-            elif src.gamestate.gamestate.stern.get("rank2promotionfailed") and len(self._get_free_clones(mainChar)) < 4:
+            elif src.gamestate.gamestate.stern.get("rank2promotionfailed") and len(self._get_free_clones(mainChar)) < 4 and not showed_spawn_option:
                 name = "spawn clone"
                 options.append((name, "spawn clone"))
                 extraDescriptions[name] = """
 To get a rank 2 promotion you need at least 3 clones beside you on the base.
 Spawn a Clone to fulfill that requirement.
 """
+                showed_spawn_option = True
             elif mainChar.rank > 2:
                 #options.append(("rank 2 promotion", "rank 2 promotion"))
                 name = "get promotion"
@@ -3228,16 +3255,18 @@ The more Clones are available to work, the more work gets done.
 """
 
             if terrain.alarm:
-                name = "disable alarm"
-                options.append((name, "disable alarm"))
-                extraDescriptions[name] = """
+                if not showed_stop_alarm_option:
+                    name = "disable alarm"
+                    options.append((name, "disable alarm"))
+                    extraDescriptions[name] = """
 Sirens are ringing and going outside is forbidden rigt now.
 You can change that.
 """
             else:
-                name = "start alarm"
-                options.append((name, "start alarm"))
-                extraDescriptions[name] = """
+                if not showed_start_alarm_option:
+                    name = "start alarm"
+                    options.append((name, "start alarm"))
+                    extraDescriptions[name] = """
 Clones are allowed to go outside right now.
 You can ring the alarm to change that.
 """
@@ -3582,6 +3611,32 @@ This will close the tutorial and let you do your own thing.
                             found_rooms.append(room)
         return found_rooms
 
+    def _get_floorplans_to_set(self,character):
+        terrain = character.getTerrain()
+
+        candidates = ["electrifierHall","smokingRoom"]
+        random.shuffle(candidates)
+        candidates.insert(0,"manufacturingHall")
+        candidates.insert(0,"trapMaterialsManufacturing")
+        candidates.insert(0,"wallManufacturing")
+        candidates.insert(0,"storage")
+        for checkRoom in terrain.rooms:
+            if checkRoom.tag in candidates:
+                candidates.remove(checkRoom.tag)
+
+        return candidates
+
+    def _get_available_rooms(self,character):
+        terrain = character.getTerrain()
+        cityPlaner = None
+        for room in terrain.rooms:
+            cityPlaner = room.getItemByType("CityPlaner",needsBolted=True)
+            if cityPlaner:
+                break
+        if cityPlaner:
+            return cityPlaner.getAvailableRoomPositions()
+        return []
+
     def handle_player_quest_choice(self,extraParameters):
         quest_type = extraParameters.get("quest_type")
         character = extraParameters.get("character")
@@ -3673,6 +3728,17 @@ This will close the tutorial and let you do your own thing.
                 self.addQuest(quest,character)
                 self.clear_implant_quest(character)
                 return
+
+        if quest_type == "set floor plan":
+            available_rooms = self._get_available_rooms(character)
+            if not available_rooms:
+                return
+            room_pos = available_rooms[0]
+            candidates = self._get_floorplans_to_set(character)
+            quest = src.quests.questMap["AssignFloorPlan"](floorPlanType=candidates[0],roomPosition=room_pos,reason="make use of the available rooms")
+            self.addQuest(quest,character)
+            self.clear_implant_quest(character)
+            return
 
         if quest_type == "break the siege":
             if self._get_snatchers():

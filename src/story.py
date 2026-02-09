@@ -3187,13 +3187,7 @@ Now that you have the right
 """
             elif not src.gamestate.gamestate.stern.get("failedBaseContact1"):
                 options.append(("contact main base", "contact main base"))
-            elif src.gamestate.gamestate.stern.get("rank4promotionfailed") and self._get_snatchers(mainChar):
-                name = "confront snatchers"
-                options.append((name, "confront snatcher"))
-                extraDescriptions[name] = """
-There are insects outside snatching every Clone that goes outside.
-All of those insects need to be killed or nothing can be done outside the base. 
-"""
+
             elif src.gamestate.gamestate.stern.get("rank4promotionfailed") and terrain.getEnemiesOnTile(mainChar,(8,7,0)):
                 name = "free build site"
                 options.append((name, "clear build site"))
@@ -3208,6 +3202,15 @@ You need to clear the build site before building it.
 You need to build a room to get a promotion.
 You need to clear the build site before building it.
 """
+
+            elif src.gamestate.gamestate.stern.get("rank3promotionfailed") and len(self._get_free_clones(mainChar)) < 4 and not showed_spawn_option:
+                name = "spawn clone"
+                options.append((name, "spawn clone"))
+                extraDescriptions[name] = """
+There are insects outside snatching every Clone that goes outside.
+All of those insects need to be killed or nothing can be done outside the base. 
+"""
+                showed_spawn_option = True
             elif len(self._get_free_clones(mainChar)) < 3 and not showed_spawn_option:
                 name = "spawn clone"
                 options.append((name, "spawn clone"))
@@ -3215,21 +3218,23 @@ You need to clear the build site before building it.
 Increase the amount of workers available.
 """
                 showed_spawn_option = True
-            elif src.gamestate.gamestate.stern.get("rank3promotionfailed") and self._get_enemies(mainChar):
+            elif src.gamestate.gamestate.stern.get("rank2promotionfailed") and self._get_snatchers(mainChar):
+                name = "confront snatchers"
+                options.append((name, "confront snatcher"))
+                extraDescriptions[name] = """
+To get a rank 3 promotion you need at least 3 clones beside you on the base.
+Spawn a Clone to fulfill that requirement.
+"""
+            elif src.gamestate.gamestate.stern.get("rank2promotionfailed") and self._get_enemies(mainChar):
                 name = "clear terrain"
                 options.append((name, "clear terrain"))
                 extraDescriptions[name] = """
 You need to clear the terrain from enemies a room to get a promotion.
 """
-            elif src.gamestate.gamestate.stern.get("rank2promotionfailed") and len(self._get_free_clones(mainChar)) < 4 and not showed_spawn_option:
-                name = "spawn clone"
-                options.append((name, "spawn clone"))
-                extraDescriptions[name] = """
-To get a rank 2 promotion you need at least 3 clones beside you on the base.
-Spawn a Clone to fulfill that requirement.
-"""
-                showed_spawn_option = True
             elif mainChar.rank > 2:
+                print(src.gamestate.gamestate.stern.get("rank2promotionfailed"))
+                print(src.gamestate.gamestate.stern.get("rank2promotionfailed"))
+                print(self._get_enemies(mainChar))
                 #options.append(("rank 2 promotion", "rank 2 promotion"))
                 name = "get promotion"
                 options.append((name, "get promotion"))

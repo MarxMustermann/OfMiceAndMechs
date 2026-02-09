@@ -107,43 +107,6 @@ Build more rooms.
 
         # check if promotion to rank 3 applies
         if not character.rank or character.rank > 3:
-            foundEnemies = []
-            terrain = self.getTerrain()
-            for otherChar in terrain.characters:
-                if otherChar.faction == character.faction:
-                    continue
-                foundEnemies.append(otherChar)
-
-            for room in terrain.rooms:
-                for otherChar in room.characters:
-                    if otherChar.faction == character.faction:
-                        continue
-                    foundEnemies.append(otherChar)
-
-            if foundEnemies:
-                if not highestAllowed:
-                    character.addMessage(f"promotions locked")
-                    character.changed("failed promotion",{"rank":3})
-
-                    src.gamestate.gamestate.stern["rank3promotionfailed"] = True
-
-                    submenue = src.menuFolder.textMenu.TextMenu("""
-Promotions to rank 3 are blocked.
-Enemies are nearby.
-
-Kill all enemies on this terrain, to unlock the promotions to rank 3.
-""")
-                    submenue.do_not_scale = True
-                    character.macroState["submenue"] = submenue
-                    character.runCommandString("~",nativeKey=True)
-
-                    character.changed("promotion blocked",{"reason":"terrain needs cleared from enemies"})
-                    return
-            elif highestAllowed == 4 or character.rank == 4:
-                highestAllowed = 3
-
-        # check if promotion to rank 2 applies
-        if not character.rank or character.rank > 2:
             numCharacters = 0
             terrain = character.getTerrain()
             for checkChar in terrain.characters:
@@ -167,6 +130,43 @@ Kill all enemies on this terrain, to unlock the promotions to rank 3.
             if numCharacters < 4:
                 if not highestAllowed:
                     character.addMessage(f"promotions locked")
+                    character.changed("failed promotion",{"rank":3})
+
+                    src.gamestate.gamestate.stern["rank3promotionfailed"] = True
+
+                    submenue = src.menuFolder.textMenu.TextMenu("""
+Promotions to rank 3 are blocked.
+Enemies are nearby.
+
+There need to be at least 3 clones besides you on the base to allow any promptions.
+""")
+                    submenue.do_not_scale = True
+                    character.macroState["submenue"] = submenue
+                    character.runCommandString("~",nativeKey=True)
+
+                    character.changed("promotion blocked",{"reason":"terrain needs cleared from enemies"})
+                    return
+            elif highestAllowed == 4 or character.rank == 4:
+                highestAllowed = 3
+
+        # check if promotion to rank 2 applies
+        if not character.rank or character.rank > 2:
+            foundEnemies = []
+            terrain = self.getTerrain()
+            for otherChar in terrain.characters:
+                if otherChar.faction == character.faction:
+                    continue
+                foundEnemies.append(otherChar)
+
+            for room in terrain.rooms:
+                for otherChar in room.characters:
+                    if otherChar.faction == character.faction:
+                        continue
+                    foundEnemies.append(otherChar)
+
+            if foundEnemies:
+                if not highestAllowed:
+                    character.addMessage(f"promotions locked")
                     character.changed("failed promotion",{"rank":2})
 
                     src.gamestate.gamestate.stern["rank2promotionfailed"] = True
@@ -174,7 +174,7 @@ Kill all enemies on this terrain, to unlock the promotions to rank 3.
                     submenue = src.menuFolder.textMenu.TextMenu("""
 Promotions to rank 2 are blocked.
 
-There need to be at least 3 clones besides you on the base to allow any promptions.
+Kill all enemies on this terrain, to unlock the promotions to rank 2.
 """)
                     submenue.do_not_scale = True
                     character.macroState["submenue"] = submenue

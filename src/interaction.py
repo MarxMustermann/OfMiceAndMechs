@@ -4838,7 +4838,7 @@ def renderGameDisplay(renderChar=None):
             text = submenue.render()
         else:
             text = main.get_text()
-        if submenue:
+        if submenuea and submenue.getTitle():
             text = [submenue.getTitle(),"\n\n",text]
         plainText = stringifyUrwid(text)
 
@@ -4887,7 +4887,8 @@ def renderGameDisplay(renderChar=None):
             # draw upper line background
             sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop-padding-line_width-outline,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
             # draw tile line background
-            sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop-padding-line_width-outline+2*tileHeight,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
+            if submenuea and submenue.getTitle():
+                sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop-padding-line_width-outline+2*tileHeight,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
             # draw lower line backgound
             sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop+padding+display_height-outline,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
             # left line background
@@ -4914,8 +4915,9 @@ def renderGameDisplay(renderChar=None):
             sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
 
             # draw title line
-            sdl_renderer2.draw_color = (255,255,255,255)
-            sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop-padding-line_width+2*tileHeight,display_width+2*(padding+overhang),line_width))
+            if submenuea and submenue.getTitle():
+                sdl_renderer2.draw_color = (255,255,255,255)
+                sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop-padding-line_width+2*tileHeight,display_width+2*(padding+overhang),line_width))
     else:
         last_menu_dimension = None
 

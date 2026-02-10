@@ -3841,8 +3841,11 @@ Once you understand things try to find better solutions.
         containerQuest.endTrigger = {"container": self, "method": "openedQuests"}
 
     def doMaintenance(self):
-
         main_char = self.activeStory["mainChar"]
+
+        if main_char.container.isRoom and main_char.container.tag == "trapRoom":
+            src.gamestate.gamestate.stern["reached_base"] = True
+
         if not main_char.quests:
             self.reachImplant()
         if len(main_char.quests) > 1:

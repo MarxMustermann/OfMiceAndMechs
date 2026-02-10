@@ -3188,6 +3188,13 @@ Now that you have the right
             elif not src.gamestate.gamestate.stern.get("failedBaseContact1"):
                 options.append(("contact main base", "contact main base"))
 
+            elif src.gamestate.gamestate.stern.get("rank4promotionfailed") and self._get_snatchers(mainChar):
+                name = "confront snatchers"
+                options.append((name, "confront snatcher"))
+                extraDescriptions[name] = """
+To get a rank 3 promotion you need at least 3 clones beside you on the base.
+Spawn a Clone to fulfill that requirement.
+"""
             elif src.gamestate.gamestate.stern.get("rank4promotionfailed") and terrain.getEnemiesOnTile(mainChar,(8,7,0)):
                 name = "free build site"
                 options.append((name, "clear build site"))

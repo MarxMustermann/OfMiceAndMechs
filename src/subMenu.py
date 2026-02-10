@@ -44,7 +44,7 @@ class SubMenu(object):
         self.query = ""
 
     def getTitle(self):
-        return ""
+        return None
 
     def rerender(self):
         pass

@@ -3514,10 +3514,15 @@ This will close the tutorial and let you do your own thing.
             return
 
         if quest_type == "heal":
-            quest = src.quests.questMap["TreatWounds"]()
-            self.addQuest(quest,character)
-            self.clear_implant_quest(character)
-            return
+            if character.searchInventory("Vial"):
+                quest = src.quests.questMap["TreatWounds"]()
+                self.addQuest(quest,character)
+                self.clear_implant_quest(character)
+                return
+            else:
+                character.showTextMenu("You need a Vial in you inventory to heal",do_not_scale=True)
+                self.clear_implant_quest(character)
+                return
 
         if quest_type == "loot":
             loot_spot = self.get_nearby_intro_loot_location(character)

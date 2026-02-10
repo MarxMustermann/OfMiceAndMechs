@@ -161,7 +161,9 @@ class ExamineMenu(src.subMenu.SubMenu):
 
             counter += 1
         text.append("\n")
-        text.append("press W/A/S/D to change what spot you look at\n\n")
+        text.append("press W/A/S/D to change what spot you look at\n")
+        text.append("You can only examine the items bellow or next to you\n")
+        text.append("The character will follow the cursor when moved\n\n")
 
         # collect things to display
         (show_characters,items,markers) = self.get_things_to_show()

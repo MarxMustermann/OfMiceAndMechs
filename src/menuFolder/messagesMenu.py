@@ -13,24 +13,18 @@ class MessagesMenu(src.subMenu.SubMenu):
         for message in reversed(to_print):
             if message[1] == src.gamestate.gamestate.tick:
                 color = "#fff"
+            elif message[1] > src.gamestate.gamestate.tick - 1:
+                color = "#fff"
             elif message[1] > src.gamestate.gamestate.tick - 2:
-                color = "#eee"
+                color = "#fff"
             elif message[1] > src.gamestate.gamestate.tick - 3:
-                color = "#eee"
-            elif message[1] > src.gamestate.gamestate.tick - 4:
-                color = "#ddd"
-            elif message[1] > src.gamestate.gamestate.tick - 5:
-                color = "#ccc"
-            elif message[1] > src.gamestate.gamestate.tick - 6:
-                color = "#bbb"
-            elif message[1] > src.gamestate.gamestate.tick - 7:
                 color = "#aaa"
-            elif message[1] > src.gamestate.gamestate.tick - 8:
+            elif message[1] > src.gamestate.gamestate.tick - 4:
                 color = "#999"
-            elif message[1] > src.gamestate.gamestate.tick - 9:
+            elif message[1] > src.gamestate.gamestate.tick - 5:
                 color = "#888"
-            elif message[1] > src.gamestate.gamestate.tick - 10:
-                color = "#888"
+            elif message[1] > src.gamestate.gamestate.tick - 6:
+                color = "#777"
             else:
                 color = "#666"
             out.append((src.interaction.urwid.AttrSpec(color, "default"),f"- {message[0]}\n"))

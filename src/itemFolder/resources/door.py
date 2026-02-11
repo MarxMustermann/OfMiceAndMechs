@@ -50,6 +50,14 @@ class Door(src.items.Item):
         character.changed("unblockedDoor",{"character":character,"item":self})
         self.walkable = True
 
+    def apply(self,character):
+        if not self.walkable:
+            text = "The door is blocked and needs to be unblocked to open.\nUse a complex interaction to unblock it"
+            character.addMessage(text)
+            character.showTextMenu(text)
+            return
+        super().apply(character)
+
     def render(self):
         """
         render depending on state
@@ -70,6 +78,7 @@ class Door(src.items.Item):
                 displayChar = src.canvas.displayChars.door_closed
         return displayChar
 
+    '''
     def gatherApplyActions(self, character):
         """
         handle a character trying to use this item, by
@@ -84,6 +93,7 @@ class Door(src.items.Item):
         else:
             applyActions.append(self.open)
         return applyActions
+    '''
 
     def open(self, character):
         """

@@ -13,6 +13,7 @@ class Tree(src.items.Item):
     walkable = False
     numMaggots = 0
     name = "tree"
+    description = "a old plant with maggots crawling on its surface and cavities"
 
     def __init__(self):
         """

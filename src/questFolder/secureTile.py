@@ -42,8 +42,7 @@ This means you should go to the tile and kill all enemies you find."""
         text += """
 
 You can attack enemies by walking into them.
-But you can use your environment to your advantage, too.
-Try luring enemies into landmines or detonating some bombs."""
+But you can use your environment to your advantage, too."""
 
         if self.simpleAttacksOnly:
             text += """

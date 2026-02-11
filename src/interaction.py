@@ -3282,11 +3282,13 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
                        always True in practice
         char: the character the input belongs to
     """
-    char.implantLoad += 1
 
+    '''
+    char.implantLoad += 1
     if char.implantLoad > 20:
         char.takeTime(1,"implant load")
         char.implantLoad = 0
+    '''
 
     if char.dead:
         return

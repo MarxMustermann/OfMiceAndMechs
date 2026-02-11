@@ -77,7 +77,7 @@ or use this item with MoldFeed in your inventory.
         amount_to_burn = min(len(moldFeed), math.ceil((character.adjustedMaxHealth - character.health) / 5))
         
         if not amount_to_burn:
-            character.addMessage("you need no healing and burn no corpses")
+            character.addMessage("you need no healing and burn no MoldFeeds")
             return
 
         for i in range(amount_to_burn):
@@ -98,8 +98,8 @@ or use this item with MoldFeed in your inventory.
     def doHealing(self,params):
         amount_to_burn = params["amount_to_burn"]
         character = params["character"]
-        character.addMessage("you burn the corpses and inhale the smoke")
-        character.heal(5 * amount_to_burn,reason="inhaling the smoke of " + str(amount_to_burn) + " corpse")
+        character.addMessage("you burn the MoldFeeds and inhale the smoke")
+        character.heal(5 * amount_to_burn,reason="inhaling the smoke of " + str(amount_to_burn) + " MoldFeeds")
         character.runCommandString(".",nativeKey=False)
 
     def getConfigurationOptions(self, character):

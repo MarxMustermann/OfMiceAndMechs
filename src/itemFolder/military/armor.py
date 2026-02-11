@@ -10,6 +10,7 @@ class Armor(src.items.Item):
 
     type = "Armor"
     name = "armor"
+    usageInfo = "Activate the Armor to equip it"
     bolted = False
     walkable = True
     damageType = "attacked"

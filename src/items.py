@@ -627,7 +627,7 @@ class Item:
         if params["keyPressed"] in options:
             option = options[params["keyPressed"]][1](character)
         else:
-            character.addMessage("no configure action found for this key")
+            character.addMessage("no complex interaction found for this key")
 
     # bug: breaks saving if a npc uses this while saving
     # it breaks because function pointers cannot be saved directly

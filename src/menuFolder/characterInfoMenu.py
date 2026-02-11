@@ -59,6 +59,8 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
             if char.weapon:
                 text += char.weapon.name
                 text += f" ({char.weapon.baseDamage})"
+            else:
+                text += "no weapon"
             text += "\n"
             text += "armor:        "
             armorValue = None

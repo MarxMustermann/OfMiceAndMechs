@@ -2897,7 +2897,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
         # activate an item
         if key in (commandChars.activate,):
             # activate the marked item
-            if charState["itemMarkedLast"]:
+            if charState.get("itemMarkedLast"):
                 if not charState["itemMarkedLast"].container:
                     return None
 

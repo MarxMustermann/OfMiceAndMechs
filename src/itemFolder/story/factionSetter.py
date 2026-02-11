@@ -7,6 +7,7 @@ class FactionSetter(src.items.Item):
     '''
     type = "FactionSetter"
     description = "sets the faction marker for Clones"
+    name = "faction setter"
     def __init__(self,epoch=0):
         super().__init__(display="FS")
         self.faction = None

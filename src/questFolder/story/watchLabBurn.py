@@ -80,4 +80,10 @@ Get some distance and watch it explode
                 return True
         return False
 
+    def _get_lab(self):
+        for room in self.character.getTerrain().rooms:
+            if room.tag == "the architects lab":
+                return room
+        return None
+
 src.quests.addType(WatchLabBurn)

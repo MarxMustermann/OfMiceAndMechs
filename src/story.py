@@ -3834,7 +3834,6 @@ Once you understand things try to find better solutions.
         src.gamestate.gamestate.mainChar.quests.append(containerQuest)
         containerQuest.activate()
         containerQuest.assignToCharacter(src.gamestate.gamestate.mainChar)
-        src.gamestate.gamestate.mainChar.addMessage("reach out to implant by pressing q")
         containerQuest.endTrigger = {"container": self, "method": "openedQuests"}
 
     def doMaintenance(self):

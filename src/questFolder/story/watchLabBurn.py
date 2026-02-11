@@ -41,11 +41,6 @@ class WatchLabBurn(src.quests.MetaQuestSequence):
         return (None,("."*num_wait,"watch the lab burn"))
 
     def generateTextDescription(self):
-        door = src.items.itemMap["Door"]()
-        door.open = True
-        door.walkable = False
-        door.blocked = False
-
         text = []
         text.extend(["""
 You reach out to your implant and it answers:
@@ -62,14 +57,7 @@ Get some distance and watch it explode
             return
 
         self.startWatching(character,self.wrapedTriggerCompletionCheck, "moved")
-        self.startWatching(character,self.lookedAt, "lookedAt")
         super().assignToCharacter(character)
-
-    def lookedAt(self, extraInfo):
-        if extraInfo["index"] == (6,0,0) and extraInfo["index_big"] == (6,10,0):
-            if not self.lookedAtDoor:
-                self.lookedAtDoor = True
-                self.character.addMessage("You found the Door. Close the menu now")
 
     def wrapedTriggerCompletionCheck(self, extraInfo):
         if self.completed:
@@ -78,12 +66,6 @@ Get some distance and watch it explode
             return
 
         self.triggerCompletionCheck(extraInfo[0],dryRun=False)
-
-    def _get_lab(self):
-        for room in self.character.getTerrain().rooms:
-            if room.tag == "the architects lab":
-                return room
-        return None
 
     def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:

@@ -10,6 +10,7 @@ class Rod(src.items.Item):
     type = "Rod"
     name = "rod"
     description = "used to build items, can also be used to hit people"
+    usageInfo = "Activate the Rod to equip it"
     bolted = False
     walkable = True
     def __init__(self,badQuality=False):

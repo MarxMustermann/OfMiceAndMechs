@@ -41,6 +41,7 @@ can be processed in a corpse shredder
         text += """The lifeless remains of something that looks a loot like you."""
         return text
 
+    '''
     def apply(self, character):
         """
         handle a character trying to use this item
@@ -71,5 +72,6 @@ can be processed in a corpse shredder
                 character.hurt(1,reason="the solid food hurts your stomach")
         else:
             self.destroy(generateScrap=False)
+    '''
 
 src.items.addType(Corpse)

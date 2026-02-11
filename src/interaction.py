@@ -2966,8 +2966,8 @@ press key for the advanced interaction
 * d = activate east
 * . = activate item on floor
 * i = activate last item in inventory
-* h = heal
-* H = heal fully
+* h = single heal
+* H = batch heal
 
 """
 

@@ -51,12 +51,9 @@ class WatchLabBurn(src.quests.MetaQuestSequence):
 You reach out to your implant and it answers:
 
 
-This room is exploding! We need to leave fast.
+The lab is burning.
 
-Look for the door first then move.
-
-Instructions to do that will be shown on the left of the screen as "suggested action"
-
+Get some distance and watch it explode
 """])
         return text
 

@@ -12,6 +12,7 @@ class Sword(src.items.Item):
 
     name = "sword"
     description = "Used to hit people"
+    usageInfo = "Activate the Sword to equip it"
 
     bolted = False
     walkable = True

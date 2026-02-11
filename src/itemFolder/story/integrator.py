@@ -8,6 +8,7 @@ class Integrator(src.items.Item):
     '''
     type = "Integrator"
     description = "integrates Clones properly into the base"
+    name = "integrator"
     def __init__(self,epoch=0):
         super().__init__(display="IT")
         self.faction = None

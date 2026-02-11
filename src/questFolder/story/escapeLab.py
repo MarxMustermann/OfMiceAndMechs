@@ -43,7 +43,7 @@ class EscapeLab(src.quests.MetaQuestSequence):
 
         if not self.shownGoToDoor and not character.macroState.get("submenue"):
             if not dryRun:
-                self.character.showTextMenu("""
+                self.character.showTextMenu(["""
 Now that you found the Door, exit the room before it explodes.
 
 The instructions on how to do this will be shown on the left side on the screen.
@@ -52,12 +52,12 @@ Capital letters will be shown in blueish tint.
 
 For example:
 
-if the suggested action is "C w x":
+if the suggested action is \"""",(src.interaction.urwid.AttrSpec("#aad","#000"),"C"),""" w x":
 
     press shift+c then
     press w then
     press x
-""")
+"""])
                 self.shownGoToDoor = True
                 return (None,("~","reach out to implant"))
 

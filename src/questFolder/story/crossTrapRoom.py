@@ -47,7 +47,7 @@ class CrossTrapRoom(src.quests.MetaQuestSequence):
         if "advancedDrop" in character.interactionState:
             interactionCommand = ""
         if character.inventory and character.inventory[-1].walkable:
-            return (None,(interactionCommand+baseCommand,"block TrickerPlate"))
+            return (None,(interactionCommand+baseCommand,"block TriggerPlate"))
 
         # check of traps are in cooldown
         foundActiveTrap = False

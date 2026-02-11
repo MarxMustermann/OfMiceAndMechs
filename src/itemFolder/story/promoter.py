@@ -7,6 +7,7 @@ class Promoter(src.items.Item):
     '''
     type = "Promoter"
     description = "Allows to get promotions"
+    name = "promoter"
     def __init__(self,):
         super().__init__(display="PR")
         self.faction = None

@@ -43,10 +43,12 @@ class Door(src.items.Item):
         return options
 
     def blockDoor(self,character):
+        character.addMessage("You block the Door")
         character.changed("blockedDoor",{"character":character,"item":self})
         self.walkable = False
 
     def unblockDoor(self,character):
+        character.addMessage("You unblock the Door")
         character.changed("unblockedDoor",{"character":character,"item":self})
         self.walkable = True
 

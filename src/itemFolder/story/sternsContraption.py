@@ -98,7 +98,7 @@ class MainContraption(src.items.Item):
                     character.hurt(10,reason="hit by shrapnel")
                     text = "You need to leave the room NOW.\nEverything will explode.\nFollow the instruction on the left side of the screen."
                     character.addMessage(text)
-                    character.showTextMenu(text)
+                    character.showTextMenu(text,do_not_scale=True)
                 for i in range(1,5):
                     pos = (random.randint(1,13),random.randint(1,13),0)
                     self.container.addAnimation(pos,"smoke",6,{})

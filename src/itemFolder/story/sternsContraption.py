@@ -194,7 +194,7 @@ class MainContraption(src.items.Item):
             if self.meltdownLevel > 4:
                 for character in self.container.characters[:]:
                     if not character.dead:
-                        character.addMessage("you feel the floor shake\n and the walls move\nand everything explodes")
+                        character.addMessage("you feel the floor shake\nand the walls move\nand everything explodes")
                         character.addMessage("you die")
                         character.die(reason="you died from explosion")
 

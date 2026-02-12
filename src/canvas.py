@@ -443,6 +443,9 @@ class Canvas:
 
                     border_width = tileHeight//10+1
 
+                    if not "SDL" in src.interaction.settings:
+                        src.interaction.settings["SDL"] = False
+
                     if src.interaction.settings["SDL"]:
                         if item.type == "CoalBurner":
                             if isinstance(content[0],str):

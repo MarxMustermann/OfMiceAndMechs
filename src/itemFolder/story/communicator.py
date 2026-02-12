@@ -77,6 +77,7 @@ You need to be at least rank 2 to contact main base.
                 if character == src.gamestate.gamestate.mainChar:
                     src.gamestate.gamestate.stern["failedBaseContact1"] = True
             else:
+                1337/0
                 character.addMessage("no main base")
                 submenu = src.menuFolder.textMenu.TextMenu("""
 no main base found.

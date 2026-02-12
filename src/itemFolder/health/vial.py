@@ -25,11 +25,10 @@ class Vial(src.items.Item):
         '''
 
         # print feedback
-        if character.watched:
-            if self.uses != 1:
-                character.addMessage("you drink from the vial")
-            else:
-                character.addMessage("you drink from the vial and empty it")
+        if self.uses != 1:
+            character.addMessage("you drink from the vial")
+        else:
+            character.addMessage("you drink from the vial and empty it")
 
         # change state
         character.takeTime(1,"drank from vial")

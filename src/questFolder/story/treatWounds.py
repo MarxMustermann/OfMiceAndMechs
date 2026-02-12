@@ -51,9 +51,11 @@ class TreatWounds(src.quests.MetaQuestSequence):
                 return (None,(["esc",],"to close the menu"))
 
         if character.health < (character.maxHealth-10):
+            message = "heal using a Vial"
+
             # make completion smooth
             if character.interactionState.get("advancedInteraction") == {}:
-                return (None,("H","drink the whole Vial"))
+                return (None,("H",message))
 
             # drink Vials from inventory
             hasInventoryVial = self.characterHasVial(character)
@@ -61,7 +63,7 @@ class TreatWounds(src.quests.MetaQuestSequence):
                 interactionCommand = "J"
                 if submenue and submenue.tag in ("advancedInteractionSelection",):
                     interactionCommand = ""
-                return (None,(interactionCommand+"H","drink the whole Vial"))
+                return (None,(interactionCommand+"H",message))
 
         #if character.inventory and character.inventory[-1].type == "Vial" and character.inventory[-1].uses == 0:
         #    return (None,("l","drop empty vial"))

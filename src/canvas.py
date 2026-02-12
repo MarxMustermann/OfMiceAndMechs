@@ -253,6 +253,16 @@ class DisplayMapping(Mapping):
             import config.displayChars_fallback as rawConfig
         return rawConfig
 
+coal_burner_texture = {}
+sword_texture = {}
+armor_texture = {}
+rodTower_texture = {}
+triggerPlate_texture = {}
+mainContraption_texture = {}
+contraption_texture = {}
+door_texture = {}
+wall_texture = {}
+
 # bad code: actual rendering beyond the abstracted form (urwid formatting, tiles) is done here
 class Canvas:
     """
@@ -404,6 +414,16 @@ class Canvas:
 
     def drawSdl(self, renderer, offsetX, offsetY, warning):
 
+        global coal_burner_texture
+        global sword_texture
+        global armor_texture
+        global rodTower_texture
+        global triggerPlate_texture
+        global mainContraption_texture
+        global contraption_texture
+        global door_texture
+        global wall_texture
+
         tileWidth = src.interaction.tileWidth
         tileHeight = src.interaction.tileHeight
 
@@ -423,7 +443,6 @@ class Canvas:
 
                     border_width = tileHeight//10+1
 
-                    """
                     if item.type == "CoalBurner":
                         if isinstance(content[0],str):
                             fg_color = (255,255,255,255)
@@ -436,17 +455,22 @@ class Canvas:
                         renderer.draw_color = bg_color
                         renderer.fill_rect((basePos[0],basePos[1],tileHeight,tileWidth*2))
 
-                        base_path = "/home/user/OfMiceAndMechs/config/tiles/"
-                        path = base_path+"CoalBurner.png"
-                        circle = tcod.image.Image.from_file(path)
-                        for x_index in range(0,circle.width):
-                            for y_index in range(0,circle.height):
-                                color = circle.get_pixel(x_index,y_index)
+                        identifier = (fg_color,bg_color)
+                        texture = coal_burner_texture.get(identifier)
+                        if not texture:
+                            base_path = "/home/user/OfMiceAndMechs/config/tiles/"
+                            path = base_path+"CoalBurner.png"
+                            circle = tcod.image.Image.from_file(path)
+                            for x_index in range(0,circle.width):
+                                for y_index in range(0,circle.height):
+                                    color = circle.get_pixel(x_index,y_index)
                                 if color == (255, 255, 255):
                                     circle.put_pixel(x_index,y_index,fg_color[:3])
                                 if color == (0, 0, 0):
                                     circle.put_pixel(x_index,y_index,bg_color[:3])
-                        texture = renderer.upload_texture(np.asarray(circle))
+                            texture = renderer.upload_texture(np.asarray(circle))
+                            coal_burner_texture[identifier] = texture
+                            print("rebuilding","CoalBurner.png",identifier)
                         renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileWidth*2,tileHeight),)
 
                     if item.type == "Sword":
@@ -461,17 +485,22 @@ class Canvas:
                         renderer.draw_color = bg_color
                         renderer.fill_rect((basePos[0],basePos[1],tileHeight,tileWidth*2))
 
-                        base_path = "/home/user/OfMiceAndMechs/config/tiles/"
-                        path = base_path+"Sword.png"
-                        circle = tcod.image.Image.from_file(path)
-                        for x_index in range(0,circle.width):
-                            for y_index in range(0,circle.height):
-                                color = circle.get_pixel(x_index,y_index)
-                                if color == (255, 255, 255):
-                                    circle.put_pixel(x_index,y_index,fg_color[:3])
-                                if color == (0, 0, 0):
-                                    circle.put_pixel(x_index,y_index,bg_color[:3])
-                        texture = renderer.upload_texture(np.asarray(circle))
+                        identifier = (fg_color,bg_color)
+                        texture = sword_texture.get(identifier)
+                        if not texture:
+                            base_path = "/home/user/OfMiceAndMechs/config/tiles/"
+                            path = base_path+"Sword.png"
+                            circle = tcod.image.Image.from_file(path)
+                            for x_index in range(0,circle.width):
+                                for y_index in range(0,circle.height):
+                                    color = circle.get_pixel(x_index,y_index)
+                                    if color == (255, 255, 255):
+                                        circle.put_pixel(x_index,y_index,fg_color[:3])
+                                    if color == (0, 0, 0):
+                                        circle.put_pixel(x_index,y_index,bg_color[:3])
+                            texture = renderer.upload_texture(np.asarray(circle))
+                            sword_texture[identifier] = texture
+                            print("rebuilding","Sword.png",identifier)
                         renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileWidth*2,tileHeight),)
 
                     if item.type == "Armor":
@@ -486,17 +515,22 @@ class Canvas:
                         renderer.draw_color = bg_color
                         renderer.fill_rect((basePos[0],basePos[1],tileHeight,tileWidth*2))
 
-                        base_path = "/home/user/OfMiceAndMechs/config/tiles/"
-                        path = base_path+"Armor.png"
-                        circle = tcod.image.Image.from_file(path)
-                        for x_index in range(0,circle.width):
-                            for y_index in range(0,circle.height):
-                                color = circle.get_pixel(x_index,y_index)
-                                if color == (255, 255, 255):
-                                    circle.put_pixel(x_index,y_index,fg_color[:3])
-                                if color == (0, 0, 0):
-                                    circle.put_pixel(x_index,y_index,bg_color[:3])
-                        texture = renderer.upload_texture(np.asarray(circle))
+                        identifier = (fg_color,bg_color)
+                        texture = armor_texture.get(identifier)
+                        if not texture:
+                            base_path = "/home/user/OfMiceAndMechs/config/tiles/"
+                            path = base_path+"Armor.png"
+                            circle = tcod.image.Image.from_file(path)
+                            for x_index in range(0,circle.width):
+                                for y_index in range(0,circle.height):
+                                    color = circle.get_pixel(x_index,y_index)
+                                    if color == (255, 255, 255):
+                                        circle.put_pixel(x_index,y_index,fg_color[:3])
+                                    if color == (0, 0, 0):
+                                        circle.put_pixel(x_index,y_index,bg_color[:3])
+                            texture = renderer.upload_texture(np.asarray(circle))
+                            armor_texture[identifier] = texture
+                            print("rebuilding","Armor.png",identifier)
                         renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileWidth*2,tileHeight),)
 
                     if item.type == "RodTower":
@@ -508,17 +542,22 @@ class Canvas:
                             fg_color = (colors[0],colors[1],colors[2],255)
                             bg_color = (colors[3],colors[4],colors[5],255)
 
-                        base_path = "/home/user/OfMiceAndMechs/config/tiles/"
-                        path = base_path+"RodTower.png"
-                        circle = tcod.image.Image.from_file(path)
-                        for x_index in range(0,circle.width):
-                            for y_index in range(0,circle.height):
-                                color = circle.get_pixel(x_index,y_index)
-                                if color == (255, 255, 255):
-                                    circle.put_pixel(x_index,y_index,fg_color[:3])
-                                if color == (0, 0, 0):
-                                    circle.put_pixel(x_index,y_index,bg_color[:3])
-                        texture = renderer.upload_texture(np.asarray(circle))
+                        identifier = (fg_color,bg_color)
+                        texture = rodTower_texture.get(identifier)
+                        if not texture:
+                            base_path = "/home/user/OfMiceAndMechs/config/tiles/"
+                            path = base_path+"RodTower.png"
+                            circle = tcod.image.Image.from_file(path)
+                            for x_index in range(0,circle.width):
+                                for y_index in range(0,circle.height):
+                                    color = circle.get_pixel(x_index,y_index)
+                                    if color == (255, 255, 255):
+                                        circle.put_pixel(x_index,y_index,fg_color[:3])
+                                    if color == (0, 0, 0):
+                                        circle.put_pixel(x_index,y_index,bg_color[:3])
+                            texture = renderer.upload_texture(np.asarray(circle))
+                            rodTower_texture[identifier] = texture
+                            print("rebuilding","RodTower.png",identifier)
                         renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileWidth*2,tileHeight),)
 
                         renderer.draw_color = fg_color
@@ -572,17 +611,22 @@ class Canvas:
                         renderer.draw_color = bg_color
                         renderer.fill_rect((basePos[0],basePos[1],tileHeight,tileWidth*2))
 
-                        base_path = "/home/user/OfMiceAndMechs/config/tiles/"
-                        path = base_path+"TriggerPlate.png"
-                        circle = tcod.image.Image.from_file(path)
-                        for x_index in range(0,circle.width):
-                            for y_index in range(0,circle.height):
-                                color = circle.get_pixel(x_index,y_index)
-                                if color == (255, 255, 255):
-                                    circle.put_pixel(x_index,y_index,fg_color[:3])
-                                if color == (0, 0, 0):
-                                    circle.put_pixel(x_index,y_index,bg_color[:3])
-                        texture = renderer.upload_texture(np.asarray(circle))
+                        identifier = (fg_color,bg_color)
+                        texture = triggerPlate_texture.get(identifier)
+                        if not texture:
+                            base_path = "/home/user/OfMiceAndMechs/config/tiles/"
+                            path = base_path+"TriggerPlate.png"
+                            circle = tcod.image.Image.from_file(path)
+                            for x_index in range(0,circle.width):
+                                for y_index in range(0,circle.height):
+                                    color = circle.get_pixel(x_index,y_index)
+                                    if color == (255, 255, 255):
+                                        circle.put_pixel(x_index,y_index,fg_color[:3])
+                                    if color == (0, 0, 0):
+                                        circle.put_pixel(x_index,y_index,bg_color[:3])
+                            texture = renderer.upload_texture(np.asarray(circle))
+                            triggerPlate_texture[identifier] = texture
+                            print("rebuilding","TriggerPlate.png",identifier)
                         renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileWidth*2,tileHeight),)
 
                     if item.type == "MainContraption":
@@ -592,17 +636,22 @@ class Canvas:
                         renderer.draw_color = bg_color
                         renderer.fill_rect((basePos[0],basePos[1],tileHeight,tileWidth*2))
 
-                        base_path = "/home/user/OfMiceAndMechs/config/tiles/"
-                        path = base_path+"MainContraption.png"
-                        circle = tcod.image.Image.from_file(path)
-                        for x_index in range(0,circle.width):
-                            for y_index in range(0,circle.height):
-                                color = circle.get_pixel(x_index,y_index)
-                                if color == (255, 255, 255):
-                                    circle.put_pixel(x_index,y_index,fg_color[:3])
-                                if color == (0, 0, 0):
-                                    circle.put_pixel(x_index,y_index,bg_color[:3])
-                        texture = renderer.upload_texture(np.asarray(circle))
+                        identifier = (fg_color,bg_color)
+                        texture = mainContraption_texture.get(identifier)
+                        if not texture:
+                            base_path = "/home/user/OfMiceAndMechs/config/tiles/"
+                            path = base_path+"MainContraption.png"
+                            circle = tcod.image.Image.from_file(path)
+                            for x_index in range(0,circle.width):
+                                for y_index in range(0,circle.height):
+                                    color = circle.get_pixel(x_index,y_index)
+                                    if color == (255, 255, 255):
+                                        circle.put_pixel(x_index,y_index,fg_color[:3])
+                                    if color == (0, 0, 0):
+                                        circle.put_pixel(x_index,y_index,bg_color[:3])
+                            texture = renderer.upload_texture(np.asarray(circle))
+                            mainContraption_texture[identifier] = texture
+                            print("rebuilding","MainContraption.png",identifier)
                         renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileWidth*2,tileHeight),)
 
                         renderer.draw_color = fg_color
@@ -636,17 +685,22 @@ class Canvas:
                         renderer.draw_color = bg_color
                         renderer.fill_rect((basePos[0],basePos[1],tileHeight,tileWidth*2))
 
-                        base_path = "/home/user/OfMiceAndMechs/config/tiles/"
-                        path = base_path+"Contraption.png"
-                        circle = tcod.image.Image.from_file(path)
-                        for x_index in range(0,circle.width):
-                            for y_index in range(0,circle.height):
-                                color = circle.get_pixel(x_index,y_index)
-                                if color == (255, 255, 255):
-                                    circle.put_pixel(x_index,y_index,fg_color[:3])
-                                if color == (0, 0, 0):
-                                    circle.put_pixel(x_index,y_index,bg_color[:3])
-                        texture = renderer.upload_texture(np.asarray(circle))
+                        identifier = (fg_color,bg_color)
+                        texture = contraption_texture.get(identifier)
+                        if not texture:
+                            base_path = "/home/user/OfMiceAndMechs/config/tiles/"
+                            path = base_path+"Contraption.png"
+                            circle = tcod.image.Image.from_file(path)
+                            for x_index in range(0,circle.width):
+                                for y_index in range(0,circle.height):
+                                    color = circle.get_pixel(x_index,y_index)
+                                    if color == (255, 255, 255):
+                                        circle.put_pixel(x_index,y_index,fg_color[:3])
+                                    if color == (0, 0, 0):
+                                        circle.put_pixel(x_index,y_index,bg_color[:3])
+                            texture = renderer.upload_texture(np.asarray(circle))
+                            contraption_texture[identifier] = texture
+                            print("rebuilding","Contraption.png",identifier)
                         renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileWidth*2,tileHeight),)
 
                         renderer.draw_color = fg_color
@@ -690,21 +744,26 @@ class Canvas:
                         renderer.draw_color = bg_color
                         renderer.fill_rect((basePos[0],basePos[1],tileHeight,tileWidth*2))
 
-                        base_path = "/home/user/OfMiceAndMechs/config/tiles/"
-                        path = base_path
-                        if item.walkable:
-                            path += "Door.png"
-                        else:
-                            path += "Door_Closed.png"
-                        circle = tcod.image.Image.from_file(path)
-                        for x_index in range(0,circle.width):
-                            for y_index in range(0,circle.height):
-                                color = circle.get_pixel(x_index,y_index)
-                                if color == (255, 255, 255):
-                                    circle.put_pixel(x_index,y_index,fg_color[:3])
-                                if color == (0, 0, 0):
-                                    circle.put_pixel(x_index,y_index,bg_color[:3])
-                        texture = renderer.upload_texture(np.asarray(circle))
+                        identifier = (item.walkable,fg_color,bg_color)
+                        texture = door_texture.get(identifier)
+                        if not texture:
+                            base_path = "/home/user/OfMiceAndMechs/config/tiles/"
+                            path = base_path
+                            if item.walkable:
+                                path += "Door.png"
+                            else:
+                                path += "Door_Closed.png"
+                            circle = tcod.image.Image.from_file(path)
+                            for x_index in range(0,circle.width):
+                                for y_index in range(0,circle.height):
+                                    color = circle.get_pixel(x_index,y_index)
+                                    if color == (255, 255, 255):
+                                        circle.put_pixel(x_index,y_index,fg_color[:3])
+                                    if color == (0, 0, 0):
+                                        circle.put_pixel(x_index,y_index,bg_color[:3])
+                            texture = renderer.upload_texture(np.asarray(circle))
+                            door_texture[identifier] = texture
+                            print("rebuilding","Door.png",identifier)
                         renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileWidth*2,tileHeight),)
 
                         renderer.draw_color = fg_color
@@ -732,17 +791,22 @@ class Canvas:
                         fg_color = (colors[0],colors[1],colors[2],255)
                         bg_color = (colors[3],colors[4],colors[5],255)
 
-                        base_path = "/home/user/OfMiceAndMechs/config/tiles/"
-                        path = base_path+"Wall_background.png"
-                        circle = tcod.image.Image.from_file(path)
-                        for x_index in range(0,circle.width):
-                            for y_index in range(0,circle.height):
-                                color = circle.get_pixel(x_index,y_index)
-                                if color == (255, 255, 255):
-                                    circle.put_pixel(x_index,y_index,fg_color[:3])
-                                if color == (0, 0, 0):
-                                    circle.put_pixel(x_index,y_index,bg_color[:3])
-                        texture = renderer.upload_texture(np.asarray(circle))
+                        identifier = (fg_color,bg_color)
+                        texture = wall_texture.get(identifier)
+                        if not texture:
+                            base_path = "/home/user/OfMiceAndMechs/config/tiles/"
+                            path = base_path+"Wall_background.png"
+                            circle = tcod.image.Image.from_file(path)
+                            for x_index in range(0,circle.width):
+                                for y_index in range(0,circle.height):
+                                    color = circle.get_pixel(x_index,y_index)
+                                    if color == (255, 255, 255):
+                                        circle.put_pixel(x_index,y_index,fg_color[:3])
+                                    if color == (0, 0, 0):
+                                        circle.put_pixel(x_index,y_index,bg_color[:3])
+                            texture = renderer.upload_texture(np.asarray(circle))
+                            wall_texture[identifier] = texture
+                            print("rebuilding","Wall.png",identifier)
                         renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileWidth*2,tileHeight),)
 
                         renderer.draw_color = fg_color
@@ -789,7 +853,6 @@ class Canvas:
                             renderer.fill_rect((basePos[0],basePos[1],border_width,tileHeight))
                             renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,tileHeight,border_width))
                             renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,tileHeight))
-                    """
 
                 if isinstance(char, src.interaction.CharacterMeta):
                     character = char.character

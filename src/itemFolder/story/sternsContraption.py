@@ -45,6 +45,7 @@ class MainContraption(src.items.Item):
 
             if tick == 2:
                 for character in self.container.characters[:]:
+                    character.addMessage("something explodes and sends shrapnel into the room")
                     character.hurt(character.health//2,reason="hit by shrapnel")
 
             if tick > 6:
@@ -52,6 +53,7 @@ class MainContraption(src.items.Item):
                 self.container.addAnimation(self.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#faa", "#f00"), "%%")]})
             if tick == 6:
                 for character in self.container.characters[:]:
+                    character.addMessage("something explodes and sends shrapnel into the room")
                     character.hurt(25,reason="hit by shrapnel")
                 for i in range(1,2):
                     pos = (random.randint(1,13),random.randint(1,13),0)
@@ -69,6 +71,7 @@ class MainContraption(src.items.Item):
                 self.container.addAnimation(self.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#faa", "#f00"), "%%")]})
             if tick == 15:
                 for character in self.container.characters[:]:
+                    character.addMessage("something explodes and sends shrapnel into the room")
                     character.hurt(30,reason="hit by shrapnel")
                 for i in range(1,3):
                     pos = (random.randint(1,13),random.randint(1,13),0)
@@ -87,6 +90,7 @@ class MainContraption(src.items.Item):
 
             if tick == 18:
                 for character in self.container.characters[:]:
+                    character.addMessage("something explodes and sends shrapnel into the room")
                     character.hurt(10,reason="hit by shrapnel")
                 for i in range(1,5):
                     pos = (random.randint(1,13),random.randint(1,13),0)
@@ -183,6 +187,7 @@ class MainContraption(src.items.Item):
             if self.meltdownLevel > 4:
                 for character in self.container.characters[:]:
                     if not character.dead:
+                        character.addMessage("you feel the floor shake and the walls move")
                         character.die(reason="you died from explosion")
 
             self.container.addAnimation(self.getPosition(),"smoke",2,{})

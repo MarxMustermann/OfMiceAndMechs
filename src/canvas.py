@@ -443,416 +443,417 @@ class Canvas:
 
                     border_width = tileHeight//10+1
 
-                    if item.type == "CoalBurner":
-                        if isinstance(content[0],str):
+                    if src.interaction.settings["SDL"]:
+                        if item.type == "CoalBurner":
+                            if isinstance(content[0],str):
+                                fg_color = (255,255,255,255)
+                                bg_color = (0,0,0,255)
+                            else:
+                                colors = content[0].get_rgb_values()
+                                fg_color = (colors[0],colors[1],colors[2],255)
+                                bg_color = (colors[3],colors[4],colors[5],255)
+
+                            renderer.draw_color = bg_color
+                            renderer.fill_rect((basePos[0],basePos[1],tileHeight,tileWidth*2))
+
+                            identifier = (fg_color,bg_color)
+                            texture = coal_burner_texture.get(identifier)
+                            if not texture:
+                                base_path = "/home/user/OfMiceAndMechs/config/tiles/"
+                                path = base_path+"CoalBurner.png"
+                                circle = tcod.image.Image.from_file(path)
+                                for x_index in range(0,circle.width):
+                                    for y_index in range(0,circle.height):
+                                        color = circle.get_pixel(x_index,y_index)
+                                    if color == (255, 255, 255):
+                                        circle.put_pixel(x_index,y_index,fg_color[:3])
+                                    if color == (0, 0, 0):
+                                        circle.put_pixel(x_index,y_index,bg_color[:3])
+                                texture = renderer.upload_texture(np.asarray(circle))
+                                coal_burner_texture[identifier] = texture
+                                print("rebuilding","CoalBurner.png",identifier)
+                            renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileWidth*2,tileHeight),)
+
+                        if item.type == "Sword":
+                            if isinstance(content[0],str):
+                                fg_color = (255,255,255,255)
+                                bg_color = (0,0,0,255)
+                            else:
+                                colors = content[0].get_rgb_values()
+                                fg_color = (colors[0],colors[1],colors[2],255)
+                                bg_color = (colors[3],colors[4],colors[5],255)
+
+                            renderer.draw_color = bg_color
+                            renderer.fill_rect((basePos[0],basePos[1],tileHeight,tileWidth*2))
+
+                            identifier = (fg_color,bg_color)
+                            texture = sword_texture.get(identifier)
+                            if not texture:
+                                base_path = "/home/user/OfMiceAndMechs/config/tiles/"
+                                path = base_path+"Sword.png"
+                                circle = tcod.image.Image.from_file(path)
+                                for x_index in range(0,circle.width):
+                                    for y_index in range(0,circle.height):
+                                        color = circle.get_pixel(x_index,y_index)
+                                        if color == (255, 255, 255):
+                                            circle.put_pixel(x_index,y_index,fg_color[:3])
+                                        if color == (0, 0, 0):
+                                            circle.put_pixel(x_index,y_index,bg_color[:3])
+                                texture = renderer.upload_texture(np.asarray(circle))
+                                sword_texture[identifier] = texture
+                                print("rebuilding","Sword.png",identifier)
+                            renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileWidth*2,tileHeight),)
+
+                        if item.type == "Armor":
+                            if isinstance(content[0],str):
+                                fg_color = (255,255,255,255)
+                                bg_color = (0,0,0,255)
+                            else:
+                                colors = content[0].get_rgb_values()
+                                fg_color = (colors[0],colors[1],colors[2],255)
+                                bg_color = (colors[3],colors[4],colors[5],255)
+
+                            renderer.draw_color = bg_color
+                            renderer.fill_rect((basePos[0],basePos[1],tileHeight,tileWidth*2))
+
+                            identifier = (fg_color,bg_color)
+                            texture = armor_texture.get(identifier)
+                            if not texture:
+                                base_path = "/home/user/OfMiceAndMechs/config/tiles/"
+                                path = base_path+"Armor.png"
+                                circle = tcod.image.Image.from_file(path)
+                                for x_index in range(0,circle.width):
+                                    for y_index in range(0,circle.height):
+                                        color = circle.get_pixel(x_index,y_index)
+                                        if color == (255, 255, 255):
+                                            circle.put_pixel(x_index,y_index,fg_color[:3])
+                                        if color == (0, 0, 0):
+                                            circle.put_pixel(x_index,y_index,bg_color[:3])
+                                texture = renderer.upload_texture(np.asarray(circle))
+                                armor_texture[identifier] = texture
+                                print("rebuilding","Armor.png",identifier)
+                            renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileWidth*2,tileHeight),)
+
+                        if item.type == "RodTower":
+                            if isinstance(content[0],str):
+                                fg_color = (255,255,255,255)
+                                bg_color = (0,0,0,255)
+                            else:
+                                colors = content[0].get_rgb_values()
+                                fg_color = (colors[0],colors[1],colors[2],255)
+                                bg_color = (colors[3],colors[4],colors[5],255)
+
+                            identifier = (fg_color,bg_color)
+                            texture = rodTower_texture.get(identifier)
+                            if not texture:
+                                base_path = "/home/user/OfMiceAndMechs/config/tiles/"
+                                path = base_path+"RodTower.png"
+                                circle = tcod.image.Image.from_file(path)
+                                for x_index in range(0,circle.width):
+                                    for y_index in range(0,circle.height):
+                                        color = circle.get_pixel(x_index,y_index)
+                                        if color == (255, 255, 255):
+                                            circle.put_pixel(x_index,y_index,fg_color[:3])
+                                        if color == (0, 0, 0):
+                                            circle.put_pixel(x_index,y_index,bg_color[:3])
+                                texture = renderer.upload_texture(np.asarray(circle))
+                                rodTower_texture[identifier] = texture
+                                print("rebuilding","RodTower.png",identifier)
+                            renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileWidth*2,tileHeight),)
+
+                            renderer.draw_color = fg_color
+
+                            renderer.fill_rect((basePos[0],basePos[1],border_width,border_width))
+                            renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,border_width,border_width))
+                            renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,border_width))
+                            renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1]+tileHeight-border_width,border_width,border_width))
+
+                            rod_color = (80,80,80,255)
+
+                            if item.bolted:
+                                if item.container.getPositionWalkable(item.getPosition(offset=(0,-1,0))):
+                                    renderer.fill_rect((basePos[0],basePos[1],tileHeight,border_width))
+                                    renderer.draw_color = rod_color
+                                    renderer.fill_rect((basePos[0]+tileWidth-border_width//2,basePos[1],border_width,border_width*2))
+                                    renderer.draw_color = fg_color
+
+                                if item.container.getPositionWalkable(item.getPosition(offset=(-1,0,0))):
+                                    renderer.fill_rect((basePos[0],basePos[1],border_width,tileHeight))
+                                    renderer.draw_color = rod_color
+                                    renderer.fill_rect((basePos[0],basePos[1]+tileHeight//2-border_width//2,border_width*2,border_width))
+                                    renderer.draw_color = fg_color
+
+                                if item.container.getPositionWalkable(item.getPosition(offset=(0,1,0))):
+                                    renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,tileHeight,border_width))
+                                    renderer.draw_color = rod_color
+                                    renderer.fill_rect((basePos[0]+tileWidth-border_width//2,basePos[1]+tileHeight-border_width*2,border_width,border_width*2))
+                                    renderer.draw_color = fg_color
+
+                                if item.container.getPositionWalkable(item.getPosition(offset=(1,0,0))):
+                                    renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,tileHeight))
+                                    renderer.draw_color = rod_color
+                                    renderer.fill_rect((basePos[0]+2*tileWidth-border_width*2,basePos[1]+tileHeight//2-border_width//2,border_width*2,border_width))
+                                    renderer.draw_color = fg_color
+                            else:
+                                renderer.fill_rect((basePos[0],basePos[1],tileHeight,border_width))
+                                renderer.fill_rect((basePos[0],basePos[1],border_width,tileHeight))
+                                renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,tileHeight,border_width))
+                                renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,tileHeight))
+
+                        if item.type == "TriggerPlate":
+                            if isinstance(content[0],str):
+                                fg_color = (255,255,255,255)
+                                bg_color = (0,0,0,255)
+                            else:
+                                colors = content[0].get_rgb_values()
+                                fg_color = (colors[0],colors[1],colors[2],255)
+                                bg_color = (colors[3],colors[4],colors[5],255)
+
+                            renderer.draw_color = bg_color
+                            renderer.fill_rect((basePos[0],basePos[1],tileHeight,tileWidth*2))
+
+                            identifier = (fg_color,bg_color)
+                            texture = triggerPlate_texture.get(identifier)
+                            if not texture:
+                                base_path = "/home/user/OfMiceAndMechs/config/tiles/"
+                                path = base_path+"TriggerPlate.png"
+                                circle = tcod.image.Image.from_file(path)
+                                for x_index in range(0,circle.width):
+                                    for y_index in range(0,circle.height):
+                                        color = circle.get_pixel(x_index,y_index)
+                                        if color == (255, 255, 255):
+                                            circle.put_pixel(x_index,y_index,fg_color[:3])
+                                        if color == (0, 0, 0):
+                                            circle.put_pixel(x_index,y_index,bg_color[:3])
+                                texture = renderer.upload_texture(np.asarray(circle))
+                                triggerPlate_texture[identifier] = texture
+                                print("rebuilding","TriggerPlate.png",identifier)
+                            renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileWidth*2,tileHeight),)
+
+                        if item.type == "MainContraption":
                             fg_color = (255,255,255,255)
                             bg_color = (0,0,0,255)
-                        else:
+
+                            renderer.draw_color = bg_color
+                            renderer.fill_rect((basePos[0],basePos[1],tileHeight,tileWidth*2))
+
+                            identifier = (fg_color,bg_color)
+                            texture = mainContraption_texture.get(identifier)
+                            if not texture:
+                                base_path = "/home/user/OfMiceAndMechs/config/tiles/"
+                                path = base_path+"MainContraption.png"
+                                circle = tcod.image.Image.from_file(path)
+                                for x_index in range(0,circle.width):
+                                    for y_index in range(0,circle.height):
+                                        color = circle.get_pixel(x_index,y_index)
+                                        if color == (255, 255, 255):
+                                            circle.put_pixel(x_index,y_index,fg_color[:3])
+                                        if color == (0, 0, 0):
+                                            circle.put_pixel(x_index,y_index,bg_color[:3])
+                                texture = renderer.upload_texture(np.asarray(circle))
+                                mainContraption_texture[identifier] = texture
+                                print("rebuilding","MainContraption.png",identifier)
+                            renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileWidth*2,tileHeight),)
+
+                            renderer.draw_color = fg_color
+
+                            if item.bolted:
+                                items = item.container.getItemByPosition(item.getPosition(offset=(0,-1,0)))
+                                if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","MainContraption",)):
+                                    renderer.fill_rect((basePos[0],basePos[1],tileHeight,border_width))
+
+                                items = item.container.getItemByPosition(item.getPosition(offset=(-1,0,0)))
+                                if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","MainContraption",)):
+                                    renderer.fill_rect((basePos[0],basePos[1],border_width,tileHeight))
+
+                                items = item.container.getItemByPosition(item.getPosition(offset=(0,1,0)))
+                                if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","MainContraption",)):
+                                    renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,tileHeight,border_width))
+
+                                items = item.container.getItemByPosition(item.getPosition(offset=(1,0,0)))
+                                if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","MainContraption",)):
+                                    renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,tileHeight))
+                            else:
+                                renderer.fill_rect((basePos[0],basePos[1],tileHeight,border_width))
+                                renderer.fill_rect((basePos[0],basePos[1],border_width,tileHeight))
+                                renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,tileHeight,border_width))
+                                renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,tileHeight))
+
+                        if item.type == "Contraption":
+                            fg_color = (255,255,255,255)
+                            bg_color = (0,0,0,255)
+
+                            renderer.draw_color = bg_color
+                            renderer.fill_rect((basePos[0],basePos[1],tileHeight,tileWidth*2))
+
+                            identifier = (fg_color,bg_color)
+                            texture = contraption_texture.get(identifier)
+                            if not texture:
+                                base_path = "/home/user/OfMiceAndMechs/config/tiles/"
+                                path = base_path+"Contraption.png"
+                                circle = tcod.image.Image.from_file(path)
+                                for x_index in range(0,circle.width):
+                                    for y_index in range(0,circle.height):
+                                        color = circle.get_pixel(x_index,y_index)
+                                        if color == (255, 255, 255):
+                                            circle.put_pixel(x_index,y_index,fg_color[:3])
+                                        if color == (0, 0, 0):
+                                            circle.put_pixel(x_index,y_index,bg_color[:3])
+                                texture = renderer.upload_texture(np.asarray(circle))
+                                contraption_texture[identifier] = texture
+                                print("rebuilding","Contraption.png",identifier)
+                            renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileWidth*2,tileHeight),)
+
+                            renderer.draw_color = fg_color
+
+                            if item.bolted:
+                                items = item.container.getItemByPosition(item.getPosition(offset=(0,-1,0)))
+                                if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","MainContraption",)):
+                                    renderer.fill_rect((basePos[0],basePos[1],tileHeight,border_width))
+                                else:
+                                    renderer.fill_rect((basePos[0]+tileWidth-border_width//2,basePos[1]+tileHeight//4,border_width,border_width*3))
+
+                                items = item.container.getItemByPosition(item.getPosition(offset=(-1,0,0)))
+                                if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","MainContraption",)):
+                                    renderer.fill_rect((basePos[0],basePos[1],border_width,tileHeight))
+                                else:
+                                    renderer.fill_rect((basePos[0]+tileWidth//2,basePos[1]+tileHeight//2-border_width//2,border_width*3,border_width))
+
+                                items = item.container.getItemByPosition(item.getPosition(offset=(0,1,0)))
+                                if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","MainContraption",)):
+                                    renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,tileHeight,border_width))
+                                else:
+                                    renderer.fill_rect((basePos[0]+tileWidth-border_width//2,basePos[1]+tileHeight-border_width*3-tileHeight//4,border_width,border_width*3))
+
+                                items = item.container.getItemByPosition(item.getPosition(offset=(1,0,0)))
+                                if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","MainContraption",)):
+                                    renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,tileHeight))
+                                else:
+                                    renderer.fill_rect((basePos[0]+tileWidth//2+tileHeight//4,basePos[1]+tileHeight//2-border_width//2,border_width*3,border_width))
+                            else:
+                                renderer.fill_rect((basePos[0],basePos[1],tileHeight,border_width))
+                                renderer.fill_rect((basePos[0],basePos[1],border_width,tileHeight))
+                                renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,tileHeight,border_width))
+                                renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,tileHeight))
+
+                        if item.type == "Door":
+
                             colors = content[0].get_rgb_values()
                             fg_color = (colors[0],colors[1],colors[2],255)
                             bg_color = (colors[3],colors[4],colors[5],255)
 
-                        renderer.draw_color = bg_color
-                        renderer.fill_rect((basePos[0],basePos[1],tileHeight,tileWidth*2))
+                            renderer.draw_color = bg_color
+                            renderer.fill_rect((basePos[0],basePos[1],tileHeight,tileWidth*2))
 
-                        identifier = (fg_color,bg_color)
-                        texture = coal_burner_texture.get(identifier)
-                        if not texture:
-                            base_path = "/home/user/OfMiceAndMechs/config/tiles/"
-                            path = base_path+"CoalBurner.png"
-                            circle = tcod.image.Image.from_file(path)
-                            for x_index in range(0,circle.width):
-                                for y_index in range(0,circle.height):
-                                    color = circle.get_pixel(x_index,y_index)
-                                if color == (255, 255, 255):
-                                    circle.put_pixel(x_index,y_index,fg_color[:3])
-                                if color == (0, 0, 0):
-                                    circle.put_pixel(x_index,y_index,bg_color[:3])
-                            texture = renderer.upload_texture(np.asarray(circle))
-                            coal_burner_texture[identifier] = texture
-                            print("rebuilding","CoalBurner.png",identifier)
-                        renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileWidth*2,tileHeight),)
+                            identifier = (item.walkable,fg_color,bg_color)
+                            texture = door_texture.get(identifier)
+                            if not texture:
+                                base_path = "/home/user/OfMiceAndMechs/config/tiles/"
+                                path = base_path
+                                if item.walkable:
+                                    path += "Door.png"
+                                else:
+                                    path += "Door_Closed.png"
+                                circle = tcod.image.Image.from_file(path)
+                                for x_index in range(0,circle.width):
+                                    for y_index in range(0,circle.height):
+                                        color = circle.get_pixel(x_index,y_index)
+                                        if color == (255, 255, 255):
+                                            circle.put_pixel(x_index,y_index,fg_color[:3])
+                                        if color == (0, 0, 0):
+                                            circle.put_pixel(x_index,y_index,bg_color[:3])
+                                texture = renderer.upload_texture(np.asarray(circle))
+                                door_texture[identifier] = texture
+                                print("rebuilding","Door.png",identifier)
+                            renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileWidth*2,tileHeight),)
 
-                    if item.type == "Sword":
-                        if isinstance(content[0],str):
-                            fg_color = (255,255,255,255)
-                            bg_color = (0,0,0,255)
-                        else:
+                            renderer.draw_color = fg_color
+
+                            if item.bolted and not item.walkable:
+                                items = item.container.getItemByPosition(item.getPosition(offset=(0,-1,0)))
+                                if not (len(items) == 1 and items[0].type == "Wall" and items[0].bolted):
+                                    renderer.fill_rect((basePos[0],basePos[1],tileHeight,border_width))
+
+                                items = item.container.getItemByPosition(item.getPosition(offset=(-1,0,0)))
+                                if not (len(items) == 1 and items[0].type == "Wall" and items[0].bolted):
+                                    renderer.fill_rect((basePos[0],basePos[1],border_width,tileHeight))
+
+                                items = item.container.getItemByPosition(item.getPosition(offset=(0,1,0)))
+                                if not (len(items) == 1 and items[0].type == "Wall" and items[0].bolted):
+                                    renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,tileHeight,border_width))
+
+                                items = item.container.getItemByPosition(item.getPosition(offset=(1,0,0)))
+                                if not (len(items) == 1 and items[0].type == "Wall" and items[0].bolted):
+                                    renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,tileHeight))
+
+                        if item.type == "Wall":
+
                             colors = content[0].get_rgb_values()
                             fg_color = (colors[0],colors[1],colors[2],255)
                             bg_color = (colors[3],colors[4],colors[5],255)
 
-                        renderer.draw_color = bg_color
-                        renderer.fill_rect((basePos[0],basePos[1],tileHeight,tileWidth*2))
+                            identifier = (fg_color,bg_color)
+                            texture = wall_texture.get(identifier)
+                            if not texture:
+                                base_path = "/home/user/OfMiceAndMechs/config/tiles/"
+                                path = base_path+"Wall_background.png"
+                                circle = tcod.image.Image.from_file(path)
+                                for x_index in range(0,circle.width):
+                                    for y_index in range(0,circle.height):
+                                        color = circle.get_pixel(x_index,y_index)
+                                        if color == (255, 255, 255):
+                                            circle.put_pixel(x_index,y_index,fg_color[:3])
+                                        if color == (0, 0, 0):
+                                            circle.put_pixel(x_index,y_index,bg_color[:3])
+                                texture = renderer.upload_texture(np.asarray(circle))
+                                wall_texture[identifier] = texture
+                                print("rebuilding","Wall.png",identifier)
+                            renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileWidth*2,tileHeight),)
 
-                        identifier = (fg_color,bg_color)
-                        texture = sword_texture.get(identifier)
-                        if not texture:
-                            base_path = "/home/user/OfMiceAndMechs/config/tiles/"
-                            path = base_path+"Sword.png"
-                            circle = tcod.image.Image.from_file(path)
-                            for x_index in range(0,circle.width):
-                                for y_index in range(0,circle.height):
-                                    color = circle.get_pixel(x_index,y_index)
-                                    if color == (255, 255, 255):
-                                        circle.put_pixel(x_index,y_index,fg_color[:3])
-                                    if color == (0, 0, 0):
-                                        circle.put_pixel(x_index,y_index,bg_color[:3])
-                            texture = renderer.upload_texture(np.asarray(circle))
-                            sword_texture[identifier] = texture
-                            print("rebuilding","Sword.png",identifier)
-                        renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileWidth*2,tileHeight),)
+                            renderer.draw_color = fg_color
 
-                    if item.type == "Armor":
-                        if isinstance(content[0],str):
-                            fg_color = (255,255,255,255)
-                            bg_color = (0,0,0,255)
-                        else:
-                            colors = content[0].get_rgb_values()
-                            fg_color = (colors[0],colors[1],colors[2],255)
-                            bg_color = (colors[3],colors[4],colors[5],255)
+                            renderer.fill_rect((basePos[0],basePos[1],border_width*2,border_width*2))
+                            renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width*2,border_width*2,border_width*2))
+                            renderer.fill_rect((basePos[0]+2*tileWidth-border_width*2,basePos[1],border_width*2,border_width*2))
+                            renderer.fill_rect((basePos[0]+2*tileWidth-border_width*2,basePos[1]+tileHeight-border_width*2,border_width*2,border_width*2))
 
-                        renderer.draw_color = bg_color
-                        renderer.fill_rect((basePos[0],basePos[1],tileHeight,tileWidth*2))
+                            renderer.draw_line((basePos[0]+border_width,basePos[1]+border_width), (basePos[0]+tileHeight-border_width,basePos[1]+2*tileWidth-border_width))
+                            renderer.draw_line((basePos[0]+border_width+1,basePos[1]+border_width), (basePos[0]+tileHeight-border_width,basePos[1]+2*tileWidth-border_width-1))
+                            renderer.draw_line((basePos[0]+border_width,basePos[1]+border_width+1), (basePos[0]+tileHeight-border_width-1,basePos[1]+2*tileWidth-border_width))
 
-                        identifier = (fg_color,bg_color)
-                        texture = armor_texture.get(identifier)
-                        if not texture:
-                            base_path = "/home/user/OfMiceAndMechs/config/tiles/"
-                            path = base_path+"Armor.png"
-                            circle = tcod.image.Image.from_file(path)
-                            for x_index in range(0,circle.width):
-                                for y_index in range(0,circle.height):
-                                    color = circle.get_pixel(x_index,y_index)
-                                    if color == (255, 255, 255):
-                                        circle.put_pixel(x_index,y_index,fg_color[:3])
-                                    if color == (0, 0, 0):
-                                        circle.put_pixel(x_index,y_index,bg_color[:3])
-                            texture = renderer.upload_texture(np.asarray(circle))
-                            armor_texture[identifier] = texture
-                            print("rebuilding","Armor.png",identifier)
-                        renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileWidth*2,tileHeight),)
+                            renderer.draw_line((basePos[0]+2*tileWidth-border_width,basePos[1]+border_width), (basePos[0]+border_width,basePos[1]+tileHeight-border_width))
+                            renderer.draw_line((basePos[0]+2*tileWidth-border_width-1,basePos[1]+border_width), (basePos[0]+border_width,basePos[1]+tileHeight-border_width-1))
+                            renderer.draw_line((basePos[0]+2*tileWidth-border_width,basePos[1]+border_width+1), (basePos[0]+border_width+1,basePos[1]+tileHeight-border_width))
 
-                    if item.type == "RodTower":
-                        if isinstance(content[0],str):
-                            fg_color = (255,255,255,255)
-                            bg_color = (0,0,0,255)
-                        else:
-                            colors = content[0].get_rgb_values()
-                            fg_color = (colors[0],colors[1],colors[2],255)
-                            bg_color = (colors[3],colors[4],colors[5],255)
+                            if item.bolted:
+                                items = item.container.getItemByPosition(item.getPosition(offset=(0,-1,0)))
+                                if not (len(items) == 1 and items[0].type in ("Door","Wall",) and items[0].bolted):
+                                    renderer.fill_rect((basePos[0],basePos[1],tileHeight,border_width))
+                                else:
+                                    renderer.fill_rect((basePos[0]+tileWidth-border_width//2,basePos[1],border_width,border_width))
 
-                        identifier = (fg_color,bg_color)
-                        texture = rodTower_texture.get(identifier)
-                        if not texture:
-                            base_path = "/home/user/OfMiceAndMechs/config/tiles/"
-                            path = base_path+"RodTower.png"
-                            circle = tcod.image.Image.from_file(path)
-                            for x_index in range(0,circle.width):
-                                for y_index in range(0,circle.height):
-                                    color = circle.get_pixel(x_index,y_index)
-                                    if color == (255, 255, 255):
-                                        circle.put_pixel(x_index,y_index,fg_color[:3])
-                                    if color == (0, 0, 0):
-                                        circle.put_pixel(x_index,y_index,bg_color[:3])
-                            texture = renderer.upload_texture(np.asarray(circle))
-                            rodTower_texture[identifier] = texture
-                            print("rebuilding","RodTower.png",identifier)
-                        renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileWidth*2,tileHeight),)
+                                items = item.container.getItemByPosition(item.getPosition(offset=(-1,0,0)))
+                                if not (len(items) == 1 and items[0].type in ("Door","Wall",) and items[0].bolted):
+                                    renderer.fill_rect((basePos[0],basePos[1],border_width,tileHeight))
+                                else:
+                                    renderer.fill_rect((basePos[0],basePos[1]+tileHeight//2-border_width//2,border_width,border_width))
 
-                        renderer.draw_color = fg_color
+                                items = item.container.getItemByPosition(item.getPosition(offset=(0,1,0)))
+                                if not (len(items) == 1 and items[0].type in ("Door","Wall",) and items[0].bolted):
+                                    renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,tileHeight,border_width))
+                                else:
+                                    renderer.fill_rect((basePos[0]+tileWidth-border_width//2,basePos[1]+tileHeight-border_width,border_width,border_width))
 
-                        renderer.fill_rect((basePos[0],basePos[1],border_width,border_width))
-                        renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,border_width,border_width))
-                        renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,border_width))
-                        renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1]+tileHeight-border_width,border_width,border_width))
-
-                        rod_color = (80,80,80,255)
-
-                        if item.bolted:
-                            if item.container.getPositionWalkable(item.getPosition(offset=(0,-1,0))):
+                                items = item.container.getItemByPosition(item.getPosition(offset=(1,0,0)))
+                                if not (len(items) == 1 and items[0].type in ("Door","Wall",) and items[0].bolted):
+                                    renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,tileHeight))
+                                else:
+                                    renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1]+tileHeight//2-border_width//2,border_width,border_width))
+                            else:
                                 renderer.fill_rect((basePos[0],basePos[1],tileHeight,border_width))
-                                renderer.draw_color = rod_color
-                                renderer.fill_rect((basePos[0]+tileWidth-border_width//2,basePos[1],border_width,border_width*2))
-                                renderer.draw_color = fg_color
-
-                            if item.container.getPositionWalkable(item.getPosition(offset=(-1,0,0))):
                                 renderer.fill_rect((basePos[0],basePos[1],border_width,tileHeight))
-                                renderer.draw_color = rod_color
-                                renderer.fill_rect((basePos[0],basePos[1]+tileHeight//2-border_width//2,border_width*2,border_width))
-                                renderer.draw_color = fg_color
-
-                            if item.container.getPositionWalkable(item.getPosition(offset=(0,1,0))):
                                 renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,tileHeight,border_width))
-                                renderer.draw_color = rod_color
-                                renderer.fill_rect((basePos[0]+tileWidth-border_width//2,basePos[1]+tileHeight-border_width*2,border_width,border_width*2))
-                                renderer.draw_color = fg_color
-
-                            if item.container.getPositionWalkable(item.getPosition(offset=(1,0,0))):
                                 renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,tileHeight))
-                                renderer.draw_color = rod_color
-                                renderer.fill_rect((basePos[0]+2*tileWidth-border_width*2,basePos[1]+tileHeight//2-border_width//2,border_width*2,border_width))
-                                renderer.draw_color = fg_color
-                        else:
-                            renderer.fill_rect((basePos[0],basePos[1],tileHeight,border_width))
-                            renderer.fill_rect((basePos[0],basePos[1],border_width,tileHeight))
-                            renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,tileHeight,border_width))
-                            renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,tileHeight))
-
-                    if item.type == "TriggerPlate":
-                        if isinstance(content[0],str):
-                            fg_color = (255,255,255,255)
-                            bg_color = (0,0,0,255)
-                        else:
-                            colors = content[0].get_rgb_values()
-                            fg_color = (colors[0],colors[1],colors[2],255)
-                            bg_color = (colors[3],colors[4],colors[5],255)
-
-                        renderer.draw_color = bg_color
-                        renderer.fill_rect((basePos[0],basePos[1],tileHeight,tileWidth*2))
-
-                        identifier = (fg_color,bg_color)
-                        texture = triggerPlate_texture.get(identifier)
-                        if not texture:
-                            base_path = "/home/user/OfMiceAndMechs/config/tiles/"
-                            path = base_path+"TriggerPlate.png"
-                            circle = tcod.image.Image.from_file(path)
-                            for x_index in range(0,circle.width):
-                                for y_index in range(0,circle.height):
-                                    color = circle.get_pixel(x_index,y_index)
-                                    if color == (255, 255, 255):
-                                        circle.put_pixel(x_index,y_index,fg_color[:3])
-                                    if color == (0, 0, 0):
-                                        circle.put_pixel(x_index,y_index,bg_color[:3])
-                            texture = renderer.upload_texture(np.asarray(circle))
-                            triggerPlate_texture[identifier] = texture
-                            print("rebuilding","TriggerPlate.png",identifier)
-                        renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileWidth*2,tileHeight),)
-
-                    if item.type == "MainContraption":
-                        fg_color = (255,255,255,255)
-                        bg_color = (0,0,0,255)
-
-                        renderer.draw_color = bg_color
-                        renderer.fill_rect((basePos[0],basePos[1],tileHeight,tileWidth*2))
-
-                        identifier = (fg_color,bg_color)
-                        texture = mainContraption_texture.get(identifier)
-                        if not texture:
-                            base_path = "/home/user/OfMiceAndMechs/config/tiles/"
-                            path = base_path+"MainContraption.png"
-                            circle = tcod.image.Image.from_file(path)
-                            for x_index in range(0,circle.width):
-                                for y_index in range(0,circle.height):
-                                    color = circle.get_pixel(x_index,y_index)
-                                    if color == (255, 255, 255):
-                                        circle.put_pixel(x_index,y_index,fg_color[:3])
-                                    if color == (0, 0, 0):
-                                        circle.put_pixel(x_index,y_index,bg_color[:3])
-                            texture = renderer.upload_texture(np.asarray(circle))
-                            mainContraption_texture[identifier] = texture
-                            print("rebuilding","MainContraption.png",identifier)
-                        renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileWidth*2,tileHeight),)
-
-                        renderer.draw_color = fg_color
-
-                        if item.bolted:
-                            items = item.container.getItemByPosition(item.getPosition(offset=(0,-1,0)))
-                            if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","MainContraption",)):
-                                renderer.fill_rect((basePos[0],basePos[1],tileHeight,border_width))
-
-                            items = item.container.getItemByPosition(item.getPosition(offset=(-1,0,0)))
-                            if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","MainContraption",)):
-                                renderer.fill_rect((basePos[0],basePos[1],border_width,tileHeight))
-
-                            items = item.container.getItemByPosition(item.getPosition(offset=(0,1,0)))
-                            if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","MainContraption",)):
-                                renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,tileHeight,border_width))
-
-                            items = item.container.getItemByPosition(item.getPosition(offset=(1,0,0)))
-                            if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","MainContraption",)):
-                                renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,tileHeight))
-                        else:
-                            renderer.fill_rect((basePos[0],basePos[1],tileHeight,border_width))
-                            renderer.fill_rect((basePos[0],basePos[1],border_width,tileHeight))
-                            renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,tileHeight,border_width))
-                            renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,tileHeight))
-
-                    if item.type == "Contraption":
-                        fg_color = (255,255,255,255)
-                        bg_color = (0,0,0,255)
-
-                        renderer.draw_color = bg_color
-                        renderer.fill_rect((basePos[0],basePos[1],tileHeight,tileWidth*2))
-
-                        identifier = (fg_color,bg_color)
-                        texture = contraption_texture.get(identifier)
-                        if not texture:
-                            base_path = "/home/user/OfMiceAndMechs/config/tiles/"
-                            path = base_path+"Contraption.png"
-                            circle = tcod.image.Image.from_file(path)
-                            for x_index in range(0,circle.width):
-                                for y_index in range(0,circle.height):
-                                    color = circle.get_pixel(x_index,y_index)
-                                    if color == (255, 255, 255):
-                                        circle.put_pixel(x_index,y_index,fg_color[:3])
-                                    if color == (0, 0, 0):
-                                        circle.put_pixel(x_index,y_index,bg_color[:3])
-                            texture = renderer.upload_texture(np.asarray(circle))
-                            contraption_texture[identifier] = texture
-                            print("rebuilding","Contraption.png",identifier)
-                        renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileWidth*2,tileHeight),)
-
-                        renderer.draw_color = fg_color
-
-                        if item.bolted:
-                            items = item.container.getItemByPosition(item.getPosition(offset=(0,-1,0)))
-                            if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","MainContraption",)):
-                                renderer.fill_rect((basePos[0],basePos[1],tileHeight,border_width))
-                            else:
-                                renderer.fill_rect((basePos[0]+tileWidth-border_width//2,basePos[1]+tileHeight//4,border_width,border_width*3))
-
-                            items = item.container.getItemByPosition(item.getPosition(offset=(-1,0,0)))
-                            if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","MainContraption",)):
-                                renderer.fill_rect((basePos[0],basePos[1],border_width,tileHeight))
-                            else:
-                                renderer.fill_rect((basePos[0]+tileWidth//2,basePos[1]+tileHeight//2-border_width//2,border_width*3,border_width))
-
-                            items = item.container.getItemByPosition(item.getPosition(offset=(0,1,0)))
-                            if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","MainContraption",)):
-                                renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,tileHeight,border_width))
-                            else:
-                                renderer.fill_rect((basePos[0]+tileWidth-border_width//2,basePos[1]+tileHeight-border_width*3-tileHeight//4,border_width,border_width*3))
-
-                            items = item.container.getItemByPosition(item.getPosition(offset=(1,0,0)))
-                            if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","MainContraption",)):
-                                renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,tileHeight))
-                            else:
-                                renderer.fill_rect((basePos[0]+tileWidth//2+tileHeight//4,basePos[1]+tileHeight//2-border_width//2,border_width*3,border_width))
-                        else:
-                            renderer.fill_rect((basePos[0],basePos[1],tileHeight,border_width))
-                            renderer.fill_rect((basePos[0],basePos[1],border_width,tileHeight))
-                            renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,tileHeight,border_width))
-                            renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,tileHeight))
-
-                    if item.type == "Door":
-
-                        colors = content[0].get_rgb_values()
-                        fg_color = (colors[0],colors[1],colors[2],255)
-                        bg_color = (colors[3],colors[4],colors[5],255)
-
-                        renderer.draw_color = bg_color
-                        renderer.fill_rect((basePos[0],basePos[1],tileHeight,tileWidth*2))
-
-                        identifier = (item.walkable,fg_color,bg_color)
-                        texture = door_texture.get(identifier)
-                        if not texture:
-                            base_path = "/home/user/OfMiceAndMechs/config/tiles/"
-                            path = base_path
-                            if item.walkable:
-                                path += "Door.png"
-                            else:
-                                path += "Door_Closed.png"
-                            circle = tcod.image.Image.from_file(path)
-                            for x_index in range(0,circle.width):
-                                for y_index in range(0,circle.height):
-                                    color = circle.get_pixel(x_index,y_index)
-                                    if color == (255, 255, 255):
-                                        circle.put_pixel(x_index,y_index,fg_color[:3])
-                                    if color == (0, 0, 0):
-                                        circle.put_pixel(x_index,y_index,bg_color[:3])
-                            texture = renderer.upload_texture(np.asarray(circle))
-                            door_texture[identifier] = texture
-                            print("rebuilding","Door.png",identifier)
-                        renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileWidth*2,tileHeight),)
-
-                        renderer.draw_color = fg_color
-
-                        if item.bolted and not item.walkable:
-                            items = item.container.getItemByPosition(item.getPosition(offset=(0,-1,0)))
-                            if not (len(items) == 1 and items[0].type == "Wall" and items[0].bolted):
-                                renderer.fill_rect((basePos[0],basePos[1],tileHeight,border_width))
-
-                            items = item.container.getItemByPosition(item.getPosition(offset=(-1,0,0)))
-                            if not (len(items) == 1 and items[0].type == "Wall" and items[0].bolted):
-                                renderer.fill_rect((basePos[0],basePos[1],border_width,tileHeight))
-
-                            items = item.container.getItemByPosition(item.getPosition(offset=(0,1,0)))
-                            if not (len(items) == 1 and items[0].type == "Wall" and items[0].bolted):
-                                renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,tileHeight,border_width))
-
-                            items = item.container.getItemByPosition(item.getPosition(offset=(1,0,0)))
-                            if not (len(items) == 1 and items[0].type == "Wall" and items[0].bolted):
-                                renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,tileHeight))
-
-                    if item.type == "Wall":
-
-                        colors = content[0].get_rgb_values()
-                        fg_color = (colors[0],colors[1],colors[2],255)
-                        bg_color = (colors[3],colors[4],colors[5],255)
-
-                        identifier = (fg_color,bg_color)
-                        texture = wall_texture.get(identifier)
-                        if not texture:
-                            base_path = "/home/user/OfMiceAndMechs/config/tiles/"
-                            path = base_path+"Wall_background.png"
-                            circle = tcod.image.Image.from_file(path)
-                            for x_index in range(0,circle.width):
-                                for y_index in range(0,circle.height):
-                                    color = circle.get_pixel(x_index,y_index)
-                                    if color == (255, 255, 255):
-                                        circle.put_pixel(x_index,y_index,fg_color[:3])
-                                    if color == (0, 0, 0):
-                                        circle.put_pixel(x_index,y_index,bg_color[:3])
-                            texture = renderer.upload_texture(np.asarray(circle))
-                            wall_texture[identifier] = texture
-                            print("rebuilding","Wall.png",identifier)
-                        renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileWidth*2,tileHeight),)
-
-                        renderer.draw_color = fg_color
-
-                        renderer.fill_rect((basePos[0],basePos[1],border_width*2,border_width*2))
-                        renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width*2,border_width*2,border_width*2))
-                        renderer.fill_rect((basePos[0]+2*tileWidth-border_width*2,basePos[1],border_width*2,border_width*2))
-                        renderer.fill_rect((basePos[0]+2*tileWidth-border_width*2,basePos[1]+tileHeight-border_width*2,border_width*2,border_width*2))
-
-                        renderer.draw_line((basePos[0]+border_width,basePos[1]+border_width), (basePos[0]+tileHeight-border_width,basePos[1]+2*tileWidth-border_width))
-                        renderer.draw_line((basePos[0]+border_width+1,basePos[1]+border_width), (basePos[0]+tileHeight-border_width,basePos[1]+2*tileWidth-border_width-1))
-                        renderer.draw_line((basePos[0]+border_width,basePos[1]+border_width+1), (basePos[0]+tileHeight-border_width-1,basePos[1]+2*tileWidth-border_width))
-
-                        renderer.draw_line((basePos[0]+2*tileWidth-border_width,basePos[1]+border_width), (basePos[0]+border_width,basePos[1]+tileHeight-border_width))
-                        renderer.draw_line((basePos[0]+2*tileWidth-border_width-1,basePos[1]+border_width), (basePos[0]+border_width,basePos[1]+tileHeight-border_width-1))
-                        renderer.draw_line((basePos[0]+2*tileWidth-border_width,basePos[1]+border_width+1), (basePos[0]+border_width+1,basePos[1]+tileHeight-border_width))
-
-                        if item.bolted:
-                            items = item.container.getItemByPosition(item.getPosition(offset=(0,-1,0)))
-                            if not (len(items) == 1 and items[0].type in ("Door","Wall",) and items[0].bolted):
-                                renderer.fill_rect((basePos[0],basePos[1],tileHeight,border_width))
-                            else:
-                                renderer.fill_rect((basePos[0]+tileWidth-border_width//2,basePos[1],border_width,border_width))
-
-                            items = item.container.getItemByPosition(item.getPosition(offset=(-1,0,0)))
-                            if not (len(items) == 1 and items[0].type in ("Door","Wall",) and items[0].bolted):
-                                renderer.fill_rect((basePos[0],basePos[1],border_width,tileHeight))
-                            else:
-                                renderer.fill_rect((basePos[0],basePos[1]+tileHeight//2-border_width//2,border_width,border_width))
-
-                            items = item.container.getItemByPosition(item.getPosition(offset=(0,1,0)))
-                            if not (len(items) == 1 and items[0].type in ("Door","Wall",) and items[0].bolted):
-                                renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,tileHeight,border_width))
-                            else:
-                                renderer.fill_rect((basePos[0]+tileWidth-border_width//2,basePos[1]+tileHeight-border_width,border_width,border_width))
-
-                            items = item.container.getItemByPosition(item.getPosition(offset=(1,0,0)))
-                            if not (len(items) == 1 and items[0].type in ("Door","Wall",) and items[0].bolted):
-                                renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,tileHeight))
-                            else:
-                                renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1]+tileHeight//2-border_width//2,border_width,border_width))
-                        else:
-                            renderer.fill_rect((basePos[0],basePos[1],tileHeight,border_width))
-                            renderer.fill_rect((basePos[0],basePos[1],border_width,tileHeight))
-                            renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,tileHeight,border_width))
-                            renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,tileHeight))
 
                 if isinstance(char, src.interaction.CharacterMeta):
                     character = char.character

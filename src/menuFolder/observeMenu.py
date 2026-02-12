@@ -175,9 +175,9 @@ class ObserveMenu(src.subMenu.SubMenu):
         if rooms:
             markers = container.getMarkersOnPosition(pos)
         if not markers:
-            text.append("no markers found\n")
+            text.append("no markings found\n")
         else:
-            text.append("markers:\n\n")
+            text.append("markings:\n\n")
         for marker in markers:
             text.append("- ")
             text.append(str(marker[0]))

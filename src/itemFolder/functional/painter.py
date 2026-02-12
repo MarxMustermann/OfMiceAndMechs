@@ -9,7 +9,7 @@ class Painter(src.items.Item):
     ingame item ment to be an ingame way to draw stock and buildsites
     '''
     type = "Painter"
-    description = "Can be used to draw markers on the floor"
+    description = "Can be used to draw markings on the floor"
     def __init__(self):
         self.activated = False
         super().__init__(src.canvas.displayChars.markerBean_inactive)
@@ -31,7 +31,7 @@ class Painter(src.items.Item):
         return """
 Place the Painter on the floor and activate it to draw.
 
-You can control what types of markers are drawn by configuring it.
+You can control what types of markings are drawn by configuring it.
 
 It can be configured to draw
 * inputStockpiles
@@ -197,7 +197,7 @@ This should be used in cases where you can not place the Painter on the position
 
     def setMode(self,extraInfo):
         '''
-        set what type of markers the painter should paint
+        set what type of markings the painter should paint
         '''
         character = extraInfo["character"]
 
@@ -327,7 +327,7 @@ This should be used in cases where you can not place the Painter on the position
                                         buildSite[2]["targets"] = "["+str(center)+"]"
                                     else:
                                         buildSite[2]["targets"] = buildSite[2]["targets"].replace("]",", "+str(center)+"]")
-                else: # draw new markers
+                else: # draw new markings
                     targets = []
                     for neighbourPos in neighbours:
                         if neighbourPos in room.walkingSpace:

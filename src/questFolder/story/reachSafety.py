@@ -44,7 +44,7 @@ Your implant interrupts:
 
 You just activated a trap. This should not have happened.
 Examine the TriggerPlate to find out what is wrong.
-""")
+""",do_not_scale=False)
                         self.shown_examine_popup = True
 
                 quest = src.quests.questMap["Examine"](targetPosition=(1,6,0),targetPositionBig=(5,7,0),reason="find out what is wrong",description="examine trap",itemType="TriggerPlate")
@@ -59,7 +59,7 @@ Your implant interrupts:
 
 The triggerplate detects you as enemy, but has the right faction marker.
 Check your faction marker to see if something is wrong with it.
-""")
+""",do_not_scale=False)
                         self.shown_self_check_popup = True
             if not src.gamestate.gamestate.stern.get("opened character menu"):
                 quest = src.quests.questMap["OpenCharacterMenu"](reason="check your faction marker")
@@ -74,7 +74,7 @@ This means traps detect you as enemy and attack you.
 We need to bypass the traps in this trap room.
 
 press q to see details
-""")
+""",do_not_scale=False)
             quest = src.quests.questMap["CrossTrapRoom"](targetPosition=(6,7,0),reason="get inside the base",description="cross trap room")
             return ([quest],None)
         if character.getBigPosition() == (6,7,0):

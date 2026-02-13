@@ -462,7 +462,7 @@ class Canvas:
                             identifier = (fg_color,bg_color)
                             texture = coal_burner_texture.get(identifier)
                             if not texture:
-                                base_path = "/home/user/OfMiceAndMechs/config/tiles/"
+                                base_path = "config/tiles/"
                                 path = base_path+"CoalBurner.png"
                                 circle = tcod.image.Image.from_file(path)
                                 for x_index in range(0,circle.width):
@@ -492,7 +492,7 @@ class Canvas:
                             identifier = (fg_color,bg_color)
                             texture = sword_texture.get(identifier)
                             if not texture:
-                                base_path = "/home/user/OfMiceAndMechs/config/tiles/"
+                                base_path = "config/tiles/"
                                 path = base_path+"Sword.png"
                                 circle = tcod.image.Image.from_file(path)
                                 for x_index in range(0,circle.width):
@@ -522,7 +522,7 @@ class Canvas:
                             identifier = (fg_color,bg_color)
                             texture = armor_texture.get(identifier)
                             if not texture:
-                                base_path = "/home/user/OfMiceAndMechs/config/tiles/"
+                                base_path = "config/tiles/"
                                 path = base_path+"Armor.png"
                                 circle = tcod.image.Image.from_file(path)
                                 for x_index in range(0,circle.width):
@@ -549,7 +549,7 @@ class Canvas:
                             identifier = (fg_color,bg_color)
                             texture = rodTower_texture.get(identifier)
                             if not texture:
-                                base_path = "/home/user/OfMiceAndMechs/config/tiles/"
+                                base_path = "config/tiles/"
                                 path = base_path+"RodTower.png"
                                 circle = tcod.image.Image.from_file(path)
                                 for x_index in range(0,circle.width):
@@ -618,7 +618,7 @@ class Canvas:
                             identifier = (fg_color,bg_color)
                             texture = triggerPlate_texture.get(identifier)
                             if not texture:
-                                base_path = "/home/user/OfMiceAndMechs/config/tiles/"
+                                base_path = "config/tiles/"
                                 path = base_path+"TriggerPlate.png"
                                 circle = tcod.image.Image.from_file(path)
                                 for x_index in range(0,circle.width):
@@ -643,7 +643,7 @@ class Canvas:
                             identifier = (fg_color,bg_color)
                             texture = mainContraption_texture.get(identifier)
                             if not texture:
-                                base_path = "/home/user/OfMiceAndMechs/config/tiles/"
+                                base_path = "config/tiles/"
                                 path = base_path+"MainContraption.png"
                                 circle = tcod.image.Image.from_file(path)
                                 for x_index in range(0,circle.width):
@@ -692,7 +692,7 @@ class Canvas:
                             identifier = (fg_color,bg_color)
                             texture = contraption_texture.get(identifier)
                             if not texture:
-                                base_path = "/home/user/OfMiceAndMechs/config/tiles/"
+                                base_path = "config/tiles/"
                                 path = base_path+"Contraption.png"
                                 circle = tcod.image.Image.from_file(path)
                                 for x_index in range(0,circle.width):
@@ -751,7 +751,7 @@ class Canvas:
                             identifier = (item.walkable,fg_color,bg_color)
                             texture = door_texture.get(identifier)
                             if not texture:
-                                base_path = "/home/user/OfMiceAndMechs/config/tiles/"
+                                base_path = "config/tiles/"
                                 path = base_path
                                 if item.walkable:
                                     path += "Door.png"
@@ -798,7 +798,7 @@ class Canvas:
                             identifier = (fg_color,bg_color)
                             texture = wall_texture.get(identifier)
                             if not texture:
-                                base_path = "/home/user/OfMiceAndMechs/config/tiles/"
+                                base_path = "config/tiles/"
                                 path = base_path+"Wall_background.png"
                                 circle = tcod.image.Image.from_file(path)
                                 for x_index in range(0,circle.width):

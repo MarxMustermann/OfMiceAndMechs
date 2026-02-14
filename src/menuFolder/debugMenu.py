@@ -37,6 +37,7 @@ class DebugMenu(src.subMenu.SubMenu):
         "fix room state",
         "fix terrain state",
         "take over character on tile",
+        "test tracking ping",
     ]
 
     def __init__(self):
@@ -398,6 +399,9 @@ class DebugMenu(src.subMenu.SubMenu):
                 case "toggle SDL":
                     if current_change:
                         src.interaction.allow_sdl = not src.interaction.allow_sdl
+                case "test tracking ping":
+                    if current_change:
+                        src.interaction.send_tracking_ping("testevent")
             text += "\n"
 
         self.persistentText = text

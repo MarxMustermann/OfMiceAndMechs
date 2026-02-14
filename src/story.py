@@ -3502,6 +3502,8 @@ This will close the tutorial and let you do your own thing.
         room = extraParameters.get("room")
         terrain = character.getTerrain()
 
+        src.interaction.send_tracking_ping("handle_player_intro_quest_choice"+"__"+quest_type)
+
         character.clear_quests()
 
         if quest_type == "explosion":
@@ -3559,6 +3561,9 @@ This will close the tutorial and let you do your own thing.
         if quest_type == "leave me alone":
             character.showTextMenu("\nAs you wish.\n\nRemember that you can contact me again by following the instructions the left side of the screen.\n",do_not_scale=True)
             src.gamestate.gamestate.stern["first_silenced"] = True
+            return
+
+        src.interaction.send_tracking_ping("handle_player_intro_quest_choice_fell_through")
 
     def _get_enemies(self,character):
         enemies = []
@@ -3656,6 +3661,8 @@ This will close the tutorial and let you do your own thing.
         character = extraParameters.get("character")
         room = extraParameters.get("room")
         terrain = character.getTerrain()
+
+        src.interaction.send_tracking_ping("handle_player_quest_choice"+"__"+quest_type)
 
         character.clear_quests()
 
@@ -3779,6 +3786,7 @@ This will close the tutorial and let you do your own thing.
             src.gamestate.gamestate.stern["first_silenced"] = True
             return
 
+        src.interaction.send_tracking_ping("handle_player_quest_choice_fell_through")
         self.reachImplant()
 
     def openedQuestsTravel(self):

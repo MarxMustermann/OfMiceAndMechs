@@ -27,7 +27,11 @@ class SettingMenu(src.subMenu.SubMenu):
             else:
                 change_amount = -1
             self.index += change_amount
-            self.index = src.helpers.clamp(self.index, 0, len(self.setting_options)-1)
+            
+            if self.index > len(self.setting_options)-1:
+                self.index = 0
+            if self.index < 0:
+                self.index = len(self.setting_options)-1
 
         # show info
         src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\n\nsettings\n\n"))

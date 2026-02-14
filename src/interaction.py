@@ -6013,7 +6013,7 @@ def showIntro():
     src.gamestate.gamestate.mainChar.registers["HOMETy"] = 7
     src.gamestate.gamestate.mainChar.faction = "city demo"
 
-    stage = -1
+    stage = -2
     stageState = None
     room = None
     skip = False
@@ -6024,10 +6024,7 @@ def showIntro():
         if not skip:
             tcodConsole.clear()
 
-        if stage == -1:
-            stageState = {"wait":True}
-            text = []
-            logoText = """
+        logoText = """
 
 OOO FFF          AAA N N DD
 O O FF   mice    AAA NNN D D
@@ -6049,8 +6046,33 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
 """
 
+        if stage == -2:
+            stageState = {"wait":True}
+            text = []
             text.append(src.urwidSpecials.makeRusty(logoText))
-            text.append("Hello, i'm MarxMustermann and you are about to try my game.\nIt would be really cool, if you'd do me a favour and give me feedback.\n\n")
+            text.append("Hello, i'm MarxMustermann and you are about to try my game.\n")
+            text.append("To improve the game i want to learn more about how it is played.\n\n")
+            text.append("May i collect information about your interaction with the game?\n")
+            text.append("I try to avoid collecting personal information.\n")
+            text.append("\n")
+            text.append("press y to agree to the data collection\n")
+            text.append("press n to deny the data collection\n")
+
+            if not first_render:
+                printUrwidToTcod(text, (64, 4))
+                tcodPresent()
+            first_render = False
+
+            if not skip:
+                time.sleep(0.01)
+            if skip:
+                stage = 0
+                stageState = None
+                skip = False
+        if stage == -1:
+            stageState = {"wait":True}
+            text = []
+            text.append(src.urwidSpecials.makeRusty(logoText))
             text.append("press enter to show the intro cutscene\n")
             text.append("press esc to skip the intro cutscene\n")
             text.append("press F11 to toggle fullscreen\n\n")
@@ -6739,17 +6761,26 @@ FOLLOW YOUR ORDERS
                 raise SystemExit()
             if isinstance(event,tcod.event.KeyDown):
                 key = event.sym
-                if key == tcod.event.KeySym.F11:
-                    sdl_window.fullscreen = not sdl_window.fullscreen
-                if key == tcod.event.KeySym.RETURN:
-                    skip = True
-                if key == tcod.event.KeySym.SPACE and stage == 4:
-                    if not stageState["endless"]:
-                        stageState["endless"] = True
-                    else:
-                        stageState = None
-                if key == tcod.event.KeySym.ESCAPE:
-                    stage = 7
+
+                if stage == -2:
+                    if key == tcod.event.KeySym.n:
+                        stage = -1
+                        src.interaction.settings["tracking"] = False
+                    if key == tcod.event.KeySym.y:
+                        stage = -1
+                        src.interaction.settings["tracking"] = True
+                else:
+                    if key == tcod.event.KeySym.F11:
+                        sdl_window.fullscreen = not sdl_window.fullscreen
+                    if key == tcod.event.KeySym.RETURN:
+                        skip = True
+                    if key == tcod.event.KeySym.SPACE and stage == 4:
+                        if not stageState["endless"]:
+                            stageState["endless"] = True
+                        else:
+                            stageState = None
+                    if key == tcod.event.KeySym.ESCAPE:
+                        stage = 7
 
         if not stageState:
             stage += 1

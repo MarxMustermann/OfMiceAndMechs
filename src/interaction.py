@@ -6799,6 +6799,7 @@ FOLLOW YOUR ORDERS
                         stage = -1
                         src.interaction.settings["tracking"] = True
                         src.interaction.ensure_tracking_id()
+                        src.interaction.send_tracking_ping("accepted tracking")
                 else:
                     if key == tcod.event.KeySym.F11:
                         sdl_window.fullscreen = not sdl_window.fullscreen

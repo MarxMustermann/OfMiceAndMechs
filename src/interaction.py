@@ -6094,7 +6094,8 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 stageState = None
                 skip = False
         if stage == -1:
-            stageState = {"wait":True,"send_tracking_ping":False}
+            if not stageState:
+                stageState = {"wait":True,"send_tracking_ping":False}
             text = []
             text.append(src.urwidSpecials.makeRusty(logoText))
             text.append("press enter to show the intro cutscene\n")

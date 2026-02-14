@@ -4,7 +4,7 @@ import src
 
 class SettingMenu(src.subMenu.SubMenu):
     type = "SettingMenu"
-    setting_options = ["auto save", "sound", "set sound volume", "fullscreen", "change npc rendering","SDL"]
+    setting_options = ["auto save", "sound", "set sound volume", "fullscreen", "change npc rendering","SDL","tracking"]
 
     def __init__(self, default=None, targetParamName="selection"):
         self.index = 0
@@ -46,6 +46,8 @@ class SettingMenu(src.subMenu.SubMenu):
                         src.interaction.sdl_window.fullscreen = src.interaction.settings["fullscreen"]
                     case "SDL":
                         src.interaction.settings["SDL"] = not src.interaction.settings["SDL"]
+                    case "tracking":
+                        src.interaction.settings["tracking"] = not src.interaction.settings["tracking"]
                     case "auto save":
                         src.interaction.settings["auto save"] = not src.interaction.settings.get("auto save",False)
 
@@ -82,6 +84,12 @@ class SettingMenu(src.subMenu.SubMenu):
                 case "SDL":
                     text += setting + ":          "
                     if src.interaction.settings["SDL"]:
+                        text += "On"
+                    else:
+                        text += "Off"
+                case "tracking":
+                    text += setting + ":          "
+                    if src.interaction.settings["tracking"]:
                         text += "On"
                     else:
                         text += "Off"

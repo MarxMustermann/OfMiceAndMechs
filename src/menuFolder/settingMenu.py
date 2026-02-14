@@ -82,13 +82,13 @@ class SettingMenu(src.subMenu.SubMenu):
                     else:
                         text += "Off"
                 case "SDL":
-                    text += setting + ":          "
+                    text += setting + ":                 "
                     if src.interaction.settings["SDL"]:
                         text += "On"
                     else:
                         text += "Off"
                 case "tracking":
-                    text += setting + ":          "
+                    text += setting + ":            "
                     if src.interaction.settings["tracking"]:
                         text += "On"
                     else:

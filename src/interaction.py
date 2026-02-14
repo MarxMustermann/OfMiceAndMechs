@@ -492,6 +492,29 @@ def changeVolume():
     if tcodMixer:
         channel = tcodMixer.get_channel("background")
         channel.volume = settings["sound"]/ 320.0
+
+def send_tracking_ping(eventType):
+    if not src.interaction.settings.get("tracking"):
+        return
+    import requests
+    from threading import Thread
+    def send_d():
+        t = time.time()
+        res = requests.post(
+            "http://ofmiceandmechs.com/userTracking.php",
+            {
+                "userId": "test",
+                "eventType": eventType,
+            },
+        )
+        print(res)
+        print(res.text)
+        diff = time.time() - t
+        if diff < 2:
+            time.sleep(diff)
+
+    t = Thread(target=send_d)
+    t.start()
     
 footer = None
 main = None

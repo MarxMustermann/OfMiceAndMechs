@@ -496,6 +496,7 @@ def changeVolume():
 def send_tracking_ping(eventType):
     if not src.interaction.settings.get("tracking"):
         return
+
     import requests
     from threading import Thread
     def send_d():
@@ -503,7 +504,7 @@ def send_tracking_ping(eventType):
         res = requests.post(
             "http://ofmiceandmechs.com/userTracking.php",
             {
-                "userId": "test",
+                "userId": src.interaction.settings.get("trackingId",""),
                 "eventType": eventType,
             },
         )
@@ -6792,6 +6793,7 @@ FOLLOW YOUR ORDERS
                     if key == tcod.event.KeySym.y:
                         stage = -1
                         src.interaction.settings["tracking"] = True
+                        src.interaction.ensure_tracking_id()
                 else:
                     if key == tcod.event.KeySym.F11:
                         sdl_window.fullscreen = not sdl_window.fullscreen
@@ -6807,6 +6809,10 @@ FOLLOW YOUR ORDERS
 
         if not stageState:
             stage += 1
+
+def ensure_tracking_id():
+    if not src.interaction.settings.get("trackingId"):
+        src.interaction.settings["trackingId"] = random.randint(0,1000000)
 
 def showRunOutro(endingType="bad"):
 

@@ -52,9 +52,9 @@ class SettingMenu(src.subMenu.SubMenu):
                         src.interaction.settings["SDL"] = not src.interaction.settings["SDL"]
                     case "tracking":
                         src.interaction.settings["tracking"] = not src.interaction.settings["tracking"]
+                        src.interaction.ensure_tracking_id()
                     case "auto save":
                         src.interaction.settings["auto save"] = not src.interaction.settings.get("auto save",False)
-
                     case "change npc rendering":
                         character.macroState["submenue"] = src.menuFolder.changeViewsMenu.ChangeViewsMenu()
 

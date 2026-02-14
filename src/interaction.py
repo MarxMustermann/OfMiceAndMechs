@@ -6094,12 +6094,16 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 stageState = None
                 skip = False
         if stage == -1:
-            stageState = {"wait":True}
+            stageState = {"wait":True,"send_tracking_ping":False}
             text = []
             text.append(src.urwidSpecials.makeRusty(logoText))
             text.append("press enter to show the intro cutscene\n")
             text.append("press esc to skip the intro cutscene\n")
             text.append("press F11 to toggle fullscreen\n\n")
+
+            if not stageState.get("send_tracking_ping"):
+                src.interaction.send_tracking_ping("opened game")
+                stageState["send_tracking_ping"] = True
 
             if not first_render:
                 printUrwidToTcod(text, (64, 4))

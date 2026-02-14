@@ -6119,7 +6119,11 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 skip = False
         if stage == 0:
             if stageState is None:
-                stageState = {"substep":1,"lastChange":time.time()}
+                stageState = {"substep":1,"lastChange":time.time(),"send_tracking_ping":False}
+
+            if not stageState.get("send_tracking_ping"):
+                src.interaction.send_tracking_ping("intro_stage_0")
+                stageState["send_tracking_ping"] = True
 
             if not skip:
                 text = """
@@ -6143,7 +6147,7 @@ You """+"."*stageState["substep"]+"""
 
         if stage == 1:
             if stageState is None:
-                stageState = {"lastChange":time.time(),"substep":0,"animationStep":0}
+                stageState = {"lastChange":time.time(),"substep":0,"animationStep":0,"send_tracking_ping":False}
 
                 scrapTakenMap = {}
                 blockedMap = set()
@@ -6160,6 +6164,10 @@ You """+"."*stageState["substep"]+"""
                 for tile in [(6,6),(7,6),(8,6),(8,7)]:
                     for _i in range(1,10):
                         stageState["MoldToAdd"].append(((tile[0]*15+random.randint(1,13),tile[1]*15+random.randint(1,13),0),))
+
+            if not stageState.get("send_tracking_ping"):
+                src.interaction.send_tracking_ping("intro_stage_1")
+                stageState["send_tracking_ping"] = True
 
             if not skip:
                 text = ["""You are born into a world of metal"""]
@@ -6261,7 +6269,7 @@ You """+"."*stageState["substep"]+"""
             terrain.lastRender = None
 
             if stageState is None:
-                stageState = {"lastChange":time.time(), "items":[],"terrainItems":[],"outputslots":[],"walkingSpaces":[],"inputslots":[],"fastSpawn":set(),"subStep":0,"didRemove":False}
+                stageState = {"lastChange":time.time(), "items":[],"terrainItems":[],"outputslots":[],"walkingSpaces":[],"inputslots":[],"fastSpawn":set(),"subStep":0,"didRemove":False,"send_tracking_ping":False}
 
                 machine = src.items.itemMap["Machine"]()
                 machine.setToProduce("Sheet")
@@ -6513,6 +6521,10 @@ You """+"."*stageState["substep"]+"""
                 stageState["inputslots"].append(("Scrap",(1,9,0)))
                 stageState["inputslots"].append(("Scrap",(1,9,0)))
 
+            if not stageState.get("send_tracking_ping"):
+                src.interaction.send_tracking_ping("intro_stage_2")
+                stageState["send_tracking_ping"] = True
+
             if not skip:
                 roomRender = room.render()
                 roomRender = fixRoomRender(roomRender)
@@ -6608,7 +6620,11 @@ You """+"."*stageState["substep"]+"""
             terrain.lastRender = None
 
             if stageState is None:
-                stageState = {"lastChange":time.time()}
+                stageState = {"lastChange":time.time(),"send_tracking_ping":False}
+
+            if not stageState.get("send_tracking_ping"):
+                src.interaction.send_tracking_ping("intro_stage_3")
+                stageState["send_tracking_ping"] = True
 
             if not skip:
                 terrainRender = terrain.render(coordinateOffset=(15*6,15*6),size=(44,44))
@@ -6675,6 +6691,10 @@ You """+"."*stageState["substep"]+"""
 
                 src.gamestate.gamestate.mainChar = npc
 
+            if not stageState.get("send_tracking_ping"):
+                src.interaction.send_tracking_ping("intro_stage_4")
+                stageState["send_tracking_ping"] = True
+
             terrainRender = terrain.render(coordinateOffset=(15*6,15*6),size=(44,44))
             terrainRender = fixRoomRender(terrainRender)
             printUrwidToTcod(text1, (38 + c_offset, 2))
@@ -6711,7 +6731,11 @@ You """+"."*stageState["substep"]+"""
             terrain.lastRender = None
 
             if stageState is None:
-                stageState = {"lastChange":time.time(),"substep":0}
+                stageState = {"lastChange":time.time(),"substep":0,"send_tracking_ping":False}
+
+            if not stageState.get("send_tracking_ping"):
+                src.interaction.send_tracking_ping("intro_stage_5")
+                stageState["send_tracking_ping"] = True
 
             if not skip:
                 offset = min(stageState["substep"],16)
@@ -6733,7 +6757,11 @@ You """+"."*stageState["substep"]+"""
 
         if stage == 6:
             if stageState is None:
-                stageState = {"lastChange":time.time(),"substep":0,"animationStep":0}
+                stageState = {"lastChange":time.time(),"substep":0,"animationStep":0,"send_tracking_ping":False}
+
+            if not stageState.get("send_tracking_ping"):
+                src.interaction.send_tracking_ping("intro_stage_6")
+                stageState["send_tracking_ping"] = True
 
             text1 = """
 But despite all the unknowns, you have that voice in your head. It tells you:"""

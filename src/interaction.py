@@ -6858,14 +6858,22 @@ def showDemoOutro():
         text = """
 SADLY THE DEMO ENDS HERE.
 
+
 Please give me feedback on what to improve.
 Also consider supporting me financially to see the full version soon.
+
+
+
+You can continue playing the demo though:
+
+press ESC to continue playing
 """
 
         printUrwidToTcod(text,(40,14))
 
         tcodPresent()
 
+        continue_game = False
         events = tcod.event.get()
         for event in events:
             if isinstance(event, tcod.event.Quit):
@@ -6883,9 +6891,12 @@ Also consider supporting me financially to see the full version soon.
                 if key == tcod.event.KeySym.F11:
                     sdl_window.fullscreen = not sdl_window.fullscreen
                 if key == tcod.event.KeySym.ESCAPE:
-                    pass
+                    continue_game = True
                 if key == tcod.event.KeySym.RETURN:
                     pass
+
+        if continue_game:
+            break
 
 def showRunOutro(endingType="bad"):
 

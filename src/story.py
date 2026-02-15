@@ -3502,7 +3502,7 @@ This will close the tutorial and let you do your own thing.
         room = extraParameters.get("room")
         terrain = character.getTerrain()
 
-        src.interaction.send_tracking_ping("handle_player_intro_quest_choice"+"__"+quest_type)
+        src.interaction.send_tracking_ping("handle_player_intro_quest_choice"+"__"+str(quest_type))
 
         character.clear_quests()
 
@@ -3662,7 +3662,7 @@ This will close the tutorial and let you do your own thing.
         room = extraParameters.get("room")
         terrain = character.getTerrain()
 
-        src.interaction.send_tracking_ping("handle_player_quest_choice"+"__"+quest_type)
+        src.interaction.send_tracking_ping("handle_player_quest_choice"+"__"+str(quest_type))
 
         character.clear_quests()
 

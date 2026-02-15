@@ -7125,6 +7125,7 @@ press enter to continue playing"""]
                         
 
 def showRunIntro():
+    src.interaction.send_tracking_ping("started_run_intro")
 
     def fixRoomRender(render):
         for row in render:
@@ -7160,7 +7161,12 @@ def showRunIntro():
         c_offset = int(tcodConsole.width / 2 - 81)
         if stage == 0:
             if stageState is None:
-                stageState = {"substep":1,"lastChange":time.time()}
+                stageState = {"substep":1,"lastChange":time.time(),"send_tracking_ping":False}
+
+            if not stageState.get("send_tracking_ping"):
+                src.interaction.send_tracking_ping("run_intro_stage_0")
+                stageState["send_tracking_ping"] = True
+
             text = """
   |                                                                         |
 --+-------------------------------------------------------------------------+--
@@ -7213,6 +7219,13 @@ d.d..ddd.dd..d.d.d...ddd.d..d.dd.dd.d..d....d....d.....d.....dd.....d...
             #    subStep = 0
             #    subStep2 = 0
         elif stage == 1:
+            if stageState is None:
+                stageState = {"send_tracking_ping":False}
+
+            if not stageState.get("send_tracking_ping"):
+                src.interaction.send_tracking_ping("run_intro_stage_1")
+                stageState["send_tracking_ping"] = True
+
             tcodConsole.clear()
             painChars = ["#","%","&","*","+","`"]
             painColors = ["#fff","#55f","#f5f","#aaf","#a9f","#9af"]
@@ -7270,10 +7283,18 @@ grows and grows and grows and grows
                 sleepAmountGrow -= 0.00075
                 subStep += 1
             else:
+                stageState = None
                 stage += 1
                 subStep = 0
                 subStep2 = 0
         elif stage == 2:
+            if stageState is None:
+                stageState = {"send_tracking_ping":False}
+
+            if not stageState.get("send_tracking_ping"):
+                src.interaction.send_tracking_ping("run_intro_stage_2")
+                stageState["send_tracking_ping"] = True
+
             backgroundText = "You will rule the world some day, but first follow your orders.   "
 
             numChars=len(backgroundText)-14
@@ -7467,6 +7488,13 @@ press enter to continue
             time.sleep(0.2)
             subStep += 1
         elif stage ==  3:
+            if stageState is None:
+                stageState = {"send_tracking_ping":False,"send_tracking_ping_sub_0":False,"send_tracking_ping_sub_1":False,"send_tracking_ping_sub_2":False,"send_tracking_ping_sub_3":False,"send_tracking_ping_sub_4":False}
+
+            if not stageState.get("send_tracking_ping"):
+                src.interaction.send_tracking_ping("run_intro_stage_3")
+                stageState["send_tracking_ping"] = True
+
             c_offset -= 2
             text = """- You."""
             if subStep > 0:
@@ -7481,27 +7509,42 @@ try to remember how you got here ...\n""" + text
 
             printUrwidToTcod(text, (131 + c_offset, 22))
             if subStep == 0:
+                if not stageState.get("send_tracking_ping_sub_0"):
+                    src.interaction.send_tracking_ping("run_intro_stage_3_0")
+                    stageState["send_tracking_ping_sub_0"] = True
                 text = """
 suggested action:
 press enter
 to open your eyes"""
             elif subStep == 1:
+                if not stageState.get("send_tracking_ping_sub_1"):
+                    src.interaction.send_tracking_ping("run_intro_stage_3_1")
+                    stageState["send_tracking_ping_sub_1"] = True
                 text = """
 suggested action:
 press enter
 to feel around"""
             elif subStep == 2:
+                if not stageState.get("send_tracking_ping_sub_2"):
+                    src.interaction.send_tracking_ping("run_intro_stage_3_2")
+                    stageState["send_tracking_ping_sub_2"] = True
                 text = """
 suggested action:
 press enter
 to look around"""
             elif subStep == 3:
+                if not stageState.get("send_tracking_ping_sub_3"):
+                    src.interaction.send_tracking_ping("run_intro_stage_3_3")
+                    stageState["send_tracking_ping_sub_3"] = True
                 text = """
 suggested action:
 press enter
 to orient yourself"""
 
             else:
+                if not stageState.get("send_tracking_ping_sub_4"):
+                    src.interaction.send_tracking_ping("run_intro_stage_3_4")
+                    stageState["send_tracking_ping_sub_4"] = True
                 text = """
 suggested action:
 press enter
@@ -7574,6 +7617,7 @@ to remember"""
                 if key == tcod.event.KeySym.RETURN:
                     if stage != 3:
                         # move to next stage
+                        stageState = None
                         stage += 1
                         subStep = 0
 
@@ -7593,6 +7637,7 @@ to remember"""
                                 if numExplosions > 2:
                                     break
                             stage += 1
+                            stageState = None
                             subStep = 0
 
 def gameLoop(loop=None, user_data=None):

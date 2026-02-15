@@ -6862,11 +6862,7 @@ SADLY THE DEMO ENDS HERE.
 Please give me feedback on what to improve.
 Also consider supporting me financially to see the full version soon.
 
-
-
-You can continue playing the demo though:
-
-press ESC to continue playing
+press ESC to return to main menu
 """
 
         printUrwidToTcod(text,(40,14))
@@ -6896,7 +6892,11 @@ press ESC to continue playing
                     pass
 
         if continue_game:
-            break
+            src.gamestate.gamestate.mainChar.macroState["submenue"] = None
+            src.gamestate.gamestate.mainChar.specialRender = False
+            src.gamestate.gamestate.save()
+            src.gamestate.gamestate = None
+            raise EndGame("the game was ended manually")
 
 def showRunOutro(endingType="bad"):
 

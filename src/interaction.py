@@ -5875,6 +5875,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                         if key == tcod.event.KeySym.F11:
                             sdl_window.fullscreen = not sdl_window.fullscreen
                         if key == tcod.event.KeySym.y:
+                            src.interaction.send_tracking_ping("deleted_gamestate_"+str(gameIndex))
                             try:
                                 # register the save
                                 with open("gamestate/globalInfo.json") as globalInfoFile:
@@ -6833,12 +6834,14 @@ FOLLOW YOUR ORDERS
                         sdl_window.fullscreen = not sdl_window.fullscreen
                     if key == tcod.event.KeySym.RETURN:
                         skip = True
+                        src.interaction.send_tracking_ping("advanced_first_intro")
                     if key == tcod.event.KeySym.SPACE and stage == 4:
                         if not stageState["endless"]:
                             stageState["endless"] = True
                         else:
                             stageState = None
                     if key == tcod.event.KeySym.ESCAPE:
+                        src.interaction.send_tracking_ping("skipped_first_intro")
                         stage = 7
 
         if not stageState:

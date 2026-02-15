@@ -472,7 +472,6 @@ class Terrain:
                         # print some info
                         char.addMessage("the entry is blocked")
                         char.hurt(5,"getting stuck between rooms")
-                        # char.addMessage("press "+commandChars.activate+" to apply")
                         # if noAdvanceGame == False:
                         #    header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
 
@@ -482,7 +481,6 @@ class Terrain:
                 if len(room.itemByCoordinates[localisedEntry]) > 15:
                     char.addMessage("the entry is blocked by items.")
                     char.hurt(5,"getting stuck between rooms")
-                    # char.addMessage("press "+commandChars.activate+" to apply")
                     # if noAdvanceGame == False:
                     #    header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
                     return room.itemByCoordinates[localisedEntry][0]
@@ -833,7 +831,6 @@ class Terrain:
                 if item and not char.getItemWalkable(item):
                     # print some info
                     char.addMessage("You cannot walk there")
-                    # char.addMessage("press "+commandChars.activate+" to apply")
                     # if noAdvanceGame == False:
                     #    header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
 
@@ -844,7 +841,6 @@ class Terrain:
                     stepOnActiveItems.append(item)
             if not foundItem and len(foundItems) >= 15:
                 char.addMessage("the floor is too full to walk there")
-                # char.addMessage("press "+commandChars.activate+" to apply")
                 # if noAdvanceGame == False:
                 #    header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
 

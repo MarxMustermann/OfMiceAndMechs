@@ -79,7 +79,7 @@ You need to be at least rank 2 to contact main base.
             else:
                 src.interaction.send_tracking_ping("contacted_main base")
                 character.addMessage("no main base")
-                src.showDemoOutro()
+                src.interaction.showDemoOutro()
                 submenu = src.menuFolder.textMenu.TextMenu("""
 no main base found.
 """)

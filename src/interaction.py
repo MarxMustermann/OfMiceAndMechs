@@ -6855,7 +6855,14 @@ def showDemoOutro():
     while 1:
         tcodConsole.clear()
 
-        printUrwidToTcod("DEMO END",(40,14))
+        text = """
+SADLY THE DEMO ENDS HERE.
+
+Please give me feedback on what to improve.
+Also consider supporting me financially to see the full version soon.
+"""
+
+        printUrwidToTcod(text,(40,14))
 
         tcodPresent()
 
@@ -6876,19 +6883,9 @@ def showDemoOutro():
                 if key == tcod.event.KeySym.F11:
                     sdl_window.fullscreen = not sdl_window.fullscreen
                 if key == tcod.event.KeySym.ESCAPE:
-                    stage = 7
-                    if endingType == "bad":
-                        if stage > 1:
-                            src.gamestate.gamestate = None
-                            raise EndGame("the game was won")
-
+                    pass
                 if key == tcod.event.KeySym.RETURN:
-                    if endingType == "bad" and stage == 2 and subStep2 > 200:
-                        numStruggled += 1
-                    if not endingType == "bad" or stage < 2:
-                        stage += 1
-                        subStep = 0
-                        subStep2 = 0
+                    pass
 
 def showRunOutro(endingType="bad"):
 

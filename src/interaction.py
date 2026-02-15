@@ -6851,6 +6851,45 @@ def ensure_tracking_id():
     if not src.interaction.settings.get("trackingId"):
         src.interaction.settings["trackingId"] = random.randint(0,1000000)
 
+def showDemoOutro():
+    while 1:
+        tcodConsole.clear()
+
+        printUrwidToTcod("DEMO END",(40,14))
+
+        tcodPresent()
+
+        events = tcod.event.get()
+        for event in events:
+            if isinstance(event, tcod.event.Quit):
+                if src.interaction.tcodMixer:
+                    src.interaction.tcodMixer.close()
+                raise SystemExit()
+            if isinstance(event, tcod.event.WindowResized):
+                checkResetWindowSize(event.width,event.height)
+            if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
+                if src.interaction.tcodMixer:
+                    src.interaction.tcodMixer.close()
+                raise SystemExit()
+            if isinstance(event,tcod.event.KeyDown):
+                key = event.sym
+                if key == tcod.event.KeySym.F11:
+                    sdl_window.fullscreen = not sdl_window.fullscreen
+                if key == tcod.event.KeySym.ESCAPE:
+                    stage = 7
+                    if endingType == "bad":
+                        if stage > 1:
+                            src.gamestate.gamestate = None
+                            raise EndGame("the game was won")
+
+                if key == tcod.event.KeySym.RETURN:
+                    if endingType == "bad" and stage == 2 and subStep2 > 200:
+                        numStruggled += 1
+                    if not endingType == "bad" or stage < 2:
+                        stage += 1
+                        subStep = 0
+                        subStep2 = 0
+
 def showRunOutro(endingType="bad"):
 
     def fixRoomRender(render):

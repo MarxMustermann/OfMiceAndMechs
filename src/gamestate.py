@@ -145,6 +145,8 @@ class GameState:
         save the game state to disc
         '''
 
+        src.interaction.send_tracking_ping("saving_"+str(self.gameIndex))
+
         # note that the game was saved (obsolete?)
         self.savedThisTurn = True
 
@@ -226,6 +228,8 @@ class GameState:
         Returns:
             bool: success indicator
         '''
+
+        src.interaction.send_tracking_ping("loading_"+str(gameIndex))
 
         # update the metadata
         try:

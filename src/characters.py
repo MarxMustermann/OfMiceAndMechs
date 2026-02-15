@@ -2892,6 +2892,8 @@ press any other key to attack normally"""
                 self.terrainInfo[terrain.getPosition()] = {"tag":terrain.tag}
 
         if tag in ("changedTile","entered room",):
+            if src.gamestate.gamestate.mainChar == self:
+                src.interaction.send_tracking_ping("move_tile_"+str(self.getBigPosition()))
             if not self.container.isRoom:
                 terrain = self.getTerrain()
                 for other_character in terrain.getCharactersOnTile(self.getBigPosition())[:]:

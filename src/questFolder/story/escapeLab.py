@@ -111,6 +111,7 @@ Instructions to do that will be shown on the left of the screen as "suggested ac
         if self.character:
             return
 
+        src.interaction.send_tracking_ping("assigned_quest_EscapeLab")
         self.startWatching(character,self.wrapedTriggerCompletionCheck, "moved")
         self.startWatching(character,self.lookedAt, "lookedAt")
         super().assignToCharacter(character)

@@ -7613,8 +7613,10 @@ to remember"""
                 if key == tcod.event.KeySym.F11:
                     sdl_window.fullscreen = not sdl_window.fullscreen
                 if key == tcod.event.KeySym.ESCAPE:
+                    src.interaction.send_tracking_ping("skipped_run_intro")
                     stage = 7
                 if key == tcod.event.KeySym.RETURN:
+                    src.interaction.send_tracking_ping("moved_run_intro")
                     if stage != 3:
                         # move to next stage
                         stageState = None

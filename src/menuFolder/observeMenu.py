@@ -9,10 +9,14 @@ class ObserveMenu(src.subMenu.SubMenu):
         self.index_big = character.getBigPosition()
         self.character = character
 
+        if character == src.gamestate.gamestate.mainChar:
+            src.interaction.send_tracking_ping("created_observe_menu")
+
     def getTitle(self):
         return "OBSERVE"
 
     def handleKey(self, key, noRender=False, character = None):
+        src.interaction.send_tracking_ping("created_observe_menu_key_pressed_"+str(key))
 
         # exit the submenu
         if key in ("esc"," ",):

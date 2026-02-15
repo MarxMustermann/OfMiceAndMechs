@@ -43,6 +43,7 @@ class EscapeLab(src.quests.MetaQuestSequence):
 
         if not self.shownGoToDoor and not character.macroState.get("submenue"):
             if not dryRun:
+                src.interaction.send_tracking_ping("showed_room_door_found")
                 self.character.showTextMenu(["""
 Now that you found the Door, exit the room before it explodes.
 

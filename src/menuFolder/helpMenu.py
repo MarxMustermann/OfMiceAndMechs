@@ -11,6 +11,7 @@ class HelpMenu(src.subMenu.SubMenu):
     def __init__(self):
         self.skipKeypress = True
         super().__init__()
+        src.interaction.send_tracking_ping("opened_help_menu")
 
     def getTitle(self):
         return "HELP"

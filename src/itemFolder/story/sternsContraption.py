@@ -47,6 +47,8 @@ class MainContraption(src.items.Item):
                 for character in self.container.characters[:]:
                     character.addMessage("something explodes and sends shrapnel into the room")
                     character.hurt(character.health//2,reason="hit by shrapnel")
+                    if character == src.gamestate.gamestate.mainChar:
+                        src.interaction.send_tracking_ping("shrapnel_1")
 
             if tick > 6:
                 self.container.addAnimation(self.getPosition(),"smoke",2,{})
@@ -55,6 +57,8 @@ class MainContraption(src.items.Item):
                 for character in self.container.characters[:]:
                     character.addMessage("something explodes into shrapnel")
                     character.hurt(25,reason="hit by shrapnel")
+                    if character == src.gamestate.gamestate.mainChar:
+                        src.interaction.send_tracking_ping("shrapnel_2")
                 for i in range(1,2):
                     pos = (random.randint(1,13),random.randint(1,13),0)
                     self.container.addAnimation(pos,"smoke",6,{})
@@ -69,6 +73,8 @@ class MainContraption(src.items.Item):
             if tick == 10:
                 for character in self.container.characters[:]:
                     character.addMessage("your implant urges:\nleave the room!\nDo this by follow the suggested action\nIt is on the left side of the screen.")
+                    if character == src.gamestate.gamestate.mainChar:
+                        src.interaction.send_tracking_ping("room_message_1")
             if tick > 10:
                 self.container.addAnimation(self.getPosition(),"smoke",4,{})
                 self.container.addAnimation(self.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#faa", "#f00"), "%%")]})
@@ -77,6 +83,8 @@ class MainContraption(src.items.Item):
                     character.addMessage("you hear a *BOOM* and *klink**klink**klink*")
                     character.hurt(30,reason="hit by shrapnel")
                     character.addMessage("your implant screams:\nleave NOW!\nDo this by follow the suggested action\nIt is shown on the left side of the screen.")
+                    if character == src.gamestate.gamestate.mainChar:
+                        src.interaction.send_tracking_ping("shrapnel_3")
                 for i in range(1,3):
                     pos = (random.randint(1,13),random.randint(1,13),0)
                     self.container.addAnimation(pos,"smoke",6,{})
@@ -99,6 +107,8 @@ class MainContraption(src.items.Item):
                     text = "You need to leave the room NOW.\nEverything will explode.\nFollow the instruction on the left side of the screen."
                     character.addMessage(text)
                     character.showTextMenu(text,do_not_scale=True)
+                    if character == src.gamestate.gamestate.mainChar:
+                        src.interaction.send_tracking_ping("shrapnel_4")
                 for i in range(1,5):
                     pos = (random.randint(1,13),random.randint(1,13),0)
                     self.container.addAnimation(pos,"smoke",6,{})
@@ -192,11 +202,14 @@ class MainContraption(src.items.Item):
                         contraption.startMeltdown()
 
             if self.meltdownLevel > 4:
+                src.interaction.send_tracking_ping("explosion_start_room")
                 for character in self.container.characters[:]:
                     if not character.dead:
                         character.addMessage("you feel the floor shake\nand the walls move\nand everything explodes")
                         character.addMessage("you die")
                         character.die(reason="you died from explosion")
+                        if character == src.gamestate.gamestate.mainChar:
+                            src.interaction.send_tracking_ping("explosion_death")
 
             self.container.addAnimation(self.getPosition(),"smoke",2,{})
             self.container.addAnimation(self.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#faa", "#f00"), "%%")]})

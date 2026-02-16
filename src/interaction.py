@@ -2766,6 +2766,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
         """
         # move the player
         if key in (":",):
+            char.addMessage("You wait for 0.1 turn")
             char.takeTime(0.1,"short wait")
         if key in (",",):
             char.startWaitForEnemyApproach(10)

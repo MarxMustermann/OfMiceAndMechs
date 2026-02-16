@@ -39,10 +39,10 @@ class HelpMenu(src.subMenu.SubMenu):
             character.changed("closedHelp")
             return True
 
-        if key in ("s","down",):
-            self.index += 1
-        if key in ("w","up",):
+        if key in ("a","left",):
             self.index -= 1
+        if key in ("d","right",):
+            self.index += 1
 
         if self.index < 0:
             self.index = 3
@@ -58,7 +58,7 @@ class HelpMenu(src.subMenu.SubMenu):
 
     def render(self):
         txt = []
-        txt.append("press w/s to move cursor\n")
+        txt.append("press a/d to move cursor\n")
         title = ""
         color = "#666"
         if self.index == 0:
@@ -69,7 +69,7 @@ class HelpMenu(src.subMenu.SubMenu):
         if self.index == 1:
             color = "#fff"
             title = "keybindings"
-        txt.append((src.interaction.urwid.AttrSpec(color, "#000"),"\n= keybindings ="))
+        txt.append((src.interaction.urwid.AttrSpec(color, "#000"),"= keybindings ="))
         color = "#666"
         if self.index == 2:
             color = "#fff"
@@ -81,7 +81,6 @@ class HelpMenu(src.subMenu.SubMenu):
             title = "submenues"
         txt.append((src.interaction.urwid.AttrSpec(color, "#000"),"= submenues==\n"))
 
-        txt.append((src.interaction.urwid.AttrSpec("#fff", "#000"),f"\n\n== {title} ==\n"))
         if self.index == 0:
             txt.append("\n")
             txt.append("The implant is your main help in this game.\n")

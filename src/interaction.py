@@ -7542,16 +7542,20 @@ press enter to continue
                 stageState["send_tracking_ping"] = True
 
             c_offset -= 2
-            text = """- You."""
+            text = ["""- You."""]
             if subStep > 0:
-                text = """- You see walls made out of solid steel.\n""" + text
+                line = """- You see walls made out of solid steel.\n"""
+                text.insert(0,line)
             if subStep > 1:
-                text = """- You feel the touch of the cold hard floor.\n""" + text
+                line = """- You feel the touch of the cold hard floor.\n"""
+                text.insert(0,line)
             if subStep > 2:
-                text = """- The room is filled with various items.\n""" + text
+                line = """- The room is filled with various items.\n"""
+                text.insert(0,line)
             if subStep > 3:
-                text = """- You recognise your hostile suroundings and
-try to remember how you got here ...\n""" + text
+                line = """- You recognise your hostile suroundings and
+try to remember how you got here ...\n"""
+                text.insert(0,line)
 
             printUrwidToTcod(text, (131 + c_offset, 22))
             if subStep == 0:

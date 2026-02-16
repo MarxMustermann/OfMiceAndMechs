@@ -38,6 +38,7 @@ if __name__ == '__main__':
         parser.add_argument("-notcod", "--notcod", action="store_true", help="do not use tcod renderer")
         parser.add_argument("-df", "--difficulty", type=str, help="set the difficulty for this run")
         parser.add_argument("-nf", "--noFlicker", action="store_true", help="disable flickering (not fully done yet)")
+        parser.add_argument("--noDemo", action="store_true", help="start the game as full version")
         args = parser.parse_args()
 
         ################################################################################
@@ -60,6 +61,9 @@ if __name__ == '__main__':
 
         if args.noFlicker:
             interaction.noFlicker = args.noFlicker
+
+        if args.noDemo:
+            interaction.noDemo = True
 
         if args.seed:
             seed = int(args.seed)

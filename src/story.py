@@ -1879,9 +1879,9 @@ but they are likely to explode when disturbed.
                     pos = (15*x+random.randint(2,11),15*y+random.randint(2,11),0)
                     if currentTerrain.getItemByPosition(pos):
                         continue
-                    rod = src.items.itemMap["Bolt"]()
-                    rod.bolted = False
-                    currentTerrain.addItem(rod,pos)
+                    bolt = src.items.itemMap["Bolt"]()
+                    bolt.bolted = False
+                    currentTerrain.addItem(bold,pos)
 
         # place a ro just in reach for the player
         pos = (15*2+random.randint(2,13),15*7+random.randint(2,13),0)

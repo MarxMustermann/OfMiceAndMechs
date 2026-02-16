@@ -23,13 +23,13 @@ class ObserveMenu(src.subMenu.SubMenu):
             return True
 
         # move small cursor
-        if key in ("w",):
+        if key in ("w","up",):
             self.index = (self.index[0],self.index[1]-1,0)
-        if key in ("s",):
+        if key in ("s","down",):
             self.index = (self.index[0],self.index[1]+1,0)
-        if key in ("a",):
+        if key in ("a","left",):
             self.index = (self.index[0]-1,self.index[1],0)
-        if key in ("d",):
+        if key in ("d","right",):
             self.index = (self.index[0]+1,self.index[1],0)
 
         # handle out of bounds by small cursor

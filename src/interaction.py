@@ -7546,20 +7546,35 @@ press enter to continue
                 stageState["send_tracking_ping"] = True
 
             c_offset -= 2
-            text = ["""- You."""]
+            color = "#666"
+            if subStep == 0:
+                color = "#fff"
+            text = [(src.interaction.urwid.AttrSpec(color,"#000"),"""- You.""")]
             if subStep > 0:
+                color = "#666"
+                if subStep == 1:
+                    color = "#fff"
                 line = """- You see walls made out of solid steel.\n"""
-                text.insert(0,line)
+                text.insert(0,(src.interaction.urwid.AttrSpec(color,"#000"),line))
             if subStep > 1:
+                color = "#666"
+                if subStep == 2:
+                    color = "#fff"
                 line = """- You feel the touch of the cold hard floor.\n"""
-                text.insert(0,line)
+                text.insert(0,(src.interaction.urwid.AttrSpec(color,"#000"),line))
             if subStep > 2:
+                color = "#666"
+                if subStep == 3:
+                    color = "#fff"
                 line = """- The room is filled with various items.\n"""
-                text.insert(0,line)
+                text.insert(0,(src.interaction.urwid.AttrSpec(color,"#000"),line))
             if subStep > 3:
+                color = "#666"
+                if subStep == 4:
+                    color = "#fff"
                 line = """- You recognise your hostile suroundings and
 try to remember how you got here ...\n"""
-                text.insert(0,line)
+                text.insert(0,(src.interaction.urwid.AttrSpec(color,"#000"),line))
 
             printUrwidToTcod(text, (131 + c_offset, 22))
             if subStep == 0:

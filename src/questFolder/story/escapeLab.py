@@ -23,20 +23,17 @@ class EscapeLab(src.quests.MetaQuestSequence):
             submenue = character.macroState["submenue"]
             if submenue and not ignoreCommands:
                 if isinstance(submenue,src.menuFolder.observeMenu.ObserveMenu):
-                    if submenue.index_big[0] < 6:
-                        return (None,("D","move cursor onte tile east"))
-                    if submenue.index_big[0] > 6:
-                        return (None,("A","move cursor onte tile west"))
-                    if submenue.index_big[1] > 10:
-                        return (None,("W","move cursor onte tile north"))
-                    if submenue.index_big[1] < 10:
-                        return (None,("S","move cursor onte tile south"))
-                    if submenue.index[0] < 6:
-                        return (None,("d","move cursor east"))
-                    if submenue.index[0] > 6:
-                        return (None,("a","move cursor west"))
-                    if submenue.index[1] > 0:
-                        return (None,("w","move cursor north"))
+                    command = ""
+                    command += "D"*(6-submenue.index_big[0])
+                    command += "A"*(submenue.index_big[0]-6)
+                    command += "W"*(submenue.index_big[1]-10)
+                    command += "S"*(10-submenue.index_big[1])
+                    command += "d"*(6-submenue.index[0])
+                    command += "a"*(submenue.index[0]-6)
+                    command += "w"*(submenue.index[1]-0)
+                    command += "s"*(0-submenue.index[1])
+                    if command != "":
+                        return (None,(command,"move cursor to door"))
                 return (None,(["esc",],"close the menu"))
             if not self.lookedAtDoor:
                 return (None,("o","open observe menu"))
@@ -47,8 +44,10 @@ class EscapeLab(src.quests.MetaQuestSequence):
                 self.character.showTextMenu(["""
 Now that you found the Door, exit the room before it explodes.
 
-The instructions on how to do this will be shown on the left side on the screen.
-Keep in mind that capital letters have to be pressed as shift+letter.
+The instructions on how to do this will be shown on the left side on the screen.""",
+(src.interaction.urwid.AttrSpec("#ff2","#000"),"""
+Keep in mind that capital letters have to be pressed as shift+letter."""),
+"""
 Capital letters will be shown in blueish tint.
 
 For example:
@@ -58,7 +57,7 @@ if the suggested action is \"""",(src.interaction.urwid.AttrSpec("#aad","#000"),
     press shift+c then
     press w then
     press x
-"""])
+""",])
                 self.shownGoToDoor = True
                 return (None,("~","reach out to implant"))
 
@@ -76,7 +75,7 @@ if the suggested action is \"""",(src.interaction.urwid.AttrSpec("#aad","#000"),
             return (None,("w","gain distance to room"))
 
         if not character.getPosition() == (6,1,0):
-            quest = src.quests.questMap["GoToPosition"](targetPosition=(6,1,0),reason="reach the door",description="reach the door")
+            quest = src.quests.questMap["GoToPosition"](targetPosition=(6,1,0),reason="reach the door",description="reach the door",targetName="Door")
             return ([quest],None)
         
         if not character.container.getPositionWalkable((6,0,0)):

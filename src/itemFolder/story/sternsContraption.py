@@ -104,7 +104,14 @@ class MainContraption(src.items.Item):
                 for character in self.container.characters[:]:
                     character.addMessage("something big explodes and\nit sounds like something even bigger broke")
                     character.hurt(10,reason="hit by shrapnel")
-                    text = "\n"*5+"You need to leave the room NOW.\nEverything will explode.\nFollow the instruction on the left side of the screen."+"\n"*5
+                    text = []
+                    text.append("\n"*5)
+                    text.append("You need to leave the room NOW.")
+                    text.append("\n"*3)
+                    text.append("Everything will explode.")
+                    text.append("\n"*3)
+                    text.append("Follow the instruction on the left side of the screen.")
+                    text.append("\n"*5)
                     character.addMessage(text)
                     character.showTextMenu(text,do_not_scale=True)
                     if character == src.gamestate.gamestate.mainChar:

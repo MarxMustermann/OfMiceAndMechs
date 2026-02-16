@@ -6703,6 +6703,7 @@ You """+"."*stageState["substep"]+"""
 
             if src.gamestate.gamestate.tick > 10400:
                 printUrwidToTcod("press enter to stop watching", (50 + c_offset, 4))
+                printUrwidToTcod("press enter to stop watching", (50 + c_offset, 51))
             tcodPresent()
 
             if stageState["substep"] < 1 and time.time()-stageState["lastChange"] > 0:

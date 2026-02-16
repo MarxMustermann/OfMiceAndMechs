@@ -43,8 +43,7 @@ fixedTicks = False
 speed = None
 libtcodpy = None
 noFlicker = False
-
-
+noDemo = False
 
 class EndGame(Exception):
     pass

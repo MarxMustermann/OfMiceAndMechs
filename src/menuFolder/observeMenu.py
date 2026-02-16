@@ -84,7 +84,8 @@ class ObserveMenu(src.subMenu.SubMenu):
         # show the coordinate line
         coordinate_line = ""
         first_coordinate = f"  {self.index}"
-        first_coordinate_bit = f"{first_coordinate}"+" "*(34-len(first_coordinate))
+        first_coordinate_bit = f"obseved coordinate: {first_coordinate}"
+        first_coordinate_bit += " "*(34-len(first_coordinate_bit))
         coordinate_line = first_coordinate_bit
         if self.index_big != self.character.getBigPosition():
             coordinate_line += f"|  {self.index_big}"

@@ -1861,18 +1861,21 @@ but they are likely to explode when disturbed.
                     continue
 
                 for i in range(1,random.randint(1,4)):
+                    pos = (15*x+random.randint(2,11),15*y+random.randint(2,11),0)
                     wall = src.items.itemMap["Wall"]()
                     wall.bolted = False
-                    currentTerrain.addItem(wall,(15*x+random.randint(2,11),15*y+random.randint(2,11),0))
+                    currentTerrain.addItem(wall,pos)
 
                 if random.random() > 0.2:
+                    pos = (15*x+random.randint(2,11),15*y+random.randint(2,11),0)
                     rod = src.items.itemMap["Rod"]()
                     rod.bolted = False
-                    currentTerrain.addItem(rod,(15*x+random.randint(2,11),15*y+random.randint(2,11),0))
+                    currentTerrain.addItem(rod,pos)
                 if random.random() > 0.2:
+                    pos = (15*x+random.randint(2,11),15*y+random.randint(2,11),0)
                     rod = src.items.itemMap["Bolt"]()
                     rod.bolted = False
-                    currentTerrain.addItem(rod,(15*x+random.randint(2,11),15*y+random.randint(2,11),0))
+                    currentTerrain.addItem(rod,pos)
 
         # place a ro just in reach for the player
         pos = (15*2+random.randint(2,13),15*7+random.randint(2,13),0)

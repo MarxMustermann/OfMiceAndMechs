@@ -47,7 +47,7 @@ class HelpMenu(src.subMenu.SubMenu):
 
     def render(self):
         txt = ""
-        txt += "\n== implant ==\n"
+        txt += "\n== implant ==\n\n"
         txt += "The implant is your main help in this game.\n"
         txt += "It will guide you from start to end and will always show you what keys to press to progress.\n"
         txt += "On easy difficuly you can finish the game by blindly typing down the keys shown.\n"

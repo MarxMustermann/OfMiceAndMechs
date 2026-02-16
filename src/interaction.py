@@ -7506,10 +7506,10 @@ grows and grows and grows and grows
             printUrwidToTcod(text, (36 + c_offset, 13))
             text = ""
             text += """
-Something breaks"""
+Something breaks and"""
             if subStep > 15:
                 baseText = """
-and your implant stops emitting pain.
+your implant stops emitting pain.
 
 For a moment you hear terrible silence,"""
                 #text += " ".join(baseText.split(" ")[:(subStep-15)])

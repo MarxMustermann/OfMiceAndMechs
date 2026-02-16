@@ -45,8 +45,8 @@ class HelpMenu(src.subMenu.SubMenu):
             self.index -= 1
 
         if self.index < 0:
-            self.index = 2
-        if self.index > 2:
+            self.index = 3
+        if self.index > 3:
             self.index = 0
 
         # show info
@@ -95,7 +95,12 @@ class HelpMenu(src.subMenu.SubMenu):
             txt.append("      use shift for alternate attacks\n")
             txt.append("      f - shoot\n")
             txt.append("      m - attack enemy on the same square\n")
-            txt.append("\n  = submenues =\n\n")
+        color = "#666"
+        if self.index == 2:
+            color = "#fff"
+        txt.append((src.interaction.urwid.AttrSpec(color, "#000"),"\n== submenues==\n"))
+        if self.index == 2:
+            txt.append("\n")
             txt.append("      o: observe\n")
             txt.append("      O: observe alternates\n")
             txt.append("      e/E - examine nearby items\n")
@@ -105,17 +110,21 @@ class HelpMenu(src.subMenu.SubMenu):
             txt.append("      x: open message log\n")
             txt.append("      v: open character overwiev\n")
             txt.append("      p: cast magic\n")
-            txt.append("  sadly the controls cannot be changed at the moment\n")
-            txt.append("  if you have issues with the character running into walls, tap the keys instead of holding them\n")
 
         color = "#666"
-        if self.index == 2:
+        if self.index == 3:
             color = "#fff"
         txt.append((src.interaction.urwid.AttrSpec(color, "#000"),"\n== user interface ==\n"))
-        if self.index == 2:
+        if self.index == 3:
+            txt.append("\n")
             txt.append("      F11: toggle fullscreen\n")
             txt.append("      ctrl +/-: zoom in/out\n")
             txt.append("\n")
             txt.append("\n")
+        txt.append("\n")
+        txt.append("\n")
+        txt.append("\n")
+        txt.append("sadly the controls cannot be changed at the moment\n")
+        txt.append("if you have issues with the character running into walls, tap the keys instead of holding them\n")
 
         return txt

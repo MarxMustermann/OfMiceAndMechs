@@ -64,22 +64,28 @@ class HelpMenu(src.subMenu.SubMenu):
         if self.index == 0:
             color = "#fff"
             title = "implant"
-        txt.append((src.interaction.urwid.AttrSpec(color, "#000"),"\n== implant ="))
+        txt.append((src.interaction.urwid.AttrSpec(color, "#000"),"\n[ implant ] "))
         color = "#666"
         if self.index == 1:
             color = "#fff"
             title = "keybindings"
-        txt.append((src.interaction.urwid.AttrSpec(color, "#000"),"= keybindings ="))
+        txt.append((src.interaction.urwid.AttrSpec(color, "#000"),"[ keybindings ] "))
         color = "#666"
         if self.index == 2:
             color = "#fff"
             title = "user interface"
-        txt.append((src.interaction.urwid.AttrSpec(color, "#000"),"= user interface ="))
+        txt.append((src.interaction.urwid.AttrSpec(color, "#000"),"[ user interface ] "))
         color = "#666"
         if self.index == 3:
             color = "#fff"
             title = "submenues"
-        txt.append((src.interaction.urwid.AttrSpec(color, "#000"),"= submenues==\n"))
+        txt.append((src.interaction.urwid.AttrSpec(color, "#000"),"[ submenues ]\n"))
+
+        txt.append("\n")
+        txt.append("\n")
+        txt.append((src.interaction.urwid.AttrSpec("#fff", "#000"),f"== {title} =="))
+        txt.append("\n")
+        txt.append("\n")
 
         if self.index == 0:
             txt.append("\n")
@@ -91,24 +97,24 @@ class HelpMenu(src.subMenu.SubMenu):
             txt.append("The implants instructions will try to adpapt as good as it can.\n")
 
         if self.index == 1:
-            txt.append("\n  = movement =\n\n")
-            txt.append("w/a/s/d - move north/east/south/west (up/left/down/right)\n")
-            txt.append("use shift for special movement\n")
-            txt.append("\n  = wait =\n\n")
-            txt.append("./:/,/; - wait 1 turn / 0.1 turn / enemy approach / enemy nearby\n")
-            txt.append("\n  = item interaction =\n\n")
-            txt.append("j/J - activate items\n")
-            txt.append("c/C - complex activate items\n")
-            txt.append("k/K - pick up item\n")
-            txt.append("l/L -  drop item\n")
+            txt.append("\n= movement =\n\n")
+            txt.append("  w/a/s/d - move north/east/south/west (up/left/down/right)\n")
+            txt.append("  use shift for special movement\n")
+            txt.append("\n= wait =\n\n")
+            txt.append("  ./:/,/; - wait 1 turn / 0.1 turn / enemy approach / enemy nearby\n")
+            txt.append("\n= item interaction =\n\n")
+            txt.append("  j/J - activate items\n")
+            txt.append("  c/C - complex activate items\n")
+            txt.append("  k/K - pick up item\n")
+            txt.append("  l/L -  drop item\n")
             txt.append("\n")
-            txt.append("lowercase keys work on the square you stand on or the last item you bumped into\n")
-            txt.append("uppercase keys open a secondary menu for selection what to interact with\n")
-            txt.append("\n  = fighting =\n\n")
-            txt.append("w/a/s/d - attack north/east/south/west\n")
-            txt.append("use shift for alternate attacks\n")
-            txt.append("f - shoot\n")
-            txt.append("m - attack enemy on the same square\n")
+            txt.append("  lowercase keys work on the square you stand on or the last item you bumped into\n")
+            txt.append("  uppercase keys open a secondary menu for selection what to interact with\n")
+            txt.append("\n= fighting =\n\n")
+            txt.append("  w/a/s/d - attack north/east/south/west\n")
+            txt.append("  use shift for alternate attacks\n")
+            txt.append("  f - shoot\n")
+            txt.append("  m - attack enemy on the same square\n")
         if self.index == 2:
             txt.append("\n")
             txt.append("o: observe\n")

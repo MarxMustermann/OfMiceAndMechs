@@ -248,7 +248,7 @@ class ExamineMenu(src.subMenu.SubMenu):
                 text.append(f"level:       {char.level}\n")
             text.append(f"exhaustion:  {char.exhaustion}\n")
             text.append(f"timeTaken:   {round(char.timeTaken,2)}\n")
-            text.append(f"movemmentsp: {char.adjustedMovementSpeed}\n")
+            text.append(f"movementsp:  {char.adjustedMovementSpeed}\n")
             text.append(f"attacksp:    {char.attackSpeed}\n")
             text.append("\n")
         elif self.index <= len(show_characters)+len(items)-1:

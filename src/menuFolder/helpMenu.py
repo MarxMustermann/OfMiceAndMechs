@@ -47,7 +47,14 @@ class HelpMenu(src.subMenu.SubMenu):
 
     def render(self):
         txt = ""
-        txt += "\n== keybindings ==\n\n"
+        txt += "\n== implant ==\n"
+        txt += "The implant is your main help in this game.\n"
+        txt += "It will guide you from start to end and will always show you what keys to press to progress.\n"
+        txt += "On easy difficuly you can finish the game by blindly typing down the keys shown.\n"
+        txt += "The keys to press are shown on the left side of the screen as \"suggested action\".\n\n"
+        txt += "You are very welcome to not do what the implant suggests.\n"
+        txt += "The implants instructions will try to adpapt as good as it can.\n"
+        txt += "\n== keybindings ==\n"
         txt += "\n= movement =\n"
         txt += " w/a/s/d - move north/east/south/west (up/left/down/right)\n"
         txt += " use shift for special movement\n"

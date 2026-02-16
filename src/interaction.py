@@ -5388,7 +5388,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
         if canLoad:
             printUrwidToTcod("press D to delete gamestate",(offsetX+3,offsetY+29))
         else:
-            printUrwidToTcod("press d/s to edit game settings",(offsetX+3,offsetY+29))
+            printUrwidToTcod("press d to change (d)ifficulty",(offsetX+3,offsetY+29))
 
         color = "#fff"
         if saves[gameIndex]:

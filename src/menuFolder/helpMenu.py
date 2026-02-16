@@ -57,55 +57,65 @@ class HelpMenu(src.subMenu.SubMenu):
         return False
 
     def render(self):
-        txt = "press w/s to move cursor\n"
-        txt += "\n== implant ==\n"
+        txt = []
+        txt.append("press w/s to move cursor\n")
+        color = "#666"
         if self.index == 0:
-            txt += "\n"
-            txt += "The implant is your main help in this game.\n"
-            txt += "It will guide you from start to end and will always show you what keys to press to progress.\n"
-            txt += "On easy difficuly you can finish the game by blindly typing down the keys shown.\n"
-            txt += "The keys to press are shown on the left side of the screen as \"suggested action\".\n\n"
-            txt += "You are very welcome to not do what the implant suggests.\n"
-            txt += "The implants instructions will try to adpapt as good as it can.\n"
+            color = "#fff"
+        txt.append((src.interaction.urwid.AttrSpec(color, "#000"),"\n== implant ==\n"))
+        if self.index == 0:
+            txt.append("\n")
+            txt.append("The implant is your main help in this game.\n")
+            txt.append("It will guide you from start to end and will always show you what keys to press to progress.\n")
+            txt.append("On easy difficuly you can finish the game by blindly typing down the keys shown.\n")
+            txt.append("The keys to press are shown on the left side of the screen as \"suggested action\".\n\n")
+            txt.append("You are very welcome to not do what the implant suggests.\n")
+            txt.append("The implants instructions will try to adpapt as good as it can.\n")
 
-        txt += "\n== keybindings ==\n"
+        color = "#666"
         if self.index == 1:
-            txt += "\n= movement =\n"
-            txt += " w/a/s/d - move north/east/south/west (up/left/down/right)\n"
-            txt += " use shift for special movement\n"
-            txt += "\n= wait =\n"
-            txt += " ./:/,/; - wait 1 turn / 0.1 turn / enemy approach / enemy nearby\n"
-            txt += "\n= item interaction =\n"
-            txt += " j/J - activate items\n"
-            txt += " c/C - complex activate items\n"
-            txt += " k/K - pick up item\n"
-            txt += " l/L -  drop item\n"
-            txt += "\n"
-            txt += "lowercase keys work on the square you stand on or the last item you bumped into\n"
-            txt += "uppercase keys open a secondary menu for selection what to interact with\n"
-            txt += "\n= fighting =\n"
-            txt += " w/a/s/d - attack north/east/south/west\n"
-            txt += " use shift for alternate attacks\n"
-            txt += " f - shoot\n"
-            txt += " m - attack enemy on the same square\n"
-            txt += "\n= submenues =\n"
-            txt += " o: observe\n"
-            txt += " O: observe alternates\n"
-            txt += " e/E - examine nearby items\n"
-            txt += " q: open quests\n"
-            txt += " Q: open advanced quest menu\n"
-            txt += " i: open inventory\n"
-            txt += " x: open message log\n"
-            txt += " v: open character overwiev\n"
-            txt += " p: cast magic\n"
+            color = "#fff"
+        txt.append((src.interaction.urwid.AttrSpec(color, "#000"),"\n== keybindings ==\n"))
+        if self.index == 1:
+            txt.append("\n  = movement =\n\n")
+            txt.append("      w/a/s/d - move north/east/south/west (up/left/down/right)\n")
+            txt.append("      use shift for special movement\n")
+            txt.append("\n  = wait =\n\n")
+            txt.append("      ./:/,/; - wait 1 turn / 0.1 turn / enemy approach / enemy nearby\n")
+            txt.append("\n  = item interaction =\n\n")
+            txt.append("      j/J - activate items\n")
+            txt.append("      c/C - complex activate items\n")
+            txt.append("      k/K - pick up item\n")
+            txt.append("      l/L -  drop item\n")
+            txt.append("\n")
+            txt.append("     lowercase keys work on the square you stand on or the last item you bumped into\n")
+            txt.append("     uppercase keys open a secondary menu for selection what to interact with\n")
+            txt.append("\n  = fighting =\n\n")
+            txt.append("      w/a/s/d - attack north/east/south/west\n")
+            txt.append("      use shift for alternate attacks\n")
+            txt.append("      f - shoot\n")
+            txt.append("      m - attack enemy on the same square\n")
+            txt.append("\n  = submenues =\n\n")
+            txt.append("      o: observe\n")
+            txt.append("      O: observe alternates\n")
+            txt.append("      e/E - examine nearby items\n")
+            txt.append("      q: open quests\n")
+            txt.append("      Q: open advanced quest menu\n")
+            txt.append("      i: open inventory\n")
+            txt.append("      x: open message log\n")
+            txt.append("      v: open character overwiev\n")
+            txt.append("      p: cast magic\n")
+            txt.append("  sadly the controls cannot be changed at the moment\n")
+            txt.append("  if you have issues with the character running into walls, tap the keys instead of holding them\n")
 
-        txt += "\n== user interface ==\n"
+        color = "#666"
         if self.index == 2:
-            txt += " F11: toggle fullscreen\n"
-            txt += " ctrl +/-: zoom in/out\n"
-            txt += "\n"
-            txt += "sadly the controls cannot be changed at the moment\n"
-            txt += "if you have issues with the character running into walls, tap the keys instead of holding them\n"
-            txt += "\n"
+            color = "#fff"
+        txt.append((src.interaction.urwid.AttrSpec(color, "#000"),"\n== user interface ==\n"))
+        if self.index == 2:
+            txt.append("      F11: toggle fullscreen\n")
+            txt.append("      ctrl +/-: zoom in/out\n")
+            txt.append("\n")
+            txt.append("\n")
 
         return txt

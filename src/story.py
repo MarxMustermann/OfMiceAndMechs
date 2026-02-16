@@ -3057,7 +3057,8 @@ This will show  you the keybindings.
             name = "leave me alone"
             options.append((name, "leave me alone"))
             extraDescriptions[name] = """
-This will close the tutorial and let you do your own thing.
+This will close the tutorial and let you do your own thing for a bit.
+You can reopen the tutorial and any time.
 """
 
             submenu = src.menuFolder.selectionMenu.SelectionMenu(

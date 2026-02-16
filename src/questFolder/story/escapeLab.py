@@ -95,17 +95,19 @@ if the suggested action is \"""",(src.interaction.urwid.AttrSpec("#aad","#000"),
         door.blocked = False
 
         text = []
-        text.extend(["""
+        text.append("""
 You reach out to your implant and it answers:
 
 
 This room is exploding! We need to leave fast.
 
-Look for the door first then move.
+Look for the door first then move.""")
+
+        text.append((src.interaction.urwid.AttrSpec("#ff2","#000"),"""
 
 Instructions to do that will be shown on the left of the screen as "suggested action"
 
-"""])
+"""))
         return text
 
     def assignToCharacter(self, character):

@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 class GoToPosition(src.quests.MetaQuestSequence):
     type = "GoToPosition"
 
-    def __init__(self, description="go to position", creator=None,targetPosition=None,ignoreEndBlocked=False,reason=None,lifetime=None, idleMovement=False):
+    def __init__(self, description="go to position", creator=None,targetPosition=None,ignoreEndBlocked=False,reason=None,lifetime=None, idleMovement=False, targetName=None):
         if targetPosition:
             if targetPosition[0] < 0 or targetPosition[0] > 13:
                 raise ValueError(f"target position {targetPosition} out of range")
@@ -31,6 +31,8 @@ class GoToPosition(src.quests.MetaQuestSequence):
         self.path = []
         self.lowLevel = True
         self.idleMovement = idleMovement
+
+        self.targetName = targetName
 
     def generateTextDescription(self):
         '''
@@ -310,7 +312,16 @@ Close this menu by pressing esc and follow the instructions on the left hand men
                 command += "J"+movementMap[step]
 
             command += movementMap[step]
-        return (None,(command,"go to target position"))
+
+        try:
+            self.targetName
+        except:
+            self.targetName = None
+
+        target_name = self.targetName
+        if not target_name:
+            target_name = "target position"
+        return (None,(command,f"go to {target_name}"))
 
     def getRequiredParameters(self):
         '''

@@ -32,6 +32,6 @@ class ReachOutStory(src.quests.MetaQuestSequence):
         if not ignoreCommands and character.macroState.get("submenue"):
             return (None, (["esc"],"close submenu"))
         else:
-            return (None, ("q","reach implant"))
+            return (None, ("q","reach out to implant"))
 
 src.quests.addType(ReachOutStory)

@@ -106,13 +106,35 @@ class MainContraption(src.items.Item):
                     character.hurt(10,reason="hit by shrapnel")
                     text = []
                     text.append("\n"*5)
+                    text.append(" "*5)
                     text.append("You need to leave the room NOW.")
+                    text.append(" "*5)
                     text.append("\n"*3)
+                    text.append(" "*5)
                     text.append("Everything will explode.")
+                    text.append(" "*5)
                     text.append("\n"*3)
-                    text.append("Follow the instruction on the left side of the screen.")
+                    text.append(" "*5)
+                    text.append((src.interaction.urwid.AttrSpec("#f00", "#000"),"Follow the instruction on the left side of the screen."))
+                    text.append(" "*5)
+                    text.append("\n"*3)
+                    text.append(" "*5)
+                    text.append((src.interaction.urwid.AttrSpec("#ff2","#000"),"""Keep in mind that capital letters have to be pressed as shift+letter.     \n"""))
+                    text.append(" "*5)
+                    text.append(" "*5)
+                    text.extend(["""
+     Capital letters will be shown in blueish tint.
+
+     For example:
+
+     if the suggested action is \"""",(src.interaction.urwid.AttrSpec("#aad","#000"),"C"),""" w x":
+
+          press shift+c then
+          press w then
+          press x
+"""])
+                    text.append(" "*5)
                     text.append("\n"*5)
-                    character.addMessage(text)
                     character.showTextMenu(text,do_not_scale=True)
                     if character == src.gamestate.gamestate.mainChar:
                         src.interaction.send_tracking_ping("shrapnel_4")

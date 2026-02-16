@@ -283,6 +283,13 @@ class QuestMenu(src.subMenu.SubMenu):
                     nextstep = [f"suggested action: \npress "]+convertedCommanString+[f" \nto {reason}\n\n"]
                 else:
                     nextstep = "suggested action: \npress + \nto generate subquests\n\n"
+                if char.container.isRoom and char.container.tag == "the architects lab":
+                    color = "#fff"
+                    if src.gamestate.gamestate.tick > 11:
+                        color = "#ff0"
+                    if src.gamestate.gamestate.tick == 16 or src.gamestate.gamestate.tick >= 19:
+                        color = "#f00"
+                    nextstep = [(src.interaction.urwid.AttrSpec(color, "default"),nextstep)]
 
                 automatic = False
                 for quest in char.getActiveQuests():

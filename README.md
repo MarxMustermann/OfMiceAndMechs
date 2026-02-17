@@ -28,3 +28,4 @@ mail: marxmustermann@riseup.net
 * [credits](CREDITS.md)
 * [website](http://ofmiceandmechs.com/)
 
+[![Gitster Badge](https://gitster.dev/api/repositories/badge/cmlr5gqu1000cp96sm7hhpr2f)](https://gitster.dev/repo/marxmustermann/ofmiceandmechs)

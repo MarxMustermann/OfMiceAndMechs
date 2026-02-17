@@ -188,5 +188,11 @@ class ObserveMenu(src.subMenu.SubMenu):
             text.append(str(marker[0]))
             text.append("\n")
 
+        text.append("\n")
+        if container.isRoom:
+            text.append("steel floor (inside)\n")
+        else:
+            text.append("mud floor (outside)\n")
+
         # return rendered text
         return text

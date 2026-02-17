@@ -45,6 +45,8 @@ libtcodpy = None
 noFlicker = False
 noDemo = False
 
+upper_case_letter_color = "#66f"
+
 class EndGame(Exception):
     pass
 

@@ -127,7 +127,7 @@ class MainContraption(src.items.Item):
 
      For example:
 
-     if the suggested action is \"""",(src.interaction.urwid.AttrSpec("#66f","#000"),"C"),""" w x":
+     if the suggested action is \"""",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"C"),""" w x":
 
           press shift+c then
           press w then

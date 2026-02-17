@@ -275,7 +275,7 @@ class QuestMenu(src.subMenu.SubMenu):
                     for letter in solvingCommangString:
                         color = "#fff"
                         if letter.isupper():
-                            color = "#66f"
+                            color = src.interaction.upper_case_letter_color
                         convertedCommanString.append((src.interaction.urwid.AttrSpec(color, "default"), letter))
                         convertedCommanString.append(" ")
                     if solvingCommangString in ("esc","enter","backspace",):

@@ -103,7 +103,7 @@ Capital letters will be shown in blueish tint.
 
 For example:
 
-if the suggested action is \"""",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"C"),""" w x":
+if the suggested action is \" """,(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"C"),""" w x":
 
     press shift+c then
     press w then
@@ -113,29 +113,29 @@ if the suggested action is \"""",(src.interaction.urwid.AttrSpec(src.interaction
         if self.index == 1:
             txt.append("\n= movement =\n\n")
             txt.append("  w/a/s/d - move north/east/south/west (up/left/down/right)\n")
-            txt.append("  W/A/S/D - special move north/east/south/west\n")
+            txt.extend(["  ",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"W"),"/",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"A"),"/",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"S"),"/",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"D")," - special move north/east/south/west\n"])
             txt.append("\n= wait =\n\n")
-            txt.append("  ./:/,/; - wait 1 turn / 0.1 turn / enemy approach / enemy nearby\n")
+            txt.extend(["  ./",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),":"),"/,/",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),";")," - wait 1 turn / 0.1 turn / enemy approach / enemy nearby\n"])
             txt.append("\n= item interaction =\n\n")
-            txt.append("  j/J - activate items\n")
-            txt.append("  c/C - complex activate items\n")
-            txt.append("  k/K - pick up item\n")
-            txt.append("  l/L - drop item\n")
+            txt.extend(["  j/",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"J")," - activate items\n"])
+            txt.extend(["  c/",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"C")," - complex activate items\n"])
+            txt.extend(["  k/",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"K")," - pick up item\n"])
+            txt.extend(["  l/",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"L")," - drop item\n"])
             txt.append("\n")
             txt.append("  lowercase keys work on the square you stand on or the last item you bumped into\n")
             txt.append("  uppercase keys open a secondary menu for selection what to interact with\n")
             txt.append("\n= fighting =\n\n")
             txt.append("  w/a/s/d - attack north/east/south/west\n")
-            txt.append("  W/A/S/D - alterne atttack north/east/south/west\n")
+            txt.extend(["  ",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"W"),"/",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"A"),"/",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"S"),"/",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"D")," - alterne atttack north/east/south/west\n"])
             txt.append("  f       - shoot\n")
             txt.append("  m       - attack enemy on the same square\n")
         if self.index == 2:
             txt.append("\n")
             txt.append("o   - observe\n")
-            txt.append("O   - observe alternates\n")
-            txt.append("e/E - examine nearby items\n")
+            txt.extend([(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"O"),"   - observe alternates\n"])
+            txt.extend(["e/",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"E")," - examine nearby items\n"])
             txt.append("q   - open quests\n")
-            txt.append("Q   - open advanced quest menu\n")
+            txt.extend([(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"Q"),"   - open advanced quest menu\n"])
             txt.append("i   - open inventory\n")
             txt.append("x   - open message log\n")
             txt.append("v   - open character overwiev\n")

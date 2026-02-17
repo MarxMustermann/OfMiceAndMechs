@@ -113,7 +113,7 @@ if the suggested action is \"""",(src.interaction.urwid.AttrSpec("#66f","#000"),
         if self.index == 1:
             txt.append("\n= movement =\n\n")
             txt.append("  w/a/s/d - move north/east/south/west (up/left/down/right)\n")
-            txt.append("  use shift for special movement\n")
+            txt.append("  W/A/S/D - special move north/east/south/west\n")
             txt.append("\n= wait =\n\n")
             txt.append("  ./:/,/; - wait 1 turn / 0.1 turn / enemy approach / enemy nearby\n")
             txt.append("\n= item interaction =\n\n")
@@ -126,7 +126,7 @@ if the suggested action is \"""",(src.interaction.urwid.AttrSpec("#66f","#000"),
             txt.append("  uppercase keys open a secondary menu for selection what to interact with\n")
             txt.append("\n= fighting =\n\n")
             txt.append("  w/a/s/d - attack north/east/south/west\n")
-            txt.append("  use shift for alternate attacks\n")
+            txt.append("  W/A/S/D - alterne atttack north/east/south/west\n")
             txt.append("  f       - shoot\n")
             txt.append("  m       - attack enemy on the same square\n")
         if self.index == 2:

@@ -5487,26 +5487,26 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                         "|                                                                   |",
                         (offsetX + 3 + 16, offsetY + 33),
                     )
-                    printUrwidToTcod(
-                        "| (c)ustom                                                          |",
-                        (offsetX + 3 + 16, offsetY + 34),
-                    )
-                    printUrwidToTcod(
-                        "| custom difficulty settings                                        |",
-                        (offsetX + 3 + 16, offsetY + 35),
-                    )
-                    printUrwidToTcod(
-                        "|                                                                   |",
-                        (offsetX + 3 + 16, offsetY + 36),
-                    )
-                    printUrwidToTcod(
-                        "| press shift and difficulty button to edit it                      |",
-                        (offsetX + 3 + 16, offsetY + 37),
-                    )
+                    #printUrwidToTcod(
+                    #    "| (c)ustom                                                          |",
+                    #    (offsetX + 3 + 16, offsetY + 34),
+                    #)
+                    #printUrwidToTcod(
+                    #    "| custom difficulty settings                                        |",
+                    #    (offsetX + 3 + 16, offsetY + 35),
+                    #)
+                    #printUrwidToTcod(
+                    #    "|                                                                   |",
+                    #    (offsetX + 3 + 16, offsetY + 36),
+                    #)
+                    #printUrwidToTcod(
+                    #    "| press shift and difficulty button to edit it                      |",
+                    #    (offsetX + 3 + 16, offsetY + 37),
+                    #)
                     if not len(custom_difficultyMap):
                         printUrwidToTcod(
                             "+-------------------------------------------------------------------+",
-                            (offsetX + 3 + 16, offsetY + 38),
+                            (offsetX + 3 + 16, offsetY + 34),
                         )
                     else:
                         printUrwidToTcod(
@@ -5788,9 +5788,9 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                                 prepereCustomDiff()
                             else:
                                 submenu.pop()
-                        if key == tcod.event.KeySym.c:
-                            difficultyMap = global_difficultyMap["custom"]
-                            prepereCustomDiff()
+                        #if key == tcod.event.KeySym.c:
+                        #    difficultyMap = global_difficultyMap["custom"]
+                        #    prepereCustomDiff()
                     if isinstance(event, tcod.event.TextInput):
                         for i, v in enumerate(custom_difficultyMap):
                             if str(i + 1) == event.text:

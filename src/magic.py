@@ -541,6 +541,7 @@ def spawnSpawnRoom(terrain, coordinate, faction, doors="0,6 6,0 6,12 12,6"):
     spawn a room with equipment to spawn clones
     '''
     spawnedRoom = spawnRoom(terrain, "EmptyRoom", coordinate, doors)
+    spawnRoom.tag = "secondary lab"
     for item in spawnedRoom.itemsOnFloor:
         if item.type != "Door":
             continue

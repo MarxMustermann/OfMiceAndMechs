@@ -77,6 +77,9 @@ class ObserveMenu(src.subMenu.SubMenu):
         # getting some helper variables
         terrain = self.character.getTerrain()
         rooms = terrain.getRoomByPosition(self.index_big)
+        container = terrain
+        if rooms:
+            container = rooms[0]
 
         # set the besaic text
         text = []
@@ -89,16 +92,22 @@ class ObserveMenu(src.subMenu.SubMenu):
         coordinate_line = first_coordinate_bit
         if self.index_big != self.character.getBigPosition():
             coordinate_line += f"|  {self.index_big}"
+        if container.isRoom:
+            if container.tag:
+                coordinate_line += f" {container.tag}"
+            else:
+                coordinate_line += f" room"
+            coordinate_line += f" (inside)"
+        else:
+            coordinate_line += f" mud field (outside)"
         coordinate_line += " "*(68-len(coordinate_line))+"\n"
         text.append(coordinate_line)
 
         # render rooms
-        if rooms:
-            rawRender = rooms[0].render(padding=1)
-            container = rooms[0]
+        if container.isRoom:
+            rawRender = container.render(padding=1)
         else:
-            rawRender = terrain.render(coordinateOffset=(15*self.index_big[1],15*self.index_big[0]),size=(14,14))
-            container = terrain
+            rawRender = container.render(coordinateOffset=(15*self.index_big[1],15*self.index_big[0]),size=(14,14))
         miniMapRender = terrain.renderTiles()
 
         # show the maps

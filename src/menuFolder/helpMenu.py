@@ -95,6 +95,20 @@ class HelpMenu(src.subMenu.SubMenu):
             txt.append("The keys to press are shown on the left side of the screen as \"suggested action\".\n\n")
             txt.append("You are very welcome to not do what the implant suggests.\n")
             txt.append("The implants instructions will try to adpapt as good as it can.\n")
+            txt.extend(["""
+
+The instructions on how to do this will be shown on the left side on the screen.
+Keep in mind that capital letters have to be pressed as shift+letter.
+Capital letters will be shown in blueish tint.
+
+For example:
+
+if the suggested action is \"""",(src.interaction.urwid.AttrSpec("#66f","#000"),"C"),""" w x":
+
+    press shift+c then
+    press w then
+    press x
+""",])
 
         if self.index == 1:
             txt.append("\n= movement =\n\n")
@@ -106,31 +120,31 @@ class HelpMenu(src.subMenu.SubMenu):
             txt.append("  j/J - activate items\n")
             txt.append("  c/C - complex activate items\n")
             txt.append("  k/K - pick up item\n")
-            txt.append("  l/L -  drop item\n")
+            txt.append("  l/L - drop item\n")
             txt.append("\n")
             txt.append("  lowercase keys work on the square you stand on or the last item you bumped into\n")
             txt.append("  uppercase keys open a secondary menu for selection what to interact with\n")
             txt.append("\n= fighting =\n\n")
             txt.append("  w/a/s/d - attack north/east/south/west\n")
             txt.append("  use shift for alternate attacks\n")
-            txt.append("  f - shoot\n")
-            txt.append("  m - attack enemy on the same square\n")
+            txt.append("  f       - shoot\n")
+            txt.append("  m       - attack enemy on the same square\n")
         if self.index == 2:
             txt.append("\n")
-            txt.append("o: observe\n")
-            txt.append("O: observe alternates\n")
+            txt.append("o   - observe\n")
+            txt.append("O   - observe alternates\n")
             txt.append("e/E - examine nearby items\n")
-            txt.append("q: open quests\n")
-            txt.append("Q: open advanced quest menu\n")
-            txt.append("i: open inventory\n")
-            txt.append("x: open message log\n")
-            txt.append("v: open character overwiev\n")
-            txt.append("p: cast magic\n")
+            txt.append("q   - open quests\n")
+            txt.append("Q   - open advanced quest menu\n")
+            txt.append("i   - open inventory\n")
+            txt.append("x   - open message log\n")
+            txt.append("v   - open character overwiev\n")
+            txt.append("p   - cast magic\n")
 
         if self.index == 3:
             txt.append("\n")
-            txt.append("F11: toggle fullscreen\n")
-            txt.append("ctrl +/-: zoom in/out\n")
+            txt.append("F11      - toggle fullscreen\n")
+            txt.append("ctrl +/- - zoom in/out\n")
             txt.append("\n")
             txt.append("\n")
         txt.append("\n")

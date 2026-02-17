@@ -5387,7 +5387,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
         printUrwidToTcod("press p to (p)lay",(offsetX+3,offsetY+20))
 
-        printUrwidToTcod("press p to (p)lay",(offsetX+3,offsetY+27))
+        printUrwidToTcod("press p/enter to (p)lay",(offsetX+3,offsetY+27))
         printUrwidToTcod("press g to select (g)ameslot",(offsetX+3,offsetY+28))
         if canLoad:
             printUrwidToTcod("press D to delete gamestate",(offsetX+3,offsetY+29))
@@ -5932,7 +5932,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                             sdl_window.fullscreen = not sdl_window.fullscreen
                         if key == tcod.event.KeySym.ESCAPE:
                             submenu.append("confirmQuit")
-                        if key == tcod.event.KeySym.p:
+                        if key == tcod.event.KeySym.p or key == tcod.event.KeySym.RETURN:
                             try:
                                 # register the save
                                 with open("gamestate/globalInfo.json") as globalInfoFile:

@@ -237,7 +237,7 @@ class InventoryMenu(src.subMenu.SubMenu):
                     extra_rows = (self.min_lines-5)-num_rows
                     txt.append("\n"*(extra_rows))
                     num_rows += extra_rows
-                txt.append("press ws to move cursor\npress L to drop item nearby\npress l to drop item\npress j to activate item\npress e to examine item")
+                txt.extend(["press ws to move cursor\npress ",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"L")," to drop item nearby\npress l to drop item\npress j to activate item\npress e to examine item"])
                 num_rows += 4
         else:
             txt.append("empty Inventory\n")

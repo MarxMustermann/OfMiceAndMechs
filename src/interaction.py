@@ -6833,6 +6833,8 @@ FOLLOW YOUR ORDERS
                         src.interaction.settings["tracking"] = True
                         src.interaction.ensure_tracking_id()
                         src.interaction.send_tracking_ping("accepted tracking")
+                        with open("config/globalSettings.json", "w") as f:
+                            json.dump(src.interaction.settings, f)
                 else:
                     if key == tcod.event.KeySym.F11:
                         sdl_window.fullscreen = not sdl_window.fullscreen

@@ -2335,6 +2335,10 @@ press any other key to attack normally"""
         if self.dead:
             logger.error("Tried to kill Dead Charc",self,exc_info= 1)
             return
+
+        if self == src.gamestate.gamestate.mainChar:
+            src.interaction.send_tracking_ping("died__"+str(reason))
+
         self.changed("died_pre", {"character": self, "reason": reason,"killer": killer, "pre": True})
         self.quests = []
 

@@ -234,6 +234,7 @@ You can only have one close combat perk
                     "params": extraInfo,
                 }
                 character.runCommandString("~",nativeKey=True)
+                src.interaction.send_tracking_ping("got rank 5 promotion")
                 return
             if character.rank == 5:
                 options = []
@@ -262,6 +263,7 @@ You can only have one special movement perk
                     "params": extraInfo,
                 }
                 character.runCommandString("~",nativeKey=True)
+                src.interaction.send_tracking_ping("got rank 4 promotion")
                 return
             if character.rank == 4:
                 options = []
@@ -290,6 +292,7 @@ You can only have one ranged attack perk
                     "params": extraInfo,
                 }
                 character.runCommandString("~",nativeKey=True)
+                src.interaction.send_tracking_ping("got rank 3 promotion")
                 return
             if character.rank == 3:
                 options = []
@@ -318,6 +321,7 @@ You can only have one attribute perk
                     "params": extraInfo,
                 }
                 character.runCommandString("~",nativeKey=True)
+                src.interaction.send_tracking_ping("got rank 2 promotion")
                 return
             self.do_promotion(extraInfo)
 

@@ -535,6 +535,7 @@ The room has to be a rectangle.
         self.xPosition = roomLeft
         self.yPosition = roomTop
 
+        src.interaction.send_tracking_ping("built_room")
         character.changed("built room",{"character":character,"room":room})
 
 src.items.addType(RoomBuilder)

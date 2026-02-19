@@ -3143,6 +3143,16 @@ The base seems to be abandoned and i recommend we should try to contact the main
                     text += """
 We need get promoted to rank 2 to contact the main base"""
 
+                if src.gamestate.gamestate.stern.get("rank4promotionfailed"):
+                    text += """
+We need to build more rooms to be able to reach rank 4.
+There is a unfinished buildsite on coordinate (8,7,0), we should complete it.
+"""
+                    if self._get_snatchers(mainChar):
+                        text += """
+It is too dangerous to work outside right now.
+The snatchers will kill everybody stepping outside, you may want to kill them.
+"""
             text += """
 
 Please select on what to focus next:
@@ -3214,6 +3224,12 @@ Now that you have the right rank, contact command again.
             elif not src.gamestate.gamestate.stern.get("failedBaseContact1"):
                 options.append(("contact main base", "contact main base"))
 
+            elif mainChar.rank > 4 and not src.gamestate.gamestate.stern.get("rank4promotionfailed"):
+                name = "get promotion"
+                options.append((name, "get promotion"))
+                extraDescriptions[name] = """
+Get a promotion to be able to contact the base commander.
+"""
             elif src.gamestate.gamestate.stern.get("rank4promotionfailed") and self._get_snatchers(mainChar):
                 name = "confront snatchers"
                 options.append((name, "confront snatcher"))

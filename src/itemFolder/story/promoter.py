@@ -251,7 +251,8 @@ You can only have one special movement perk
                 submenu = src.menuFolder.selectionMenu.SelectionMenu(
                     text = text,
                     options=options,
-                    targetParamName="rewardType"
+                    targetParamName="rewardType",
+                    extraDescriptions=extraDescriptions,
                 )
                 submenu.do_not_scale = True
 
@@ -278,7 +279,8 @@ You can only have one ranged attack perk
                 submenu = src.menuFolder.selectionMenu.SelectionMenu(
                     text = text,
                     options=options,
-                    targetParamName="rewardType"
+                    targetParamName="rewardType",
+                    extraDescriptions=extraDescriptions,
                 )
                 submenu.do_not_scale = True
 
@@ -305,7 +307,8 @@ You can only have one attribute perk
                 submenu = src.menuFolder.selectionMenu.SelectionMenu(
                     text = text,
                     options=options,
-                    targetParamName="rewardType"
+                    targetParamName="rewardType",
+                    extraDescriptions=extraDescriptions,
                 )
                 submenu.do_not_scale = True
 

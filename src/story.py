@@ -3144,14 +3144,28 @@ The base seems to be abandoned and i recommend we should try to contact the main
 We need get promoted to rank 2 to contact the main base"""
 
                 if src.gamestate.gamestate.stern.get("rank4promotionfailed"):
-                    text += """
+                    if not terrain.getRoomByPosition((8,7,0)):
+                        text += """
 We need to build more rooms to be able to reach rank 4.
 There is a unfinished buildsite on coordinate (8,7,0), we should complete it.
 """
-                    if self._get_snatchers(mainChar):
-                        text += """
+                        if self._get_snatchers(mainChar):
+                            text += """
 It is too dangerous to work outside right now.
 The snatchers will kill everybody stepping outside, you may want to kill them.
+"""
+                        if terrain.getEnemiesOnTile(mainChar,(8,7,0)):
+                            text += """
+The old buildsite is overrun with siders.
+You need to kill them before the room can be build.
+"""
+                    elif self._get_available_rooms(mainChar):
+                        text += """
+We should make use of the newly build room.
+"""
+                    else:
+                        text += """
+You can get promoted from rank 5 to rank 4 now.
 """
             text += """
 
@@ -3232,7 +3246,7 @@ Get a promotion to be able to contact the base commander.
 """
             elif src.gamestate.gamestate.stern.get("rank4promotionfailed") and self._get_snatchers(mainChar):
                 name = "confront snatchers"
-                options.append((name, "confront snatcher"))
+                options.append((name, "confront snatchers"))
                 extraDescriptions[name] = """
 To get a rank 3 promotion you need at least 3 clones beside you on the base.
 Spawn a Clone to fulfill that requirement.

@@ -163,6 +163,7 @@ class ObserveMenu(src.subMenu.SubMenu):
             if show_character == self.character:
                 text.append(" (You)")
             elif show_character.faction == self.character.faction:
+                text.append(f" - {show_character.name}")
                 text.append(" (ally)")
             else:
                 text.append(" (enemy)")

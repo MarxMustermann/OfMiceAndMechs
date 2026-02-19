@@ -241,8 +241,7 @@ You can only have one close combat perk
                 options.append(("endurance run","endurance run"))
                 extraDescriptions["endurance run"] = "your alternate movement only costs 80% time, but costs 1 exhaustion"
                 options.append(("jump","jump"))
-                extraDescriptions["endurance run"] = "your alternate movement only costs 50% time, but costs 5 exhaustion"
-                extraDescriptions = {"special attacks":"your alternate attack is a selection of special attacks","swap attack":"your alternate attack allows you to switch places the attacked"}
+                extraDescriptions["jump"] = "your alternate movement only costs 50% time, but costs 5 exhaustion"
                 text = """
 As a a reward for getting promoted from rank 5 to rank 4 you can select a special movement perk.
 

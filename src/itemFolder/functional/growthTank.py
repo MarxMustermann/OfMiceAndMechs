@@ -164,16 +164,11 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
         # emtpy growth tank
         self.filled = False
 
-        name = getRandomName(
-            self.xPosition + self.container.timeIndex,
-            self.yPosition + self.container.timeIndex,
-        )
-        character = src.characters.characterMap["Clone"](
-            src.canvas.displayChars.staffCharactersByLetter[name[0].lower()],
-            name=name,
-        )
+        new_character = src.characters.characterMap["Clone"]()
 
-        character.solvers = [
+        character.showTextMenu(f"\nyou use the GrowthTank to spawn a clone.\n\nIt is named {new_character.name} ({new_character.name.split(" ")[0][0]}{new_character.name.split(" ")[1][0]})\n")
+
+        new_character.solvers = [
             "SurviveQuest",
             "Serve",
             "NaiveMoveQuest",
@@ -194,16 +189,16 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
         flask = src.items.itemMap["GooFlask"]()
         flask.uses = self.gooCharges
         self.gooCharges = 0
-        character.flask = flask
+        new_character.flask = flask
 
         # inhabit character
         # character.fallUnconcious()
         # character.hasFloorPermit = False
-        self.container.addCharacter(character, self.xPosition + 1, self.yPosition)
+        self.container.addCharacter(new_character, self.xPosition + 1, self.yPosition)
         # character.revokeReputation(amount=4,reason="being helpless")
-        character.runCommandString("jj")
+        new_character.runCommandString("jj")
         #self.runCommand("born", character=character)
 
-        return character
+        return new_character
 
 src.items.addType(GrowthTank)

@@ -292,6 +292,7 @@ You can only have one ranged attack perk
                 return
             if character.rank == 3:
                 options = []
+                extraDescriptions = {}
                 options.append(("max health boost","max health boost"))
                 extraDescriptions["max health boost"] = "2 times the maxHP"
                 options.append(("movement speed boost","movement speed boost"))

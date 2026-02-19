@@ -3265,10 +3265,6 @@ Spawn a Clone to fulfill that requirement.
 You need to clear the terrain from enemies a room to get a promotion.
 """
             elif mainChar.rank > 2:
-                print(src.gamestate.gamestate.stern.get("rank2promotionfailed"))
-                print(src.gamestate.gamestate.stern.get("rank2promotionfailed"))
-                print(self._get_enemies(mainChar))
-                #options.append(("rank 2 promotion", "rank 2 promotion"))
                 name = "get promotion"
                 options.append((name, "get promotion"))
                 extraDescriptions[name] = """

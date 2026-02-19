@@ -3266,6 +3266,12 @@ You need to build a room to get a promotion.
 You need to clear the build site before building it.
 """
 
+            elif mainChar.rank > 3 and not src.gamestate.gamestate.stern.get("rank3promotionfailed"):
+                name = "get promotion"
+                options.append((name, "get promotion"))
+                extraDescriptions[name] = """
+Get a promotion to be able to contact the base commander.
+"""
             elif src.gamestate.gamestate.stern.get("rank3promotionfailed") and len(self._get_free_clones(mainChar)) < 4 and not showed_spawn_option:
                 name = "spawn clone"
                 options.append((name, "spawn clone"))

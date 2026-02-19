@@ -3139,7 +3139,7 @@ We need to spawn a backup clone to be able to reach rank 5.
             if not src.gamestate.gamestate.stern.get("failedBaseContact2"):
                 text += """
 The base seems to be abandoned and i recommend we should try to contact the main base."""
-                if src.gamestate.gamestate.stern.get("failedBaseContact1"):
+                if src.gamestate.gamestate.stern.get("failedBaseContact1") and mainChar.rank > 2:
                     text += """
 We need get promoted to rank 2 to contact the main base"""
 
@@ -3284,7 +3284,7 @@ You need to clear the build site before building it.
                 extraDescriptions[name] = """
 Get a promotion to be able to contact the base commander.
 """
-            elif src.gamestate.gamestate.stern.get("rank3promotionfailed") and len(self._get_free_clones(mainChar)) < 4 and not showed_spawn_option:
+            elif src.gamestate.gamestate.stern.get("rank3promotionfailed") and len(self._get_free_clones(mainChar)) < 4 and not showed_spawn_option and mainChar.rank == 4:
                 name = "spawn clone"
                 options.append((name, "spawn clone"))
                 extraDescriptions[name] = """

@@ -6042,7 +6042,7 @@ def showIntro():
     src.gamestate.gamestate.mainChar.faction = "city demo"
 
     stage = -2
-    if src.interaction.settings.get("tracking"):
+    if "tracking" in src.interaction.settings:
         stage = -1
     stageState = None
     room = None

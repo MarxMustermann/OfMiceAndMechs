@@ -5387,12 +5387,13 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
         printUrwidToTcod("press p to (p)lay",(offsetX+3,offsetY+20))
 
-        printUrwidToTcod("press p/enter to (p)lay",(offsetX+3,offsetY+27))
-        printUrwidToTcod("press g to select (g)ameslot",(offsetX+3,offsetY+28))
+        printUrwidToTcod("press f to open the (f)eedback form",(offsetX+3,offsetY+27))
+        printUrwidToTcod("press p/enter to (p)lay",(offsetX+3,offsetY+28))
+        printUrwidToTcod("press g to select (g)ameslot",(offsetX+3,offsetY+29))
         if canLoad:
-            printUrwidToTcod("press D to delete gamestate",(offsetX+3,offsetY+29))
+            printUrwidToTcod("press D to delete gamestate",(offsetX+3,offsetY+30))
         else:
-            printUrwidToTcod("press d to change (d)ifficulty",(offsetX+3,offsetY+29))
+            printUrwidToTcod("press d to change (d)ifficulty",(offsetX+3,offsetY+30))
 
         color = "#fff"
         if saves[gameIndex]:
@@ -5918,6 +5919,9 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                         raise SystemExit()
                     if isinstance(event, tcod.event.KeyDown):
                         key = event.sym
+                        if key == tcod.event.KeySym.f:
+                            import webbrowser
+                            webbrowser.open_new_tab("http://ofmiceandmechs.com/playtest_questionaire.php")
                         if key == tcod.event.KeySym.z:
                             import webbrowser
                             webbrowser.open_new_tab("https://discord.gg/z5QfwfzWCn")
@@ -6874,9 +6878,9 @@ Also consider supporting me financially to see the full version soon.
 Just kidding. You can play the whole game if you want.
 It would be a good time to give me feedback though.
 
-
+press enter to open feedback page
 press c to continue playing
-press ESC to return to main menu
+press esc to return to main menu
 """
 
         printUrwidToTcod(text,(40,14))
@@ -6903,7 +6907,8 @@ press ESC to return to main menu
                 if key == tcod.event.KeySym.ESCAPE:
                     continue_game = True
                 if key == tcod.event.KeySym.RETURN:
-                    pass
+                    import webbrowser
+                    webbrowser.open_new_tab("http://ofmiceandmechs.com/playtest_questionaire.php")
                 if key == tcod.event.KeySym.c:
                     return
 

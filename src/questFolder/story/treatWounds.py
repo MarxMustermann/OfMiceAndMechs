@@ -115,7 +115,7 @@ A quick way to heal is to use Vials.""")
             result.append("""
 You have a Vial in your inventory. Use it to heal yourself.
 """)
-        result.append("""
+        result.extend(["""
 
 Try to collect more vials and other useful things.
 Your inventory is now shown on the top right side of the screen.
@@ -123,10 +123,20 @@ You can access the inventory menu by pressing i.
 
 
 Right now you are looking at the quest menu.
-Detailed instructions are shown here.
+Detailed descriptions are shown here.
+The keys to press are shown on the left side of the screen.
+
+For example:
+
+if the suggested action is \"""",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"J")," ",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"H"),"""\":
+
+    press shift+j then
+    press shift+h
+""","""
+
 For now ignore the options below and press esc to continue.
 
-""")
+"""])
         return result
 
     def assignToCharacter(self, character):

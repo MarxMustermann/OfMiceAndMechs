@@ -3143,7 +3143,7 @@ The base seems to be abandoned and i recommend we should try to contact the main
                     text += """
 We need get promoted to rank 2 to contact the main base"""
 
-                if src.gamestate.gamestate.stern.get("rank4promotionfailed"):
+                if src.gamestate.gamestate.stern.get("rank4promotionfailed") and mainChar.rank == 5:
                     if not terrain.getRoomByPosition((8,7,0)):
                         text += """
 We need to build more rooms to be able to reach rank 4.
@@ -3167,6 +3167,18 @@ We should make use of the newly build room.
                         text += """
 You can get promoted from rank 5 to rank 4 now.
 """
+
+                if src.gamestate.gamestate.stern.get("rank3promotionfailed") and mainChar.rank == 4 and len(self._get_free_clones(mainChar)) < 4:
+                    text += """
+We need to spawn more clones to be able to reach rank 3.
+"""
+
+                if src.gamestate.gamestate.stern.get("rank2promotionfailed") and mainChar.rank == 3 and self._get_enemies(mainChar):
+                    text += """
+
+We need to clear the terrain from all enemies to get promoted
+"""
+
             text += """
 
 Please select on what to focus next:
@@ -3196,7 +3208,7 @@ The alarm should probably be activated while there are Snatchers out there.
                 options.append((name, "stop alarm"))
                 extraDescriptions[name] = """
 Now that the Snatchers are dead the environment outside the base can be accessed somewhat safely.
-
+Disabling the alarm will allow your clones to work outside.
 """
                 showed_stop_alarm_option = True
             if self._get_traprooms_to_clean(mainChar):
@@ -3276,9 +3288,7 @@ Get a promotion to be able to contact the base commander.
                 name = "spawn clone"
                 options.append((name, "spawn clone"))
                 extraDescriptions[name] = """
-There are insects outside snatching every Clone that goes outside.
-All of those insects need to be killed or nothing can be done outside the base. 
-"""
+Spawn more clones to fulfil the propmotion requirement for rank 3"""
                 showed_spawn_option = True
             elif len(self._get_free_clones(mainChar)) < 3 and not showed_spawn_option:
                 name = "spawn clone"

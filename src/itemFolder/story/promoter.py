@@ -209,8 +209,11 @@ Kill all enemies on this terrain, to unlock the promotions to rank 2.
         while character.rank > highestAllowed:
             if character.rank == 6:
                 options = []
+                extraDescriptions = {}
                 options.append(("special attacks","special attacks"))
-                options.append(("swap attacks","swap attacks"))
+                extraDescriptions["special attacks"] = "your alternate attack is a selection of special attacks"
+                options.append(("swap attacks","swap attack"))
+                extraDescriptions["swap attacks"] = "your alternate attack allows you to switch places the attacked"
                 text = """
 As a a reward for reaching rank 5 you can select a close combat perk.
 
@@ -219,7 +222,8 @@ You can only have one close combat perk
                 submenu = src.menuFolder.selectionMenu.SelectionMenu(
                     text = text,
                     options=options,
-                    targetParamName="rewardType"
+                    targetParamName="rewardType",
+                    extraDescriptions=extraDescriptions,
                 )
                 submenu.do_not_scale = True
 
@@ -233,8 +237,12 @@ You can only have one close combat perk
                 return
             if character.rank == 5:
                 options = []
+                extraDescriptions = {}
                 options.append(("endurance run","endurance run"))
+                extraDescriptions["endurance run"] = "your alternate movement only costs 80% time, but costs 1 exhaustion"
                 options.append(("jump","jump"))
+                extraDescriptions["endurance run"] = "your alternate movement only costs 50% time, but costs 5 exhaustion"
+                extraDescriptions = {"special attacks":"your alternate attack is a selection of special attacks","swap attack":"your alternate attack allows you to switch places the attacked"}
                 text = """
 As a a reward for reaching rank 4 you can select a special movement perk.
 
@@ -257,8 +265,11 @@ You can only have one special movement perk
                 return
             if character.rank == 4:
                 options = []
+                extraDescriptions = {}
                 options.append(("line shot","line shot"))
+                extraDescriptions["line shot"] = "your ranged attach is shooting in a straight line north south west or east"
                 options.append(("ramdom target shot","ramdom target shot"))
+                extraDescriptions["ramdom target shot"] = "your ranged attach is shooting in random target in the roon"
                 text = """
 As a a reward for reaching rank 3 you can select a ranged attack perk.
 
@@ -282,7 +293,9 @@ You can only have one ranged attack perk
             if character.rank == 3:
                 options = []
                 options.append(("max health boost","max health boost"))
+                extraDescriptions["max health boost"] = "2 times the maxHP"
                 options.append(("movement speed boost","movement speed boost"))
+                extraDescriptions["movement speed boost"] = "movement and attacks only costs 50% time"
                 text = """
 As a a reward for reaching rank 2 you can select a attribute perk.
 

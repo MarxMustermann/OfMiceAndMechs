@@ -6870,6 +6870,12 @@ SADLY THE DEMO ENDS HERE.
 Please give me feedback on what to improve.
 Also consider supporting me financially to see the full version soon.
 
+
+Just kidding. You can play the whole game if you want.
+It would be a good time to give me feedback though.
+
+
+press c to continue playing
 press ESC to return to main menu
 """
 
@@ -6898,6 +6904,8 @@ press ESC to return to main menu
                     continue_game = True
                 if key == tcod.event.KeySym.RETURN:
                     pass
+                if key == tcod.event.KeySym.c:
+                    return
 
         if continue_game:
             src.gamestate.gamestate.mainChar.macroState["submenue"] = None

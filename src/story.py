@@ -3190,7 +3190,7 @@ Get a promotion to be able to contact the base commander.
                 name = "contact command"
                 options.append(("contact command", "contact command"))
                 extraDescriptions[name] = """
-Now that you have the right 
+Now that you have the right rank, contact command again.
 """
             elif not src.gamestate.gamestate.stern.get("failedBaseContact1"):
                 options.append(("contact main base", "contact main base"))

@@ -5684,7 +5684,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                         (start_x, start_y + 3),
                     )
         
-        items = ["press z for discord", "press x for website", "press c for github"]
+        items = ["press z to open discord", "press x to open website", "press c to open github"]
         widthForItem = (tcodConsole.width-3)//len(items)
         emptySpace =(tcodConsole.width-3) - widthForItem*len(items)
     

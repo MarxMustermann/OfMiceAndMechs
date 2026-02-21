@@ -281,6 +281,7 @@ def checkResetWindowSize(width=None,height=None):
     tileset = tcod.tileset.load_tilesheet(
         f"scaled_{tileHeight//2}x{tileHeight}.png", 16, 16, tcod.tileset.CHARMAP_CP437
     )
+    tileset = tcod.tileset.load_truetype_font("PxPlus_IBM_BIOS-2y.ttf",tileWidth,tileHeight)
 
     global tcodConsole
     root_console = tcod.console.Console(newWidth, newHeight, order="F")
@@ -4601,24 +4602,6 @@ def renderGameDisplay(renderChar=None):
 
                 for uiElement in uiElements:
 
-                    if uiElement["type"] == "miniMap":
-                        miniMapChars = thisTerrain.renderTiles()
-                        canvas = src.canvas.Canvas(
-                            size=(15, 15),
-                            chars=miniMapChars,
-                            coordinateOffset=(0,0),
-                            shift=(0,0),
-                            displayChars=src.canvas.displayChars,
-                            tileMapping=None,
-                        )
-                        canvas.getAsDummy(pseudoDisplay,uiElement["offset"][0],uiElement["offset"][1]+1,warning=warning)
-                        canvas.printTcod(tcodConsole,uiElement["offset"][0],uiElement["offset"][1]+1,warning=warning)
-                        if not src.gamestate.gamestate.mainChar.dead:
-                            position_string = str(src.gamestate.gamestate.mainChar.getBigPosition())
-                            if src.gamestate.gamestate.mainChar.container and src.gamestate.gamestate.mainChar.container.isRoom:
-                                position_string += " "+str(src.gamestate.gamestate.mainChar.container.tag)
-                            printUrwidToTcod(position_string,(2*uiElement["offset"][0]+2,uiElement["offset"][1]))
-
                     if uiElement["type"] == "zoneMap":
                         miniMapChars = src.menuFolder.terrainMenu.TerrainMenu.renderZoneInfo(src.gamestate.gamestate.mainChar)
                         canvas = src.canvas.Canvas(
@@ -4842,6 +4825,46 @@ def renderGameDisplay(renderChar=None):
     uiElements = calculate_UI_layout(char)
 
     for uiElement in uiElements:
+
+        if uiElement["type"] == "miniMap":
+            offsetLeft = uiElement["offset"][0]*tileWidth*2
+            offsetTop = uiElement["offset"][1]*tileHeight
+
+            if not src.gamestate.gamestate.mainChar.dead:
+                position_string = str(src.gamestate.gamestate.mainChar.getBigPosition())
+                if src.gamestate.gamestate.mainChar.container and src.gamestate.gamestate.mainChar.container.isRoom:
+                    position_string += " "+str(src.gamestate.gamestate.mainChar.container.tag)
+
+                root_console = tcod.console.Console(len(position_string), 1, order="F")
+                printUrwidToTcod(position_string,(0,0),explecitConsole=root_console)
+                atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset)
+                console_render = tcod.render.SDLConsoleRender(atlas)
+                renderedToTexture = console_render.render(root_console)
+                sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
+
+            miniMapChars = thisTerrain.renderTiles()
+            canvas = src.canvas.Canvas(
+                size=(15, 15),
+                chars=miniMapChars,
+                coordinateOffset=(0,0),
+                shift=(0,0),
+                displayChars=src.canvas.displayChars,
+                tileMapping=None,
+            )
+            root_console = tcod.console.Console(30, 15, order="F")
+            #canvas.getAsDummy(pseudoDisplay,uiElement["offset"][0],uiElement["offset"][1]+1,warning=warning)
+            canvas.printTcod(root_console,0,0,warning=warning)
+
+            tileset2 = tcod.tileset.load_tilesheet(
+                f"scaled_{tileHeight//2}x{tileHeight}.png", 16, 16, tcod.tileset.CHARMAP_CP437
+            )
+            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset2)
+            console_render = tcod.render.SDLConsoleRender(atlas)
+            renderedToTexture = console_render.render(root_console)
+            sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop+tileHeight,renderedToTexture.width,renderedToTexture.height),)
+
+            canvas.drawSdl(sdl_renderer2,offsetLeft,offsetTop,warning=warning)
+
         if uiElement["type"] == "gameMap":
             offsetLeft = uiElement["offset"][0]*tileWidth*2
             offsetTop = uiElement["offset"][1]*tileHeight
@@ -4855,7 +4878,10 @@ def renderGameDisplay(renderChar=None):
             canvas = render(char)
             canvas.printTcod(root_console,0,0,warning=warning)
 
-            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset)
+            tileset2 = tcod.tileset.load_tilesheet(
+                f"scaled_{tileHeight//2}x{tileHeight}.png", 16, 16, tcod.tileset.CHARMAP_CP437
+            )
+            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset2)
             console_render = tcod.render.SDLConsoleRender(atlas)
             renderedToTexture = console_render.render(root_console)
             sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
@@ -4939,7 +4965,8 @@ def renderGameDisplay(renderChar=None):
             root_console = tcod.console.Console(width, height, order="F")
             printUrwidToTcod(text,(0,0),explecitConsole=root_console)
 
-            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset)
+            tileset2 = tcod.tileset.load_truetype_font("PxPlus_IBM_BIOS-2y.ttf",tileWidth,tileHeight)
+            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset2)
             console_render = tcod.render.SDLConsoleRender(atlas)
             renderedToTexture = console_render.render(root_console)
             sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)

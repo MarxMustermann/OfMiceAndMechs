@@ -203,20 +203,21 @@ class InventoryMenu(src.subMenu.SubMenu):
             counter = 0
             for item in char.inventory:
                 counter += 1
+                cursor_indicator = " -  "
                 if not sidebared and counter == cursor + 1:
-                    txt.extend(["-> "])
+                    cursor_indicator = " -> "
                 if isinstance(item.render(), int):
                     txt.extend(
                         [
                             str(counter),
-                            " - ",
+                            cursor_indicator,
                             src.canvas.displayChars.indexedMapping[item.render()],
                             " - ",
                             item.name,
                         ]
                     )
                 else:
-                    txt.extend([str(counter), " - ", item.render(), " - ", item.name])
+                    txt.extend([str(counter), cursor_indicator, item.render(), " - ", item.name])
                 txt.append("\n")
                 num_rows += 1
 

@@ -275,13 +275,14 @@ def checkResetWindowSize(width=None,height=None):
         tileHeight = 28
     tileWidth = tileHeight//2
 
-    global tileset
+    global tileset_map
+    global tileset_ui
     newHeight = height//tileHeight
     newWidth  = (width//tileHeight)*2
-    tileset = tcod.tileset.load_tilesheet(
+    tileset_map = tcod.tileset.load_tilesheet(
         f"scaled_{tileHeight//2}x{tileHeight}.png", 16, 16, tcod.tileset.CHARMAP_CP437
     )
-    tileset = tcod.tileset.load_truetype_font("PxPlus_IBM_BIOS-2y.ttf",tileWidth,tileHeight)
+    tileset_ui = tcod.tileset.load_truetype_font("PxPlus_IBM_BIOS-2y.ttf",tileWidth,tileHeight)
 
     global tcodConsole
     root_console = tcod.console.Console(newWidth, newHeight, order="F")
@@ -293,12 +294,14 @@ def checkResetWindowSize(width=None,height=None):
     window_charheight = newHeight
 
 sdl_renderer2 = None
-tileset = None
+tileset_map = None
+tileset_ui = None
 atlas = None
 sdl_window = None
 def setUpTcod():
     global settings
-    global tileset
+    global tileset_map
+    global tileset_ui
     global atlas
 
     if os.path.isfile("config/globalSettings.json"):
@@ -310,6 +313,9 @@ def setUpTcod():
     import tcod as internalTcod
     global tcod
     tcod = internalTcod
+
+    global tileHeight
+    global tileWidth
 
     """
     tileset = tcod.tileset.load_tilesheet(
@@ -327,7 +333,10 @@ def setUpTcod():
         "OfMiceAndMechs_7x15.png", 16, 16, tcod.tileset.CHARMAP_CP437
     )
     """
-    tileset = tcod.tileset.load_tilesheet(
+    tileset_map = tcod.tileset.load_tilesheet(
+        "scaled_7x14.png", 16, 16, tcod.tileset.CHARMAP_CP437
+    )
+    tileset_ui = tcod.tileset.load_tilesheet(
         "scaled_7x14.png", 16, 16, tcod.tileset.CHARMAP_CP437
     )
     """
@@ -343,8 +352,6 @@ def setUpTcod():
     window_charwidth = 200
     window_charheight = 50
 
-    global tileHeight
-    global tileWidth
     tileHeight = 100
     tileWidth = 30
 
@@ -362,7 +369,7 @@ def setUpTcod():
             title="OfMiceAndMechs"
         )
     sdl_renderer2 = tcod.sdl.render.new_renderer(sdl_window)
-    atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset)
+    atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
     console_render = tcod.render.SDLConsoleRender(atlas)
 
     #if settings["fullscreen"]:
@@ -4243,7 +4250,7 @@ class ItemMeta:
         self.content = content
 
 def tcodPresent(noPresent=False):
-    atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset)
+    atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
     console_render = tcod.render.SDLConsoleRender(atlas)
 
     sdl_renderer2.draw_color = (0,0,0,255)
@@ -4837,7 +4844,7 @@ def renderGameDisplay(renderChar=None):
 
                 root_console = tcod.console.Console(len(position_string), 1, order="F")
                 printUrwidToTcod(position_string,(0,0),explecitConsole=root_console)
-                atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset)
+                atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
                 console_render = tcod.render.SDLConsoleRender(atlas)
                 renderedToTexture = console_render.render(root_console)
                 sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
@@ -4855,10 +4862,7 @@ def renderGameDisplay(renderChar=None):
             #canvas.getAsDummy(pseudoDisplay,uiElement["offset"][0],uiElement["offset"][1]+1,warning=warning)
             canvas.printTcod(root_console,0,0,warning=warning)
 
-            tileset2 = tcod.tileset.load_tilesheet(
-                f"scaled_{tileHeight//2}x{tileHeight}.png", 16, 16, tcod.tileset.CHARMAP_CP437
-            )
-            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset2)
+            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_map)
             console_render = tcod.render.SDLConsoleRender(atlas)
             renderedToTexture = console_render.render(root_console)
             sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop+tileHeight,renderedToTexture.width,renderedToTexture.height),)
@@ -4878,10 +4882,7 @@ def renderGameDisplay(renderChar=None):
             canvas = render(char)
             canvas.printTcod(root_console,0,0,warning=warning)
 
-            tileset2 = tcod.tileset.load_tilesheet(
-                f"scaled_{tileHeight//2}x{tileHeight}.png", 16, 16, tcod.tileset.CHARMAP_CP437
-            )
-            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset2)
+            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_map)
             console_render = tcod.render.SDLConsoleRender(atlas)
             renderedToTexture = console_render.render(root_console)
             sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
@@ -4965,8 +4966,7 @@ def renderGameDisplay(renderChar=None):
             root_console = tcod.console.Console(width, height, order="F")
             printUrwidToTcod(text,(0,0),explecitConsole=root_console)
 
-            tileset2 = tcod.tileset.load_truetype_font("PxPlus_IBM_BIOS-2y.ttf",tileWidth,tileHeight)
-            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset2)
+            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_map)
             console_render = tcod.render.SDLConsoleRender(atlas)
             renderedToTexture = console_render.render(root_console)
             sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)

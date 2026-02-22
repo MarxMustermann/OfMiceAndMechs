@@ -37,4 +37,9 @@ jobs:
       #     compression-level: 9
       - name: Create Release
         run: |
+            Copy-Item -Path ./OfMiceAndMechs-Linux.tar.gz -Destination ./Game/Data
+            Set-Location -Path ./Game/Data
+            Set-Variable -Name "s" -Value (git rev-parse --short HEAD)
+            $s = "Dev-"+$s
             gh release create $s ./OfMiceAndMechs-Linux.tar.gz --generate-notes --latest
+

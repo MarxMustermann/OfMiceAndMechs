@@ -39,5 +39,6 @@ jobs:
         run: |
             cp ./OfMiceAndMechs-Linux.tar.gz Game/Data/
             cd Game/Data/
-            gh release create ./OfMiceAndMechs-Linux.tar.gz --generate-notes --latest
+            revision = "$(git rev-parse --short HEAD)"
+            gh release create $revision ./OfMiceAndMechs-Linux.tar.gz --generate-notes --latest
 

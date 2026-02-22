@@ -38,6 +38,7 @@ jobs:
 
           echo "cd internal" >  OfMiceAndMechs/internal/launch_game.sh
           echo "./executeMe" >> OfMiceAndMechs/internal/launch_game.sh
+          chmod +x OfMiceAndMechs/internal/launch_game.sh
 
           echo "[Desktop Entry]" >  OfMiceAndMechs/OfMiceAndMechs.desktop
           echo "" >> OfMiceAndMechs/OfMiceAndMechs.desktop
@@ -69,7 +70,6 @@ jobs:
           echo "alternatively double click the executeMe file in the internal folder or run the launch_game.sh" >> OfMiceAndMechs/README.txt
           echo "if all that fails consult the instructions on https://github.com/MarxMustermann/OfMiceAndMechs/blob/master/INSTALL.md" >>  OfMiceAndMechs/README.txt
 
-          chmod +x OfMiceAndMechs/launch_game.sh
           tar -czf OfMiceAndMechs-Linux.tar.gz OfMiceAndMechs
       # - name: Upload Artifacts
       #   uses: actions/upload-artifact@v4

@@ -1,0 +1,27 @@
+name: Package Game
+env:
+    GH_TOKEN: ${{ github.token }}
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - 'master'
+
+jobs:
+  build-linux:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check-out repository
+        uses: actions/checkout@v3
+        with:
+            path: "./Game/Data"
+      - name: install dep and finishing up
+        run: |
+            cd Game/Data/
+            revision="$(git rev-parse --short HEAD)"
+            echo $revision
+            gh release create  Dev-$revision --generate-notes --latest
+

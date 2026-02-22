@@ -44,4 +44,5 @@ jobs:
             Set-Location -Path ./Game/Data
             Set-Variable -Name "s" -Value (git rev-parse --short HEAD)
             $s = "Dev-"+$s
+            echo $s
             gh release upload $s ./OfMiceAndMechs-Win.zip

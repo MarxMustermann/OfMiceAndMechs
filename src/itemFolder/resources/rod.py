@@ -48,13 +48,10 @@ baseDamage:
 
         character.addMessage(f"you equip the rod and wield a {self.baseDamage} weapon now")
 
+        oldWeapon = None
         if character.weapon:
             oldWeapon = character.weapon
             character.weapon = None
-            if character.getFreeInventorySpace():
-                character.addToInventory(oldWeapon)
-            else:
-                character.container.addItem(oldWeapon,character.getPosition())
 
         character.weapon = self
         character.changed("equipedItem",(character,self))
@@ -63,6 +60,12 @@ baseDamage:
         else:
             if self in character.inventory:
                 character.removeItemFromInventory(self)
+
+        if oldWeapon:
+            if character.getFreeInventorySpace():
+                character.addToInventory(oldWeapon)
+            else:
+                character.container.addItem(oldWeapon,character.getPosition())
 
     def upgrade(self):
         '''

@@ -6954,8 +6954,8 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
             printUrwidToTcod(terrainRender, (19 + c_offset, 5))
 
             if src.gamestate.gamestate.tick > 10400:
-                printUrwidToTcod("press enter to stop watching", (50 + c_offset, 4))
-                printUrwidToTcod("press enter to stop watching", (50 + c_offset, 51))
+                printUrwidToTcod("press enter to stop watching and to continue the cutscene", (35 + c_offset, 4))
+                printUrwidToTcod("press enter to stop watching and to continue the cutscene", (35 + c_offset, 51))
             tcodPresent()
 
             if stageState["substep"] < 1 and time.time()-stageState["lastChange"] > 0:

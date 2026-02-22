@@ -5398,10 +5398,10 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
         tcodPresent(noPresent=True)
 
-        root_console = tcod.console.Console(tcodConsole.width, tcodConsole.width, order="F")
+        root_console = tcod.console.Console(tcodConsole.width+1, tcodConsole.width, order="F")
         chars = fixRoomRender(terrain.render(coordinateOffset=(15*5,15*5),size=(tcodConsole.height,tcodConsole.width//2)))
         canvas = src.canvas.Canvas(
-            size=(tcodConsole.width, tcodConsole.width),
+            size=(tcodConsole.width+1, tcodConsole.width),
             chars=chars,
             coordinateOffset=(0,0),
             shift=(0,0),
@@ -5415,15 +5415,17 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
         renderedToTexture = console_render.render(root_console)
         sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(0,0,renderedToTexture.width,renderedToTexture.height),)
 
+        canvas.drawSdl(sdl_renderer2,0,0,warning=False)
+
         offsetX = int(tcodConsole.width / 2) - 23
         offsetY = 10
         
-        root_console = tcod.console.Console(tcodConsole.width-3, 3, order="F")
+        root_console = tcod.console.Console(tcodConsole.width-6, 3, order="F")
         offsetLeft = 3*tileWidth
         offsetTop = (tcodConsole.height-2)*tileHeight
         items = ["press z to open discord", "press x to open website", "press c to open github"]
-        widthForItem = (tcodConsole.width-3)//len(items)
-        emptySpace =(tcodConsole.width-3) - widthForItem*len(items)
+        widthForItem = (tcodConsole.width-6)//len(items)
+        emptySpace =(tcodConsole.width-8) - widthForItem*len(items)
     
         itemsText = " "*emptySpace
         for item in items:

@@ -17,7 +17,7 @@ jobs:
       - name: Check-out repository
         uses: actions/checkout@v3
         with:
-            path: "./Game/Data"
+            path: "./OfMice/Data"
       - name: install dep and finishing up
         run: |
           sudo apt-get install python3 python3-venv
@@ -27,7 +27,15 @@ jobs:
           venvFolder/bin/python3 -m pip install pyinstaller
           venvFolder/bin/pyinstaller executeMe.py
           cd ../../
-          tar -czf OfMiceAndMechs-Linux.tar.gz Game
+          mkdir OfMiceAndMechs
+          mkdir OfMiceAndMechs/internal/
+          cp -r Game/Data/dist/executeMe/* OfMiceAndMechs/internal/
+          cp -r Game/Data/scaled_* OfMiceAndMechs/internal/
+          cp -r Game/Data/data/ OfMiceAndMechs/internal/
+          cp -r Game/Data/config/ OfMiceAndMechs/internal/
+          cp -r Game/Data/README.md OfMiceAndMechs/internal/
+          cp -r Game/Data/sounds/ OfMiceAndMechs/internal/
+          tar -czf OfMiceAndMechs-Linux.tar.gz OfMiceAndMechs
       # - name: Upload Artifacts
       #   uses: actions/upload-artifact@v4
       #   with:
@@ -40,5 +48,5 @@ jobs:
             cp ./OfMiceAndMechs-Linux.tar.gz Game/Data/
             cd Game/Data/
             revision="$(git rev-parse --short HEAD)"
-            gh release create $revision ./OfMiceAndMechs-Linux.tar.gz --generate-notes --latest
+            gh release create Dev-$revision ./OfMiceAndMechs-Linux.tar.gz
 

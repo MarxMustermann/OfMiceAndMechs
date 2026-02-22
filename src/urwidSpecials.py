@@ -3,6 +3,8 @@ urwid specific code belongs here
 bad code: most of the urwind code is scattered around
 """
 
+import src
+
 
 """
 split a mix of strings and urwid formating into a list where each element contains exactly
@@ -42,7 +44,6 @@ add rusty colors to a string
 
 
 def makeRusty(payload):
-    import urwid
 
     converted = []
     colours = ["#f50", "#a60", "#f80", "#fa0", "#860"]
@@ -51,6 +52,6 @@ def makeRusty(payload):
         counter += 1
         if len(char):
             converted.append(
-                (urwid.AttrSpec(colours[counter * 7 % 5], "default"), char)
+                (src.pseudoUrwid.AttrSpec(colours[counter * 7 % 5], "default"), char)
             )
     return converted

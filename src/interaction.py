@@ -4966,7 +4966,7 @@ def renderGameDisplay(renderChar=None):
             root_console = tcod.console.Console(width, height, order="F")
             printUrwidToTcod(text,(0,0),explecitConsole=root_console)
 
-            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_map)
+            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
             console_render = tcod.render.SDLConsoleRender(atlas)
             renderedToTexture = console_render.render(root_console)
             sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)

@@ -51,5 +51,5 @@ jobs:
             cp ./OfMiceAndMechs-Linux.tar.gz Game/Data/
             cd Game/Data/
             revision="$(git rev-parse --short HEAD)"
-            gh release upload Dev-$revision ./OfMiceAndMechs-Linux.tar.gz
+            gh release create  Dev-$revision ./OfMiceAndMechs-Linux.tar.gz --generate-notes --latest || gh release upload Dev-$revision ./OfMiceAndMechs-Linux.tar.gz
 

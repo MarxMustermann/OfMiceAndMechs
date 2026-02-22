@@ -42,7 +42,6 @@ add rusty colors to a string
 
 
 def makeRusty(payload):
-    import urwid
 
     converted = []
     colours = ["#f50", "#a60", "#f80", "#fa0", "#860"]

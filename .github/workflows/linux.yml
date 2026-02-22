@@ -1,0 +1,44 @@
+name: Package Game
+env:
+    GH_TOKEN: ${{ github.token }}
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - 'master'
+
+jobs:
+  build-linux:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check-out repository
+        uses: actions/checkout@v3
+        with:
+            path: "./Game/Data"
+      - name: install dep and finishing up
+        run: |
+          unzip Game/Data.zip -d Game/Data/
+          sudo apt-get install python3 python3-venv
+          python3 -m venv venvFolder
+          venvFolder/bin/python3 -m pip install -r requirements.txt
+          venvFolder/bin/python3 -m pip install pyinstaller
+          venvFolder/bin/pyinstaller executeMe.py
+          echo "python.exe executeMe" | out-file ./Game/launch_game.sh -Append
+          Compress-Archive -Path ./Game/* -Destination OfMiceAndMechs-Win.zip
+      # - name: Upload Artifacts
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: OfMiceAndMechs-Win
+      #     path: |
+      #       /Game/*
+      #     compression-level: 9
+      - name: Create Release
+        run: |
+            Copy-Item -Path ./OfMiceAndMechs-Win.zip -Destination ./Game/Data
+            Set-Location -Path ./Game/Data
+            Set-Variable -Name "s" -Value (git rev-parse --short HEAD)
+            $s = "Dev-"+$s
+            gh release create $s ./OfMiceAndMechs-Win.zip --generate-notes --latest

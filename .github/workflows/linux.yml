@@ -23,6 +23,8 @@ jobs:
           sudo apt-get install python3 python3-venv
           cd Game
           python3 -m venv venvFolder
+          ls
+          ls *
           venvFolder/bin/python3 -m pip install -r requirements.txt
           venvFolder/bin/python3 -m pip install pyinstaller
           venvFolder/bin/pyinstaller executeMe.py

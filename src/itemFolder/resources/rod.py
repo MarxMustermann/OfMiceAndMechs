@@ -53,6 +53,8 @@ baseDamage:
             character.weapon = None
             if character.getFreeInventorySpace():
                 character.addToInventory(oldWeapon)
+            else:
+                character.container.addItem(oldWeapon,character.getPosition())
 
         character.weapon = self
         character.changed("equipedItem",(character,self))

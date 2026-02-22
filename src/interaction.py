@@ -5396,21 +5396,31 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
         height = 10
         width = 46
 
-        printUrwidToTcod(fixRoomRender(terrain.render(coordinateOffset=(15*5,15*5),size=(tcodConsole.height,tcodConsole.width//2))),(0,0))
-        """
+        tcodPresent(noPresent=True)
+
+        root_console = tcod.console.Console(tcodConsole.width, tcodConsole.width, order="F")
+        chars = fixRoomRender(terrain.render(coordinateOffset=(15*5,15*5),size=(tcodConsole.height,tcodConsole.width//2)))
         canvas = src.canvas.Canvas(
-            size=(renderHeight, renderHeight),
+            size=(tcodConsole.width, tcodConsole.width),
             chars=chars,
             coordinateOffset=(0,0),
-            shift=shift,
+            shift=(0,0),
             displayChars=src.canvas.displayChars,
             tileMapping=tileMapping,
         )
-        """
+        canvas.printTcod(root_console,0,0,warning=False)
+
+        atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_map)
+        console_render = tcod.render.SDLConsoleRender(atlas)
+        renderedToTexture = console_render.render(root_console)
+        sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(0,0,renderedToTexture.width,renderedToTexture.height),)
 
         offsetX = int(tcodConsole.width / 2) - 23
         offsetY = 10
         
+        root_console = tcod.console.Console(tcodConsole.width-3, 3, order="F")
+        offsetLeft = 3*tileWidth
+        offsetTop = (tcodConsole.height-2)*tileHeight
         items = ["press z to open discord", "press x to open website", "press c to open github"]
         widthForItem = (tcodConsole.width-3)//len(items)
         emptySpace =(tcodConsole.width-3) - widthForItem*len(items)
@@ -5421,11 +5431,16 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
             itemsText+= space * " " + item + space * " "
 
         printUrwidToTcod(
-            "+"+ ("-" *len(itemsText)) +"+\n"+
-            f"|{itemsText}|"
-            ,(1, tcodConsole.height-2)
+            "+"+ ("-" *len(itemsText)) +"+\n"+f"|{itemsText}|\n"+"|"+(" " *len(itemsText)) +"|\n"
+            ,(0, 0),
+            explecitConsole=root_console,
         )
-        tcodPresent(noPresent=True)
+
+        atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
+        console_render = tcod.render.SDLConsoleRender(atlas)
+        renderedToTexture = console_render.render(root_console)
+        sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
+
 
         root_console = tcod.console.Console(51, 33, order="F")
         offsetLeft = offsetX*tileWidth

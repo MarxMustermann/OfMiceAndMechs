@@ -21,12 +21,14 @@ jobs:
       - name: install dep and finishing up
         run: |
           sudo apt-get install python3 python3-venv
+          cd Game
           python3 -m venv venvFolder
           venvFolder/bin/python3 -m pip install -r requirements.txt
           venvFolder/bin/python3 -m pip install pyinstaller
           venvFolder/bin/pyinstaller executeMe.py
-          echo "python.exe executeMe" | out-file ./Game/launch_game.sh -Append
-          Compress-Archive -Path ./Game/* -Destination OfMiceAndMechs-Win.zip
+          echo "executeMe" | out-file ./Game/launch_game.sh -Append
+          cd ..
+          tar -czf OfMiceAndMechs-Linux.tar.gz Game
       # - name: Upload Artifacts
       #   uses: actions/upload-artifact@v4
       #   with:
@@ -36,8 +38,4 @@ jobs:
       #     compression-level: 9
       - name: Create Release
         run: |
-            Copy-Item -Path ./OfMiceAndMechs-Win.zip -Destination ./Game/Data
-            Set-Location -Path ./Game/Data
-            Set-Variable -Name "s" -Value (git rev-parse --short HEAD)
-            $s = "Dev-"+$s
-            gh release create $s ./OfMiceAndMechs-Win.zip --generate-notes --latest
+            gh release create $s ./OfMiceAndMechs-Linux.tar.gz --generate-notes --latest

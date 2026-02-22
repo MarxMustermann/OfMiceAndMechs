@@ -6312,14 +6312,30 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 stageState["send_tracking_ping"] = True
 
             if not skip:
-                text = """
-You """+"."*stageState["substep"]+"""
+                tcodPresent(noPresent=True)
 
+                # add text
+                text = "You "+"."*stageState["substep"]
+                offsetLeft = ((tcodConsole.width-len(text))//2)*tileWidth
+                root_console = tcod.console.Console(len(text), 1, order="F")
+                printUrwidToTcod(text,(0,0),explecitConsole=root_console)
+                atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_map)
+                console_render = tcod.render.SDLConsoleRender(atlas)
+                renderedToTexture = console_render.render(root_console)
+                sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,24*tileHeight,renderedToTexture.width,renderedToTexture.height),)
 
-"""
-                printUrwidToTcod(text, (64 + c_offset - int(len(text) / 2), 24))
-                printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "), (63 + c_offset, 27))
-                tcodPresent()
+                # add character
+                text = [(src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")]
+                offsetLeft = ((tcodConsole.width-2)//2)*tileWidth
+                root_console = tcod.console.Console(45, 25, order="F")
+                printUrwidToTcod(text,(0,0),explecitConsole=root_console)
+                atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_map)
+                console_render = tcod.render.SDLConsoleRender(atlas)
+                renderedToTexture = console_render.render(root_console)
+                sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,27*tileHeight,renderedToTexture.width,renderedToTexture.height),)
+
+                # draw
+                sdl_renderer2.present()
 
             if time.time()-stageState["lastChange"] > 1 or skip:
                 stageState["substep"] += 1

@@ -31,15 +31,11 @@ jobs:
       # - name: Upload Artifacts
       #   uses: actions/upload-artifact@v4
       #   with:
-      #     name: OfMiceAndMechs-Win
+      #     name: OfMiceAndMechs-Linux
       #     path: |
       #       /Game/*
       #     compression-level: 9
       - name: Create Release
         run: |
-            Copy-Item -Path ./OfMiceAndMechs-Linux.tar.gz -Destination ./Game/Data
-            Set-Location -Path ./Game/Data
-            Set-Variable -Name "s" -Value (git rev-parse --short HEAD)
-            $s = "Dev-"+$s
-            gh release create $s ./OfMiceAndMechs-Linux.tar.gz --generate-notes --latest
+            gh release create ./OfMiceAndMechs-Linux.tar.gz --generate-notes --latest
 

@@ -6211,8 +6211,26 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
         if stage == -2:
             stageState = {"wait":True}
+
+
+            if not first_render:
+                tcodPresent(noPresent=True)
+
+            # draw logo
+            offsetLeft = ((tcodConsole.width-43)//2)*tileWidth
             text = []
             text.append(src.urwidSpecials.makeRusty(logoText))
+
+            root_console = tcod.console.Console(45, 25, order="F")
+            printUrwidToTcod(text,(0,0),explecitConsole=root_console)
+            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_map)
+            console_render = tcod.render.SDLConsoleRender(atlas)
+            renderedToTexture = console_render.render(root_console)
+            sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,4*tileHeight,renderedToTexture.width,renderedToTexture.height),)
+
+            # draw interaction info
+            offsetLeft = ((tcodConsole.width-60)//2)*tileWidth
+            text = []
             text.append("Hello, i'm MarxMustermann and you are about to try my game.\n")
             text.append("To improve the game i want to learn more about how it is played.\n\n")
             text.append("May i collect information about your interaction with the game?\n")
@@ -6221,9 +6239,15 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
             text.append("press y (as in yes) to agree to the data collection\n")
             text.append("press n to deny the data collection\n")
 
+            root_console = tcod.console.Console(70, 8, order="F")
+            printUrwidToTcod(text,(0,0),explecitConsole=root_console)
+            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
+            console_render = tcod.render.SDLConsoleRender(atlas)
+            renderedToTexture = console_render.render(root_console)
+            sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,25*tileHeight,renderedToTexture.width,renderedToTexture.height),)
+
             if not first_render:
-                printUrwidToTcod(text, (64, 4))
-                tcodPresent()
+                sdl_renderer2.present()
             first_render = False
 
             if not skip:
@@ -6264,6 +6288,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
             console_render = tcod.render.SDLConsoleRender(atlas)
             renderedToTexture = console_render.render(root_console)
             sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,25*tileHeight,renderedToTexture.width,renderedToTexture.height),)
+
             if not first_render:
                 sdl_renderer2.present()
             first_render = False

@@ -44,8 +44,5 @@ jobs:
             Set-Location -Path ./Game/Data
             Set-Variable -Name "s" -Value (git rev-parse --short HEAD)
             $s = "Dev-"+$s
-            try {
-              gh release create $s ./OfMiceAndMechs-Win.zip --generate-notes --latest
-            } catch {
-              gh release update $s ./OfMiceAndMechs-Win.zip
-            }
+            :: gh release create $s ./OfMiceAndMechs-Win.zip --generate-notes --latest
+            gh release upload $s ./OfMiceAndMechs-Win.zip

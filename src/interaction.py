@@ -5397,58 +5397,92 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
         width = 46
 
         printUrwidToTcod(fixRoomRender(terrain.render(coordinateOffset=(15*5,15*5),size=(tcodConsole.height,tcodConsole.width//2))),(0,0))
+        """
+        canvas = src.canvas.Canvas(
+            size=(renderHeight, renderHeight),
+            chars=chars,
+            coordinateOffset=(0,0),
+            shift=shift,
+            displayChars=src.canvas.displayChars,
+            tileMapping=tileMapping,
+        )
+        """
 
         offsetX = int(tcodConsole.width / 2) - 23
         offsetY = 10
+        
+        items = ["press z to open discord", "press x to open website", "press c to open github"]
+        widthForItem = (tcodConsole.width-3)//len(items)
+        emptySpace =(tcodConsole.width-3) - widthForItem*len(items)
+    
+        itemsText = " "*emptySpace
+        for item in items:
+            space = int(widthForItem/2 - len(item)/2)
+            itemsText+= space * " " + item + space * " "
 
-        printUrwidToTcod("|",(offsetX,offsetY))
-        printUrwidToTcod("|",(offsetX+width,offsetY))
-        printUrwidToTcod("--+"+45*"-"+"+--",(offsetX-2,offsetY+1))
+        printUrwidToTcod(
+            "+"+ ("-" *len(itemsText)) +"+\n"+
+            f"|{itemsText}|"
+            ,(1, tcodConsole.height-2)
+        )
+        tcodPresent(noPresent=True)
+
+        root_console = tcod.console.Console(51, 33, order="F")
+        offsetLeft = offsetX*tileWidth
+        offsetTop = offsetY*tileHeight
+
+        # draw the basic main menu
+        offsetX = 2
+        offsetY = 0
+        printUrwidToTcod("|",(offsetX,offsetY),explecitConsole=root_console)
+        printUrwidToTcod("|",(offsetX+width,offsetY),explecitConsole=root_console)
+        printUrwidToTcod("--+"+45*"-"+"+--",(offsetX-2,offsetY+1),explecitConsole=root_console)
         for y in range(offsetY+2,offsetY+21+height):
-            printUrwidToTcod("|"+45*" "+"|",(offsetX,y))
-        printUrwidToTcod("--+"+45*"-"+"+--",(offsetX-2,offsetY+18))
-        printUrwidToTcod("--+"+45*"-"+"+--",(offsetX-2,offsetY+21+height))
-        printUrwidToTcod("|",(offsetX,offsetY+22+height))
-        printUrwidToTcod("|",(offsetX+width,offsetY+22+height))
-        printUrwidToTcod(src.urwidSpecials.makeRusty(logoText),(offsetX+2,offsetY+1))
+            printUrwidToTcod("|"+45*" "+"|",(offsetX,y),explecitConsole=root_console)
+        printUrwidToTcod("--+"+45*"-"+"+--",(offsetX-2,offsetY+18),explecitConsole=root_console)
+        printUrwidToTcod("--+"+45*"-"+"+--",(offsetX-2,offsetY+21+height),explecitConsole=root_console)
+        printUrwidToTcod("|",(offsetX,offsetY+22+height),explecitConsole=root_console)
+        printUrwidToTcod("|",(offsetX+width,offsetY+22+height),explecitConsole=root_console)
+        printUrwidToTcod(src.urwidSpecials.makeRusty(logoText),(offsetX+2,offsetY+1),explecitConsole=root_console)
 
-        printUrwidToTcod("press p to (p)lay",(offsetX+3,offsetY+20))
+        printUrwidToTcod("press p to (p)lay",(offsetX+3,offsetY+20),explecitConsole=root_console)
 
-        printUrwidToTcod("press f to open the (f)eedback form",(offsetX+3,offsetY+27))
-        printUrwidToTcod("press p/enter to (p)lay",(offsetX+3,offsetY+28))
-        printUrwidToTcod("press g to select (g)ameslot",(offsetX+3,offsetY+29))
+        printUrwidToTcod("press f to open the (f)eedback form",(offsetX+3,offsetY+27),explecitConsole=root_console)
+        printUrwidToTcod("press p/enter to (p)lay",(offsetX+3,offsetY+28),explecitConsole=root_console)
+        printUrwidToTcod("press g to select (g)ameslot",(offsetX+3,offsetY+29),explecitConsole=root_console)
         if canLoad:
-            printUrwidToTcod("press D to delete gamestate",(offsetX+3,offsetY+30))
+            printUrwidToTcod("press D to delete gamestate",(offsetX+3,offsetY+30),explecitConsole=root_console)
         else:
-            printUrwidToTcod("press d to change (d)ifficulty",(offsetX+3,offsetY+30))
+            printUrwidToTcod("press d to change (d)ifficulty",(offsetX+3,offsetY+30),explecitConsole=root_console)
 
         color = "#fff"
         if saves[gameIndex]:
             color = "#333"
-        printUrwidToTcod((src.interaction.urwid.AttrSpec(color, "black"),f"(d)ifficulty - {difficulty}"),(offsetX+3,offsetY+23))
+        printUrwidToTcod((src.interaction.urwid.AttrSpec(color, "black"),f"(d)ifficulty - {difficulty}"),(offsetX+3,offsetY+23),explecitConsole=root_console)
         color = "#fff"
         if saves[gameIndex]:
             color = "#333"
         #printUrwidToTcod((src.interaction.urwid.AttrSpec(color, "black"),f"(s)cenario   - {selectedScenario}"),(offsetX+3,offsetY+24))
-        printUrwidToTcod(f"(g)ameslot   - {gameIndex}",(offsetX+3,offsetY+25))
+        printUrwidToTcod(f"(g)ameslot   - {gameIndex}",(offsetX+3,offsetY+25),explecitConsole=root_console)
 
+        # draw special menus
         for menu in submenu:
             match menu:
                 case "gameslot":
-                    printUrwidToTcod("+----------------------+", (offsetX + 3 + 16, offsetY + 23))
-                    printUrwidToTcod("| choose the gameslot: |", (offsetX + 3 + 16, offsetY + 24))
+                    printUrwidToTcod("+----------------------+", (offsetX + 3 + 16, offsetY + 18),explecitConsole=root_console)
+                    printUrwidToTcod("| choose the gameslot: |", (offsetX + 3 + 16, offsetY + 19),explecitConsole=root_console)
                     for i in range(10):
                         if saves[i]:
-                            printUrwidToTcod(f"| {i}: load game         |", (offsetX + 3 + 16, offsetY + 25 + i))
+                            printUrwidToTcod(f"| {i}: load game         |", (offsetX + 3 + 16, offsetY + 20 + i),explecitConsole=root_console)
                         else:
-                            printUrwidToTcod(f"| {i}: new game          |", (offsetX + 3 + 16, offsetY + 25 + i))
-                    printUrwidToTcod("+----------------------+", (offsetX + 3 + 16, offsetY + 35))
+                            printUrwidToTcod(f"| {i}: new game          |", (offsetX + 3 + 16, offsetY + 20 + i),explecitConsole=root_console)
+                    printUrwidToTcod("+----------------------+", (offsetX + 3 + 16, offsetY + 30),explecitConsole=root_console)
                 case "scenario":
                     maxLength = 0
                     for scenario in scenarios:
                         maxLength = max(maxLength, len(scenario[1]))
 
-                    printUrwidToTcod("+" + "-" * (maxLength + 5) + "+", (offsetX + 3 + 16, offsetY + 22))
+                    printUrwidToTcod("+" + "-" * (maxLength + 5) + "+", (offsetX + 3 + 16, offsetY + 22),explecitConsole=root_console)
                     i = 0
                     for scenario in scenarios:
                         printUrwidToTcod(
@@ -5458,88 +5492,123 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                                 scenario[1],
                             ),
                             (offsetX + 3 + 16, offsetY + 23 + i),
+                            explecitConsole=root_console,
                         )
                         i += 1
-                    printUrwidToTcod("+" + "-" * (maxLength + 5) + "+", (offsetX + 3 + 16, offsetY + 23 + i))
+                    printUrwidToTcod("+" + "-" * (maxLength + 5) + "+", (offsetX + 3 + 16, offsetY + 23 + i),explecitConsole=root_console)
 
                 case "difficulty":
                     printUrwidToTcod(
-                        "+-------------------------------------------------------------------+",
-                        (offsetX + 3 + 16, offsetY + 21),
+                        "+-----------------------------------------------+",
+                        (offsetX, offsetY + 15),
+                        explecitConsole=root_console,
                     )
                     printUrwidToTcod(
-                        "| (e)asy                                                            |",
-                        (offsetX + 3 + 16, offsetY + 22),
+                        "| (e)asy                                        |",
+                        (offsetX, offsetY + 16),
+                        explecitConsole=root_console,
                     )
                     printUrwidToTcod(
-                        "| easy is easy. Recommended to start with.                          |",
-                        (offsetX + 3 + 16, offsetY + 23),
+                        "| easy is easy. Recommended to start with.      |",
+                        (offsetX, offsetY + 17),
+                        explecitConsole=root_console,
                     )
                     printUrwidToTcod(
-                        "| This mode should teach you how the game works.                    |",
-                        (offsetX + 3 + 16, offsetY + 24),
+                        "| This mode should teach you how the game works.|",
+                        (offsetX, offsetY + 18),
+                        explecitConsole=root_console,
                     )
                     printUrwidToTcod(
-                        "|                                                                   |",
-                        (offsetX + 3 + 16, offsetY + 25),
+                        "|                                               |",
+                        (offsetX, offsetY + 19),
+                        explecitConsole=root_console,
                     )
                     printUrwidToTcod(
-                        "| (m)edium                                                          |",
-                        (offsetX + 3 + 16, offsetY + 26),
+                        "| (m)edium                                      |",
+                        (offsetX, offsetY + 20),
+                        explecitConsole=root_console,
                     )
                     printUrwidToTcod(
-                        "| medium is pretty hard. Recommended after winning an easy run.     |",
-                        (offsetX + 3 + 16, offsetY + 27),
+                        "| medium is pretty hard.                        |",
+                        (offsetX, offsetY + 21),
+                        explecitConsole=root_console,
                     )
                     printUrwidToTcod(
-                        "| Balanced to be challenging after mastering one game mechanic      |",
-                        (offsetX + 3 + 16, offsetY + 28),
+                        "| Recommended after winning an easy run.        |",
+                        (offsetX, offsetY + 22),
+                        explecitConsole=root_console,
                     )
                     printUrwidToTcod(
-                        "|                                                                   |",
-                        (offsetX + 3 + 16, offsetY + 29),
+                        "| Balanced to be challenging after              |",
+                        (offsetX, offsetY + 23),
+                        explecitConsole=root_console,
                     )
                     printUrwidToTcod(
-                        "| (d)ifficult                                                       |",
-                        (offsetX + 3 + 16, offsetY + 30),
+                        "| mastering one game mechanic.                  |",
+                        (offsetX, offsetY + 24),
+                        explecitConsole=root_console,
                     )
                     printUrwidToTcod(
-                        "| difficult is really hard. not recomended                          |",
-                        (offsetX + 3 + 16, offsetY + 31),
+                        "|                                               |",
+                        (offsetX, offsetY + 25),
+                        explecitConsole=root_console,
                     )
                     printUrwidToTcod(
-                        "| Should be a challenging with full meta knowledge                  |",
-                        (offsetX + 3 + 16, offsetY + 32),
+                        "| (d)ifficult                                   |",
+                        (offsetX, offsetY + 26),
+                        explecitConsole=root_console,
                     )
                     printUrwidToTcod(
-                        "|                                                                   |",
-                        (offsetX + 3 + 16, offsetY + 33),
+                        "| difficult is really hard. not recomended      |",
+                        (offsetX, offsetY + 27),
+                        explecitConsole=root_console,
+                    )
+                    printUrwidToTcod(
+                        "| Should be a challenging                       |",
+                        (offsetX, offsetY + 28),
+                        explecitConsole=root_console,
+                    )
+                    printUrwidToTcod(
+                        "| with full meta knowledge                      |",
+                        (offsetX, offsetY + 29),
+                        explecitConsole=root_console,
+                    )
+                    printUrwidToTcod(
+                        "|                                               |",
+                        (offsetX, offsetY + 30),
+                        explecitConsole=root_console,
                     )
                     #printUrwidToTcod(
                     #    "| (c)ustom                                                          |",
                     #    (offsetX + 3 + 16, offsetY + 34),
+                    #    explecitConsole=root_console,
                     #)
                     #printUrwidToTcod(
                     #    "| custom difficulty settings                                        |",
                     #    (offsetX + 3 + 16, offsetY + 35),
+                    #    explecitConsole=root_console,
                     #)
                     #printUrwidToTcod(
                     #    "|                                                                   |",
                     #    (offsetX + 3 + 16, offsetY + 36),
+                    #    explecitConsole=root_console,
                     #)
                     #printUrwidToTcod(
                     #    "| press shift and difficulty button to edit it                      |",
                     #    (offsetX + 3 + 16, offsetY + 37),
+                    #    explecitConsole=root_console,
                     #)
                     if not len(custom_difficultyMap):
                         printUrwidToTcod(
-                            "+-------------------------------------------------------------------+",
-                            (offsetX + 3 + 16, offsetY + 34),
+                            "+-----------------------------------------------+",
+                            (offsetX, offsetY + 31),
+                            explecitConsole=root_console,
                         )
                     else:
                         printUrwidToTcod(
                             "|-------------------saved custom difficulties-----------------------|",
                             (offsetX + 3 + 16, offsetY + 38),
+                            explecitConsole=root_console,
                         )
                         start_y = offsetY + 39
 
@@ -5557,50 +5626,61 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                         printUrwidToTcod(
                             "|                                                                   |",
                             (offsetX + 3 + 16, start_y),
+                            explecitConsole=root_console,
                         )
                         printUrwidToTcod(
                             "| select a custom difficulty by entering its number                 |",
                             (offsetX + 3 + 16, start_y + 1),
+                            explecitConsole=root_console,
                         )
                         printUrwidToTcod(
                             "+-------------------------------------------------------------------+",
                             (offsetX + 3 + 16, start_y + 2),
+                            explecitConsole=root_console,
                         )
 
                 case "delete":
                     printUrwidToTcod(
                         (src.interaction.urwid.AttrSpec("#f00", "black"), "+---------------------------------------+"),
                         (offsetX + 2, offsetY + 21),
+                        explecitConsole=root_console,
                     )
                     printUrwidToTcod(
                         (src.interaction.urwid.AttrSpec("#f00", "black"), "| this will delete your game state      |"),
                         (offsetX + 2, offsetY + 22),
+                        explecitConsole=root_console,
                     )
                     printUrwidToTcod(
                         (src.interaction.urwid.AttrSpec("#f00", "black"), "| press y to confirm                    |"),
                         (offsetX + 2, offsetY + 23),
+                        explecitConsole=root_console,
                     )
                     printUrwidToTcod(
                         (src.interaction.urwid.AttrSpec("#f00", "black"), "+---------------------------------------+"),
                         (offsetX + 2, offsetY + 24),
+                        explecitConsole=root_console,
                     )
 
                 case "confirmQuit":
                     printUrwidToTcod(
                         (src.interaction.urwid.AttrSpec("#fff", "black"), "+-----------------------------+"),
                         (offsetX + 2, offsetY + 21),
+                        explecitConsole=root_console,
                     )
                     printUrwidToTcod(
                         (src.interaction.urwid.AttrSpec("#fff", "black"), "| Do you really want to quit? |"),
                         (offsetX + 2, offsetY + 22),
+                        explecitConsole=root_console,
                     )
                     printUrwidToTcod(
                         (src.interaction.urwid.AttrSpec("#fff", "black"), "| press y/enter to confirm    |"),
                         (offsetX + 2, offsetY + 23),
+                        explecitConsole=root_console,
                     )
                     printUrwidToTcod(
                         (src.interaction.urwid.AttrSpec("#fff", "black"), "+-----------------------------+"),
                         (offsetX + 2, offsetY + 24),
+                        explecitConsole=root_console,
                     )
 
                 case "custom_difficulty":
@@ -5608,6 +5688,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                     printUrwidToTcod(
                         "+-------------------------------------+",
                         (start_x, offsetY + 21),
+                        explecitConsole=root_console,
                     )
                     start_y = offsetY + 22
                     for i, (title, key, current_value, range_values, sub_slider) in enumerate(slider):
@@ -5621,56 +5702,67 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                             printUrwidToTcod(
                                 (src.interaction.urwid.AttrSpec("black", "#fff"), title_adjusted),
                                 (start_x, start_y),
+                                explecitConsole=root_console,
                             )
                         else:
                             printUrwidToTcod(
                                 title_adjusted,
                                 (start_x, start_y),
+                                explecitConsole=root_console,
                             )
                         printUrwidToTcod(
                             show,
                             (start_x, start_y + 1),
+                            explecitConsole=root_console,
                         )
                         val = "| " + str(current_value) + ((35 - len(str(current_value))) * " ") + " |"
                         printUrwidToTcod(
                             val,
                             (start_x, start_y + 2),
+                            explecitConsole=root_console,
                         )
                         start_y += 3
 
                     printUrwidToTcod(
                         "|  press w or s to choose the slider  |",
                         (start_x, start_y),
+                        explecitConsole=root_console,
                     )
                     printUrwidToTcod(
                         "|  press a or d to adjust the value   |",
                         (start_x, start_y + 1),
+                        explecitConsole=root_console,
                     )
                     if len(slider[choosen_slider][4]):
                         printUrwidToTcod(
                             "|    press e to adjust sub values     |",
                             (start_x, start_y + 2),
+                            explecitConsole=root_console,
                         )
                         start_y += 1
                     if len(slider_stack):
                         printUrwidToTcod(
                             "|      press enter to return back     |",
                             (start_x, start_y + 2),
+                            explecitConsole=root_console,
                         )
                         start_y += 1
                     printUrwidToTcod(
                         "|     press q to save the settings    |",
                         (start_x, start_y + 2),
+                        explecitConsole=root_console,
                     )
                     printUrwidToTcod(
                         "+-------------------------------------+",
                         (start_x, start_y + 3),
+                        explecitConsole=root_console,
                     )
                 case "difficulty name input":
                     start_x = offsetX + 80
                     printUrwidToTcod(
                         "+-------------------------------------+",
                         (start_x, start_y + 1),
+                        explecitConsole=root_console,
                     )
                     space = int(39 / 2 - len(custom_diff_name) / 2)
                     label = " " * space
@@ -5678,27 +5770,20 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                     printUrwidToTcod(
                         label,
                         (start_x, start_y + 2),
+                        explecitConsole=root_console,
                     )
                     printUrwidToTcod(
                         "+-------------------------------------+",
                         (start_x, start_y + 3),
+                        explecitConsole=root_console,
                     )
-        
-        items = ["press z to open discord", "press x to open website", "press c to open github"]
-        widthForItem = (tcodConsole.width-3)//len(items)
-        emptySpace =(tcodConsole.width-3) - widthForItem*len(items)
-    
-        itemsText = " "*emptySpace
-        for item in items:
-            space = int(widthForItem/2 - len(item)/2)
-            itemsText+= space * " " + item + space * " "
 
-        printUrwidToTcod(
-            "+"+ ("-" *len(itemsText)) +"+\n"+
-            f"|{itemsText}|"
-            ,(1, tcodConsole.height-2)
-        )
-        tcodPresent()
+        atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
+        console_render = tcod.render.SDLConsoleRender(atlas)
+        renderedToTexture = console_render.render(root_console)
+        sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
+
+        sdl_renderer2.present()
 
         events = tcod.event.get()
         current_submenu = submenu[-1] if len(submenu) else ""

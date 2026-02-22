@@ -59,7 +59,7 @@ It changes your implant and sets your faction marker to {self.faction}.
             options["b"] = ("unbolt", self.unboltAction)
         else:
             options["b"] = ("bolt down", self.boltAction)
-        options["f"] = ("set faction",self.setFaction)
+        #options["f"] = ("set faction",self.setFaction)
         return options
 
     def setFaction(self,character):

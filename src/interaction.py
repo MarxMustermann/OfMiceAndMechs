@@ -6235,20 +6235,42 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
         if stage == -1:
             if not stageState:
                 stageState = {"wait":True,"send_tracking_ping":False}
+
+            offsetLeft = ((tcodConsole.width-43)//2)*tileWidth
+
+            if not first_render:
+                tcodPresent(noPresent=True)
+
+            # draw logo
             text = []
             text.append(src.urwidSpecials.makeRusty(logoText))
+
+            root_console = tcod.console.Console(45, 25, order="F")
+            printUrwidToTcod(text,(0,0),explecitConsole=root_console)
+            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_map)
+            console_render = tcod.render.SDLConsoleRender(atlas)
+            renderedToTexture = console_render.render(root_console)
+            sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,4*tileHeight,renderedToTexture.width,renderedToTexture.height),)
+
+            # draw interaction info
+            text = []
             text.append("press enter to show the intro cutscene\n")
             text.append("press esc to skip the intro cutscene\n")
             text.append("press F11 to toggle fullscreen\n\n")
 
+            root_console = tcod.console.Console(40, 4, order="F")
+            printUrwidToTcod(text,(0,0),explecitConsole=root_console)
+            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
+            console_render = tcod.render.SDLConsoleRender(atlas)
+            renderedToTexture = console_render.render(root_console)
+            sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,25*tileHeight,renderedToTexture.width,renderedToTexture.height),)
+            if not first_render:
+                sdl_renderer2.present()
+            first_render = False
+
             if not stageState.get("send_tracking_ping"):
                 src.interaction.send_tracking_ping("opened game")
                 stageState["send_tracking_ping"] = True
-
-            if not first_render:
-                printUrwidToTcod(text, (64, 4))
-                tcodPresent()
-            first_render = False
 
             if not skip:
                 time.sleep(0.01)

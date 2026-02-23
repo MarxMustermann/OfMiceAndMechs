@@ -8030,7 +8030,6 @@ press enter to continue
             renderedToTexture = console_render.render(root_console)
             sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
 
-
             # draw
             sdl_renderer2.present()
 
@@ -8043,6 +8042,8 @@ press enter to continue
             if not stageState.get("send_tracking_ping"):
                 src.interaction.send_tracking_ping("run_intro_stage_3")
                 stageState["send_tracking_ping"] = True
+
+            tcodPresent(noPresent=True)
 
             c_offset -= 2
             color = "#666"
@@ -8075,7 +8076,14 @@ press enter to continue
 try to remember how you got here ...\n"""
                 text.insert(0,(src.interaction.urwid.AttrSpec(color,"#000"),line))
 
-            printUrwidToTcod(text, (131 + c_offset, 22))
+            root_console = tcod.console.Console(60, 60, order="F")
+            printUrwidToTcod(text, (0,0), explecitConsole=root_console)
+
+            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
+            console_render = tcod.render.SDLConsoleRender(atlas)
+            renderedToTexture = console_render.render(root_console)
+            sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),((131 + c_offset) * tileWidth,22*tileHeight,renderedToTexture.width,renderedToTexture.height),)
+
             if subStep == 0:
                 if not stageState.get("send_tracking_ping_sub_0"):
                     src.interaction.send_tracking_ping("run_intro_stage_3_0")
@@ -8118,21 +8126,32 @@ suggested action:
 press enter
 to remember"""
 
-            printUrwidToTcod(text, (2, 19))
+            root_console = tcod.console.Console(width+1, height, order="F")
+            printUrwidToTcod(text, (0,0), explecitConsole=root_console)
+
+            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
+            console_render = tcod.render.SDLConsoleRender(atlas)
+            renderedToTexture = console_render.render(root_console)
+            sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(2*tileWidth,19*tileHeight,renderedToTexture.width,renderedToTexture.height),)
+
+            drawPos = (0,0)
+            renderString = []
+            mapSize = 1
             if subStep == 1:
-                wall = src.items.itemMap["Wall"]()
-                totalOffsetX = (char_position[0]-6)*2
-                totalOffsetY = char_position[1]-5
-                for x in range(13):
-                    if x == 6:
-                        continue
-                    printUrwidToTcod(wall.render(), (totalOffsetX + x*2, totalOffsetY))
-                for x in range(13):
-                    printUrwidToTcod(wall.render(), (totalOffsetX + x*2, totalOffsetY+12))
-                for y in range(13):
-                    printUrwidToTcod(wall.render(), (totalOffsetX, totalOffsetY+y))
-                for y in range(13):
-                    printUrwidToTcod(wall.render(), (totalOffsetX + 12*2, totalOffsetY+y))
+                room = src.rooms.EmptyRoom(None,None,None,None)
+                room.reconfigure(13, 13, doorPos=[(6,0)])
+                room.hidden = False
+                items = room.getItemByPosition((6,0,0))
+                items[0].walkable = False
+                rendered_room = fixRoomRender(room.render())
+                for y in range(1,12):
+                    for x in range(1,12):
+                        rendered_room[y][x] = "  "
+                rendered_room[0][6] = "  "
+
+                mapSize = 13
+                drawPos = ((char_position[0]-6)*2,char_position[1]-5)
+                renderString = rendered_room
             if subStep == 2:
                 room = src.rooms.EmptyRoom(None,None,None,None)
                 room.reconfigure(13, 13, doorPos=[(6,0)])
@@ -8140,26 +8159,84 @@ to remember"""
                 items = room.getItemByPosition((6,0,0))
                 items[0].walkable = False
                 rendered_room = fixRoomRender(room.render())
-                printUrwidToTcod(rendered_room,((char_position[0]-6)*2,char_position[1]-5))
+
+                mapSize = 13
+                drawPos = ((char_position[0]-6)*2,char_position[1]-5)
+                renderString = rendered_room
             if subStep == 3:
                 offset = src.gamestate.gamestate.mainChar.getPosition()
                 rendered_room = fixRoomRender(src.gamestate.gamestate.mainChar.container.render())
-                printUrwidToTcod(rendered_room,((char_position[0]-6)*2,char_position[1]-5))
+
+                mapSize = 13
+                drawPos = ((char_position[0]-6)*2,char_position[1]-5)
+                renderString = rendered_room
             if subStep == 4:
                 offset = src.gamestate.gamestate.mainChar.getPosition()
                 roomPos = src.gamestate.gamestate.mainChar.container.getPosition()
                 terrainRender = src.gamestate.gamestate.mainChar.getTerrain().render(coordinateOffset=(15*(roomPos[1]-1)-6+offset[1],15*(roomPos[0]-1)-6+offset[0]),size=(44,44))
                 terrainRender = fixRoomRender(terrainRender)
-                printUrwidToTcod(terrainRender,((char_position[0]-22)*2,char_position[1]-22))
 
                 if minimap_position:
                     miniMapChars = src.gamestate.gamestate.mainChar.getTerrain().renderTiles()
-                    miniMapChars = fixRoomRender(miniMapChars)
-                    printUrwidToTcod(miniMapChars, (minimap_position[0]*2, minimap_position[1]+1))
 
+                    root_console = tcod.console.Console(15*2, 15, order="F")
+                    canvas = src.canvas.Canvas(
+                        size=(15, 15),
+                        chars=miniMapChars,
+                        coordinateOffset=(0,0),
+                        shift=(0,0),
+                        displayChars=src.canvas.displayChars,
+                        tileMapping=tileMapping,
+                    )
+                    canvas.printTcod(root_console,0,0,warning=False)
+
+                    atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_map)
+                    console_render = tcod.render.SDLConsoleRender(atlas)
+                    renderedToTexture = console_render.render(root_console)
+                    sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(minimap_position[0]*tileWidth, minimap_position[1]*tileHeight,renderedToTexture.width,renderedToTexture.height),)
+
+                    canvas.drawSdl(sdl_renderer2,minimap_position[0]*tileWidth,minimap_position[1]*tileHeight,warning=False)
+
+
+                mapSize = 45
+                drawPos = ((char_position[0]-22)*2,char_position[1]-22)
+                renderString = terrainRender
+
+            # draw map
+            root_console = tcod.console.Console(mapSize*2, mapSize, order="F")
+            canvas = src.canvas.Canvas(
+                size=(mapSize, mapSize),
+                chars=renderString,
+                coordinateOffset=(0,0),
+                shift=(0,0),
+                displayChars=src.canvas.displayChars,
+                tileMapping=tileMapping,
+            )
+            canvas.printTcod(root_console,0,0,warning=False)
+
+            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_map)
+            console_render = tcod.render.SDLConsoleRender(atlas)
+            renderedToTexture = console_render.render(root_console)
+            sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(drawPos[0]*tileWidth, drawPos[1]*tileHeight,renderedToTexture.width,renderedToTexture.height),)
+
+            canvas.drawSdl(sdl_renderer2,drawPos[0]*tileWidth,drawPos[1]*tileHeight,warning=False)
+
+            # draw character
             offset = src.gamestate.gamestate.mainChar.getPosition()
-            printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "), (char_position[0]*2,char_position[1]))
-            tcodPresent()
+            text = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
+
+            root_console = tcod.console.Console(2, 1, order="F")
+            printUrwidToTcod(text, (0,0), explecitConsole=root_console)
+
+            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
+            console_render = tcod.render.SDLConsoleRender(atlas)
+            renderedToTexture = console_render.render(root_console)
+            sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),((char_position[0]*2)*tileWidth,(char_position[1])*tileHeight,renderedToTexture.width,renderedToTexture.height),)
+
+
+            # draw
+            sdl_renderer2.present()
+
             time.sleep(0.1)
         else:
             break

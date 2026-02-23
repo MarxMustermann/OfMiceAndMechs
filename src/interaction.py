@@ -7672,7 +7672,6 @@ def showRunIntro():
             display_width = width*tileWidth
             display_height = height*tileHeight
             
-            # add text
             offsetLeft = (45 + c_offset) * tileWidth
             offsetTop = 17 * tileHeight
 
@@ -7699,6 +7698,7 @@ def showRunIntro():
             # right line
             sdl_renderer2.fill_rect((offsetLeft+padding+display_width,offsetTop-padding-overhang,line_width,display_height+2*(padding+overhang)))
     
+            # add text
             textBase = ["""
 You see """,".",".",".",""" nothing
 ""","You hear ",".",".",".",""" nothing
@@ -7955,29 +7955,46 @@ grows and grows and grows and grows
                 if y > window_charheight:
                     break
 
-            text = """
-                                                                                       \n\
-      |                                                                         |      \n\
-    --+-------------------------------------------------------------------------+--    \n\
-      |                                                                         |      \n\
-      |                                                                         |      \n\
-      |                                                                         |      \n\
-      |                                                                         |      \n\
-      |                                                                         |      \n\
-      |                                                                         |      \n\
-      |                                                                         |      \n\
-      |                                                                         |      \n\
-      |                                                                         |      \n\
-      |                                                                         |      \n\
-      |                                                                         |      \n\
-      |                                                                         |      \n\
-      |                                                                         |      \n\
-      |                                                                         |      \n\
-    --+-------------------------------------------------------------------------+--    \n\
-      |                                                                         |      \n\
-                                                                                       \n\
-"""
-            printUrwidToTcod(text, (36 + c_offset, 13))
+            tcodPresent(noPresent=True)
+
+            padding = 15
+            line_width = 5
+            overhang = 25
+            outline = 4
+
+            width = 71
+            height = 13
+            display_width = width*tileWidth
+            display_height = height*tileHeight
+            
+            offsetLeft = (45 + c_offset) * tileWidth
+            offsetTop = 17 * tileHeight
+
+            # draw background
+            sdl_renderer2.fill_rect((offsetLeft-padding,offsetTop-padding,display_width+2*padding,display_height+2*padding))
+            # draw top line background
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop-padding-line_width-outline,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
+            # draw logo divider background
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop-padding-line_width-outline+17*tileHeight,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
+            # draw lower line backgound
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop+padding+display_height-outline,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
+            # left line background
+            sdl_renderer2.fill_rect((offsetLeft-padding-line_width-outline,offsetTop-padding-overhang-outline,line_width+2*outline,display_height+2*(padding+overhang+outline)))
+            # right line background
+            sdl_renderer2.fill_rect((offsetLeft+padding+display_width-outline,offsetTop-padding-overhang-outline,line_width+2*outline,display_height+2*(padding+overhang)+2*outline))
+
+            sdl_renderer2.draw_color = (255,255,255,255)
+            # draw upper line
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop-padding-line_width,display_width+2*(padding+overhang),line_width))
+            # draw lower line
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop+padding+display_height,display_width+2*(padding+overhang),line_width))
+            # left line
+            sdl_renderer2.fill_rect((offsetLeft-padding-line_width,offsetTop-padding-overhang,line_width,display_height+2*(padding+overhang)))
+            # right line
+            sdl_renderer2.fill_rect((offsetLeft+padding+display_width,offsetTop-padding-overhang,line_width,display_height+2*(padding+overhang)))
+    
+
+            # add text
             text = ""
             text += """
 Something breaks and"""
@@ -8003,8 +8020,20 @@ but slowly you hear that familiar voice again."""
 suggested action:
 press enter to continue
 """
-            printUrwidToTcod(text, (45 + c_offset, 17))
-            tcodPresent()
+            root_console = tcod.console.Console(width+1, height, order="F")
+            printUrwidToTcod(text, (0,0), explecitConsole=root_console)
+            if subStep2 > 170:
+                printUrwidToTcod("press enter to stop struggling", (0, 12),explecitConsole=root_console)
+
+            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
+            console_render = tcod.render.SDLConsoleRender(atlas)
+            renderedToTexture = console_render.render(root_console)
+            sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
+
+
+            # draw
+            sdl_renderer2.present()
+
             time.sleep(0.2)
             subStep += 1
         elif stage ==  3:

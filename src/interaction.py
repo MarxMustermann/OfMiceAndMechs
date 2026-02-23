@@ -6451,7 +6451,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                     renderedToTexture = console_render.render(root_console)
                     sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft, offsetTop,renderedToTexture.width,renderedToTexture.height),)
 
-                    #canvas.drawSdl(sdl_renderer2,offsetLeft,offsetTop,warning=False)
+                    canvas.drawSdl(sdl_renderer2,offsetLeft,offsetTop,warning=False)
                 else:
                     mapStep = min(stageState["animationStep"],16)
                     mapSize = 13+2*mapStep
@@ -6479,7 +6479,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                     renderedToTexture = console_render.render(root_console)
                     sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft, offsetTop,renderedToTexture.width,renderedToTexture.height),)
 
-                    #canvas.drawSdl(sdl_renderer2,offsetLeft,offsetTop,warning=False)
+                    canvas.drawSdl(sdl_renderer2,offsetLeft,offsetTop,warning=False)
 
                 # add text
                 root_console = tcod.console.Console(50, 1, order="F")
@@ -6805,7 +6805,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 renderedToTexture = console_render.render(root_console)
                 sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft, offsetTop,renderedToTexture.width,renderedToTexture.height),)
 
-                #canvas.drawSdl(sdl_renderer2,offsetLeft,offsetTop,warning=False)
+                canvas.drawSdl(sdl_renderer2,offsetLeft,offsetTop,warning=False)
 
                 # add text
                 offsetLeft = (38 + c_offset)*tileWidth
@@ -6940,7 +6940,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 renderedToTexture = console_render.render(root_console)
                 sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft, offsetTop,renderedToTexture.width,renderedToTexture.height),)
 
-                #canvas.drawSdl(sdl_renderer2,offsetLeft,offsetTop,warning=False)
+                canvas.drawSdl(sdl_renderer2,offsetLeft,offsetTop,warning=False)
 
                 # add text
                 offsetLeft = (38 + c_offset)*tileWidth
@@ -7044,7 +7044,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
             renderedToTexture = console_render.render(root_console)
             sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft, offsetTop,renderedToTexture.width,renderedToTexture.height),)
 
-            #canvas.drawSdl(sdl_renderer2,offsetLeft,offsetTop,warning=False)
+            canvas.drawSdl(sdl_renderer2,offsetLeft,offsetTop,warning=False)
 
             # add text
             offsetLeft = (38 + c_offset)*tileWidth
@@ -7139,7 +7139,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                     renderedToTexture = console_render.render(root_console)
                     sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft, offsetTop,renderedToTexture.width,renderedToTexture.height),)
 
-                    #canvas.drawSdl(sdl_renderer2,offsetLeft,offsetTop,warning=False)
+                    canvas.drawSdl(sdl_renderer2,offsetLeft,offsetTop,warning=False)
 
                 # add text
                 offsetLeft = (38 + c_offset) * tileWidth

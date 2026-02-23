@@ -6319,7 +6319,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 offsetLeft = ((tcodConsole.width-len(text))//2)*tileWidth
                 root_console = tcod.console.Console(len(text), 1, order="F")
                 printUrwidToTcod(text,(0,0),explecitConsole=root_console)
-                atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_map)
+                atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
                 console_render = tcod.render.SDLConsoleRender(atlas)
                 renderedToTexture = console_render.render(root_console)
                 sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,24*tileHeight,renderedToTexture.width,renderedToTexture.height),)
@@ -6490,7 +6490,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                     pos = (40 + c_offset - int(len(text) / 2), 2)
                 printUrwidToTcod(text, (0,0), explecitConsole=root_console)
 
-                atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_map)
+                atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
                 console_render = tcod.render.SDLConsoleRender(atlas)
                 renderedToTexture = console_render.render(root_console)
                 sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(pos[0]*tileWidth,pos[1]*tileHeight,renderedToTexture.width,renderedToTexture.height),)
@@ -6778,16 +6778,49 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 stageState["send_tracking_ping"] = True
 
             if not skip:
-                roomRender = room.render()
-                roomRender = fixRoomRender(roomRender)
-                roomRender[6][6] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
+                tcodPresent(noPresent=True)
 
-                terrainRender = terrain.render(coordinateOffset=(15*6,15*6),size=(44,44))
+                # draw map
+                mapSize = 45
+                terrainRender = terrain.render(coordinateOffset=(15*6,15*6),size=(mapSize,mapSize))
                 terrainRender = fixRoomRender(terrainRender)
                 terrainRender[22][22] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
-                printUrwidToTcod(text, (38 + c_offset, 2))
-                printUrwidToTcod(terrainRender, (19 + c_offset, 5))
-                tcodPresent()
+
+                offsetLeft = (19 + c_offset)*tileWidth
+                offsetTop = 5*tileHeight
+
+                root_console = tcod.console.Console(mapSize*2, mapSize, order="F")
+                canvas = src.canvas.Canvas(
+                    size=(mapSize, mapSize),
+                    chars=terrainRender,
+                    coordinateOffset=(0,0),
+                    shift=(0,0),
+                    displayChars=src.canvas.displayChars,
+                    tileMapping=tileMapping,
+                )
+                canvas.printTcod(root_console,0,0,warning=False)
+
+                atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_map)
+                console_render = tcod.render.SDLConsoleRender(atlas)
+                renderedToTexture = console_render.render(root_console)
+                sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft, offsetTop,renderedToTexture.width,renderedToTexture.height),)
+
+                #canvas.drawSdl(sdl_renderer2,offsetLeft,offsetTop,warning=False)
+
+                # add text
+                offsetLeft = (38 + c_offset)*tileWidth
+                offsetTop = 2*tileHeight
+
+                root_console = tcod.console.Console(len(text), 1, order="F")
+                printUrwidToTcod(text, (0,0), explecitConsole=root_console)
+
+                atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
+                console_render = tcod.render.SDLConsoleRender(atlas)
+                renderedToTexture = console_render.render(root_console)
+                sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
+                
+                # draw
+                sdl_renderer2.present()
 
             if stageState["walkingSpaces"] and stageState["subStep"] > 1:
                 stageState["lastChange"] = time.time()
@@ -6879,14 +6912,52 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 stageState["send_tracking_ping"] = True
 
             if not skip:
+                tcodPresent(noPresent=True)
+
+                # draw map
+                mapSize = 45
+
                 terrainRender = terrain.render(coordinateOffset=(15*6,15*6),size=(44,44))
                 terrainRender = fixRoomRender(terrainRender)
                 terrainRender[22][22] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
-                printUrwidToTcod(text1, (38 + c_offset, 2))
-                printUrwidToTcod(text2, (42 + c_offset, 3))
-                printUrwidToTcod(terrainRender, (19 + c_offset, 5))
+                #printUrwidToTcod(terrainRender, (19 + c_offset, 5))
 
-                tcodPresent()
+                offsetLeft = (19 + c_offset)*tileWidth
+                offsetTop = 5*tileHeight
+
+                root_console = tcod.console.Console(mapSize*2, mapSize, order="F")
+                canvas = src.canvas.Canvas(
+                    size=(mapSize, mapSize),
+                    chars=terrainRender,
+                    coordinateOffset=(0,0),
+                    shift=(0,0),
+                    displayChars=src.canvas.displayChars,
+                    tileMapping=tileMapping,
+                )
+                canvas.printTcod(root_console,0,0,warning=False)
+
+                atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_map)
+                console_render = tcod.render.SDLConsoleRender(atlas)
+                renderedToTexture = console_render.render(root_console)
+                sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft, offsetTop,renderedToTexture.width,renderedToTexture.height),)
+
+                #canvas.drawSdl(sdl_renderer2,offsetLeft,offsetTop,warning=False)
+
+                # add text
+                offsetLeft = (38 + c_offset)*tileWidth
+                offsetTop = 2*tileHeight
+
+                root_console = tcod.console.Console(60, 2, order="F")
+                printUrwidToTcod(text1, (0,0), explecitConsole=root_console)
+                printUrwidToTcod(text2, (4,1), explecitConsole=root_console)
+
+                atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
+                console_render = tcod.render.SDLConsoleRender(atlas)
+                renderedToTexture = console_render.render(root_console)
+                sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
+                
+                # draw
+                sdl_renderer2.present()
 
             if time.time()-stageState["lastChange"] > 2 or skip:
                 stageState = None

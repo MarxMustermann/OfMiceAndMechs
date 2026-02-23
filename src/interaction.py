@@ -7717,8 +7717,6 @@ d.d..ddd.dd..d.d.d...ddd.d..d.dd.dd.d..d....d....d.....d.....dd.....d...
 
             root_console = tcod.console.Console(width+1, height, order="F")
             printUrwidToTcod(text, (0,0), explecitConsole=root_console)
-            if subStep2 > 170:
-                printUrwidToTcod("press enter to stop struggling", (0, 12),explecitConsole=root_console)
 
             atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
             console_render = tcod.render.SDLConsoleRender(atlas)
@@ -8022,8 +8020,6 @@ press enter to continue
 """
             root_console = tcod.console.Console(width+1, height, order="F")
             printUrwidToTcod(text, (0,0), explecitConsole=root_console)
-            if subStep2 > 170:
-                printUrwidToTcod("press enter to stop struggling", (0, 12),explecitConsole=root_console)
 
             atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
             console_render = tcod.render.SDLConsoleRender(atlas)

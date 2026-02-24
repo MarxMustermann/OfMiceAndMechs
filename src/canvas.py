@@ -253,7 +253,6 @@ class DisplayMapping(Mapping):
             import config.displayChars_fallback as rawConfig
         return rawConfig
 
-triggerPlate_texture = {}
 mainContraption_texture = {}
 contraption_texture = {}
 door_texture = {}
@@ -410,7 +409,6 @@ class Canvas:
 
     def drawSdl(self, renderer, offsetX, offsetY, warning):
 
-        global triggerPlate_texture
         global mainContraption_texture
         global contraption_texture
         global door_texture
@@ -492,26 +490,7 @@ class Canvas:
                                 fg_color = (colors[0],colors[1],colors[2],255)
                                 bg_color = (colors[3],colors[4],colors[5],255)
 
-                            renderer.draw_color = bg_color
-                            renderer.fill_rect((basePos[0],basePos[1],tileHeight,tileWidth*2))
-
-                            identifier = (fg_color,bg_color)
-                            texture = triggerPlate_texture.get(identifier)
-                            if not texture:
-                                base_path = "config/tiles/"
-                                path = base_path+"TriggerPlate.png"
-                                circle = tcod.image.Image.from_file(path)
-                                for x_index in range(0,circle.width):
-                                    for y_index in range(0,circle.height):
-                                        color = circle.get_pixel(x_index,y_index)
-                                        if color == (255, 255, 255):
-                                            circle.put_pixel(x_index,y_index,fg_color[:3])
-                                        if color == (0, 0, 0):
-                                            circle.put_pixel(x_index,y_index,bg_color[:3])
-                                texture = renderer.upload_texture(np.asarray(circle))
-                                triggerPlate_texture[identifier] = texture
-                                print("rebuilding","TriggerPlate.png",identifier)
-                            renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileWidth*2,tileHeight),)
+                            item.drawSDL(renderer, basePos, fg_color=fg_color, bg_color=bg_color)
 
                         if item.type == "MainContraption":
                             fg_color = (255,255,255,255)

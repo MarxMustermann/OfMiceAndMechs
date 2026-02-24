@@ -1,7 +1,9 @@
 import random
+import numpy as np
 
 import src
 
+armor_texture = {}
 
 class Armor(src.items.Item):
     """
@@ -28,6 +30,29 @@ class Armor(src.items.Item):
             self.armorValue = 1
         else:
             self.armorValue = random.randint(1, 5)
+
+    def drawSDL(self, renderer, basePos, fg_color=(255,255,255,255), bg_color=(0,0,0,255), tileSize=None):
+
+        if tileSize is None:
+            tileSize = src.interaction.tileHeight
+
+        identifier = (fg_color,bg_color)
+        texture = armor_texture.get(identifier)
+        if not texture:
+            base_path = "config/tiles/"
+            path = base_path+"Armor.png"
+            circle = src.interaction.tcod.image.Image.from_file(path)
+            for x_index in range(0,circle.width):
+                for y_index in range(0,circle.height):
+                    color = circle.get_pixel(x_index,y_index)
+                    if color == (255, 255, 255):
+                        circle.put_pixel(x_index,y_index,fg_color[:3])
+                    if color == (0, 0, 0):
+                        circle.put_pixel(x_index,y_index,bg_color[:3])
+            texture = renderer.upload_texture(np.asarray(circle))
+            armor_texture[identifier] = texture
+            print("rebuilding","Armor.png",identifier)
+        renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileSize,tileSize),)
 
     def getDamageThreashold(self):
         return 2**self.armorValue*100

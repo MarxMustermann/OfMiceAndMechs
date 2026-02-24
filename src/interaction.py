@@ -4332,6 +4332,74 @@ def printUrwidToTcod(inData,offset,color=None,internalOffset=None,size=None, act
 
     #footertext = stringifyUrwid(inData)
 
+def printUrwidToSDL(inData,offset,color=None,internalOffset=None,size=None, actionMeta=None):
+
+    if not internalOffset:
+        internalOffset = [0,0]
+
+    if not color:
+        color = ((255,255,255),(0,0,0))
+    if color[0] == (None,None,None):
+        color = ((255,255,255),color[1])
+    if color[1] == (None,None,None):
+        color = (color[0],(0,0,0))
+
+    if isinstance(inData,str):
+        counter = 0
+        for line in inData.split("\n"):
+            if counter > 0:
+                internalOffset[0] = 0
+                internalOffset[1] += 1
+
+            skipPrint = False
+            toPrint = line
+            if size:
+                if internalOffset[0] > size[0]:
+                    skipPrint = True
+                if internalOffset[1] > size[1]:
+                    skipPrint = True
+
+                if not skipPrint:
+                    toPrint = line[:size[0]-internalOffset[0]]
+
+            if not skipPrint:
+                x = offset[0]+internalOffset[0]
+                y = offset[1]+internalOffset[1]
+                if actionMeta:
+                    for i in range(len(toPrint)):
+                        src.gamestate.gamestate.clickMap[(x+i,y)] = actionMeta
+                #tcodConsole.print(x=x,y=y,string=toPrint,fg=color[0],bg=color[1])
+
+            internalOffset[0] += len(line)
+            counter += 1
+
+
+    if isinstance(inData,tuple):
+        printUrwidToSDL(inData[1],offset,(inData[0].get_rgb_values()[:3],inData[0].get_rgb_values()[3:]),internalOffset,size,actionMeta)
+
+    if isinstance(inData,int):
+        printUrwidToSDL(src.canvas.displayChars.indexedMapping[inData],offset,color,internalOffset,size,actionMeta)
+
+    if isinstance(inData,list):
+        for item in inData:
+            printUrwidToSDL(item,offset,color,internalOffset,size,actionMeta)
+
+    if isinstance(inData, ActionMeta):
+        printUrwidToSDL(inData.content,offset,color,internalOffset,size,inData.payload)
+
+    if isinstance(inData, CharacterMeta):
+        printUrwidToSDL(inData.content,offset,color,internalOffset,size,actionMeta)
+
+    if isinstance(inData, ItemMeta):
+        printUrwidToSDL(inData.content,offset,color,internalOffset,size,actionMeta)
+
+        sdl_renderer2.draw_color = (255,0,0,255)
+        x = offset[0]+internalOffset[0]
+        y = offset[1]+internalOffset[1]
+        sdl_renderer2.fill_rect(((x-2)*tileWidth,y*tileHeight,2*tileWidth,tileHeight))
+
+    #footertext = stringifyUrwid(inData)
+
 def printUrwidToDummy(dummy,inData,offset,color=None,internalOffset=None,size=None, actionMeta=None):
     if not internalOffset:
         internalOffset = [0,0]
@@ -4805,6 +4873,7 @@ def renderGameDisplay(renderChar=None):
                         offset = uiElement["offset"]
                         printUrwidToTcod(chars,offset,size=size)
                         printUrwidToDummy(pseudoDisplay,chars,offset,size=size)
+                        printUrwidToSDL(chars,offset)
 
                     if uiElement["type"] == "rememberedMenu2" and char.rememberedMenu2:
                         chars = []
@@ -4815,6 +4884,7 @@ def renderGameDisplay(renderChar=None):
                         offset = uiElement["offset"]
                         printUrwidToTcod(chars,offset,size=size)
                         printUrwidToDummy(pseudoDisplay,chars,offset,size=size)
+                        printUrwidToSDL(chars,offset)
 
             if not useTiles and not tcodConsole:
                 main.set_text(
@@ -4919,8 +4989,10 @@ def renderGameDisplay(renderChar=None):
                     width = last_menu_dimension[0]
                     height = last_menu_dimension[1]
 
-            offsetLeft = max(src.interaction.tcodConsole.width//2-width//2,1)*tileWidth
-            offsetTop = max(min(src.interaction.tcodConsole.height//2-height//2,17),1)*tileHeight
+            distance_left = max(src.interaction.tcodConsole.width//2-width//2,1)
+            distance_top = max(min(src.interaction.tcodConsole.height//2-height//2,17),1)
+            offsetLeft = distance_left*tileWidth
+            offsetTop = distance_top*tileHeight
 
             positions = []
             for x in range(-1,width//2+3):
@@ -4970,6 +5042,8 @@ def renderGameDisplay(renderChar=None):
             console_render = tcod.render.SDLConsoleRender(atlas)
             renderedToTexture = console_render.render(root_console)
             sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
+
+            printUrwidToSDL(text,(distance_left,distance_top))
 
             # draw title line
             if submenue and submenue.getTitle():

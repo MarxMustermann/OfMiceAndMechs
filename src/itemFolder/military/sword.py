@@ -1,7 +1,9 @@
 import random
+import numpy as np
 
 import src
 
+sword_texture = {}
 
 class Sword(src.items.Item):
     """
@@ -28,6 +30,32 @@ class Sword(src.items.Item):
             self.baseDamage = 11
         else:
             self.baseDamage = int(random.triangular(10,25,15))
+
+    def drawSDL(self, renderer, basePos, fg_color=(255,255,255,255), bg_color=(0,0,0,255), tileSize=None):
+
+        if tileSize is None:
+            tileSize = src.interaction.tileHeight
+
+        renderer.draw_color = bg_color
+        renderer.fill_rect((basePos[0],basePos[1],tileSize,tileSize))
+
+        identifier = (fg_color,bg_color)
+        texture = sword_texture.get(identifier)
+        if not texture:
+            base_path = "config/tiles/"
+            path = base_path+"Sword.png"
+            circle = src.interaction.tcod.image.Image.from_file(path)
+            for x_index in range(0,circle.width):
+                for y_index in range(0,circle.height):
+                    color = circle.get_pixel(x_index,y_index)
+                    if color == (255, 255, 255):
+                        circle.put_pixel(x_index,y_index,fg_color[:3])
+                    if color == (0, 0, 0):
+                        circle.put_pixel(x_index,y_index,bg_color[:3])
+            texture = renderer.upload_texture(np.asarray(circle))
+            sword_texture[identifier] = texture
+            print("rebuilding","Sword.png",identifier)
+        renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileSize,tileSize),)
 
     def degrade(self,multiplier=1,character=None):
         if self.baseDamage <= 10:

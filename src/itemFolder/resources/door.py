@@ -1,5 +1,8 @@
 import src
 
+import numpy as np
+
+door_texture = {}
 
 class Door(src.items.Item):
     """
@@ -21,6 +24,54 @@ class Door(src.items.Item):
 
         super().__init__()
         self.bio = bio
+
+    def drawSDL(self, renderer, basePos, fg_color=(255,255,255,255), bg_color=(0,0,0,255), tileSize=None):
+
+        if tileSize is None:
+            tileSize = src.interaction.tileHeight
+
+        border_width = tileSize//10+1
+
+        identifier = (self.walkable,fg_color,bg_color)
+        texture = door_texture.get(identifier)
+        if not texture:
+            base_path = "config/tiles/"
+            path = base_path
+            if self.walkable:
+                path += "Door.png"
+            else:
+                path += "Door_Closed.png"
+            circle = src.interaction.tcod.image.Image.from_file(path)
+            for x_index in range(0,circle.width):
+                for y_index in range(0,circle.height):
+                    color = circle.get_pixel(x_index,y_index)
+                    if color == (255, 255, 255):
+                        circle.put_pixel(x_index,y_index,fg_color[:3])
+                    if color == (0, 0, 0):
+                        circle.put_pixel(x_index,y_index,bg_color[:3])
+            texture = renderer.upload_texture(np.asarray(circle))
+            door_texture[identifier] = texture
+            print("rebuilding","Door.png",identifier)
+        renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileSize,tileSize),)
+
+        renderer.draw_color = fg_color
+
+        if self.bolted and not self.walkable:
+            items = self.container.getItemByPosition(self.getPosition(offset=(0,-1,0)))
+            if not (len(items) == 1 and items[0].type == "Wall" and items[0].bolted):
+                renderer.fill_rect((basePos[0],basePos[1],tileSize,border_width))
+
+            items = self.container.getItemByPosition(self.getPosition(offset=(-1,0,0)))
+            if not (len(items) == 1 and items[0].type == "Wall" and items[0].bolted):
+                renderer.fill_rect((basePos[0],basePos[1],border_width,tileSize))
+
+            items = self.container.getItemByPosition(self.getPosition(offset=(0,1,0)))
+            if not (len(items) == 1 and items[0].type == "Wall" and items[0].bolted):
+                renderer.fill_rect((basePos[0],basePos[1]+tileSize-border_width,tileSize,border_width))
+
+            items = self.container.getItemByPosition(self.getPosition(offset=(1,0,0)))
+            if not (len(items) == 1 and items[0].type == "Wall" and items[0].bolted):
+                renderer.fill_rect((basePos[0]+tileSize-border_width,basePos[1],border_width,tileSize))
 
     def getConfigurationOptions(self, character):
         """

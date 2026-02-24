@@ -253,7 +253,6 @@ class DisplayMapping(Mapping):
             import config.displayChars_fallback as rawConfig
         return rawConfig
 
-mainContraption_texture = {}
 contraption_texture = {}
 door_texture = {}
 wall_texture = {}
@@ -409,7 +408,6 @@ class Canvas:
 
     def drawSdl(self, renderer, offsetX, offsetY, warning):
 
-        global mainContraption_texture
         global contraption_texture
         global door_texture
         global wall_texture
@@ -496,50 +494,7 @@ class Canvas:
                             fg_color = (255,255,255,255)
                             bg_color = (0,0,0,255)
 
-                            renderer.draw_color = bg_color
-                            renderer.fill_rect((basePos[0],basePos[1],tileHeight,tileWidth*2))
-
-                            identifier = (fg_color,bg_color)
-                            texture = mainContraption_texture.get(identifier)
-                            if not texture:
-                                base_path = "config/tiles/"
-                                path = base_path+"MainContraption.png"
-                                circle = tcod.image.Image.from_file(path)
-                                for x_index in range(0,circle.width):
-                                    for y_index in range(0,circle.height):
-                                        color = circle.get_pixel(x_index,y_index)
-                                        if color == (255, 255, 255):
-                                            circle.put_pixel(x_index,y_index,fg_color[:3])
-                                        if color == (0, 0, 0):
-                                            circle.put_pixel(x_index,y_index,bg_color[:3])
-                                texture = renderer.upload_texture(np.asarray(circle))
-                                mainContraption_texture[identifier] = texture
-                                print("rebuilding","MainContraption.png",identifier)
-                            renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileWidth*2,tileHeight),)
-
-                            renderer.draw_color = fg_color
-
-                            if item.bolted:
-                                items = item.container.getItemByPosition(item.getPosition(offset=(0,-1,0)))
-                                if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","MainContraption",)):
-                                    renderer.fill_rect((basePos[0],basePos[1],tileHeight,border_width))
-
-                                items = item.container.getItemByPosition(item.getPosition(offset=(-1,0,0)))
-                                if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","MainContraption",)):
-                                    renderer.fill_rect((basePos[0],basePos[1],border_width,tileHeight))
-
-                                items = item.container.getItemByPosition(item.getPosition(offset=(0,1,0)))
-                                if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","MainContraption",)):
-                                    renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,tileHeight,border_width))
-
-                                items = item.container.getItemByPosition(item.getPosition(offset=(1,0,0)))
-                                if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","MainContraption",)):
-                                    renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,tileHeight))
-                            else:
-                                renderer.fill_rect((basePos[0],basePos[1],tileHeight,border_width))
-                                renderer.fill_rect((basePos[0],basePos[1],border_width,tileHeight))
-                                renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,tileHeight,border_width))
-                                renderer.fill_rect((basePos[0]+2*tileWidth-border_width,basePos[1],border_width,tileHeight))
+                            item.drawSDL(renderer, basePos, fg_color=fg_color, bg_color=bg_color)
 
                         if item.type == "Contraption":
                             fg_color = (255,255,255,255)

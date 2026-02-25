@@ -2987,10 +2987,10 @@ but they are likely to explode when disturbed.
             if terrain.getRoomByPosition((6,10,0)):
                 text = """
 Congratulations! You made it out of the burning lab.
-It will explode soon.
+It will explode soon, we should wait for it to burn down.
+
 
 Let me properly introduce myself:
-
 
 I'm your implant and i'll be helping you with your tasks.
 My advice is shown on the left side of the screen.
@@ -2999,6 +2999,7 @@ My advice is shown on the left side of the screen.
                 text = """
 The explosion of the lab woke up the local insects.
 You should get to safety before they start to hunt.
+Our base is in the middle of the terrain, go there.
 """
 
             text += """
@@ -3036,10 +3037,16 @@ There are Vials nearby. You can heal yourself with those.
 Fetch them to have some healing items available.
 """
             name = "get to safety"
-            options.append((name, "help me get to safety"))
+            options.append((name, "help me get into the base"))
             extraDescriptions[name] = """
 Beeing outside is dangerous. There is an abandoned base nearby.
 This will lead you into the base.
+"""
+
+            name = "hunt spiderlings"
+            options.append((name, "help me hunt spiderlings"))
+            extraDescriptions[name] = """
+The spiderlings are easy victims and do not deserve to live
 """
 
             if mainChar.health >= mainChar.maxHealth // 2 and mainChar.health < mainChar.maxHealth:
@@ -3617,6 +3624,18 @@ This will close the tutorial and let you do your own thing.
 
         if quest_type == "get to safety":
             quest = src.quests.questMap["ReachSafety"]()
+            self.addQuest(quest,character)
+            self.clear_implant_quest(character)
+            return
+
+        if quest_type == "hunt spiderlings":
+            candidates = []
+            for check_character in terrain.getAllCharacters():
+                if check_character.charType != "Spiderling":
+                    continue
+                candidates.append(check_character)
+            random.shuffle(candidates)
+            quest = src.quests.questMap["SecureTile"](toSecure=candidates[0].getBigPosition(),endWhenCleared=True,reason="kill spiderlings",simpleAttacksOnly=True,noHeal=True)
             self.addQuest(quest,character)
             self.clear_implant_quest(character)
             return

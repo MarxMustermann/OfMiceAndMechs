@@ -47,6 +47,9 @@ class Item:
 
     description = "abstract base item should never be used directly"
 
+    def drawSDL(self, renderer, basePos, fg_color=(255,255,255,255), bg_color=(0,0,0,255), tileSize=None):
+        pass
+
     def getTerrainPosition(self):
         '''
         get the position of the terrain this item is on

@@ -427,21 +427,19 @@ class Canvas:
                         src.interaction.settings["SDL"] = False
 
                     if src.interaction.settings["SDL"]:
-                        if item.type in ("CoalBurner","Sword","Armor","RodTower","TriggerPlate","Door","Wall","MainContraption","Contraption",):
-                            print(content[0])
-                            if isinstance(content[0],str):
-                                fg_color = (255,255,255,255)
-                                bg_color = (0,0,0,255)
-                            elif isinstance(content[0],tuple) and isinstance(content[0][0],src.pseudoUrwid.AttrSpec):
-                                colors = content[0][0].get_rgb_values()
-                                fg_color = (colors[0],colors[1],colors[2],255)
-                                bg_color = (colors[3],colors[4],colors[5],255)
-                            else:
-                                colors = content[0].get_rgb_values()
-                                fg_color = (colors[0],colors[1],colors[2],255)
-                                bg_color = (colors[3],colors[4],colors[5],255)
+                        if isinstance(content[0],str):
+                            fg_color = (255,255,255,255)
+                            bg_color = (0,0,0,255)
+                        elif isinstance(content[0],tuple) and isinstance(content[0][0],src.pseudoUrwid.AttrSpec):
+                            colors = content[0][0].get_rgb_values()
+                            fg_color = (colors[0],colors[1],colors[2],255)
+                            bg_color = (colors[3],colors[4],colors[5],255)
+                        else:
+                            colors = content[0].get_rgb_values()
+                            fg_color = (colors[0],colors[1],colors[2],255)
+                            bg_color = (colors[3],colors[4],colors[5],255)
 
-                            item.drawSDL(renderer, basePos, fg_color=fg_color, bg_color=bg_color)
+                        item.drawSDL(renderer, basePos, fg_color=fg_color, bg_color=bg_color)
 
                 if isinstance(char, src.interaction.CharacterMeta):
                     character = char.character

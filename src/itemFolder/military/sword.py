@@ -76,10 +76,10 @@ baseDamage:
         character.container.addAnimation(character.getPosition(),"showchar",5,{"char":charSequence[-1]})
         character.container.addAnimation(character.getPosition(),"showchar",2,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"), "wt")})
 
+        oldWeapon = None
         if character.weapon:
             oldWeapon = character.weapon
             character.weapon = None
-            character.container.addItem(oldWeapon,character.getPosition())
 
         character.weapon = self
         character.changed("equipedItem",(character,self))
@@ -88,6 +88,12 @@ baseDamage:
         else:
             if self in character.inventory:
                 character.removeItemFromInventory(self)
+
+        if oldWeapon:
+            if character.getFreeInventorySpace():
+                character.addToInventory(oldWeapon)
+            else:
+                character.container.addItem(oldWeapon,character.getPosition())
 
     def upgrade(self):
         self.baseDamage += 1

@@ -155,7 +155,7 @@ class GameState:
         tileWidth = src.interaction.tileWidth
         tileHeight = src.interaction.tileHeight
         sdl_renderer2 = src.interaction.sdl_renderer2
-        tileset = src.interaction.tileset
+        tileset = src.interaction.tileset_ui
 
         text = " saving game "
 

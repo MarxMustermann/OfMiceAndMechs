@@ -4393,10 +4393,29 @@ def printUrwidToSDL(inData,offset,color=None,internalOffset=None,size=None, acti
     if isinstance(inData, ItemMeta):
         printUrwidToSDL(inData.content,offset,color,internalOffset,size,actionMeta)
 
-        sdl_renderer2.draw_color = (255,0,0,255)
-        x = offset[0]+internalOffset[0]
-        y = offset[1]+internalOffset[1]
-        sdl_renderer2.fill_rect(((x-2)*tileWidth,y*tileHeight,2*tileWidth,tileHeight))
+        if src.interaction.settings["SDL"]:
+
+            item = inData.item
+            content = inData.content
+            x = offset[0]+internalOffset[0]
+            y = offset[1]+internalOffset[1]
+            basePos = ((x-2)*tileWidth,y*tileHeight)
+            if isinstance(content, int):
+                content = src.canvas.displayChars.indexedMapping[content]
+
+            if isinstance(content[0],str):
+                fg_color = (255,255,255,255)
+                bg_color = (0,0,0,255)
+            elif isinstance(content[0],tuple) and isinstance(content[0][0],src.pseudoUrwid.AttrSpec):
+                colors = content[0][0].get_rgb_values()
+                fg_color = (colors[0],colors[1],colors[2],255)
+                bg_color = (colors[3],colors[4],colors[5],255)
+            else:
+                colors = content[0].get_rgb_values()
+                fg_color = (colors[0],colors[1],colors[2],255)
+                bg_color = (colors[3],colors[4],colors[5],255)
+
+            item.drawSDL(sdl_renderer2, basePos, fg_color=fg_color, bg_color=bg_color)
 
     #footertext = stringifyUrwid(inData)
 

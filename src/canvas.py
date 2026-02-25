@@ -427,7 +427,7 @@ class Canvas:
                         src.interaction.settings["SDL"] = False
 
                     if src.interaction.settings["SDL"]:
-                        if item.type == "CoalBurner":
+                        if item.type in ("CoalBurner","Sword","Armor","RodTower","TriggerPlate"):
                             if isinstance(content[0],str):
                                 fg_color = (255,255,255,255)
                                 bg_color = (0,0,0,255)
@@ -438,72 +438,13 @@ class Canvas:
 
                             item.drawSDL(renderer, basePos, fg_color=fg_color, bg_color=bg_color)
 
-                        if item.type == "Sword":
-                            if isinstance(content[0],str):
-                                fg_color = (255,255,255,255)
-                                bg_color = (0,0,0,255)
-                            else:
-                                colors = content[0].get_rgb_values()
-                                fg_color = (colors[0],colors[1],colors[2],255)
-                                bg_color = (colors[3],colors[4],colors[5],255)
-
-                            item.drawSDL(renderer, basePos, fg_color=fg_color, bg_color=bg_color)
-
-                        if item.type == "Armor":
-                            if isinstance(content[0],str):
-                                fg_color = (255,255,255,255)
-                                bg_color = (0,0,0,255)
-                            else:
-                                colors = content[0].get_rgb_values()
-                                fg_color = (colors[0],colors[1],colors[2],255)
-                                bg_color = (colors[3],colors[4],colors[5],255)
-
-                            item.drawSDL(renderer, basePos, fg_color=fg_color, bg_color=bg_color)
-
-                        if item.type == "RodTower":
-                            if isinstance(content[0],str):
-                                fg_color = (255,255,255,255)
-                                bg_color = (0,0,0,255)
-                            else:
-                                colors = content[0].get_rgb_values()
-                                fg_color = (colors[0],colors[1],colors[2],255)
-                                bg_color = (colors[3],colors[4],colors[5],255)
-
-                            item.drawSDL(renderer, basePos, fg_color=fg_color, bg_color=bg_color)
-
-                        if item.type == "TriggerPlate":
-                            if isinstance(content[0],str):
-                                fg_color = (255,255,255,255)
-                                bg_color = (0,0,0,255)
-                            else:
-                                colors = content[0].get_rgb_values()
-                                fg_color = (colors[0],colors[1],colors[2],255)
-                                bg_color = (colors[3],colors[4],colors[5],255)
-
-                            item.drawSDL(renderer, basePos, fg_color=fg_color, bg_color=bg_color)
-
-                        if item.type == "MainContraption":
+                        if item.type in ("MainContraption","Contraption",):
                             fg_color = (255,255,255,255)
                             bg_color = (0,0,0,255)
 
                             item.drawSDL(renderer, basePos, fg_color=fg_color, bg_color=bg_color)
 
-                        if item.type == "Contraption":
-                            fg_color = (255,255,255,255)
-                            bg_color = (0,0,0,255)
-
-                            item.drawSDL(renderer, basePos, fg_color=fg_color, bg_color=bg_color)
-
-                        if item.type == "Door":
-
-                            colors = content[0].get_rgb_values()
-                            fg_color = (colors[0],colors[1],colors[2],255)
-                            bg_color = (colors[3],colors[4],colors[5],255)
-
-                            item.drawSDL(renderer, basePos, fg_color=fg_color, bg_color=bg_color)
-
-                        if item.type == "Wall":
-
+                        if item.type in ("Door","Wall",):
                             colors = content[0].get_rgb_values()
                             fg_color = (colors[0],colors[1],colors[2],255)
                             bg_color = (colors[3],colors[4],colors[5],255)

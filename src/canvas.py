@@ -427,7 +427,7 @@ class Canvas:
                         src.interaction.settings["SDL"] = False
 
                     if src.interaction.settings["SDL"]:
-                        if item.type in ("CoalBurner","Sword","Armor","RodTower","TriggerPlate"):
+                        if item.type in ("CoalBurner","Sword","Armor","RodTower","TriggerPlate","Door","Wall"):
                             if isinstance(content[0],str):
                                 fg_color = (255,255,255,255)
                                 bg_color = (0,0,0,255)
@@ -441,13 +441,6 @@ class Canvas:
                         if item.type in ("MainContraption","Contraption",):
                             fg_color = (255,255,255,255)
                             bg_color = (0,0,0,255)
-
-                            item.drawSDL(renderer, basePos, fg_color=fg_color, bg_color=bg_color)
-
-                        if item.type in ("Door","Wall",):
-                            colors = content[0].get_rgb_values()
-                            fg_color = (colors[0],colors[1],colors[2],255)
-                            bg_color = (colors[3],colors[4],colors[5],255)
 
                             item.drawSDL(renderer, basePos, fg_color=fg_color, bg_color=bg_color)
 

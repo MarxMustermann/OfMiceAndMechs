@@ -4395,7 +4395,9 @@ def printUrwidToSDL(inData,offset,color=None,internalOffset=None,size=None, acti
 
         if src.interaction.settings["SDL"]:
 
+
             item = inData.item
+
             content = inData.content
             x = offset[0]+internalOffset[0]
             y = offset[1]+internalOffset[1]
@@ -4415,7 +4417,8 @@ def printUrwidToSDL(inData,offset,color=None,internalOffset=None,size=None, acti
                 fg_color = (colors[0],colors[1],colors[2],255)
                 bg_color = (colors[3],colors[4],colors[5],255)
 
-            item.drawSDL(sdl_renderer2, basePos, fg_color=fg_color, bg_color=bg_color)
+            if isinstance(item.container, src.characters.Character):
+                item.drawSDL(sdl_renderer2, basePos, fg_color=fg_color, bg_color=bg_color)
 
     #footertext = stringifyUrwid(inData)
 
@@ -4892,7 +4895,6 @@ def renderGameDisplay(renderChar=None):
                         offset = uiElement["offset"]
                         printUrwidToTcod(chars,offset,size=size)
                         printUrwidToDummy(pseudoDisplay,chars,offset,size=size)
-                        printUrwidToSDL(chars,offset)
 
                     if uiElement["type"] == "rememberedMenu2" and char.rememberedMenu2:
                         chars = []
@@ -4903,7 +4905,6 @@ def renderGameDisplay(renderChar=None):
                         offset = uiElement["offset"]
                         printUrwidToTcod(chars,offset,size=size)
                         printUrwidToDummy(pseudoDisplay,chars,offset,size=size)
-                        printUrwidToSDL(chars,offset)
 
             if not useTiles and not tcodConsole:
                 main.set_text(
@@ -4921,6 +4922,25 @@ def renderGameDisplay(renderChar=None):
     uiElements = calculate_UI_layout(char)
 
     for uiElement in uiElements:
+        if uiElement["type"] == "rememberedMenu" and char.rememberedMenu:
+            chars = []
+            counter = 0
+            for menu in reversed(char.rememberedMenu):
+                chars.extend(["------------- ",ActionMeta(content=">",payload=["lESC"]),"\n\n"])
+                chars.extend(menu.render())
+                counter += 1
+            size = uiElement["size"]
+            offset = uiElement["offset"]
+            printUrwidToSDL(chars,offset)
+
+        if uiElement["type"] == "rememberedMenu2" and char.rememberedMenu2:
+            chars = []
+            for menu in reversed(char.rememberedMenu2):
+                chars.extend(["------------- ",ActionMeta(content="<",payload=["rESC"]),"\n\n"])
+                chars.extend(menu.render())
+            size = uiElement["size"]
+            offset = uiElement["offset"]
+            printUrwidToSDL(chars,offset)
 
         if uiElement["type"] == "miniMap":
             offsetLeft = uiElement["offset"][0]*tileWidth*2

@@ -30,3 +30,4 @@ import src.questFolder.story.teleportToGlassPalace
 import src.questFolder.story.openHelpMenu
 import src.questFolder.story.openCharacterMenu
 import src.questFolder.story.watchLabBurn
+import src.questFolder.story.storyTeleport

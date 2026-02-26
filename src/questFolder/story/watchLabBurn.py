@@ -31,7 +31,7 @@ class WatchLabBurn(src.quests.MetaQuestSequence):
                 return (None,("+","end quest"))
             return (None,(".","stop watching the explosion"))
 
-        if character.getSpacePosition()[1] > 11:
+        if character.getSpacePosition()[1] > 8:
             return (None,("w","distance yourself from the lab"))
         lab = self._get_lab()
         sterns_contraption = lab.getItemByType("MainContraption")

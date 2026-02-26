@@ -8262,7 +8262,7 @@ to remember"""
                 rendered_room[0][6] = "  "
 
                 mapSize = 13
-                drawPos = ((char_position[0]-6)*2,char_position[1]-5)
+                drawPos = ((char_position[0]-6)*2,char_position[1]-8)
                 renderString = rendered_room
             if subStep == 2:
                 room = src.rooms.EmptyRoom(None,None,None,None)
@@ -8273,14 +8273,14 @@ to remember"""
                 rendered_room = fixRoomRender(room.render())
 
                 mapSize = 13
-                drawPos = ((char_position[0]-6)*2,char_position[1]-5)
+                drawPos = ((char_position[0]-6)*2,char_position[1]-8)
                 renderString = rendered_room
             if subStep == 3:
                 offset = src.gamestate.gamestate.mainChar.getPosition()
                 rendered_room = fixRoomRender(src.gamestate.gamestate.mainChar.container.render())
 
                 mapSize = 13
-                drawPos = ((char_position[0]-6)*2,char_position[1]-5)
+                drawPos = ((char_position[0]-6)*2,char_position[1]-8)
                 renderString = rendered_room
             if subStep == 4:
                 offset = src.gamestate.gamestate.mainChar.getPosition()

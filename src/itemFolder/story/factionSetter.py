@@ -47,6 +47,13 @@ It changes your implant and sets your faction marker to {self.faction}.
         character.hasMaxHealthBoost = False
         character.hasMovementSpeedBoost = False
 
+        terrainPos = character.getTerrain().getPosition()
+        characterPos = character.getBigPosition()
+        character.registers["HOMEx"] = characterPos[0]
+        character.registers["HOMEy"] = characterPos[1]
+        character.registers["HOMETx"] = terrainPos[0]
+        character.registers["HOMETy"] = terrainPos[1]
+
     def getConfigurationOptions(self, character):
         '''
         register the configuration options with superclass

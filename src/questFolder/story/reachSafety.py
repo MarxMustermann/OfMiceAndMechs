@@ -1,5 +1,6 @@
 import src
 
+import random
 
 class ReachSafety(src.quests.MetaQuestSequence):
     type = "ReachSafety"
@@ -47,7 +48,24 @@ Examine the TriggerPlate to find out what is wrong.
 """,do_not_scale=False)
                         self.shown_examine_popup = True
 
-                quest = src.quests.questMap["Examine"](targetPosition=(1,6,0),targetPositionBig=(5,7,0),reason="find out what is wrong",description="examine trap",itemType="TriggerPlate")
+                offsets = [(0,0,0),(1,0,0),(0,1,0),(-1,0,0),(0,-1,0)]
+                random.shuffle(offsets)
+                triggerPlatePos = ((5,7,0),(1,6,0),)
+                for offset in offsets:
+                    check_pos = character.getPosition(offset=offset)
+                    has_found_triggered = False
+                    for item in character.container.getItemByPosition(check_pos):
+                        if item.type != "TriggerPlate":
+                            continue
+                        triggerPlatePos = (item.getBigPosition(),item.getPosition())
+                        if item.isInCoolDown():
+                            has_found_triggered = True
+                            break
+                    if has_found_triggered:
+                        break
+                        
+
+                quest = src.quests.questMap["Examine"](targetPosition=triggerPlatePos[1],targetPositionBig=triggerPlatePos[0],reason="find out what is wrong",description="examine trap",itemType="TriggerPlate")
                 return ([quest],None)
             if character.macroState.get("submenue"):
                 return (None,(["esc"],"close menu"))

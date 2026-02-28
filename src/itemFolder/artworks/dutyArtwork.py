@@ -13,7 +13,7 @@ class DutyArtwork(src.items.Item):
         configure the superclass
         """
 
-        super().__init__(display="DA")
+        super().__init__(display=(src.interaction.urwid.AttrSpec("#ff0","#000"),"DA"))
 
         self.name = "duty artwork"
 

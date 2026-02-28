@@ -5,6 +5,7 @@ class Mechanical_Crawler(src.monster.Monster):
     the class for a small statue
     is intended as temple guard
     """
+    charType = "Mechanical crawler"
     def __init__(
         self,
         display="st",
@@ -34,7 +35,6 @@ class Mechanical_Crawler(src.monster.Monster):
             creator=creator,
             characterId=characterId,
         )
-        self.charType = "Mechanical crawler"
         self.godMode = True
         self.waitLength = 15
         self.level = level

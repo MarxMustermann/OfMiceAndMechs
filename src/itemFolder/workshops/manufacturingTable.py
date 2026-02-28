@@ -162,7 +162,8 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
         self.numUsed = 0
 
         # send out events
-        character.changed("configured ManufacturingTable",{})
+        if character:
+            character.changed("configured ManufacturingTable",{})
 
         self.drawStockpiles(params)
 

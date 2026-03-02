@@ -45,8 +45,8 @@ class HelpMenu(src.subMenu.SubMenu):
             self.index += 1
 
         if self.index < 0:
-            self.index = 3
-        if self.index > 3:
+            self.index = 4
+        if self.index > 4:
             self.index = 0
 
         # show info
@@ -63,20 +63,25 @@ class HelpMenu(src.subMenu.SubMenu):
         color = "#666"
         if self.index == 0:
             color = "#fff"
-            title = "implant"
-        txt.append((src.interaction.urwid.AttrSpec(color, "#000"),"\n[ implant ] "))
+            title = "overview"
+        txt.append((src.interaction.urwid.AttrSpec(color, "#000"),"\n[ overview ] "))
         color = "#666"
         if self.index == 1:
+            color = "#fff"
+            title = "implant"
+        txt.append((src.interaction.urwid.AttrSpec(color, "#000"),"[ implant ] "))
+        color = "#666"
+        if self.index == 2:
             color = "#fff"
             title = "keybindings"
         txt.append((src.interaction.urwid.AttrSpec(color, "#000"),"[ keybindings ] "))
         color = "#666"
-        if self.index == 2:
+        if self.index == 3:
             color = "#fff"
             title = "user interface"
         txt.append((src.interaction.urwid.AttrSpec(color, "#000"),"[ user interface ] "))
         color = "#666"
-        if self.index == 3:
+        if self.index == 4:
             color = "#fff"
             title = "submenues"
         txt.append((src.interaction.urwid.AttrSpec(color, "#000"),"[ submenues ]\n"))
@@ -88,6 +93,10 @@ class HelpMenu(src.subMenu.SubMenu):
         txt.append("\n")
 
         if self.index == 0:
+            txt.append("\n")
+            txt.append("This is the help menu. It covers various topics.\n\npress a and d to switch between the topics\n")
+            txt.append("press esc to close this menu")
+        if self.index == 1:
             txt.append("\n")
             txt.append("The implant is your main help in this game.\n")
             txt.append("It will guide you from start to end and will always show you what keys to press to progress.\n")
@@ -110,7 +119,7 @@ if the suggested action is \" """,(src.interaction.urwid.AttrSpec(src.interactio
     press x
 """,])
 
-        if self.index == 1:
+        if self.index == 2:
             txt.append("\n= movement =\n\n")
             txt.append("  w/a/s/d - move north/east/south/west (up/left/down/right)\n")
             txt.extend(["  ",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"W"),"/",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"A"),"/",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"S"),"/",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"D")," - special move north/east/south/west\n"])
@@ -129,7 +138,8 @@ if the suggested action is \" """,(src.interaction.urwid.AttrSpec(src.interactio
             txt.extend(["  ",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"W"),"/",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"A"),"/",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"S"),"/",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"D")," - alterne atttack north/east/south/west\n"])
             txt.append("  f       - shoot\n")
             txt.append("  m       - attack enemy on the same square\n")
-        if self.index == 2:
+
+        if self.index == 3:
             txt.append("\n")
             txt.append("o   - observe\n")
             txt.extend([(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"O"),"   - observe alternates\n"])
@@ -141,16 +151,19 @@ if the suggested action is \" """,(src.interaction.urwid.AttrSpec(src.interactio
             txt.append("v   - open character overwiev\n")
             txt.append("p   - cast magic\n")
 
-        if self.index == 3:
+        if self.index == 4:
             txt.append("\n")
             txt.append("F11      - toggle fullscreen\n")
             txt.append("ctrl +/- - zoom in/out\n")
             txt.append("\n")
             txt.append("\n")
+
+        if self.index > 1:
+            txt.append("\n")
+            txt.append("\n")
+            txt.append("\n")
+            txt.append("sadly the controls cannot be changed at the moment\n")
+            txt.append("if you have issues with the character running into walls, tap the keys instead of holding them")
         txt.append("\n")
-        txt.append("\n")
-        txt.append("\n")
-        txt.append("sadly the controls cannot be changed at the moment\n")
-        txt.append("if you have issues with the character running into walls, tap the keys instead of holding them\n")
 
         return txt

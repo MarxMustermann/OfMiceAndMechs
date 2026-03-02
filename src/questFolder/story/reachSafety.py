@@ -105,7 +105,7 @@ press q to see details
             if not character.container.isRoom:
                 return (None,("d","to enter the room"))
             if character.getNearbyEnemies():
-                quest = src.quests.questMap["Fight"](description="kill the last enemy",simpleOnly=True)
+                quest = src.quests.questMap["Fight"](description="kill the last enemy",simpleOnly=True,suicidal=True)
                 return ([quest],None)
             return (None,(".","stand around confused"))
         quest = src.quests.questMap["GoToTileStory"](targetPosition=(5,7,0),reason="reach the base entrance",description="reach the base entrance",allowMapMenu=False)
@@ -151,6 +151,7 @@ To make things easier this quest splits into subquests.
         self.clearSubQuests()
         self.got_trapped = True
         self.trap_tick = src.gamestate.gamestate.tick
+        self.character.runCommandString(".",clear=True)
 
     def wrapedTriggerCompletionCheck(self, extraInfo):
         if self.completed:

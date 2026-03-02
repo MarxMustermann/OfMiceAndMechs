@@ -208,6 +208,14 @@ Place the items in the correct input or storage stockpile.
                 if inputSlots:
                     break
 
+        fullyEmptyFirst_inputSlots = []
+        for inputSlot in inputSlots[:]:
+            if room.getItemByPosition(inputSlot[0]):
+                fullyEmptyFirst_inputSlots.append(inputSlot)
+            else:
+                fullyEmptyFirst_inputSlots.insert(0,inputSlot)
+        inputSlots = fullyEmptyFirst_inputSlots
+
         if self.targetPosition:
             for slot in inputSlots:
                 if self.targetPosition != slot[0]:
@@ -225,6 +233,9 @@ Place the items in the correct input or storage stockpile.
                 if neighbour[1] != inputSlot[0][1]:
                     continue
                 foundDirectDrop = (neighbour,direction,inputSlot)
+                if not room.getItemByPosition(inputSlot[0]):
+                    break
+            if foundDirectDrop and not room.getItemByPosition(foundDirectDrop[2][0]):
                 break
 
         if character.inventory and foundDirectDrop:

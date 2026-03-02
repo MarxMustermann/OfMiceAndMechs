@@ -382,6 +382,8 @@ Press d to move the cursor and show the subquests description.
             for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
                 if room.alarm:
                     continue
+                if character.getTerrain().getEnemiesOnTile(character,room.getPosition()):
+                    continue
 
                 checkedTypes = set()
                 emptyInputSlots = room.getEmptyInputslots(allowStorage=(not trueInput),allowAny=True)
@@ -422,6 +424,8 @@ Press d to move the cursor and show the subquests description.
                                     continue
                                 if sourceRoom.alarm:
                                     continue
+                                if character.getTerrain().getEnemiesOnTile(character,sourceRoom.getPosition()):
+                                    continue
                                 outputSlots = sourceRoom.getNonEmptyOutputslots(itemType=inputSlot[1],allowStorage=allowStorage,allowDesiredFilled=allowDesiredFilled)
                                 if not outputSlots:
                                     continue
@@ -434,6 +438,8 @@ Press d to move the cursor and show the subquests description.
                                     if otherRoom == room:
                                         continue
                                     if otherRoom.alarm:
+                                        continue
+                                    if character.getTerrain().getEnemiesOnTile(character,otherRoom.getPosition()):
                                         continue
 
                                     outputSlots = otherRoom.getNonEmptyOutputslots(itemType=inputSlot[1],allowStorage=allowStorage,allowDesiredFilled=allowDesiredFilled)
@@ -504,6 +510,8 @@ Press d to move the cursor and show the subquests description.
 
         for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
             if room.alarm:
+                continue
+            if character.getTerrain().getEnemiesOnTile(character,room.getPosition()):
                 continue
 
             checkedTypes = set()

@@ -6,7 +6,7 @@ on:
   workflow_dispatch: {}
   push:
     branches:
-      - 'master'
+      - 'testing'
 
 jobs:
   build-linux:
@@ -84,5 +84,5 @@ jobs:
             cd Game/Data/
             revision="$(git rev-parse --short HEAD)"
             echo $revision
-            gh release upload Release-$revision ./OfMiceAndMechs-Linux.tar.gz
+            gh release upload Testing-$revision ./OfMiceAndMechs-Linux.tar.gz
 

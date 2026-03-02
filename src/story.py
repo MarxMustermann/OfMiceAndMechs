@@ -1928,6 +1928,9 @@ but they are likely to explode when disturbed.
         for x in (1,3,5,):
             for y in (7,8,9,10,11):
                 scrapStorage_room.addStorageSlot((x,y,0),"Scrap",{"desiredState":"filled"})
+        for x in (2,4,):
+            for y in (7,8,9,10,11):
+                scrapStorage_room.addWalkingSpace((x,y,0))
 
         for _i in range(1,20):
             self.setUpShrine(self.get_free_position("shrine"))

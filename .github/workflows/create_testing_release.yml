@@ -6,7 +6,7 @@ on:
   workflow_dispatch: {}
   push:
     branches:
-      - 'master'
+      - 'testing'
 
 jobs:
   build-linux:
@@ -23,5 +23,5 @@ jobs:
             cd Game/Data/
             revision="$(git rev-parse --short HEAD)"
             echo $revision
-            gh release create  Release-$revision --generate-notes --latest
+            gh release create  Testing-$revision --generate-notes --latest
 

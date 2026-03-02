@@ -6,7 +6,7 @@ on:
   workflow_dispatch: {}
   push:
     branches:
-      - 'master'
+      - 'testing'
 
 jobs:
   build-win:
@@ -43,6 +43,6 @@ jobs:
             Copy-Item -Path ./OfMiceAndMechs-Win.zip -Destination ./Game/Data
             Set-Location -Path ./Game/Data
             Set-Variable -Name "s" -Value (git rev-parse --short HEAD)
-            $s = "Release-"+$s
+            $s = "Testing-"+$s
             echo $s
             gh release upload $s ./OfMiceAndMechs-Win.zip

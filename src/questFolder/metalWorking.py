@@ -215,7 +215,7 @@ Press d to move the cursor and show the subquests description.
 
         # produce missing metal bars
         if reason and reason.startswith("no source for item MetalBars") and (self.tryHard or "scrap hammering" in self.character.duties):
-            newQuest = src.quests.questMap["ScrapHammering"](amount=self.amount,produceToInventory=True,tryHard=self.tryHard,reason="have MetalBars to process")
+            newQuest = src.quests.questMap["ScrapHammering"](amount=1,produceToInventory=True,tryHard=self.tryHard,reason="have MetalBars to process")
             self.addQuest(newQuest)
             self.startWatching(newQuest,self.handleQuestFailure,"failed")
             return

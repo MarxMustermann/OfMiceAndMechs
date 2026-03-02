@@ -1352,6 +1352,9 @@ class Room:
                             color = "#f00"
                             char = "EE"
 
+                        if character.working and src.gamestate.gamestate.tick%2 == 0:
+                            color = "#fff"
+
                         display = (src.interaction.urwid.AttrSpec(color, bgColor), char)
                         chars[character.yPosition][character.xPosition] = display
 

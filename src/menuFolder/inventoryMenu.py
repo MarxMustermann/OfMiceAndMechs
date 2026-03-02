@@ -211,13 +211,13 @@ class InventoryMenu(src.subMenu.SubMenu):
                         [
                             str(counter),
                             cursor_indicator,
-                            src.canvas.displayChars.indexedMapping[item.render()],
+                            src.interaction.ItemMeta(content=item.render(),item=item),
                             " - ",
                             item.name,
                         ]
                     )
                 else:
-                    txt.extend([str(counter), cursor_indicator, item.render(), " - ", item.name])
+                    txt.extend([str(counter), cursor_indicator, src.interaction.ItemMeta(content=item.render(),item=item), " - ", item.name])
                 txt.append("\n")
                 num_rows += 1
 

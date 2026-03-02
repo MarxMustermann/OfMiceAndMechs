@@ -4332,6 +4332,96 @@ def printUrwidToTcod(inData,offset,color=None,internalOffset=None,size=None, act
 
     #footertext = stringifyUrwid(inData)
 
+def printUrwidToSDL(inData,offset,color=None,internalOffset=None,size=None, actionMeta=None):
+
+    if not internalOffset:
+        internalOffset = [0,0]
+
+    if not color:
+        color = ((255,255,255),(0,0,0))
+    if color[0] == (None,None,None):
+        color = ((255,255,255),color[1])
+    if color[1] == (None,None,None):
+        color = (color[0],(0,0,0))
+
+    if isinstance(inData,str):
+        counter = 0
+        for line in inData.split("\n"):
+            if counter > 0:
+                internalOffset[0] = 0
+                internalOffset[1] += 1
+
+            skipPrint = False
+            toPrint = line
+            if size:
+                if internalOffset[0] > size[0]:
+                    skipPrint = True
+                if internalOffset[1] > size[1]:
+                    skipPrint = True
+
+                if not skipPrint:
+                    toPrint = line[:size[0]-internalOffset[0]]
+
+            if not skipPrint:
+                x = offset[0]+internalOffset[0]
+                y = offset[1]+internalOffset[1]
+                if actionMeta:
+                    for i in range(len(toPrint)):
+                        src.gamestate.gamestate.clickMap[(x+i,y)] = actionMeta
+                #tcodConsole.print(x=x,y=y,string=toPrint,fg=color[0],bg=color[1])
+
+            internalOffset[0] += len(line)
+            counter += 1
+
+
+    if isinstance(inData,tuple):
+        printUrwidToSDL(inData[1],offset,(inData[0].get_rgb_values()[:3],inData[0].get_rgb_values()[3:]),internalOffset,size,actionMeta)
+
+    if isinstance(inData,int):
+        printUrwidToSDL(src.canvas.displayChars.indexedMapping[inData],offset,color,internalOffset,size,actionMeta)
+
+    if isinstance(inData,list):
+        for item in inData:
+            printUrwidToSDL(item,offset,color,internalOffset,size,actionMeta)
+
+    if isinstance(inData, ActionMeta):
+        printUrwidToSDL(inData.content,offset,color,internalOffset,size,inData.payload)
+
+    if isinstance(inData, CharacterMeta):
+        printUrwidToSDL(inData.content,offset,color,internalOffset,size,actionMeta)
+
+    if isinstance(inData, ItemMeta):
+        printUrwidToSDL(inData.content,offset,color,internalOffset,size,actionMeta)
+
+        if src.interaction.settings["SDL"]:
+
+
+            item = inData.item
+
+            content = inData.content
+            x = offset[0]+internalOffset[0]
+            y = offset[1]+internalOffset[1]
+            basePos = ((x-2)*tileWidth,y*tileHeight)
+            if isinstance(content, int):
+                content = src.canvas.displayChars.indexedMapping[content]
+
+            if isinstance(content[0],str):
+                fg_color = (255,255,255,255)
+                bg_color = (0,0,0,255)
+            elif isinstance(content[0],tuple) and isinstance(content[0][0],src.pseudoUrwid.AttrSpec):
+                colors = content[0][0].get_rgb_values()
+                fg_color = (colors[0],colors[1],colors[2],255)
+                bg_color = (colors[3],colors[4],colors[5],255)
+            else:
+                colors = content[0].get_rgb_values()
+                fg_color = (colors[0],colors[1],colors[2],255)
+                bg_color = (colors[3],colors[4],colors[5],255)
+
+            if isinstance(item.container, src.characters.Character):
+                item.drawSDL(sdl_renderer2, basePos, fg_color=fg_color, bg_color=bg_color)
+
+    #footertext = stringifyUrwid(inData)
+
 def printUrwidToDummy(dummy,inData,offset,color=None,internalOffset=None,size=None, actionMeta=None):
     if not internalOffset:
         internalOffset = [0,0]
@@ -4832,6 +4922,25 @@ def renderGameDisplay(renderChar=None):
     uiElements = calculate_UI_layout(char)
 
     for uiElement in uiElements:
+        if uiElement["type"] == "rememberedMenu" and char.rememberedMenu:
+            chars = []
+            counter = 0
+            for menu in reversed(char.rememberedMenu):
+                chars.extend(["------------- ",ActionMeta(content=">",payload=["lESC"]),"\n\n"])
+                chars.extend(menu.render())
+                counter += 1
+            size = uiElement["size"]
+            offset = uiElement["offset"]
+            printUrwidToSDL(chars,offset)
+
+        if uiElement["type"] == "rememberedMenu2" and char.rememberedMenu2:
+            chars = []
+            for menu in reversed(char.rememberedMenu2):
+                chars.extend(["------------- ",ActionMeta(content="<",payload=["rESC"]),"\n\n"])
+                chars.extend(menu.render())
+            size = uiElement["size"]
+            offset = uiElement["offset"]
+            printUrwidToSDL(chars,offset)
 
         if uiElement["type"] == "miniMap":
             offsetLeft = uiElement["offset"][0]*tileWidth*2
@@ -4919,8 +5028,10 @@ def renderGameDisplay(renderChar=None):
                     width = last_menu_dimension[0]
                     height = last_menu_dimension[1]
 
-            offsetLeft = max(src.interaction.tcodConsole.width//2-width//2,1)*tileWidth
-            offsetTop = max(min(src.interaction.tcodConsole.height//2-height//2,17),1)*tileHeight
+            distance_left = max(src.interaction.tcodConsole.width//2-width//2,1)
+            distance_top = max(min(src.interaction.tcodConsole.height//2-height//2,17),1)
+            offsetLeft = distance_left*tileWidth
+            offsetTop = distance_top*tileHeight
 
             positions = []
             for x in range(-1,width//2+3):
@@ -4970,6 +5081,8 @@ def renderGameDisplay(renderChar=None):
             console_render = tcod.render.SDLConsoleRender(atlas)
             renderedToTexture = console_render.render(root_console)
             sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
+
+            printUrwidToSDL(text,(distance_left,distance_top))
 
             # draw title line
             if submenue and submenue.getTitle():
@@ -5443,63 +5556,85 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
         renderedToTexture = console_render.render(root_console)
         sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
 
-
-        root_console = tcod.console.Console(51, 33, order="F")
+        height = 30
+        width = 47
+        root_console = tcod.console.Console(width, height, order="F")
         offsetLeft = offsetX*tileWidth
         offsetTop = offsetY*tileHeight
+        display_height = 30*tileHeight
+        display_width = 47*tileWidth
 
         # draw the basic main menu
-        offsetX = 2
-        offsetY = 0
-        printUrwidToTcod("|",(offsetX,offsetY),explecitConsole=root_console)
-        printUrwidToTcod("|",(offsetX+width,offsetY),explecitConsole=root_console)
-        printUrwidToTcod("--+"+45*"-"+"+--",(offsetX-2,offsetY+1),explecitConsole=root_console)
-        for y in range(offsetY+2,offsetY+21+height):
-            printUrwidToTcod("|"+45*" "+"|",(offsetX,y),explecitConsole=root_console)
-        printUrwidToTcod("--+"+45*"-"+"+--",(offsetX-2,offsetY+18),explecitConsole=root_console)
-        printUrwidToTcod("--+"+45*"-"+"+--",(offsetX-2,offsetY+21+height),explecitConsole=root_console)
-        printUrwidToTcod("|",(offsetX,offsetY+22+height),explecitConsole=root_console)
-        printUrwidToTcod("|",(offsetX+width,offsetY+22+height),explecitConsole=root_console)
-        printUrwidToTcod(src.urwidSpecials.makeRusty(logoText),(offsetX+2,offsetY+1),explecitConsole=root_console)
+        offsetY = -2
+        printUrwidToTcod(src.urwidSpecials.makeRusty(logoText),(2,offsetY+1),explecitConsole=root_console)
 
-        printUrwidToTcod("press p to (p)lay",(offsetX+3,offsetY+20),explecitConsole=root_console)
+        printUrwidToTcod("press p to (p)lay",(3,offsetY+20),explecitConsole=root_console)
 
-        printUrwidToTcod("press f to open the (f)eedback form",(offsetX+3,offsetY+27),explecitConsole=root_console)
-        printUrwidToTcod("press p/enter to (p)lay",(offsetX+3,offsetY+28),explecitConsole=root_console)
-        printUrwidToTcod("press g to select (g)ameslot",(offsetX+3,offsetY+29),explecitConsole=root_console)
+        printUrwidToTcod("press f to open the (f)eedback form",(3,offsetY+27),explecitConsole=root_console)
+        printUrwidToTcod("press p/enter to (p)lay",(3,offsetY+28),explecitConsole=root_console)
+        printUrwidToTcod("press g to select (g)ameslot",(3,offsetY+29),explecitConsole=root_console)
         if canLoad:
-            printUrwidToTcod("press D to delete gamestate",(offsetX+3,offsetY+30),explecitConsole=root_console)
+            printUrwidToTcod("press D to delete gamestate",(3,offsetY+30),explecitConsole=root_console)
         else:
-            printUrwidToTcod("press d to change (d)ifficulty",(offsetX+3,offsetY+30),explecitConsole=root_console)
+            printUrwidToTcod("press d to change (d)ifficulty",(3,offsetY+30),explecitConsole=root_console)
+
+        padding = 15
+        line_width = 5
+        overhang = 25
+        outline = 4
+        sdl_renderer2.draw_color = (0,0,0,255)
+
+        # draw background
+        sdl_renderer2.fill_rect((offsetLeft-padding,offsetTop-padding,display_width+2*padding,display_height+2*padding))
+        # draw top line background
+        sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop-padding-line_width-outline,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
+        # draw logo divider background
+        sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop-padding-line_width-outline+17*tileHeight,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
+        # draw lower line backgound
+        sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop+padding+display_height-outline,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
+        # left line background
+        sdl_renderer2.fill_rect((offsetLeft-padding-line_width-outline,offsetTop-padding-overhang-outline,line_width+2*outline,display_height+2*(padding+overhang+outline)))
+        # right line background
+        sdl_renderer2.fill_rect((offsetLeft+padding+display_width-outline,offsetTop-padding-overhang-outline,line_width+2*outline,display_height+2*(padding+overhang)+2*outline))
+
+        sdl_renderer2.draw_color = (255,255,255,255)
+        # draw upper line
+        sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop-padding-line_width,display_width+2*(padding+overhang),line_width))
+        # draw lower line
+        sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop+padding+display_height,display_width+2*(padding+overhang),line_width))
+        # left line
+        sdl_renderer2.fill_rect((offsetLeft-padding-line_width,offsetTop-padding-overhang,line_width,display_height+2*(padding+overhang)))
+        # right line
+        sdl_renderer2.fill_rect((offsetLeft+padding+display_width,offsetTop-padding-overhang,line_width,display_height+2*(padding+overhang)))
 
         color = "#fff"
         if saves[gameIndex]:
             color = "#333"
-        printUrwidToTcod((src.interaction.urwid.AttrSpec(color, "black"),f"(d)ifficulty - {difficulty}"),(offsetX+3,offsetY+23),explecitConsole=root_console)
+        printUrwidToTcod((src.interaction.urwid.AttrSpec(color, "black"),f"(d)ifficulty - {difficulty}"),(3,offsetY+23),explecitConsole=root_console)
         color = "#fff"
         if saves[gameIndex]:
             color = "#333"
-        #printUrwidToTcod((src.interaction.urwid.AttrSpec(color, "black"),f"(s)cenario   - {selectedScenario}"),(offsetX+3,offsetY+24))
-        printUrwidToTcod(f"(g)ameslot   - {gameIndex}",(offsetX+3,offsetY+25),explecitConsole=root_console)
+        #printUrwidToTcod((src.interaction.urwid.AttrSpec(color, "black"),f"(s)cenario   - {selectedScenario}"),(3,offsetY+24))
+        printUrwidToTcod(f"(g)ameslot   - {gameIndex}",(3,offsetY+25),explecitConsole=root_console)
 
         # draw special menus
         for menu in submenu:
             match menu:
                 case "gameslot":
-                    printUrwidToTcod("+----------------------+", (offsetX + 3 + 16, offsetY + 18),explecitConsole=root_console)
-                    printUrwidToTcod("| choose the gameslot: |", (offsetX + 3 + 16, offsetY + 19),explecitConsole=root_console)
+                    printUrwidToTcod("+----------------------+", ( 3 + 16, offsetY + 18),explecitConsole=root_console)
+                    printUrwidToTcod("| choose the gameslot: |", ( 3 + 16, offsetY + 19),explecitConsole=root_console)
                     for i in range(10):
                         if saves[i]:
-                            printUrwidToTcod(f"| {i}: load game         |", (offsetX + 3 + 16, offsetY + 20 + i),explecitConsole=root_console)
+                            printUrwidToTcod(f"| {i}: load game         |", ( 3 + 16, offsetY + 20 + i),explecitConsole=root_console)
                         else:
-                            printUrwidToTcod(f"| {i}: new game          |", (offsetX + 3 + 16, offsetY + 20 + i),explecitConsole=root_console)
-                    printUrwidToTcod("+----------------------+", (offsetX + 3 + 16, offsetY + 30),explecitConsole=root_console)
+                            printUrwidToTcod(f"| {i}: new game          |", ( 3 + 16, offsetY + 20 + i),explecitConsole=root_console)
+                    printUrwidToTcod("+----------------------+", ( 3 + 16, offsetY + 30),explecitConsole=root_console)
                 case "scenario":
                     maxLength = 0
                     for scenario in scenarios:
                         maxLength = max(maxLength, len(scenario[1]))
 
-                    printUrwidToTcod("+" + "-" * (maxLength + 5) + "+", (offsetX + 3 + 16, offsetY + 22),explecitConsole=root_console)
+                    printUrwidToTcod("+" + "-" * (maxLength + 5) + "+", ( 3 + 16, offsetY + 22),explecitConsole=root_console)
                     i = 0
                     for scenario in scenarios:
                         printUrwidToTcod(
@@ -5508,123 +5643,123 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                                 scenario[2],
                                 scenario[1],
                             ),
-                            (offsetX + 3 + 16, offsetY + 23 + i),
+                            ( 3 + 16, offsetY + 23 + i),
                             explecitConsole=root_console,
                         )
                         i += 1
-                    printUrwidToTcod("+" + "-" * (maxLength + 5) + "+", (offsetX + 3 + 16, offsetY + 23 + i),explecitConsole=root_console)
+                    printUrwidToTcod("+" + "-" * (maxLength + 5) + "+", ( 3 + 16, offsetY + 23 + i),explecitConsole=root_console)
 
                 case "difficulty":
                     printUrwidToTcod(
                         "+-----------------------------------------------+",
-                        (offsetX, offsetY + 15),
+                        (0, offsetY + 15),
                         explecitConsole=root_console,
                     )
                     printUrwidToTcod(
                         "| (e)asy                                        |",
-                        (offsetX, offsetY + 16),
+                        (0, offsetY + 16),
                         explecitConsole=root_console,
                     )
                     printUrwidToTcod(
                         "| easy is easy. Recommended to start with.      |",
-                        (offsetX, offsetY + 17),
+                        (0, offsetY + 17),
                         explecitConsole=root_console,
                     )
                     printUrwidToTcod(
                         "| This mode should teach you how the game works.|",
-                        (offsetX, offsetY + 18),
+                        (0, offsetY + 18),
                         explecitConsole=root_console,
                     )
                     printUrwidToTcod(
                         "|                                               |",
-                        (offsetX, offsetY + 19),
+                        (0, offsetY + 19),
                         explecitConsole=root_console,
                     )
                     printUrwidToTcod(
                         "| (m)edium                                      |",
-                        (offsetX, offsetY + 20),
+                        (0, offsetY + 20),
                         explecitConsole=root_console,
                     )
                     printUrwidToTcod(
                         "| medium is pretty hard.                        |",
-                        (offsetX, offsetY + 21),
+                        (0, offsetY + 21),
                         explecitConsole=root_console,
                     )
                     printUrwidToTcod(
                         "| Recommended after winning an easy run.        |",
-                        (offsetX, offsetY + 22),
+                        (0, offsetY + 22),
                         explecitConsole=root_console,
                     )
                     printUrwidToTcod(
                         "| Balanced to be challenging after              |",
-                        (offsetX, offsetY + 23),
+                        (0, offsetY + 23),
                         explecitConsole=root_console,
                     )
                     printUrwidToTcod(
                         "| mastering one game mechanic.                  |",
-                        (offsetX, offsetY + 24),
+                        (0, offsetY + 24),
                         explecitConsole=root_console,
                     )
                     printUrwidToTcod(
                         "|                                               |",
-                        (offsetX, offsetY + 25),
+                        (0, offsetY + 25),
                         explecitConsole=root_console,
                     )
                     printUrwidToTcod(
                         "| (d)ifficult                                   |",
-                        (offsetX, offsetY + 26),
+                        (0, offsetY + 26),
                         explecitConsole=root_console,
                     )
                     printUrwidToTcod(
                         "| difficult is really hard. not recomended      |",
-                        (offsetX, offsetY + 27),
+                        (0, offsetY + 27),
                         explecitConsole=root_console,
                     )
                     printUrwidToTcod(
                         "| Should be a challenging                       |",
-                        (offsetX, offsetY + 28),
+                        (0, offsetY + 28),
                         explecitConsole=root_console,
                     )
                     printUrwidToTcod(
                         "| with full meta knowledge                      |",
-                        (offsetX, offsetY + 29),
+                        (0, offsetY + 29),
                         explecitConsole=root_console,
                     )
                     printUrwidToTcod(
                         "|                                               |",
-                        (offsetX, offsetY + 30),
+                        (0, offsetY + 30),
                         explecitConsole=root_console,
                     )
                     #printUrwidToTcod(
                     #    "| (c)ustom                                                          |",
-                    #    (offsetX + 3 + 16, offsetY + 34),
+                    #    ( 3 + 16, offsetY + 34),
                     #    explecitConsole=root_console,
                     #)
                     #printUrwidToTcod(
                     #    "| custom difficulty settings                                        |",
-                    #    (offsetX + 3 + 16, offsetY + 35),
+                    #    ( 3 + 16, offsetY + 35),
                     #    explecitConsole=root_console,
                     #)
                     #printUrwidToTcod(
                     #    "|                                                                   |",
-                    #    (offsetX + 3 + 16, offsetY + 36),
+                    #    ( 3 + 16, offsetY + 36),
                     #    explecitConsole=root_console,
                     #)
                     #printUrwidToTcod(
                     #    "| press shift and difficulty button to edit it                      |",
-                    #    (offsetX + 3 + 16, offsetY + 37),
+                    #    ( 3 + 16, offsetY + 37),
                     #    explecitConsole=root_console,
                     #)
                     if not len(custom_difficultyMap):
                         printUrwidToTcod(
                             "+-----------------------------------------------+",
-                            (offsetX, offsetY + 31),
+                            (0, offsetY + 31),
                             explecitConsole=root_console,
                         )
                     else:
                         printUrwidToTcod(
                             "|-------------------saved custom difficulties-----------------------|",
-                            (offsetX + 3 + 16, offsetY + 38),
+                            ( 3 + 16, offsetY + 38),
                             explecitConsole=root_console,
                         )
                         start_y = offsetY + 39
@@ -5636,72 +5771,72 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                             label = "| " + label + space + "|"
                             printUrwidToTcod(
                                 label,
-                                (offsetX + 3 + 16, start_y),
+                                ( 3 + 16, start_y),
                             )
                             start_y += 1
 
                         printUrwidToTcod(
                             "|                                                                   |",
-                            (offsetX + 3 + 16, start_y),
+                            ( 3 + 16, start_y),
                             explecitConsole=root_console,
                         )
                         printUrwidToTcod(
                             "| select a custom difficulty by entering its number                 |",
-                            (offsetX + 3 + 16, start_y + 1),
+                            ( 3 + 16, start_y + 1),
                             explecitConsole=root_console,
                         )
                         printUrwidToTcod(
                             "+-------------------------------------------------------------------+",
-                            (offsetX + 3 + 16, start_y + 2),
+                            ( 3 + 16, start_y + 2),
                             explecitConsole=root_console,
                         )
 
                 case "delete":
                     printUrwidToTcod(
                         (src.interaction.urwid.AttrSpec("#f00", "black"), "+---------------------------------------+"),
-                        (offsetX + 2, offsetY + 21),
+                        ( 2, offsetY + 21),
                         explecitConsole=root_console,
                     )
                     printUrwidToTcod(
                         (src.interaction.urwid.AttrSpec("#f00", "black"), "| this will delete your game state      |"),
-                        (offsetX + 2, offsetY + 22),
+                        ( 2, offsetY + 22),
                         explecitConsole=root_console,
                     )
                     printUrwidToTcod(
                         (src.interaction.urwid.AttrSpec("#f00", "black"), "| press y to confirm                    |"),
-                        (offsetX + 2, offsetY + 23),
+                        ( 2, offsetY + 23),
                         explecitConsole=root_console,
                     )
                     printUrwidToTcod(
                         (src.interaction.urwid.AttrSpec("#f00", "black"), "+---------------------------------------+"),
-                        (offsetX + 2, offsetY + 24),
+                        ( 2, offsetY + 24),
                         explecitConsole=root_console,
                     )
 
                 case "confirmQuit":
                     printUrwidToTcod(
                         (src.interaction.urwid.AttrSpec("#fff", "black"), "+-----------------------------+"),
-                        (offsetX + 2, offsetY + 21),
+                        ( 2, offsetY + 21),
                         explecitConsole=root_console,
                     )
                     printUrwidToTcod(
                         (src.interaction.urwid.AttrSpec("#fff", "black"), "| Do you really want to quit? |"),
-                        (offsetX + 2, offsetY + 22),
+                        ( 2, offsetY + 22),
                         explecitConsole=root_console,
                     )
                     printUrwidToTcod(
                         (src.interaction.urwid.AttrSpec("#fff", "black"), "| press y/enter to confirm    |"),
-                        (offsetX + 2, offsetY + 23),
+                        ( 2, offsetY + 23),
                         explecitConsole=root_console,
                     )
                     printUrwidToTcod(
                         (src.interaction.urwid.AttrSpec("#fff", "black"), "+-----------------------------+"),
-                        (offsetX + 2, offsetY + 24),
+                        ( 2, offsetY + 24),
                         explecitConsole=root_console,
                     )
 
                 case "custom_difficulty":
-                    start_x = offsetX + 70
+                    start_x = 70
                     printUrwidToTcod(
                         "+-------------------------------------+",
                         (start_x, offsetY + 21),
@@ -5775,7 +5910,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                         explecitConsole=root_console,
                     )
                 case "difficulty name input":
-                    start_x = offsetX + 80
+                    start_x = 80
                     printUrwidToTcod(
                         "+-------------------------------------+",
                         (start_x, start_y + 1),
@@ -5799,6 +5934,10 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
         console_render = tcod.render.SDLConsoleRender(atlas)
         renderedToTexture = console_render.render(root_console)
         sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
+
+        # draw logo divider background
+        sdl_renderer2.draw_color = (255,255,255,255)
+        sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop-padding-line_width+17*tileHeight,display_width+2*overhang+2*padding,line_width))
 
         sdl_renderer2.present()
 
@@ -6319,7 +6458,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 offsetLeft = ((tcodConsole.width-len(text))//2)*tileWidth
                 root_console = tcod.console.Console(len(text), 1, order="F")
                 printUrwidToTcod(text,(0,0),explecitConsole=root_console)
-                atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_map)
+                atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
                 console_render = tcod.render.SDLConsoleRender(atlas)
                 renderedToTexture = console_render.render(root_console)
                 sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,24*tileHeight,renderedToTexture.width,renderedToTexture.height),)
@@ -6451,7 +6590,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                     renderedToTexture = console_render.render(root_console)
                     sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft, offsetTop,renderedToTexture.width,renderedToTexture.height),)
 
-                    #canvas.drawSdl(sdl_renderer2,offsetLeft,offsetTop,warning=False)
+                    canvas.drawSdl(sdl_renderer2,offsetLeft,offsetTop,warning=False)
                 else:
                     mapStep = min(stageState["animationStep"],16)
                     mapSize = 13+2*mapStep
@@ -6479,7 +6618,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                     renderedToTexture = console_render.render(root_console)
                     sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft, offsetTop,renderedToTexture.width,renderedToTexture.height),)
 
-                    #canvas.drawSdl(sdl_renderer2,offsetLeft,offsetTop,warning=False)
+                    canvas.drawSdl(sdl_renderer2,offsetLeft,offsetTop,warning=False)
 
                 # add text
                 root_console = tcod.console.Console(50, 1, order="F")
@@ -6490,7 +6629,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                     pos = (40 + c_offset - int(len(text) / 2), 2)
                 printUrwidToTcod(text, (0,0), explecitConsole=root_console)
 
-                atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_map)
+                atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
                 console_render = tcod.render.SDLConsoleRender(atlas)
                 renderedToTexture = console_render.render(root_console)
                 sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(pos[0]*tileWidth,pos[1]*tileHeight,renderedToTexture.width,renderedToTexture.height),)
@@ -6778,16 +6917,49 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 stageState["send_tracking_ping"] = True
 
             if not skip:
-                roomRender = room.render()
-                roomRender = fixRoomRender(roomRender)
-                roomRender[6][6] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
+                tcodPresent(noPresent=True)
 
-                terrainRender = terrain.render(coordinateOffset=(15*6,15*6),size=(44,44))
+                # draw map
+                mapSize = 45
+                terrainRender = terrain.render(coordinateOffset=(15*6,15*6),size=(mapSize,mapSize))
                 terrainRender = fixRoomRender(terrainRender)
                 terrainRender[22][22] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
-                printUrwidToTcod(text, (38 + c_offset, 2))
-                printUrwidToTcod(terrainRender, (19 + c_offset, 5))
-                tcodPresent()
+
+                offsetLeft = (19 + c_offset)*tileWidth
+                offsetTop = 5*tileHeight
+
+                root_console = tcod.console.Console(mapSize*2, mapSize, order="F")
+                canvas = src.canvas.Canvas(
+                    size=(mapSize, mapSize),
+                    chars=terrainRender,
+                    coordinateOffset=(0,0),
+                    shift=(0,0),
+                    displayChars=src.canvas.displayChars,
+                    tileMapping=tileMapping,
+                )
+                canvas.printTcod(root_console,0,0,warning=False)
+
+                atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_map)
+                console_render = tcod.render.SDLConsoleRender(atlas)
+                renderedToTexture = console_render.render(root_console)
+                sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft, offsetTop,renderedToTexture.width,renderedToTexture.height),)
+
+                canvas.drawSdl(sdl_renderer2,offsetLeft,offsetTop,warning=False)
+
+                # add text
+                offsetLeft = (38 + c_offset)*tileWidth
+                offsetTop = 2*tileHeight
+
+                root_console = tcod.console.Console(len(text), 1, order="F")
+                printUrwidToTcod(text, (0,0), explecitConsole=root_console)
+
+                atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
+                console_render = tcod.render.SDLConsoleRender(atlas)
+                renderedToTexture = console_render.render(root_console)
+                sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
+                
+                # draw
+                sdl_renderer2.present()
 
             if stageState["walkingSpaces"] and stageState["subStep"] > 1:
                 stageState["lastChange"] = time.time()
@@ -6879,20 +7051,59 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 stageState["send_tracking_ping"] = True
 
             if not skip:
+                tcodPresent(noPresent=True)
+
+                # draw map
+                mapSize = 45
+
                 terrainRender = terrain.render(coordinateOffset=(15*6,15*6),size=(44,44))
                 terrainRender = fixRoomRender(terrainRender)
                 terrainRender[22][22] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
-                printUrwidToTcod(text1, (38 + c_offset, 2))
-                printUrwidToTcod(text2, (42 + c_offset, 3))
-                printUrwidToTcod(terrainRender, (19 + c_offset, 5))
 
-                tcodPresent()
+                offsetLeft = (19 + c_offset)*tileWidth
+                offsetTop = 5*tileHeight
+
+                root_console = tcod.console.Console(mapSize*2, mapSize, order="F")
+                canvas = src.canvas.Canvas(
+                    size=(mapSize, mapSize),
+                    chars=terrainRender,
+                    coordinateOffset=(0,0),
+                    shift=(0,0),
+                    displayChars=src.canvas.displayChars,
+                    tileMapping=tileMapping,
+                )
+                canvas.printTcod(root_console,0,0,warning=False)
+
+                atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_map)
+                console_render = tcod.render.SDLConsoleRender(atlas)
+                renderedToTexture = console_render.render(root_console)
+                sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft, offsetTop,renderedToTexture.width,renderedToTexture.height),)
+
+                canvas.drawSdl(sdl_renderer2,offsetLeft,offsetTop,warning=False)
+
+                # add text
+                offsetLeft = (38 + c_offset)*tileWidth
+                offsetTop = 2*tileHeight
+
+                root_console = tcod.console.Console(60, 2, order="F")
+                printUrwidToTcod(text1, (0,0), explecitConsole=root_console)
+                printUrwidToTcod(text2, (4,1), explecitConsole=root_console)
+
+                atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
+                console_render = tcod.render.SDLConsoleRender(atlas)
+                renderedToTexture = console_render.render(root_console)
+                sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
+                
+                # draw
+                sdl_renderer2.present()
 
             if time.time()-stageState["lastChange"] > 2 or skip:
                 stageState = None
                 skip = False
 
         if stage == 4:
+            tcodPresent(noPresent=True)
+
             text1 = """Strange machinations fill the world with ancient logic"""
             text2 = """and you work on tasks with unknown purposes."""
 
@@ -6947,16 +7158,61 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 src.interaction.send_tracking_ping("intro_stage_4")
                 stageState["send_tracking_ping"] = True
 
+            # draw map
+            mapSize = 45
+
             terrainRender = terrain.render(coordinateOffset=(15*6,15*6),size=(44,44))
             terrainRender = fixRoomRender(terrainRender)
-            printUrwidToTcod(text1, (38 + c_offset, 2))
-            printUrwidToTcod(text2, (42 + c_offset, 3))
-            printUrwidToTcod(terrainRender, (19 + c_offset, 5))
 
+            offsetLeft = (19 + c_offset)*tileWidth
+            offsetTop = 5*tileHeight
+
+            root_console = tcod.console.Console(mapSize*2, mapSize, order="F")
+            canvas = src.canvas.Canvas(
+                size=(mapSize, mapSize),
+                chars=terrainRender,
+                coordinateOffset=(0,0),
+                shift=(0,0),
+                displayChars=src.canvas.displayChars,
+                tileMapping=tileMapping,
+            )
+            canvas.printTcod(root_console,0,0,warning=False)
+
+            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_map)
+            console_render = tcod.render.SDLConsoleRender(atlas)
+            renderedToTexture = console_render.render(root_console)
+            sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft, offsetTop,renderedToTexture.width,renderedToTexture.height),)
+
+            canvas.drawSdl(sdl_renderer2,offsetLeft,offsetTop,warning=False)
+
+            # add text
+            offsetLeft = (38 + c_offset)*tileWidth
+            offsetTop = 2*tileHeight
+
+            root_console = tcod.console.Console(60, 2, order="F")
+            printUrwidToTcod(text1, (0,0), explecitConsole=root_console)
+            printUrwidToTcod(text2, (4,1), explecitConsole=root_console)
+
+            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
+            console_render = tcod.render.SDLConsoleRender(atlas)
+            renderedToTexture = console_render.render(root_console)
+            sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
+        
             if src.gamestate.gamestate.tick > 10400:
-                printUrwidToTcod("press enter to stop watching and to continue the cutscene", (35 + c_offset, 4))
-                printUrwidToTcod("press enter to stop watching and to continue the cutscene", (35 + c_offset, 51))
-            tcodPresent()
+                text = "press enter to stop watching and to continue the cutscene"
+                offsetLeft = (35 + c_offset)*tileWidth
+
+                root_console = tcod.console.Console(len(text), 1, order="F")
+                printUrwidToTcod(text, (0,0), explecitConsole=root_console)
+
+                atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
+                console_render = tcod.render.SDLConsoleRender(atlas)
+                renderedToTexture = console_render.render(root_console)
+                sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,4*tileHeight,renderedToTexture.width,renderedToTexture.height),)
+                sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,51*tileHeight,renderedToTexture.width,renderedToTexture.height),)
+            
+            # draw
+            sdl_renderer2.present()
 
             if stageState["substep"] < 1 and time.time()-stageState["lastChange"] > 0:
                 stageState["lastChange"] = time.time()
@@ -6991,14 +7247,54 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 stageState["send_tracking_ping"] = True
 
             if not skip:
+                tcodPresent(noPresent=True)
+
                 offset = min(stageState["substep"],16)
                 if not stageState["substep"] > 16:
-                    terrainRender = terrain.render(coordinateOffset=(15*6+offset,15*6+offset),size=(44-2*offset,44-2*offset))
+                    #printUrwidToTcod(terrainRender, (19 + 2 * offset + c_offset, 5 + offset))
+
+                    # draw map
+                    mapSize = 45-2*offset
+
+                    terrainRender = terrain.render(coordinateOffset=(15*6+offset,15*6+offset),size=(mapSize,mapSize))
                     terrainRender = fixRoomRender(terrainRender)
-                    printUrwidToTcod(terrainRender, (19 + 2 * offset + c_offset, 5 + offset))
-                printUrwidToTcod(text1, (38 + c_offset, 2 + offset))
-                printUrwidToTcod(text2, (42 + c_offset, 3 + offset))
-                tcodPresent()
+
+                    offsetLeft = (19 + c_offset + 2 * offset) * tileWidth
+                    offsetTop = (5 + offset) * tileHeight
+
+                    root_console = tcod.console.Console(mapSize*2, mapSize, order="F")
+                    canvas = src.canvas.Canvas(
+                        size=(mapSize, mapSize),
+                        chars=terrainRender,
+                        coordinateOffset=(0,0),
+                        shift=(0,0),
+                        displayChars=src.canvas.displayChars,
+                        tileMapping=tileMapping,
+                    )
+                    canvas.printTcod(root_console,0,0,warning=False)
+
+                    atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_map)
+                    console_render = tcod.render.SDLConsoleRender(atlas)
+                    renderedToTexture = console_render.render(root_console)
+                    sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft, offsetTop,renderedToTexture.width,renderedToTexture.height),)
+
+                    canvas.drawSdl(sdl_renderer2,offsetLeft,offsetTop,warning=False)
+
+                # add text
+                offsetLeft = (38 + c_offset) * tileWidth
+                offsetTop = (2 + offset) * tileHeight
+
+                root_console = tcod.console.Console(60, 2, order="F")
+                printUrwidToTcod(text1, (0,0), explecitConsole=root_console)
+                printUrwidToTcod(text2, (4,1), explecitConsole=root_console)
+
+                atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
+                console_render = tcod.render.SDLConsoleRender(atlas)
+                renderedToTexture = console_render.render(root_console)
+                sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
+        
+                # draw
+                sdl_renderer2.present()
 
             if time.time()-stageState["lastChange"] > 0.3:
                 stageState["lastChange"] = time.time()
@@ -7477,28 +7773,45 @@ def showRunIntro():
                 src.interaction.send_tracking_ping("run_intro_stage_0")
                 stageState["send_tracking_ping"] = True
 
-            text = """
-  |                                                                         |
---+-------------------------------------------------------------------------+--
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
---+-------------------------------------------------------------------------+--
-  |                                                                         |
+            tcodPresent(noPresent=True)
 
-"""
-            printUrwidToTcod(text, (40 + c_offset, 14))
+            padding = 15
+            line_width = 5
+            overhang = 25
+            outline = 4
+
+            width = 71
+            height = 13
+            display_width = width*tileWidth
+            display_height = height*tileHeight
+            
+            offsetLeft = (45 + c_offset) * tileWidth
+            offsetTop = 17 * tileHeight
+
+            # draw background
+            sdl_renderer2.fill_rect((offsetLeft-padding,offsetTop-padding,display_width+2*padding,display_height+2*padding))
+            # draw top line background
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop-padding-line_width-outline,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
+            # draw logo divider background
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop-padding-line_width-outline+17*tileHeight,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
+            # draw lower line backgound
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop+padding+display_height-outline,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
+            # left line background
+            sdl_renderer2.fill_rect((offsetLeft-padding-line_width-outline,offsetTop-padding-overhang-outline,line_width+2*outline,display_height+2*(padding+overhang+outline)))
+            # right line background
+            sdl_renderer2.fill_rect((offsetLeft+padding+display_width-outline,offsetTop-padding-overhang-outline,line_width+2*outline,display_height+2*(padding+overhang)+2*outline))
+
+            sdl_renderer2.draw_color = (255,255,255,255)
+            # draw upper line
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop-padding-line_width,display_width+2*(padding+overhang),line_width))
+            # draw lower line
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop+padding+display_height,display_width+2*(padding+overhang),line_width))
+            # left line
+            sdl_renderer2.fill_rect((offsetLeft-padding-line_width,offsetTop-padding-overhang,line_width,display_height+2*(padding+overhang)))
+            # right line
+            sdl_renderer2.fill_rect((offsetLeft+padding+display_width,offsetTop-padding-overhang,line_width,display_height+2*(padding+overhang)))
+    
+            # add text
             textBase = ["""
 You see """,".",".",".",""" nothing
 ""","You hear ",".",".",".",""" nothing
@@ -7514,10 +7827,21 @@ d.d..ddd.dd..d.d.d...ddd.d..d.dd.dd.d..d....d....d.....d.....dd.....d...
             text = "".join(textBase[0:subStep])
             if not subStep < len(textBase)-1:
                 text += textBase[-1][0:subStep2]
-            printUrwidToTcod(text, (45 + c_offset, 17))
+
+            root_console = tcod.console.Console(width+1, height, order="F")
+            printUrwidToTcod(text, (0,0), explecitConsole=root_console)
+
             if subStep2 > 170:
-                printUrwidToTcod("press enter to stop struggling", (45 + c_offset, 29))
-            tcodPresent()
+                printUrwidToTcod("press enter to stop struggling", (0, 12),explecitConsole=root_console)
+
+            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
+            console_render = tcod.render.SDLConsoleRender(atlas)
+            renderedToTexture = console_render.render(root_console)
+            sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
+
+            # draw
+            sdl_renderer2.present()
+
             if subStep < len(textBase)-1:
                 time.sleep(0.5)
                 subStep += 1
@@ -7745,29 +8069,46 @@ grows and grows and grows and grows
                 if y > window_charheight:
                     break
 
-            text = """
-                                                                                       \n\
-      |                                                                         |      \n\
-    --+-------------------------------------------------------------------------+--    \n\
-      |                                                                         |      \n\
-      |                                                                         |      \n\
-      |                                                                         |      \n\
-      |                                                                         |      \n\
-      |                                                                         |      \n\
-      |                                                                         |      \n\
-      |                                                                         |      \n\
-      |                                                                         |      \n\
-      |                                                                         |      \n\
-      |                                                                         |      \n\
-      |                                                                         |      \n\
-      |                                                                         |      \n\
-      |                                                                         |      \n\
-      |                                                                         |      \n\
-    --+-------------------------------------------------------------------------+--    \n\
-      |                                                                         |      \n\
-                                                                                       \n\
-"""
-            printUrwidToTcod(text, (36 + c_offset, 13))
+            tcodPresent(noPresent=True)
+
+            padding = 15
+            line_width = 5
+            overhang = 25
+            outline = 4
+
+            width = 71
+            height = 13
+            display_width = width*tileWidth
+            display_height = height*tileHeight
+            
+            offsetLeft = (45 + c_offset) * tileWidth
+            offsetTop = 17 * tileHeight
+
+            # draw background
+            sdl_renderer2.fill_rect((offsetLeft-padding,offsetTop-padding,display_width+2*padding,display_height+2*padding))
+            # draw top line background
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop-padding-line_width-outline,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
+            # draw logo divider background
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop-padding-line_width-outline+17*tileHeight,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
+            # draw lower line backgound
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop+padding+display_height-outline,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
+            # left line background
+            sdl_renderer2.fill_rect((offsetLeft-padding-line_width-outline,offsetTop-padding-overhang-outline,line_width+2*outline,display_height+2*(padding+overhang+outline)))
+            # right line background
+            sdl_renderer2.fill_rect((offsetLeft+padding+display_width-outline,offsetTop-padding-overhang-outline,line_width+2*outline,display_height+2*(padding+overhang)+2*outline))
+
+            sdl_renderer2.draw_color = (255,255,255,255)
+            # draw upper line
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop-padding-line_width,display_width+2*(padding+overhang),line_width))
+            # draw lower line
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop+padding+display_height,display_width+2*(padding+overhang),line_width))
+            # left line
+            sdl_renderer2.fill_rect((offsetLeft-padding-line_width,offsetTop-padding-overhang,line_width,display_height+2*(padding+overhang)))
+            # right line
+            sdl_renderer2.fill_rect((offsetLeft+padding+display_width,offsetTop-padding-overhang,line_width,display_height+2*(padding+overhang)))
+    
+
+            # add text
             text = ""
             text += """
 Something breaks and"""
@@ -7793,8 +8134,17 @@ but slowly you hear that familiar voice again."""
 suggested action:
 press enter to continue
 """
-            printUrwidToTcod(text, (45 + c_offset, 17))
-            tcodPresent()
+            root_console = tcod.console.Console(width+1, height, order="F")
+            printUrwidToTcod(text, (0,0), explecitConsole=root_console)
+
+            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
+            console_render = tcod.render.SDLConsoleRender(atlas)
+            renderedToTexture = console_render.render(root_console)
+            sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
+
+            # draw
+            sdl_renderer2.present()
+
             time.sleep(0.2)
             subStep += 1
         elif stage ==  3:
@@ -7804,6 +8154,8 @@ press enter to continue
             if not stageState.get("send_tracking_ping"):
                 src.interaction.send_tracking_ping("run_intro_stage_3")
                 stageState["send_tracking_ping"] = True
+
+            tcodPresent(noPresent=True)
 
             c_offset -= 2
             color = "#666"
@@ -7836,7 +8188,14 @@ press enter to continue
 try to remember how you got here ...\n"""
                 text.insert(0,(src.interaction.urwid.AttrSpec(color,"#000"),line))
 
-            printUrwidToTcod(text, (131 + c_offset, 22))
+            root_console = tcod.console.Console(60, 60, order="F")
+            printUrwidToTcod(text, (0,0), explecitConsole=root_console)
+
+            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
+            console_render = tcod.render.SDLConsoleRender(atlas)
+            renderedToTexture = console_render.render(root_console)
+            sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),((131 + c_offset) * tileWidth,22*tileHeight,renderedToTexture.width,renderedToTexture.height),)
+
             if subStep == 0:
                 if not stageState.get("send_tracking_ping_sub_0"):
                     src.interaction.send_tracking_ping("run_intro_stage_3_0")
@@ -7879,21 +8238,32 @@ suggested action:
 press enter
 to remember"""
 
-            printUrwidToTcod(text, (2, 19))
+            root_console = tcod.console.Console(width+1, height, order="F")
+            printUrwidToTcod(text, (0,0), explecitConsole=root_console)
+
+            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
+            console_render = tcod.render.SDLConsoleRender(atlas)
+            renderedToTexture = console_render.render(root_console)
+            sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(2*tileWidth,19*tileHeight,renderedToTexture.width,renderedToTexture.height),)
+
+            drawPos = (0,0)
+            renderString = []
+            mapSize = 1
             if subStep == 1:
-                wall = src.items.itemMap["Wall"]()
-                totalOffsetX = (char_position[0]-6)*2
-                totalOffsetY = char_position[1]-5
-                for x in range(13):
-                    if x == 6:
-                        continue
-                    printUrwidToTcod(wall.render(), (totalOffsetX + x*2, totalOffsetY))
-                for x in range(13):
-                    printUrwidToTcod(wall.render(), (totalOffsetX + x*2, totalOffsetY+12))
-                for y in range(13):
-                    printUrwidToTcod(wall.render(), (totalOffsetX, totalOffsetY+y))
-                for y in range(13):
-                    printUrwidToTcod(wall.render(), (totalOffsetX + 12*2, totalOffsetY+y))
+                room = src.rooms.EmptyRoom(None,None,None,None)
+                room.reconfigure(13, 13, doorPos=[(6,0)])
+                room.hidden = False
+                items = room.getItemByPosition((6,0,0))
+                items[0].walkable = False
+                rendered_room = fixRoomRender(room.render())
+                for y in range(1,12):
+                    for x in range(1,12):
+                        rendered_room[y][x] = "  "
+                rendered_room[0][6] = "  "
+
+                mapSize = 13
+                drawPos = ((char_position[0]-6)*2,char_position[1]-5)
+                renderString = rendered_room
             if subStep == 2:
                 room = src.rooms.EmptyRoom(None,None,None,None)
                 room.reconfigure(13, 13, doorPos=[(6,0)])
@@ -7901,26 +8271,84 @@ to remember"""
                 items = room.getItemByPosition((6,0,0))
                 items[0].walkable = False
                 rendered_room = fixRoomRender(room.render())
-                printUrwidToTcod(rendered_room,((char_position[0]-6)*2,char_position[1]-5))
+
+                mapSize = 13
+                drawPos = ((char_position[0]-6)*2,char_position[1]-5)
+                renderString = rendered_room
             if subStep == 3:
                 offset = src.gamestate.gamestate.mainChar.getPosition()
                 rendered_room = fixRoomRender(src.gamestate.gamestate.mainChar.container.render())
-                printUrwidToTcod(rendered_room,((char_position[0]-6)*2,char_position[1]-5))
+
+                mapSize = 13
+                drawPos = ((char_position[0]-6)*2,char_position[1]-5)
+                renderString = rendered_room
             if subStep == 4:
                 offset = src.gamestate.gamestate.mainChar.getPosition()
                 roomPos = src.gamestate.gamestate.mainChar.container.getPosition()
                 terrainRender = src.gamestate.gamestate.mainChar.getTerrain().render(coordinateOffset=(15*(roomPos[1]-1)-6+offset[1],15*(roomPos[0]-1)-6+offset[0]),size=(44,44))
                 terrainRender = fixRoomRender(terrainRender)
-                printUrwidToTcod(terrainRender,((char_position[0]-22)*2,char_position[1]-22))
 
                 if minimap_position:
                     miniMapChars = src.gamestate.gamestate.mainChar.getTerrain().renderTiles()
-                    miniMapChars = fixRoomRender(miniMapChars)
-                    printUrwidToTcod(miniMapChars, (minimap_position[0]*2, minimap_position[1]+1))
 
+                    root_console = tcod.console.Console(15*2, 15, order="F")
+                    canvas = src.canvas.Canvas(
+                        size=(15, 15),
+                        chars=miniMapChars,
+                        coordinateOffset=(0,0),
+                        shift=(0,0),
+                        displayChars=src.canvas.displayChars,
+                        tileMapping=tileMapping,
+                    )
+                    canvas.printTcod(root_console,0,0,warning=False)
+
+                    atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_map)
+                    console_render = tcod.render.SDLConsoleRender(atlas)
+                    renderedToTexture = console_render.render(root_console)
+                    sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(minimap_position[0]*tileWidth, minimap_position[1]*tileHeight,renderedToTexture.width,renderedToTexture.height),)
+
+                    canvas.drawSdl(sdl_renderer2,minimap_position[0]*tileWidth,minimap_position[1]*tileHeight,warning=False)
+
+
+                mapSize = 45
+                drawPos = ((char_position[0]-22)*2,char_position[1]-22)
+                renderString = terrainRender
+
+            # draw map
+            root_console = tcod.console.Console(mapSize*2, mapSize, order="F")
+            canvas = src.canvas.Canvas(
+                size=(mapSize, mapSize),
+                chars=renderString,
+                coordinateOffset=(0,0),
+                shift=(0,0),
+                displayChars=src.canvas.displayChars,
+                tileMapping=tileMapping,
+            )
+            canvas.printTcod(root_console,0,0,warning=False)
+
+            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_map)
+            console_render = tcod.render.SDLConsoleRender(atlas)
+            renderedToTexture = console_render.render(root_console)
+            sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(drawPos[0]*tileWidth, drawPos[1]*tileHeight,renderedToTexture.width,renderedToTexture.height),)
+
+            canvas.drawSdl(sdl_renderer2,drawPos[0]*tileWidth,drawPos[1]*tileHeight,warning=False)
+
+            # draw character
             offset = src.gamestate.gamestate.mainChar.getPosition()
-            printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "), (char_position[0]*2,char_position[1]))
-            tcodPresent()
+            text = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
+
+            root_console = tcod.console.Console(2, 1, order="F")
+            printUrwidToTcod(text, (0,0), explecitConsole=root_console)
+
+            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
+            console_render = tcod.render.SDLConsoleRender(atlas)
+            renderedToTexture = console_render.render(root_console)
+            sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),((char_position[0]*2)*tileWidth,(char_position[1])*tileHeight,renderedToTexture.width,renderedToTexture.height),)
+
+
+            # draw
+            sdl_renderer2.present()
+
             time.sleep(0.1)
         else:
             break

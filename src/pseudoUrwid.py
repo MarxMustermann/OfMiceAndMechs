@@ -42,6 +42,7 @@ class AttrSpec:
                 return 15*16
             else:
                 return int(value)*16
+
     def get_rgb_values(self):
 
         color = []

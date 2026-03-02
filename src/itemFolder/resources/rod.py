@@ -67,6 +67,8 @@ baseDamage:
             else:
                 character.container.addItem(oldWeapon,character.getPosition())
 
+        character.changed("equipedItem",(character,self))
+
     def upgrade(self):
         '''
         upgrade the rod. (obsolete?)

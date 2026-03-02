@@ -3360,6 +3360,11 @@ but they are likely to explode when disturbed.
         if mainChar.faction != "city #1" and mainChar.getTerrain().getPosition() == architects_pos:
             terrain = mainChar.getTerrain()
 
+            if len(mainChar.rememberedMenu2) < 2:
+                inventoryMenu = src.menuFolder.inventoryMenu.InventoryMenu(mainChar)
+                inventoryMenu.sidebared = True
+                mainChar.rememberedMenu2.append(inventoryMenu)
+
             text = ""
             if terrain.getRoomByPosition((7,7,0)):
                 text += """
@@ -3483,11 +3488,6 @@ You remember and know what you are doing.
                 quest = src.quests.questMap["ResetFaction"]()
                 self.addQuest(quest,mainChar)
                 return
-
-            if len(mainChar.rememberedMenu2) < 2:
-                inventoryMenu = src.menuFolder.inventoryMenu.InventoryMenu(mainChar)
-                inventoryMenu.sidebared = True
-                mainChar.rememberedMenu2.append(inventoryMenu)
 
             if terrain.getRoomByPosition((6,10,0)):
                 text = """

@@ -80,9 +80,9 @@ jobs:
       #     compression-level: 9
       - name: Create Release
         run: |
-            cp ./OfMiceAndMechs-Linux.tar.gz Game/Data/
             cd Game/Data/
             revision="$(git rev-parse --short HEAD)"
+            cp ../../OfMiceAndMechs-Linux.tar.gz ./OfMiceAndMechs-Linux-$revision.tar.gz
             echo $revision
-            gh release upload Release-$revision ./OfMiceAndMechs-Linux.tar.gz
+            gh release upload Release-$revision ./OfMiceAndMechs-Linux.tar-$revision.gz
 

@@ -40,9 +40,9 @@ jobs:
       #     compression-level: 9
       - name: Create Release
         run: |
-            Copy-Item -Path ./OfMiceAndMechs-Win.zip -Destination ./Game/Data
             Set-Location -Path ./Game/Data
             Set-Variable -Name "s" -Value (git rev-parse --short HEAD)
+            Copy-Item -Path ../../OfMiceAndMechs-Win.zip -Destination ./OfMiceAndMechs-Win-$s.zip
             $s = "Release-"+$s
             echo $s
-            gh release upload $s ./OfMiceAndMechs-Win.zip
+            gh release upload $s ./OfMiceAndMechs-Win-$s.zip

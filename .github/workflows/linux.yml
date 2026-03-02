@@ -35,6 +35,41 @@ jobs:
           cp -r Game/Data/config/ OfMiceAndMechs/internal/
           cp -r Game/Data/README.md OfMiceAndMechs/internal/
           cp -r Game/Data/sounds/ OfMiceAndMechs/internal/
+
+          echo "cd internal" >  OfMiceAndMechs/internal/launch_game.sh
+          echo "./executeMe" >> OfMiceAndMechs/internal/launch_game.sh
+          chmod +x OfMiceAndMechs/internal/launch_game.sh
+
+          echo "[Desktop Entry]" >  OfMiceAndMechs/OfMiceAndMechs.desktop
+          echo "" >> OfMiceAndMechs/OfMiceAndMechs.desktop
+          echo "# The type as listed above" >> OfMiceAndMechs/OfMiceAndMechs.desktop
+          echo "Type=Application" >> OfMiceAndMechs/OfMiceAndMechs.desktop
+          echo "" >> OfMiceAndMechs/OfMiceAndMechs.desktop
+          echo "# The version of the desktop entry specification to which this file conforms" >> OfMiceAndMechs/OfMiceAndMechs.desktop
+          echo "Version=1.0" >> OfMiceAndMechs/OfMiceAndMechs.desktop
+          echo "" >> OfMiceAndMechs/OfMiceAndMechs.desktop
+          echo "# The name of the application" >> OfMiceAndMechs/OfMiceAndMechs.desktop
+          echo "Name=OfMiceAndMechs" >> OfMiceAndMechs/OfMiceAndMechs.desktop
+          echo "" >> OfMiceAndMechs/OfMiceAndMechs.desktop
+          echo "# A comment which can/will be used as a tooltip" >> OfMiceAndMechs/OfMiceAndMechs.desktop
+          echo "Comment=An adventure game" >> OfMiceAndMechs/OfMiceAndMechs.desktop
+          echo "" >> OfMiceAndMechs/OfMiceAndMechs.desktop
+          echo "# The executable of the application, possibly with arguments." >> OfMiceAndMechs/OfMiceAndMechs.desktop
+          echo "Exec=./internal/launch_game.sh" >> OfMiceAndMechs/OfMiceAndMechs.desktop
+          echo "" >> OfMiceAndMechs/OfMiceAndMechs.desktop
+          echo "# The name of the icon that will be used to display this entry" >> OfMiceAndMechs/OfMiceAndMechs.desktop
+          echo "Icon=./internal/pseudo_logo.png" >> OfMiceAndMechs/OfMiceAndMechs.desktop
+          echo "" >> OfMiceAndMechs/OfMiceAndMechs.desktop
+          echo "# Describes whether this application needs to be run in a terminal or not" >> OfMiceAndMechs/OfMiceAndMechs.desktop
+          echo "Terminal=false" >> OfMiceAndMechs/OfMiceAndMechs.desktop
+          echo "" >> OfMiceAndMechs/OfMiceAndMechs.desktop
+          echo "# Describes the categories in which this entry should be shown" >> OfMiceAndMechs/OfMiceAndMechs.desktop
+          echo "Categories=Game;" >> OfMiceAndMechs/OfMiceAndMechs.desktop
+
+          echo "To start the game double click the OfMiceAndMechs.desktop file." >  OfMiceAndMechs/README.txt
+          echo "alternatively double click the executeMe file in the internal folder or run the launch_game.sh" >> OfMiceAndMechs/README.txt
+          echo "if all that fails consult the instructions on https://github.com/MarxMustermann/OfMiceAndMechs/blob/master/INSTALL.md" >>  OfMiceAndMechs/README.txt
+
           tar -czf OfMiceAndMechs-Linux.tar.gz OfMiceAndMechs
       # - name: Upload Artifacts
       #   uses: actions/upload-artifact@v4
@@ -48,5 +83,6 @@ jobs:
             cp ./OfMiceAndMechs-Linux.tar.gz Game/Data/
             cd Game/Data/
             revision="$(git rev-parse --short HEAD)"
-            gh release create Linux-$revision ./OfMiceAndMechs-Linux.tar.gz
+            echo $revision
+            gh release upload Dev-$revision ./OfMiceAndMechs-Linux.tar.gz
 

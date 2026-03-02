@@ -1883,6 +1883,30 @@ but they are likely to explode when disturbed.
 
         craftingRoom.addCharacter(crawler,6,8)
 
+        rooms_to_decorate = []
+
+        scrapProccessing_room = architect.doAddRoom(
+                {
+                       "coordinate": (6,6,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,12 12,6",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        scrapProccessing_room.tag = "scrap processing"
+        rooms_to_decorate.append(scrapProccessing_room)
+        item = src.items.itemMap["ScrapCompactor"]()
+        scrapProccessing_room.addInputSlot((8,3,0),"Scrap",{})
+        scrapProccessing_room.addItem(item,(9,3,0))
+        scrapProccessing_room.addStorageSlot((10,3,0),"MetalBars",{})
+
+        for x in (11,10,9,8,7,6):
+            scrapProccessing_room.addWalkingSpace((x,6,0))
+        for y in (11,10,9,8,7):
+            scrapProccessing_room.addWalkingSpace((6,y,0))
+
 
         for _i in range(1,20):
             self.setUpShrine(self.get_free_position("shrine"))
@@ -1893,7 +1917,7 @@ but they are likely to explode when disturbed.
         for _i in range(1,20):
             self.setUpCloningLab(self.get_free_position("cloning lab"))
 
-        for pos in [(6,6,0),(6,7,0),(6,8,0),(8,6,0),(8,7,0),(8,8,0)]:
+        for pos in [(6,7,0),(6,8,0),(8,6,0),(8,7,0),(8,8,0)]:
             door_positions = ["6,0","0,6","12,6","6,12"]
 
             if pos == (6,6,0):
@@ -1928,13 +1952,9 @@ but they are likely to explode when disturbed.
                     None,
                )
             ruin.tag = "ruined room"
-            
+            rooms_to_decorate.append(ruin)
+        
             # draw walkingspace
-            if pos == (6,6,0):
-                for x in (11,10,9,8,7,6):
-                    ruin.addWalkingSpace((x,6,0))
-                for y in (11,10,9,8,7):
-                    ruin.addWalkingSpace((6,y,0))
             if pos == (6,7,0):
                 for y in (11,10,9,8,7,6,5,4,3,2,1):
                     ruin.addWalkingSpace((6,y,0))
@@ -1957,26 +1977,31 @@ but they are likely to explode when disturbed.
                 for y in (1,2,3,4,5,):
                     ruin.addWalkingSpace((6,y,0))
 
+        for room in rooms_to_decorate:
+            pos = room.getPosition()
+
             # add scrap
             for _i in range(0,20):
                 pos = (random.randint(1,11),random.randint(1,11),0)
 
+                for item in room.getItemByPosition(pos)[:]:
+                    item.destroy()
+
                 scrap = src.items.itemMap["Scrap"](amount=random.randint(1,10))
-                ruin.addItem(scrap,pos)
+                room.addItem(scrap,pos)
 
             # add enemies
             for _i in range(0,5):
                 crawler = src.characters.characterMap["Mechanical_Crawler"]()
 
-                quest = src.quests.questMap["SecureTile"](toSecure=ruin.getPosition())
+                quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
                 quest.autoSolve = True
                 quest.assignToCharacter(crawler)
                 quest.activate()
                 crawler.quests.append(quest)
 
                 pos = (random.randint(1,11),random.randint(1,11),0)
-                ruin.addCharacter(crawler,pos[0],pos[1])
-
+                room.addCharacter(crawler,pos[0],pos[1])
 
         # add decoration for flavour
         for pos in [(6,1,0),(6,2,0),(6,3,0),(6,4,0),(6,5,0), 

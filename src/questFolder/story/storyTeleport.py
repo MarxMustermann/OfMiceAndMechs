@@ -1,9 +1,10 @@
 import src
+import random
 
 class StoryTeleport(src.quests.MetaQuestSequence):
     type = "StoryTeleport"
 
-    def __init__(self, description="teleport home", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None,reason=None):
+    def __init__(self, description="leave the desolate temple", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None,reason=None):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
@@ -61,8 +62,27 @@ class StoryTeleport(src.quests.MetaQuestSequence):
             else:
                 return (None,(".","undo selection"))
 
+        if character.getBigPosition() == (7,5,0):
+            quest = src.quests.questMap["GoToTile"](targetPosition=(7,6,0),reason="get closer to the exit",description="go to teleporter room")
+            return ([quest],None)
+        if character.getBigPosition() == (7,6,0):
+            quest = src.quests.questMap["SecureTile"](toSecure=random.choice([(6,6,0),(8,6,0)]),reason="be able to leave",description="search for teleporter",endWhenCleared=True)
+            return ([quest],None)
+        if character.getBigPosition() == (6,6,0):
+            quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),reason="be able to leave",description="search for teleporter",endWhenCleared=True)
+            return ([quest],None)
+        if character.getBigPosition() == (6,7,0):
+            quest = src.quests.questMap["SecureTile"](toSecure=(6,8,0),reason="be able to leave",description="search for teleporter",endWhenCleared=True)
+            return ([quest],None)
+        if character.getBigPosition() == (8,6,0):
+            quest = src.quests.questMap["SecureTile"](toSecure=(8,7,0),reason="be able to leave",description="search for teleporter",endWhenCleared=True)
+            return ([quest],None)
+        if character.getBigPosition() == (8,7,0):
+            quest = src.quests.questMap["SecureTile"](toSecure=(8,8,0),reason="be able to leave",description="search for teleporter",endWhenCleared=True)
+            return ([quest],None)
+
         if not character.getBigPosition() == (7,8,0):
-            quest = src.quests.questMap["GoToTile"](targetPosition=(7,8,0),reason="reach the communicator",description="go to command centre")
+            quest = src.quests.questMap["GoToTile"](targetPosition=(7,8,0),reason="go to the teleporter room",description="go to teleporter room")
             return ([quest],None)
 
         if not character.container.isRoom:

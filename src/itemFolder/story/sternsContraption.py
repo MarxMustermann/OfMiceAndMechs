@@ -164,28 +164,11 @@ class MainContraption(src.items.Item):
                     text.append(" "*5)
                     text.append("\n"*3)
                     text.append(" "*5)
-                    text.append("Everything will explode.")
+                    text.append("This room will explode and you will die.")
                     text.append(" "*5)
                     text.append("\n"*3)
                     text.append(" "*5)
                     text.append((src.interaction.urwid.AttrSpec("#f00", "#000"),"Follow the instruction on the left side of the screen."))
-                    text.append(" "*5)
-                    text.append("\n"*3)
-                    text.append(" "*5)
-                    text.append((src.interaction.urwid.AttrSpec("#ff2","#000"),"""Keep in mind that capital letters have to be pressed as shift+letter.     \n"""))
-                    text.append(" "*5)
-                    text.append(" "*5)
-                    text.extend(["""
-     Capital letters will be shown in blueish tint.
-
-     For example:
-
-     if the suggested action is \"""",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"C"),""" w x":
-
-          press shift+c then
-          press w then
-          press x
-"""])
                     text.append(" "*5)
                     text.append("\n"*5)
                     character.showTextMenu(text,do_not_scale=True)
@@ -255,6 +238,7 @@ class MainContraption(src.items.Item):
                         terrain.addItem(scrap,(bigX*15+x,bigY*15+y,0))
                 terrain.scrapFields.append((bigX,bigY,0))
 
+                """
                 enemySpawns = [(4,6,0),(4,8,0),(3,10,0),(3,7,0),(5,8,0),(7,9,0)]
                 if src.gamestate.gamestate.difficulty == "easy":
                     enemySpawns.remove((4,8,0))
@@ -273,6 +257,7 @@ class MainContraption(src.items.Item):
                     enemy = src.characters.characterMap["Hunter"]()
                     enemy.faction = "insects"
                     terrain.addCharacter(enemy,bigPos[0]*15+random.randint(3,12),bigPos[1]*15+random.randint(3,12))
+                """
 
                 self.container.destroy()
                 return

@@ -8,7 +8,6 @@ class EscapeLab(src.quests.MetaQuestSequence):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
-        self.lookedAtDoor = False
         self.shownGoToDoor = False
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
@@ -35,37 +34,6 @@ class EscapeLab(src.quests.MetaQuestSequence):
                     if command != "":
                         return (None,(command,"move cursor to door"))
                 return (None,(["esc",],"close the menu"))
-            if not self.lookedAtDoor:
-                return (None,("o","open observe menu"))
-
-        if not self.shownGoToDoor and not character.macroState.get("submenue"):
-            if not dryRun:
-                src.interaction.send_tracking_ping("showed_room_door_found")
-                self.character.showTextMenu(["""
-Now that you found the Door, exit the room before it explodes.
-
-The instructions on how to do this will be shown on the left side on the screen.""",
-(src.interaction.urwid.AttrSpec("#ff2","#000"),"""
-Keep in mind that capital letters have to be pressed as shift+letter."""),
-"""
-Capital letters will be shown in blueish tint.
-
-For example:
-
-if the suggested action is \"""",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"C"),""" w x":
-
-    press shift+c then
-    press w then
-    press x
-""",])
-                self.shownGoToDoor = True
-                return (None,("~","reach out to implant"))
-
-        submenue = character.macroState["submenue"]
-        if submenue and not ignoreCommands:
-            if submenue.tag == "configurationSelection":
-                return (None,("x","unblock door"))
-            return (None,(["esc",],"close the menu"))
 
         if character.yPosition == 0:
             return (None,("w","leave room"))
@@ -99,8 +67,7 @@ You reach out to your implant and it answers:
 
 
 This room is exploding! We need to leave fast.
-
-Look for the door first then move.""")
+""")
 
         text.append((src.interaction.urwid.AttrSpec("#ff2","#000"),"""
 
@@ -119,10 +86,12 @@ Instructions to do that will be shown on the left of the screen as "suggested ac
         super().assignToCharacter(character)
 
     def lookedAt(self, extraInfo):
+        """
         if extraInfo["index"] == (6,0,0) and extraInfo["index_big"] == (6,10,0):
             if not self.lookedAtDoor:
                 self.lookedAtDoor = True
                 self.character.addMessage("You found the Door. Close the menu now")
+        """
 
     def wrapedTriggerCompletionCheck(self, extraInfo):
         if self.completed:
@@ -136,7 +105,7 @@ Instructions to do that will be shown on the left of the screen as "suggested ac
         if not character:
             return False
 
-        if character.container.isRoom:
+        if character.container.isRoom and character.container.tag == "the architects lab":
             return False
 
         if character.yPosition%15 in (0,14):

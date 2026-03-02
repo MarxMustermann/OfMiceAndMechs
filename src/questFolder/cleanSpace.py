@@ -198,7 +198,7 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
         generate the quest to complete a duty
         '''
         if len(character.inventory):
-            quest = src.quests.questMap["ClearInventory"](reason="have space to pick up items (duty: clean)")
+            quest = src.quests.questMap["ClearInventory"](reason="have space to pick up items (duty: clean)",returnToTile=False)
             if not dryRun:
                 beUsefull.idleCounter = 0
             return ([quest],None)
@@ -222,7 +222,7 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
                         continue
 
                     if character.getFreeInventorySpace() <= 0:
-                        quest = src.quests.questMap["ClearInventory"](reason="have space to pick up items (duty: clean)")
+                        quest = src.quests.questMap["ClearInventory"](reason="have space to pick up items (duty: clean)",returnToTile=False)
                         beUsefull.idleCounter = 0
                         return ([quest],None)
                     quest = src.quests.questMap["ClearTile"](targetPositionBig=room.getPosition(),reason="tidy up the room (duty: clean)")

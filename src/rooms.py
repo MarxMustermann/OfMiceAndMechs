@@ -1317,7 +1317,7 @@ class Room:
                             colormap = {
                                     "A":"#aaa",
                                     "B":"#3aa",
-                                    "C":"#00a",
+                                    "C":"#a4a",
                                     "D":"#fa4",
                                     "E":"#0af",
                                     "F":"#44a",
@@ -1351,6 +1351,9 @@ class Room:
                             bgColor = "#722"
                             color = "#f00"
                             char = "EE"
+
+                        if character.working and src.gamestate.gamestate.tick%2 == 0:
+                            color = "#fff"
 
                         display = (src.interaction.urwid.AttrSpec(color, bgColor), char)
                         chars[character.yPosition][character.xPosition] = display

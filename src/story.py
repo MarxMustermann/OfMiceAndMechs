@@ -991,6 +991,7 @@ class MainGame(BasicPhase):
         self.listeners = {"default": []}
         self.watched = []
         self.has_shown_HelpMenu = False
+        self.has_shown_welcome = False
         super().__init__("MainGame", seed=seed)
 
     def get_free_position(self,tag):
@@ -1066,6 +1067,8 @@ class MainGame(BasicPhase):
         if self.preselection == "Story":
             self.sternsBasePosition = self.get_free_position("the architects base")
             self.setUpSternsBase(self.sternsBasePosition)
+            self.architectsLabPosition = self.get_free_position("the architects lab")
+            self.setUpArchitectsLab(self.architectsLabPosition)
         elif self.preselection == "baseBuilder":
             self.playerBasePosition = self.get_free_position("player base")
         elif self.preselection == "roguelike":
@@ -1648,6 +1651,383 @@ but they are likely to explode when disturbed.
 
             currentTerrain.addCharacter(mutantSpider,bigX*15+smallX, bigY*15+smallY)
 
+    def setUpArchitectsLab(self,pos):
+        currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
+        currentTerrain.tag = "the architects lab"
+        currentTerrain.maxMana = 50
+
+        thisFactionId = self.factionCounter
+        faction = f"architecture"
+        self.factionCounter += 1
+
+        architect = src.magic.getArchitect(currentTerrain)
+
+        # add the actual room
+        startRoom = architect.doAddRoom(
+                {
+                       "coordinate": (7,7,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,0 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        startRoom.tag = "the architects lab"
+        startRoom.getItemByPosition((6,12,0))[0].walkable = False
+
+        # add hub room
+        hubRoom = architect.doAddRoom(
+                {
+                       "coordinate": (7,6,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 6,0 12,6 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        hubRoom.tag = "hub"
+        for y in (11,10,9,8,7):
+            hubRoom.addWalkingSpace((6,y,0))
+        for y in (5,4,3,2,1,):
+            hubRoom.addWalkingSpace((6,y,0))
+        for x in (11,10,9,8,7):
+            hubRoom.addWalkingSpace((x,6,0))
+        for x in (5,4,3,2,1,):
+            hubRoom.addWalkingSpace((x,6,0))
+        for pos in [(5,7,0),(7,7,0),(7,5,0),(5,5,0)]:
+            hubRoom.addWalkingSpace(pos)
+        item = src.items.itemMap["Scrap"](amount=2)
+        hubRoom.addItem(item,(6,3,0))
+        item = src.items.itemMap["Scrap"](amount=1)
+        hubRoom.addItem(item,(3,6,0))
+        item = src.items.itemMap["Scrap"](amount=3)
+        hubRoom.addItem(item,(4,6,0))
+        item = src.items.itemMap["Scrap"](amount=2)
+        hubRoom.addItem(item,(5,6,0))
+        item = src.items.itemMap["Scrap"](amount=1)
+        hubRoom.addItem(item,(6,5,0))
+        item = src.items.itemMap["DirectionMonolith"]()
+        hubRoom.addItem(item,(6,6,0))
+
+        # add teleport room
+        teleporterRoom = architect.doAddRoom(
+                {
+                       "coordinate": (7,8,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,0 0,6 12,6 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        teleporterRoom.tag = "teleporter room"
+        teleporter = src.items.itemMap["PersonnelTeleporter"](targetPositionBig=self.sternsBasePosition)
+        teleporterRoom.addItem(teleporter,(6,6,0))
+        for y in (11,10,9,8,7):
+            teleporterRoom.addWalkingSpace((6,y,0))
+        for y in (5,):
+            teleporterRoom.addWalkingSpace((6,y,0))
+        for x in (11,10,9,8,7):
+            teleporterRoom.addWalkingSpace((x,6,0))
+        for x in (5,4,3,2,1,):
+            teleporterRoom.addWalkingSpace((x,6,0))
+        for pos in [(5,7,0),(7,7,0),(7,5,0),(5,5,0)]:
+            teleporterRoom.addWalkingSpace(pos)
+
+        # add teleport room
+        craftingRoom = architect.doAddRoom(
+                {
+                       "coordinate": (7,5,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        craftingRoom.tag = "crafting room"
+        item = src.items.itemMap["SwordSharpener"]()
+        craftingRoom.addItem(item,(3,9,0))
+        item = src.items.itemMap["ArmorReinforcer"]()
+        craftingRoom.addItem(item,(9,9,0))
+        for y in (11,10,9,8,7,6,5,4):
+            craftingRoom.addWalkingSpace((6,y,0))
+        for x in (2,3,4,5,7,8,9,10,):
+            craftingRoom.addWalkingSpace((x,8,0))
+            craftingRoom.addWalkingSpace((x,10,0))
+        craftingRoom.addWalkingSpace((2,9,0))
+        craftingRoom.addWalkingSpace((10,9,0))
+        craftingRoom.addInputSlot((3,11,0),"Scrap",{})
+        item = src.items.itemMap["ScrapCompactor"]()
+        craftingRoom.addItem(item,(4,11,0))
+        craftingRoom.addStorageSlot((5,11,0),"MetalBars",{})
+        item = src.items.itemMap["ManufacturingTable"]()
+        item.numUsed = 1000
+        item.onlyProduceOne = True
+        craftingRoom.addItem(item,(8,7,0))
+        item.configureItem({"type":"Sheet","character":None})
+        item = src.items.itemMap["ManufacturingTable"]()
+        item.numUsed = 1000
+        item.onlyProduceOne = True
+        craftingRoom.addItem(item,(4,7,0))
+        item.configureItem({"type":"Rod","character":None})
+        for y in (11,10,9,8,7,5,4,3,2,1):
+            craftingRoom.addStorageSlot((1,y,0),None)
+            craftingRoom.addStorageSlot((11,y,0),None)
+
+        craftingRoom.addWalkingSpace((2,11,0))
+        craftingRoom.addWalkingSpace((2,7,0))
+        craftingRoom.addWalkingSpace((2,6,0))
+        craftingRoom.addWalkingSpace((2,5,0))
+        craftingRoom.addWalkingSpace((2,4,0))
+        craftingRoom.addWalkingSpace((2,3,0))
+        craftingRoom.addWalkingSpace((2,2,0))
+        craftingRoom.addWalkingSpace((2,1,0))
+        craftingRoom.addWalkingSpace((1,6,0))
+
+        craftingRoom.addWalkingSpace((10,11,0))
+        craftingRoom.addWalkingSpace((10,7,0))
+        craftingRoom.addWalkingSpace((10,6,0))
+        craftingRoom.addWalkingSpace((10,5,0))
+        craftingRoom.addWalkingSpace((10,4,0))
+        craftingRoom.addWalkingSpace((10,3,0))
+        craftingRoom.addWalkingSpace((10,2,0))
+        craftingRoom.addWalkingSpace((10,1,0))
+        craftingRoom.addWalkingSpace((11,6,0))
+
+        npc = src.characters.characterMap["Clone"]()
+        npc.questsDone = [
+                "NaiveMoveQuest",
+                "MoveQuestMeta",
+                "NaiveActivateQuest",
+                "ActivateQuestMeta",
+                "NaivePickupQuest",
+                "PickupQuestMeta",
+                "DrinkQuest",
+                "CollectQuestMeta",
+                "FireFurnaceMeta",
+                "ExamineQuest",
+                "NaiveDropQuest",
+                "DropQuestMeta",
+                "LeaveRoomQuest",
+            ]
+
+        npc.solvers = [
+                "SurviveQuest",
+                "Serve",
+                "NaiveMoveQuest",
+                "MoveQuestMeta",
+                "NaiveActivateQuest",
+                "ActivateQuestMeta",
+                "NaivePickupQuest",
+                "PickupQuestMeta",
+                "DrinkQuest",
+                "ExamineQuest",
+                "FireFurnaceMeta",
+                "CollectQuestMeta",
+                "WaitQuest" "NaiveDropQuest",
+                "NaiveDropQuest",
+                "DropQuestMeta",
+            ]
+
+        npc.flask = src.items.itemMap["GooFlask"]()
+        npc.flask.uses = 100
+        npc.faction = faction
+
+        npc.duties = []
+        npc.registers["HOMEx"] = 7
+        npc.registers["HOMEy"] = 5
+        npc.registers["HOMETx"] = currentTerrain.xPosition
+        npc.registers["HOMETy"] = currentTerrain.yPosition
+
+        npc.personality["autoFlee"] = False
+        npc.personality["abortMacrosOnAttack"] = False
+        npc.personality["autoCounterAttack"] = False
+
+        quest = src.quests.questMap["BeUsefull"](strict=True)
+        quest.autoSolve = True
+        quest.assignToCharacter(npc)
+        quest.activate()
+        npc.assignQuest(quest,active=True)
+        npc.foodPerRound = 1
+        npc.duties.append("resource gathering")
+        npc.duties.append("scrap hammering")
+        npc.duties.append("resource fetching")
+        npc.duties.append("hauling")
+        npc.duties.append("metal working")
+        npc.duties.append("machine placing")
+        npc.duties.append("maggot gathering")
+        npc.duties.append("painting")
+        npc.duties.append("cleaning")
+        npc.duties.append("machine operation")
+        npc.duties.append("manufacturing")
+        npc.duties.append("praying")
+        npc.dutyPriorities["cleaning"] = 10
+        npc.dutyPriorities["machine operation"] = 2
+        npc.dutyPriorities["hauling"] = 3
+        npc.dutyPriorities["manufacturing"] = 4
+
+        item = src.items.itemMap["StasisTank"]()
+        item.character = npc
+        craftingRoom.addItem(item,(6,3,0))
+
+        crawler = src.characters.characterMap["Mechanical_Crawler"]()
+
+        quest = src.quests.questMap["SecureTile"](toSecure=craftingRoom.getPosition())
+        quest.autoSolve = True
+        quest.assignToCharacter(crawler)
+        quest.activate()
+        crawler.quests.append(quest)
+
+        craftingRoom.addCharacter(crawler,6,8)
+
+        rooms_to_decorate = []
+
+        scrapProccessing_room = architect.doAddRoom(
+                {
+                       "coordinate": (6,6,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,12 12,6",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        scrapProccessing_room.tag = "scrap processing"
+        rooms_to_decorate.append(scrapProccessing_room)
+        item = src.items.itemMap["ScrapCompactor"]()
+        scrapProccessing_room.addInputSlot((8,3,0),"Scrap",{})
+        scrapProccessing_room.addItem(item,(9,3,0))
+        scrapProccessing_room.addStorageSlot((10,3,0),"MetalBars",{})
+
+        scrapStorage_room = architect.doAddRoom(
+                {
+                       "coordinate": (8,6,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,12 0,6",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        scrapStorage_room.tag = "scrap processing"
+        rooms_to_decorate.append(scrapStorage_room)
+        item = src.items.itemMap["ScrapCompactor"]()
+
+        for x in (1,2,3,4,5,6,):
+            scrapStorage_room.addWalkingSpace((x,6,0))
+        for y in (11,10,9,8,7):
+            scrapStorage_room.addWalkingSpace((6,y,0))
+
+        for x in (1,3,5,):
+            for y in (7,8,9,10,11):
+                scrapStorage_room.addStorageSlot((x,y,0),"Scrap",{"desiredState":"filled"})
+
+        for _i in range(1,20):
+            self.setUpShrine(self.get_free_position("shrine"))
+
+        #for _i in range(1,15):
+        #    self.setUpFactoryRemains(self.get_free_position("factory"))
+
+        for _i in range(1,20):
+            self.setUpCloningLab(self.get_free_position("cloning lab"))
+
+        for pos in [(6,7,0),(6,8,0),(8,7,0),(8,8,0)]:
+            door_positions = ["6,0","0,6","12,6","6,12"]
+
+            if pos == (6,6,0):
+                door_positions.remove("6,0")
+                door_positions.remove("0,6")
+            if pos == (6,7,0):
+                door_positions.remove("0,6")
+                door_positions.remove("12,6")
+            if pos == (6,8,0):
+                door_positions.remove("0,6")
+                door_positions.remove("6,12")
+
+            if pos == (8,7,0):
+                door_positions.remove("0,6")
+                door_positions.remove("12,6")
+            if pos == (8,8,0):
+                door_positions.remove("12,6")
+                door_positions.remove("6,12")
+
+            # add teleport room
+            ruin = architect.doAddRoom(
+                    {
+                           "coordinate": pos,
+                           "roomType": "EmptyRoom",
+                           "doors": " ".join(door_positions),
+                           "offset": [1,1],
+                           "size": [13, 13],
+                    },
+                    None,
+               )
+            ruin.tag = "ruined room"
+            rooms_to_decorate.append(ruin)
+        
+            # draw walkingspace
+            if pos == (6,7,0):
+                for y in (11,10,9,8,7,6,5,4,3,2,1):
+                    ruin.addWalkingSpace((6,y,0))
+            if pos == (6,8,0):
+                for x in (11,10,9,8,7,6):
+                    ruin.addWalkingSpace((x,6,0))
+                for y in (1,2,3,4,5,):
+                    ruin.addWalkingSpace((6,y,0))
+            if pos == (8,7,0):
+                for y in (11,10,9,8,7,6,5,4,3,2,1):
+                    ruin.addWalkingSpace((6,y,0))
+            if pos == (8,8,0):
+                for x in (1,2,3,4,5,6):
+                    ruin.addWalkingSpace((x,6,0))
+                for y in (1,2,3,4,5,):
+                    ruin.addWalkingSpace((6,y,0))
+
+        for room in rooms_to_decorate:
+            pos = room.getPosition()
+
+            # add scrap
+            for _i in range(0,20):
+                pos = (random.randint(1,11),random.randint(1,11),0)
+
+                for item in room.getItemByPosition(pos)[:]:
+                    item.destroy()
+
+                scrap = src.items.itemMap["Scrap"](amount=random.randint(1,10))
+                room.addItem(scrap,pos)
+
+            # add enemies
+            for _i in range(0,5):
+                crawler = src.characters.characterMap["Mechanical_Crawler"]()
+
+                quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
+                quest.autoSolve = True
+                quest.assignToCharacter(crawler)
+                quest.activate()
+                crawler.quests.append(quest)
+
+                pos = (random.randint(1,11),random.randint(1,11),0)
+                room.addCharacter(crawler,pos[0],pos[1])
+
+        # add decoration for flavour
+        for pos in [(6,1,0),(6,2,0),(6,3,0),(6,4,0),(6,5,0), 
+                    (5,5,0),(4,5,0),(4,6,0),(4,7,0),(4,8,0),(5,8,0),(6,8,0),(7,8,0),(8,8,0),(8,7,0),(8,6,0),(8,5,0),(7,5,0)]:
+            startRoom.addWalkingSpace(pos)
+        for pos in [(5,6,0),(7,6,0),(5,7,0),(6,6,0),(7,7,0),
+                    (9,9,0),(10,9,0),(8,9,0),(9,8,0),(9,10,0),
+                    (3,9,0),(2,9,0),(4,9,0),(3,8,0),(3,10,0),
+                    (9,3,0),(9,2,0),(9,4,0),(8,3,0),(10,3,0),
+                    (3,3,0),(4,3,0),(2,3,0),(3,2,0),(3,4,0),]:
+            item = src.items.itemMap["Contraption"]()
+            item.display = "OT"
+            startRoom.addItem(item,pos)
+
+        #set number of rooms for the god
+        src.gamestate.gamestate.gods[1]["roomRewardMapByTerrain"] = {(currentTerrain.xPosition,currentTerrain.yPosition): len(currentTerrain.rooms) - 1}
+
     def setUpSternsBase(self,pos):
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
         currentTerrain.tag = "the architects base"
@@ -1672,6 +2052,8 @@ but they are likely to explode when disturbed.
                 None,
            )
         shelter.tag = "shelter"
+
+        src.magic.spawnScrapField(currentTerrain,(6,10))
 
         ####
         # create the control room
@@ -1768,6 +2150,7 @@ but they are likely to explode when disturbed.
         forestPositions = [(6,6,0)]
         specialWallTiles = [(8,7,0)]
 
+        """
         ###############################################
         ###
         ##  add the lab/starter room
@@ -1786,6 +2169,7 @@ but they are likely to explode when disturbed.
            )
         startRoom.tag = "the architects lab"
         startRoom.getItemByPosition((6,0,0))[0].walkable = False
+        """
 
         # draw path to base
         for y in range(7,15):
@@ -1818,6 +2202,7 @@ but they are likely to explode when disturbed.
         vial.uses = 1
         currentTerrain.addItem(vial, (labPositionExit[0]*15+8,labPositionExit[1]*15+2,0))
         
+        """
         # add decoration for flavour
         for pos in [(6,1,0),(6,2,0),(6,3,0),(6,4,0),(6,5,0), 
                     (5,5,0),(4,5,0),(4,6,0),(4,7,0),(4,8,0),(5,8,0),(6,8,0),(7,8,0),(8,8,0),(8,7,0),(8,6,0),(8,5,0),(7,5,0)]:
@@ -1830,6 +2215,7 @@ but they are likely to explode when disturbed.
             item = src.items.itemMap["Contraption"]()
             item.display = "OT"
             startRoom.addItem(item,pos)
+        """
 
         ###############################################
         ###
@@ -1997,6 +2383,7 @@ but they are likely to explode when disturbed.
                 currentTerrain.addItem(mold,(15*moldTile[0]+pos[0],15*moldTile[1]+pos[1],0))
                 mold.startSpawn()
 
+        """
         # add snatcher nest
         for snatcherNest in snatcherNests:
 
@@ -2019,6 +2406,7 @@ but they are likely to explode when disturbed.
                 enemy.quests.append(quest)
 
                 currentTerrain.addCharacter(enemy,snatcherNest[0]*15+random.randint(3,12),snatcherNest[1]*15+random.randint(3,12))
+        """
 
         # add forests
         for forestPosition in forestPositions:
@@ -2813,16 +3201,13 @@ but they are likely to explode when disturbed.
         return storyStartInfo
             
     def createStoryStart(self):
-        homeTerrain = src.gamestate.gamestate.terrainMap[self.sternsBasePosition[1]][self.sternsBasePosition[0]]
+        homeTerrain = src.gamestate.gamestate.terrainMap[self.architectsLabPosition[1]][self.architectsLabPosition[0]]
 
         mainChar = src.characters.characterMap["Clone"]()
         mainChar.flask = src.items.itemMap["GooFlask"]()
         mainChar.flask.uses = 100
         mainChar.duties = ["praying","city planning","clone spawning",]
-        mainChar.rank = 3
-        mainChar.hasSpecialAttacks = True
-        mainChar.hasJump = True
-        mainChar.hasLineShot = True
+        mainChar.rank = 6
         mainChar.timeTaken = 1
         mainChar.runCommandString(".",nativeKey=True)
 
@@ -2830,15 +3215,15 @@ but they are likely to explode when disturbed.
         mainChar.personality["viewColour"] = "name"
 
         thisFactionId = self.factionCounter
-        mainChar.faction = f"city #{thisFactionId}"
+        mainChar.faction = f"architecture"
         self.factionCounter += 1
 
         vial = src.items.itemMap["Vial"]()
         vial.uses = 2
         mainChar.inventory.append(vial)
 
-        mainChar.registers["HOMETx"] = self.sternsBasePosition[0]
-        mainChar.registers["HOMETy"] = self.sternsBasePosition[1]
+        mainChar.registers["HOMETx"] = self.architectsLabPosition[0]
+        mainChar.registers["HOMETy"] = self.architectsLabPosition[1]
         mainChar.registers["HOMEx"] = 7
         mainChar.registers["HOMEy"] = 7
 
@@ -2858,14 +3243,16 @@ but they are likely to explode when disturbed.
             if not room.tag == "the architects lab":
                 continue
             startRoom = room
-        startRoom.addCharacter(mainChar,6,5)
+        startRoom.addCharacter(mainChar,6,8)
 
         contraption = src.items.itemMap["MainContraption"]()
-        startRoom.addItem(contraption,(6,6,0))
+        startRoom.addItem(contraption,(6,7,0))
         storyStartInfo["sternsContraption"] = contraption
 
+        """
         spider = src.characters.characterMap["Spiderling"]()
         homeTerrain.addCharacter(spider,5*15+9,8*15+5)
+        """
 
         return storyStartInfo
 
@@ -2952,7 +3339,10 @@ but they are likely to explode when disturbed.
             return
 
         # go home when lost
-        if not mainChar.getTerrain() == homeTerrain:
+        sternsBasePosition = self.sternsBasePosition
+        if len(sternsBasePosition) < 3:
+            sternsBasePosition = (sternsBasePosition[0],sternsBasePosition[1],0)
+        if mainChar.getTerrain().getPosition() not in (homeTerrain.getPosition(),sternsBasePosition,):
             quest = src.quests.questMap["GoHome"]()
             self.addQuest(quest,mainChar)
             return
@@ -2962,6 +3352,121 @@ but they are likely to explode when disturbed.
             quest = src.quests.questMap["EscapeLab"]()
             self.addQuest(quest,mainChar)
             return
+
+        # do the initial lab sequence
+        architects_pos = self.architectsLabPosition
+        if len(architects_pos):
+            architects_pos = (architects_pos[0], architects_pos[1], 0)
+        if mainChar.faction != "city #1" and mainChar.getTerrain().getPosition() == architects_pos:
+            terrain = mainChar.getTerrain()
+
+            text = ""
+            if terrain.getRoomByPosition((7,7,0)):
+                text += """
+Congratulations! You made it out of the burning room.
+You really should stop touching machinery you don't know how to use!
+The whole room will explode soon.
+"""
+
+            else:
+                text += """
+The base is overrun with enemies that blocks your way out of here.
+You didn't even bring weapins!
+We should try find something to defend ourselves with.
+"""
+
+            text += """
+I case you hit your head and don't remember:
+I'm your implant and i'll be helping you with your tasks.
+
+What may i help you with?
+"""
+
+            options = []
+            extraDescriptions = {}
+
+            shown_help_option = False
+            shown_worker_wake = False
+
+            if terrain.getRoomByPosition((7,7,0)):
+                name = "explosion"
+                options.append((name, "let me watch the lab burn"))
+                extraDescriptions[name] = """
+The lab burning down will surely be spectacular.
+"""
+
+            if not self.has_shown_HelpMenu and src.gamestate.gamestate.tick < 30:
+                name = "help"
+                options.append((name, "show me how play the game"))
+                extraDescriptions[name] = """
+This will show you how to access the help menu.
+The help menu will show you the keybindings.
+"""
+                shown_help_option = True
+
+            if self.get_crafting_room_enemies(mainChar):
+                name = "secure crafting room"
+                options.append((name, "secure crafting room"))
+                extraDescriptions[name] = """
+We should be able to build a weapon there.
+"""
+            elif not mainChar.weapon:
+                name = "craft rod"
+                options.append((name, "help me craft a weapon"))
+                extraDescriptions[name] = """
+We can build a Rod here. I doesn't hit hard, but it will do.
+We just need to collect scrap, produce MetalBars.
+Then form the Metalbars into a Rod.
+"""
+
+            if (7,5,0) in self.get_wakeable_workers(mainChar):
+                shown_worker_wake = True
+                name = "wake worker"
+                options.append((name, "wake worker"))
+                extraDescriptions[name] = """
+There is a filled stasis Tank in the crafting area.
+Maybe we can wake the worker inside it.
+"""
+            if not shown_worker_wake and self.get_wakeable_workers(mainChar):
+                name = "wake worker"
+                options.append((name, "wake worker"))
+                extraDescriptions[name] = """
+There is a filled stasis Tank in the crafting area.
+Maybe we can wake the worker inside it.
+"""
+
+
+            name = "teleport"
+            options.append((name, "get me out of here!"))
+            extraDescriptions[name] = """
+This place is not safe. It is time to leave.
+"""
+
+            if not shown_help_option:
+                name = "help"
+                options.append((name, "show me how to play the game"))
+                extraDescriptions[name] = """
+Shows you how to open the games help menu.
+"""
+
+
+            name = "leave me alone"
+            options.append((name, "leave me alone"))
+            extraDescriptions[name] = """
+You remember and know what you are doing.
+"""
+
+            submenu = src.menuFolder.selectionMenu.SelectionMenu(
+                text, options, tag="player_quest_selection", targetParamName="quest_type",extraDescriptions=extraDescriptions
+            )
+            submenu.followUp = {"container":self,"method":"handle_player_intro_lab_quest_choice","params":{"character":mainChar}}
+            mainChar.add_submenu(submenu)
+
+            quest = src.quests.questMap["Decide"]()
+            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
+            return
+
 
         # assimilate into base
         if mainChar.faction != "city #1":
@@ -3036,6 +3541,7 @@ You are hurt and should heal yourself.
 There are Vials nearby. You can heal yourself with those.
 Fetch them to have some healing items available.
 """
+
             name = "get to safety"
             options.append((name, "help me get into the base"))
             extraDescriptions[name] = """
@@ -3123,7 +3629,7 @@ You can reopen the tutorial and any time.
                 characters = rooms[0].characters
 
             for other_character in characters:
-                if other_character.faction == character.faction:
+                if other_character.faction == mainChar.faction:
                     continue
                 quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,lifetime=100,description="defend the arena",reason="ensure no attackers get into the base")
                 self.addQuest(quest,mainChar)
@@ -3531,6 +4037,129 @@ This will close the tutorial and let you do your own thing.
             self.addQuest(quest,mainChar)
             return
 
+    def handle_player_intro_lab_quest_choice(self,extraParameters):
+        quest_type = extraParameters.get("quest_type")
+        character = extraParameters.get("character")
+        room = extraParameters.get("room")
+        terrain = character.getTerrain()
+
+        src.interaction.send_tracking_ping("handle_player_intro_lab_quest_choice"+"__"+str(quest_type))
+
+        character.clear_quests()
+
+        if quest_type == "wake worker":
+            print("StoryWakeWorker")
+            print(random.choice(self.get_wakeable_workers(character)))
+            quest = src.quests.questMap["StoryWakeWorker"](targetPositionBig=random.choice(self.get_wakeable_workers(character)))
+            self.addQuest(quest,character)
+            self.clear_implant_quest(character)
+            return
+
+        if quest_type == "craft rod":
+            quest = src.quests.questMap["StoryCraftRod"]()
+            self.addQuest(quest,character)
+            self.clear_implant_quest(character)
+            return
+
+        if quest_type == "secure crafting room":
+            quest = src.quests.questMap["SecureTile"](toSecure=(7,5,0),endWhenCleared=True)
+            self.addQuest(quest,character)
+            self.clear_implant_quest(character)
+            return
+
+        if quest_type == "teleport":
+            quest = src.quests.questMap["StoryTeleport"]()
+            self.addQuest(quest,character)
+            self.clear_implant_quest(character)
+            return
+
+        if quest_type == "explosion":
+            quest = src.quests.questMap["WatchLabBurn"]()
+            self.addQuest(quest,character)
+            self.clear_implant_quest(character)
+            return
+
+        if quest_type == "heal":
+            if character.searchInventory("Vial"):
+                quest = src.quests.questMap["TreatWounds"]()
+                self.addQuest(quest,character)
+                self.clear_implant_quest(character)
+                return
+            else:
+                character.showTextMenu("You need a Vial in you inventory to heal",do_not_scale=True)
+                self.clear_implant_quest(character)
+                return
+
+        if quest_type == "loot":
+            loot_spot = self.get_nearby_intro_loot_location(character)
+            if not loot_spot:
+                character.showTextMenu("no loot spot found")
+                self.reachImplant()
+                return
+
+            # fight for vial from tile
+            if terrain.getEnemiesOnTile(character,loot_spot):
+                quest = src.quests.questMap["LootRoom"](targetPositionBig=loot_spot,reason="collect equipment")
+                self.addQuest(quest,character)
+                quest = src.quests.questMap["SecureTile"](toSecure=loot_spot,endWhenCleared=True,reason="be able to loot that tile",simpleAttacksOnly=True,noHeal=True)
+                self.addQuest(quest,character)
+                self.clear_implant_quest(character)
+                return
+
+            quest = src.quests.questMap["LootRoom"](targetPositionBig=loot_spot,reason="collect equipment")
+            self.addQuest(quest,character)
+            self.clear_implant_quest(character)
+            return
+
+        if quest_type == "get to safety":
+            quest = src.quests.questMap["ReachSafety"]()
+            self.addQuest(quest,character)
+            self.clear_implant_quest(character)
+            return
+
+        if quest_type == "hunt spiderlings":
+            candidates = []
+            for check_character in terrain.getAllCharacters():
+                if check_character.charType != "Spiderling":
+                    continue
+                candidates.append(check_character)
+            random.shuffle(candidates)
+            quest = src.quests.questMap["SecureTile"](toSecure=candidates[0].getBigPosition(),endWhenCleared=True,reason="kill spiderlings",simpleAttacksOnly=True,noHeal=True)
+            self.addQuest(quest,character)
+            self.clear_implant_quest(character)
+            return
+
+        if quest_type == "help":
+            character.showTextMenu("\nyou can open the help menu by pressing ?\n(you need to close all other menues first)\nThis will show the keybindings and some general informaiton.\n\nDo this to complete this quest.\nInstructions are shown on the left side of the screen\n",do_not_scale=True)
+            self.has_shown_HelpMenu = True
+            quest = src.quests.questMap["OpenHelpMenu"]()
+            self.addQuest(quest,character)
+            self.clear_implant_quest(character)
+            return
+
+        if quest_type == "leave me alone":
+            character.showTextMenu("\nAs you wish.\n\n\n\nand as you surely remember:\n\nYou can contact me again later by pressing q\n",do_not_scale=True)
+            src.gamestate.gamestate.stern["first_silenced"] = True
+            return
+
+        src.interaction.send_tracking_ping("handle_player_intro_lab_quest_choice_fell_through")
+
+    def get_crafting_room_enemies(self, character):
+        terrain = character.getTerrain()
+        return terrain.getEnemiesOnTile(character,(7,5,0))
+
+    def get_wakeable_workers(self, character):
+        terrain = character.getTerrain()
+
+        result = []
+        for room in terrain.rooms:
+            if not room.getItemsByType("StasisTank"):
+                continue
+            if terrain.getEnemiesOnTile(character,room.getPosition()):
+                continue
+            result.append(room.getPosition())
+        return result
+
     def get_nearby_intro_loot_location(self,character):
         terrain = character.getTerrain()
         offsets = [(-1,0,0),(1,0,0),(0,-1,0),(0,1,0)]
@@ -3641,7 +4270,7 @@ This will close the tutorial and let you do your own thing.
             return
 
         if quest_type == "help":
-            character.showTextMenu("\nfollow the instructions given on the left side of the screen\n",do_not_scale=True)
+            character.showTextMenu("\nyou can open the help menu by pressing ?\n(you need to close all other menues first)\nThis will show the keybindings and some general informaiton.\n\nDo this to complete this quest.\nInstructions are shown on the left side of the screen\n",do_not_scale=True)
             self.has_shown_HelpMenu = True
             quest = src.quests.questMap["OpenHelpMenu"]()
             self.addQuest(quest,character)

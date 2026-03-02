@@ -34,16 +34,30 @@ The ejected character will be placed to the south of the stasis tank and will st
         self.character = None
         self.characterTimeEntered = None
 
-    def eject(self):
+    def eject(self,character=None):
         """
         eject the current inhabitant
         """
 
         if self.character:
-            self.container.addCharacter(self.character, self.xPosition, self.yPosition + 1)
-            self.character.stasis = False
+            spwaned_character = self.character
+            self.container.addCharacter(spwaned_character, self.xPosition, self.yPosition + 1)
+            spwaned_character.stasis = False
             self.character = None
             self.characterTimeEntered = None
+
+            if character:
+                short_code = spwaned_character.name.split(" ")[0][0]+spwaned_character.name.split(" ")[1][0]
+                short_code = short_code.lower()
+                character.showTextMenu(f"""
+You break the glass of the StasisTank and a Clone falls out.
+The spark has left its eyes and is stares blankly,
+but after some seconds it starts to move as if nothing happened.
+\n
+Its name is {spwaned_character.name} ({short_code})
+""")
+                character.changed("woke clone",{"character":character,"awoken":spwaned_character})
+            self.destroy()
 
     def apply(self, character):
         """
@@ -53,8 +67,8 @@ The ejected character will be placed to the south of the stasis tank and will st
             character: the character trying to use the item
         """
 
-        if self.character and self.character.stasis:
-            self.eject()
+        if self.character:
+            self.eject(character)
         else:
             options = []
             options.append(("enter", "yes"))

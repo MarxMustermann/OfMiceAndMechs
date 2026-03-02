@@ -9,7 +9,7 @@ class CityPlaner(src.items.Item):
     type = "CityPlaner"
     description = "Management item to plan how the base should be built"
     def __init__(self, name="CityPlaner", noId=False):
-        super().__init__(display="CP", name=name)
+        super().__init__(display=(src.interaction.urwid.AttrSpec("#ff0","#000"),"CP"), name=name)
         self.applyOptions.extend(
                         [
                                                                 ("showMap", "show map"),

@@ -3413,6 +3413,12 @@ The help menu will show you the keybindings.
 """
                 shown_help_option = True
 
+            if mainChar.health < mainChar.maxHealth // 2 and mainChar.searchInventory("Vial"):
+                name = "heal"
+                options.append((name, "help me heal"))
+                extraDescriptions[name] = """
+You are hurt and should heal yourself.
+"""
             if self.get_crafting_room_enemies(mainChar):
                 name = "secure crafting room"
                 options.append((name, "secure crafting room"))

@@ -1902,11 +1902,28 @@ but they are likely to explode when disturbed.
         scrapProccessing_room.addItem(item,(9,3,0))
         scrapProccessing_room.addStorageSlot((10,3,0),"MetalBars",{})
 
-        for x in (11,10,9,8,7,6):
-            scrapProccessing_room.addWalkingSpace((x,6,0))
-        for y in (11,10,9,8,7):
-            scrapProccessing_room.addWalkingSpace((6,y,0))
+        scrapStorage_room = architect.doAddRoom(
+                {
+                       "coordinate": (8,6,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,12 0,6",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        scrapStorage_room.tag = "scrap processing"
+        rooms_to_decorate.append(scrapStorage_room)
+        item = src.items.itemMap["ScrapCompactor"]()
 
+        for x in (1,2,3,4,5,6,):
+            scrapStorage_room.addWalkingSpace((x,6,0))
+        for y in (11,10,9,8,7):
+            scrapStorage_room.addWalkingSpace((6,y,0))
+
+        for x in (1,3,5,):
+            for y in (7,8,9,10,11):
+                scrapStorage_room.addStorageSlot((x,y,0),"Scrap",{"desiredState":"filled"})
 
         for _i in range(1,20):
             self.setUpShrine(self.get_free_position("shrine"))
@@ -1917,7 +1934,7 @@ but they are likely to explode when disturbed.
         for _i in range(1,20):
             self.setUpCloningLab(self.get_free_position("cloning lab"))
 
-        for pos in [(6,7,0),(6,8,0),(8,6,0),(8,7,0),(8,8,0)]:
+        for pos in [(6,7,0),(6,8,0),(8,7,0),(8,8,0)]:
             door_positions = ["6,0","0,6","12,6","6,12"]
 
             if pos == (6,6,0):
@@ -1930,9 +1947,6 @@ but they are likely to explode when disturbed.
                 door_positions.remove("0,6")
                 door_positions.remove("6,12")
 
-            if pos == (8,6,0):
-                door_positions.remove("6,0")
-                door_positions.remove("12,6")
             if pos == (8,7,0):
                 door_positions.remove("0,6")
                 door_positions.remove("12,6")
@@ -1962,11 +1976,6 @@ but they are likely to explode when disturbed.
                 for x in (11,10,9,8,7,6):
                     ruin.addWalkingSpace((x,6,0))
                 for y in (1,2,3,4,5,):
-                    ruin.addWalkingSpace((6,y,0))
-            if pos == (8,6,0):
-                for x in (1,2,3,4,5,6,):
-                    ruin.addWalkingSpace((x,6,0))
-                for y in (11,10,9,8,7):
                     ruin.addWalkingSpace((6,y,0))
             if pos == (8,7,0):
                 for y in (11,10,9,8,7,6,5,4,3,2,1):

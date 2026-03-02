@@ -75,17 +75,37 @@ use the manufacturing table on {self.targetPosition}{reason}.
             quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True,reason="get near the machine")
             return ([quest],None)
 
+        submenue = character.macroState.get("submenue")
+        if submenue and not ignoreCommands:
+            if submenue.tag == "applyOptionSelection":
+                command = submenue.get_command_to_select_option("produce item")
+                if command:
+                    return (None,(command,"start producing"))
+            if submenue.tag not in ("advancedInteractionSelection",):
+                return (None,(["esc"],"close the menu"))
+
+        # activate correct item when marked
+        action = self.generate_confirm_interaction_command(allowedItems=("ManufacturingTable",))
+        if action:
+            return action
+
+        interaction_command = "J"
+        if submenue:
+            if submenue.tag == "advancedInteractionSelection":
+                interaction_command = ""
+            else:
+                return (None,(["esc"],"close menu"))
         message = "manufacture item"
         if (pos[0],pos[1],pos[2]) == self.targetPosition:
             return (None,("jj",message))
         if (pos[0]-1,pos[1],pos[2]) == self.targetPosition:
-            return (None,("Jaj",message))
+            return (None,(interaction_command+"aj",message))
         if (pos[0]+1,pos[1],pos[2]) == self.targetPosition:
-            return (None,("Jdj",message))
+            return (None,(interaction_command+"dj",message))
         if (pos[0],pos[1]-1,pos[2]) == self.targetPosition:
-            return (None,("Jwj",message))
+            return (None,(interaction_command+"wj",message))
         if (pos[0],pos[1]+1,pos[2]) == self.targetPosition:
-            return (None,("Jsj",message))
+            return (None,(interaction_command+"sj",message))
         return (None,(".","stand around confused"))
 
     def getQuestMarkersTile(self,character):

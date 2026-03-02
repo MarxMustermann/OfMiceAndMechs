@@ -198,6 +198,9 @@ Scrapfields are shown on the minimap as white ss"""]
             return (None,None)
 
         for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
+            if character.getTerrain().getEnemiesOnTile(character,room.getPosition()):
+                continue
+
             emptyInputSlots = room.getEmptyInputslots(itemType="Scrap")
             if emptyInputSlots:
                 for inputSlot in emptyInputSlots:

@@ -208,6 +208,14 @@ Place the items in the correct input or storage stockpile.
                 if inputSlots:
                     break
 
+        fullyEmptyFirst_inputSlots = []
+        for inputSlot in inputSlots[:]:
+            if room.getItemByPosition(inputSlot[0]):
+                fullyEmptyFirst_inputSlots.append(inputSlot)
+            else:
+                fullyEmptyFirst_inputSlots.insert(0,inputSlot)
+        inputSlots = fullyEmptyFirst_inputSlots
+
         if self.targetPosition:
             for slot in inputSlots:
                 if self.targetPosition != slot[0]:
@@ -225,6 +233,9 @@ Place the items in the correct input or storage stockpile.
                 if neighbour[1] != inputSlot[0][1]:
                     continue
                 foundDirectDrop = (neighbour,direction,inputSlot)
+                if not room.getItemByPosition(inputSlot[0]):
+                    break
+            if foundDirectDrop and not room.getItemByPosition(foundDirectDrop[2][0]):
                 break
 
         if character.inventory and foundDirectDrop:
@@ -406,6 +417,14 @@ Place the items in the correct input or storage stockpile.
                 emptyInputSlots = room.getEmptyInputslots(allowStorage=(not trueInput),allowAny=True)
                 random.shuffle(emptyInputSlots)
 
+                fullyEmptyFirst_emptyInputSlots = []
+                for inputSlot in emptyInputSlots[:]:
+                    if room.getItemByPosition(inputSlot[0]):
+                        fullyEmptyFirst_emptyInputSlots.append(inputSlot)
+                    else:
+                        fullyEmptyFirst_emptyInputSlots.insert(0,inputSlot)
+                emptyInputSlots = fullyEmptyFirst_emptyInputSlots
+
                 if emptyInputSlots:
                     for inputSlot in emptyInputSlots:
                         if inputSlot[1] is None:
@@ -431,12 +450,12 @@ Place the items in the correct input or storage stockpile.
                         reason = "finish hauling (duty: hauling)"
                         quests = []
                         if inputSlot[1]:
-                            quests.append(src.quests.questMap["RestockRoom"](toRestock=inputSlot[1],allowAny=True,reason=reason,targetPosition=inputSlot[0]))
+                            quests.append(src.quests.questMap["RestockRoom"](toRestock=inputSlot[1],allowAny=True,reason=reason,targetPosition=inputSlot[0],targetPositionBig=room.getPosition()))
                             if character.container != room:
                                 quests.append(src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),reason="get to the room to work in (duty: hauling)"))
                         else:
                             if hasItem:
-                                quests.append(src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type,allowAny=True,reason=reason,targetPosition=inputSlot[0]))
+                                quests.append(src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type,allowAny=True,reason=reason,targetPosition=inputSlot[0],targetPositionBig=room.getPosition()))
                                 if character.container != room:
                                     quests.append(src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),reason="get to the room to work in (duty: hauling)"))
                                 if not dryRun:
@@ -459,6 +478,14 @@ Place the items in the correct input or storage stockpile.
         for trueInput in (True,False):
             for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
                 emptyInputSlots = room.getEmptyInputslots(allowStorage=(not trueInput),allowAny=True)
+
+                fullyEmptyFirst_emptyInputSlots = []
+                for inputSlot in emptyInputSlots[:]:
+                    if room.getItemByPosition(inputSlot[0]):
+                        fullyEmptyFirst_emptyInputSlots.append(inputSlot)
+                    else:
+                        fullyEmptyFirst_emptyInputSlots.insert(0,inputSlot)
+                emptyInputSlots = fullyEmptyFirst_emptyInputSlots
 
                 if emptyInputSlots:
                     for inputSlot in random.sample(list(emptyInputSlots),len(emptyInputSlots)):

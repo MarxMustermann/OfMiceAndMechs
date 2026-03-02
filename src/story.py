@@ -1901,6 +1901,10 @@ but they are likely to explode when disturbed.
         scrapProccessing_room.addInputSlot((8,3,0),"Scrap",{})
         scrapProccessing_room.addItem(item,(9,3,0))
         scrapProccessing_room.addStorageSlot((10,3,0),"MetalBars",{})
+        for x in (6,7,8,9,10,11,):
+            scrapProccessing_room.addWalkingSpace((x,6,0))
+        for y in (11,10,9,8,7):
+            scrapProccessing_room.addWalkingSpace((6,y,0))
 
         scrapStorage_room = architect.doAddRoom(
                 {
@@ -1924,6 +1928,9 @@ but they are likely to explode when disturbed.
         for x in (1,3,5,):
             for y in (7,8,9,10,11):
                 scrapStorage_room.addStorageSlot((x,y,0),"Scrap",{"desiredState":"filled"})
+        for x in (2,4,):
+            for y in (7,8,9,10,11):
+                scrapStorage_room.addWalkingSpace((x,y,0))
 
         for _i in range(1,20):
             self.setUpShrine(self.get_free_position("shrine"))
@@ -3360,6 +3367,11 @@ but they are likely to explode when disturbed.
         if mainChar.faction != "city #1" and mainChar.getTerrain().getPosition() == architects_pos:
             terrain = mainChar.getTerrain()
 
+            if len(mainChar.rememberedMenu2) < 2:
+                inventoryMenu = src.menuFolder.inventoryMenu.InventoryMenu(mainChar)
+                inventoryMenu.sidebared = True
+                mainChar.rememberedMenu2.append(inventoryMenu)
+
             text = ""
             if terrain.getRoomByPosition((7,7,0)):
                 text += """
@@ -3404,6 +3416,12 @@ The help menu will show you the keybindings.
 """
                 shown_help_option = True
 
+            if mainChar.health < mainChar.maxHealth // 2 and mainChar.searchInventory("Vial"):
+                name = "heal"
+                options.append((name, "help me heal"))
+                extraDescriptions[name] = """
+You are hurt and should heal yourself.
+"""
             if self.get_crafting_room_enemies(mainChar):
                 name = "secure crafting room"
                 options.append((name, "secure crafting room"))
@@ -3483,11 +3501,6 @@ You remember and know what you are doing.
                 quest = src.quests.questMap["ResetFaction"]()
                 self.addQuest(quest,mainChar)
                 return
-
-            if len(mainChar.rememberedMenu2) < 2:
-                inventoryMenu = src.menuFolder.inventoryMenu.InventoryMenu(mainChar)
-                inventoryMenu.sidebared = True
-                mainChar.rememberedMenu2.append(inventoryMenu)
 
             if terrain.getRoomByPosition((6,10,0)):
                 text = """

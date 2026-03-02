@@ -122,6 +122,10 @@ operate the machine on {self.targetPosition}{reason}.
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
         for checkRoom in beUsefull.getRandomPriotisedRooms(character,currentRoom):
+
+            if character.getTerrain().getEnemiesOnTile(character,checkRoom.getPosition()):
+                continue
+
             items = checkRoom.itemsOnFloor[:]
             random.shuffle(items)
             for item in items:

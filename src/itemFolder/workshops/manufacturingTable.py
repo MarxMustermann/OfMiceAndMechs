@@ -39,6 +39,7 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
         self.inUse = False
         self.disabled = False
         self.priority = 0
+        self.onlyProduceOne = False
 
     def boltAction(self, character):
         self.numUsed = 0
@@ -228,6 +229,7 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
         self.delayedAction(params)
         self.numUsed += 1
         self.inUse = True
+        character.working = True
 
     def output_produced_item(self,params):
         character = params["character"]
@@ -235,6 +237,7 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
             return
         character.addMessage("You produce a "+params["type"])
         character.addMessage("It took you "+str(params["delayTime"])+" turns to do that")
+        character.working = False
 
         badListed = ["Sword","Armor","Rod"]
         if params["type"] in badListed:
@@ -345,7 +348,7 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
             itemList = self.container.getItemByPosition(targetPos)
 
             if itemList:
-                if len(itemList) > 10 or (not itemList[0].walkable):
+                if len(itemList) > 10 or (not itemList[0].walkable) or self.onlyProduceOne:
                     targetFull = True
 
             if not targetFull:
@@ -444,6 +447,9 @@ numUsed: {self.numUsed}
         color = "#fff"
         if self.priority > 0:
             color = "#ff"+hex(15-self.priority)[2]
+
+        if self.inUse and src.gamestate.gamestate.tick%2 == 0:
+            characters = "mw"
 
         display = (src.interaction.urwid.AttrSpec(color, "black"), characters)
         return display

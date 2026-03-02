@@ -278,6 +278,8 @@ class Character:
         self.outsideOnly = False
         self.lastCast = None
 
+        self.working = False
+
     def repeatLastCast(self):
         try:
             self.lastCast
@@ -2766,6 +2768,10 @@ press any other key to attack normally"""
                 logger.debug("impossible state with events")
                 continue
             self.events.remove(event)
+
+
+        if self.working and self.timeTaken < 1:
+            self.working = False
 
         # handle satiation
         #self.satiation -= self.foodPerRound

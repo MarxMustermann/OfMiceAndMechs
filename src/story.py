@@ -1901,6 +1901,10 @@ but they are likely to explode when disturbed.
         scrapProccessing_room.addInputSlot((8,3,0),"Scrap",{})
         scrapProccessing_room.addItem(item,(9,3,0))
         scrapProccessing_room.addStorageSlot((10,3,0),"MetalBars",{})
+        for x in (6,7,8,9,10,11,):
+            scrapProccessing_room.addWalkingSpace((x,6,0))
+        for y in (11,10,9,8,7):
+            scrapProccessing_room.addWalkingSpace((6,y,0))
 
         scrapStorage_room = architect.doAddRoom(
                 {

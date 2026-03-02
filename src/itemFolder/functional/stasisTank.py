@@ -55,7 +55,7 @@ The spark has left its eyes and is stares blankly,
 but after some seconds it starts to move as if nothing happened.
 \n
 Its name is {spwaned_character.name} ({short_code})
-""")
+""",do_not_scale=True)
                 character.changed("woke clone",{"character":character,"awoken":spwaned_character})
             self.destroy()
 

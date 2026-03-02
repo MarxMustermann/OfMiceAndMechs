@@ -1892,7 +1892,6 @@ but they are likely to explode when disturbed.
 
         for _i in range(1,20):
             self.setUpCloningLab(self.get_free_position("cloning lab"))
-        npc.burnedIn = True
 
         for pos in [(6,6,0),(6,7,0),(6,8,0),(8,6,0),(8,7,0),(8,8,0)]:
             door_positions = ["6,0","0,6","12,6","6,12"]

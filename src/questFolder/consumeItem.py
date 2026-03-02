@@ -6,7 +6,7 @@ class ConsumeItem(src.quests.MetaQuestSequence):
     type = "ConsumeItem"
     lowLevel = True
 
-    def __init__(self, description="consume item", creator=None, itemType=None,reason=None):
+    def __init__(self, description="consume item", creator=None, itemType=None,reason=None, consumeVerb="consume"):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
@@ -14,13 +14,14 @@ class ConsumeItem(src.quests.MetaQuestSequence):
 
         self.itemType = itemType
         self.type = "ConsumeItem"
+        self.consumeVerb = consumeVerb
 
     def generateTextDescription(self):
         reason = ""
         if self.reason:
             reason = f",\nto {self.reason}"
         text = f"""
-Cosume an item of the type {self.itemType} from your inventory{reason}.
+{self.consumeVerb} an item of the type {self.itemType} from your inventory{reason}.
 """
         return text
 
@@ -62,7 +63,7 @@ Cosume an item of the type {self.itemType} from your inventory{reason}.
 
             offset = counter-character.macroState["submenue"].cursor
 
-            return (None,("s"*offset+"w"*(-offset)+"j","consume the item"))
+            return (None,("s"*offset+"w"*(-offset)+"j",f"{self.consumeVerb} the {item.name}"))
         return (None,("i","open inventory"))
 
 src.quests.addType(ConsumeItem)

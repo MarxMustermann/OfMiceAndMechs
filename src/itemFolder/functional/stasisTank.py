@@ -60,7 +60,8 @@ The spark has left its eyes and is stares blankly,
 but after some seconds it starts to move as if nothing happened."""
                 else:
                     text += """
-It has no memory, but it continues its work here."""
+It has no memory of how it got here,
+but it will continue its work here."""
                 text += f"""
 \n
 The Clones name is {spwaned_character.name} ({short_code})

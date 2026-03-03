@@ -59,7 +59,7 @@ The spark has left its eyes and is stares blankly,
 but after some seconds it starts to move as if nothing happened."""
                 text += """
 \n
-Its name is {spwaned_character.name} ({short_code})
+The Clones name is {spwaned_character.name} ({short_code})
 """
                 character.showTextMenu(text,do_not_scale=True)
                 character.changed("woke clone",{"character":character,"awoken":spwaned_character})

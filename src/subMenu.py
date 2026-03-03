@@ -236,11 +236,11 @@ class SubMenu(object):
             if counter == self.selectionIndex:
                 out.extend([" -> ", v, "\n"])
                 if self.extraDescriptions and self.options[k] in self.extraDescriptions:
-                    extraDescription = "\n"+self.extraDescriptions[self.options[k]]+"\n\n"
+                    extraDescription = ["\n",self.extraDescriptions[self.options[k]],"\n\n"]
             else:
                 out.extend(["    ", v, "\n"])
         if extraDescription:
-            out += extraDescription
+            out.extend(extraDescription)
 
         if self.persistentText:
             out.insert(0,"\n\n")

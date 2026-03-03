@@ -26,7 +26,7 @@ class GetCombatReady(src.quests.MetaQuestSequence):
             if submenue.tag not in ("advancedInteractionSelection",):
                 return (None,(["esc"],"close the menu"))
 
-        if not character.weapon:
+        if not character.weapon or character.weapon.type == "Rod":
             items = character.container.getItemsByType("Sword")
 
             if items:

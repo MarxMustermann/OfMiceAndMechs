@@ -1236,6 +1236,7 @@ class MainGame(BasicPhase):
         mainChar.rememberedMenu.append(questMenu)
 
         messagesMenu = src.menuFolder.messagesMenu.MessagesMenu(mainChar)
+        messagesMenu.sidebared = True
         mainChar.rememberedMenu2.append(messagesMenu)
         mainChar.disableCommandsOnPlus = True
         mainChar.autoExpandQuests2 = True
@@ -1416,11 +1417,6 @@ So bring it with you to be able to spawn one NPC cheaper.
                     continue
                 foundStopStatue = True
 
-            try:
-                self.showedExtraLoot
-            except:
-                self.showedExtraLoot = False
-
             if not self.showedExtraLoot:
                 foundFilledStatue = False
                 for item in newRoom.itemsOnFloor:
@@ -1502,10 +1498,6 @@ Each shot will consume a Bolt.
                     return
 
                 if foundLandMine:
-                    try:
-                        self.showedLandMineLuringInfo
-                    except:
-                        self.showedLandMineLuringInfo = False
 
                     if not self.showedLandMineLuringInfo:
                         text = """
@@ -1527,11 +1519,6 @@ I can hurt you quite a lot, too. So remember to keep a distance.
                         self.showedLandMineLuringInfo = True
                         return
 
-                try:
-                    self.showedBaitInfo
-                except:
-                    self.showedBaitInfo = False
-
                 if not self.showedBaitInfo:
                     text = """
 Another thing you can to is to bait/kite enemies
@@ -1549,11 +1536,6 @@ You can use this to divide enemy groups and kite enemies into traps.
 
                     self.showedBaitInfo = True
                     return
-
-                try:
-                    self.showedWaitInfo
-                except:
-                    self.showedWaitInfo = False
 
                 if not self.showedWaitInfo:
                     text = """
@@ -1575,10 +1557,6 @@ So this works best when you are near dead.
                     return
 
             if foundStopStatue:
-                try:
-                    self.showedStopStatueInfo
-                except:
-                    self.showedStopStatueInfo = False
 
                 if not self.showedStopStatueInfo:
                     text = """
@@ -1917,6 +1895,70 @@ but they are likely to explode when disturbed.
             for offset in [(0,1,0),(1,1,0),(2,1,0),(2,0,0),(2,-1,0),(1,-1,0),(0,-1,0),(-1,-1,0),(-2,-1,0),(-2,0,0),(-2,1,0),(-1,1,0)]:
                 scrapProccessing_room.addWalkingSpace((pos[0]+offset[0],pos[1]+offset[1],pos[2]+offset[2]))
 
+        machine_operation_npc = src.characters.characterMap["Clone"]()
+        machine_operation_npc.questsDone = [
+                "NaiveMoveQuest",
+                "MoveQuestMeta",
+                "NaiveActivateQuest",
+                "ActivateQuestMeta",
+                "NaivePickupQuest",
+                "PickupQuestMeta",
+                "DrinkQuest",
+                "CollectQuestMeta",
+                "FireFurnaceMeta",
+                "ExamineQuest",
+                "NaiveDropQuest",
+                "DropQuestMeta",
+                "LeaveRoomQuest",
+            ]
+
+        machine_operation_npc.solvers = [
+                "SurviveQuest",
+                "Serve",
+                "NaiveMoveQuest",
+                "MoveQuestMeta",
+                "NaiveActivateQuest",
+                "ActivateQuestMeta",
+                "NaivePickupQuest",
+                "PickupQuestMeta",
+                "DrinkQuest",
+                "ExamineQuest",
+                "FireFurnaceMeta",
+                "CollectQuestMeta",
+                "WaitQuest" "NaiveDropQuest",
+                "NaiveDropQuest",
+                "DropQuestMeta",
+            ]
+
+        machine_operation_npc.flask = src.items.itemMap["GooFlask"]()
+        machine_operation_npc.flask.uses = 100
+        machine_operation_npc.faction = faction
+        machine_operation_npc.burnedIn = True
+
+        machine_operation_npc.duties = []
+        machine_operation_npc.registers["HOMEx"] = 6
+        machine_operation_npc.registers["HOMEy"] = 6
+        machine_operation_npc.registers["HOMETx"] = currentTerrain.xPosition
+        machine_operation_npc.registers["HOMETy"] = currentTerrain.yPosition
+
+        machine_operation_npc.personality["autoFlee"] = False
+        machine_operation_npc.personality["abortMacrosOnAttack"] = False
+        machine_operation_npc.personality["autoCounterAttack"] = False
+
+        quest = src.quests.questMap["BeUsefull"](strict=True)
+        quest.autoSolve = True
+        quest.assignToCharacter(machine_operation_npc)
+        quest.activate()
+        machine_operation_npc.assignQuest(quest,active=True)
+        machine_operation_npc.foodPerRound = 1
+        machine_operation_npc.duties.append("machine operation")
+
+        item = src.items.itemMap["StasisTank"]()
+        item.character = machine_operation_npc
+        scrapProccessing_room.addItem(item,(1,1,0))
+        for pos in [(9,7,0),(9,8,0),(9,9,0),(9,10,0),(9,11,0),(10,11,0)]:
+            scrapProccessing_room.addWalkingSpace(pos)
+
         scrapStorage_room = architect.doAddRoom(
                 {
                        "coordinate": (8,6,0),
@@ -1942,6 +1984,14 @@ but they are likely to explode when disturbed.
         for x in (2,4,6,):
             for y in (1,2,3,4,5,):
                 scrapStorage_room.addWalkingSpace((x,y,0))
+
+        for y in (1,3,5,7,9,11):
+            for x in (7,8,9,10,11,):
+                scrapStorage_room.addStorageSlot((x,y,0),"Scrap",{"desiredState":"filled"})
+        for y in (2,4,6,8,10):
+            for x in (7,8,9,10,11,):
+                scrapStorage_room.addWalkingSpace((x,y,0))
+
 
         for _i in range(1,20):
             self.setUpShrine(self.get_free_position("shrine"))
@@ -2005,11 +2055,16 @@ but they are likely to explode when disturbed.
                     ruin.addWalkingSpace((6,y,0))
 
         for room in rooms_to_decorate:
-            pos = room.getPosition()
+            room_pos = room.getPosition()
 
             # add scrap
-            for _i in range(0,20):
+            scrap_amount = 20
+            if room_pos == (8,6,0):
+                scrap_amount = 100
+            for _i in range(0,scrap_amount):
                 pos = (random.randint(1,11),random.randint(1,11),0)
+                if pos == (1,1,0) and room_pos == (6,6,0):
+                    continue
 
                 for item in room.getItemByPosition(pos)[:]:
                     item.destroy()
@@ -2027,7 +2082,7 @@ but they are likely to explode when disturbed.
                 quest.activate()
                 crawler.quests.append(quest)
 
-                pos = (random.randint(1,11),random.randint(1,11),0)
+                pos = (random.randint(3,9),random.randint(3,9),0)
                 room.addCharacter(crawler,pos[0],pos[1])
 
         # add decoration for flavour

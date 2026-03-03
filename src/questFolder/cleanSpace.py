@@ -204,12 +204,7 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
             return ([quest],None)
 
         for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
-            foundEnemy = False
-            for otherChar in room.characters:
-                if not otherChar.faction == character.faction:
-                    foundEnemy = True
-                    break
-            if foundEnemy:
+            if character.getTerrain().getEnemiesOnTile(character,room.getPosition()):
                 continue
 
             if not room.floorPlan:
@@ -231,12 +226,7 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
                     return ([quest],None)
 
         for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
-            foundEnemy = False
-            for otherChar in room.characters:
-                if not otherChar.faction == character:
-                    foundEnemy = True
-                    break
-            if foundEnemy:
+            if character.getTerrain().getEnemiesOnTile(character,room.getPosition()):
                 continue
 
             slots = room.inputSlots+room.outputSlots+room.storageSlots

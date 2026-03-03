@@ -326,7 +326,7 @@ You can only have one attribute perk
             self.do_promotion(extraInfo)
 
         submenu = src.menuFolder.textMenu.TextMenu(f"""
-The tendrils retrive.
+The tendrils retreat.
 
 You are rank {character.rank} now.
 """)

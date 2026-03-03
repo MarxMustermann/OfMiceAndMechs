@@ -19,7 +19,7 @@ class Rod(src.items.Item):
         if badQuality:
             self.baseDamage = 4
         else:
-            self.baseDamage = int(random.triangular(8,12,10))
+            self.baseDamage = int(random.triangular(4,10,6))
 
     def getLongInfo(self, character=None):
         '''

@@ -3421,9 +3421,13 @@ The help menu will show you the keybindings.
             if mainChar.health < mainChar.maxHealth // 2 and mainChar.searchInventory("Vial"):
                 name = "heal"
                 options.append((name, "help me heal"))
-                extraDescriptions[name] = """
+                extraDescriptions[name] = ["""
 You are hurt and should heal yourself.
-"""
+
+Keep in mind you need to enter capital letters with shift pressed.
+So ""","\"",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"black"),"J H"),"\"",""" needs to be entered as:
+shift+j then shift+h
+"""]
             if self.get_crafting_room_enemies(mainChar):
                 name = "secure crafting room"
                 options.append((name, "secure crafting room"))

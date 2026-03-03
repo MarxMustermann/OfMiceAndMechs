@@ -53,10 +53,14 @@ The ejected character will be placed to the south of the stasis tank and will st
                 else:
                     short_code = short_code.upper()
                 text = """
-You break the glass of the StasisTank and a Clone falls out."""
-                text += """
+You break the glass of the StasisTank and a Clone falls out.\n\n"""
+                if (spwaned_character.burnedIn):
+                    text += """
 The spark has left its eyes and is stares blankly,
 but after some seconds it starts to move as if nothing happened."""
+                else:
+                    text += """
+It has no memory, but continues its work here."""
                 text += """
 \n
 The Clones name is {spwaned_character.name} ({short_code})

@@ -88,7 +88,13 @@ class RodTower(src.items.Item):
             renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,tileSize,border_width))
             renderer.fill_rect((basePos[0]+tileSize-border_width,basePos[1],border_width,tileSize))
 
-    def apply(self, character=None):
+    def apply(self, character):
+        character.macroState["submenue"] = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu("\npress j to confirm manually activating the RodTower",ignoreFirstKey=False,do_not_scale=True,tag="confirm_RodTower")
+        character.macroState["submenue"].followUp = {"container":self,"method":"activate","params":{"character":character}}
+
+    def activate(self,extraParams):
+        if "keyPressed" in extraParams and extraParams["keyPressed"] != "j":
+            return
         try:
             self.lastUsed
         except:
@@ -130,7 +136,7 @@ class RodTower(src.items.Item):
                 target.hurt(baseDamage*2,reason="hit by RodTower")
 
     def remoteActivate(self,extraParams=None):
-        self.apply()
+        self.activate({})
 
     def isInCoolDown(self):
         if not (src.gamestate.gamestate.tick - self.lastUsed) > self.coolDown:

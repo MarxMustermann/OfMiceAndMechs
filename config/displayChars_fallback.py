@@ -286,6 +286,6 @@ staffCharactersByLetter = {
 winch = "8O"
 winch_inactive = "80"
 winch_active = "iW"
-scrap_light = (AttrSpec("#830", "black"), ".;")
+scrap_light = (AttrSpec("#830", "black"), ";-")
 scrap_medium = (AttrSpec("#740", "black"), "*,")
 scrap_heavy = (AttrSpec("#a50", "black"), "%#")

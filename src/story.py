@@ -2142,6 +2142,69 @@ but they are likely to explode when disturbed.
         scrapProccessing_room.addItem(item,(4,1,0))
 
 
+        resource_gethering_npc = src.characters.characterMap["Clone"]()
+        resource_gethering_npc.questsDone = [
+                "NaiveMoveQuest",
+                "MoveQuestMeta",
+                "NaiveActivateQuest",
+                "ActivateQuestMeta",
+                "NaivePickupQuest",
+                "PickupQuestMeta",
+                "DrinkQuest",
+                "CollectQuestMeta",
+                "FireFurnaceMeta",
+                "ExamineQuest",
+                "NaiveDropQuest",
+                "DropQuestMeta",
+                "LeaveRoomQuest",
+            ]
+
+        resource_gethering_npc.solvers = [
+                "SurviveQuest",
+                "Serve",
+                "NaiveMoveQuest",
+                "MoveQuestMeta",
+                "NaiveActivateQuest",
+                "ActivateQuestMeta",
+                "NaivePickupQuest",
+                "PickupQuestMeta",
+                "DrinkQuest",
+                "ExamineQuest",
+                "FireFurnaceMeta",
+                "CollectQuestMeta",
+                "WaitQuest" "NaiveDropQuest",
+                "NaiveDropQuest",
+                "DropQuestMeta",
+            ]
+
+        resource_gethering_npc.flask = src.items.itemMap["GooFlask"]()
+        resource_gethering_npc.flask.uses = 100
+        resource_gethering_npc.faction = faction
+        resource_gethering_npc.burnedIn = True
+
+        resource_gethering_npc.duties = []
+        resource_gethering_npc.registers["HOMEx"] = 7
+        resource_gethering_npc.registers["HOMEy"] = 6
+        resource_gethering_npc.registers["HOMETx"] = currentTerrain.xPosition
+        resource_gethering_npc.registers["HOMETy"] = currentTerrain.yPosition
+
+        resource_gethering_npc.personality["autoFlee"] = False
+        resource_gethering_npc.personality["abortMacrosOnAttack"] = False
+        resource_gethering_npc.personality["autoCounterAttack"] = False
+
+        quest = src.quests.questMap["BeUsefull"](strict=True)
+        quest.autoSolve = True
+        quest.assignToCharacter(resource_gethering_npc)
+        quest.activate()
+        resource_gethering_npc.assignQuest(quest,active=True)
+        resource_gethering_npc.foodPerRound = 1
+        resource_gethering_npc.duties.append("resource gathering")
+
+        item = src.items.itemMap["StasisTank"]()
+        item.character = resource_gethering_npc
+        scrapProccessing_room.addItem(item,(5,1,0))
+
+
         for pos in [(9,7,0),(9,8,0),(9,9,0),(9,10,0),(9,11,0),(10,11,0)]:
             scrapProccessing_room.addWalkingSpace(pos)
 

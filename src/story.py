@@ -1797,6 +1797,9 @@ but they are likely to explode when disturbed.
         craftingRoom.addWalkingSpace((10,1,0))
         craftingRoom.addWalkingSpace((11,6,0))
 
+        scrap = src.items.itemMap["Scrap"](amount=2)
+        craftingRoom.addItem(scrap,(1,10,0))
+
         npc = src.characters.characterMap["Clone"]()
         npc.questsDone = [
                 "NaiveMoveQuest",

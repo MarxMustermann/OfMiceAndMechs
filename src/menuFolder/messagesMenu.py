@@ -4,7 +4,14 @@ class MessagesMenu(src.subMenu.SubMenu):
 
     def render(self):
         char = self.char
-        out = [f"press w/s to scroll\npress esc to close menu\n\noldest message on top - skipping {self.scrollIndex} messages\n\n"]
+        out = []
+        try:
+            self.sidebared
+        except:
+            self.sidebared = True
+
+        if not self.sidebared:
+            out.append(f"press w/s to scroll\npress esc to close menu\n\noldest message on top - skipping {self.scrollIndex} messages\n\n")
 
         if self.scrollIndex:
             to_print = char.messages[-46-self.scrollIndex:-self.scrollIndex]
@@ -36,6 +43,7 @@ class MessagesMenu(src.subMenu.SubMenu):
         self.char = char
         self.scrollIndex = 0
         self.skipKeypress = True
+        self.sidebared = False
         super().__init__()
 
     def getTitle(self):
@@ -61,9 +69,11 @@ class MessagesMenu(src.subMenu.SubMenu):
             character.changed("closedMessages")
             return True
         if key in ("ESC","lESC",):
+            self.sidebared = True
             self.char.rememberedMenu.append(self)
             return True
         if key in ("rESC",):
+            self.sidebared = True
             self.char.rememberedMenu2.append(self)
             return True
         if key == "w" and self.scrollIndex > 0:

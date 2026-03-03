@@ -7,6 +7,7 @@ class StopStatue(src.items.Item):
     """
 
     type = "StopStatue"
+    description = "This machine kills all mechanical enemies in the room when activated"
 
     def __init__(self):
         """

@@ -1800,8 +1800,8 @@ but they are likely to explode when disturbed.
         scrap = src.items.itemMap["Scrap"](amount=2)
         craftingRoom.addItem(scrap,(1,10,0))
 
-        npc = src.characters.characterMap["Clone"]()
-        npc.questsDone = [
+        main_npc = src.characters.characterMap["Clone"]()
+        main_npc.questsDone = [
                 "NaiveMoveQuest",
                 "MoveQuestMeta",
                 "NaiveActivateQuest",
@@ -1817,7 +1817,7 @@ but they are likely to explode when disturbed.
                 "LeaveRoomQuest",
             ]
 
-        npc.solvers = [
+        main_npc.solvers = [
                 "SurviveQuest",
                 "Serve",
                 "NaiveMoveQuest",
@@ -1835,45 +1835,45 @@ but they are likely to explode when disturbed.
                 "DropQuestMeta",
             ]
 
-        npc.flask = src.items.itemMap["GooFlask"]()
-        npc.flask.uses = 100
-        npc.faction = faction
+        main_npc.flask = src.items.itemMap["GooFlask"]()
+        main_npc.flask.uses = 100
+        main_npc.faction = faction
 
-        npc.duties = []
-        npc.registers["HOMEx"] = 7
-        npc.registers["HOMEy"] = 5
-        npc.registers["HOMETx"] = currentTerrain.xPosition
-        npc.registers["HOMETy"] = currentTerrain.yPosition
+        main_npc.duties = []
+        main_npc.registers["HOMEx"] = 7
+        main_npc.registers["HOMEy"] = 5
+        main_npc.registers["HOMETx"] = currentTerrain.xPosition
+        main_npc.registers["HOMETy"] = currentTerrain.yPosition
 
-        npc.personality["autoFlee"] = False
-        npc.personality["abortMacrosOnAttack"] = False
-        npc.personality["autoCounterAttack"] = False
+        main_npc.personality["autoFlee"] = False
+        main_npc.personality["abortMacrosOnAttack"] = False
+        main_npc.personality["autoCounterAttack"] = False
 
         quest = src.quests.questMap["BeUsefull"](strict=True)
         quest.autoSolve = True
-        quest.assignToCharacter(npc)
+        quest.assignToCharacter(main_npc)
         quest.activate()
-        npc.assignQuest(quest,active=True)
-        npc.foodPerRound = 1
-        npc.duties.append("resource gathering")
-        npc.duties.append("scrap hammering")
-        npc.duties.append("resource fetching")
-        npc.duties.append("hauling")
-        npc.duties.append("metal working")
-        npc.duties.append("machine placing")
-        npc.duties.append("maggot gathering")
-        npc.duties.append("painting")
-        npc.duties.append("cleaning")
-        npc.duties.append("machine operation")
-        npc.duties.append("manufacturing")
-        npc.duties.append("praying")
-        npc.dutyPriorities["cleaning"] = 10
-        npc.dutyPriorities["machine operation"] = 2
-        npc.dutyPriorities["hauling"] = 3
-        npc.dutyPriorities["manufacturing"] = 4
+        main_npc.assignQuest(quest,active=True)
+        main_npc.foodPerRound = 1
+        main_npc.duties.append("resource gathering")
+        main_npc.duties.append("scrap hammering")
+        main_npc.duties.append("resource fetching")
+        main_npc.duties.append("hauling")
+        main_npc.duties.append("metal working")
+        main_npc.duties.append("machine placing")
+        main_npc.duties.append("maggot gathering")
+        main_npc.duties.append("painting")
+        main_npc.duties.append("cleaning")
+        main_npc.duties.append("machine operation")
+        main_npc.duties.append("manufacturing")
+        main_npc.duties.append("praying")
+        main_npc.dutyPriorities["cleaning"] = 10
+        main_npc.dutyPriorities["machine operation"] = 2
+        main_npc.dutyPriorities["hauling"] = 3
+        main_npc.dutyPriorities["manufacturing"] = 4
 
         item = src.items.itemMap["StasisTank"]()
-        item.character = npc
+        item.character = main_npc
         craftingRoom.addItem(item,(6,3,0))
 
         crawler = src.characters.characterMap["Mechanical_Crawler"]()
@@ -1900,16 +1900,22 @@ but they are likely to explode when disturbed.
            )
         scrapProccessing_room.tag = "scrap processing"
         rooms_to_decorate.append(scrapProccessing_room)
-        item = src.items.itemMap["ScrapCompactor"]()
-        scrapProccessing_room.addInputSlot((8,3,0),"Scrap",{})
-        scrapProccessing_room.addItem(item,(9,3,0))
-        scrapProccessing_room.addStorageSlot((10,3,0),"MetalBars",{})
         for x in (6,7,8,9,10,11,):
             scrapProccessing_room.addWalkingSpace((x,6,0))
         for y in (11,10,9,8,7):
             scrapProccessing_room.addWalkingSpace((6,y,0))
-        for pos in [(9,5,0),(9,4,0),(10,4,0),(11,4,0),(11,3,0),(11,2,0),(10,2,0),(9,2,0),(8,2,0),(7,2,0),(7,3,0),(7,4,0),(8,4,0)]:
+        for pos in [(9,5,0),(6,3,0),(3,5,0),(3,6,0),(3,7,0)]:
             scrapProccessing_room.addWalkingSpace(pos)
+
+        basePositions = [(9,3,0),(3,3,0),(3,9,0)]
+        for pos in basePositions:
+            scrapProccessing_room.addInputSlot((pos[0]-1,pos[1],pos[2]),"Scrap",{})
+            item = src.items.itemMap["ScrapCompactor"]()
+            scrapProccessing_room.addItem(item,(pos[0],pos[1],pos[2]))
+            scrapProccessing_room.addStorageSlot((pos[0]+1,pos[1],pos[2]),"MetalBars",{})
+            
+            for offset in [(0,1,0),(1,1,0),(2,1,0),(2,0,0),(2,-1,0),(1,-1,0),(0,-1,0),(-1,-1,0),(-2,-1,0),(-2,0,0),(-2,1,0),(-1,1,0)]:
+                scrapProccessing_room.addWalkingSpace((pos[0]+offset[0],pos[1]+offset[1],pos[2]+offset[2]))
 
         scrapStorage_room = architect.doAddRoom(
                 {
@@ -3388,7 +3394,7 @@ The whole room will explode soon.
             else:
                 text += """
 The base is overrun with enemies that blocks your way out of here.
-You didn't even bring weapins!
+You didn't even bring weapons!
 We should try find something to defend ourselves with.
 """
 
@@ -3463,10 +3469,22 @@ Maybe we can wake the worker inside it.
 """
 
 
-            name = "teleport"
-            options.append((name, "get me out of here!"))
-            extraDescriptions[name] = """
-This place is not safe. It is time to leave.
+            if mainChar.getBigPosition() != (7,8,0):
+                name = "go to teleporter room"
+                options.append((name, "help me find a way out of here"))
+                extraDescriptions[name] = """
+There is a teleporter in the base. It is in the room (6,6,0).
+We may need to fight our way towards it.
+
+If we reach it we can leave this place.
+"""
+            else:
+                name = "teleport"
+                options.append((name, "help me leave"))
+                extraDescriptions[name] = """
+We can leave this place now.
+
+We probably can't return, though.
 """
 
             if not shown_help_option:
@@ -4085,6 +4103,12 @@ This will close the tutorial and let you do your own thing.
 
         if quest_type == "secure crafting room":
             quest = src.quests.questMap["SecureTile"](toSecure=(7,5,0),endWhenCleared=True)
+            self.addQuest(quest,character)
+            self.clear_implant_quest(character)
+            return
+
+        if quest_type == "go to teleporter room":
+            quest = src.quests.questMap["StoryReachTeleporterRoom"]()
             self.addQuest(quest,character)
             self.clear_implant_quest(character)
             return

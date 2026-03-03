@@ -1324,10 +1324,6 @@ a metal worker"""
 
 
         if self.difficulty == ("medium","easy",):
-            try:
-                self.showedGlassHeartInfo
-            except:
-                self.showedGlassHeartInfo = False
 
             if not self.showedGlassHeartInfo:
                 if item.type == "SpecialItem":

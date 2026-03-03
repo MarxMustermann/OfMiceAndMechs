@@ -18,6 +18,8 @@ class StoryTeleport(src.quests.MetaQuestSequence):
         if not character:
             return (None,None)
 
+        terrain = character.getTerrain()
+
         if not character.container.isRoom:
             if character.xPosition%15 == 0:
                 return (None,("d","enter room"))
@@ -69,7 +71,11 @@ class StoryTeleport(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["SecureTile"](toSecure=random.choice([(6,6,0),(8,6,0)]),reason="be able to leave",description="search for teleporter",endWhenCleared=True)
             return ([quest],None)
         if character.getBigPosition() == (6,6,0):
-            quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),reason="be able to leave",description="search for teleporter",endWhenCleared=True)
+            target_pos = (6,7,0)
+            if terrain.getEnemiesOnTile(character,target_pos):
+                quest = src.quests.questMap["SecureTile"](toSecure=target_pos,reason="be able to leave",description="search for teleporter",endWhenCleared=True)
+            else:
+                quest = src.quests.questMap["GoToTile"](targetPosition=(6,7,0))
             return ([quest],None)
         if character.getBigPosition() == (6,7,0):
             quest = src.quests.questMap["SecureTile"](toSecure=(6,8,0),reason="be able to leave",description="search for teleporter",endWhenCleared=True)

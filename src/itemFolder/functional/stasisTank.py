@@ -61,7 +61,7 @@ but after some seconds it starts to move as if nothing happened."""
                 else:
                     text += """
 It has no memory, but continues its work here."""
-                text += """
+                text += f"""
 \n
 The Clones name is {spwaned_character.name} ({short_code})
 """

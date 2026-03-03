@@ -153,6 +153,7 @@ if the suggested action is \" """,(src.interaction.urwid.AttrSpec(src.interactio
 
         if self.index == 4:
             txt.append("\n")
+            txt.append("ESC      - open main menu\n")
             txt.append("F11      - toggle fullscreen\n")
             txt.append("ctrl +/- - zoom in/out\n")
             txt.append("\n")

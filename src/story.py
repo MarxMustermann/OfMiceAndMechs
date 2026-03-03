@@ -1933,7 +1933,7 @@ but they are likely to explode when disturbed.
         for x in (1,3,5,):
             for y in (1,2,3,4,5,):
                 scrapStorage_room.addStorageSlot((x,y,0),"Scrap",{"desiredState":"filled"})
-        for x in (2,4,):
+        for x in (2,4,6,):
             for y in (1,2,3,4,5,):
                 scrapStorage_room.addWalkingSpace((x,y,0))
 

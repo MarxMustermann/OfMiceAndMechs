@@ -1905,6 +1905,8 @@ but they are likely to explode when disturbed.
             scrapProccessing_room.addWalkingSpace((x,6,0))
         for y in (11,10,9,8,7):
             scrapProccessing_room.addWalkingSpace((6,y,0))
+        for pos in [(9,5,0),(9,4,0),(10,4,0),(11,4,0),(11,3,0),(11,2,0),(10,2,0),(9,2,0),(8,2,0),(7,2,0),(7,3,0),(7,4,0),(8,4,0)]:
+            scrapProccessing_room.addWalkingSpace(pos)
 
         scrapStorage_room = architect.doAddRoom(
                 {
@@ -1924,14 +1926,12 @@ but they are likely to explode when disturbed.
             scrapStorage_room.addWalkingSpace((x,6,0))
         for y in (11,10,9,8,7):
             scrapStorage_room.addWalkingSpace((6,y,0))
-        for pos in [(9,5,0),(9,4,0),(10,4,0),(11,4,0),(11,3,0),(11,2,0),(10,2,0),(9,2,0),(8,2,0),(7,2,0),(7,3,0),(7,4,0),(8,4,0)]:
-            scrapStorage_room.addWalkingSpace(pos)
 
         for x in (1,3,5,):
-            for y in (7,8,9,10,11):
+            for y in (1,2,3,4,5,):
                 scrapStorage_room.addStorageSlot((x,y,0),"Scrap",{"desiredState":"filled"})
         for x in (2,4,):
-            for y in (7,8,9,10,11):
+            for y in (1,2,3,4,5,):
                 scrapStorage_room.addWalkingSpace((x,y,0))
 
         for _i in range(1,20):

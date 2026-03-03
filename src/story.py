@@ -2061,6 +2061,8 @@ but they are likely to explode when disturbed.
                 pos = (random.randint(1,11),random.randint(1,11),0)
                 if pos == (1,1,0) and room_pos == (6,6,0):
                     continue
+                if pos[1] == 1 and room_pos == (6,6,0):
+                    continue
 
                 for item in room.getItemByPosition(pos)[:]:
                     item.destroy()

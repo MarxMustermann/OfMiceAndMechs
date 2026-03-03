@@ -48,7 +48,10 @@ The ejected character will be placed to the south of the stasis tank and will st
 
             if character:
                 short_code = spwaned_character.name.split(" ")[0][0]+spwaned_character.name.split(" ")[1][0]
-                short_code = short_code.lower()
+                if spwaned_character.burnedIn:
+                    short_code = short_code.lower()
+                else:
+                    short_code = short_code.upper()
                 character.showTextMenu(f"""
 You break the glass of the StasisTank and a Clone falls out.
 The spark has left its eyes and is stares blankly,

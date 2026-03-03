@@ -78,13 +78,13 @@ class HelpMenu(src.subMenu.SubMenu):
         color = "#666"
         if self.index == 3:
             color = "#fff"
-            title = "user interface"
-        txt.append((src.interaction.urwid.AttrSpec(color, "#000"),"[ user interface ] "))
+            title = "submenues"
+        txt.append((src.interaction.urwid.AttrSpec(color, "#000"),"[ submenues ] "))
         color = "#666"
         if self.index == 4:
             color = "#fff"
-            title = "submenues"
-        txt.append((src.interaction.urwid.AttrSpec(color, "#000"),"[ submenues ]\n"))
+            title = "user interface"
+        txt.append((src.interaction.urwid.AttrSpec(color, "#000"),"[ user interface ]\n"))
 
         txt.append("\n")
         txt.append("\n")

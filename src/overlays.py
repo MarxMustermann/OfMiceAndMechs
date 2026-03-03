@@ -287,7 +287,7 @@ class NPCsOverlay:
                     colormap = {
                             "A":"#aaa",
                             "B":"#3aa",
-                            "C":"#00a",
+                            "C":"#a4a",
                             "D":"#fa4",
                             "E":"#0af",
                             "F":"#44a",

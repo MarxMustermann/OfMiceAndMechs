@@ -414,6 +414,11 @@ Place the items in the correct input or storage stockpile.
 
         for trueInput in (True,False):
             for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
+                if room.alarm:
+                    continue
+                if character.getTerrain().getEnemiesOnTile(character,room.getPosition()):
+                    continue
+
                 emptyInputSlots = room.getEmptyInputslots(allowStorage=(not trueInput),allowAny=True)
                 random.shuffle(emptyInputSlots)
 
@@ -477,6 +482,11 @@ Place the items in the correct input or storage stockpile.
 
         for trueInput in (True,False):
             for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
+                if room.alarm:
+                    continue
+                if character.getTerrain().getEnemiesOnTile(character,room.getPosition()):
+                    continue
+
                 emptyInputSlots = room.getEmptyInputslots(allowStorage=(not trueInput),allowAny=True)
 
                 fullyEmptyFirst_emptyInputSlots = []
@@ -532,6 +542,11 @@ Place the items in the correct input or storage stockpile.
                                 return (quests,None)
 
         for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
+            if room.alarm:
+                continue
+            if character.getTerrain().getEnemiesOnTile(character,room.getPosition()):
+                continue
+
             for storageSlot in room.storageSlots:
                 if storageSlot[2].get("desiredState") != "filled":
                     continue

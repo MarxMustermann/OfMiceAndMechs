@@ -1932,7 +1932,7 @@ but they are likely to explode when disturbed.
         machine_operation_npc.burnedIn = True
 
         machine_operation_npc.duties = []
-        machine_operation_npc.registers["HOMEx"] = 6
+        machine_operation_npc.registers["HOMEx"] = 7
         machine_operation_npc.registers["HOMEy"] = 6
         machine_operation_npc.registers["HOMETx"] = currentTerrain.xPosition
         machine_operation_npc.registers["HOMETy"] = currentTerrain.yPosition
@@ -1994,7 +1994,7 @@ but they are likely to explode when disturbed.
         cleaning_npc.burnedIn = True
 
         cleaning_npc.duties = []
-        cleaning_npc.registers["HOMEx"] = 6
+        cleaning_npc.registers["HOMEx"] = 7
         cleaning_npc.registers["HOMEy"] = 6
         cleaning_npc.registers["HOMETx"] = currentTerrain.xPosition
         cleaning_npc.registers["HOMETy"] = currentTerrain.yPosition
@@ -2057,7 +2057,7 @@ but they are likely to explode when disturbed.
         resource_fetching_npc.burnedIn = True
 
         resource_fetching_npc.duties = []
-        resource_fetching_npc.registers["HOMEx"] = 6
+        resource_fetching_npc.registers["HOMEx"] = 7
         resource_fetching_npc.registers["HOMEy"] = 6
         resource_fetching_npc.registers["HOMETx"] = currentTerrain.xPosition
         resource_fetching_npc.registers["HOMETy"] = currentTerrain.yPosition
@@ -2077,6 +2077,70 @@ but they are likely to explode when disturbed.
         item = src.items.itemMap["StasisTank"]()
         item.character = resource_fetching_npc
         scrapProccessing_room.addItem(item,(3,1,0))
+
+
+        manufacturing_npc = src.characters.characterMap["Clone"]()
+        manufacturing_npc.questsDone = [
+                "NaiveMoveQuest",
+                "MoveQuestMeta",
+                "NaiveActivateQuest",
+                "ActivateQuestMeta",
+                "NaivePickupQuest",
+                "PickupQuestMeta",
+                "DrinkQuest",
+                "CollectQuestMeta",
+                "FireFurnaceMeta",
+                "ExamineQuest",
+                "NaiveDropQuest",
+                "DropQuestMeta",
+                "LeaveRoomQuest",
+            ]
+
+        manufacturing_npc.solvers = [
+                "SurviveQuest",
+                "Serve",
+                "NaiveMoveQuest",
+                "MoveQuestMeta",
+                "NaiveActivateQuest",
+                "ActivateQuestMeta",
+                "NaivePickupQuest",
+                "PickupQuestMeta",
+                "DrinkQuest",
+                "ExamineQuest",
+                "FireFurnaceMeta",
+                "CollectQuestMeta",
+                "WaitQuest" "NaiveDropQuest",
+                "NaiveDropQuest",
+                "DropQuestMeta",
+            ]
+
+        manufacturing_npc.flask = src.items.itemMap["GooFlask"]()
+        manufacturing_npc.flask.uses = 100
+        manufacturing_npc.faction = faction
+        manufacturing_npc.burnedIn = True
+
+        manufacturing_npc.duties = []
+        manufacturing_npc.registers["HOMEx"] = 7
+        manufacturing_npc.registers["HOMEy"] = 6
+        manufacturing_npc.registers["HOMETx"] = currentTerrain.xPosition
+        manufacturing_npc.registers["HOMETy"] = currentTerrain.yPosition
+
+        manufacturing_npc.personality["autoFlee"] = False
+        manufacturing_npc.personality["abortMacrosOnAttack"] = False
+        manufacturing_npc.personality["autoCounterAttack"] = False
+
+        quest = src.quests.questMap["BeUsefull"](strict=True)
+        quest.autoSolve = True
+        quest.assignToCharacter(manufacturing_npc)
+        quest.activate()
+        manufacturing_npc.assignQuest(quest,active=True)
+        manufacturing_npc.foodPerRound = 1
+        manufacturing_npc.duties.append("manufacturing")
+
+        item = src.items.itemMap["StasisTank"]()
+        item.character = manufacturing_npc
+        scrapProccessing_room.addItem(item,(4,1,0))
+
 
         for pos in [(9,7,0),(9,8,0),(9,9,0),(9,10,0),(9,11,0),(10,11,0)]:
             scrapProccessing_room.addWalkingSpace(pos)

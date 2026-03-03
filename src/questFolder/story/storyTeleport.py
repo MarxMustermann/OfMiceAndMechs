@@ -66,22 +66,17 @@ class StoryTeleport(src.quests.MetaQuestSequence):
 
         target_pos = None
         if character.getBigPosition() == (7,5,0):
-            quest = src.quests.questMap["GoToTile"](targetPosition=(7,6,0),reason="get closer to the exit",description="go to teleporter room")
-            return ([quest],None)
+            target_pos = (7,6,0)
         if character.getBigPosition() == (7,6,0):
-            quest = src.quests.questMap["SecureTile"](toSecure=random.choice([(6,6,0),(8,6,0)]),reason="be able to leave",description="search for teleporter",endWhenCleared=True)
-            return ([quest],None)
+            target_pos = random.choice([(6,6,0),(8,6,0)])
         if character.getBigPosition() == (6,6,0):
             target_pos = (6,7,0)
         if character.getBigPosition() == (6,7,0):
-            quest = src.quests.questMap["SecureTile"](toSecure=(6,8,0),reason="be able to leave",description="search for teleporter",endWhenCleared=True)
-            return ([quest],None)
+            target_pos = (6,8,0)
         if character.getBigPosition() == (8,6,0):
-            quest = src.quests.questMap["SecureTile"](toSecure=(8,7,0),reason="be able to leave",description="search for teleporter",endWhenCleared=True)
-            return ([quest],None)
+            target_pos = (8,7,0)
         if character.getBigPosition() == (8,7,0):
-            quest = src.quests.questMap["SecureTile"](toSecure=(8,8,0),reason="be able to leave",description="search for teleporter",endWhenCleared=True)
-            return ([quest],None)
+            target_pos = (8,8,0)
         if target_pos:
             if terrain.getEnemiesOnTile(character,target_pos):
                 quest = src.quests.questMap["SecureTile"](toSecure=target_pos,reason="be able to leave",description="search for teleporter",endWhenCleared=True)

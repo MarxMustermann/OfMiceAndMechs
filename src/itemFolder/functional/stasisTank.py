@@ -58,6 +58,14 @@ You break the glass of the StasisTank and a Clone falls out.\n\n"""
                     text += """
 The spark has left its eyes and is stares blankly,
 but after some seconds it starts to move."""
+                    duty_string = f"{spwaned_character.duties[0]} duty"
+                    if len(spwaned_character.duties) > 1:
+                        duty_string = f'{" ".join(spwaned_character.duties)} duties'
+                    text += f"""
+
+
+This Clone is burned in and will only do the {duty_string}.
+"""
                 else:
                     text += """
 It has no memory of how it got here,

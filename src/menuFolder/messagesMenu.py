@@ -4,7 +4,8 @@ class MessagesMenu(src.subMenu.SubMenu):
 
     def render(self):
         char = self.char
-        out = []
+        out = [f"press w/s to scroll\npress esc to close menu\n\noldest message on top - skipping {self.scrollIndex} messages\n\n"]
+
 
         if self.scrollIndex:
             to_print = char.messages[-46-self.scrollIndex:-self.scrollIndex]
@@ -73,10 +74,8 @@ class MessagesMenu(src.subMenu.SubMenu):
 
         char = self.char
 
-        text = [f"press w/s to scroll\noldest message on top - skipping {self.scrollIndex} messages\n\n",self.render()]
-
         # show info
         src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "messages"))
-        src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), [text]))
+        src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.render()))
         src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), ""))
         return None

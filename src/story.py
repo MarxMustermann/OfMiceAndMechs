@@ -1952,6 +1952,69 @@ but they are likely to explode when disturbed.
         item = src.items.itemMap["StasisTank"]()
         item.character = machine_operation_npc
         scrapProccessing_room.addItem(item,(1,1,0))
+
+        cleaning_npc = src.characters.characterMap["Clone"]()
+        cleaning_npc.questsDone = [
+                "NaiveMoveQuest",
+                "MoveQuestMeta",
+                "NaiveActivateQuest",
+                "ActivateQuestMeta",
+                "NaivePickupQuest",
+                "PickupQuestMeta",
+                "DrinkQuest",
+                "CollectQuestMeta",
+                "FireFurnaceMeta",
+                "ExamineQuest",
+                "NaiveDropQuest",
+                "DropQuestMeta",
+                "LeaveRoomQuest",
+            ]
+
+        cleaning_npc.solvers = [
+                "SurviveQuest",
+                "Serve",
+                "NaiveMoveQuest",
+                "MoveQuestMeta",
+                "NaiveActivateQuest",
+                "ActivateQuestMeta",
+                "NaivePickupQuest",
+                "PickupQuestMeta",
+                "DrinkQuest",
+                "ExamineQuest",
+                "FireFurnaceMeta",
+                "CollectQuestMeta",
+                "WaitQuest" "NaiveDropQuest",
+                "NaiveDropQuest",
+                "DropQuestMeta",
+            ]
+
+        cleaning_npc.flask = src.items.itemMap["GooFlask"]()
+        cleaning_npc.flask.uses = 100
+        cleaning_npc.faction = faction
+        cleaning_npc.burnedIn = True
+
+        cleaning_npc.duties = []
+        cleaning_npc.registers["HOMEx"] = 6
+        cleaning_npc.registers["HOMEy"] = 6
+        cleaning_npc.registers["HOMETx"] = currentTerrain.xPosition
+        cleaning_npc.registers["HOMETy"] = currentTerrain.yPosition
+
+        cleaning_npc.personality["autoFlee"] = False
+        cleaning_npc.personality["abortMacrosOnAttack"] = False
+        cleaning_npc.personality["autoCounterAttack"] = False
+
+        quest = src.quests.questMap["BeUsefull"](strict=True)
+        quest.autoSolve = True
+        quest.assignToCharacter(cleaning_npc)
+        quest.activate()
+        cleaning_npc.assignQuest(quest,active=True)
+        cleaning_npc.foodPerRound = 1
+        cleaning_npc.duties.append("cleaning")
+
+        item = src.items.itemMap["StasisTank"]()
+        item.character = cleaning_npc
+        scrapProccessing_room.addItem(item,(2,1,0))
+
         for pos in [(9,7,0),(9,8,0),(9,9,0),(9,10,0),(9,11,0),(10,11,0)]:
             scrapProccessing_room.addWalkingSpace(pos)
 

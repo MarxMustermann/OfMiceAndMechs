@@ -81,7 +81,7 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
         # ensure proper weapons
         if character.weapon and character.weapon.type == "Rod":
             quests = [] 
-            quests.append(src.quests.questMap["MetalWorking"](toProduce="Sword",reason="have a proper weapon available", tryHard=True))
+            quests.append(src.quests.questMap["MetalWorking"](toProduce="Sword",reason="have a proper weapon available", tryHard=True,amount=1))
             quests.append(src.quests.questMap["Equip"](reason="be able to defend yoursef", tryHard=True))
             return (list(reversed(quests)),None)
 

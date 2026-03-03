@@ -117,7 +117,7 @@ class ExamineMenu(src.subMenu.SubMenu):
 
     def render(self):
         pos = self.character.getPosition(offset=self.offset)
-        direction_map = {(0,0,0):"downwards",(1,0,0):"west",(-1,0,0):"east",(0,1,0):"south",(0,-1,0):"north"}
+        direction_map = {(0,0,0):"downwards",(1,0,0):"east",(-1,0,0):"west",(0,1,0):"south",(0,-1,0):"north"}
         small_pos = self.character.getSpacePosition(offset=self.offset)
         text = [f"you are looking {direction_map[self.offset]} and examining the position: {small_pos}\n\n"]
         cursorview = []

@@ -57,7 +57,7 @@ You break the glass of the StasisTank and a Clone falls out.\n\n"""
                 if (spwaned_character.burnedIn):
                     text += """
 The spark has left its eyes and is stares blankly,
-but after some seconds it starts to move as if nothing happened."""
+but after some seconds it starts to move."""
                 else:
                     text += """
 It has no memory of how it got here,

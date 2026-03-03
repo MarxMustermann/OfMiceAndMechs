@@ -43,9 +43,9 @@ class Item:
     usageInfo = None
     tasks = []
     container = None
-    name = "unknown"
+    name = "missing name"
 
-    description = "abstract base item should never be used directly"
+    description = "missing description"
 
     def drawSDL(self, renderer, basePos, fg_color=(255,255,255,255), bg_color=(0,0,0,255), tileSize=None):
         pass

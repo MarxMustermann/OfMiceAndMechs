@@ -2254,7 +2254,7 @@ but they are likely to explode when disturbed.
                 },
                 None,
            )
-        manufacturing_room.tag = "scrap processing"
+        manufacturing_room.tag = "manufacturing"
         rooms_to_decorate.append(manufacturing_room)
         for y in (1,2,3,4,5,6,7,8,9,10,11,):
             manufacturing_room.addWalkingSpace((6,y,0))
@@ -2270,6 +2270,97 @@ but they are likely to explode when disturbed.
                 manufacturing_room.addWalkingSpace((pos[0]+offset[0],pos[1]+offset[1],pos[2]+offset[2]))
 
 
+        manufacturing_room2 = architect.doAddRoom(
+                {
+                       "coordinate": (8,7,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,12 6,0",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        manufacturing_room2.tag = "manufacturing"
+        rooms_to_decorate.append(manufacturing_room2)
+        for y in (1,2,3,4,5,6,7,8,9,10,11,):
+            manufacturing_room2.addWalkingSpace((6,y,0))
+
+        basePositions = [(3,2,0),(3,6,0),(3,10,0),(9,2,0),(9,6,0),(9,10,0),]
+        for pos in basePositions:
+            manufacturing_room2.addInputSlot((pos[0]-1,pos[1],pos[2]),"Scrap",{})
+            item = src.items.itemMap["ScrapCompactor"]()
+            manufacturing_room2.addItem(item,(pos[0],pos[1],pos[2]))
+            manufacturing_room2.addStorageSlot((pos[0]+1,pos[1],pos[2]),"MetalBars",{})
+            
+            for offset in [(0,1,0),(1,1,0),(2,1,0),(-2,1,0),(-1,1,0)]:
+                manufacturing_room2.addWalkingSpace((pos[0]+offset[0],pos[1]+offset[1],pos[2]+offset[2]))
+
+
+        wall_manufacturing_room = architect.doAddRoom(
+                {
+                       "coordinate": (6,8,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,12 0,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        wall_manufacturing_room.tag = "wall manufacturing"
+        rooms_to_decorate.append(wall_manufacturing_room)
+        for x in (11,10,9,8,7,6):
+            wall_manufacturing_room.addWalkingSpace((x,6,0))
+        for y in (1,2,3,4,5,):
+            wall_manufacturing_room.addWalkingSpace((6,y,0))
+
+        for y in (8,10,):
+            wall_manufacturing_room.addInputSlot((2,y,0),"Scrap",{})
+            item = src.items.itemMap["ScrapCompactor"]()
+            wall_manufacturing_room.addItem(item,(3,y,0))
+            wall_manufacturing_room.addStorageSlot((4,y,0),"MetalBars",{})
+            item = src.items.itemMap["ManufacturingTable"]()
+            item.toProduce = "Rod"
+            wall_manufacturing_room.addItem(item,(5,y,0))
+            wall_manufacturing_room.addStorageSlot((6,y,0),"Rod",{})
+            item = src.items.itemMap["ManufacturingTable"]()
+            item.toProduce = "Frame"
+            wall_manufacturing_room.addItem(item,(7,y,0))
+            wall_manufacturing_room.addStorageSlot((8,y,0),"Frame",{})
+            item = src.items.itemMap["ManufacturingTable"]()
+            item.toProduce = "Case"
+            wall_manufacturing_room.addItem(item,(9,y,0))
+            wall_manufacturing_room.addStorageSlot((10,y,0),"Case",{})
+            wall_manufacturing_room.addWalkingSpace((1,y,0))
+            wall_manufacturing_room.addWalkingSpace((11,y,0))
+        for y in (7,9,11,):
+            for x in (1,2,3,4,5,6,7,8,9,10,11,):
+                wall_manufacturing_room.addWalkingSpace((x,y,0))
+
+        wall_manufacturing_room.addStorageSlot((2,2,0),"Case",{"desiredState":"filled"})
+        item = src.items.itemMap["ManufacturingTable"]()
+        item.toProduce = "Wall"
+        wall_manufacturing_room.addItem(item,(3,2,0))
+        wall_manufacturing_room.addStorageSlot((4,2,0),"Wall",{})
+
+        wall_manufacturing_room.addStorageSlot((2,4,0),"Case",{"desiredState":"filled"})
+        item = src.items.itemMap["ManufacturingTable"]()
+        item.toProduce = "Wall"
+        wall_manufacturing_room.addItem(item,(3,4,0))
+        wall_manufacturing_room.addStorageSlot((4,4,0),"Wall",{})
+
+        wall_manufacturing_room.addStorageSlot((2,4,0),"MetalBars",{"desiredState":"filled"})
+
+        for y in (1,3,5,):
+            for x in (1,2,3,4,5,):
+                if (x,y) == (3,3):
+                    continue
+                wall_manufacturing_room.addWalkingSpace((x,y,0))
+        wall_manufacturing_room.addWalkingSpace((1,2,0))
+        wall_manufacturing_room.addWalkingSpace((1,4,0))
+        wall_manufacturing_room.addWalkingSpace((5,2,0))
+        wall_manufacturing_room.addWalkingSpace((5,4,0))
+        wall_manufacturing_room.addWalkingSpace((3,6,0))
+            
         #for _i in range(1,20):
         #    self.setUpShrine(self.get_free_position("shrine"))
 
@@ -2279,22 +2370,12 @@ but they are likely to explode when disturbed.
         #for _i in range(1,20):
         #    self.setUpCloningLab(self.get_free_position("cloning lab"))
 
-        for pos in [(6,8,0),(8,7,0),(8,8,0)]:
+        for pos in [(8,8,0),]:
             door_positions = ["6,0","0,6","12,6","6,12"]
 
-            if pos == (6,6,0):
-                door_positions.remove("6,0")
-                door_positions.remove("0,6")
-            if pos == (6,7,0):
-                door_positions.remove("0,6")
-                door_positions.remove("12,6")
             if pos == (6,8,0):
                 door_positions.remove("0,6")
                 door_positions.remove("6,12")
-
-            if pos == (8,7,0):
-                door_positions.remove("0,6")
-                door_positions.remove("12,6")
             if pos == (8,8,0):
                 door_positions.remove("12,6")
                 door_positions.remove("6,12")
@@ -2314,17 +2395,6 @@ but they are likely to explode when disturbed.
             rooms_to_decorate.append(ruin)
         
             # draw walkingspace
-            if pos == (6,7,0):
-                for y in (11,10,9,8,7,6,5,4,3,2,1):
-                    ruin.addWalkingSpace((6,y,0))
-            if pos == (6,8,0):
-                for x in (11,10,9,8,7,6):
-                    ruin.addWalkingSpace((x,6,0))
-                for y in (1,2,3,4,5,):
-                    ruin.addWalkingSpace((6,y,0))
-            if pos == (8,7,0):
-                for y in (11,10,9,8,7,6,5,4,3,2,1):
-                    ruin.addWalkingSpace((6,y,0))
             if pos == (8,8,0):
                 for x in (1,2,3,4,5,6):
                     ruin.addWalkingSpace((x,6,0))

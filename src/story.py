@@ -2398,40 +2398,6 @@ but they are likely to explode when disturbed.
             for x in (1,2,3,4,5,6,7,8,9,10,11,):
                 food_processing_room.addWalkingSpace((x,y,0))
 
-
-        for room in rooms_to_decorate:
-            room_pos = room.getPosition()
-
-            # add scrap
-            scrap_amount = 20
-            if room_pos == (8,6,0):
-                scrap_amount = 100
-            for _i in range(0,scrap_amount):
-                pos = (random.randint(1,11),random.randint(1,11),0)
-                if pos == (1,1,0) and room_pos == (6,6,0):
-                    continue
-                if pos[1] == 1 and room_pos == (6,6,0):
-                    continue
-
-                for item in room.getItemByPosition(pos)[:]:
-                    item.destroy()
-
-                scrap = src.items.itemMap["Scrap"](amount=random.randint(1,10))
-                room.addItem(scrap,pos)
-
-            # add enemies
-            for _i in range(0,5):
-                crawler = src.characters.characterMap["Mechanical_Crawler"]()
-
-                quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
-                quest.autoSolve = True
-                quest.assignToCharacter(crawler)
-                quest.activate()
-                crawler.quests.append(quest)
-
-                pos = (random.randint(3,9),random.randint(3,9),0)
-                room.addCharacter(crawler,pos[0],pos[1])
-
         # add decoration for flavour
         for pos in [(6,1,0),(6,2,0),(6,3,0),(6,4,0),(6,5,0), 
                     (5,5,0),(4,5,0),(4,6,0),(4,7,0),(4,8,0),(5,8,0),(6,8,0),(7,8,0),(8,8,0),(8,7,0),(8,6,0),(8,5,0),(7,5,0)]:

@@ -141,6 +141,7 @@ To see your items open the your inventory by pressing i."""
         # clear inventory in local room
         room = character.getRoom()
         if len(character.inventory) and room:
+
             emptyInputSlots = room.getEmptyInputslots(character.inventory[-1].type, allowAny=True, disallowLocations=self.disallowLocations)
             if emptyInputSlots:
                 quest = src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True, reason="reduce the number of items in your inventory",disallowLocations=self.disallowLocations)
@@ -160,6 +161,8 @@ To see your items open the your inventory by pressing i."""
                 rooms_to_check.extend(homeRoom.storageRooms)
             rooms_to_check.extend(character.getTerrain().rooms)
             for checkRoom in rooms_to_check:
+                if character.getTerrain().getEnemiesOnTile(character,checkRoom.getPosition()) and not self.tryHard:
+                    continue
                 emptyInputSlots = checkRoom.getEmptyInputslots(character.inventory[-1].type, allowAny=True,disallowLocations=self.disallowLocations)
                 if emptyInputSlots:
                     quest1 = src.quests.questMap["GoToTile"](targetPosition=checkRoom.getPosition(),reason="go to a room with empty stockpiles")

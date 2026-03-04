@@ -3914,6 +3914,14 @@ There is a filled stasis Tank in the crafting area.
 Maybe we can wake the worker inside it.
 """
 
+            if self.get_rooms_to_explore_towards_teleporter(mainChar):
+                name = "explore toward teleporter room"
+                options.append((name, "help me explore my way out"))
+                extraDescriptions[name] = """
+There is a teleporter in the base. It is in the room (6,6,0).
+
+We should slowly move towards it, while keeping an eye out for interesting things.
+"""
 
             if mainChar.getBigPosition() != (7,8,0):
                 name = "go to teleporter room"
@@ -4558,6 +4566,15 @@ This will close the tutorial and let you do your own thing.
             self.clear_implant_quest(character)
             return
 
+        if quest_type == "explore toward teleporter room":
+            rooms = self.get_rooms_to_explore_towards_teleporter(character)
+            if rooms:
+                quest = src.quests.questMap["SecureTile"](toSecure=rooms[0],endWhenCleared=True)
+                self.addQuest(quest,character)
+                self.clear_implant_quest(character)
+                return
+
+
         if quest_type == "go to teleporter room":
             quest = src.quests.questMap["StoryReachTeleporterRoom"]()
             self.addQuest(quest,character)
@@ -4640,6 +4657,39 @@ This will close the tutorial and let you do your own thing.
             return
 
         src.interaction.send_tracking_ping("handle_player_intro_lab_quest_choice_fell_through")
+
+    def get_rooms_to_explore_towards_teleporter(self, character):
+        terrain = character.getTerrain()
+        
+        lanes = [{
+                    "rooms":[(6,6,0,),(6,7,0),(6,8,0)],
+                    "length":0,
+            },{
+                    "rooms":[(8,6,0),(8,7,0),(8,8,0)],
+                    "length":0,
+            }
+        ]
+        random.shuffle(lanes)
+
+        for lane in lanes:
+            for pos in lane["rooms"]:
+                if not terrain.getEnemiesOnTile(character,pos):
+                    continue
+                lane["length"] += 1
+
+        shortest_lane = None
+        for lane in lanes:
+            if shortest_lane and shortest_lane["length"] < lane["length"]:
+                continue
+            shortest_lane = lane
+
+        to_explore = []
+        for pos in shortest_lane["rooms"]:
+            if not terrain.getEnemiesOnTile(character,pos):
+                continue
+            to_explore.append(pos)
+
+        return to_explore
 
     def get_crafting_room_enemies(self, character):
         terrain = character.getTerrain()

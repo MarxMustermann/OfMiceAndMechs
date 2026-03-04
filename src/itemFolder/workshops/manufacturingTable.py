@@ -310,6 +310,9 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
 
     def getInputItems(self, character = None):
 
+        if not self.container:
+            return []
+
         result = []
 
         for offset in self.ins:

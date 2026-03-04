@@ -259,6 +259,39 @@ class MainContraption(src.items.Item):
                     terrain.addCharacter(enemy,bigPos[0]*15+random.randint(3,12),bigPos[1]*15+random.randint(3,12))
                 """
 
+                for room_pos in ((6,6,0),(6,7,0),(6,8,0),(8,6,0),(8,7,0),(8,8,0),):
+                    room = self.getTerrain().getRoomByPosition(room_pos)[0]
+
+                    # add scrap
+                    scrap_amount = 20
+                    if room_pos == (8,6,0):
+                        scrap_amount = 100
+                    for _i in range(0,scrap_amount):
+                        pos = (random.randint(1,11),random.randint(1,11),0)
+                        if pos == (1,1,0) and room_pos == (6,6,0):
+                            continue
+                        if pos[1] == 1 and room_pos == (6,6,0):
+                            continue
+
+                        for item in room.getItemByPosition(pos)[:]:
+                            item.destroy()
+
+                        scrap = src.items.itemMap["Scrap"](amount=random.randint(1,10))
+                        room.addItem(scrap,pos)
+
+                    # add enemies
+                    for _i in range(0,5):
+                        crawler = src.characters.characterMap["Mechanical_Crawler"]()
+
+                        quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
+                        quest.autoSolve = True
+                        quest.assignToCharacter(crawler)
+                        quest.activate()
+                        crawler.quests.append(quest)
+
+                        pos = (random.randint(3,9),random.randint(3,9),0)
+                        room.addCharacter(crawler,pos[0],pos[1])
+
                 self.container.destroy()
                 return
 

@@ -992,6 +992,7 @@ class MainGame(BasicPhase):
         self.watched = []
         self.has_shown_HelpMenu = False
         self.has_shown_welcome = False
+        self.last_worker_spawn = -2000
         super().__init__("MainGame", seed=seed)
 
     def get_free_position(self,tag):
@@ -3884,6 +3885,18 @@ We just need to collect scrap, produce MetalBars.
 Then form the Metalbars into a Rod.
 """
 
+            try:
+                self.last_worker_spawn
+            except:
+                self.last_worker_spawn = -2000
+            if self.last_worker_spawn > src.gamestate.gamestate.tick-100:
+                    name = "watch worker"
+                    options.append((name, "watch worker work"))
+                    extraDescriptions[name] = """
+You just woke a worker.
+Let's watch what he is doing for a bit.
+"""
+
             if src.gamestate.gamestate.tick > 30:
                 if (7,5,0) in self.get_wakeable_workers(mainChar):
                     shown_worker_wake = True
@@ -4520,7 +4533,14 @@ This will close the tutorial and let you do your own thing.
 
         character.clear_quests()
 
+        if quest_type == "watch worker":
+            quest = src.quests.questMap["WaitQuest"](lifetime=99,batchWait=True)
+            self.addQuest(quest,character)
+            self.clear_implant_quest(character)
+            return
+
         if quest_type == "wake worker":
+            self.last_worker_spawn = src.gamestate.gamestate.tick
             quest = src.quests.questMap["StoryWakeWorker"](targetPositionBig=random.choice(self.get_wakeable_workers(character)))
             self.addQuest(quest,character)
             self.clear_implant_quest(character)

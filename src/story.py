@@ -2336,19 +2336,19 @@ but they are likely to explode when disturbed.
             for x in (1,2,3,4,5,6,7,8,9,10,11,):
                 wall_manufacturing_room.addWalkingSpace((x,y,0))
 
-        wall_manufacturing_room.addStorageSlot((2,2,0),"Case",{"desiredState":"filled"})
+        wall_manufacturing_room.addInputSlot((2,2,0),"Case",{})
         item = src.items.itemMap["ManufacturingTable"]()
         item.toProduce = "Wall"
         wall_manufacturing_room.addItem(item,(3,2,0))
         wall_manufacturing_room.addStorageSlot((4,2,0),"Wall",{})
 
-        wall_manufacturing_room.addStorageSlot((2,4,0),"Case",{"desiredState":"filled"})
+        wall_manufacturing_room.addInputSlot((2,4,0),"Case",{})
         item = src.items.itemMap["ManufacturingTable"]()
         item.toProduce = "Wall"
         wall_manufacturing_room.addItem(item,(3,4,0))
         wall_manufacturing_room.addStorageSlot((4,4,0),"Wall",{})
 
-        wall_manufacturing_room.addStorageSlot((2,4,0),"MetalBars",{"desiredState":"filled"})
+        wall_manufacturing_room.addInputSlot((3,3,0),"MetalBars",{})
 
         for y in (1,3,5,):
             for x in (1,2,3,4,5,):

@@ -2248,7 +2248,7 @@ but they are likely to explode when disturbed.
                 {
                        "coordinate": (6,7,0),
                        "roomType": "EmptyRoom",
-                       "doors": "6,12 0,12",
+                       "doors": "6,12 6,0",
                        "offset": [1,1],
                        "size": [13, 13],
                 },
@@ -2300,7 +2300,7 @@ but they are likely to explode when disturbed.
                 {
                        "coordinate": (6,8,0),
                        "roomType": "EmptyRoom",
-                       "doors": "6,12 0,12",
+                       "doors": "6,0 12,6",
                        "offset": [1,1],
                        "size": [13, 13],
                 },
@@ -2361,45 +2361,43 @@ but they are likely to explode when disturbed.
         wall_manufacturing_room.addWalkingSpace((5,4,0))
         wall_manufacturing_room.addWalkingSpace((3,6,0))
             
-        #for _i in range(1,20):
-        #    self.setUpShrine(self.get_free_position("shrine"))
 
-        #for _i in range(1,15):
-        #    self.setUpFactoryRemains(self.get_free_position("factory"))
+        food_processing_room = architect.doAddRoom(
+                {
+                       "coordinate": (8,8,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 6,0",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        food_processing_room.tag = "food processing"
+        rooms_to_decorate.append(food_processing_room)
 
-        #for _i in range(1,20):
-        #    self.setUpCloningLab(self.get_free_position("cloning lab"))
+        for x in (1,2,3,4,5,6):
+            food_processing_room.addWalkingSpace((x,6,0))
+        for y in (1,2,3,4,5,):
+            food_processing_room.addWalkingSpace((6,y,0))
+            
+        for y in (8,10,):
+            food_processing_room.addInputSlot((2,y,0),"Bloom",{})
+            item = src.items.itemMap["BloomShredder"]()
+            food_processing_room.addItem(item,(3,y,0))
+            food_processing_room.addStorageSlot((4,y,0),"BioMass",{})
+            item = src.items.itemMap["BioPress"]()
+            food_processing_room.addItem(item,(5,y,0))
+            food_processing_room.addStorageSlot((6,y,0),"PressCake",{})
+            item = src.items.itemMap["GooProducer"]()
+            food_processing_room.addItem(item,(7,y,0))
+            item = src.items.itemMap["GooDispenser"]()
+            food_processing_room.addItem(item,(8,y,0))
+            food_processing_room.addWalkingSpace((1,y,0))
+            food_processing_room.addWalkingSpace((11,y,0))
+        for y in (7,9,11,):
+            for x in (1,2,3,4,5,6,7,8,9,10,11,):
+                food_processing_room.addWalkingSpace((x,y,0))
 
-        for pos in [(8,8,0),]:
-            door_positions = ["6,0","0,6","12,6","6,12"]
-
-            if pos == (6,8,0):
-                door_positions.remove("0,6")
-                door_positions.remove("6,12")
-            if pos == (8,8,0):
-                door_positions.remove("12,6")
-                door_positions.remove("6,12")
-
-            # add teleport room
-            ruin = architect.doAddRoom(
-                    {
-                           "coordinate": pos,
-                           "roomType": "EmptyRoom",
-                           "doors": " ".join(door_positions),
-                           "offset": [1,1],
-                           "size": [13, 13],
-                    },
-                    None,
-               )
-            ruin.tag = "ruined room"
-            rooms_to_decorate.append(ruin)
-        
-            # draw walkingspace
-            if pos == (8,8,0):
-                for x in (1,2,3,4,5,6):
-                    ruin.addWalkingSpace((x,6,0))
-                for y in (1,2,3,4,5,):
-                    ruin.addWalkingSpace((6,y,0))
 
         for room in rooms_to_decorate:
             room_pos = room.getPosition()

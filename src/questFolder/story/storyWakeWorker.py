@@ -150,6 +150,18 @@ Remove the worker from the StasisTank{reason}.
                     result.append(((stasisTank.getPosition()[0],stasisTank.getPosition()[1]),"target"))
         return result
 
+    def handleQuestFailure(self,extraParam):
+        reason = extraParam.get("reason")
+        quest = extraParam.get("quest")
+
+        if quest.type == "GoToPosition" and reason == "no path found":
+            pos = extraParam["quest"].targetPosition
+            quest = src.quests.questMap["ClearPathToPosition"](targetPosition=(pos[0],pos[1]+1,pos[2]))
+            self.addQuest(quest)
+            self.startWatching(quest,self.handleQuestFailure,"failed")
+            return
+        super().handleQuestFailure(extraParam)
+
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
         for checkRoom in beUsefull.getRandomPriotisedRooms(character,currentRoom):

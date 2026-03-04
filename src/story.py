@@ -2018,69 +2018,6 @@ but they are likely to explode when disturbed.
         scrapProccessing_room.addItem(item,(2,1,0))
 
 
-        resource_fetching_npc = src.characters.characterMap["Clone"]()
-        resource_fetching_npc.questsDone = [
-                "NaiveMoveQuest",
-                "MoveQuestMeta",
-                "NaiveActivateQuest",
-                "ActivateQuestMeta",
-                "NaivePickupQuest",
-                "PickupQuestMeta",
-                "DrinkQuest",
-                "CollectQuestMeta",
-                "FireFurnaceMeta",
-                "ExamineQuest",
-                "NaiveDropQuest",
-                "DropQuestMeta",
-                "LeaveRoomQuest",
-            ]
-
-        resource_fetching_npc.solvers = [
-                "SurviveQuest",
-                "Serve",
-                "NaiveMoveQuest",
-                "MoveQuestMeta",
-                "NaiveActivateQuest",
-                "ActivateQuestMeta",
-                "NaivePickupQuest",
-                "PickupQuestMeta",
-                "DrinkQuest",
-                "ExamineQuest",
-                "FireFurnaceMeta",
-                "CollectQuestMeta",
-                "WaitQuest" "NaiveDropQuest",
-                "NaiveDropQuest",
-                "DropQuestMeta",
-            ]
-
-        resource_fetching_npc.flask = src.items.itemMap["GooFlask"]()
-        resource_fetching_npc.flask.uses = 100
-        resource_fetching_npc.faction = faction
-        resource_fetching_npc.burnedIn = True
-
-        resource_fetching_npc.duties = []
-        resource_fetching_npc.registers["HOMEx"] = 7
-        resource_fetching_npc.registers["HOMEy"] = 6
-        resource_fetching_npc.registers["HOMETx"] = currentTerrain.xPosition
-        resource_fetching_npc.registers["HOMETy"] = currentTerrain.yPosition
-
-        resource_fetching_npc.personality["autoFlee"] = False
-        resource_fetching_npc.personality["abortMacrosOnAttack"] = False
-        resource_fetching_npc.personality["autoCounterAttack"] = False
-
-        quest = src.quests.questMap["BeUsefull"](strict=True)
-        quest.autoSolve = True
-        quest.assignToCharacter(resource_fetching_npc)
-        quest.activate()
-        resource_fetching_npc.assignQuest(quest,active=True)
-        resource_fetching_npc.foodPerRound = 1
-        resource_fetching_npc.duties.append("resource fetching")
-
-        item = src.items.itemMap["StasisTank"]()
-        item.character = resource_fetching_npc
-        scrapProccessing_room.addItem(item,(3,1,0))
-
-
         manufacturing_npc = src.characters.characterMap["Clone"]()
         manufacturing_npc.questsDone = [
                 "NaiveMoveQuest",
@@ -2270,6 +2207,69 @@ but they are likely to explode when disturbed.
                 manufacturing_room.addWalkingSpace((pos[0]+offset[0],pos[1]+offset[1],pos[2]+offset[2]))
 
 
+        resource_fetching_npc = src.characters.characterMap["Clone"]()
+        resource_fetching_npc.questsDone = [
+                "NaiveMoveQuest",
+                "MoveQuestMeta",
+                "NaiveActivateQuest",
+                "ActivateQuestMeta",
+                "NaivePickupQuest",
+                "PickupQuestMeta",
+                "DrinkQuest",
+                "CollectQuestMeta",
+                "FireFurnaceMeta",
+                "ExamineQuest",
+                "NaiveDropQuest",
+                "DropQuestMeta",
+                "LeaveRoomQuest",
+            ]
+
+        resource_fetching_npc.solvers = [
+                "SurviveQuest",
+                "Serve",
+                "NaiveMoveQuest",
+                "MoveQuestMeta",
+                "NaiveActivateQuest",
+                "ActivateQuestMeta",
+                "NaivePickupQuest",
+                "PickupQuestMeta",
+                "DrinkQuest",
+                "ExamineQuest",
+                "FireFurnaceMeta",
+                "CollectQuestMeta",
+                "WaitQuest" "NaiveDropQuest",
+                "NaiveDropQuest",
+                "DropQuestMeta",
+            ]
+
+        resource_fetching_npc.flask = src.items.itemMap["GooFlask"]()
+        resource_fetching_npc.flask.uses = 100
+        resource_fetching_npc.faction = faction
+        resource_fetching_npc.burnedIn = True
+
+        resource_fetching_npc.duties = []
+        resource_fetching_npc.registers["HOMEx"] = 7
+        resource_fetching_npc.registers["HOMEy"] = 6
+        resource_fetching_npc.registers["HOMETx"] = currentTerrain.xPosition
+        resource_fetching_npc.registers["HOMETy"] = currentTerrain.yPosition
+
+        resource_fetching_npc.personality["autoFlee"] = False
+        resource_fetching_npc.personality["abortMacrosOnAttack"] = False
+        resource_fetching_npc.personality["autoCounterAttack"] = False
+
+        quest = src.quests.questMap["BeUsefull"](strict=True)
+        quest.autoSolve = True
+        quest.assignToCharacter(resource_fetching_npc)
+        quest.activate()
+        resource_fetching_npc.assignQuest(quest,active=True)
+        resource_fetching_npc.foodPerRound = 1
+        resource_fetching_npc.duties.append("resource fetching")
+
+        item = src.items.itemMap["StasisTank"]()
+        item.character = resource_fetching_npc
+        manufacturing_room.addItem(item,(1,10,0))
+
+
         manufacturing_room2 = architect.doAddRoom(
                 {
                        "coordinate": (8,7,0),
@@ -2294,6 +2294,69 @@ but they are likely to explode when disturbed.
             
             for offset in [(0,1,0),(1,1,0),(2,1,0),(-2,1,0),(-1,1,0)]:
                 manufacturing_room2.addWalkingSpace((pos[0]+offset[0],pos[1]+offset[1],pos[2]+offset[2]))
+
+
+        hauling_npc = src.characters.characterMap["Clone"]()
+        hauling_npc.questsDone = [
+                "NaiveMoveQuest",
+                "MoveQuestMeta",
+                "NaiveActivateQuest",
+                "ActivateQuestMeta",
+                "NaivePickupQuest",
+                "PickupQuestMeta",
+                "DrinkQuest",
+                "CollectQuestMeta",
+                "FireFurnaceMeta",
+                "ExamineQuest",
+                "NaiveDropQuest",
+                "DropQuestMeta",
+                "LeaveRoomQuest",
+            ]
+
+        hauling_npc.solvers = [
+                "SurviveQuest",
+                "Serve",
+                "NaiveMoveQuest",
+                "MoveQuestMeta",
+                "NaiveActivateQuest",
+                "ActivateQuestMeta",
+                "NaivePickupQuest",
+                "PickupQuestMeta",
+                "DrinkQuest",
+                "ExamineQuest",
+                "FireFurnaceMeta",
+                "CollectQuestMeta",
+                "WaitQuest" "NaiveDropQuest",
+                "NaiveDropQuest",
+                "DropQuestMeta",
+            ]
+
+        hauling_npc.flask = src.items.itemMap["GooFlask"]()
+        hauling_npc.flask.uses = 100
+        hauling_npc.faction = faction
+        hauling_npc.burnedIn = True
+
+        hauling_npc.duties = []
+        hauling_npc.registers["HOMEx"] = 7
+        hauling_npc.registers["HOMEy"] = 6
+        hauling_npc.registers["HOMETx"] = currentTerrain.xPosition
+        hauling_npc.registers["HOMETy"] = currentTerrain.yPosition
+
+        hauling_npc.personality["autoFlee"] = False
+        hauling_npc.personality["abortMacrosOnAttack"] = False
+        hauling_npc.personality["autoCounterAttack"] = False
+
+        quest = src.quests.questMap["BeUsefull"](strict=True)
+        quest.autoSolve = True
+        quest.assignToCharacter(hauling_npc)
+        quest.activate()
+        hauling_npc.assignQuest(quest,active=True)
+        hauling_npc.foodPerRound = 1
+        hauling_npc.duties.append("resource fetching")
+
+        item = src.items.itemMap["StasisTank"]()
+        item.character = hauling_npc
+        manufacturing_room2.addItem(item,(1,10,0))
 
 
         wall_manufacturing_room = architect.doAddRoom(
@@ -3820,18 +3883,19 @@ We just need to collect scrap, produce MetalBars.
 Then form the Metalbars into a Rod.
 """
 
-            if (7,5,0) in self.get_wakeable_workers(mainChar):
-                shown_worker_wake = True
-                name = "wake worker"
-                options.append((name, "wake worker"))
-                extraDescriptions[name] = """
+            if src.gamestate.gamestate.tick > 30:
+                if (7,5,0) in self.get_wakeable_workers(mainChar):
+                    shown_worker_wake = True
+                    name = "wake worker"
+                    options.append((name, "wake worker"))
+                    extraDescriptions[name] = """
 There is a filled stasis Tank in the crafting area.
 Maybe we can wake the worker inside it.
 """
-            if not shown_worker_wake and self.get_wakeable_workers(mainChar):
-                name = "wake worker"
-                options.append((name, "wake worker"))
-                extraDescriptions[name] = """
+                if not shown_worker_wake and self.get_wakeable_workers(mainChar):
+                    name = "wake worker"
+                    options.append((name, "wake worker"))
+                    extraDescriptions[name] = """
 There is a filled stasis Tank in the crafting area.
 Maybe we can wake the worker inside it.
 """

@@ -272,9 +272,13 @@ class MainContraption(src.items.Item):
                             continue
                         if pos == (11,1,0) and room_pos == (8,6,0):
                             continue
+                        if pos == (1,10,0) and room_pos == (6,7,0):
+                            continue
+                        if pos == (1,10,0) and room_pos == (8,7,0):
+                            continue
                         if pos[1] == 1 and room_pos == (6,6,0):
                             continue
-                        if pos in ((10,6,0),(6,11,0),(6,1,0),(1,6,0),):
+                        if pos in ((11,6,0),(6,11,0),(6,1,0),(1,6,0),):
                             continue
 
                         for item in room.getItemByPosition(pos)[:]:

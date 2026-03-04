@@ -2144,6 +2144,43 @@ but they are likely to explode when disturbed.
         scrapProccessing_room.addItem(item,(4,1,0))
 
 
+        for pos in [(9,7,0),(9,8,0),(9,9,0),(9,10,0),(9,11,0),(10,11,0)]:
+            scrapProccessing_room.addWalkingSpace(pos)
+
+        scrapStorage_room = architect.doAddRoom(
+                {
+                       "coordinate": (8,6,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,12 0,6",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        scrapStorage_room.tag = "scrap processing"
+        rooms_to_decorate.append(scrapStorage_room)
+        item = src.items.itemMap["ScrapCompactor"]()
+
+        for x in (1,2,3,4,5,6,):
+            scrapStorage_room.addWalkingSpace((x,6,0))
+        for y in (11,10,9,8,7):
+            scrapStorage_room.addWalkingSpace((6,y,0))
+
+        for x in (1,3,5,):
+            for y in (1,2,3,4,5,):
+                scrapStorage_room.addStorageSlot((x,y,0),"Scrap",{"desiredState":"filled"})
+        for x in (2,4,6,):
+            for y in (1,2,3,4,5,):
+                scrapStorage_room.addWalkingSpace((x,y,0))
+
+        for y in (1,3,5,7,9,11):
+            for x in (7,8,9,10,11,):
+                scrapStorage_room.addStorageSlot((x,y,0),"Scrap",{"desiredState":"filled"})
+        for y in (2,4,6,8,10):
+            for x in (7,8,9,10,11,):
+                scrapStorage_room.addWalkingSpace((x,y,0))
+
+
         resource_gethering_npc = src.characters.characterMap["Clone"]()
         resource_gethering_npc.questsDone = [
                 "NaiveMoveQuest",
@@ -2204,44 +2241,7 @@ but they are likely to explode when disturbed.
 
         item = src.items.itemMap["StasisTank"]()
         item.character = resource_gethering_npc
-        scrapProccessing_room.addItem(item,(5,1,0))
-
-
-        for pos in [(9,7,0),(9,8,0),(9,9,0),(9,10,0),(9,11,0),(10,11,0)]:
-            scrapProccessing_room.addWalkingSpace(pos)
-
-        scrapStorage_room = architect.doAddRoom(
-                {
-                       "coordinate": (8,6,0),
-                       "roomType": "EmptyRoom",
-                       "doors": "6,12 0,6",
-                       "offset": [1,1],
-                       "size": [13, 13],
-                },
-                None,
-           )
-        scrapStorage_room.tag = "scrap processing"
-        rooms_to_decorate.append(scrapStorage_room)
-        item = src.items.itemMap["ScrapCompactor"]()
-
-        for x in (1,2,3,4,5,6,):
-            scrapStorage_room.addWalkingSpace((x,6,0))
-        for y in (11,10,9,8,7):
-            scrapStorage_room.addWalkingSpace((6,y,0))
-
-        for x in (1,3,5,):
-            for y in (1,2,3,4,5,):
-                scrapStorage_room.addStorageSlot((x,y,0),"Scrap",{"desiredState":"filled"})
-        for x in (2,4,6,):
-            for y in (1,2,3,4,5,):
-                scrapStorage_room.addWalkingSpace((x,y,0))
-
-        for y in (1,3,5,7,9,11):
-            for x in (7,8,9,10,11,):
-                scrapStorage_room.addStorageSlot((x,y,0),"Scrap",{"desiredState":"filled"})
-        for y in (2,4,6,8,10):
-            for x in (7,8,9,10,11,):
-                scrapStorage_room.addWalkingSpace((x,y,0))
+        scrapStorage_room.addItem(item,(11,1,0))
 
 
         manufacturing_room = architect.doAddRoom(

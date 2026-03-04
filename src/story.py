@@ -4521,8 +4521,6 @@ This will close the tutorial and let you do your own thing.
         character.clear_quests()
 
         if quest_type == "wake worker":
-            print("StoryWakeWorker")
-            print(random.choice(self.get_wakeable_workers(character)))
             quest = src.quests.questMap["StoryWakeWorker"](targetPositionBig=random.choice(self.get_wakeable_workers(character)))
             self.addQuest(quest,character)
             self.clear_implant_quest(character)

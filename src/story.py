@@ -1880,6 +1880,8 @@ but they are likely to explode when disturbed.
             scrapProccessing_room.addWalkingSpace((6,y,0))
         for pos in [(9,5,0),(6,3,0),(3,5,0),(3,6,0),(3,7,0)]:
             scrapProccessing_room.addWalkingSpace(pos)
+        for x in (1,2,3,4,5,):
+            scrapProccessing_room.addStorageSlot((x,11,0),"MetalBars",{"desiredState":"filled"})
 
         basePositions = [(9,3,0),(3,3,0),(3,9,0)]
         for pos in basePositions:
@@ -2242,16 +2244,42 @@ but they are likely to explode when disturbed.
                 scrapStorage_room.addWalkingSpace((x,y,0))
 
 
-        for _i in range(1,20):
-            self.setUpShrine(self.get_free_position("shrine"))
+        manufacturing_room = architect.doAddRoom(
+                {
+                       "coordinate": (6,7,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,12 0,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        manufacturing_room.tag = "scrap processing"
+        rooms_to_decorate.append(manufacturing_room)
+        for y in (1,2,3,4,5,6,7,8,9,10,11,):
+            manufacturing_room.addWalkingSpace((6,y,0))
+
+        basePositions = [(3,2,0),(3,6,0),(3,10,0),(9,2,0),(9,6,0),(9,10,0),]
+        for pos in basePositions:
+            manufacturing_room.addInputSlot((pos[0]-1,pos[1],pos[2]),"Scrap",{})
+            item = src.items.itemMap["ScrapCompactor"]()
+            manufacturing_room.addItem(item,(pos[0],pos[1],pos[2]))
+            manufacturing_room.addStorageSlot((pos[0]+1,pos[1],pos[2]),"MetalBars",{})
+            
+            for offset in [(0,1,0),(1,1,0),(2,1,0),(-2,1,0),(-1,1,0)]:
+                manufacturing_room.addWalkingSpace((pos[0]+offset[0],pos[1]+offset[1],pos[2]+offset[2]))
+
+
+        #for _i in range(1,20):
+        #    self.setUpShrine(self.get_free_position("shrine"))
 
         #for _i in range(1,15):
         #    self.setUpFactoryRemains(self.get_free_position("factory"))
 
-        for _i in range(1,20):
-            self.setUpCloningLab(self.get_free_position("cloning lab"))
+        #for _i in range(1,20):
+        #    self.setUpCloningLab(self.get_free_position("cloning lab"))
 
-        for pos in [(6,7,0),(6,8,0),(8,7,0),(8,8,0)]:
+        for pos in [(6,8,0),(8,7,0),(8,8,0)]:
             door_positions = ["6,0","0,6","12,6","6,12"]
 
             if pos == (6,6,0):

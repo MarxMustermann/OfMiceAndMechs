@@ -6,12 +6,11 @@ import src
 class WaitQuest(src.quests.MetaQuestSequence):
     type = "WaitQuest"
 
-    def __init__(self, description="wait", followUp=None, startCinematics=None, lifetime=None, creator=None, reason=None):
+    def __init__(self, description="wait", followUp=None, startCinematics=None, lifetime=None, creator=None, reason=None, batchWait=False):
         super().__init__(lifetime=lifetime, creator=creator)
         self.metaDescription = description
         self.reason = reason
-
-        # save initial state and register
+        self.batchWait = batchWait
 
     """
     do nothing
@@ -47,6 +46,8 @@ This quest will end in {self.lifetimeEvent.tick - src.gamestate.gamestate.tick} 
         wait_time = 10
         if self.lifetimeEvent:
             wait_time = min(self.lifetimeEvent.tick - src.gamestate.gamestate.tick,10)
+        if self.batchWait:
+            return (None,(";","wait"))
         return (None,("."*wait_time,"wait"))
 
 src.quests.addType(WaitQuest)

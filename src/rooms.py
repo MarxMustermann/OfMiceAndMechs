@@ -1544,9 +1544,8 @@ class Room:
                         if advanceAnimations:
                             self.animations.remove(animation)
                 elif animationType in ("charsequence",):
-                    display = extraInfo["chars"][len(extraInfo["chars"])-1-duration]
-
                     try:
+                        display = extraInfo["chars"][len(extraInfo["chars"])-1-duration]
                         if display:
                             chars[pos[1]][pos[0]] = display
                     except:

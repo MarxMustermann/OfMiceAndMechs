@@ -1887,6 +1887,8 @@ but they are likely to explode when disturbed.
         basePositions = [(9,3,0),(3,3,0),(3,9,0)]
         for pos in basePositions:
             scrapProccessing_room.addInputSlot((pos[0]-1,pos[1],pos[2]),"Scrap",{})
+            item = src.items.itemMap["Scrap"](amount=1)
+            scrapProccessing_room.addItem(item,(pos[0]-1,pos[1],pos[2]))
             item = src.items.itemMap["ScrapCompactor"]()
             scrapProccessing_room.addItem(item,(pos[0],pos[1],pos[2]))
             scrapProccessing_room.addStorageSlot((pos[0]+1,pos[1],pos[2]),"MetalBars",{})
@@ -2256,6 +2258,8 @@ but they are likely to explode when disturbed.
             item = src.items.itemMap["ScrapCompactor"]()
             wall_manufacturing_room.addItem(item,(3,y,0))
             wall_manufacturing_room.addStorageSlot((4,y,0),"MetalBars",{})
+            item = src.items.itemMap["MetalBars"]()
+            wall_manufacturing_room.addItem(item,(4,y,0))
             item = src.items.itemMap["ManufacturingTable"]()
             item.toProduce = "Rod"
             wall_manufacturing_room.addItem(item,(5,y,0))

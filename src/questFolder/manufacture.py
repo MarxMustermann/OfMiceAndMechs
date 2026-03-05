@@ -135,6 +135,9 @@ use the manufacturing table on {self.targetPosition}{reason}.
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
         terrain = character.getTerrain()
         for checkRoom in beUsefull.getRandomPriotisedRooms(character,currentRoom):
+            if character.getTerrain().getEnemiesOnTile(character,checkRoom.getPosition()):
+                continue
+
             items = checkRoom.itemsOnFloor[:]
             random.shuffle(items)
             candidates = []
@@ -171,6 +174,9 @@ use the manufacturing table on {self.targetPosition}{reason}.
                 return ([quest],None)
 
         for checkRoom in beUsefull.getRandomPriotisedRooms(character,currentRoom):
+            if character.getTerrain().getEnemiesOnTile(character,checkRoom.getPosition()):
+                continue
+
             items = checkRoom.itemsOnFloor[:]
             random.shuffle(items)
             for item in items:

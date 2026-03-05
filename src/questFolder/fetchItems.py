@@ -533,6 +533,8 @@ Press d to move the cursor and show the subquests description.
                 for otherRoom in beUsefull.getRandomPriotisedRooms(character,currentRoom):
                     if otherRoom == room:
                         continue
+                    if character.getTerrain().getEnemiesOnTile(character,otherRoom.getPosition()):
+                        continue
                     for checkStorageSlot in otherRoom.storageSlots:
                         if checkStorageSlot[1] == storageSlot[1] or not checkStorageSlot[1]:
                             items = otherRoom.getItemByPosition(checkStorageSlot[0])

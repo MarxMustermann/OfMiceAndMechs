@@ -1258,6 +1258,7 @@ class MainGame(BasicPhase):
         src.interaction.showRunIntro()
         self.kickoff()
 
+
     def mainCharacterDeath(self,extraParam):
         if not src.gamestate.gamestate.mainChar.dead:
             return
@@ -3475,7 +3476,7 @@ but they are likely to explode when disturbed.
         if not terrain.mana >= 0.1:
             return
 
-        for i in range(5):
+        for i in range(10):
             if not terrain.mana >= 0.1:
                 break
             terrain.mana -= 0.1

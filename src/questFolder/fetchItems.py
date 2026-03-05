@@ -151,11 +151,15 @@ Press d to move the cursor and show the subquests description.
     def getSource(self):
         source = None
         for room in self.character.getTerrain().rooms:
+            if self.character.getTerrain().getEnemiesOnTile(self.character,room.getPosition()):
+                continue
             if room.getNonEmptyOutputslots(itemType=self.toCollect):
                 return (room.getPosition(),)
 
         if self.takeAnyUnbolted:
             for room in self.character.getTerrain().rooms:
+                if self.character.getTerrain().getEnemiesOnTile(self.character,room.getPosition()):
+                    continue
                 for item in room.itemsOnFloor:
                     if item.bolted is False and item.type == self.toCollect:
                         return (room.getPosition(),)
@@ -282,9 +286,12 @@ Press d to move the cursor and show the subquests description.
                             candidates.append(item)
                 if not candidates:
                     for room in character.getTerrain().rooms:
+                        if character.getTerrain().getEnemiesOnTile(character,room.getPosition()):
+                            continue
                         for item in room.itemsOnFloor:
                             if item.bolted is False and item.type == self.toCollect and not item.is_bolted_over():
                                 candidates.append(item)
+                                print(room)
 
                 if candidates:
                     foundItem = True
@@ -325,13 +332,13 @@ Press d to move the cursor and show the subquests description.
                     quests = []
                     quests.append(src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to "+self.toCollect,reason=f"be able to pick up the {self.toCollect}"))
                     if character.container != item.container:
-                        quests.append(src.quests.questMap["GoToTile"](targetPosition=item.container.getPosition(),description="go to "+self.toCollect+" source",reason=f"reach a source for {self.toCollect}"))
+                        quests.append(src.quests.questMap["GoToTile"](targetPosition=item.container.getPosition(),description="go to "+self.toCollect+" source",reason=f"reach a source for {self.toCollect} test"))
                     return (quests,None)
 
             # go to item source
             source = self.getSource()
             if source:
-                quest = src.quests.questMap["GoToTile"](targetPosition=source[0],reason=f"reach a source for {self.toCollect}")
+                quest = src.quests.questMap["GoToTile"](targetPosition=source[0],reason=f"reach a source for {self.toCollect} test2")
                 if self.returnToTile:
                     self.tileToReturnTo = character.getBigPosition()
                 return ([quest],None)

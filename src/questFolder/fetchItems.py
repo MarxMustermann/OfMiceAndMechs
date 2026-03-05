@@ -332,13 +332,13 @@ Press d to move the cursor and show the subquests description.
                     quests = []
                     quests.append(src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to "+self.toCollect,reason=f"be able to pick up the {self.toCollect}"))
                     if character.container != item.container:
-                        quests.append(src.quests.questMap["GoToTile"](targetPosition=item.container.getPosition(),description="go to "+self.toCollect+" source",reason=f"reach a source for {self.toCollect} test"))
+                        quests.append(src.quests.questMap["GoToTile"](targetPosition=item.container.getPosition(),description="go to "+self.toCollect+" source",reason=f"reach a source for {self.toCollect}"))
                     return (quests,None)
 
             # go to item source
             source = self.getSource()
             if source:
-                quest = src.quests.questMap["GoToTile"](targetPosition=source[0],reason=f"reach a source for {self.toCollect} test2")
+                quest = src.quests.questMap["GoToTile"](targetPosition=source[0],reason=f"reach a source for {self.toCollect}")
                 if self.returnToTile:
                     self.tileToReturnTo = character.getBigPosition()
                 return ([quest],None)

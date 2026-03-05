@@ -290,6 +290,7 @@ class MainContraption(src.items.Item):
 
                         scrap = src.items.itemMap["Scrap"](amount=random.randint(1,10))
                         room.addItem(scrap,pos)
+                        scrap.setWalkable()
 
                     # add enemies
                     for _i in range(0,5):

@@ -32,7 +32,7 @@ class OpenHelpMenu(src.quests.MetaQuestSequence):
 
         text = []
         text.extend(["""
-Open the help menu by pressing.
+Open the help menu by pressing ? after closing this menu.
 """])
         return text
 

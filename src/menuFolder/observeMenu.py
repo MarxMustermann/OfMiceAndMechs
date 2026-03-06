@@ -206,7 +206,9 @@ class ObserveMenu(src.subMenu.SubMenu):
         else:
             text.append("mud floor (outside)\n")
 
-        text.append("\n\npress w/a/s/d to change what spot you look at\n")
+        text.append("\n\n")
+        text.append("press w/a/s/d to change what spot you look at\n")
+        text.append("press W/A/S/D to change what tile you look at\n")
 
         # return rendered text
         return text

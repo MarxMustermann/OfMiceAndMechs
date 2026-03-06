@@ -3859,6 +3859,7 @@ What may i help you with?
             shown_help_option = False
             shown_observe_option = False
             shown_worker_wake = False
+            shown_worker_watch = False
 
             if terrain.getRoomByPosition((7,7,0)):
                 name = "explosion"
@@ -3911,9 +3912,10 @@ Then form the Metalbars into a Rod.
 """
 
             if self.last_worker_spawn > src.gamestate.gamestate.tick-100:
-                    name = "watch worker"
-                    options.append((name, "watch worker work"))
-                    extraDescriptions[name] = """
+                shown_worker_watch = True
+                name = "watch worker"
+                options.append((name, "watch worker work"))
+                extraDescriptions[name] = """
 You just woke a worker.
 Let's watch what he is doing for a bit.
 """
@@ -3975,7 +3977,12 @@ Shows you how to open the games help menu.
 Shows you how to open the games observe menu.
 """
 
-
+            if self.last_worker_spawn and not shown_worker_watch:
+                name = "watch worker"
+                options.append((name, "remind me how to watch the workers"))
+                extraDescriptions[name] = """
+Let's watch what the workers are doing for a bit.
+"""
 
             name = "leave me alone"
             options.append((name, "leave me alone"))

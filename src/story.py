@@ -2000,7 +2000,10 @@ May he forever rest in peace.
                 scrapStorage_room.addStorageSlot((x,y,0),"Scrap",{"desiredState":"filled"})
         for y in (2,4,6,8,10):
             for x in (7,8,9,10,11,):
+                if (y,x) == (10,1):
+                    continue
                 scrapStorage_room.addWalkingSpace((x,y,0))
+        scrapStorage_room.addWalkingSpace((10,1,0))
 
 
         resource_gethering_npc = src.characters.characterMap["Clone"]()

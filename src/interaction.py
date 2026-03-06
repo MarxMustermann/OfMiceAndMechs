@@ -6041,6 +6041,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                         if index < len(saves):
                             gameIndex = index
                             manage_worlds = False
+                            index = 0
 
                             try:
                                 # register the save
@@ -6125,6 +6126,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 if key == tcod.event.KeySym.ESCAPE:
                     if manage_worlds:
                         manage_worlds = False
+                        index = 0
                     else:
                         submenu.append("confirmQuit")
 

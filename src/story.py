@@ -3910,10 +3910,6 @@ We just need to collect scrap, produce MetalBars.
 Then form the Metalbars into a Rod.
 """
 
-            try:
-                self.last_worker_spawn
-            except:
-                self.last_worker_spawn = -2000
             if self.last_worker_spawn > src.gamestate.gamestate.tick-100:
                     name = "watch worker"
                     options.append((name, "watch worker work"))

@@ -4,7 +4,7 @@ import src
 class WatchLabBurn(src.quests.MetaQuestSequence):
     type = "WatchLabBurn"
 
-    def __init__(self, description="watch lab burn", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None):
+    def __init__(self, description="watch the room burn", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
@@ -32,13 +32,13 @@ class WatchLabBurn(src.quests.MetaQuestSequence):
             return (None,(".","stop watching the explosion"))
 
         if character.getSpacePosition()[1] > 8:
-            return (None,("w","distance yourself from the lab"))
+            return (None,("w","distance yourself from the room"))
         lab = self._get_lab()
         sterns_contraption = lab.getItemByType("MainContraption")
         num_wait = 1
         if sterns_contraption:
             num_wait = 8-sterns_contraption.meltdownLevel-1
-        return (None,("."*num_wait,"watch the lab burn"))
+        return (None,("."*num_wait,"watch the room burn"))
 
     def generateTextDescription(self):
         text = []
@@ -46,7 +46,7 @@ class WatchLabBurn(src.quests.MetaQuestSequence):
 You reach out to your implant and it answers:
 
 
-The lab is burning.
+The room is burning.
 
 Get some distance and watch it explode
 """])

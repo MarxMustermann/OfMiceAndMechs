@@ -28,6 +28,7 @@ import src.questFolder.story.storyExtendBase
 import src.questFolder.story.storyScavengeWalls
 import src.questFolder.story.teleportToGlassPalace
 import src.questFolder.story.openHelpMenu
+import src.questFolder.story.openObserveMenu
 import src.questFolder.story.openCharacterMenu
 import src.questFolder.story.watchLabBurn
 import src.questFolder.story.storyTeleport

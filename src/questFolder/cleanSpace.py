@@ -186,6 +186,8 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
 
         result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
         if renderForTile:
+            if character.getTerrain().getRoomByPosition(self.targetPositionBig):
+                return []
             result.append(((self.targetPosition[0]+self.targetPositionBig[0]*15,self.targetPosition[1]+self.targetPositionBig[1]*15),"target"))
         else:
             if character.getBigPosition() == self.targetPositionBig:

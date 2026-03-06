@@ -45,12 +45,13 @@ class GameState:
                     }
         self.difficulty = None
         self.difficultyMap = None
-        self.mainLoop = {}
+        self.mainLoop = {"counter":0,"character_queue":[]}
 
         self.multi_chars = set()
         self.header = None
         self.main = None
         self.footer = None
+        self.world_infos = None
 
         """
         self.uiElements = [
@@ -195,14 +196,16 @@ class GameState:
         if not os.path.exists("gamestate/"):
             os.makedirs("gamestate/")
 
+        savestateId = self.world_infos["savestateId"]
+
         # store a backup of the savegame
         try:
-            shutil.copyfile(f"gamestate/gamestate_{self.gameIndex}", f"gamestate/gamestate_{self.gameIndex}_backup")
+            shutil.copyfile(f"gamestate/gamestate_{savestateId}", f"gamestate/gamestate_{savestateId}_backup")
         except:
             pass
 
         # create the actual save file
-        with open(f"gamestate/gamestate_{self.gameIndex}", 'wb') as file:
+        with open(f"gamestate/gamestate_{savestateId}", 'wb') as file:
             compressed = zlib.compress(pickle.dumps(self),9)
             file.write(compressed)
 
@@ -211,10 +214,10 @@ class GameState:
             with open("gamestate/globalInfo.json") as globalInfoFile:
                 rawState = json.loads(globalInfoFile.read())
         except:
-            rawState = {"saves": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"customPrefabs":[],"lastGameIndex":0}
-        saves = rawState["saves"]
-        saves[self.gameIndex] =  {"difficulty":10,"scenario":"test"}
+            rawState = {"worlds": [],"customPrefabs":[],"lastGameIndex":0,"wordCounter":0,}
+        saves = rawState["worlds"]
         rawState["lastGameIndex"] = self.gameIndex
+        rawState["worlds"][self.gameIndex]["hasSave"] = True
         with open("gamestate/globalInfo.json", "w") as globalInfoFile:
             json.dump(rawState,globalInfoFile)
 
@@ -236,14 +239,17 @@ class GameState:
             with open("gamestate/globalInfo.json") as globalInfoFile:
                 rawState = json.loads(globalInfoFile.read())
         except:
-            rawState = {"saves": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"customPrefabs":[],"lastGameIndex":0}
+            rawState = {"worlds": [],"customPrefabs":[],"lastGameIndex":0,"wordCounter":0}
+
+        savestateId = rawState["worlds"][gameIndex]["savestateId"]
+
         rawState["lastGameIndex"] = gameIndex
         with open("gamestate/globalInfo.json", "w") as globalInfoFile:
             json.dump(rawState,globalInfoFile)
 
         # load the actual gamefile
         import pickle
-        with open(f"gamestate/gamestate_{gameIndex}", 'rb') as file:
+        with open(f"gamestate/gamestate_{savestateId}", 'rb') as file:
             newSelf = pickle.loads(zlib.decompress(file.read()))
 
         return newSelf

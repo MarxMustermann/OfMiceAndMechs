@@ -1966,8 +1966,19 @@ May he forever rest in peace.
         item.character = machine_operation_npc
         scrapProccessing_room.addItem(item,(1,1,0))
 
-        for pos in [(9,7,0),(9,8,0),(9,9,0),(9,10,0),(9,11,0),(10,11,0)]:
+        for pos in [(7,9,0),(8,9,0),(9,9,0)]:
             scrapProccessing_room.addWalkingSpace(pos)
+        item = src.items.itemMap["MemorialPlate"](inscription="""
+"While one can pray and wish for scrap, it still needs to be hammered into form"
+
+Scrap can be processed into MetalBars  
+And those are the base resource for almost everything.
+
+This memorial contains:
+* 3 ScrapComactors
+* preserved Clone - machine operation duty
+""")
+        scrapProccessing_room.addItem(item,(9,9,0))
 
         scrapStorage_room = architect.doAddRoom(
                 {

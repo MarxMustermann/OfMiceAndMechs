@@ -107,6 +107,9 @@ def advanceGame():
     while character_queue:
         character = character_queue[0][2]
         advanceChar(character, singleStep=True)
+        if not character_queue:
+            break
+
         heappop(character_queue)
 
         if character.timeTaken < 1 and not character.dead:
@@ -5106,7 +5109,7 @@ def showMainMenu(args=None):
     try:
         with open("gamestate/globalInfo.json") as globalInfoFile:
             rawState = json.loads(globalInfoFile.read())
-            saves = rawState["saves"]
+            saves = rawState["worlds"]
             gameIndex = rawState["lastGameIndex"]
     except:
         saves = [0,0,0,0,0,0,0,0,0,0]
@@ -5341,21 +5344,28 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 monster_diffs,
             ]
         )
+
+    index = 0
+    manage_worlds = False
+
     while 1:
+        main_menu_entries = ["start run","open feedback form","change game settings","manage worlds",]
+        start_name = "start run"
+        if gameIndex < len(saves):
+            start_name = "continue run"
+        main_menu_entries = [start_name,"open feedback form","manage worlds",]
+
         tcodConsole.clear()
-        time.sleep(0.1)
+        time.sleep(0.01)
 
         try:
             # register the save
             with open("gamestate/globalInfo.json") as globalInfoFile:
                 rawState = json.loads(globalInfoFile.read())
         except:
-            rawState = {"saves": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"customPrefabs":[],"lastGameIndex":0}
+            rawState = {"worlds": [],"customPrefabs":[],"lastGameIndex":0,"wordCounter":0}
 
-        canLoad = False
-        if rawState["saves"][gameIndex]:
-            canLoad = True
-        saves = rawState["saves"]
+        saves = rawState["worlds"]
 
         if startGame:
             global new_chars
@@ -5372,7 +5382,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 tcodPresent()
 
             def doLoad():
-                if canLoad:
+                if gameIndex < len(saves) and saves[gameIndex]["hasSave"]:
                     src.gamestate.gamestate = src.gamestate.gamestate.loadP(gameIndex)
                     setUpNoUrwid()
 
@@ -5381,8 +5391,30 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                     else:
                         src.gamestate.gamestate.mainChar.runCommandString("~")
                 else:
+                    try:
+                        # register the save
+                        with open("gamestate/globalInfo.json") as globalInfoFile:
+                            rawState = json.loads(globalInfoFile.read())
+                    except:
+                        rawState = {
+                            "worlds": [],
+                            "customPrefabs": [],
+                            "lastGameIndex": 0,
+                            "wordCounter":0,
+                        }
+
+                    if not gameIndex < len(saves):
+                        rawState["wordCounter"] += 1
+                        rawState["worlds"].append({"savestateId":rawState["wordCounter"],"hasSave":False,})
+
+                    rawState["lastGameIndex"] = gameIndex
+                    with open("gamestate/globalInfo.json", "w") as globalInfoFile:
+                        json.dump(rawState, globalInfoFile)
+
                     seed = 0
                     src.gamestate.setup(gameIndex)
+                    src.gamestate.gamestate.world_infos = rawState["worlds"][gameIndex]
+
                     setUpNoUrwid()
 
                     if selectedScenario == "siege":
@@ -5536,7 +5568,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
         root_console = tcod.console.Console(tcodConsole.width-6, 3, order="F")
         offsetLeft = 3*tileWidth
         offsetTop = (tcodConsole.height-2)*tileHeight
-        items = ["press z to open discord", "press x to open website", "press c to open github"]
+        items = ["press z to open discord", "press o to open website", "press c to open github"]
         widthForItem = (tcodConsole.width-6)//len(items)
         emptySpace =(tcodConsole.width-8) - widthForItem*len(items)
     
@@ -5568,15 +5600,54 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
         offsetY = -2
         printUrwidToTcod(src.urwidSpecials.makeRusty(logoText),(2,offsetY+1),explecitConsole=root_console)
 
-        printUrwidToTcod("press p to (p)lay",(3,offsetY+20),explecitConsole=root_console)
-
-        printUrwidToTcod("press f to open the (f)eedback form",(3,offsetY+27),explecitConsole=root_console)
-        printUrwidToTcod("press p/enter to (p)lay",(3,offsetY+28),explecitConsole=root_console)
-        printUrwidToTcod("press g to select (g)ameslot",(3,offsetY+29),explecitConsole=root_console)
-        if canLoad:
-            printUrwidToTcod("press D to delete gamestate",(3,offsetY+30),explecitConsole=root_console)
+        if manage_worlds:
+            printUrwidToTcod("press esc to close world management",(3,offsetY+26),explecitConsole=root_console)
+            printUrwidToTcod("press x to delete world",(3,offsetY+27),explecitConsole=root_console)
         else:
-            printUrwidToTcod("press d to change (d)ifficulty",(3,offsetY+30),explecitConsole=root_console)
+            printUrwidToTcod("press esc to close game",(3,offsetY+27),explecitConsole=root_console)
+        printUrwidToTcod("press w to move cursor up",(3,offsetY+28),explecitConsole=root_console)
+        printUrwidToTcod("press s to move cursor down",(3,offsetY+29),explecitConsole=root_console)
+        if manage_worlds:
+            printUrwidToTcod("press j/enter/d to select world",(3,offsetY+30),explecitConsole=root_console)
+        else:
+            printUrwidToTcod("press j/enter/d to select",(3,offsetY+30),explecitConsole=root_console)
+
+        y = 20
+        if manage_worlds:
+            counter = 0
+            for save_entry in saves:
+                menu_entry = str(save_entry)
+                indicator = ""
+                if counter == index:
+                    indicator = "=> "
+                color = "#fff"
+                if counter == gameIndex:
+                    color = "#ff0"
+                line = (src.interaction.urwid.AttrSpec(color, "black"), indicator+menu_entry)
+                printUrwidToTcod(line,(3,offsetY+y+counter),explecitConsole=root_console)
+                counter += 1
+
+            indicator = ""
+            if counter == index:
+                indicator = "=> "
+            printUrwidToTcod(indicator+"create new world",(3,offsetY+y+counter),explecitConsole=root_console)
+            counter += 1
+        else:
+            counter = 0
+            for menu_entry in main_menu_entries:
+                indicator = ""
+                if counter == index:
+                    indicator = "=> "
+                printUrwidToTcod(indicator+menu_entry,(3,offsetY+y+counter),explecitConsole=root_console)
+                counter += 1
+
+        #printUrwidToTcod("press f to open the (f)eedback form",(3,offsetY+27),explecitConsole=root_console)
+        #printUrwidToTcod("press p/enter to (p)lay",(3,offsetY+28),explecitConsole=root_console)
+        #printUrwidToTcod("press g to select (g)ameslot",(3,offsetY+29),explecitConsole=root_console)
+        #if canLoad:
+        #    printUrwidToTcod("press D to delete gamestate",(3,offsetY+30),explecitConsole=root_console)
+        #else:
+        #    printUrwidToTcod("press d to change (d)ifficulty",(3,offsetY+30),explecitConsole=root_console)
 
         padding = 15
         line_width = 5
@@ -5606,16 +5677,6 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
         sdl_renderer2.fill_rect((offsetLeft-padding-line_width,offsetTop-padding-overhang,line_width,display_height+2*(padding+overhang)))
         # right line
         sdl_renderer2.fill_rect((offsetLeft+padding+display_width,offsetTop-padding-overhang,line_width,display_height+2*(padding+overhang)))
-
-        color = "#fff"
-        if saves[gameIndex]:
-            color = "#333"
-        printUrwidToTcod((src.interaction.urwid.AttrSpec(color, "black"),f"(d)ifficulty - {difficulty}"),(3,offsetY+23),explecitConsole=root_console)
-        color = "#fff"
-        if saves[gameIndex]:
-            color = "#333"
-        #printUrwidToTcod((src.interaction.urwid.AttrSpec(color, "black"),f"(s)cenario   - {selectedScenario}"),(3,offsetY+24))
-        printUrwidToTcod(f"(g)ameslot   - {gameIndex}",(3,offsetY+25),explecitConsole=root_console)
 
         # draw special menus
         for menu in submenu:
@@ -5825,13 +5886,28 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                         explecitConsole=root_console,
                     )
                     printUrwidToTcod(
-                        (src.interaction.urwid.AttrSpec("#fff", "black"), "| press y/enter to confirm    |"),
+                        (src.interaction.urwid.AttrSpec("#fff", "black"), "|                             |"),
                         ( 2, offsetY + 23),
                         explecitConsole=root_console,
                     )
                     printUrwidToTcod(
-                        (src.interaction.urwid.AttrSpec("#fff", "black"), "+-----------------------------+"),
+                        (src.interaction.urwid.AttrSpec("#fff", "black"), "| press y/enter/j to confirm  |"),
                         ( 2, offsetY + 24),
+                        explecitConsole=root_console,
+                    )
+                    printUrwidToTcod(
+                        (src.interaction.urwid.AttrSpec("#fff", "black"), "|                             |"),
+                        ( 2, offsetY + 25),
+                        explecitConsole=root_console,
+                    )
+                    printUrwidToTcod(
+                        (src.interaction.urwid.AttrSpec("#fff", "black"), "| press n/esc to abort        |"),
+                        ( 2, offsetY + 26),
+                        explecitConsole=root_console,
+                    )
+                    printUrwidToTcod(
+                        (src.interaction.urwid.AttrSpec("#fff", "black"), "+-----------------------------+"),
+                        ( 2, offsetY + 27),
                         explecitConsole=root_console,
                     )
 
@@ -5944,6 +6020,136 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
         events = tcod.event.get()
         current_submenu = submenu[-1] if len(submenu) else ""
         for event in events:
+            if isinstance(event, tcod.event.KeyDown):
+                key = event.sym
+
+                match current_submenu:
+                    case "confirmQuit":
+                        if isinstance(event, tcod.event.KeyDown):
+                            key = event.sym
+                            if key in (tcod.event.KeySym.RETURN, tcod.event.KeySym.y, tcod.event.KeySym.j):
+                                if src.interaction.tcodMixer:
+                                    src.interaction.tcodMixer.close()
+                                raise SystemExit()
+                            submenu.pop()
+                            continue
+                    case _:
+                        pass
+
+                if key in (tcod.event.KeySym.RETURN, tcod.event.KeySym.KP_ENTER, tcod.event.KeySym.d, tcod.event.KeySym.j, tcod.event.KeySym.RIGHT, ):
+                    if manage_worlds:
+                        if index < len(saves):
+                            gameIndex = index
+                            manage_worlds = False
+
+                            try:
+                                # register the save
+                                with open("gamestate/globalInfo.json") as globalInfoFile:
+                                    rawState = json.loads(globalInfoFile.read())
+                            except:
+                                rawState = {
+                                    "worlds": [],
+                                    "customPrefabs": [],
+                                    "lastGameIndex": 0,
+                                    "wordCounter":0,
+                                }
+
+                            rawState["lastGameIndex"] = gameIndex
+                            with open("gamestate/globalInfo.json", "w") as globalInfoFile:
+                                json.dump(rawState, globalInfoFile)
+                        else:
+                            rawState["wordCounter"] += 1
+                            rawState["worlds"].append({"savestateId":rawState["wordCounter"],"hasSave":False,})
+                            with open("gamestate/globalInfo.json", "w") as globalInfoFile:
+                                json.dump(rawState, globalInfoFile)
+                            saves = rawState["worlds"]
+                    else:
+                        selected_entry = main_menu_entries[index]
+                        match selected_entry:
+                            case "continue run":
+                                startGame = True
+                            case "start run":
+                                try:
+                                    # register the save
+                                    with open("gamestate/globalInfo.json") as globalInfoFile:
+                                        rawState = json.loads(globalInfoFile.read())
+                                except:
+                                    rawState = {
+                                        "worlds": [],
+                                        "customPrefabs": [],
+                                        "lastGameIndex": 0,
+                                        "wordCounter":0,
+                                    }
+
+                                rawState["lastGameIndex"] = gameIndex
+                                with open("gamestate/globalInfo.json", "w") as globalInfoFile:
+                                    json.dump(rawState, globalInfoFile)
+                                startGame = True
+                            case "manage worlds":
+                                index = 0
+                                manage_worlds = True
+                            case "open feedback form":
+                                import webbrowser
+                                webbrowser.open("http://ofmiceandmechs.com/playtest_questionaire.php", new=1)
+                            case _:
+                                pass
+
+                if key in (tcod.event.KeySym.x,):
+                    if manage_worlds:
+                        rawState["worlds"].remove(rawState["worlds"][index])
+                        saves = rawState["worlds"]
+                        with open("gamestate/globalInfo.json", "w") as globalInfoFile:
+                            json.dump(rawState, globalInfoFile)
+
+                if manage_worlds:
+                    if key in (tcod.event.KeySym.s, tcod.event.KeySym.DOWN,):
+                        index += 1
+                        if index >= len(saves)+1:
+                            index = 0
+                    if key in (tcod.event.KeySym.w, tcod.event.KeySym.UP,):
+                        index -= 1
+                        if index < 0:
+                            index = len(saves)+1-1
+                else:
+                    if key in (tcod.event.KeySym.s, tcod.event.KeySym.DOWN,):
+                        index += 1
+                        if index >= len(main_menu_entries):
+                            index = 0
+                    if key in (tcod.event.KeySym.w, tcod.event.KeySym.UP,):
+                        index -= 1
+                        if index < 0:
+                            index = len(main_menu_entries)-1
+
+                if key == tcod.event.KeySym.F11:
+                    sdl_window.fullscreen = not sdl_window.fullscreen
+                if key == tcod.event.KeySym.ESCAPE:
+                    if manage_worlds:
+                        manage_worlds = False
+                    else:
+                        submenu.append("confirmQuit")
+
+                if key == tcod.event.KeySym.z:
+                    import webbrowser
+                    webbrowser.open("https://discord.gg/z5QfwfzWCn", new=1)
+                if key == tcod.event.KeySym.o:
+                    import webbrowser
+                    webbrowser.open("http://ofmiceandmechs.com/", new=1)
+                if key == tcod.event.KeySym.c:
+                    import webbrowser
+                    webbrowser.open("https://github.com/MarxMustermann/OfMiceAndMechs", new=1)
+
+                if isinstance(event, tcod.event.Quit):
+                    if src.interaction.tcodMixer:
+                        src.interaction.tcodMixer.close()
+                    raise SystemExit()
+                if isinstance(event, tcod.event.WindowResized):
+                    checkResetWindowSize(event.width, event.height)
+                if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
+                    if src.interaction.tcodMixer:
+                        src.interaction.tcodMixer.close()
+                    raise SystemExit()
+            continue
+
             match current_submenu:
                 case "gameslot":
                     if isinstance(event, tcod.event.KeyDown):
@@ -6154,12 +6360,13 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                                     rawState = json.loads(globalInfoFile.read())
                             except:
                                 rawState = {
-                                    "saves": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                    "worlds": [],
                                     "customPrefabs": [],
                                     "lastGameIndex": 0,
+                                    "wordCounter":0,
                                 }
 
-                            rawState["saves"][gameIndex] = 0
+                            rawState["worlds"][gameIndex] = 0
                             with open("gamestate/globalInfo.json", "w") as globalInfoFile:
                                 json.dump(rawState, globalInfoFile)
 
@@ -6205,20 +6412,6 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                         if key == tcod.event.KeySym.ESCAPE:
                             submenu.append("confirmQuit")
                         if key == tcod.event.KeySym.p or key == tcod.event.KeySym.RETURN:
-                            try:
-                                # register the save
-                                with open("gamestate/globalInfo.json") as globalInfoFile:
-                                    rawState = json.loads(globalInfoFile.read())
-                            except:
-                                rawState = {
-                                    "saves": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                                    "customPrefabs": [],
-                                    "lastGameIndex": 0,
-                                }
-
-                            rawState["lastGameIndex"] = gameIndex
-                            with open("gamestate/globalInfo.json", "w") as globalInfoFile:
-                                json.dump(rawState, globalInfoFile)
                             startGame = True
                         if key == tcod.event.KeySym.g:
                             submenu.append("gameslot")
@@ -6231,16 +6424,6 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                             else:
                                 if not canLoad:
                                     submenu.append("difficulty")
-            if isinstance(event, tcod.event.Quit):
-                if src.interaction.tcodMixer:
-                    src.interaction.tcodMixer.close()
-                raise SystemExit()
-            if isinstance(event, tcod.event.WindowResized):
-                checkResetWindowSize(event.width, event.height)
-            if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
-                if src.interaction.tcodMixer:
-                    src.interaction.tcodMixer.close()
-                raise SystemExit()
 
 def showInterruptChoice(text,options):
     tcod.event.get()

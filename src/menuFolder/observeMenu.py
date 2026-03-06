@@ -18,6 +18,8 @@ class ObserveMenu(src.subMenu.SubMenu):
     def handleKey(self, key, noRender=False, character = None):
         src.interaction.send_tracking_ping("created_observe_menu_key_pressed_"+str(key))
 
+        character.changed("opened observe menu",{})
+
         # exit the submenu
         if key in ("esc"," ",):
             return True

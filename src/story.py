@@ -991,6 +991,7 @@ class MainGame(BasicPhase):
         self.listeners = {"default": []}
         self.watched = []
         self.has_shown_HelpMenu = False
+        self.has_shown_observeMenu = False
         self.has_shown_welcome = False
         self.last_worker_spawn = -2000
         super().__init__("MainGame", seed=seed)
@@ -1068,7 +1069,7 @@ class MainGame(BasicPhase):
         if self.preselection == "Story":
             self.sternsBasePosition = self.get_free_position("the architects base")
             self.setUpSternsBase(self.sternsBasePosition)
-            self.architectsLabPosition = self.get_free_position("the architects lab")
+            self.architectsLabPosition = self.get_free_position("the architects tomb")
             self.setUpArchitectsLab(self.architectsLabPosition)
         elif self.preselection == "baseBuilder":
             self.playerBasePosition = self.get_free_position("player base")
@@ -1629,7 +1630,7 @@ but they are likely to explode when disturbed.
 
     def setUpArchitectsLab(self,pos):
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
-        currentTerrain.tag = "the architects lab"
+        currentTerrain.tag = "the architects tomb"
         currentTerrain.maxMana = 50
 
         thisFactionId = self.factionCounter
@@ -1649,7 +1650,7 @@ but they are likely to explode when disturbed.
                 },
                 None,
            )
-        startRoom.tag = "the architects lab"
+        startRoom.tag = "the architects tomb"
         startRoom.getItemByPosition((6,12,0))[0].walkable = False
 
         # add hub room
@@ -2629,7 +2630,7 @@ May he forever rest in peace.
                 },
                 None,
            )
-        startRoom.tag = "the architects lab"
+        startRoom.tag = "the architects tomb"
         startRoom.getItemByPosition((6,0,0))[0].walkable = False
         """
 
@@ -3702,7 +3703,7 @@ May he forever rest in peace.
 
         startRoom = None
         for room in homeTerrain.rooms:
-            if not room.tag == "the architects lab":
+            if not room.tag == "the architects tomb":
                 continue
             startRoom = room
         startRoom.addCharacter(mainChar,6,8)
@@ -3810,7 +3811,7 @@ May he forever rest in peace.
             return
         
         # flee initial room
-        if mainChar.container.tag == "the architects lab":
+        if mainChar.container.tag == "the architects tomb":
             quest = src.quests.questMap["EscapeLab"]()
             self.addQuest(quest,mainChar)
             return
@@ -3853,13 +3854,14 @@ What may i help you with?
             extraDescriptions = {}
 
             shown_help_option = False
+            shown_observe_option = False
             shown_worker_wake = False
 
             if terrain.getRoomByPosition((7,7,0)):
                 name = "explosion"
-                options.append((name, "let me watch the lab burn"))
+                options.append((name, "i want to watch the room burn"))
                 extraDescriptions[name] = """
-The lab burning down will surely be spectacular.
+It surely will be spectacular.
 """
 
             if not self.has_shown_HelpMenu and src.gamestate.gamestate.tick < 30:
@@ -3871,6 +3873,13 @@ The help menu will show you the keybindings.
 """
                 shown_help_option = True
 
+            if not self.has_shown_observeMenu and src.gamestate.gamestate.tick < 100:
+                name = "observe"
+                options.append((name, "observe environment"))
+                extraDescriptions[name] = """
+Look around to see if there are useful items around.
+"""
+
             if mainChar.health < mainChar.maxHealth // 2 and mainChar.searchInventory("Vial"):
                 name = "heal"
                 options.append((name, "help me heal"))
@@ -3881,6 +3890,7 @@ Keep in mind you need to enter capital letters with shift pressed.
 So ""","\"",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"black"),"J H"),"\"",""" needs to be entered as:
 shift+j then shift+h
 """]
+
             if self.get_crafting_room_enemies(mainChar):
                 name = "secure crafting room"
                 options.append((name, "secure crafting room"))
@@ -4654,13 +4664,22 @@ This will close the tutorial and let you do your own thing.
             self.clear_implant_quest(character)
             return
 
+        if quest_type == "observe":
+            character.showTextMenu("\nyou can open the observation menu by pressing o\n(after closing this menu by pressing esc)\n\nThis menu will show you the description of the items around you.\nSelect what items are shown by moving the cursor.\nYou will not move or use time while you are observing\n",do_not_scale=True)
+            self.has_shown_observeMenu = True
+            quest = src.quests.questMap["OpenObserveMenu"]()
+            self.addQuest(quest,character)
+            self.clear_implant_quest(character)
+            return
+
         if quest_type == "help":
-            character.showTextMenu("\nyou can open the help menu by pressing ?\n(you need to close all other menues first)\nThis will show the keybindings and some general informaiton.\n\nDo this to complete this quest.\nInstructions are shown on the left side of the screen\n",do_not_scale=True)
+            character.showTextMenu("\nyou can open the help menu by pressing ?\n(after closing this menu by pressing esc)\n\nThis will show the keybindings and some general informaiton.\n\nDo this to complete this quest.\nInstructions are shown on the left side of the screen\n",do_not_scale=True)
             self.has_shown_HelpMenu = True
             quest = src.quests.questMap["OpenHelpMenu"]()
             self.addQuest(quest,character)
             self.clear_implant_quest(character)
             return
+
 
         if quest_type == "leave me alone":
             character.showTextMenu("\nAs you wish.\n\n\n\nand as you surely remember:\n\nYou can contact me again later by pressing q\n",do_not_scale=True)

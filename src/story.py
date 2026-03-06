@@ -1257,7 +1257,7 @@ class MainGame(BasicPhase):
         src.gamestate.gamestate.story = self
         src.interaction.showRunIntro()
         self.kickoff()
-
+        src.gamestate.gamestate.save()
 
     def mainCharacterDeath(self,extraParam):
         if not src.gamestate.gamestate.mainChar.dead:
@@ -1684,7 +1684,13 @@ but they are likely to explode when disturbed.
         hubRoom.addItem(item,(5,6,0))
         item = src.items.itemMap["Scrap"](amount=1)
         hubRoom.addItem(item,(6,5,0))
-        item = src.items.itemMap["DirectionMonolith"]()
+        item = src.items.itemMap["MemorialMonolith"](inscription="""
+This Mausoleum is in rememberance to the architect.
+
+The creator of all things.
+
+May he forever rest in peace.
+""")
         hubRoom.addItem(item,(6,6,0))
 
         # add teleport room

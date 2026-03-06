@@ -283,7 +283,7 @@ class QuestMenu(src.subMenu.SubMenu):
                     nextstep = [f"suggested action: \npress "]+convertedCommanString+[f" \nto {reason}\n\n"]
                 else:
                     nextstep = "suggested action: \npress + \nto generate subquests\n\n"
-                if char.container.isRoom and char.container.tag == "the architects lab":
+                if char.container.isRoom and char.container.tag == "the architects tomb":
                     color = "#fff"
                     if src.gamestate.gamestate.tick > 11:
                         color = "#ff0"

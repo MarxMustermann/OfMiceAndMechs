@@ -105,7 +105,7 @@ Instructions to do that will be shown on the left of the screen as "suggested ac
         if not character:
             return False
 
-        if character.container.isRoom and character.container.tag == "the architects lab":
+        if character.container.isRoom and character.container.tag == "the architects tomb":
             return False
 
         if character.yPosition%15 in (0,14):

@@ -3879,6 +3879,7 @@ The help menu will show you the keybindings.
                 extraDescriptions[name] = """
 Look around to see if there are useful items around.
 """
+                shown_observe_option = True
 
             if mainChar.health < mainChar.maxHealth // 2 and mainChar.searchInventory("Vial"):
                 name = "heal"
@@ -3968,6 +3969,13 @@ We probably can't return, though.
                 extraDescriptions[name] = """
 Shows you how to open the games help menu.
 """
+            if not shown_observe_option:
+                name = "observe"
+                options.append((name, "show me how to look around"))
+                extraDescriptions[name] = """
+Shows you how to open the games observe menu.
+"""
+
 
 
             name = "leave me alone"

@@ -3873,7 +3873,7 @@ We should try find something to defend ourselves with.
 """
 
             text += """
-I case you hit your head and don't remember:
+In case you hit your head and don't remember:
 I'm your implant and i'll be helping you with your tasks.
 
 What may i help you with?

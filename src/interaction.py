@@ -6560,7 +6560,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
             text.append("May i collect information about your interaction with the game?\n")
             text.append("You can disable tracking in the settings later.\n")
             text.append("\n")
-            text.append("press y (as in yes) to agree to the data collection\n")
+            text.append("press y to agree to the data collection\n")
             text.append("press n to deny the data collection\n")
 
             root_console = tcod.console.Console(70, 8, order="F")

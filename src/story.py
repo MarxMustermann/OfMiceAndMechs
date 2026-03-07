@@ -2016,7 +2016,6 @@ This memorial contains:
                 scrapStorage_room.addWalkingSpace((x,y,0))
         scrapStorage_room.addWalkingSpace((10,1,0))
 
-
         resource_gethering_npc = src.characters.characterMap["Clone"]()
         resource_gethering_npc.questsDone = [
                 "NaiveMoveQuest",
@@ -2078,6 +2077,22 @@ This memorial contains:
         item = src.items.itemMap["StasisTank"]()
         item.character = resource_gethering_npc
         scrapStorage_room.addItem(item,(11,1,0))
+
+
+        for pos in [(3,10,0),(3,11,0),(3,12,0)]:
+            scrapStorage_room.addWalkingSpace(pos)
+        item = src.items.itemMap["MemorialPlate"](inscription="""
+"The more riches you have the more storage you need,
+especially if you are hoarding Scrap"
+
+Scrap can be processed into MetalBars  
+And those are the base resource for almost everything.
+
+This memorial contains:
+* 3 ScrapComactors
+* preserved Clone - machine operation duty
+""")
+        scrapStorage_room.addItem(item,(3,9,0))
 
 
         manufacturing_room = architect.doAddRoom(

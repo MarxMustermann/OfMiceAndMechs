@@ -4003,7 +4003,7 @@ Shows you how to open the games help menu.
 Shows you how to open the games observe menu.
 """
 
-            if self.last_worker_spawn and not shown_worker_watch:
+            if self.last_worker_spawn > 0 and not shown_worker_watch:
                 name = "watch worker"
                 options.append((name, "remind me how to watch the workers"))
                 extraDescriptions[name] = """

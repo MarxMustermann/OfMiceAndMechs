@@ -5002,7 +5002,7 @@ def renderGameDisplay(renderChar=None):
             canvas.drawSdl(sdl_renderer2,offsetLeft,offsetTop,warning=warning)
 
             submenue = char.macroState.get("submenue")
-            if specialRender or submenue:
+            if (specialRender or submenue) and (not submenue or submenue.tag != "Wait"):
                 sdl_renderer2.draw_blend_mode = tcod.sdl.render.BlendMode(1)
                 sdl_renderer2.draw_color = (0,0,0,100)
                 sdl_renderer2.fill_rect((offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height))

@@ -5074,6 +5074,8 @@ def renderGameDisplay(renderChar=None):
             sdl_renderer2.fill_rect((offsetLeft+padding+display_width-outline,offsetTop-padding-overhang-outline,line_width+2*outline,display_height+2*(padding+overhang)+2*outline))
 
             sdl_renderer2.draw_color = (100,100,100,255)
+            if (submenue and submenue.tag == "Wait"):
+                sdl_renderer2.draw_color = (255,255,255,255)
             # draw upper line
             sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop-padding-line_width,display_width+2*(padding+overhang),line_width))
             # draw lower line

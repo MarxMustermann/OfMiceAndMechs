@@ -20,6 +20,10 @@ If you don't need the help you can ignore the story or increase the difficulty.
 
 So [download](INSTALL.md) the game and try it today.
 
+# support me!
+
+You can buy the game on [itch](https://marxmustermann.itch.io/ofmiceandmechs) if you want to support me 
+
 # be part of it
 
 discord: https://discord.gg/z5QfwfzWCn

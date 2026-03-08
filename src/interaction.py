@@ -5067,7 +5067,7 @@ def renderGameDisplay(renderChar=None):
             # right line background
             sdl_renderer2.fill_rect((offsetLeft+padding+display_width-outline,offsetTop-padding-overhang-outline,line_width+2*outline,display_height+2*(padding+overhang)+2*outline))
 
-            sdl_renderer2.draw_color = (255,255,255,255)
+            sdl_renderer2.draw_color = (100,100,100,255)
             # draw upper line
             sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop-padding-line_width,display_width+2*(padding+overhang),line_width))
             # draw lower line
@@ -5089,7 +5089,7 @@ def renderGameDisplay(renderChar=None):
 
             # draw title line
             if submenue and submenue.getTitle():
-                sdl_renderer2.draw_color = (255,255,255,255)
+                sdl_renderer2.draw_color = (100,100,100,255)
                 sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop-padding-line_width+2*tileHeight,display_width+2*(padding+overhang),line_width))
     else:
         last_menu_dimension = None

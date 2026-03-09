@@ -4398,7 +4398,6 @@ def printUrwidToSDL(inData,offset,color=None,internalOffset=None,size=None, acti
 
         if src.interaction.settings["SDL"]:
 
-
             item = inData.item
 
             content = inData.content
@@ -4420,8 +4419,7 @@ def printUrwidToSDL(inData,offset,color=None,internalOffset=None,size=None, acti
                 fg_color = (colors[0],colors[1],colors[2],255)
                 bg_color = (colors[3],colors[4],colors[5],255)
 
-            if isinstance(item.container, src.characters.Character):
-                item.drawSDL(sdl_renderer2, basePos, fg_color=fg_color, bg_color=bg_color)
+            item.drawSDL(sdl_renderer2, basePos, fg_color=fg_color, bg_color=bg_color)
 
     #footertext = stringifyUrwid(inData)
 

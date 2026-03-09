@@ -444,6 +444,70 @@ class Canvas:
                 if isinstance(char, src.interaction.CharacterMeta):
                     character = char.character
 
+                    if character.faction == src.gamestate.gamestate.mainChar.faction:
+                        faction_color = (40,40,200,255)
+                    else:
+                        faction_color = (200,0,0,255)
+                    edge_size = 2*border_width
+                    renderer.draw_color = faction_color
+
+                    if not character == src.gamestate.gamestate.mainChar:
+                        # draw left upper triangle
+                        offset = 0
+                        renderer.draw_line((basePos[0]+edge_size//3+1,basePos[1]+edge_size//3), (basePos[0]+edge_size//3+1,basePos[1]+edge_size//3))
+                        while offset*3 < edge_size:
+                            renderer.draw_color = faction_color
+                            renderer.draw_line((basePos[0]+offset,basePos[1]+offset), (basePos[0]+edge_size-offset*2,basePos[1]+offset))
+                            renderer.draw_line((basePos[0]+offset,basePos[1]+edge_size-offset*2),(basePos[0]+offset,basePos[1]+1+offset))
+                            if offset in (0,1,):
+                                renderer.draw_color = (0,0,0,255)
+                                renderer.draw_line((basePos[0]+edge_size-offset+1,basePos[1]-1),(basePos[0],basePos[1]+edge_size-offset))
+                            else:
+                                renderer.draw_line((basePos[0]+edge_size-offset*2,basePos[1]+offset),(basePos[0]+offset,basePos[1]+edge_size-offset*2))
+                            offset += 1
+
+                        # draw right upper triangle
+                        offset = 0
+                        renderer.draw_line((basePos[0]+tileHeight-edge_size//3,basePos[1]+edge_size//3), (basePos[0]+tileHeight-edge_size//3,basePos[1]+edge_size//3))
+                        while offset*3 < edge_size:
+                            renderer.draw_color = faction_color
+                            renderer.draw_line((basePos[0]-offset+tileHeight,basePos[1]+offset), (basePos[0]+tileHeight-edge_size+offset*2,basePos[1]+offset))
+                            renderer.draw_line((basePos[0]+tileHeight-offset-1,basePos[1]+edge_size-offset*2),(basePos[0]-offset+tileHeight-1,basePos[1]+offset+1))
+                            if offset in (0,1,):
+                                renderer.draw_color = (0,0,0,255)
+                                renderer.draw_line((basePos[0]+tileHeight-edge_size+offset-1,basePos[1]), (basePos[0]+tileHeight-1,basePos[1]+edge_size-offset))
+                            else:
+                                renderer.draw_line((basePos[0]+tileHeight-edge_size+offset*2-1,basePos[1]+offset), (basePos[0]+tileHeight-offset-1,basePos[1]+edge_size-offset*2))
+                            offset += 1
+
+                        # draw left upper triangle
+                        offset = 0
+                        renderer.draw_line((basePos[0]+edge_size//3+1,basePos[1]+tileHeight-edge_size//3-1), (basePos[0]+edge_size//3+1,basePos[1]+tileHeight-edge_size//3-1))
+                        while offset*3 < edge_size:
+                            renderer.draw_color = faction_color
+                            renderer.draw_line((basePos[0]+offset,basePos[1]+tileHeight-offset-1), (basePos[0]+edge_size-offset*2,basePos[1]+tileHeight-offset-1))
+                            renderer.draw_line((basePos[0]+offset,basePos[1]+tileHeight-edge_size+offset*2-1),(basePos[0]+offset,basePos[1]+tileHeight-1-offset))
+                            if offset in (0,1,):
+                                renderer.draw_color = (0,0,0,255)
+                                renderer.draw_line((basePos[0]+edge_size-offset+1,basePos[1]+tileHeight),(basePos[0],basePos[1]+tileHeight-edge_size+offset-1))
+                            else:
+                                renderer.draw_line((basePos[0]+edge_size-offset*2+1,basePos[1]+tileHeight-offset),(basePos[0]+offset,basePos[1]+tileHeight-edge_size+offset*2-1))
+                            offset += 1
+
+                        # draw right upper triangle
+                        offset = 0
+                        renderer.draw_line((basePos[0]+tileHeight-edge_size//3,basePos[1]+tileHeight-edge_size//3-1), (basePos[0]+tileHeight-edge_size//3,basePos[1]+tileHeight-edge_size//3-1))
+                        while offset*3 < edge_size:
+                            renderer.draw_color = faction_color
+                            renderer.draw_line((basePos[0]-offset+tileHeight,basePos[1]+tileHeight-offset-1), (basePos[0]+tileHeight-edge_size+offset*2,basePos[1]+tileHeight-offset-1))
+                            renderer.draw_line((basePos[0]+tileHeight-offset-1,basePos[1]+tileHeight-edge_size+offset*2-1),(basePos[0]-offset+tileHeight-1,basePos[1]+tileHeight-offset-1))
+                            if offset in (0,1,):
+                                renderer.draw_color = (0,0,0,255)
+                                renderer.draw_line((basePos[0]+tileHeight-edge_size+offset-1,basePos[1]+tileHeight-1), (basePos[0]+tileHeight-1,basePos[1]+tileHeight-edge_size+offset-1))
+                            else:
+                                renderer.draw_line((basePos[0]+tileHeight-edge_size+offset*2-1,basePos[1]+tileHeight-offset-1), (basePos[0]+tileHeight-offset-1,basePos[1]+tileHeight-edge_size+offset*2-1))
+                            offset += 1
+
                     if not src.gamestate.gamestate.mainChar.specialRender and (character.health != character.adjustedMaxHealth or character.exhaustion != 0):
                         if character.dead or character.health <= 0:
                             renderer.draw_color = (255,0,0,255)
@@ -497,6 +561,7 @@ class Canvas:
                                     barwidth = int((src.interaction.tileWidth*2-borderWidth*2)*src.helpers.clamp(character.exhaustion/10,0,1))
                                     renderer.draw_color = color
                                     renderer.fill_rect((barBasePos[0]+borderWidth,barBasePos[1]+borderWidth,barwidth,barHeight))
+
                 x += 1
             y += 1
 

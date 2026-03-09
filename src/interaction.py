@@ -5353,6 +5353,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
     index = 0
     manage_worlds = False
+    change_game_settings = False
 
     while 1:
         if gameIndex >= len(rawState["worlds"]):
@@ -5361,7 +5362,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
         start_name = "start run"
         if gameIndex < len(saves):
             start_name = "continue run"
-        main_menu_entries = [start_name,"open feedback form","manage worlds",]
+        main_menu_entries = [start_name,"open feedback form","manage worlds","change game setting",]
 
         tcodConsole.clear()
         time.sleep(0.01)
@@ -5611,14 +5612,18 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
         if manage_worlds:
             printUrwidToTcod("press esc to close world management",(3,offsetY+26),explecitConsole=root_console)
             printUrwidToTcod("press x to delete world",(3,offsetY+27),explecitConsole=root_console)
+        elif change_game_settings:
+            printUrwidToTcod("press esc to close settings",(3,offsetY+27),explecitConsole=root_console)
         else:
             printUrwidToTcod("press esc to close game",(3,offsetY+27),explecitConsole=root_console)
         printUrwidToTcod("press w to move cursor up",(3,offsetY+28),explecitConsole=root_console)
         printUrwidToTcod("press s to move cursor down",(3,offsetY+29),explecitConsole=root_console)
         if manage_worlds:
-            printUrwidToTcod("press j/enter/d to select world",(3,offsetY+30),explecitConsole=root_console)
+            printUrwidToTcod("press j/enter/a/d to select world",(3,offsetY+30),explecitConsole=root_console)
+        elif change_game_settings:
+            printUrwidToTcod("press a/j/enter/a/d to change setting",(3,offsetY+30),explecitConsole=root_console)
         else:
-            printUrwidToTcod("press j/enter/d to select",(3,offsetY+30),explecitConsole=root_console)
+            printUrwidToTcod("press j/enter/a/d to select",(3,offsetY+30),explecitConsole=root_console)
 
         y = 20
         if manage_worlds:
@@ -5640,6 +5645,21 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 indicator = "=> "
             printUrwidToTcod(indicator+"create new world",(3,offsetY+y+counter),explecitConsole=root_console)
             counter += 1
+        elif change_game_settings:
+            counter = 0
+            #for setting in ["rendering","UI font","sound","volume",]:
+            for setting in ["rendering",]:
+                indicator = ""
+                if counter == index:
+                    indicator = "=> "
+                value = "XXX"
+                if setting == "rendering":
+                    if src.interaction.settings["SDL"]:
+                        value = "SDL"
+                    else:
+                        value = "ASCII"
+                printUrwidToTcod(indicator+setting+": "+value,(3,offsetY+y+counter),explecitConsole=root_console)
+                counter += 1
         else:
             counter = 0
             for menu_entry in main_menu_entries:
@@ -6044,7 +6064,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                     case _:
                         pass
 
-                if key in (tcod.event.KeySym.RETURN, tcod.event.KeySym.KP_ENTER, tcod.event.KeySym.d, tcod.event.KeySym.j, tcod.event.KeySym.RIGHT, ):
+                if key in (tcod.event.KeySym.RETURN, tcod.event.KeySym.KP_ENTER, tcod.event.KeySym.d, tcod.event.KeySym.j, tcod.event.KeySym.RIGHT, tcod.event.KeySym.a, tcod.event.KeySym.LEFT ):
                     if manage_worlds:
                         if index < len(saves):
                             gameIndex = index
@@ -6072,6 +6092,8 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                             with open("gamestate/globalInfo.json", "w") as globalInfoFile:
                                 json.dump(rawState, globalInfoFile)
                             saves = rawState["worlds"]
+                    elif change_game_settings:
+                        src.interaction.settings["SDL"] = not src.interaction.settings["SDL"]
                     else:
                         selected_entry = main_menu_entries[index]
                         match selected_entry:
@@ -6097,6 +6119,9 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                             case "manage worlds":
                                 index = 0
                                 manage_worlds = True
+                            case "change game setting":
+                                index = 0
+                                change_game_settings = True
                             case "open feedback form":
                                 import webbrowser
                                 webbrowser.open("http://ofmiceandmechs.com/playtest_questionaire.php", new=1)
@@ -6134,6 +6159,9 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 if key == tcod.event.KeySym.ESCAPE:
                     if manage_worlds:
                         manage_worlds = False
+                        index = 0
+                    elif change_game_settings:
+                        change_game_settings = False
                         index = 0
                     else:
                         submenu.append("confirmQuit")

@@ -5358,7 +5358,6 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
         if gameIndex >= len(rawState["worlds"]):
             gameIndex = 0
 
-        main_menu_entries = ["start run","open feedback form","change game settings","manage worlds",]
         start_name = "start run"
         if gameIndex < len(saves):
             start_name = "continue run"

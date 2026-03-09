@@ -246,7 +246,7 @@ def playSound(soundName,channelName,loop=False):
         if src.interaction.tcodMixer:
             channel = src.interaction.tcodMixer.get_channel(channelName)
             if not channel.busy:
-                channel.play(sounds[soundName], volume = settings["sound"]/320.0)
+                channel.play(sounds[soundName], volume = settings["sound"]/160.0)
 
 zoom = 0
 window_width = None
@@ -311,7 +311,7 @@ def setUpTcod():
                 with open("config/globalSettings.json") as f:
                     settings = json.loads(f.read())
     else:
-        settings = {"auto save": False, "sound": 32, "fullscreen": True, "SDL":True} #Default Settings
+        settings = {"auto save": False, "sound": 16, "fullscreen": True, "SDL":True} #Default Settings
     
     import tcod as internalTcod
     global tcod
@@ -492,18 +492,18 @@ def setUpTcod():
     )
     """
     if tcodMixer:
-        tcodMixer.get_channel("background").play(sound = sounds["loop1_start"],volume = settings["sound"]/ 320.0,on_end = sound_loop)
+        tcodMixer.get_channel("background").play(sound = sounds["loop1_start"],volume = settings["sound"]/ 160.0,on_end = sound_loop)
 
 def sound_loop(ch):
     if random.random() < 0.5:
-        ch.play(sound = sounds["loop1"],volume = settings["sound"]/320.0,on_end = sound_loop)
+        ch.play(sound = sounds["loop1"],volume = settings["sound"]/160.0,on_end = sound_loop)
     else:
-        ch.play(sound = sounds["loop2"],volume = settings["sound"]/320.0,on_end = sound_loop)
+        ch.play(sound = sounds["loop2"],volume = settings["sound"]/160.0,on_end = sound_loop)
 
 def changeVolume():
     if tcodMixer:
         channel = tcodMixer.get_channel("background")
-        channel.volume = settings["sound"]/ 320.0
+        channel.volume = settings["sound"]/ 160.0
 
 def send_tracking_ping(eventType):
     if not src.interaction.settings.get("tracking"):

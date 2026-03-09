@@ -142,6 +142,15 @@ class ExamineMenu(src.subMenu.SubMenu):
                     cursorview[local_offset[1]+2][local_offset[0]+2] = render
                     if local_offset == self.offset:
                         under_cursor = render
+        else:
+            terrain = self.character.container
+            rawRender = terrain.render(coordinateOffset=(self.character.xPosition+self.offset[0]-2,self.character.yPosition+self.offset[1]-2),size=(5,5))
+            for x in range(0,5):
+                for y in range(0,5):
+                    render = rawRender[y][x]
+                    cursorview[y][x] = render
+                    if (x-2,y-2,0) == self.offset:
+                        under_cursor = render
 
         color = "#fff"
         if self.last_move_blocked:

@@ -445,7 +445,7 @@ class Canvas:
                     character = char.character
 
                     if character.faction == src.gamestate.gamestate.mainChar.faction:
-                        faction_color = (40,40,200,255)
+                        faction_color = (100,100,200,255)
                     else:
                         faction_color = (200,0,0,255)
                     edge_size = 2*border_width

@@ -284,6 +284,10 @@ class MainContraption(src.items.Item):
                             continue
                         if pos in ((11,6,0),(6,11,0),(6,1,0),(1,6,0),):
                             continue
+                        if room_pos == (6,6,0) and pos in ((9,9,0),):
+                            continue
+                        if room_pos == (8,6,0) and pos in ((3,9,0),):
+                            continue
 
                         for item in room.getItemByPosition(pos)[:]:
                             item.destroy()

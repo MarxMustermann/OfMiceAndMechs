@@ -1692,6 +1692,7 @@ class Room:
                 itemList = self.itemByCoordinates.get(pos)
                 if itemList and itemList[-1].type == "Scrap":
                     itemList[-1].amount += item.amount
+                    itemList[-1].setWalkable()
                     continue
 
             item.container = self

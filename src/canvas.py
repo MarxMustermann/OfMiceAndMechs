@@ -414,14 +414,13 @@ class Canvas:
             for char in line:
                 mapped = None
                 basePos = (offsetX+x*tileWidth*2,offsetY+y*tileHeight)
+                border_width = tileHeight//10+1
 
                 if isinstance(char, src.interaction.ItemMeta):
                     item = char.item
                     content = char.content
                     if isinstance(content, int):
                         content = self.displayChars.indexedMapping[content]
-
-                    border_width = tileHeight//10+1
 
                     if not "SDL" in src.interaction.settings:
                         src.interaction.settings["SDL"] = False

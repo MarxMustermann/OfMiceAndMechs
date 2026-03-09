@@ -1340,7 +1340,7 @@ class Room:
                                     "W":"#4af",
                                     "X":"#daa",
                                     "Y":"#1aa",
-                                    "Z":"#03a",
+                                    "Z":"#73a",
                                     }
                             color = colormap.get(character.name[0])
                             if not color:

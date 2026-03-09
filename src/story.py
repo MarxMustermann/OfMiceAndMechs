@@ -2079,7 +2079,7 @@ This memorial contains:
         scrapStorage_room.addItem(item,(11,1,0))
 
 
-        for pos in [(3,10,0),(4,10,0),(5,10,0)]:
+        for pos in [(3,9,0),(4,9,0),(5,9,0)]:
             scrapStorage_room.addWalkingSpace(pos)
         item = src.items.itemMap["MemorialPlate"](inscription="""
 "The more riches you have the more storage you need,

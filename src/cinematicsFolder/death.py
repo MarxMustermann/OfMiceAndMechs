@@ -6,15 +6,6 @@ import tcod
 import tcod.constants
 
 import src
-import src.gamestate
-import src.helpers
-import src.interaction
-import src.menuFolder
-import src.menuFolder.characterStatsMenu
-import src.pseudoUrwid
-import src.story
-import src.urwidSpecials
-
 
 def in_dest(source, target, radius):
     return pow(target[0] - source[0], 2) + pow(target[1] - source[1], 2) <= pow(radius, 2)

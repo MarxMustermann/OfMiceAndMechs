@@ -6,6 +6,7 @@ class Mechanical_Crawler(src.monster.Monster):
     is intended as temple guard
     """
     charType = "Mechanical crawler"
+
     def __init__(
         self,
         display="st",
@@ -50,6 +51,8 @@ class Mechanical_Crawler(src.monster.Monster):
         self.maxHealth = basehealth+basehealth*0.25*self.level
         self.health = self.maxHealth
         self.baseDamage = baseRawDamage+(baseRawDamage*0.5*self.level)
+
+        self.charType = "Mechanical crawler"
 
     def changed(self, tag="default", info=None):
         if tag == "pickup bolted fail":

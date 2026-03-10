@@ -3544,7 +3544,7 @@ This memorial contains:
         mainChar.duties = ["praying","city planning","clone spawning",]
         mainChar.rank = 6
         mainChar.timeTaken = 1
-        mainChar.runCommandString(".",nativeKey=True)
+        #mainChar.runCommandString(".",nativeKey=True)
 
         mainChar.personality["viewChar"] = "name"
         mainChar.personality["viewColour"] = "name"
@@ -3619,7 +3619,7 @@ This memorial contains:
         mainChar.duties = ["praying","city planning","clone spawning",]
         mainChar.rank = 6
         mainChar.timeTaken = 1
-        mainChar.runCommandString(".",nativeKey=True)
+        #mainChar.runCommandString(".",nativeKey=True)
 
         mainChar.personality["viewChar"] = "name"
         mainChar.personality["viewColour"] = "name"
@@ -3701,7 +3701,8 @@ This memorial contains:
         mainChar.duties = ["praying","city planning","clone spawning",]
         mainChar.rank = 6
         mainChar.timeTaken = 1
-        mainChar.runCommandString(".",nativeKey=True)
+        #mainChar.runCommandString(".",nativeKey=True)
+        mainChar.takeTime(1,reason="dizzy")
 
         mainChar.personality["viewChar"] = "name"
         mainChar.personality["viewColour"] = "name"

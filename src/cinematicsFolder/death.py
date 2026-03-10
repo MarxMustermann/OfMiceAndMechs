@@ -6,6 +6,7 @@ import tcod
 import tcod.constants
 
 import src
+import src.pseudoUrwid
 
 def in_dest(source, target, radius):
     return pow(target[0] - source[0], 2) + pow(target[1] - source[1], 2) <= pow(radius, 2)
@@ -83,7 +84,10 @@ def Death(extraParam):
 
         text = f"{reason}\n"
         if killer:
-            text += f"by {killer.name}\n"
+            if isinstance(killer,src.characters.characterMap["Clone"]):
+                text += f"by {killer.name}\n"
+            else:
+                text += f"by {killer.type}\n"
         text += "The last bit of your life force left your body and you died.\n"
         text += "But something else left your body as well.\n"
         text += "It took over another clone from your base.\n"

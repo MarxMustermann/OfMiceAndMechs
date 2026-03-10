@@ -109,9 +109,7 @@ class GooFlask(src.items.Item):
 
         text = super().getLongInfo(character)
         text += f"""
-You can drink from the GooFlask to gain new satiation.
-If your satiation drops to 0 you will die.
-Equip the GooFlask to drink automatically.
+Goo is nureshment for Clones. It is needed to spawn new Clones.
 
 A GooFlask can be refilled at a GooDispenser and can hold a maximum of {self.maxUses} charges.
 The flask has {self.uses} charges.

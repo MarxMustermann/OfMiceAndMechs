@@ -109,7 +109,7 @@ class GooFlask(src.items.Item):
 
         text = super().getLongInfo(character)
         text += f"""
-Goo is nureshment for Clones. It is needed to spawn new Clones.
+Goo is nurishment for Clones. It is needed to spawn new Clones.
 
 A GooFlask can be refilled at a GooDispenser and can hold a maximum of {self.maxUses} charges.
 The flask has {self.uses} charges.

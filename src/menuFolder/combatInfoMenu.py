@@ -60,7 +60,7 @@ class CombatInfoMenu(src.subMenu.SubMenu):
             text += f"name:        {name} {enemy.getSpacePosition()}\n"
             text += f"health:      {enemy.health}/{enemy.adjustedMaxHealth}\n"
             try:
-                enamy.level
+                enemy.level
             except:
                 enemy.level = None
             if enemy.level:

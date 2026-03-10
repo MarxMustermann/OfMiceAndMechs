@@ -6158,10 +6158,11 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
                 if key in (tcod.event.KeySym.x,):
                     if manage_worlds:
-                        rawState["worlds"].remove(rawState["worlds"][index])
-                        saves = rawState["worlds"]
-                        with open("gamestate/globalInfo.json", "w") as globalInfoFile:
-                            json.dump(rawState, globalInfoFile)
+                        if index < len(rawState["worlds"]):
+                            rawState["worlds"].remove(rawState["worlds"][index])
+                            saves = rawState["worlds"]
+                            with open("gamestate/globalInfo.json", "w") as globalInfoFile:
+                                json.dump(rawState, globalInfoFile)
 
                 if manage_worlds:
                     if key in (tcod.event.KeySym.s, tcod.event.KeySym.DOWN,):

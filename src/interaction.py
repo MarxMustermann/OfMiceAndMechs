@@ -5384,6 +5384,13 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
     change_game_settings = False
 
     while 1:
+        try:
+            # register the save
+            with open("gamestate/globalInfo.json") as globalInfoFile:
+                rawState = json.loads(globalInfoFile.read())
+        except:
+            rawState = {"worlds": [],"customPrefabs":[],"lastGameIndex":0,"wordCounter":0}
+
         if gameIndex >= len(rawState["worlds"]):
             gameIndex = 0
 
@@ -5394,13 +5401,6 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
         tcodConsole.clear()
         time.sleep(0.01)
-
-        try:
-            # register the save
-            with open("gamestate/globalInfo.json") as globalInfoFile:
-                rawState = json.loads(globalInfoFile.read())
-        except:
-            rawState = {"worlds": [],"customPrefabs":[],"lastGameIndex":0,"wordCounter":0}
 
         saves = rawState["worlds"]
 

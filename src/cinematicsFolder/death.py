@@ -13,7 +13,6 @@ def in_dest(source, target, radius):
 
 def Death(extraParam):
     character = extraParam["character"]
-    print(character.macroState)
 
     runStar = False
     for key in character.macroState["commandKeyQueue"]:

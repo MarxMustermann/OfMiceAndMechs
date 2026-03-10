@@ -32,8 +32,12 @@ class CombatInfoMenu(src.subMenu.SubMenu):
             char.level = None
 
         if not self.sidebared:
+            name = char.charType
+            if isinstance(char,src.characters.characterMap["Clone"]):
+                name = char.name
+
             text += "you: \n\n"
-            text += f"name:        {char.name} {char.getSpacePosition()}\n"
+            text += f"name:        {name} {char.getSpacePosition()}\n"
             text += f"health:      {char.health}/{char.adjustedMaxHealth}\n"
             if char.level:
                 text += f"level:       {char.level}\n"
@@ -48,8 +52,12 @@ class CombatInfoMenu(src.subMenu.SubMenu):
 
         enemies = char.getNearbyEnemies()
         for enemy in enemies:
+            name = enemy.charType
+            if isinstance(enemy,src.characters.characterMap["Clone"]):
+                name = enemy.name
+
             text += "-------------  \n"
-            text += f"name:        {enemy.name} {enemy.getSpacePosition()}\n"
+            text += f"name:        {name} {enemy.getSpacePosition()}\n"
             text += f"health:      {enemy.health}/{enemy.adjustedMaxHealth}\n"
             try:
                 enamy.level
@@ -66,8 +74,12 @@ class CombatInfoMenu(src.subMenu.SubMenu):
 subordinates:
 """
         for ally in char.subordinates:
+            name = ally.charType
+            if isinstance(ally,src.characters.characterMap["Clone"]):
+                name = ally.name
+
             text += "-------------  \n"
-            text += f"name:        {ally.name} {ally.getSpacePosition()}\n"
+            text += f"name:        {name} {ally.getSpacePosition()}\n"
             text += f"health:      {ally.health}/{ally.adjustedMaxHealth}\n"
             try:
                 ally.level

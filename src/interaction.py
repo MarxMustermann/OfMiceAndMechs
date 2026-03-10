@@ -173,7 +173,7 @@ def advanceGame():
 
     # auto save
     if settings.get("auto save"):
-        if src.gamestate.gamestate.tick % 150 == 0:
+        if src.gamestate.gamestate.tick % 150 == 0 and not src.gamestate.gamestate.savedThisTurn:
             src.gamestate.gamestate.save()
             src.gamestate.gamestate.mainChar.addMessage("auto saved")
 

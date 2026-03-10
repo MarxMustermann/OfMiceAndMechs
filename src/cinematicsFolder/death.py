@@ -87,7 +87,7 @@ def Death(extraParam):
             if isinstance(killer,src.characters.characterMap["Clone"]):
                 text += f"by {killer.name}\n"
             else:
-                text += f"by {killer.type}\n"
+                text += f"by {killer.charType}\n"
         text += "The last bit of your life force left your body and you died.\n"
         text += "But something else left your body as well.\n"
         text += "It took over another clone from your base.\n"
@@ -158,7 +158,10 @@ def Death(extraParam):
 
     text = f"{reason}\n"
     if killer:
-        text += f"by {killer.name}\n"
+        if isinstance(killer,src.characters.characterMap["Clone"]):
+            text += f"by {killer.name}\n"
+        else:
+            text += f"by {killer.charType}\n"
 
     text += "press s to see the characters stats\n"
     text += "press enter to return to main menu"

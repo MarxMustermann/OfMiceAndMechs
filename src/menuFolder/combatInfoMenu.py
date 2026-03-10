@@ -89,8 +89,8 @@ subordinates:
                 text += f"level:       {ally.level}\n"
             text += f"exhaustion:  {ally.exhaustion}\n"
             text += f"timeTaken:   {round(ally.timeTaken,2)}\n"
-            text += f"movemmentsp: {enemy.adjustedMovementSpeed}\n"
-            text += f"attacksp:    {enemy.attackSpeed}\n"
+            text += f"movemmentsp: {ally.adjustedMovementSpeed}\n"
+            text += f"attacksp:    {ally.attackSpeed}\n"
 
         return text
 

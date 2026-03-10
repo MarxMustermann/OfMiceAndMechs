@@ -709,7 +709,7 @@ def moveCharacter(direction,char,noAdvanceGame,header,urwid,dash=False):
 
         # remember items bumped into for possible interaction
         if item:
-            char.addMessage("You cannot walk there " + str(direction))
+            char.addMessage("You bump into a "+item.name+"\nso you cannot walk " + str(direction) + ".\nYou can press j/k/c now to interact with the item.")
             if not noAdvanceGame:
                 if header:
                     header.set_text(

@@ -594,7 +594,7 @@ class Item:
         # reformat options for menu
         text = ""
         if not options:
-            text += "this machine cannot be configured, press any key to continue"
+            text += "This machine cannot be configured, press any key to continue"
         else:
             for (key, value) in options.items():
                 text += f"{key}: {value[0]}\n"

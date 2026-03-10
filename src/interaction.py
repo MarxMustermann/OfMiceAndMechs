@@ -5362,7 +5362,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
         start_name = "start run"
         if gameIndex < len(saves):
             start_name = "continue run"
-        main_menu_entries = [start_name,"open feedback form","manage worlds","change game settings",]
+        main_menu_entries = [start_name,"open feedback form","change game settings","manage worlds",]
 
         tcodConsole.clear()
         time.sleep(0.01)

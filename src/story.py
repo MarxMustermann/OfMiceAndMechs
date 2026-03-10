@@ -3893,6 +3893,8 @@ What may i help you with?
                 options.append((name, "i want to watch the room burn"))
                 extraDescriptions[name] = """
 It surely will be spectacular.
+Wait by pressing "."
+"." is a period "," is a comma
 """
 
             if not self.has_shown_HelpMenu and src.gamestate.gamestate.tick < 30:

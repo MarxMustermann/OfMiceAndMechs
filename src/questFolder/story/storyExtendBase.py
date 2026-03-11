@@ -280,14 +280,7 @@ class StoryExtendBase(src.quests.MetaQuestSequence):
             reasonString = f", to {self.reason}"
 
         text = [f"""
-Clear the terrain from all enemies{reasonString}.
-
-There are several types of enemies, that have different behaviour.
-I'll show you how to deal with each of them,
-but as long as the enemies die you get the promotion.
-So experiment on your own on how to best beat the enemies.
-
-Remember that the base provides you with important ressources and healing.
+We need to build more rooms{reasonString}.
 """]
         return text
 

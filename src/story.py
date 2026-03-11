@@ -4247,7 +4247,7 @@ the base is safe for the moment, but there is a lot left to do.\n"""
             if not src.gamestate.gamestate.stern.get("failedContact2"):
                 text += """
 The base seems to be empty and i recommend we should try to contact command."""
-                if src.gamestate.gamestate.stern.get("failedContact1"):
+                if src.gamestate.gamestate.stern.get("failedContact1") and mainChar.rank > 5:
                     text += """
 We need get promoted to rank 5 to contact command"""
                 if src.gamestate.gamestate.stern.get("rank5promotionfailed") and not self._get_free_clones(mainChar):
@@ -4274,7 +4274,7 @@ The snatchers will kill everybody stepping outside, you may want to kill them.
 """
                         if terrain.getEnemiesOnTile(mainChar,(8,7,0)):
                             text += """
-The old buildsite is overrun with siders.
+The old buildsite is overrun with spiders.
 You need to kill them before the room can be build.
 """
                     elif self._get_available_rooms(mainChar):

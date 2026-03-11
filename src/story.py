@@ -2347,8 +2347,11 @@ This memorial contains:
 Wall are built from a Case and MetalBars.
 Most big items are built from Cases.
 
+The production chain for Cases is as follows:
+
 The MetalBars have to be formed into Rods.
-The Rods need to F
+The Rods need to formed into Frames.
+Finally the Cases can be crafted from Frames.
 
 
 This memorial contains:
@@ -4244,14 +4247,14 @@ the base is safe for the moment, but there is a lot left to do.\n"""
             if not src.gamestate.gamestate.stern.get("failedContact2"):
                 text += """
 The base seems to be empty and i recommend we should try to contact command."""
-                if not src.gamestate.gamestate.stern.get("failedContact1"):
+                if src.gamestate.gamestate.stern.get("failedContact1"):
                     text += """
 We need get promoted to rank 5 to contact command"""
-                if not src.gamestate.gamestate.stern.get("rank5promotionfailed"):
+                if src.gamestate.gamestate.stern.get("rank5promotionfailed"):
                     text += """
 We need to spawn a backup clone to be able to reach rank 5.
 """
-            if not src.gamestate.gamestate.stern.get("failedBaseContact2"):
+            elif not src.gamestate.gamestate.stern.get("failedBaseContact2"):
                 text += """
 The base seems to be abandoned and i recommend we should try to contact the main base."""
                 if src.gamestate.gamestate.stern.get("failedBaseContact1") and mainChar.rank > 2:

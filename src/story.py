@@ -2120,7 +2120,6 @@ This memorial contains:
             for offset in [(0,1,0),(1,1,0),(2,1,0),(-2,1,0),(-1,1,0)]:
                 manufacturing_room.addWalkingSpace((pos[0]+offset[0],pos[1]+offset[1],pos[2]+offset[2]))
 
-
         resource_fetching_npc = src.characters.characterMap["Clone"]()
         resource_fetching_npc.questsDone = [
                 "NaiveMoveQuest",
@@ -2340,8 +2339,28 @@ This memorial contains:
         wall_manufacturing_room.addWalkingSpace((5,4,0))
         wall_manufacturing_room.addWalkingSpace((3,6,0))
             
+        for pos in [(9,3,0),(8,3,0),(7,3,0)]:
+            wall_manufacturing_room.addWalkingSpace(pos)
+        item = src.items.itemMap["MemorialPlate"](inscription="""
+"Strong Walls are the basis of all society"
+
+Wall are built from a Case and MetalBars.
+Most big items are built from Cases.
+
+The MetalBars have to be formed into Rods.
+The Rods need to F
+
+
+This memorial contains:
+* 2 ScrapComactors
+* 8 ManufacturingTables
+* preserved Clone - manufacturing duty (ma)
+""")
+        wall_manufacturing_room.addItem(item,(9,3,0))
+
 
         manufacturing_npc = src.characters.characterMap["Clone"]()
+        manufacturing_npc.name = "Martha Alister"
         manufacturing_npc.questsDone = [
                 "NaiveMoveQuest",
                 "MoveQuestMeta",
@@ -2440,8 +2459,32 @@ This memorial contains:
             for x in (1,2,3,4,5,6,7,8,9,10,11,):
                 food_processing_room.addWalkingSpace((x,y,0))
 
+        for pos in [(3,3,0),(4,3,0),(5,3,0)]:
+            food_processing_room.addWalkingSpace(pos)
+        item = src.items.itemMap["MemorialPlate"](inscription="""
+"Love and envy is the source of all conflict"
+
+With the creation goo the reproduction problem was solved. 
+New Clones can be grown using this goo.
+That is fast and reliable.
+
+First MoldSeed has to be planted and after some time its Blooms can be harversted.
+Those have to be shredded, pressed and then can be transformed into goo.
+
+100 Blooms are needed to fill a GooFlask.
+
+This memorial contains:
+* 2 BloomShredder
+* 2 PressCake
+* 2 GooProducer
+* 2 GooDispenser
+* preserved Clone - cleaning duty (cl)
+""")
+        food_processing_room.addItem(item,(3,3,0))
+
 
         cleaning_npc = src.characters.characterMap["Clone"]()
+        cleaning_npc.name = "Carli Languish"
         cleaning_npc.questsDone = [
                 "NaiveMoveQuest",
                 "MoveQuestMeta",
@@ -3891,11 +3934,12 @@ What may i help you with?
             if terrain.getRoomByPosition((7,7,0)):
                 name = "explosion"
                 options.append((name, "i want to watch the room burn"))
-                extraDescriptions[name] = """
+                extraDescriptions[name] = ["""
 It surely will be spectacular.
-Wait by pressing "."
+
+Wait by pressing "." (period)""",(src.interaction.urwid.AttrSpec("#ff0","black"),"""
 "." is a period "," is a comma
-"""
+"""),]
 
             if not self.has_shown_HelpMenu and src.gamestate.gamestate.tick < 30:
                 name = "help"

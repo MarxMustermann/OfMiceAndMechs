@@ -8,7 +8,7 @@ class GrowthTank(src.items.Item):
     """
 
     type = "GrowthTank"
-    description = "Produces Clones"
+    description = "is used to spawn Clones using goo"
     def __init__(self, filled=False):
         """
         setting properties of the base class
@@ -18,13 +18,12 @@ class GrowthTank(src.items.Item):
 
         self.name = "growth tank"
         self.usageInfo = """
-Fill a growth tank to prepare it for generating an npc.
-You can fill it by activating it with a full goo flask in your inventory.
+Fill the GrowthTank to prepare it for spawning a Clone.
+You can fill it by activating it with a full GooFlask.
+The GooFlask can be in your inventory or in the space to the west of it.
 
-Activate a filled growth tank to spawn a new npc.
-Wake the NPC by taking to the NPC.
-
-You talk to NPCs by pressing h and selecting the NPC to talk to.
+Activate a filled growth tank to spawn a new Clone.
+After spawned the Clone will activate the Command to the east of the GrowthTank.
 """
 
         self.runsCommands = True

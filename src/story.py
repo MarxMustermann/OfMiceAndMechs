@@ -5106,7 +5106,7 @@ This will close the tutorial and let you do your own thing.
             return
 
         if quest_type == "complete build site":
-            quest = src.quests.questMap["StoryExtendBase"](reason="be able to get promoted to base commander.\nThis will allow you to contact main base")
+            quest = src.quests.questMap["StoryExtendBase"](reason="be able to get promoted to base commander.\nThis will allow you to contact the main base")
             self.addQuest(quest,character)
             return
 

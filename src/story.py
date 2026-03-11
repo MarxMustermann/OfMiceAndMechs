@@ -4250,7 +4250,7 @@ The base seems to be empty and i recommend we should try to contact command."""
                 if src.gamestate.gamestate.stern.get("failedContact1"):
                     text += """
 We need get promoted to rank 5 to contact command"""
-                if src.gamestate.gamestate.stern.get("rank5promotionfailed"):
+                if src.gamestate.gamestate.stern.get("rank5promotionfailed") and not self._get_free_clones(mainChar):
                     text += """
 We need to spawn a backup clone to be able to reach rank 5.
 """

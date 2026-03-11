@@ -23,7 +23,8 @@ You can fill it by activating it with a full GooFlask.
 The GooFlask can be in your inventory or in the space to the west of it.
 
 Activate a filled growth tank to spawn a new Clone.
-After spawned the Clone will activate the Command to the east of the GrowthTank.
+A Growthtank needs to be filled with at least 100 goo. to be able to spawn a Clone.
+After getting spawned the Clone will activate the item to the east of the GrowthTank.
 """
 
         self.runsCommands = True

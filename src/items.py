@@ -3,10 +3,14 @@ items and item related code belongs here
 """
 
 import logging
+import os
+import numpy as np
 
 import src
 
 logger = logging.getLogger(__name__)
+
+textures = {}
 
 class Item:
     '''
@@ -48,7 +52,31 @@ class Item:
     description = "missing description"
 
     def drawSDL(self, renderer, basePos, fg_color=(255,255,255,255), bg_color=(0,0,0,255), tileSize=None):
-        pass
+        if tileSize is None:
+            tileSize = src.interaction.tileHeight
+
+        identifier = (self.type,fg_color,bg_color)
+        if not identifier in textures:
+            base_path = "config/tiles/"
+            path = base_path+self.type+".png"
+
+            if os.path.exists(path):
+
+                tile = src.interaction.tcod.image.Image.from_file(path)
+                for x_index in range(0,tile.width):
+                    for y_index in range(0,tile.height):
+                        color = tile.get_pixel(x_index,y_index)
+                        if color == (255, 255, 255):
+                            tile.put_pixel(x_index,y_index,fg_color[:3])
+                        if color == (0, 0, 0):
+                            tile.put_pixel(x_index,y_index,bg_color[:3])
+                texture = renderer.upload_texture(np.asarray(tile))
+                textures[identifier] = texture
+                print("rebuilding",self.type+".png",identifier)
+
+        texture = textures.get(identifier)
+        if texture:
+            renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileSize,tileSize),)
 
     def getTerrainPosition(self):
         '''

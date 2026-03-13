@@ -175,6 +175,20 @@ class StoryExtendBase(src.quests.MetaQuestSequence):
                     if not character.getFreeInventorySpace():
                         quest = src.quests.questMap["ClearInventory"](tryHard=True, reason="have space for storing Walls")
                         return ([quest],None)
+
+                    if character.getBigPosition() == (8,7,0):
+                        for item in terrain.getNearbyItems(character):
+                            if item.type != "Wall":
+                                continue
+                            small_pos = item.getSmallPosition()
+                            if small_pos[0] in (1,13) or small_pos[1] in (1,13):
+                                continue
+
+                            print(item.getBigPosition())
+                            print(small_pos)
+                            quest = src.quests.questMap["CleanSpace"](targetPosition=small_pos, targetPositionBig=item.getBigPosition(), reason="pick up a Wall")
+                            return ([quest],None)
+
                     quest = src.quests.questMap["StoryScavengeWalls"](reason="have Walls to complete building the room")
                     return ([quest],None)
         else:

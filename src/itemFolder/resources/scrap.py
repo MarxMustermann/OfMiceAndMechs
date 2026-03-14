@@ -91,13 +91,42 @@ class Scrap(src.items.Item):
             return src.canvas.displayChars.scrap_heavy
 
     def drawSDL(self, renderer, basePos, fg_color=(255,255,255,255), bg_color=(0,0,0,255), tileSize=None):
+
+        # select the base tile
         if self.amount < 5:
             tile_name = "Scrap_1"
         elif self.amount < 15:
             tile_name = "Scrap_2"
         else:
             tile_name = "Scrap_3"
-        self.drawTileSDL(renderer, basePos, fg_color=fg_color, bg_color=bg_color, tileSize=tileSize, tileName=tile_name)
+
+        # select the borders to show
+        if self.amount < 5:
+            borders = (False,False,False,False)
+        elif not self.container:
+            borders = (True,True,True,True)
+        else:
+            borders = [] 
+            for offset in ((0,-1,0),(-1,0,0),(0,1,0),(1,0,0)):
+
+                items = self.container.getItemByPosition(self.getPosition(offset=offset))
+                if not items:
+                    borders.append(True)
+                    continue 
+
+                if not items[0].type == "Scrap":
+                    borders.append(True)
+                    continue 
+
+                if items[0].amount < 5:
+                    borders.append(True)
+                    continue 
+
+                borders.append(False)
+
+            borders = tuple(borders)
+
+        self.drawTileSDL(renderer, basePos, fg_color=fg_color, bg_color=bg_color, tileSize=tileSize, tileName=tile_name, borders=borders)
 
     def getResistance(self):
         """

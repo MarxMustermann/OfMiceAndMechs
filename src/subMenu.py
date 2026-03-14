@@ -226,7 +226,7 @@ class SubMenu(object):
         # show question
         out = []
         if self.query:
-            out.extend(["\n",self.query.strip(), "\n"])
+            out.extend(["\n",self.query, "\n"])
 
         # render the options
         extraDescription = None

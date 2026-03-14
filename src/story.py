@@ -1991,7 +1991,7 @@ This memorial contains:
                 },
                 None,
            )
-        scrapStorage_room.tag = "scrap processing"
+        scrapStorage_room.tag = "scrap storage"
         rooms_to_decorate.append(scrapStorage_room)
         item = src.items.itemMap["ScrapCompactor"]()
 

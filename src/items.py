@@ -60,8 +60,11 @@ class Item:
 
         identifier = (tileName,fg_color,bg_color)
         if not identifier in textures:
-            base_path = "config/tiles/"
+            base_path = "config/tiles_fancy/"
             path = base_path+tileName+".png"
+            if not os.path.exists(path):
+                base_path = "config/tiles/"
+                path = base_path+tileName+".png"
 
             if os.path.exists(path):
 

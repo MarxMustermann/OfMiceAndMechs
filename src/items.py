@@ -52,13 +52,16 @@ class Item:
     description = "missing description"
 
     def drawSDL(self, renderer, basePos, fg_color=(255,255,255,255), bg_color=(0,0,0,255), tileSize=None):
+        self.drawTileSDL(renderer, basePos, fg_color=fg_color, bg_color=bg_color, tileSize=tileSize, tileName=self.type)
+
+    def drawTileSDL(self, renderer, basePos, fg_color=(255,255,255,255), bg_color=(0,0,0,255), tileSize=None, tileName=""):
         if tileSize is None:
             tileSize = src.interaction.tileHeight
 
-        identifier = (self.type,fg_color,bg_color)
+        identifier = (tileName,fg_color,bg_color)
         if not identifier in textures:
             base_path = "config/tiles/"
-            path = base_path+self.type+".png"
+            path = base_path+tileName+".png"
 
             if os.path.exists(path):
 
@@ -72,7 +75,7 @@ class Item:
                             tile.put_pixel(x_index,y_index,bg_color[:3])
                 texture = renderer.upload_texture(np.asarray(tile))
                 textures[identifier] = texture
-                print("rebuilding",self.type+".png",identifier)
+                print("rebuilding",tileName+".png",identifier)
 
         texture = textures.get(identifier)
         if texture:

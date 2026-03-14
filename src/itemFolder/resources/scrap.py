@@ -90,6 +90,15 @@ class Scrap(src.items.Item):
         else:
             return src.canvas.displayChars.scrap_heavy
 
+    def drawSDL(self, renderer, basePos, fg_color=(255,255,255,255), bg_color=(0,0,0,255), tileSize=None):
+        if self.amount < 5:
+            tile_name = "Scrap_1"
+        elif self.amount < 15:
+            tile_name = "Scrap_2"
+        else:
+            tile_name = "Scrap_3"
+        self.drawTileSDL(renderer, basePos, fg_color=fg_color, bg_color=bg_color, tileSize=tileSize, tileName=tile_name)
+
     def getResistance(self):
         """
         get resistance to being moved depending on size

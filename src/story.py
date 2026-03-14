@@ -994,6 +994,7 @@ class MainGame(BasicPhase):
         self.has_shown_observeMenu = False
         self.has_shown_welcome = False
         self.last_worker_spawn = -2000
+        self.last_implant_interaction = -100
         super().__init__("MainGame", seed=seed)
 
     def get_free_position(self,tag):
@@ -3871,10 +3872,47 @@ This memorial contains:
         if not src.gamestate.gamestate.stern.get("first_reachout_done"):
             src.gamestate.gamestate.stern["first_reachout_done"] = True
 
+        # get helper variables
         mainChar = self.activeStory["mainChar"]
         homeTerrain = src.gamestate.gamestate.terrainMap[mainChar.registers["HOMETy"]][mainChar.registers["HOMETx"]]
 
+        # reduce edge cases
         if len(mainChar.quests) > 1 or (mainChar.quests and mainChar.quests[0].type != "ReachOutStory"):
+            return
+
+        # prevent implant
+        if self.last_implant_interaction > src.gamestate.gamestate.tick - 100 and src.gamestate.gamestate.tick > 200:
+            options = []
+            extraDescriptions = {}
+            text = f"""
+You reach out to the implant and it responds:
+
+Malfunction ... resetting. {100-(src.gamestate.gamestate.tick - self.last_implant_interaction)} ticks remaining
+
+
+"""
+
+            name = "wait implant"
+            options.append((name, "wait implant recover"))
+            extraDescriptions[name] = ["""
+Wait for the implant to recover again""",]
+
+            name = "implant no wait"
+            options.append((name, "leave me alone"))
+            extraDescriptions[name] = """
+Give up on reaching out to the implant for now.
+"""
+
+
+            submenu = src.menuFolder.selectionMenu.SelectionMenu(
+                text, options, tag="player_quest_selection", targetParamName="quest_type",extraDescriptions=extraDescriptions
+            )
+            submenu.followUp = {"container":self,"method":"handle_player_intro_lab_quest_choice","params":{"character":mainChar}}
+            mainChar.add_submenu(submenu)
+
+            quest = src.quests.questMap["Decide"]()
+            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
             return
 
         # go home when lost
@@ -4660,6 +4698,15 @@ This will close the tutorial and let you do your own thing.
 
         character.clear_quests()
 
+        if quest_type not in ("leave me alone","implant no wait",None,):
+            self.last_implant_interaction = src.gamestate.gamestate.tick
+
+        if quest_type == "wait implant":
+            quest = src.quests.questMap["WaitQuest"](lifetime=99,batchWait=True)
+            self.addQuest(quest,character)
+            self.clear_implant_quest(character)
+            return
+
         if quest_type == "watch worker":
             quest = src.quests.questMap["WaitQuest"](lifetime=99,batchWait=True)
             self.addQuest(quest,character)
@@ -4778,6 +4825,10 @@ This will close the tutorial and let you do your own thing.
             self.clear_implant_quest(character)
             return
 
+        if quest_type == "implant no wait":
+            character.showTextMenu("\nTry contacting the implant later by pressing q\n",do_not_scale=True)
+            src.gamestate.gamestate.stern["first_silenced"] = True
+            return
 
         if quest_type == "leave me alone":
             character.showTextMenu("\nAs you wish.\n\n\n\nand as you surely remember:\n\nYou can contact me again later by pressing q\n",do_not_scale=True)

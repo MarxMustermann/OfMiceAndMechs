@@ -4826,7 +4826,8 @@ This will close the tutorial and let you do your own thing.
             return
 
         if quest_type == "implant no wait":
-            character.showTextMenu("\nTry contacting the implant later by pressing q\n",do_not_scale=True)
+            if not src.gamestate.gamestate.stern.get("first_silenced"):
+                character.showTextMenu("\nTry contacting the implant later by pressing q\n",do_not_scale=True)
             src.gamestate.gamestate.stern["first_silenced"] = True
             return
 

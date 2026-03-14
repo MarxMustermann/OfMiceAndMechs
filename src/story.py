@@ -3885,16 +3885,18 @@ This memorial contains:
         if self.last_implant_interaction > src.gamestate.gamestate.tick - 100 and src.gamestate.gamestate.tick > 200:
             options = []
             extraDescriptions = {}
-            text = f"""
-You reach out to the implant and it responds:
+            text = [f"""
+You reach out to the implant and it responds.
 
-Malfunction ... resetting. {100-(src.gamestate.gamestate.tick - self.last_implant_interaction)} ticks remaining
+Malfunction ... resetting submodule:
 
+""",(src.interaction.urwid.AttrSpec("#ff0","black"),f"""{100-(src.gamestate.gamestate.tick - self.last_implant_interaction)} ticks remaining"""),"""
 
-"""
+please stand by
+""",]
 
             name = "wait implant"
-            options.append((name, "wait implant recover"))
+            options.append((name, "wait for the implant reset"))
             extraDescriptions[name] = ["""
 Wait for the implant to recover again""",]
 

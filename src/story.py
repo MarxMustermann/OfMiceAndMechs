@@ -2009,11 +2009,12 @@ This memorial contains:
 
         for y in (1,3,5,7,9,11):
             for x in (7,8,9,10,11,):
+                if (y,x) == (10,1):
+                    scrapStorage_room.addWalkingSpace((x,y,0))
+                    continue
                 scrapStorage_room.addStorageSlot((x,y,0),"Scrap",{"desiredState":"filled"})
         for y in (2,4,6,8,10):
             for x in (7,8,9,10,11,):
-                if (y,x) == (10,1):
-                    continue
                 scrapStorage_room.addWalkingSpace((x,y,0))
         scrapStorage_room.addWalkingSpace((10,1,0))
 

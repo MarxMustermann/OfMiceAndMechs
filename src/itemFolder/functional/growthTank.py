@@ -36,6 +36,11 @@ After getting spawned the Clone will activate the item to the east of the Growth
                 ("born", "set command for newly born npcs"),
             ]
 
+    def drawSDL(self, renderer, basePos, fg_color=(255,255,255,255), bg_color=(0,0,0,255), tileSize=None):
+        tile_name = self.type
+        if self.filled:
+            tile_name += "_filled"
+        self.drawTileSDL(renderer, basePos, fg_color=fg_color, bg_color=bg_color, tileSize=tileSize, tileName=tile_name)
 
     def render(self):
         """

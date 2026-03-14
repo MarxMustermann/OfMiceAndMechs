@@ -4305,6 +4305,7 @@ Please select on what to focus next:
             showed_spawn_option = False
             showed_start_alarm_option = False
             showed_stop_alarm_option = False
+            showed_schedule_room_building_option = False
             options = []
             extraDescriptions = {}
 
@@ -4313,6 +4314,13 @@ Please select on what to focus next:
                 options.append((name, "set floor plan"))
                 extraDescriptions[name] = """
 You should make use of the rooms you have built.
+"""
+            if self._get_available_room_placements(mainChar) and not self._get_scheduled_built_sites(mainChar) and terrain.getRoomByPosition((8,7,0)):
+                showed_schedule_room_building_option = True
+                name = "schedule room building"
+                options.append((name, "schedule room building"))
+                extraDescriptions[name] = """
+You should shedule building more rooms.
 """
             if not terrain.alarm and self._get_snatchers(mainChar):
                 name = "start alarm"
@@ -5016,6 +5024,28 @@ This will close the tutorial and let you do your own thing.
                             found_rooms.append(room)
         return found_rooms
 
+    def _get_scheduled_built_sites(self,character):
+        terrain = character.getTerrain()
+        room = terrain.getRoomByPosition((7,7,0))[0]
+        cityPlaner = room.getItemByType("CityPlaner",needsBolted=True)
+        return cityPlaner.plannedRooms[:]
+
+    def _get_available_room_placements(self,character):
+        terrain = character.getTerrain()
+
+        planned_room = self._get_scheduled_built_sites(character)
+
+        possible_placements = []
+        for candidate in [(8,6,0),(8,8,0)]:
+            if terrain.getRoomByPosition(candidate):
+                continue
+            if candidate in planned_room:
+                continue
+            
+            possible_placements.append(candidate)
+
+        return possible_placements
+
     def _get_floorplans_to_set(self,character):
         terrain = character.getTerrain()
 
@@ -5051,6 +5081,16 @@ This will close the tutorial and let you do your own thing.
         src.interaction.send_tracking_ping("handle_player_quest_choice"+"__"+str(quest_type))
 
         character.clear_quests()
+
+        if quest_type == "schedule room building":
+            candidates = self._get_available_room_placements(character)
+            if candidates:
+                random.shuffle(candidates)
+                quest = src.quests.questMap["ScheduleRoomBuilding"](roomPosition=candidates[0])
+                quest.endTrigger = {"container": self, "method": "reachImplant"}
+                self.addQuest(quest,character)
+                self.clear_implant_quest(character)
+                return
 
         if quest_type == "maintain base defences":
 

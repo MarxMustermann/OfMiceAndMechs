@@ -2344,7 +2344,7 @@ This memorial contains:
         for pos in [(9,3,0),(8,3,0),(7,3,0)]:
             wall_manufacturing_room.addWalkingSpace(pos)
         item = src.items.itemMap["MemorialPlate"](inscription=[(src.interaction.urwid.AttrSpec("#ff0","black"),"""
-"Strong Walls are the basis of all society"
+"Strong Walls are the foundation of all society"
 """),"""
 
 Wall are built from a Case and MetalBars.

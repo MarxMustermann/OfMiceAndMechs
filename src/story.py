@@ -3967,6 +3967,7 @@ We should try find something to defend ourselves with.
             text += """
 In case you hit your head and don't remember:
 I'm your implant and i'll be helping you with your tasks.
+The most recommended option is on top.
 
 What may i help you with?
 """

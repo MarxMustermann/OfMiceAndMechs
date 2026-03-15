@@ -2083,17 +2083,17 @@ This memorial contains:
 
         for pos in [(3,9,0),(4,9,0),(5,9,0)]:
             scrapStorage_room.addWalkingSpace(pos)
-        item = src.items.itemMap["MemorialPlate"](inscription="""
+        item = src.items.itemMap["MemorialPlate"](inscription=[(src.interaction.urwid.AttrSpec("#ff0","black"),"""
 "The more riches you have the more storage you need,
-especially if you are hoarding Scrap"
+especially if you are hoarding Scrap" """),"""
 
 Scrap can be processed into MetalBars  
 And those are the base resource for almost everything.
-
+""",(src.interaction.urwid.AttrSpec("#777","black"),"""
 This memorial contains:
 * 3 ScrapComactors
 * preserved Clone - machine operation duty
-""")
+""")])
         scrapStorage_room.addItem(item,(3,9,0))
 
 
@@ -2343,9 +2343,9 @@ This memorial contains:
             
         for pos in [(9,3,0),(8,3,0),(7,3,0)]:
             wall_manufacturing_room.addWalkingSpace(pos)
-        item = src.items.itemMap["MemorialPlate"](inscription="""
+        item = src.items.itemMap["MemorialPlate"](inscription=[(src.interaction.urwid.AttrSpec("#ff0","black"),"""
 "Strong Walls are the basis of all society"
-
+"""),"""
 Wall are built from a Case and MetalBars.
 Most big items are built from Cases.
 
@@ -2355,12 +2355,12 @@ The MetalBars have to be formed into Rods.
 The Rods need to formed into Frames.
 Finally the Cases can be crafted from Frames.
 
-
+""",(src.interaction.urwid.AttrSpec("#777","black"),"""
 This memorial contains:
 * 2 ScrapComactors
 * 8 ManufacturingTables
 * preserved Clone - manufacturing duty (ma)
-""")
+"""),])
         wall_manufacturing_room.addItem(item,(9,3,0))
 
 
@@ -2466,9 +2466,9 @@ This memorial contains:
 
         for pos in [(3,3,0),(4,3,0),(5,3,0)]:
             food_processing_room.addWalkingSpace(pos)
-        item = src.items.itemMap["MemorialPlate"](inscription="""
+        item = src.items.itemMap["MemorialPlate"](inscription=[(src.interaction.urwid.AttrSpec("#ff0","black"),"""
 "Love and envy is the source of all conflict"
-
+"""),"""
 With the creation goo the reproduction problem was solved. 
 New Clones can be grown using this goo.
 That is fast and reliable.
@@ -2478,13 +2478,14 @@ Those have to be shredded, pressed and then can be transformed into goo.
 
 100 Blooms are needed to fill a GooFlask.
 
+""",(src.interaction.urwid.AttrSpec("#777","black"),"""
 This memorial contains:
 * 2 BloomShredder
 * 2 PressCake
 * 2 GooProducer
 * 2 GooDispenser
 * preserved Clone - cleaning duty (cl)
-""")
+"""),])
         food_processing_room.addItem(item,(3,3,0))
 
 

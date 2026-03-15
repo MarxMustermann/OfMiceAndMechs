@@ -1070,7 +1070,7 @@ class MainGame(BasicPhase):
         if self.preselection == "Story":
             self.sternsBasePosition = self.get_free_position("the architects base")
             self.setUpSternsBase(self.sternsBasePosition)
-            self.architectsLabPosition = self.get_free_position("the architects tomb")
+            self.architectsLabPosition = self.get_free_position("the architects mausoleum")
             self.setUpArchitectsLab(self.architectsLabPosition)
         elif self.preselection == "baseBuilder":
             self.playerBasePosition = self.get_free_position("player base")
@@ -1631,7 +1631,7 @@ but they are likely to explode when disturbed.
 
     def setUpArchitectsLab(self,pos):
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
-        currentTerrain.tag = "the architects tomb"
+        currentTerrain.tag = "the architects mausoleum"
         currentTerrain.maxMana = 50
 
         thisFactionId = self.factionCounter
@@ -3905,7 +3905,7 @@ please stand by
 Wait for the implant to recover again""",]
 
             name = "implant no wait"
-            options.append((name, "leave me alone"))
+            options.append((name, "continue without using implant"))
             extraDescriptions[name] = """
 Give up on reaching out to the implant for now.
 """
@@ -4818,7 +4818,7 @@ This will close the tutorial and let you do your own thing.
             return
 
         if quest_type == "observe":
-            character.showTextMenu("\nyou can open the observation menu by pressing o\n(after closing this menu by pressing esc)\n\nThis menu will show you the description of the items around you.\nSelect what items are shown by moving the cursor.\nYou will not move or use time while you are observing\n",do_not_scale=True)
+            character.showTextMenu("""\nyou can open the observation menu by pressing "o"\n\nThis menu will show you the description of the items around you.\nSelect what items are shown by moving the cursor.\nYou will not move or use time while you are observing\n""",do_not_scale=True,allowObserve=True)
             self.has_shown_observeMenu = True
             quest = src.quests.questMap["OpenObserveMenu"]()
             self.addQuest(quest,character)
@@ -4826,7 +4826,7 @@ This will close the tutorial and let you do your own thing.
             return
 
         if quest_type == "help":
-            character.showTextMenu("\nyou can open the help menu by pressing ?\n(after closing this menu by pressing esc)\n\nThis will show the keybindings and some general informaiton.\n\nDo this to complete this quest.\nInstructions are shown on the left side of the screen\n",do_not_scale=True)
+            character.showTextMenu("""\nyou can open the help menu by pressing "?"\n\nThis will show the keybindings and some general informaiton.\n\nDo this to complete this quest.\nInstructions are shown on the left side of the screen\n""",do_not_scale=True,allowHelp=True)
             self.has_shown_HelpMenu = True
             quest = src.quests.questMap["OpenHelpMenu"]()
             self.addQuest(quest,character)

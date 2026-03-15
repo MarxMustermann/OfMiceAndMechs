@@ -2346,6 +2346,7 @@ This memorial contains:
         item = src.items.itemMap["MemorialPlate"](inscription=[(src.interaction.urwid.AttrSpec("#ff0","black"),"""
 "Strong Walls are the basis of all society"
 """),"""
+
 Wall are built from a Case and MetalBars.
 Most big items are built from Cases.
 
@@ -2469,6 +2470,7 @@ This memorial contains:
         item = src.items.itemMap["MemorialPlate"](inscription=[(src.interaction.urwid.AttrSpec("#ff0","black"),"""
 "Love and envy is the source of all conflict"
 """),"""
+
 With the creation goo the reproduction problem was solved. 
 New Clones can be grown using this goo.
 That is fast and reliable.

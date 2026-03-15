@@ -1,5 +1,5 @@
 import src
-
+import random
 
 class Scrap(src.items.Item):
     """
@@ -24,6 +24,8 @@ class Scrap(src.items.Item):
 
         # reset walkable
         self.setWalkable()
+
+        self.tile_index = random.randint(0,2)
 
     def moveDirection(self, direction, force=1, initialMovement=True):
         """
@@ -94,11 +96,11 @@ class Scrap(src.items.Item):
 
         # select the base tile
         if self.amount < 5:
-            tile_name = "Scrap_1"
+            tile_name = "Scrap_1_"+str(self.tile_index)
         elif self.amount < 15:
-            tile_name = "Scrap_2"
+            tile_name = "Scrap_2_"+str(self.tile_index)
         else:
-            tile_name = "Scrap_3"
+            tile_name = "Scrap_3_"+str(self.tile_index)
 
         # select the borders to show
         if self.amount < 5:

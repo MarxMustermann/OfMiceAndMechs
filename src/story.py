@@ -1969,16 +1969,16 @@ May he forever rest in peace.
 
         for pos in [(7,9,0),(8,9,0),(9,9,0)]:
             scrapProccessing_room.addWalkingSpace(pos)
-        item = src.items.itemMap["MemorialPlate"](inscription="""
-"While one can pray and wish for scrap, it still needs to be hammered into form"
+        item = src.items.itemMap["MemorialPlate"](inscription=["""
+""",(src.interaction.urwid.AttrSpec("#ff0","black"),'''"While one can pray and wish for scrap, it still needs to be hammered into form"'''),"""
 
 Scrap can be processed into MetalBars  
 And those are the base resource for almost everything.
-
+""",(src.interaction.urwid.AttrSpec("#777","black"),"""
 This memorial contains:
 * 3 ScrapComactors
 * preserved Clone - machine operation duty
-""")
+"""),])
         scrapProccessing_room.addItem(item,(9,9,0))
 
         scrapStorage_room = architect.doAddRoom(

@@ -31,6 +31,7 @@ class SubMenu(object):
         self.tag = tag
         self.extraInfo ={}
         self.shift = 0
+        self.golden_border = False
 
         self.options = collections.OrderedDict()
         self.niceOptions = collections.OrderedDict()

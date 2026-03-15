@@ -51,8 +51,14 @@ class MemorialMonolith(src.items.Item):
         """
 
         if self.inscription:
-            character.addMessage(self.inscription)
-            character.showTextMenu(self.inscription)
+            character.addMessage("You read the inscription")
+
+            submenu = src.menuFolder.textMenu.TextMenu([(src.interaction.urwid.AttrSpec("#ff0","black"),self.inscription)])
+            submenu.do_not_scale = True
+            submenu.golden_border = True
+            character.add_submenu(submenu)
+            character.runCommandString("~",nativeKey=True)
+
         else:
             character.addMessage("The monolith has no inscription")
 

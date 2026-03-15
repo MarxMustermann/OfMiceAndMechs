@@ -2347,7 +2347,7 @@ This memorial contains:
 "Strong Walls are the foundation of all society"
 """),"""
 
-Wall are built from a Case and MetalBars.
+Walls are built from a Case and MetalBars.
 Most big items are built from Cases.
 
 The production chain for Cases is as follows:

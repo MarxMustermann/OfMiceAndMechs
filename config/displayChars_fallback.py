@@ -289,5 +289,5 @@ winch = "8O"
 winch_inactive = "80"
 winch_active = "iW"
 scrap_light = (AttrSpec("#830", "black"), ";~")
-scrap_medium = (AttrSpec("#740", "black"), "*,")
-scrap_heavy = (AttrSpec("#a50", "black"), "%#")
+scrap_medium = (AttrSpec("#630", "black"), "*,")
+scrap_heavy = (AttrSpec("#520", "black"), "%#")

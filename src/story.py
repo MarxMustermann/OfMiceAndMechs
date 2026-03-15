@@ -2352,9 +2352,9 @@ Most big items are built from Cases.
 
 The production chain for Cases is as follows:
 
-The MetalBars have to be formed into Rods.
-The Rods need to formed into Frames.
-Finally the Cases can be crafted from Frames.
+- The MetalBars have to be formed into Rods.
+- The Rods need to formed into Frames.
+- Finally the Cases can be crafted from Frames.
 
 """,(src.interaction.urwid.AttrSpec("#777","black"),"""
 This memorial contains:

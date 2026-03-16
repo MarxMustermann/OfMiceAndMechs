@@ -114,10 +114,9 @@ class StoryTeleport(src.quests.MetaQuestSequence):
 
     def generateTextDescription(self):
         return ["""
-You reach out to your implant and it answers:
-
-There is no base leader. This means this base got abandoned by main command.
-Comtact main command to get reregistered as colony.
+You can use the Teleporter to get out of here.
+The teleporter is in room (7,8,0).
+Use it to leave the mausoleum.
 """]
 
     def handleTeleported(self, character):

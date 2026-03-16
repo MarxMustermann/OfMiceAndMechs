@@ -197,7 +197,7 @@ class InventoryMenu(src.subMenu.SubMenu):
 
         txt = []
         if not sidebared:
-            txt.append("your inventory:\n\n")
+            txt.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"#000"),"your inventory:\n\n"))
             num_rows += 2
         if len(char.inventory):
             counter = 0

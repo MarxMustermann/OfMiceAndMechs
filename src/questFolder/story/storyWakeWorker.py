@@ -34,8 +34,15 @@ class StoryWakeWorker(src.quests.MetaQuestSequence):
         reason = ""
         if self.reason:
             reason = f", to {self.reason}"
+        position_string = ""
+        if self.targetPosition:
+            position_string = f" on position {self.targetPosition}"
+        if self.targetPositionBig:
+            position_big_string = f" in room {self.targetPositionBig}"
         return f"""
-Remove the worker from the StasisTank{reason}.
+Remove the worker from the StasisTank{position_string}{position_big_string}{reason}.
+
+Activate the StasisTank to release the worker.
 """
 
     def triggerCompletionCheck(self,character=None,dryRun=True):

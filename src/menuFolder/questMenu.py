@@ -271,16 +271,19 @@ class QuestMenu(src.subMenu.SubMenu):
                         solvingCommangString = solvingCommangString.replace("\n","\\n")
 
                 if solvingCommangString:
-                    convertedCommanString = []
-                    for letter in solvingCommangString:
-                        color = "#fff"
-                        if letter.isupper():
-                            color = src.interaction.upper_case_letter_color
-                        convertedCommanString.append((src.interaction.urwid.AttrSpec(color, "default"), letter))
-                        convertedCommanString.append(" ")
-                    if solvingCommangString in ("esc","enter","backspace",):
-                        convertedCommanString = [(src.interaction.urwid.AttrSpec("#bb9", "default"),solvingCommangString)]
-                    nextstep = [f"suggested action: \npress "]+convertedCommanString+[f" \nto {reason}\n\n"]
+                    if src.gamestate.gamestate.stern.get("command_disabled"):
+                        nextstep = [f"suggested action: \n --- command submodule disabled ---\n\n"]
+                    else:
+                        convertedCommanString = []
+                        for letter in solvingCommangString:
+                            color = "#fff"
+                            if letter.isupper():
+                                color = src.interaction.upper_case_letter_color
+                            convertedCommanString.append((src.interaction.urwid.AttrSpec(color, "default"), letter))
+                            convertedCommanString.append(" ")
+                        if solvingCommangString in ("esc","enter","backspace",):
+                            convertedCommanString = [(src.interaction.urwid.AttrSpec("#bb9", "default"),solvingCommangString)]
+                        nextstep = [f"suggested action: \npress "]+convertedCommanString+[f" \nto {reason}\n\n"]
                 else:
                     nextstep = "suggested action: \npress + \nto generate subquests\n\n"
                 if char.container.isRoom and char.container.tag == "the architects tomb":

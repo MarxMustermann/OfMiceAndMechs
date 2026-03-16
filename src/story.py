@@ -3876,6 +3876,8 @@ This memorial contains:
     def openedQuestsStory(self):
         if not src.gamestate.gamestate.stern.get("first_reachout_done"):
             src.gamestate.gamestate.stern["first_reachout_done"] = True
+        else:
+            src.gamestate.gamestate.stern["first_reachout_done"] = True
 
         # get helper variables
         mainChar = self.activeStory["mainChar"]
@@ -3885,14 +3887,47 @@ This memorial contains:
         if len(mainChar.quests) > 1 or (mainChar.quests and mainChar.quests[0].type != "ReachOutStory"):
             return
 
+        # reveal implant flaw
+        if not src.gamestate.gamestate.stern.get("revealed_implant_flaw") and src.gamestate.gamestate.tick > 200:
+            recovering_ticks_remaining = src.gamestate.gamestate.stern.get("revealed_implant_flaw_recovering",5)
+            if recovering_ticks_remaining:
+                recovering_ticks_remaining = recovering_ticks_remaining-1
+                src.gamestate.gamestate.stern["revealed_implant_flaw_recovering"] = recovering_ticks_remaining
+
+            if recovering_ticks_remaining == 4:
+                error_string = "Eerrro.or.rr.r"
+            if recovering_ticks_remaining == 3:
+                error_string = "Errrrorrrr.r.."
+            error_string = "Eeerrooorrrrrr"
+            if recovering_ticks_remaining == 2:
+                error_string = "Erroorr......."
+            if recovering_ticks_remaining == 1:
+                error_string = "Error........."
+
+            mainChar.showTextMenu("""
+You reach out to your implant, but it stutters....
+
+"""+error_string+""":   Corruption in command resolution module
+
+Tendrils of pain shoot through your implant and hurt your brain.
+
+"""+"="*recovering_ticks_remaining+""" press enter to recover """+"="*recovering_ticks_remaining+"""
+""")
+            mainChar.takeTime(2, reason="stunned by pain")
+            if src.gamestate.gamestate.stern.get("revealed_implant_flaw_recovering") == 4:
+                src.gamestate.gamestate.stern["revealed_implant_flaw"] = True 
+                self.last_implant_interaction = src.gamestate.gamestate.tick
+            else:
+                return
+
         # prevent implant
-        if self.last_implant_interaction > src.gamestate.gamestate.tick - 100 and src.gamestate.gamestate.tick > 200:
+        if self.last_implant_interaction > src.gamestate.gamestate.tick - 100 and src.gamestate.gamestate.tick > 200 and not src.gamestate.gamestate.stern.get("command_disabled"):
             options = []
             extraDescriptions = {}
             text = [f"""
 You reach out to the implant and it responds.
 
-Malfunction ... resetting submodule:
+Malfunction in command resolution module ... resetting submodule:
 
 """,(src.interaction.urwid.AttrSpec("#ff0","black"),f"""{100-(src.gamestate.gamestate.tick - self.last_implant_interaction)} ticks remaining"""),"""
 
@@ -3903,6 +3938,11 @@ please stand by
             options.append((name, "wait for the implant reset"))
             extraDescriptions[name] = ["""
 Wait for the implant to recover again""",]
+
+            name = "disable command module"
+            options.append((name, "disable command submodule"))
+            extraDescriptions[name] = ["""
+You can immeadiately reach the implant again,\nbut it wont be able to tell you exact commands.\nIt will will give you general directions and advice.""",]
 
             name = "implant no wait"
             options.append((name, "continue without using implant"))
@@ -4106,6 +4146,19 @@ Shows you how to open the games observe menu.
 Let's watch what the workers are doing for a bit.
 """
 
+            if src.gamestate.gamestate.tick > 200:
+                if not src.gamestate.gamestate.stern.get("command_disabled"):
+                    name = "disable command module"
+                    options.append((name, "disable command submodule"))
+                    extraDescriptions[name] = ["""
+Reduce strain on your implant by disabling command module.""",]
+                else:
+                    name = "enable command module"
+                    options.append((name, "enable command submodule"))
+                    extraDescriptions[name] = ["""
+reenable command module.""",]
+
+
             name = "leave me alone"
             options.append((name, "leave me alone"))
             extraDescriptions[name] = """
@@ -4218,6 +4271,7 @@ It is never a bad idea to have full health.
                 extraDescriptions[name] = """
 This will show  you the keybindings.
 """
+
             name = "leave me alone"
             options.append((name, "leave me alone"))
             extraDescriptions[name] = """
@@ -4706,8 +4760,18 @@ This will close the tutorial and let you do your own thing.
 
         character.clear_quests()
 
-        if quest_type not in ("leave me alone","implant no wait",None,):
+        if quest_type not in ("leave me alone","implant no wait","disable command module","enable command modul",None,) and not src.gamestate.gamestate.stern.get("command_disabled"):
             self.last_implant_interaction = src.gamestate.gamestate.tick
+
+        if quest_type == "disable command module":
+            src.gamestate.gamestate.stern["command_disabled"] = True
+            self.clear_implant_quest(character)
+            return
+
+        if quest_type == "enable command module":
+            src.gamestate.gamestate.stern["command_disabled"] = False
+            self.clear_implant_quest(character)
+            return
 
         if quest_type == "wait implant":
             quest = src.quests.questMap["WaitQuest"](lifetime=99,batchWait=True)
@@ -4723,7 +4787,12 @@ This will close the tutorial and let you do your own thing.
 
         if quest_type == "wake worker":
             self.last_worker_spawn = src.gamestate.gamestate.tick
-            quest = src.quests.questMap["StoryWakeWorker"](targetPositionBig=random.choice(self.get_wakeable_workers(character)))
+            candidates = self.get_wakeable_workers(character)
+            if (7,5,0) in candidates:
+                room_pos = (7,5,0)
+            else:
+                room_pos = random.choice(candidates)
+            quest = src.quests.questMap["StoryWakeWorker"](targetPositionBig=room_pos)
             self.addQuest(quest,character)
             self.clear_implant_quest(character)
             return

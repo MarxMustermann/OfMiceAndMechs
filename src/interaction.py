@@ -46,6 +46,7 @@ noFlicker = False
 noDemo = False
 
 upper_case_letter_color = "#66f"
+disabled_ui_color = "#777"
 
 class EndGame(Exception):
     pass

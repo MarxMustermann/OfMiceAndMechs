@@ -103,7 +103,7 @@ class ObserveMenu(src.subMenu.SubMenu):
         else:
             coordinate_line += f" mud field (outside)"
         coordinate_line += " "*(68-len(coordinate_line))+"\n"
-        text.append(coordinate_line)
+        text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"#000"),coordinate_line))
 
         # render rooms
         if container.isRoom:
@@ -156,9 +156,9 @@ class ObserveMenu(src.subMenu.SubMenu):
         text.append("\n")
         show_characters = container.getCharactersOnPosition(pos)
         if not show_characters:
-            text.append("no characters found\n")
+            text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"#000"),"no characters found\n"))
         else:
-            text.append("characters:\n\n")
+            text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"#000"),"characters:\n\n"))
         for show_character in show_characters:
             text.append("- ")
             text.append(show_character.charType)
@@ -176,9 +176,9 @@ class ObserveMenu(src.subMenu.SubMenu):
         text.append("\n")
         items = container.getItemByPosition(pos)
         if not items:
-            text.append("no items found\n")
+            text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"#000"),"no items found\n"))
         else:
-            text.append("items:\n\n")
+            text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"#000"),"items:\n\n"))
         for item in items:
             text.append("- ")
             text.append(item.name)
@@ -192,9 +192,9 @@ class ObserveMenu(src.subMenu.SubMenu):
         if rooms:
             markers = container.getMarkersOnPosition(pos)
         if not markers:
-            text.append("no markings found\n")
+            text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"#000"),"no markings found\n"))
         else:
-            text.append("markings:\n\n")
+            text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"#000"),"markings:\n\n"))
         for marker in markers:
             text.append("- ")
             text.append(str(marker[0]))
@@ -202,13 +202,13 @@ class ObserveMenu(src.subMenu.SubMenu):
 
         text.append("\n")
         if container.isRoom:
-            text.append("steel floor (inside)\n")
+            text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"#000"),"steel floor (inside)\n"))
         else:
-            text.append("mud floor (outside)\n")
+            text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"#000"),"mud floor (outside)\n"))
 
         text.append("\n\n")
-        text.append("press w/a/s/d to change what spot you look at\n")
-        text.append("press W/A/S/D to change what tile you look at\n")
+        text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"#000"),"press w/a/s/d to change what spot you look at\n"))
+        text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"#000"),"press W/A/S/D to change what tile you look at\n"))
 
         # return rendered text
         return text

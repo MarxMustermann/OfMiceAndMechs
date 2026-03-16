@@ -4,7 +4,7 @@ import random
 class StoryTeleport(src.quests.MetaQuestSequence):
     type = "StoryTeleport"
 
-    def __init__(self, description="leave the desolate temple", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None,reason=None):
+    def __init__(self, description="leave the mausoleum", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None,reason=None):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description

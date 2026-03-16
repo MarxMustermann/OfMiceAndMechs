@@ -47,6 +47,7 @@ noDemo = False
 
 upper_case_letter_color = "#66f"
 disabled_ui_color = "#777"
+highlighted_ui_color = "#ff0"
 
 class EndGame(Exception):
     pass

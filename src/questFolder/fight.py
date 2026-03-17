@@ -218,19 +218,31 @@ So if an enemy is to directly east of you:
                 if command == "d":
                     pos = character.getPosition()
                     if not character.container.getPositionWalkable((pos[0]+1,pos[1],pos[2]),character=character):
-                        command = "Kd"+random.choice(["l","La","Ls","Lw","Ld"])
+                        command = "Kd"
+                        if not character.getFreeInventorySpace():
+                            command = ""
+                        command += random.choice(["l","La","Ls","Lw","Ld"])
                 elif command == "a":
                     pos = character.getPosition()
                     if not character.container.getPositionWalkable((pos[0]-1,pos[1],pos[2]),character=character):
-                        command = "Ka"+random.choice(["l","La","Ls","Lw","Ld"])
+                        command = "Ka"
+                        if not character.getFreeInventorySpace():
+                            command = ""
+                        command += random.choice(["l","La","Ls","Lw","Ld"])
                 elif command == "s":
                     pos = character.getPosition()
                     if not character.container.getPositionWalkable((pos[0],pos[1]+1,pos[2]),character=character):
-                        command = "Ks"+random.choice(["l","La","Ls","Lw","Ld"])
+                        command = "Ks"
+                        if not character.getFreeInventorySpace():
+                            command = ""
+                        command += random.choice(["l","La","Ls","Lw","Ld"])
                 elif command == "w":
                     pos = character.getPosition()
                     if not character.container.getPositionWalkable((pos[0],pos[1]-1,pos[2]),character=character):
-                        command = "Kw"+random.choice(["l","La","Ls","Lw","Ld"])
+                        command = "Kw"
+                        if not character.getFreeInventorySpace():
+                            command = ""
+                        command += random.choice(["l","La","Ls","Lw","Ld"])
 
                 if command:
                     return (None,(command,"approach enemy"))

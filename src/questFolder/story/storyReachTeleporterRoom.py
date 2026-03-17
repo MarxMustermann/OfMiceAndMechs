@@ -94,10 +94,10 @@ class StoryReachTeleporterRoom(src.quests.MetaQuestSequence):
 
     def generateTextDescription(self):
         return ["""
-You reach out to your implant and it answers:
+You can leave the facility byusing the PersonnelTeleporter.
 
-There is no base leader. This means this base got abandoned by main command.
-Comtact main command to get reregistered as colony.
+Go to the room holding the PersonnelTeleporter.
+The room is on position (7,8,0)
 """]
 
     def handleEnteredRoom(self, extraInfo):

@@ -22,7 +22,9 @@ class WaitQuest(src.quests.MetaQuestSequence):
             reason_string = f", to {self.reason}"
 
         text = f"""
-Wait{reason_string}."""
+Wait{reason_string}.
+
+You can wait by pressing "." to wait for one tick or by pressing ";" to wait 100 ticks"""
         if self.lifetimeEvent:
             text += f"""
 

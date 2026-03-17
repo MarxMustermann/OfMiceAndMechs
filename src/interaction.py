@@ -4891,7 +4891,7 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                         chars = []
                         counter = 0
                         for menu in reversed(char.rememberedMenu):
-                            chars.extend(["------------- ",ActionMeta(content=">",payload=["lESC"]),"\n\n"])
+                            chars.extend([(src.pseudoUrwid.AttrSpec(disabled_ui_color,"black"),"------------- "),ActionMeta(content=">",payload=["lESC"]),"\n\n"])
                             chars.extend(menu.render())
                             counter += 1
                         size = uiElement["size"]
@@ -4902,7 +4902,7 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                     if uiElement["type"] == "rememberedMenu2" and char.rememberedMenu2:
                         chars = []
                         for menu in reversed(char.rememberedMenu2):
-                            chars.extend(["------------- ",ActionMeta(content="<",payload=["rESC"]),"\n\n"])
+                            chars.extend([(src.pseudoUrwid.AttrSpec(disabled_ui_color,"black"),"------------- "),ActionMeta(content="<",payload=["rESC"]),"\n\n"])
                             chars.extend(menu.render())
                         size = uiElement["size"]
                         offset = uiElement["offset"]

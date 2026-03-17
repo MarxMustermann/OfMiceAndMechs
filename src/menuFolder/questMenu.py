@@ -271,7 +271,7 @@ class QuestMenu(src.subMenu.SubMenu):
                         solvingCommangString = solvingCommangString.replace("\n","\\n")
 
                 if solvingCommangString:
-                    if src.gamestate.gamestate.stern.get("command_disabled") and not src.gamestate.gamestate.stern.get("implant_override_ticks"):
+                    if src.gamestate.gamestate.stern.get("command_disabled") and not src.gamestate.gamestate.stern.get("implant_override_ticks") and not (char.quests and (char.quests[0].type in ("Decide","ReachOutStory",))):
                         nextstep = [f"suggested action: \npress q to see task description\n--- command submodule disabled ---\n"]
                         if src.gamestate.gamestate.stern["last_implant_interaction"] < src.gamestate.gamestate.tick-100:
                             nextstep.append("press tab to temporary enable command submodule\n\n")

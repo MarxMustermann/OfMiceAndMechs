@@ -173,6 +173,11 @@ def advanceGame():
         # spawn enemy waves
         src.magic.spawnWaves()
 
+    amount = src.gamestate.gamestate.stern.get("implant_override_ticks",0)
+    if amount > 0:
+        amount -= 1
+        src.gamestate.gamestate.stern["implant_override_ticks"] = amount
+
     # auto save
     if settings.get("auto save"):
         if src.gamestate.gamestate.tick % 150 == 0 and not src.gamestate.gamestate.savedThisTurn:
@@ -185,6 +190,7 @@ def advanceGame():
     if src.gamestate.gamestate.saveAtTheTurnEnd:
         src.gamestate.gamestate.saveAtTheTurnEnd = False
         src.gamestate.gamestate.save()
+
 
 def advanceGame_disabled():
     """
@@ -4212,6 +4218,10 @@ def getTcodEvents():
                         translatedKey = "down"
                 if key == tcod.event.KeySym.F11:
                     sdl_window.fullscreen = not sdl_window.fullscreen
+                if key == tcod.event.KeySym.TAB:
+                    if src.gamestate.gamestate.stern["last_implant_interaction"] < src.gamestate.gamestate.tick-100:
+                        src.gamestate.gamestate.stern["implant_override_ticks"] = 10
+                        src.gamestate.gamestate.stern["last_implant_interaction"] = src.gamestate.gamestate.tick
 
                 if translatedKey is None:
                     continue

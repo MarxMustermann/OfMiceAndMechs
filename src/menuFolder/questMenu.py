@@ -271,8 +271,22 @@ class QuestMenu(src.subMenu.SubMenu):
                         solvingCommangString = solvingCommangString.replace("\n","\\n")
 
                 if solvingCommangString:
-                    if src.gamestate.gamestate.stern.get("command_disabled"):
-                        nextstep = [f"suggested action: \n --- command submodule disabled ---\n\n"]
+                    if src.gamestate.gamestate.stern.get("command_disabled") and not src.gamestate.gamestate.stern.get("implant_override_ticks"):
+                        nextstep = [f"suggested action: \npress q to see task description\n--- command submodule disabled ---\n"]
+                        if src.gamestate.gamestate.stern["last_implant_interaction"] < src.gamestate.gamestate.tick-100:
+                            nextstep.append("press tab to temporary enable command submodule\n\n")
+                        else:
+                            nextstep.append(f"""ready in {100-(src.gamestate.gamestate.tick-src.gamestate.gamestate.stern["last_implant_interaction"])} ticks\n\n""")
+                        nextstep.append(f"""\n{src.gamestate.gamestate.stern.get("implant_override_ticks",0)}\n\n\n""")
+                    elif src.gamestate.gamestate.tick - src.gamestate.gamestate.stern["last_implant_interaction"] < 100 and src.gamestate.gamestate.stern.get("revealed_implant_flaw") and not (
+                            char.quests and (char.quests[0].type in ("Decide",) or char.quests[0].free_command_module) or char.quests[0].tag == "wait implant" or src.gamestate.gamestate.stern.get("implant_override_ticks")):
+                        nextstep = [f"suggested action: \n--- command submodule overheated ---\n"]
+                        nextstep.append(f"""{100-(src.gamestate.gamestate.tick - src.gamestate.gamestate.stern["last_implant_interaction"])} ticks remaining for cooldown\n""")
+                        if char.macroState.get("submenue"):
+                            nextstep.append("press esc to close menu\n")
+                        else:
+                            nextstep.append("press q to get task description\n")
+                        nextstep.append("\n")
                     else:
                         convertedCommanString = []
                         for letter in solvingCommangString:

@@ -4069,7 +4069,7 @@ What may i help you with?
                 extraDescriptions[name] = ["""
 Wait for the implant to recover again""",]
 
-            if self.num_ignored_cooldown > 2 and not src.gamestate.gamestate.stern.get("command_disabled"):
+            if self.num_ignored_cooldown > 2 and not src.gamestate.gamestate.stern.get("command_disabled") and src.gamestate.gamestate.stern["last_implant_interaction"] > src.gamestate.gamestate.tick - 100:
                 name = "disable command module"
                 options.append((name, "disable command submodule"))
                 extraDescriptions[name] = ["""

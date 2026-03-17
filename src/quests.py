@@ -53,6 +53,8 @@ class Quest:
         self.randomSeed = None
         self.autoSolve = False
         self.selfAssigned = False
+        self.free_command_module = False
+        self.tag = None
 
         self.lifetime = lifetime
         self.lifetimeEvent = None

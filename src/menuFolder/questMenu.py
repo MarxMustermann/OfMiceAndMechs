@@ -277,7 +277,6 @@ class QuestMenu(src.subMenu.SubMenu):
                             nextstep.append("press tab to temporary enable command submodule\n\n")
                         else:
                             nextstep.append(f"""ready in {100-(src.gamestate.gamestate.tick-src.gamestate.gamestate.stern["last_implant_interaction"])} ticks\n\n""")
-                        nextstep.append(f"""\n{src.gamestate.gamestate.stern.get("implant_override_ticks",0)}\n\n\n""")
                     elif src.gamestate.gamestate.tick - src.gamestate.gamestate.stern["last_implant_interaction"] < 100 and src.gamestate.gamestate.stern.get("revealed_implant_flaw") and not (
                             char.quests and (char.quests[0].type in ("Decide",) or char.quests[0].free_command_module) or char.quests[0].tag == "wait implant" or src.gamestate.gamestate.stern.get("implant_override_ticks")):
                         nextstep = [f"suggested action: \n--- command submodule overheated ---\n"]

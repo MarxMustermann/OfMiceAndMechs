@@ -58,11 +58,10 @@ class StoryTeleport(src.quests.MetaQuestSequence):
             
             return (None,(["esc"],"close the menu"))
 
-        if character.macroState.get("itemMarkedLast"):
-            if character.macroState["itemMarkedLast"].type == "Communicator":
-                return (None,("j","activate communicator"))
-            else:
-                return (None,(".","undo selection"))
+        # activate correct item when marked
+        action = self.generate_confirm_interaction_command(allowedItems=("PersonnelTeleporter",))
+        if action:
+            return action
 
         target_pos = None
         if character.getBigPosition() == (7,5,0):

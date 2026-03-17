@@ -63,6 +63,11 @@ operate the machine on {self.targetPosition}{reason}.
         if self.subQuests:
             return (None,None)
 
+        # activate correct item when marked
+        action = self.generate_confirm_interaction_command(allowedItems=("Machine","ScrapCompactor","MaggotFermenter","BioPress","GooProducer","Electrifier","BloomShredder","CorpseShredder","Merger"))
+        if action:
+            return action
+
         # handle menus
         submenue = character.macroState["submenue"]
         if submenue and not ignoreCommands:

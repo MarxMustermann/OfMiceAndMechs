@@ -4061,6 +4061,7 @@ What may i help you with?
             shown_worker_wake = False
             shown_worker_watch = False
             shown_implant_wait = False
+            shown_disable = False
 
             if not self.has_waited_for_implant and src.gamestate.gamestate.stern["last_implant_interaction"] > src.gamestate.gamestate.tick - 100 and src.gamestate.gamestate.tick > 200 and not src.gamestate.gamestate.stern.get("command_disabled"):
                 shown_implant_wait = True
@@ -4070,6 +4071,7 @@ What may i help you with?
 Wait for the implant to recover again""",]
 
             if self.num_ignored_cooldown > 2 and not src.gamestate.gamestate.stern.get("command_disabled") and src.gamestate.gamestate.stern["last_implant_interaction"] > src.gamestate.gamestate.tick - 100:
+                shown_disable = True
                 name = "disable command module"
                 options.append((name, "disable command submodule"))
                 extraDescriptions[name] = ["""
@@ -4224,7 +4226,7 @@ Let's watch what the workers are doing for a bit.
 Wait for the implant to recover again""",]
 
             if src.gamestate.gamestate.tick > 200:
-                if not src.gamestate.gamestate.stern.get("command_disabled"):
+                if not src.gamestate.gamestate.stern.get("command_disabled") and not shown_disable:
                     name = "disable command module"
                     options.append((name, "disable command submodule"))
                     extraDescriptions[name] = ["""
@@ -4851,11 +4853,15 @@ This will close the tutorial and let you do your own thing.
         if quest_type == "disable command module":
             src.gamestate.gamestate.stern["command_disabled"] = True
             self.clear_implant_quest(character)
+            character.clear_quests()
+            self.reachImplant()
             return
 
         if quest_type == "enable command module":
             src.gamestate.gamestate.stern["command_disabled"] = False
             self.clear_implant_quest(character)
+            character.clear_quests()
+            self.reachImplant()
             return
 
         if quest_type == "wait implant":

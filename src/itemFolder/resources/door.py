@@ -93,6 +93,12 @@ class Door(src.items.Item):
             options["b"] = ("bolt down", self.boltAction)
         return options
 
+    def unboltAction(self,character):
+        super().unboltAction(character)
+        if not self.bolted:
+            self.walkable = False
+
+
     def blockDoor(self,character):
         character.addMessage("You block the Door")
         character.changed("blockedDoor",{"character":character,"item":self})
@@ -128,7 +134,10 @@ class Door(src.items.Item):
             if self.walkable:
                 displayChar = src.canvas.displayChars.door_opened
             else:
-                displayChar = src.canvas.displayChars.door_closed
+                if self.bolted and (self.xPosition in (0,12,) or self.yPosition in (0,12,)):
+                    displayChar = src.canvas.displayChars.outer_door_closed
+                else:
+                    displayChar = src.canvas.displayChars.door_closed
         return displayChar
 
     '''

@@ -144,7 +144,7 @@ class ExamineMenu(src.subMenu.SubMenu):
                         under_cursor = render
         else:
             terrain = self.character.container
-            rawRender = terrain.render(coordinateOffset=(self.character.xPosition+self.offset[0]-2,self.character.yPosition+self.offset[1]-2),size=(5,5))
+            rawRender = terrain.render(coordinateOffset=(self.character.yPosition-2,self.character.xPosition-2),size=(5,5))
             for x in range(0,5):
                 for y in range(0,5):
                     render = rawRender[y][x]

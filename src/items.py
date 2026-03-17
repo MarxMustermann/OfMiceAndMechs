@@ -3,10 +3,14 @@ items and item related code belongs here
 """
 
 import logging
+import os
+import numpy as np
 
 import src
 
 logger = logging.getLogger(__name__)
+
+textures = {}
 
 class Item:
     '''
@@ -47,8 +51,67 @@ class Item:
 
     description = "missing description"
 
-    def drawSDL(self, renderer, basePos, fg_color=(255,255,255,255), bg_color=(0,0,0,255), tileSize=None):
-        pass
+    def drawSDL(self, renderer, basePos, fg_color=(255,255,255,255), bg_color=(0,0,0,255), tileSize=None, borders=False):
+        self.drawTileSDL(renderer, basePos, fg_color=fg_color, bg_color=bg_color, tileSize=tileSize, tileName=self.type, borders=borders)
+
+    def drawTileSDL(self, renderer, basePos, fg_color=(255,255,255,255), bg_color=(0,0,0,255), tileSize=None, tileName="", borders=False):
+        if tileSize is None:
+            tileSize = src.interaction.tileHeight
+
+        identifier = (tileName,fg_color,bg_color,borders)
+        if not identifier in textures:
+            base_path = "config/tiles_fancy/"
+            path = base_path+tileName+".png"
+            if not os.path.exists(path):
+                base_path = "config/tiles/"
+                path = base_path+tileName+".png"
+
+            if os.path.exists(path):
+
+                tile = src.interaction.tcod.image.Image.from_file(path)
+
+                # draw borders
+                if borders:
+
+                    # draw upper border
+                    if borders[0]:
+                        for x_index in range(0,tile.width):
+                            for y_index in range(0,6):
+                                tile.put_pixel(x_index,y_index,(255,255,255))
+
+                    # draw left border
+                    if borders[1]:
+                        for x_index in range(0,6):
+                            for y_index in range(0,tile.height):
+                                tile.put_pixel(x_index,y_index,(255,255,255))
+
+                    # draw lower border
+                    if borders[2]:
+                        for x_index in range(0,tile.width):
+                            for y_index in range(tile.height-6,tile.height):
+                                tile.put_pixel(x_index,y_index,(255,255,255))
+
+                    # draw right border
+                    if borders[3]:
+                        for x_index in range(tile.width-6,tile.width):
+                            for y_index in range(0,tile.height):
+                                tile.put_pixel(x_index,y_index,(255,255,255))
+
+                # color the tile
+                for x_index in range(0,tile.width):
+                    for y_index in range(0,tile.height):
+                        color = tile.get_pixel(x_index,y_index)
+                        if color == (255, 255, 255):
+                            tile.put_pixel(x_index,y_index,fg_color[:3])
+                        if color == (0, 0, 0):
+                            tile.put_pixel(x_index,y_index,bg_color[:3])
+                texture = renderer.upload_texture(np.asarray(tile))
+                textures[identifier] = texture
+                print("rebuilding",tileName+".png",identifier)
+
+        texture = textures.get(identifier)
+        if texture:
+            renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileSize,tileSize),)
 
     def getTerrainPosition(self):
         '''

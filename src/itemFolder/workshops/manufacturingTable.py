@@ -450,29 +450,11 @@ numUsed: {self.numUsed}
 
         return characters
 
+
     def drawSDL(self, renderer, basePos, fg_color=(255,255,255,255), bg_color=(0,0,0,255), tileSize=None):
         base_characters = self._get_base_display_character()
-
-        if tileSize is None:
-            tileSize = src.interaction.tileHeight
-
-        identifier = (fg_color,bg_color,base_characters)
-        texture = manufacturingTable_texture.get(identifier)
-        if not texture:
-            base_path = "config/tiles/"
-            path = base_path+"ManufacturingTable_"+base_characters+".png"
-            circle = src.interaction.tcod.image.Image.from_file(path)
-            for x_index in range(0,circle.width):
-                for y_index in range(0,circle.height):
-                    color = circle.get_pixel(x_index,y_index)
-                    if color == (255, 255, 255):
-                        circle.put_pixel(x_index,y_index,fg_color[:3])
-                    if color == (0, 0, 0):
-                        circle.put_pixel(x_index,y_index,bg_color[:3])
-            texture = renderer.upload_texture(np.asarray(circle))
-            manufacturingTable_texture[identifier] = texture
-            print("rebuilding","ManufacturingTable_"+base_characters+".png",identifier)
-        renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileSize,tileSize),)
+        tile_name = "ManufacturingTable_"+base_characters
+        self.drawTileSDL(renderer, basePos, fg_color=fg_color, bg_color=bg_color, tileSize=tileSize, tileName=tile_name)
 
     def render(self):
         base_characters = self._get_base_display_character()

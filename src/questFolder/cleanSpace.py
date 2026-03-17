@@ -239,6 +239,8 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
                 items = room.getItemByPosition(slot[0])
                 if not items:
                     continue
+                if items[0].bolted:
+                    continue
 
                 misplacmentFound = False
                 for item in items:

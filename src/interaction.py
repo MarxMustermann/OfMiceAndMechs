@@ -46,6 +46,8 @@ noFlicker = False
 noDemo = False
 
 upper_case_letter_color = "#66f"
+disabled_ui_color = "#777"
+highlighted_ui_color = "#ff0"
 
 class EndGame(Exception):
     pass
@@ -171,6 +173,11 @@ def advanceGame():
         # spawn enemy waves
         src.magic.spawnWaves()
 
+    amount = src.gamestate.gamestate.stern.get("implant_override_ticks",0)
+    if amount > 0:
+        amount -= 1
+        src.gamestate.gamestate.stern["implant_override_ticks"] = amount
+
     # auto save
     if settings.get("auto save"):
         if src.gamestate.gamestate.tick % 150 == 0 and not src.gamestate.gamestate.savedThisTurn:
@@ -183,6 +190,7 @@ def advanceGame():
     if src.gamestate.gamestate.saveAtTheTurnEnd:
         src.gamestate.gamestate.saveAtTheTurnEnd = False
         src.gamestate.gamestate.save()
+
 
 def advanceGame_disabled():
     """
@@ -4210,6 +4218,10 @@ def getTcodEvents():
                         translatedKey = "down"
                 if key == tcod.event.KeySym.F11:
                     sdl_window.fullscreen = not sdl_window.fullscreen
+                if key == tcod.event.KeySym.TAB:
+                    if src.gamestate.gamestate.stern["last_implant_interaction"] < src.gamestate.gamestate.tick-100:
+                        src.gamestate.gamestate.stern["implant_override_ticks"] = 10
+                        src.gamestate.gamestate.stern["last_implant_interaction"] = src.gamestate.gamestate.tick
 
                 if translatedKey is None:
                     continue
@@ -4889,7 +4901,7 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                         chars = []
                         counter = 0
                         for menu in reversed(char.rememberedMenu):
-                            chars.extend(["------------- ",ActionMeta(content=">",payload=["lESC"]),"\n\n"])
+                            chars.extend([(src.pseudoUrwid.AttrSpec(disabled_ui_color,"black"),"------------- "),ActionMeta(content=">",payload=["lESC"]),"\n\n"])
                             chars.extend(menu.render())
                             counter += 1
                         size = uiElement["size"]
@@ -4900,7 +4912,7 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                     if uiElement["type"] == "rememberedMenu2" and char.rememberedMenu2:
                         chars = []
                         for menu in reversed(char.rememberedMenu2):
-                            chars.extend(["------------- ",ActionMeta(content="<",payload=["rESC"]),"\n\n"])
+                            chars.extend([(src.pseudoUrwid.AttrSpec(disabled_ui_color,"black"),"------------- "),ActionMeta(content="<",payload=["rESC"]),"\n\n"])
                             chars.extend(menu.render())
                         size = uiElement["size"]
                         offset = uiElement["offset"]
@@ -5074,6 +5086,8 @@ def renderGameDisplay(renderChar=None,showSaving=False):
             sdl_renderer2.draw_color = (100,100,100,255)
             if (submenue and submenue.tag == "Wait"):
                 sdl_renderer2.draw_color = (255,255,255,255)
+            if submenue and submenue.golden_border:
+                sdl_renderer2.draw_color = (255,155,0,0)
             # draw upper line
             sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop-padding-line_width,display_width+2*(padding+overhang),line_width))
             # draw lower line
@@ -6158,10 +6172,11 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
                 if key in (tcod.event.KeySym.x,):
                     if manage_worlds:
-                        rawState["worlds"].remove(rawState["worlds"][index])
-                        saves = rawState["worlds"]
-                        with open("gamestate/globalInfo.json", "w") as globalInfoFile:
-                            json.dump(rawState, globalInfoFile)
+                        if index < len(rawState["worlds"]):
+                            rawState["worlds"].remove(rawState["worlds"][index])
+                            saves = rawState["worlds"]
+                            with open("gamestate/globalInfo.json", "w") as globalInfoFile:
+                                json.dump(rawState, globalInfoFile)
 
                 if manage_worlds:
                     if key in (tcod.event.KeySym.s, tcod.event.KeySym.DOWN,):
@@ -6624,8 +6639,9 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
             text.append("May i collect information about your interaction with the game?\n")
             text.append("You can disable tracking in the settings later.\n")
             text.append("\n")
-            text.append("press y to agree to the data collection\n")
-            text.append("press n to deny the data collection\n")
+
+            text.append((src.interaction.urwid.AttrSpec("#ff0", "black"),"> press y to agree to the data collection <\n"))
+            text.append((src.interaction.urwid.AttrSpec("#ff0", "black"),"> press n to deny the data collection <\n"))
 
             root_console = tcod.console.Console(70, 8, order="F")
             printUrwidToTcod(text,(0,0),explecitConsole=root_console)

@@ -27,6 +27,7 @@ class Wall(src.items.Item):
 
         border_width = tileSize//10+1
 
+        """
         identifier = (fg_color,bg_color)
         texture = wall_texture.get(identifier)
         if not texture:
@@ -44,6 +45,9 @@ class Wall(src.items.Item):
             wall_texture[identifier] = texture
             print("rebuilding","Wall.png",identifier)
         renderer.copy(texture, (0,0,texture.width,texture.height),(basePos[0],basePos[1],tileSize,tileSize),)
+        """
+        renderer.draw_color = bg_color
+        renderer.fill_rect((basePos[0],basePos[1],tileSize,tileSize))
 
         renderer.draw_color = fg_color
 
@@ -104,5 +108,10 @@ class Wall(src.items.Item):
         else:
             options["b"] = ("bolt down", self.boltAction)
         return options
+
+    def render(self):
+        if self.bolted and (self.xPosition in (0,12,) or self.yPosition in (0,12,)):
+            return src.canvas.displayChars.outer_wall
+        return src.canvas.displayChars.wall
 
 src.items.addType(Wall)

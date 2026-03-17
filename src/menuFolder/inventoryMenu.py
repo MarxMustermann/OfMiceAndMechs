@@ -197,7 +197,7 @@ class InventoryMenu(src.subMenu.SubMenu):
 
         txt = []
         if not sidebared:
-            txt.append("your inventory:\n\n")
+            txt.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"#000"),"your inventory:\n\n"))
             num_rows += 2
         if len(char.inventory):
             counter = 0
@@ -238,7 +238,7 @@ class InventoryMenu(src.subMenu.SubMenu):
                     extra_rows = (self.min_lines-5)-num_rows
                     txt.append("\n"*(extra_rows))
                     num_rows += extra_rows
-                txt.extend(["press ws to move cursor\npress ",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"L")," to drop item nearby\npress l to drop item\npress j to activate item\npress e to examine item"])
+                txt.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"#000"),["press ws to move cursor\npress ",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"L")," to drop item nearby\npress l to drop item\npress j to activate item\npress e to examine item"]))
                 num_rows += 4
         else:
             txt.append("empty Inventory\n")

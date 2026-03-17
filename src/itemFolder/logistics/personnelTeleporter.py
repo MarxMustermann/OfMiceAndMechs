@@ -279,32 +279,7 @@ class PersonnelTeleporter(src.items.Item):
         '''
         generate string with information
         '''
-        text = "operation mode:"
-        if self.group:
-            text += " sender" if self.mode == self.senderMode else " receiver"
-        else:
-            text += "OFF"
-        text += "\n"
-
-        code = "input direction:" if self.mode == self.senderMode else "output direction:"
-
-        if self.direction:
-            cases = {(0, -1, 0): "north", (-1, 0, 0): "west", (1, 0, 0): "east", (0, 1, 0): "south"}
-
-            text += code + " " + cases[self.direction]
-        else:
-            if self.mode == self.senderMode:
-                text += code + " from all directions"
-            else:
-                text += code + " to all directions"
-
-        f_text = str(self.group) if self.group else "Not Set"
-        text += "\nfrequency: " + f_text
-
-        if self.group:
-            g = src.gamestate.gamestate.teleporterGroups[self.group]
-            network_size = len(g[0]) + len(g[1])
-            text += f"\nnetwork size: {network_size}"
+        text = "use the teleporter to teleport somewhere"
         return text
 
     def render(self):

@@ -175,6 +175,20 @@ class StoryExtendBase(src.quests.MetaQuestSequence):
                     if not character.getFreeInventorySpace():
                         quest = src.quests.questMap["ClearInventory"](tryHard=True, reason="have space for storing Walls")
                         return ([quest],None)
+
+                    if character.getBigPosition() == (8,7,0):
+                        for item in terrain.getNearbyItems(character):
+                            if item.type != "Wall":
+                                continue
+                            small_pos = item.getSmallPosition()
+                            if small_pos[0] in (1,13) or small_pos[1] in (1,13):
+                                continue
+
+                            print(item.getBigPosition())
+                            print(small_pos)
+                            quest = src.quests.questMap["CleanSpace"](targetPosition=small_pos, targetPositionBig=item.getBigPosition(), reason="pick up a Wall")
+                            return ([quest],None)
+
                     quest = src.quests.questMap["StoryScavengeWalls"](reason="have Walls to complete building the room")
                     return ([quest],None)
         else:
@@ -280,14 +294,7 @@ class StoryExtendBase(src.quests.MetaQuestSequence):
             reasonString = f", to {self.reason}"
 
         text = [f"""
-Clear the terrain from all enemies{reasonString}.
-
-There are several types of enemies, that have different behaviour.
-I'll show you how to deal with each of them,
-but as long as the enemies die you get the promotion.
-So experiment on your own on how to best beat the enemies.
-
-Remember that the base provides you with important ressources and healing.
+We need to build more rooms{reasonString}.
 """]
         return text
 

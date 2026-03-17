@@ -31,6 +31,7 @@ class SubMenu(object):
         self.tag = tag
         self.extraInfo ={}
         self.shift = 0
+        self.golden_border = False
 
         self.options = collections.OrderedDict()
         self.niceOptions = collections.OrderedDict()
@@ -226,7 +227,7 @@ class SubMenu(object):
         # show question
         out = []
         if self.query:
-            out.extend(["\n",self.query.strip(), "\n"])
+            out.extend(["\n",self.query, "\n"])
 
         # render the options
         extraDescription = None

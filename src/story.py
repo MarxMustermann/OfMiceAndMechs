@@ -994,7 +994,11 @@ class MainGame(BasicPhase):
         self.has_shown_observeMenu = False
         self.has_shown_welcome = False
         self.last_worker_spawn = -2000
+        self.has_waited_for_implant = False
+        self.num_ignored_cooldown = 0
         super().__init__("MainGame", seed=seed)
+
+        src.gamestate.gamestate.stern["last_implant_interaction"] = -100
 
     def get_free_position(self,tag):
         pos = random.choice(self.available_positions)
@@ -1069,7 +1073,7 @@ class MainGame(BasicPhase):
         if self.preselection == "Story":
             self.sternsBasePosition = self.get_free_position("the architects base")
             self.setUpSternsBase(self.sternsBasePosition)
-            self.architectsLabPosition = self.get_free_position("the architects tomb")
+            self.architectsLabPosition = self.get_free_position("the architects mausoleum")
             self.setUpArchitectsLab(self.architectsLabPosition)
         elif self.preselection == "baseBuilder":
             self.playerBasePosition = self.get_free_position("player base")
@@ -1630,7 +1634,7 @@ but they are likely to explode when disturbed.
 
     def setUpArchitectsLab(self,pos):
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
-        currentTerrain.tag = "the architects tomb"
+        currentTerrain.tag = "the architects mausoleum"
         currentTerrain.maxMana = 50
 
         thisFactionId = self.factionCounter
@@ -1968,16 +1972,17 @@ May he forever rest in peace.
 
         for pos in [(7,9,0),(8,9,0),(9,9,0)]:
             scrapProccessing_room.addWalkingSpace(pos)
-        item = src.items.itemMap["MemorialPlate"](inscription="""
-"While one can pray and wish for scrap, it still needs to be hammered into form"
+        item = src.items.itemMap["MemorialPlate"](inscription=["""
+""",(src.interaction.urwid.AttrSpec("#ff0","black"),'''"While one can pray and wish for scrap,
+it still needs to be hammered into form"'''),"""
 
 Scrap can be processed into MetalBars  
 And those are the base resource for almost everything.
-
+""",(src.interaction.urwid.AttrSpec("#777","black"),"""
 This memorial contains:
 * 3 ScrapComactors
 * preserved Clone - machine operation duty
-""")
+"""),])
         scrapProccessing_room.addItem(item,(9,9,0))
 
         scrapStorage_room = architect.doAddRoom(
@@ -1990,7 +1995,7 @@ This memorial contains:
                 },
                 None,
            )
-        scrapStorage_room.tag = "scrap processing"
+        scrapStorage_room.tag = "scrap storage"
         rooms_to_decorate.append(scrapStorage_room)
         item = src.items.itemMap["ScrapCompactor"]()
 
@@ -2008,11 +2013,12 @@ This memorial contains:
 
         for y in (1,3,5,7,9,11):
             for x in (7,8,9,10,11,):
+                if (y,x) == (10,1):
+                    scrapStorage_room.addWalkingSpace((x,y,0))
+                    continue
                 scrapStorage_room.addStorageSlot((x,y,0),"Scrap",{"desiredState":"filled"})
         for y in (2,4,6,8,10):
             for x in (7,8,9,10,11,):
-                if (y,x) == (10,1):
-                    continue
                 scrapStorage_room.addWalkingSpace((x,y,0))
         scrapStorage_room.addWalkingSpace((10,1,0))
 
@@ -2081,17 +2087,17 @@ This memorial contains:
 
         for pos in [(3,9,0),(4,9,0),(5,9,0)]:
             scrapStorage_room.addWalkingSpace(pos)
-        item = src.items.itemMap["MemorialPlate"](inscription="""
+        item = src.items.itemMap["MemorialPlate"](inscription=[(src.interaction.urwid.AttrSpec("#ff0","black"),"""
 "The more riches you have the more storage you need,
-especially if you are hoarding Scrap"
+especially if you are hoarding Scrap" """),"""
 
 Scrap can be processed into MetalBars  
 And those are the base resource for almost everything.
-
+""",(src.interaction.urwid.AttrSpec("#777","black"),"""
 This memorial contains:
 * 3 ScrapComactors
 * preserved Clone - machine operation duty
-""")
+""")])
         scrapStorage_room.addItem(item,(3,9,0))
 
 
@@ -2119,7 +2125,6 @@ This memorial contains:
             
             for offset in [(0,1,0),(1,1,0),(2,1,0),(-2,1,0),(-1,1,0)]:
                 manufacturing_room.addWalkingSpace((pos[0]+offset[0],pos[1]+offset[1],pos[2]+offset[2]))
-
 
         resource_fetching_npc = src.characters.characterMap["Clone"]()
         resource_fetching_npc.questsDone = [
@@ -2340,8 +2345,32 @@ This memorial contains:
         wall_manufacturing_room.addWalkingSpace((5,4,0))
         wall_manufacturing_room.addWalkingSpace((3,6,0))
             
+        for pos in [(9,3,0),(8,3,0),(7,3,0)]:
+            wall_manufacturing_room.addWalkingSpace(pos)
+        item = src.items.itemMap["MemorialPlate"](inscription=[(src.interaction.urwid.AttrSpec("#ff0","black"),"""
+"Strong Walls are the foundation of all society"
+"""),"""
+
+Walls are built from a Case and MetalBars.
+Most big items are built from Cases.
+
+The production chain for Cases is as follows:
+
+- The MetalBars have to be formed into Rods.
+- The Rods need to formed into Frames.
+- Finally the Cases can be crafted from Frames.
+
+""",(src.interaction.urwid.AttrSpec("#777","black"),"""
+This memorial contains:
+* 2 ScrapComactors
+* 8 ManufacturingTables
+* preserved Clone - manufacturing duty (ma)
+"""),])
+        wall_manufacturing_room.addItem(item,(9,3,0))
+
 
         manufacturing_npc = src.characters.characterMap["Clone"]()
+        manufacturing_npc.name = "Martha Alister"
         manufacturing_npc.questsDone = [
                 "NaiveMoveQuest",
                 "MoveQuestMeta",
@@ -2440,8 +2469,34 @@ This memorial contains:
             for x in (1,2,3,4,5,6,7,8,9,10,11,):
                 food_processing_room.addWalkingSpace((x,y,0))
 
+        for pos in [(3,3,0),(4,3,0),(5,3,0)]:
+            food_processing_room.addWalkingSpace(pos)
+        item = src.items.itemMap["MemorialPlate"](inscription=[(src.interaction.urwid.AttrSpec("#ff0","black"),"""
+"Love and envy is the source of all conflict"
+"""),"""
+
+With the creation goo the reproduction problem was solved. 
+New Clones can be grown using this goo.
+That is fast and reliable.
+
+First MoldSeed has to be planted and after some time its Blooms can be harversted.
+Those have to be shredded, pressed and then can be transformed into goo.
+
+100 Blooms are needed to fill a GooFlask.
+
+""",(src.interaction.urwid.AttrSpec("#777","black"),"""
+This memorial contains:
+* 2 BloomShredder
+* 2 PressCake
+* 2 GooProducer
+* 2 GooDispenser
+* preserved Clone - cleaning duty (cl)
+"""),])
+        food_processing_room.addItem(item,(3,3,0))
+
 
         cleaning_npc = src.characters.characterMap["Clone"]()
+        cleaning_npc.name = "Carli Languish"
         cleaning_npc.questsDone = [
                 "NaiveMoveQuest",
                 "MoveQuestMeta",
@@ -3821,15 +3876,101 @@ This memorial contains:
         for listenItem in self.watched[:]:
             self.stopWatching(listenItem[0], listenItem[1], listenItem[2])
 
+    def _add_cooldown_color(self,description):
+        if 100-(src.gamestate.gamestate.tick - src.gamestate.gamestate.stern["last_implant_interaction"]) > 0 and not src.gamestate.gamestate.stern.get("command_disabled") and src.gamestate.gamestate.stern.get("revealed_implant_flaw"):
+            description = (src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"#000"),description)
+        return description
+
     def openedQuestsStory(self):
         if not src.gamestate.gamestate.stern.get("first_reachout_done"):
             src.gamestate.gamestate.stern["first_reachout_done"] = True
+        else:
+            src.gamestate.gamestate.stern["first_reachout_done"] = True
 
+        # get helper variables
         mainChar = self.activeStory["mainChar"]
         homeTerrain = src.gamestate.gamestate.terrainMap[mainChar.registers["HOMETy"]][mainChar.registers["HOMETx"]]
 
+        # reduce edge cases
         if len(mainChar.quests) > 1 or (mainChar.quests and mainChar.quests[0].type != "ReachOutStory"):
             return
+
+        # reveal implant flaw
+        if not src.gamestate.gamestate.stern.get("revealed_implant_flaw") and src.gamestate.gamestate.tick > 200:
+            recovering_ticks_remaining = src.gamestate.gamestate.stern.get("revealed_implant_flaw_recovering",5)
+            if recovering_ticks_remaining:
+                recovering_ticks_remaining = recovering_ticks_remaining-1
+                src.gamestate.gamestate.stern["revealed_implant_flaw_recovering"] = recovering_ticks_remaining
+
+            if recovering_ticks_remaining == 4:
+                error_string = "Eerrro.or.rr.r"
+            if recovering_ticks_remaining == 3:
+                error_string = "Errrrorrrr.r.."
+            error_string = "Eeerrooorrrrrr"
+            if recovering_ticks_remaining == 2:
+                error_string = "Erroorr......."
+            if recovering_ticks_remaining == 1:
+                error_string = "Error........."
+
+            mainChar.showTextMenu(["""
+You reach out to your implant, but it stutters....
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""
+Error: Corruption in command resolution module
+"""),"""
+Tendrils of pain shoot through your implant and hurt your brain.
+
+"""+"="*recovering_ticks_remaining+""" press enter to recover """+"="*recovering_ticks_remaining+"""
+"""])
+            mainChar.takeTime(2, reason="stunned by pain")
+            if src.gamestate.gamestate.stern.get("revealed_implant_flaw_recovering") == 3:
+                src.gamestate.gamestate.stern["revealed_implant_flaw"] = True 
+                src.gamestate.gamestate.stern["last_implant_interaction"] = src.gamestate.gamestate.tick
+            else:
+                return
+
+        '''
+        # prevent implant
+        if src.gamestate.gamestate["last_implant_interaction"] > src.gamestate.gamestate.tick - 100 and src.gamestate.gamestate.tick > 200 and not src.gamestate.gamestate.stern.get("command_disabled"):
+            options = []
+            extraDescriptions = {}
+            text = [f"""
+You reach out to the implant and it responds.
+
+Malfunction in command resolution module ... resetting submodule:
+
+""",(src.interaction.urwid.AttrSpec("#ff0","black"),f"""{100-(src.gamestate.gamestate.tick - src.gamestate.gamestate.stern["last_implant_interaction"])} ticks remaining"""),"""
+
+please stand by
+""",]
+
+            name = "wait implant"
+            options.append((name, "wait for the implant reset"))
+            extraDescriptions[name] = ["""
+Wait for the implant to recover again""",]
+
+            name = "disable command module"
+            options.append((name, "disable command submodule"))
+            extraDescriptions[name] = ["""
+You can immeadiately reach the implant again,\nbut it wont be able to tell you exact commands.\nIt will will give you general directions and advice.""",]
+
+            name = "implant no wait"
+            options.append((name, "continue without using implant"))
+            extraDescriptions[name] = """
+Give up on reaching out to the implant for now.
+"""
+
+
+            submenu = src.menuFolder.selectionMenu.SelectionMenu(
+                text, options, tag="player_quest_selection", targetParamName="quest_type",extraDescriptions=extraDescriptions
+            )
+            submenu.followUp = {"container":self,"method":"handle_player_intro_lab_quest_choice","params":{"character":mainChar}}
+            mainChar.add_submenu(submenu)
+
+            quest = src.quests.questMap["Decide"]()
+            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            self.addQuest(quest,mainChar)
+            return
+        '''
 
         # go home when lost
         sternsBasePosition = self.sternsBasePosition
@@ -3858,27 +3999,59 @@ This memorial contains:
                 inventoryMenu.sidebared = True
                 mainChar.rememberedMenu2.append(inventoryMenu)
 
-            text = ""
+            '''
+            text = []
+            if src.gamestate.gamestate.stern.get("command_disabled"):
+                text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),f"""
+Command resolution disabled: {100-(src.gamestate.gamestate.tick - src.gamestate.gamestate.stern["last_implant_interaction"])} ticks
+
+"""))
+            elif 100-(src.gamestate.gamestate.tick - src.gamestate.gamestate.stern["last_implant_interaction"]) > 0:
+                text.append((src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"""
+Malfunction in command resolution module ... resetting submodule:
+
+{100-(src.gamestate.gamestate.tick - src.gamestate.gamestate.stern["last_implant_interaction"])} ticks remaining.
+
+"""))
+            else:
+                text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),f"""
+command resolution module ready: {100-(src.gamestate.gamestate.tick - src.gamestate.gamestate.stern["last_implant_interaction"])} ticks
+
+"""))
+            '''
+            text = []
             if terrain.getRoomByPosition((7,7,0)):
-                text += """
+                text.append("""
 Congratulations! You made it out of the burning room.
 You really should stop touching machinery you don't know how to use!
 The whole room will explode soon.
-"""
+""")
 
             else:
-                text += """
-The base is overrun with enemies that blocks your way out of here.
+                text.append("""
+We should leave.
+
+The facility is overrun with enemies that blocks your way out of here.
 You didn't even bring weapons!
 We should try find something to defend ourselves with.
-"""
+""")
 
-            text += """
+            text.append("""
 In case you hit your head and don't remember:
 I'm your implant and i'll be helping you with your tasks.
+The most recommended option is on top.
+
+
+""")
+            if src.gamestate.gamestate.stern["last_implant_interaction"] > src.gamestate.gamestate.tick - 100 and src.gamestate.gamestate.tick > 200 and not src.gamestate.gamestate.stern.get("command_disabled"):
+                text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),f"""
+Command submodule resetting ... wait {100-(src.gamestate.gamestate.tick - src.gamestate.gamestate.stern["last_implant_interaction"])} ticks
+"""))
+            text.append("""
+
 
 What may i help you with?
-"""
+""")
 
             options = []
             extraDescriptions = {}
@@ -3887,19 +4060,37 @@ What may i help you with?
             shown_observe_option = False
             shown_worker_wake = False
             shown_worker_watch = False
+            shown_implant_wait = False
+
+            if not self.has_waited_for_implant and src.gamestate.gamestate.stern["last_implant_interaction"] > src.gamestate.gamestate.tick - 100 and src.gamestate.gamestate.tick > 200 and not src.gamestate.gamestate.stern.get("command_disabled"):
+                shown_implant_wait = True
+                name = "wait implant"
+                options.append((name, "wait for the implant reset"))
+                extraDescriptions[name] = ["""
+Wait for the implant to recover again""",]
+
+            if self.num_ignored_cooldown > 2 and not src.gamestate.gamestate.stern.get("command_disabled") and src.gamestate.gamestate.stern["last_implant_interaction"] > src.gamestate.gamestate.tick - 100:
+                name = "disable command module"
+                options.append((name, "disable command submodule"))
+                extraDescriptions[name] = ["""
+The command resolution submodule seems to be permanently broken.\n
+Reduce the strain on the implant by disabling it.""",]
 
             if terrain.getRoomByPosition((7,7,0)):
                 name = "explosion"
-                options.append((name, "i want to watch the room burn"))
-                extraDescriptions[name] = """
+                description = self._add_cooldown_color("i want to watch the room burn")
+                options.append((name, description))
+                extraDescriptions[name] = ["""
 It surely will be spectacular.
-Wait by pressing "."
+
+Wait by pressing "." (period)""",(src.interaction.urwid.AttrSpec("#ff0","black"),"""
 "." is a period "," is a comma
-"""
+"""),]
 
             if not self.has_shown_HelpMenu and src.gamestate.gamestate.tick < 30:
                 name = "help"
-                options.append((name, "show me how play the game"))
+                description = self._add_cooldown_color("show me how play the game")
+                options.append((name, description))
                 extraDescriptions[name] = """
 This will show you how to access the help menu.
 The help menu will show you the keybindings.
@@ -3908,7 +4099,8 @@ The help menu will show you the keybindings.
 
             if not self.has_shown_observeMenu and src.gamestate.gamestate.tick < 100:
                 name = "observe"
-                options.append((name, "observe environment"))
+                description = self._add_cooldown_color("observe environment")
+                options.append((name, description))
                 extraDescriptions[name] = """
 Look around to see if there are useful items around.
 """
@@ -3916,7 +4108,8 @@ Look around to see if there are useful items around.
 
             if mainChar.health < mainChar.maxHealth // 2 and mainChar.searchInventory("Vial"):
                 name = "heal"
-                options.append((name, "help me heal"))
+                description = self._add_cooldown_color("help me heal")
+                options.append((name, description))
                 extraDescriptions[name] = ["""
 You are hurt and should heal yourself.
 
@@ -3927,13 +4120,15 @@ shift+j then shift+h
 
             if self.get_crafting_room_enemies(mainChar):
                 name = "secure crafting room"
-                options.append((name, "secure crafting room"))
+                description = self._add_cooldown_color("secure crafting room")
+                options.append((name, description))
                 extraDescriptions[name] = """
 We should be able to build a weapon there.
 """
             elif not mainChar.weapon:
                 name = "craft rod"
-                options.append((name, "help me craft a weapon"))
+                description = self._add_cooldown_color("help me craft a weapon")
+                options.append((name, description))
                 extraDescriptions[name] = """
 We can build a Rod here. I doesn't hit hard, but it will do.
 We just need to collect scrap, produce MetalBars.
@@ -3943,7 +4138,8 @@ Then form the Metalbars into a Rod.
             if self.last_worker_spawn > src.gamestate.gamestate.tick-100:
                 shown_worker_watch = True
                 name = "watch worker"
-                options.append((name, "watch worker work"))
+                description = self._add_cooldown_color("watch worker work")
+                options.append((name, description))
                 extraDescriptions[name] = """
 You just woke a worker.
 Let's watch what he is doing for a bit.
@@ -3953,14 +4149,16 @@ Let's watch what he is doing for a bit.
                 if (7,5,0) in self.get_wakeable_workers(mainChar):
                     shown_worker_wake = True
                     name = "wake worker"
-                    options.append((name, "wake worker"))
+                    description = self._add_cooldown_color("wake worker")
+                    options.append((name, description))
                     extraDescriptions[name] = """
 There is a filled stasis Tank in the crafting area.
 Maybe we can wake the worker inside it.
 """
                 if not shown_worker_wake and self.get_wakeable_workers(mainChar):
                     name = "wake worker"
-                    options.append((name, "wake worker"))
+                    description = self._add_cooldown_color("wake worker")
+                    options.append((name, description))
                     extraDescriptions[name] = """
 There is a filled stasis Tank in the crafting area.
 Maybe we can wake the worker inside it.
@@ -3968,7 +4166,8 @@ Maybe we can wake the worker inside it.
 
             if self.get_rooms_to_explore_towards_teleporter(mainChar):
                 name = "explore toward teleporter room"
-                options.append((name, "help me explore my way out"))
+                description = self._add_cooldown_color("help me explore my way out")
+                options.append((name, description))
                 extraDescriptions[name] = """
 There is a teleporter in the base. It is in the room (6,6,0).
 
@@ -3977,7 +4176,8 @@ We should slowly move towards it, while keeping an eye out for interesting thing
 
             if mainChar.getBigPosition() != (7,8,0):
                 name = "go to teleporter room"
-                options.append((name, "help me find a way out of here"))
+                description = self._add_cooldown_color("help me find a way out of here")
+                options.append((name, description))
                 extraDescriptions[name] = """
 There is a teleporter in the base. It is in the room (6,6,0).
 We may need to fight our way towards it.
@@ -3986,7 +4186,8 @@ If we reach it we can leave this place.
 """
             else:
                 name = "teleport"
-                options.append((name, "help me leave"))
+                description = self._add_cooldown_color("help me leave")
+                options.append((name, description))
                 extraDescriptions[name] = """
 We can leave this place now.
 
@@ -3995,23 +4196,45 @@ We probably can't return, though.
 
             if not shown_help_option:
                 name = "help"
-                options.append((name, "show me how to play the game"))
+                description = self._add_cooldown_color("show me how to play the game")
+                options.append((name, description))
                 extraDescriptions[name] = """
 Shows you how to open the games help menu.
 """
             if not shown_observe_option:
                 name = "observe"
-                options.append((name, "show me how to look around"))
+                description = self._add_cooldown_color("show me how to look around")
+                options.append((name, description))
                 extraDescriptions[name] = """
 Shows you how to open the games observe menu.
 """
 
             if self.last_worker_spawn > 0 and not shown_worker_watch:
                 name = "watch worker"
-                options.append((name, "remind me how to watch the workers"))
+                description = self._add_cooldown_color("remind me how to watch the workers")
+                options.append((name, description))
                 extraDescriptions[name] = """
 Let's watch what the workers are doing for a bit.
 """
+
+            if not shown_implant_wait and src.gamestate.gamestate.stern["last_implant_interaction"] > src.gamestate.gamestate.tick - 100 and src.gamestate.gamestate.tick > 200 and not src.gamestate.gamestate.stern.get("command_disabled"):
+                name = "wait implant"
+                options.append((name, "wait for the implant reset"))
+                extraDescriptions[name] = ["""
+Wait for the implant to recover again""",]
+
+            if src.gamestate.gamestate.tick > 200:
+                if not src.gamestate.gamestate.stern.get("command_disabled"):
+                    name = "disable command module"
+                    options.append((name, "disable command submodule"))
+                    extraDescriptions[name] = ["""
+Reduce strain on your implant by disabling command module.""",]
+                else:
+                    name = "enable command module"
+                    options.append((name, "enable command submodule"))
+                    extraDescriptions[name] = ["""
+reenable command module.""",]
+
 
             name = "leave me alone"
             options.append((name, "leave me alone"))
@@ -4125,6 +4348,7 @@ It is never a bad idea to have full health.
                 extraDescriptions[name] = """
 This will show  you the keybindings.
 """
+
             name = "leave me alone"
             options.append((name, "leave me alone"))
             extraDescriptions[name] = """
@@ -4200,14 +4424,14 @@ the base is safe for the moment, but there is a lot left to do.\n"""
             if not src.gamestate.gamestate.stern.get("failedContact2"):
                 text += """
 The base seems to be empty and i recommend we should try to contact command."""
-                if not src.gamestate.gamestate.stern.get("failedContact1"):
+                if src.gamestate.gamestate.stern.get("failedContact1") and mainChar.rank > 5:
                     text += """
 We need get promoted to rank 5 to contact command"""
-                if not src.gamestate.gamestate.stern.get("rank5promotionfailed"):
+                if src.gamestate.gamestate.stern.get("rank5promotionfailed") and not self._get_free_clones(mainChar):
                     text += """
 We need to spawn a backup clone to be able to reach rank 5.
 """
-            if not src.gamestate.gamestate.stern.get("failedBaseContact2"):
+            elif not src.gamestate.gamestate.stern.get("failedBaseContact2"):
                 text += """
 The base seems to be abandoned and i recommend we should try to contact the main base."""
                 if src.gamestate.gamestate.stern.get("failedBaseContact1") and mainChar.rank > 2:
@@ -4227,7 +4451,7 @@ The snatchers will kill everybody stepping outside, you may want to kill them.
 """
                         if terrain.getEnemiesOnTile(mainChar,(8,7,0)):
                             text += """
-The old buildsite is overrun with siders.
+The old buildsite is overrun with spiders.
 You need to kill them before the room can be build.
 """
                     elif self._get_available_rooms(mainChar):
@@ -4258,6 +4482,7 @@ Please select on what to focus next:
             showed_spawn_option = False
             showed_start_alarm_option = False
             showed_stop_alarm_option = False
+            showed_schedule_room_building_option = False
             options = []
             extraDescriptions = {}
 
@@ -4266,6 +4491,13 @@ Please select on what to focus next:
                 options.append((name, "set floor plan"))
                 extraDescriptions[name] = """
 You should make use of the rooms you have built.
+"""
+            if self._get_available_room_placements(mainChar) and not self._get_scheduled_built_sites(mainChar) and terrain.getRoomByPosition((8,7,0)):
+                showed_schedule_room_building_option = True
+                name = "schedule room building"
+                options.append((name, "schedule room building"))
+                extraDescriptions[name] = """
+You should shedule building more rooms.
 """
             if not terrain.alarm and self._get_snatchers(mainChar):
                 name = "start alarm"
@@ -4605,27 +4837,66 @@ This will close the tutorial and let you do your own thing.
 
         character.clear_quests()
 
+        free_command_module = False
+        if src.gamestate.gamestate.tick > 200 and not src.gamestate.gamestate.stern.get("command_disabled"):
+            if src.gamestate.gamestate.stern["last_implant_interaction"] <= src.gamestate.gamestate.tick - 100:
+                free_command_module = True
+            else:
+                if quest_type not in ("leave me alone","implant no wait","disable command module","enable command modul",None,) and not src.gamestate.gamestate.stern.get("command_disabled"):
+                    self.num_ignored_cooldown += 1
+
+        if quest_type not in ("leave me alone","implant no wait","disable command module","enable command modul",None,) and not src.gamestate.gamestate.stern.get("command_disabled"):
+            src.gamestate.gamestate.stern["last_implant_interaction"] = src.gamestate.gamestate.tick
+
+        if quest_type == "disable command module":
+            src.gamestate.gamestate.stern["command_disabled"] = True
+            self.clear_implant_quest(character)
+            return
+
+        if quest_type == "enable command module":
+            src.gamestate.gamestate.stern["command_disabled"] = False
+            self.clear_implant_quest(character)
+            return
+
+        if quest_type == "wait implant":
+            self.has_waited_for_implant = True
+            quest = src.quests.questMap["WaitQuest"](lifetime=99,batchWait=True)
+            quest.free_command_module = free_command_module
+            quest.tag = "wait implant"
+            self.addQuest(quest,character)
+            self.clear_implant_quest(character)
+            return
+
         if quest_type == "watch worker":
             quest = src.quests.questMap["WaitQuest"](lifetime=99,batchWait=True)
+            quest.free_command_module = free_command_module
             self.addQuest(quest,character)
             self.clear_implant_quest(character)
             return
 
         if quest_type == "wake worker":
             self.last_worker_spawn = src.gamestate.gamestate.tick
-            quest = src.quests.questMap["StoryWakeWorker"](targetPositionBig=random.choice(self.get_wakeable_workers(character)))
+            candidates = self.get_wakeable_workers(character)
+            if (7,5,0) in candidates:
+                room_pos = (7,5,0)
+            else:
+                room_pos = random.choice(candidates)
+            quest = src.quests.questMap["StoryWakeWorker"](targetPositionBig=room_pos)
+            quest.free_command_module = free_command_module
             self.addQuest(quest,character)
             self.clear_implant_quest(character)
             return
 
         if quest_type == "craft rod":
             quest = src.quests.questMap["StoryCraftRod"]()
+            quest.free_command_module = free_command_module
             self.addQuest(quest,character)
             self.clear_implant_quest(character)
             return
 
         if quest_type == "secure crafting room":
             quest = src.quests.questMap["SecureTile"](toSecure=(7,5,0),endWhenCleared=True)
+            quest.free_command_module = free_command_module
             self.addQuest(quest,character)
             self.clear_implant_quest(character)
             return
@@ -4634,6 +4905,7 @@ This will close the tutorial and let you do your own thing.
             rooms = self.get_rooms_to_explore_towards_teleporter(character)
             if rooms:
                 quest = src.quests.questMap["SecureTile"](toSecure=rooms[0],endWhenCleared=True)
+                quest.free_command_module = free_command_module
                 self.addQuest(quest,character)
                 self.clear_implant_quest(character)
                 return
@@ -4641,18 +4913,21 @@ This will close the tutorial and let you do your own thing.
 
         if quest_type == "go to teleporter room":
             quest = src.quests.questMap["StoryReachTeleporterRoom"]()
+            quest.free_command_module = free_command_module
             self.addQuest(quest,character)
             self.clear_implant_quest(character)
             return
 
         if quest_type == "teleport":
             quest = src.quests.questMap["StoryTeleport"]()
+            quest.free_command_module = free_command_module
             self.addQuest(quest,character)
             self.clear_implant_quest(character)
             return
 
         if quest_type == "explosion":
             quest = src.quests.questMap["WatchLabBurn"]()
+            quest.free_command_module = free_command_module
             self.addQuest(quest,character)
             self.clear_implant_quest(character)
             return
@@ -4660,6 +4935,7 @@ This will close the tutorial and let you do your own thing.
         if quest_type == "heal":
             if character.searchInventory("Vial"):
                 quest = src.quests.questMap["TreatWounds"]()
+                quest.free_command_module = free_command_module
                 self.addQuest(quest,character)
                 self.clear_implant_quest(character)
                 return
@@ -4678,19 +4954,23 @@ This will close the tutorial and let you do your own thing.
             # fight for vial from tile
             if terrain.getEnemiesOnTile(character,loot_spot):
                 quest = src.quests.questMap["LootRoom"](targetPositionBig=loot_spot,reason="collect equipment")
+                quest.free_command_module = free_command_module
                 self.addQuest(quest,character)
                 quest = src.quests.questMap["SecureTile"](toSecure=loot_spot,endWhenCleared=True,reason="be able to loot that tile",simpleAttacksOnly=True,noHeal=True)
+                quest.free_command_module = free_command_module
                 self.addQuest(quest,character)
                 self.clear_implant_quest(character)
                 return
 
             quest = src.quests.questMap["LootRoom"](targetPositionBig=loot_spot,reason="collect equipment")
+            quest.free_command_module = free_command_module
             self.addQuest(quest,character)
             self.clear_implant_quest(character)
             return
 
         if quest_type == "get to safety":
             quest = src.quests.questMap["ReachSafety"]()
+            quest.free_command_module = free_command_module
             self.addQuest(quest,character)
             self.clear_implant_quest(character)
             return
@@ -4703,26 +4983,34 @@ This will close the tutorial and let you do your own thing.
                 candidates.append(check_character)
             random.shuffle(candidates)
             quest = src.quests.questMap["SecureTile"](toSecure=candidates[0].getBigPosition(),endWhenCleared=True,reason="kill spiderlings",simpleAttacksOnly=True,noHeal=True)
+            quest.free_command_module = free_command_module
             self.addQuest(quest,character)
             self.clear_implant_quest(character)
             return
 
         if quest_type == "observe":
-            character.showTextMenu("\nyou can open the observation menu by pressing o\n(after closing this menu by pressing esc)\n\nThis menu will show you the description of the items around you.\nSelect what items are shown by moving the cursor.\nYou will not move or use time while you are observing\n",do_not_scale=True)
+            character.showTextMenu("""\nyou can open the observation menu by pressing "o"\n\nThis menu will show you the description of the items around you.\nSelect what items are shown by moving the cursor.\nYou will not move or use time while you are observing\n""",do_not_scale=True,allowObserve=True)
             self.has_shown_observeMenu = True
             quest = src.quests.questMap["OpenObserveMenu"]()
+            quest.free_command_module = free_command_module
             self.addQuest(quest,character)
             self.clear_implant_quest(character)
             return
 
         if quest_type == "help":
-            character.showTextMenu("\nyou can open the help menu by pressing ?\n(after closing this menu by pressing esc)\n\nThis will show the keybindings and some general informaiton.\n\nDo this to complete this quest.\nInstructions are shown on the left side of the screen\n",do_not_scale=True)
+            character.showTextMenu("""\nyou can open the help menu by pressing "?"\n\nThis will show the keybindings and some general informaiton.\n\nDo this to complete this quest.\nInstructions are shown on the left side of the screen\n""",do_not_scale=True,allowHelp=True)
             self.has_shown_HelpMenu = True
             quest = src.quests.questMap["OpenHelpMenu"]()
+            quest.free_command_module = free_command_module
             self.addQuest(quest,character)
             self.clear_implant_quest(character)
             return
 
+        if quest_type == "implant no wait":
+            if not src.gamestate.gamestate.stern.get("first_silenced"):
+                character.showTextMenu("\nTry contacting the implant later by pressing q\n",do_not_scale=True)
+            src.gamestate.gamestate.stern["first_silenced"] = True
+            return
 
         if quest_type == "leave me alone":
             character.showTextMenu("\nAs you wish.\n\n\n\nand as you surely remember:\n\nYou can contact me again later by pressing q\n",do_not_scale=True)
@@ -4969,6 +5257,28 @@ This will close the tutorial and let you do your own thing.
                             found_rooms.append(room)
         return found_rooms
 
+    def _get_scheduled_built_sites(self,character):
+        terrain = character.getTerrain()
+        room = terrain.getRoomByPosition((7,7,0))[0]
+        cityPlaner = room.getItemByType("CityPlaner",needsBolted=True)
+        return cityPlaner.plannedRooms[:]
+
+    def _get_available_room_placements(self,character):
+        terrain = character.getTerrain()
+
+        planned_room = self._get_scheduled_built_sites(character)
+
+        possible_placements = []
+        for candidate in [(8,6,0),(8,8,0)]:
+            if terrain.getRoomByPosition(candidate):
+                continue
+            if candidate in planned_room:
+                continue
+            
+            possible_placements.append(candidate)
+
+        return possible_placements
+
     def _get_floorplans_to_set(self,character):
         terrain = character.getTerrain()
 
@@ -5004,6 +5314,16 @@ This will close the tutorial and let you do your own thing.
         src.interaction.send_tracking_ping("handle_player_quest_choice"+"__"+str(quest_type))
 
         character.clear_quests()
+
+        if quest_type == "schedule room building":
+            candidates = self._get_available_room_placements(character)
+            if candidates:
+                random.shuffle(candidates)
+                quest = src.quests.questMap["ScheduleRoomBuilding"](roomPosition=candidates[0])
+                quest.endTrigger = {"container": self, "method": "reachImplant"}
+                self.addQuest(quest,character)
+                self.clear_implant_quest(character)
+                return
 
         if quest_type == "maintain base defences":
 
@@ -5059,7 +5379,7 @@ This will close the tutorial and let you do your own thing.
             return
 
         if quest_type == "complete build site":
-            quest = src.quests.questMap["StoryExtendBase"](reason="be able to get promoted to base commander.\nThis will allow you to contact main base")
+            quest = src.quests.questMap["StoryExtendBase"](reason="be able to get promoted to base commander.\nThis will allow you to contact the main base")
             self.addQuest(quest,character)
             return
 

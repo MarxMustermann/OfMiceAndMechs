@@ -8,7 +8,7 @@ class GrowthTank(src.items.Item):
     """
 
     type = "GrowthTank"
-    description = "Produces Clones"
+    description = "is used to spawn Clones using goo"
     def __init__(self, filled=False):
         """
         setting properties of the base class
@@ -18,13 +18,13 @@ class GrowthTank(src.items.Item):
 
         self.name = "growth tank"
         self.usageInfo = """
-Fill a growth tank to prepare it for generating an npc.
-You can fill it by activating it with a full goo flask in your inventory.
+Fill the GrowthTank to prepare it for spawning a Clone.
+You can fill it by activating it with a full GooFlask.
+The GooFlask can be in your inventory or in the space to the west of it.
 
-Activate a filled growth tank to spawn a new npc.
-Wake the NPC by taking to the NPC.
-
-You talk to NPCs by pressing h and selecting the NPC to talk to.
+Activate a filled growth tank to spawn a new Clone.
+A Growthtank needs to be filled with at least 100 goo. to be able to spawn a Clone.
+After getting spawned the Clone will activate the item to the east of the GrowthTank.
 """
 
         self.runsCommands = True
@@ -36,6 +36,11 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
                 ("born", "set command for newly born npcs"),
             ]
 
+    def drawSDL(self, renderer, basePos, fg_color=(255,255,255,255), bg_color=(0,0,0,255), tileSize=None):
+        tile_name = self.type
+        if self.filled:
+            tile_name += "_filled"
+        self.drawTileSDL(renderer, basePos, fg_color=fg_color, bg_color=bg_color, tileSize=tileSize, tileName=tile_name)
 
     def render(self):
         """

@@ -40,6 +40,9 @@ You are affected by:
         return output
 
     def conditionMet(self, params) -> bool:
+        if self.effect.type == "Berserk":
+            if not src.gamestate.gamestate.mainChar.getNearbyEnemies():
+                return False
         return self.character.statusEffects[-1].type == self.effect.type
 
 

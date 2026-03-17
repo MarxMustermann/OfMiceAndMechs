@@ -390,14 +390,25 @@ class Character:
     def openQuestMenu(self, extraInfo = None):
         self.macroState["submenue"] = src.menuFolder.questMenu.QuestMenu()
 
-    def showTextMenu(self,text,do_not_scale=False,allowQuests=True):
+    def openHelpMenu(self, extraInfo = None):
+        self.macroState["submenue"] = src.menuFolder.helpMenu.HelpMenu()
+
+    def openObserveMenu(self, extraInfo = None):
+        self.macroState["submenue"] = src.menuFolder.observeMenu.ObserveMenu(self)
+
+    def showTextMenu(self,text,do_not_scale=False,allowQuests=False,allowHelp=False,allowObserve=False):
         '''
         show a popup to the character
         '''
 
-        specialKeys = None
+        specialKeys = {}
         if allowQuests:
-            specialKeys = {"q": {"container": self, "method": "openQuestMenu"}}
+            specialKeys["q"] = {"container": self, "method": "openQuestMenu"}
+        if allowHelp:
+            specialKeys["h"] = {"container": self, "method": "openHelpMenu"}
+            specialKeys["?"] = {"container": self, "method": "openHelpMenu"}
+        if allowObserve:
+            specialKeys["o"] = {"container": self, "method": "openObserveMenu"}
         submenu = src.menuFolder.textMenu.TextMenu(text,specialKeys=specialKeys)
         submenu.do_not_scale = do_not_scale
         self.add_submenu(submenu)
@@ -609,6 +620,8 @@ class Character:
         returns:
             the offset
         '''
+        if position[0] == None:
+            return (None,None,None)
         return (position[0]-self.xPosition,position[1]-self.yPosition,position[2]-self.zPosition)
 
     def getDistance(self,position):
@@ -2682,7 +2695,10 @@ press any other key to attack normally"""
             pos: the position to examine
         '''
 
-        submenu = src.menuFolder.examineMenu.ExamineMenu(self,offset=self.getOffset(pos))
+        offset = self.getOffset(pos)
+        if offset[0] == None:
+            return
+        submenu = src.menuFolder.examineMenu.ExamineMenu(self,offset=offset)
         self.add_submenu(submenu)
         return
 

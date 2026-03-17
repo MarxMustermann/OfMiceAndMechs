@@ -58,7 +58,7 @@ class HelpMenu(src.subMenu.SubMenu):
 
     def render(self):
         txt = []
-        txt.append("press a/d to move cursor\n")
+        txt.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"#000"),"press a/d to move cursor\n"))
         title = ""
         color = "#666"
         if self.index == 0:
@@ -88,7 +88,7 @@ class HelpMenu(src.subMenu.SubMenu):
 
         txt.append("\n")
         txt.append("\n")
-        txt.append((src.interaction.urwid.AttrSpec("#fff", "#000"),f"== {title} =="))
+        txt.append((src.interaction.urwid.AttrSpec("#aa5", "#000"),f"== {title} =="))
         txt.append("\n")
         txt.append("\n")
 

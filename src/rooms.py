@@ -300,6 +300,10 @@ class Room:
         # check input slots first
         for inputSlot in self.inputSlots:
 
+            # prevent weird edge cases
+            if inputSlot[0] in self.walkingSpace:
+                continue
+
             # filter for correct stockpile types
             if forceGenericStorage:
                 continue
@@ -353,6 +357,10 @@ class Room:
         # check all stockpiles
         if allowStorage:
             for storageSlot in self.storageSlots:
+
+                # prevent weird edge cases
+                if storageSlot[0] in self.walkingSpace:
+                    continue
 
                 # filter for correct stockpile types
                 if (not forceGenericStorage) and ((itemType and storageSlot[1] != itemType) and (not allowAny or  storageSlot[1] is not None)):

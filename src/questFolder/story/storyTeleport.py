@@ -4,7 +4,7 @@ import random
 class StoryTeleport(src.quests.MetaQuestSequence):
     type = "StoryTeleport"
 
-    def __init__(self, description="leave the desolate temple", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None,reason=None):
+    def __init__(self, description="leave the mausoleum", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None,reason=None):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
@@ -58,11 +58,10 @@ class StoryTeleport(src.quests.MetaQuestSequence):
             
             return (None,(["esc"],"close the menu"))
 
-        if character.macroState.get("itemMarkedLast"):
-            if character.macroState["itemMarkedLast"].type == "Communicator":
-                return (None,("j","activate communicator"))
-            else:
-                return (None,(".","undo selection"))
+        # activate correct item when marked
+        action = self.generate_confirm_interaction_command(allowedItems=("PersonnelTeleporter",))
+        if action:
+            return action
 
         target_pos = None
         if character.getBigPosition() == (7,5,0):
@@ -114,10 +113,9 @@ class StoryTeleport(src.quests.MetaQuestSequence):
 
     def generateTextDescription(self):
         return ["""
-You reach out to your implant and it answers:
-
-There is no base leader. This means this base got abandoned by main command.
-Comtact main command to get reregistered as colony.
+You can use the Teleporter to get out of here.
+The teleporter is in room (7,8,0).
+Use it to leave the mausoleum.
 """]
 
     def handleTeleported(self, character):

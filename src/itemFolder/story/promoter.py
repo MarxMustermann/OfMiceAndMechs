@@ -213,7 +213,7 @@ Kill all enemies on this terrain, to unlock the promotions to rank 2.
                 options.append(("special attacks","special attacks"))
                 extraDescriptions["special attacks"] = "your alternate attack is a selection of special attacks"
                 options.append(("swap attacks","swap attack"))
-                extraDescriptions["swap attacks"] = "your alternate attack allows you to switch places the attacked"
+                extraDescriptions["swap attacks"] = "your alternate attack allows you to switch places the character that was attacked"
                 text = """
 As a a reward for getting promoted from rank 6 to rank 5 you can select a close combat perk.
 
@@ -380,7 +380,7 @@ You are rank {character.rank} now.
 
         rewardText = None
         specialAttackText = """
-You got a attack perk. 
+You got an attack perk.
 
 You can do an alternative attack by pressing shift when attacking.
 
@@ -390,6 +390,8 @@ pressing D will do an alternative attack to an enemy to the east.
 The alternative attacks usually cost exhaustion.
 If you have more than 10 exhaustion you will do much less damage.
 So try not to exeed 10 exhaustion.
+
+
 """
         if rewardType == "special attacks":
             rewardText = specialAttackText + """

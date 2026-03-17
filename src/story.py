@@ -4047,7 +4047,6 @@ The most recommended option is on top.
                 text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),f"""
 Command submodule resetting ... wait {100-(src.gamestate.gamestate.tick - src.gamestate.gamestate.stern["last_implant_interaction"])} ticks
 """))
-            text.append(f"{self.num_ignored_cooldown}")
             text.append("""
 
 

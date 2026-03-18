@@ -2024,6 +2024,7 @@ This memorial contains:
         scrapStorage_room.addWalkingSpace((10,1,0))
 
         resource_gethering_npc = src.characters.characterMap["Clone"]()
+        resource_gethering_npc.name = "Robert Gartner"
         resource_gethering_npc.questsDone = [
                 "NaiveMoveQuest",
                 "MoveQuestMeta",
@@ -2097,7 +2098,7 @@ And those are the base resource for almost everything.
 """,(src.interaction.urwid.AttrSpec("#777","black"),"""
 This memorial contains:
 * 3 ScrapComactors
-* preserved Clone - machine operation duty
+* preserved Clone - resource gathering duty (rg)
 """)])
         scrapStorage_room.addItem(item,(3,9,0))
 

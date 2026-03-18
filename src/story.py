@@ -996,6 +996,7 @@ class MainGame(BasicPhase):
         self.last_worker_spawn = -2000
         self.has_waited_for_implant = False
         self.num_ignored_cooldown = 0
+        self.reenabled_command = False
         super().__init__("MainGame", seed=seed)
 
         src.gamestate.gamestate.stern["last_implant_interaction"] = -100
@@ -4071,7 +4072,7 @@ What may i help you with?
                 extraDescriptions[name] = ["""
 Wait for the implant to recover again""",]
 
-            if self.num_ignored_cooldown > 2 and not src.gamestate.gamestate.stern.get("command_disabled") and src.gamestate.gamestate.stern["last_implant_interaction"] > src.gamestate.gamestate.tick - 100:
+            if self.num_ignored_cooldown > 2 and not src.gamestate.gamestate.stern.get("command_disabled") and src.gamestate.gamestate.stern["last_implant_interaction"] > src.gamestate.gamestate.tick - 100 and not self.reenabled_command:
                 shown_disable = True
                 name = "disable command module"
                 options.append((name, "disable command submodule"))
@@ -4868,6 +4869,7 @@ This will close the tutorial and let you do your own thing.
             return
 
         if quest_type == "enable command module":
+            self.reenabled_command = True
             src.gamestate.gamestate.stern["command_disabled"] = False
             self.clear_implant_quest(character)
             character.clear_quests()
@@ -5222,7 +5224,11 @@ This will close the tutorial and let you do your own thing.
         memorialPlates = []
         terrain = character.getTerrain()
         known_memorialPlates = src.gamestate.gamestate.stern.get("readMemorialPlates",[])
+
         for room in terrain.rooms:
+            if terrain.getEnemiesOnTile(character,room.getPosition()):
+                continue
+
             items = room.getItemsByType("MemorialPlate")
             for item in items:
 

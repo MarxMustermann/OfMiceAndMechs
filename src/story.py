@@ -1947,6 +1947,7 @@ May he forever rest in peace.
         machine_operation_npc.flask.uses = 100
         machine_operation_npc.faction = faction
         machine_operation_npc.burnedIn = True
+        machine_operation_npc.name = "Marcus Ostrander"
 
         machine_operation_npc.duties = []
         machine_operation_npc.registers["HOMEx"] = 7
@@ -1981,7 +1982,7 @@ And those are the base resource for almost everything.
 """,(src.interaction.urwid.AttrSpec("#777","black"),"""
 This memorial contains:
 * 3 ScrapComactors
-* preserved Clone - machine operation duty
+* preserved Clone - machine operation duty (mo)
 """),])
         scrapProccessing_room.addItem(item,(9,9,0))
 

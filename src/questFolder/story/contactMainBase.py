@@ -94,7 +94,7 @@ class ContactMainBase(src.quests.MetaQuestSequence):
 You reach out to your implant and it answers:
 
 There is no base leader. This means this base got abandoned by main command.
-Comtact main command to get reregistered as colony.
+Contact main command to get reregistered as colony.
 """]
 
     def assignToCharacter(self, character):

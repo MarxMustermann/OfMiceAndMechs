@@ -453,6 +453,7 @@ numUsed: {self.numUsed}
 
     def drawSDL(self, renderer, basePos, fg_color=(255,255,255,255), bg_color=(0,0,0,255), tileSize=None):
         base_characters = self._get_base_display_character()
+        base_characters = base_characters.replace("m","_m").replace("t","_t")
         tile_name = "ManufacturingTable_"+base_characters
         self.drawTileSDL(renderer, basePos, fg_color=fg_color, bg_color=bg_color, tileSize=tileSize, tileName=tile_name)
 

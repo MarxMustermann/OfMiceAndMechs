@@ -25,7 +25,6 @@ class MemorialPlate(src.items.Item):
         """
 
         if self.inscription:
-            character.addMessage(self.inscription)
             character.showTextMenu(self.inscription)
         else:
             character.addMessage("The plate has no inscription")

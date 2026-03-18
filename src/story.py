@@ -1909,6 +1909,7 @@ May he forever rest in peace.
                 scrapProccessing_room.addWalkingSpace((pos[0]+offset[0],pos[1]+offset[1],pos[2]+offset[2]))
 
         machine_operation_npc = src.characters.characterMap["Clone"]()
+        machine_operation_npc.name = "Marcus Ostrander"
         machine_operation_npc.questsDone = [
                 "NaiveMoveQuest",
                 "MoveQuestMeta",
@@ -1947,7 +1948,6 @@ May he forever rest in peace.
         machine_operation_npc.flask.uses = 100
         machine_operation_npc.faction = faction
         machine_operation_npc.burnedIn = True
-        machine_operation_npc.name = "Marcus Ostrander"
 
         machine_operation_npc.duties = []
         machine_operation_npc.registers["HOMEx"] = 7

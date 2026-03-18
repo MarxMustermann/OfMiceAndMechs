@@ -2097,7 +2097,6 @@ Scrap can be processed into MetalBars
 And those are the base resource for almost everything.
 """,(src.interaction.urwid.AttrSpec("#777","black"),"""
 This memorial contains:
-* 3 ScrapComactors
 * preserved Clone - resource gathering duty (rg)
 """)])
         scrapStorage_room.addItem(item,(3,9,0))
@@ -4139,6 +4138,15 @@ We just need to collect scrap, produce MetalBars.
 Then form the Metalbars into a Rod.
 """
 
+            if self._get_unread_memorialPlates(mainChar):
+                name = "read information plate"
+                description = self._add_cooldown_color("read information plate")
+                options.append((name, description))
+                extraDescriptions[name] = """
+The rooms have plates with information on them.
+Read them to gather some information.
+"""
+
             if self.last_worker_spawn > src.gamestate.gamestate.tick-100:
                 shown_worker_watch = True
                 name = "watch worker"
@@ -4866,6 +4874,16 @@ This will close the tutorial and let you do your own thing.
             self.reachImplant()
             return
 
+        if quest_type == "read information plate":
+            memorialPlates = self._get_unread_memorialPlates(character)
+            if memorialPlates:
+                memorialPlate = random.choice(memorialPlates)
+                quest = src.quests.questMap["ReadMemorialPlate"](targetPosition=memorialPlate.getPosition(),targetPositionBig=memorialPlate.getBigPosition())
+                quest.free_command_module = free_command_module
+                self.addQuest(quest,character)
+                self.clear_implant_quest(character)
+                return
+
         if quest_type == "wait implant":
             self.has_waited_for_implant = True
             quest = src.quests.questMap["WaitQuest"](lifetime=99,batchWait=True)
@@ -5199,6 +5217,21 @@ This will close the tutorial and let you do your own thing.
             return
 
         src.interaction.send_tracking_ping("handle_player_intro_quest_choice_fell_through")
+
+    def _get_unread_memorialPlates(self,character):
+        memorialPlates = []
+        terrain = character.getTerrain()
+        known_memorialPlates = src.gamestate.gamestate.stern.get("readMemorialPlates",[])
+        for room in terrain.rooms:
+            items = room.getItemsByType("MemorialPlate")
+            for item in items:
+
+                identifier = (item.getBigPosition(),item.getPosition())
+                if identifier in known_memorialPlates:
+                    continue
+
+                memorialPlates.append(item)
+        return memorialPlates
 
     def _get_enemies(self,character):
         enemies = []

@@ -24,8 +24,16 @@ class MemorialPlate(src.items.Item):
             character: the character trying to use the item
         """
 
+        if character == src.gamestate.gamestate.mainChar:
+            memporialPlates = src.gamestate.gamestate.stern.get("readMemorialPlates",[])
+            identifier = (self.getBigPosition(),self.getPosition())
+            if not identifier in memporialPlates:
+                memporialPlates.append(identifier)
+            src.gamestate.gamestate.stern["readMemorialPlates"] = memporialPlates
+
         if self.inscription:
             character.showTextMenu(self.inscription)
+            character.changed("read memorial plate",{"character":character,"item":self})
         else:
             character.addMessage("The plate has no inscription")
 

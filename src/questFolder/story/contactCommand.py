@@ -98,7 +98,7 @@ class ContactCommand(src.quests.MetaQuestSequence):
 You reach out to your implant and it answers:
 
 The base is secure from immediate dangers.
-Comtact the bases leader to get further instrucions.
+Contact the bases leader to get further instrucions.
 """]
 
     def assignToCharacter(self, character):

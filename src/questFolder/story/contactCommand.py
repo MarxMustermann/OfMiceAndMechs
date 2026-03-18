@@ -60,11 +60,10 @@ class ContactCommand(src.quests.MetaQuestSequence):
             
             return (None,(["esc"],"close the menu"))
 
-        if character.macroState.get("itemMarkedLast"):
-            if character.macroState["itemMarkedLast"].type == "Communicator":
-                return (None,("j","activate communicator"))
-            else:
-                return (None,(".","undo selection"))
+        # activate correct item when marked
+        action = self.generate_confirm_interaction_command(allowedItems=("Communicator",))
+        if action:
+            return action
 
         if not character.getBigPosition() == (7,7,0):
             quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),reason="reach the communicator",description="go to command centre")

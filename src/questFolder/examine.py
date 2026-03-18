@@ -17,8 +17,11 @@ class Examine(src.quests.MetaQuestSequence):
         reasonString = ""
         if self.reason:
             reasonString = ", to "+self.reason
+        big_position_string = ""
+        if targetPositionBig:
+            big_position_string = f" on tile {targetPositionBig}"
         text = f"""
-Decide{reasonString}.
+Exanine the position {targetPosition}{big_position_string} {reasonString}.
 
 """
         return text

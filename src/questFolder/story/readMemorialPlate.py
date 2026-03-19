@@ -59,8 +59,8 @@ class ReadMemorialPlate(src.quests.MetaQuestSequence):
         return (None,("j","activate information plate"))
 
     def generateTextDescription(self):
-        return ["""
-Read the information from the MemorialPlate on Position {self.targetPosition} in tile {self.targetPositionBig].
+        return [f"""
+Read the information from the MemorialPlate on Position {self.targetPosition} in tile {self.targetPositionBig}.
 
 Activate the MemorialPlate to read it.
 """]

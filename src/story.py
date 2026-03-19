@@ -994,7 +994,6 @@ class MainGame(BasicPhase):
         self.has_shown_observeMenu = False
         self.has_shown_welcome = False
         self.last_worker_spawn = -2000
-        self.has_waited_for_implant = False
         self.num_ignored_cooldown = 0
         self.reenabled_command = False
         super().__init__("MainGame", seed=seed)
@@ -4062,15 +4061,7 @@ What may i help you with?
             shown_observe_option = False
             shown_worker_wake = False
             shown_worker_watch = False
-            shown_implant_wait = False
             shown_disable = False
-
-            if not self.has_waited_for_implant and src.gamestate.gamestate.stern["last_implant_interaction"] > src.gamestate.gamestate.tick - 100 and src.gamestate.gamestate.tick > 200 and not src.gamestate.gamestate.stern.get("command_disabled"):
-                shown_implant_wait = True
-                name = "wait implant"
-                options.append((name, "wait for the implant reset"))
-                extraDescriptions[name] = ["""
-Wait for the implant to recover again""",]
 
             if self.num_ignored_cooldown > 2 and not src.gamestate.gamestate.stern.get("command_disabled") and src.gamestate.gamestate.stern["last_implant_interaction"] > src.gamestate.gamestate.tick - 100 and not self.reenabled_command:
                 shown_disable = True
@@ -4230,7 +4221,7 @@ Shows you how to open the games observe menu.
 Let's watch what the workers are doing for a bit.
 """
 
-            if not shown_implant_wait and src.gamestate.gamestate.stern["last_implant_interaction"] > src.gamestate.gamestate.tick - 100 and src.gamestate.gamestate.tick > 200 and not src.gamestate.gamestate.stern.get("command_disabled"):
+            if src.gamestate.gamestate.stern["last_implant_interaction"] > src.gamestate.gamestate.tick - 100 and src.gamestate.gamestate.tick > 200 and not src.gamestate.gamestate.stern.get("command_disabled"):
                 name = "wait implant"
                 options.append((name, "wait for the implant reset"))
                 extraDescriptions[name] = ["""
@@ -4887,7 +4878,6 @@ This will close the tutorial and let you do your own thing.
                 return
 
         if quest_type == "wait implant":
-            self.has_waited_for_implant = True
             quest = src.quests.questMap["WaitQuest"](lifetime=99,batchWait=True)
             quest.free_command_module = free_command_module
             quest.tag = "wait implant"

@@ -5007,7 +5007,7 @@ This will close the tutorial and let you do your own thing.
             return
 
         if quest_type == "observe":
-            character.showTextMenu("""\nyou can open the observation menu by pressing "o"\n\nThis menu will show you the description of the items around you.\nSelect what items are shown by moving the cursor.\nYou will not move or use time while you are observing\n""",do_not_scale=True,allowObserve=True)
+            character.showTextMenu("""\nyou can open the observation menu by pressing "o"\n\nThis menu will show you the description of the items around you.\nSelect what items are shown by moving the cursor.\nYou will not move or use time while you are observing\n""",do_not_scale=True,allowObserve=True,tag="open observe info")
             self.has_shown_observeMenu = True
             quest = src.quests.questMap["OpenObserveMenu"]()
             quest.free_command_module = free_command_module
@@ -5016,7 +5016,7 @@ This will close the tutorial and let you do your own thing.
             return
 
         if quest_type == "help":
-            character.showTextMenu("""\nyou can open the help menu by pressing "?"\n\nThis will show the keybindings and some general informaiton.\n\nDo this to complete this quest.\nInstructions are shown on the left side of the screen\n""",do_not_scale=True,allowHelp=True)
+            character.showTextMenu("""\nyou can open the help menu by pressing "?"\n\nThis will show the keybindings and some general informaiton.\n\nDo this to complete this quest.\nInstructions are shown on the left side of the screen\n""",do_not_scale=True,allowHelp=True,tag="open help info")
             self.has_shown_HelpMenu = True
             quest = src.quests.questMap["OpenHelpMenu"]()
             quest.free_command_module = free_command_module

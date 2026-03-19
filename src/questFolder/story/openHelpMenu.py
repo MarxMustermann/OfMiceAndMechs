@@ -19,7 +19,8 @@ class OpenHelpMenu(src.quests.MetaQuestSequence):
 
         submenue = character.macroState["submenue"]
         if submenue and not ignoreCommands:
-            return (None,(["esc",],"close the menu"))
+            if not submenue.tag == "open help info":
+                return (None,(["esc",],"close the menu"))
 
         return (None,("?","open help menu"))
 

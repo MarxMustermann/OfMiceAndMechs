@@ -7,7 +7,7 @@ class TextMenu(src.subMenu.SubMenu):
 
     type = "TextMenu"
 
-    def __init__(self, text="",specialKeys=None):
+    def __init__(self, text="",specialKeys=None, tag=None):
         """
         initialise internal state
 
@@ -20,6 +20,7 @@ class TextMenu(src.subMenu.SubMenu):
         if not specialKeys:
             specialKeys = {}
         self.specialKeys = specialKeys
+        self.tag = tag
 
     def handleKey(self, key, noRender=False, character = None):
         """

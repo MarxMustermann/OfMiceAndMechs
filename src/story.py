@@ -1723,12 +1723,88 @@ May he forever rest in peace.
         for pos in [(5,7,0),(7,7,0),(7,5,0),(5,5,0)]:
             teleporterRoom.addWalkingSpace(pos)
 
-        # add teleport room
-        craftingRoom = architect.doAddRoom(
+        # build maze path
+        maze_room_easy_path_1 = architect.doAddRoom(
                 {
                        "coordinate": (7,5,0),
                        "roomType": "EmptyRoom",
-                       "doors": "6,12",
+                       "doors": "12,6 0,6 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        for x in range(1,12):
+            maze_room_easy_path_1.addWalkingSpace((x,6,0))
+        for y in range(7,12):
+            maze_room_easy_path_1.addWalkingSpace((6,y,0))
+
+        maze_room_easy_path_2 = architect.doAddRoom(
+                {
+                       "coordinate": (6,5,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "12,6 6,0",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        for y in range(1,7):
+            maze_room_easy_path_2.addWalkingSpace((6,y,0))
+        for x in range(7,12):
+            maze_room_easy_path_2.addWalkingSpace((x,6,0))
+
+        maze_room_easy_path_3 = architect.doAddRoom(
+                {
+                       "coordinate": (6,4,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "12,6 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        for y in range(7,12):
+            maze_room_easy_path_3.addWalkingSpace((6,y,0))
+        for x in range(6,12):
+            maze_room_easy_path_3.addWalkingSpace((x,6,0))
+
+        maze_room_exit = architect.doAddRoom(
+                {
+                       "coordinate": (7,4,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "12,6 0,6 6,0",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        for y in range(1,6):
+            maze_room_exit.addWalkingSpace((6,y,0))
+        for x in range(1,12):
+            maze_room_exit.addWalkingSpace((x,6,0))
+ 
+        maze_room_hard_path_1 = architect.doAddRoom(
+                {
+                       "coordinate": (8,5,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,0 0,6",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        for x in range(1,7):
+            maze_room_hard_path_1.addWalkingSpace((x,6,0))
+        for y in range(1,6):
+            maze_room_hard_path_1.addWalkingSpace((6,y,0))
+
+        # add teleport room
+        craftingRoom = architect.doAddRoom(
+                {
+                       "coordinate": (8,4,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,12 0,6",
                        "offset": [1,1],
                        "size": [13, 13],
                 },
@@ -4150,7 +4226,7 @@ Let's watch what he is doing for a bit.
 """
 
             if src.gamestate.gamestate.tick > 30:
-                if (7,5,0) in self.get_wakeable_workers(mainChar):
+                if self._get_crafting_room_position() in self.get_wakeable_workers(mainChar):
                     shown_worker_wake = True
                     name = "wake worker"
                     description = self._add_cooldown_color("wake worker")
@@ -4895,8 +4971,8 @@ This will close the tutorial and let you do your own thing.
         if quest_type == "wake worker":
             self.last_worker_spawn = src.gamestate.gamestate.tick
             candidates = self.get_wakeable_workers(character)
-            if (7,5,0) in candidates:
-                room_pos = (7,5,0)
+            if self._get_crafting_room_position() in candidates:
+                room_pos = self._get_crafting_room_position()
             else:
                 room_pos = random.choice(candidates)
             quest = src.quests.questMap["StoryWakeWorker"](targetPositionBig=room_pos)
@@ -4913,7 +4989,7 @@ This will close the tutorial and let you do your own thing.
             return
 
         if quest_type == "secure crafting room":
-            quest = src.quests.questMap["SecureTile"](toSecure=(7,5,0),endWhenCleared=True)
+            quest = src.quests.questMap["SecureTile"](toSecure=self._get_crafting_room_position(),endWhenCleared=True)
             quest.free_command_module = free_command_module
             self.addQuest(quest,character)
             self.clear_implant_quest(character)
@@ -5070,9 +5146,12 @@ This will close the tutorial and let you do your own thing.
 
         return to_explore
 
+    def _get_crafting_room_position(self):
+        return (7,5,0)
+
     def get_crafting_room_enemies(self, character):
         terrain = character.getTerrain()
-        return terrain.getEnemiesOnTile(character,(7,5,0))
+        return terrain.getEnemiesOnTile(character,self._get_crafting_room_position())
 
     def get_wakeable_workers(self, character):
         terrain = character.getTerrain()

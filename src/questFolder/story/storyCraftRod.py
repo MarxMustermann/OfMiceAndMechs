@@ -20,7 +20,7 @@ class StoryCraftRod(src.quests.MetaQuestSequence):
 
         terrain = character.getTerrain()
 
-        rooms = terrain.getRoomByPosition((7,5,0))
+        rooms = terrain.getRoomByPosition((8,4,0))
         if not rooms:
             return self._solver_trigger_fail(dryRun,"crafting room gone")
         crafting_room = rooms[0]
@@ -73,17 +73,17 @@ class StoryCraftRod(src.quests.MetaQuestSequence):
 
         items_out = crafting_room.getItemByPosition((5,11,0))
         if items_out:
-            quest = src.quests.questMap["CleanSpace"](targetPosition=(5,11,0), targetPositionBig=(7,5,0))
+            quest = src.quests.questMap["CleanSpace"](targetPosition=(5,11,0), targetPositionBig=(8,4,0))
             return ([quest],None)
         items_in = crafting_room.getItemByPosition((2,11,0))
         if not items_in: 
             if character.searchInventory("Scrap"):
-                quest = src.quests.questMap["PlaceItem"](targetPosition=(3,11,0), targetPositionBig=(7,5,0), itemType="Scrap")
+                quest = src.quests.questMap["PlaceItem"](targetPosition=(3,11,0), targetPositionBig=(8,4,0), itemType="Scrap")
                 return ([quest],None)
 
             quest = src.quests.questMap["StoryFetchScrap"]()
             return ([quest],None)
-        quest = src.quests.questMap["CleanSpace"](targetPosition=(2,11,0), targetPositionBig=(7,5,0))
+        quest = src.quests.questMap["CleanSpace"](targetPosition=(2,11,0), targetPositionBig=(8,4,0))
         return ([quest],None)
 
 

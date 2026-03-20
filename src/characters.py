@@ -396,7 +396,7 @@ class Character:
     def openObserveMenu(self, extraInfo = None):
         self.macroState["submenue"] = src.menuFolder.observeMenu.ObserveMenu(self)
 
-    def showTextMenu(self,text,do_not_scale=False,allowQuests=False,allowHelp=False,allowObserve=False):
+    def showTextMenu(self,text,do_not_scale=False,allowQuests=False,allowHelp=False,allowObserve=False,tag=None):
         '''
         show a popup to the character
         '''
@@ -409,7 +409,7 @@ class Character:
             specialKeys["?"] = {"container": self, "method": "openHelpMenu"}
         if allowObserve:
             specialKeys["o"] = {"container": self, "method": "openObserveMenu"}
-        submenu = src.menuFolder.textMenu.TextMenu(text,specialKeys=specialKeys)
+        submenu = src.menuFolder.textMenu.TextMenu(text,specialKeys=specialKeys,tag=tag)
         submenu.do_not_scale = do_not_scale
         self.add_submenu(submenu)
         self.runCommandString("~",nativeKey=True)

@@ -1679,16 +1679,6 @@ but they are likely to explode when disturbed.
             hubRoom.addWalkingSpace((x,6,0))
         for pos in [(5,7,0),(7,7,0),(7,5,0),(5,5,0)]:
             hubRoom.addWalkingSpace(pos)
-        item = src.items.itemMap["Scrap"](amount=2)
-        hubRoom.addItem(item,(6,3,0))
-        item = src.items.itemMap["Scrap"](amount=1)
-        hubRoom.addItem(item,(3,6,0))
-        item = src.items.itemMap["Scrap"](amount=3)
-        hubRoom.addItem(item,(4,6,0))
-        item = src.items.itemMap["Scrap"](amount=2)
-        hubRoom.addItem(item,(5,6,0))
-        item = src.items.itemMap["Scrap"](amount=1)
-        hubRoom.addItem(item,(6,5,0))
         item = src.items.itemMap["MemorialMonolith"](inscription="""
 This Mausoleum is in rememberance to the architect.
 
@@ -1938,16 +1928,6 @@ May he forever rest in peace.
         item = src.items.itemMap["StasisTank"]()
         item.character = main_npc
         craftingRoom.addItem(item,(6,3,0))
-
-        crawler = src.characters.characterMap["Mechanical_Crawler"]()
-
-        quest = src.quests.questMap["SecureTile"](toSecure=craftingRoom.getPosition())
-        quest.autoSolve = True
-        quest.assignToCharacter(crawler)
-        quest.activate()
-        crawler.quests.append(quest)
-
-        craftingRoom.addCharacter(crawler,6,8)
 
         rooms_to_decorate = []
 
@@ -3842,10 +3822,6 @@ This memorial contains:
         thisFactionId = self.factionCounter
         mainChar.faction = f"architecture"
         self.factionCounter += 1
-
-        vial = src.items.itemMap["Vial"]()
-        vial.uses = 2
-        mainChar.inventory.append(vial)
 
         mainChar.registers["HOMETx"] = self.architectsLabPosition[0]
         mainChar.registers["HOMETy"] = self.architectsLabPosition[1]

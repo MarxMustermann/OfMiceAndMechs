@@ -996,6 +996,9 @@ class MainGame(BasicPhase):
         self.last_worker_spawn = -2000
         self.num_ignored_cooldown = 0
         self.reenabled_command = False
+
+        self.has_shown_congratz = False
+        self.has_shown_get_weapon = False
         super().__init__("MainGame", seed=seed)
 
         src.gamestate.gamestate.stern["last_implant_interaction"] = -100
@@ -4074,20 +4077,34 @@ command resolution module ready: {100-(src.gamestate.gamestate.tick - src.gamest
             '''
             text = []
             if terrain.getRoomByPosition((7,7,0)):
-                text.append("""
+                congratz_text = """
 Congratulations! You made it out of the burning room.
 You really should stop touching machinery you don't know how to use!
 The whole room will explode soon.
-""")
+"""
+                
+                if not self.has_shown_congratz:
+                    mainChar.showTextMenu(congratz_text+"\n\npress enter to continue\n")
+                    mainChar.takeTime(amount=1,reason="waiting for implant")
+                    self.has_shown_congratz = True
+                    return
 
+                text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),congratz_text))
             else:
-                text.append("""
+                weapon_text = """
 We should leave.
 
 The facility is overrun with enemies that blocks your way out of here.
 You didn't even bring weapons!
 We should try find something to defend ourselves with.
-""")
+"""
+                if not self.has_shown_get_weapon:
+                    mainChar.showTextMenu(weapon_text+"\n\npress enter to continue\n")
+                    mainChar.takeTime(amount=1,reason="waiting for implant")
+                    self.has_shown_get_weapon = True
+                    return
+
+                text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),weapon_text))
 
             text.append("""
 In case you hit your head and don't remember:
@@ -4144,6 +4161,18 @@ The help menu will show you the keybindings.
 """
                 shown_help_option = True
 
+            if mainChar.getBigPosition() == (7,6,0) and terrain.getEnemiesOnTile(mainChar,(7,5,0)):
+                name = "clear first room"
+                description = self._add_cooldown_color("enter next room")
+                options.append((name, description))
+                extraDescriptions[name] = ["""
+We need to move on and the crafting room is to the north.
+So let's go to the room in the north.
+""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""
+Be aware: We will have to fight an enemy there.
+""")]
+                shown_observe_option = True
+
             if not self.has_shown_observeMenu and src.gamestate.gamestate.tick < 100:
                 name = "observe"
                 description = self._add_cooldown_color("observe environment")
@@ -4164,6 +4193,15 @@ Keep in mind you need to enter capital letters with shift pressed.
 So ""","\"",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"black"),"J H"),"\"",""" needs to be entered as:
 shift+j then shift+h
 """]
+
+            if self._get_path_to_clear_to_crafting_room(mainChar):
+                name = "clear path to crafting room"
+                description = self._add_cooldown_color("clear path to crafting room")
+                options.append((name, description))
+                extraDescriptions[name] = """
+There are enemies on the path to the crafting room.
+Clear a room on the path to the crafting room.
+"""
 
             if self.get_crafting_room_enemies(mainChar):
                 name = "secure crafting room"
@@ -4904,6 +4942,23 @@ This will close the tutorial and let you do your own thing.
         if quest_type not in ("leave me alone","implant no wait","disable command module","enable command modul",None,) and not src.gamestate.gamestate.stern.get("command_disabled"):
             src.gamestate.gamestate.stern["last_implant_interaction"] = src.gamestate.gamestate.tick
 
+        if quest_type == "clear first room":
+
+            character.showTextMenu("Fight enemies by bumping into them.\nSo if an enemy is to your north press w to attack.\n\npress enter to close menu",do_not_scale=True)
+
+            quest = src.quests.questMap["SecureTile"](toSecure=(7,5,0),endWhenCleared=True)
+            self.addQuest(quest,character)
+            return
+
+        if quest_type == "clear path to crafting room":
+            candides = self._get_path_to_clear_to_crafting_room(character)
+            if candides:
+                room_position = candides[0]
+
+                quest = src.quests.questMap["SecureTile"](toSecure=room_position,endWhenCleared=True)
+                self.addQuest(quest,character)
+                return
+
         if quest_type == "disable command module":
             src.gamestate.gamestate.stern["command_disabled"] = True
             self.clear_implant_quest(character)
@@ -5121,6 +5176,17 @@ This will close the tutorial and let you do your own thing.
             to_explore.append(pos)
 
         return to_explore
+
+    def _get_path_to_clear_to_crafting_room(self, character):
+        terrain = character.getTerrain()
+
+        candidates = [(7,5,0),(6,5,0),(6,4,0),(7,4,0),]
+        result = []
+        for candidate in candidates:
+            if not terrain.getEnemiesOnTile(character,candidate):
+                continue
+            result.append(candidate)
+        return result
 
     def _get_crafting_room_position(self):
         return (7,5,0)

@@ -1731,6 +1731,36 @@ May he forever rest in peace.
             maze_room_easy_path_1.addWalkingSpace((x,6,0))
         for y in range(7,12):
             maze_room_easy_path_1.addWalkingSpace((6,y,0))
+        for pos in [(6,5,0),(6,4,0)]:
+            maze_room_easy_path_1.addWalkingSpace(pos)
+        for pos in [(3,7,0),(3,8,0),(3,9,0)]:
+            maze_room_easy_path_1.addWalkingSpace(pos)
+        item = src.items.itemMap["Corpse"]()
+        maze_room_easy_path_1.addItem(item,(3,9,0))
+        for pos in [(9,7,0),(9,8,0),(9,9,0)]:
+            maze_room_easy_path_1.addWalkingSpace(pos)
+        item = src.items.itemMap["Corpse"]()
+        maze_room_easy_path_1.addItem(item,(9,9,0))
+        for pos in [(9,5,0),(9,4,0),(9,3,0)]:
+            maze_room_easy_path_1.addWalkingSpace(pos)
+        item = src.items.itemMap["Corpse"]()
+        maze_room_easy_path_1.addItem(item,(9,3,0))
+        for pos in [(3,5,0),(3,4,0),(3,3,0)]:
+            maze_room_easy_path_1.addWalkingSpace(pos)
+        item = src.items.itemMap["Corpse"]()
+        maze_room_easy_path_1.addItem(item,(3,3,0))
+        item = src.items.itemMap["MemorialPlate"](inscription=["""
+""",(src.interaction.urwid.AttrSpec("#ff0","black"),'''"Good science needs good subjects"'''),"""
+
+The architects crowning achievement was the creation of the implants.
+Those eased the work of the Clones and gave control over the economy.
+It took countless tries for the first Clone to survice the procedure.
+
+""",(src.interaction.urwid.AttrSpec("#777","black"),"""
+This memorial contains:
+* 4 Corpses
+"""),])
+        maze_room_easy_path_1.addItem(item,(6,4,0))
 
         maze_room_easy_path_2 = architect.doAddRoom(
                 {

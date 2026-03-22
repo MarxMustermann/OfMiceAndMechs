@@ -6,7 +6,7 @@ import src
 class SecureTile(src.quests.questMap["GoToTile"]):
     type = "SecureTile"
 
-    def __init__(self, description="secure tile", toSecure=None, endWhenCleared=False, reputationReward=0,rewardText=None,strict=False,alwaysHuntDown=False,reason=None,story=None, wandering = False, lifetime=None, simpleAttacksOnly=False, noHeal=False):
+    def __init__(self, description="secure tile", toSecure=None, endWhenCleared=False, reputationReward=0,rewardText=None,strict=False,alwaysHuntDown=False,reason=None,story=None, wandering = False, lifetime=None, simpleAttacksOnly=False, noHeal=False, suicidal=False):
         super().__init__(description=description,targetPosition=toSecure,lifetime=lifetime)
         self.metaDescription = description
         self.endWhenCleared = endWhenCleared
@@ -22,6 +22,7 @@ class SecureTile(src.quests.questMap["GoToTile"]):
         if toSecure is not None and (toSecure[0] > 13 or toSecure[1] > 13):
             raise Exception("Out of bounds" + str(toSecure))
         self.simpleAttacksOnly = simpleAttacksOnly
+        self.suicidal = suicidal
 
     def generateTextDescription(self):
         reasonString = ""
@@ -137,22 +138,22 @@ Use simple attacks only.
                 enemies = character.getNearbyEnemies()
                 if enemies:
                     if self.alwaysHuntDown:
-                        quest = src.quests.questMap["Huntdown"](target=random.choice(enemies),reason="ensure your enemy is dead")
+                        quest = src.quests.questMap["Huntdown"](target=random.choice(enemies),reason="ensure your enemy is dead",suicidal=self.suicidal)
                         return ([quest],None)
                     if self.simpleAttacksOnly:
-                        quest = src.quests.questMap["Fight"](simpleOnly=self.simpleAttacksOnly,reason="get rid of the enemies")
+                        quest = src.quests.questMap["Fight"](simpleOnly=self.simpleAttacksOnly,reason="get rid of the enemies",suicidal=self.suicidal)
                         return ([quest],None)
                     if not dryRun:
                         self.huntdownCooldown = 100
                     if random.random() < 0.3:
-                        quest = src.quests.questMap["Huntdown"](target=random.choice(enemies),reason="ensure victory")
+                        quest = src.quests.questMap["Huntdown"](target=random.choice(enemies),reason="ensure victory",suicidal=self.suicidal)
                         return ([quest],None)
                     else:
-                        quest = src.quests.questMap["Fight"](simpleOnly=self.simpleAttacksOnly,reason="reduce danger")
+                        quest = src.quests.questMap["Fight"](simpleOnly=self.simpleAttacksOnly,reason="reduce danger",suicidal=self.suicidal)
                         return ([quest],None)
         enemies = character.getNearbyEnemies()
         if enemies:
-            quest = src.quests.questMap["Fight"](simpleOnly=self.simpleAttacksOnly,reason="defend yourself")
+            quest = src.quests.questMap["Fight"](simpleOnly=self.simpleAttacksOnly,reason="defend yourself",suicidal=self.suicidal)
             return ([quest],None)
 
         # go to the position to secure

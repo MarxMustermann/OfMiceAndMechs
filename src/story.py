@@ -4261,9 +4261,18 @@ So ""","\"",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_co
 shift+j then shift+h
 """]
 
-            if self._get_path_to_clear_to_crafting_room(mainChar):
-                name = "clear path to crafting room"
-                description = self._add_cooldown_color("clear path to crafting room")
+            if self._get_local_unread_memorialPlates(mainChar):
+                name = "read information plate"
+                description = self._add_cooldown_color("read information plate")
+                options.append((name, description))
+                extraDescriptions[name] = """
+There is a information plate in this room.
+We should read it to see if there is interesting information.
+"""
+
+            if self._get_path_to_clear_to_exit(mainChar):
+                name = "clear path to exit"
+                description = self._add_cooldown_color("clear path to exit")
                 options.append((name, description))
                 extraDescriptions[name] = """
 There are enemies on the path to the crafting room.
@@ -5017,8 +5026,8 @@ This will close the tutorial and let you do your own thing.
             self.addQuest(quest,character)
             return
 
-        if quest_type == "clear path to crafting room":
-            candides = self._get_path_to_clear_to_crafting_room(character)
+        if quest_type == "clear path to exit":
+            candides = self._get_path_to_clear_to_exit(character)
             if candides:
                 room_position = candides[0]
 
@@ -5244,7 +5253,7 @@ This will close the tutorial and let you do your own thing.
 
         return to_explore
 
-    def _get_path_to_clear_to_crafting_room(self, character):
+    def _get_path_to_clear_to_exit(self, character):
         terrain = character.getTerrain()
 
         candidates = [(7,5,0),(6,5,0),(6,4,0),(7,4,0),]
@@ -5397,6 +5406,27 @@ This will close the tutorial and let you do your own thing.
             return
 
         src.interaction.send_tracking_ping("handle_player_intro_quest_choice_fell_through")
+
+    def _get_local_unread_memorialPlates(self,character):
+        if not character.container or not character.container.isRoom:
+            return []
+        if character.getNearbyEnemies():
+            return []
+
+        room = character.container
+        known_memorialPlates = src.gamestate.gamestate.stern.get("readMemorialPlates",[])
+        memorialPlates = []
+
+        items = room.getItemsByType("MemorialPlate")
+        for item in items:
+            identifier = (item.getBigPosition(),item.getPosition())
+            if identifier in known_memorialPlates:
+                continue
+
+            memorialPlates.append(item)
+
+        return memorialPlates
+
 
     def _get_unread_memorialPlates(self,character):
         memorialPlates = []

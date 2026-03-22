@@ -53,7 +53,7 @@ class ReadMemorialPlate(src.quests.MetaQuestSequence):
             return (None,(".","stand around confused"))
 
         if character.getDistance(self.targetPosition) > 0:
-            quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,reason="to be able to use the MemorialPlate",description="go to information plate")
+            quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,reason="to be able to use the MemorialPlate",description="go to information plate",clearPath=True)
             return ([quest],None)
 
         return (None,("j","activate information plate"))

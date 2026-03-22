@@ -107,7 +107,7 @@ Activate the MemorialPlate to read it.
         if not renderForTile:
             if isinstance(character.container,src.rooms.Room):
                 for item in character.container.itemsOnFloor:
-                    if not item.type == "Communicator":
+                    if not item.type == "MemorialPlate":
                         continue
                     if not item.bolted:
                         continue

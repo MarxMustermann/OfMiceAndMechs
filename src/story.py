@@ -1754,7 +1754,7 @@ May he forever rest in peace.
 
 The architects crowning achievement was the creation of the implants.
 Those eased the work of the Clones and gave control over the economy.
-It took countless tries for the first Clone to survice the procedure.
+It took countless tries for the first Clone to survive the procedure.
 
 """,(src.interaction.urwid.AttrSpec("#777","black"),"""
 This memorial contains:
@@ -1776,6 +1776,24 @@ This memorial contains:
             maze_room_easy_path_2.addWalkingSpace((6,y,0))
         for x in range(7,12):
             maze_room_easy_path_2.addWalkingSpace((x,6,0))
+        for pos in [(9,5,0),(9,4,0),(9,3,0),(8,3,0),(7,3,0),]:
+            maze_room_easy_path_2.addWalkingSpace(pos)
+        item = src.items.itemMap["MeditationPlate"]()
+        maze_room_easy_path_2.addItem(item,(4,8,0))
+        for pos in [(5,6,0),(4,6,0),(4,7,0),(4,8,0),(5,8,0),(6,8,0),(6,7,0)]:
+            maze_room_easy_path_2.addWalkingSpace(pos)
+        item = src.items.itemMap["MemorialPlate"](inscription=["""
+""",(src.interaction.urwid.AttrSpec("#ff0","black"),'''"Time heals all wounds"'''),"""
+
+Clones heal over time.
+The more hurt the Clones are the faster they heal.
+The process can be sped up by meditation to some degree.
+
+""",(src.interaction.urwid.AttrSpec("#777","black"),"""
+This memorial contains:
+* 1 MeditationPlate
+"""),])
+        maze_room_easy_path_2.addItem(item,(9,3,0))
 
         maze_room_easy_path_3 = architect.doAddRoom(
                 {
@@ -1791,6 +1809,25 @@ This memorial contains:
             maze_room_easy_path_3.addWalkingSpace((6,y,0))
         for x in range(6,12):
             maze_room_easy_path_3.addWalkingSpace((x,6,0))
+        for pos in [(5,6,0),(4,6,0),(4,5,0),(4,4,4),(5,4,0),(6,4,0),(6,5,0),]:
+            maze_room_easy_path_3.addWalkingSpace(pos)
+        for pos in [(7,9,0),(8,9,0),(9,9,0),(9,8,0),(9,7,0),]:
+            maze_room_easy_path_3.addWalkingSpace(pos)
+        item = src.items.itemMap["Vial"]()
+        item.uses = 1
+        maze_room_easy_path_3.addItem(item,(4,4,0))
+        item = src.items.itemMap["MemorialPlate"](inscription=["""
+""",(src.interaction.urwid.AttrSpec("#ff0","black"),'''"Goo is life"'''),"""
+
+Goo extract The lifes can extract the lifes essence from goo.
+It can be filled into Vials by VialFillers.
+Clones can drink from those to heal.
+
+""",(src.interaction.urwid.AttrSpec("#777","black"),"""
+This memorial contains:
+* 1 Vial
+"""),])
+        maze_room_easy_path_3.addItem(item,(9,9,0))
 
         maze_room_exit = architect.doAddRoom(
                 {
@@ -4976,7 +5013,7 @@ This will close the tutorial and let you do your own thing.
 
             character.showTextMenu("Fight enemies by bumping into them.\nSo if an enemy is to your north press w to attack.\n\npress enter to close menu",do_not_scale=True)
 
-            quest = src.quests.questMap["SecureTile"](toSecure=(7,5,0),endWhenCleared=True)
+            quest = src.quests.questMap["SecureTile"](toSecure=(7,5,0),endWhenCleared=True,suicidal=True)
             self.addQuest(quest,character)
             return
 
@@ -4985,7 +5022,7 @@ This will close the tutorial and let you do your own thing.
             if candides:
                 room_position = candides[0]
 
-                quest = src.quests.questMap["SecureTile"](toSecure=room_position,endWhenCleared=True)
+                quest = src.quests.questMap["SecureTile"](toSecure=room_position,endWhenCleared=True,suicidal=True)
                 self.addQuest(quest,character)
                 return
 

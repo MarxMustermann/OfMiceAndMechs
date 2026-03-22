@@ -4,13 +4,14 @@ import src
 class Huntdown(src.quests.MetaQuestSequence):
     type = "Huntdown"
 
-    def __init__(self, description="huntdown", target=None, lifetime=None, alwaysfollow = False, reason=None):
+    def __init__(self, description="huntdown", target=None, lifetime=None, alwaysfollow = False, reason=None, suicidal=False):
         questList = []
         super().__init__(questList,lifetime=lifetime)
         self.metaDescription = description
         self.target = target
         self.alwaysfollow = alwaysfollow
         self.reason = reason
+        self.suicidal = suicidal
 
     def generateTextDescription(self):
         out = []
@@ -90,7 +91,7 @@ Hunt down enemy{reasonText}."""
             return ([quest],None)
 
         # do actual combat
-        quest = src.quests.questMap["Fight"](suicidal=True,reason="end your enemy")
+        quest = src.quests.questMap["Fight"](reason="end your enemy",suicidal=self.suicidal)
         return ([quest],None)
 
 src.quests.addType(Huntdown)

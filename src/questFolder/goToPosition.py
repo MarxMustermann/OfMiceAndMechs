@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 class GoToPosition(src.quests.MetaQuestSequence):
     type = "GoToPosition"
 
-    def __init__(self, description="go to position", creator=None,targetPosition=None,ignoreEndBlocked=False,reason=None,lifetime=None, idleMovement=False, targetName=None):
+    def __init__(self, description="go to position", creator=None,targetPosition=None,ignoreEndBlocked=False,reason=None,lifetime=None, idleMovement=False, targetName=None, clearPath=False):
         if targetPosition:
             if targetPosition[0] < 0 or targetPosition[0] > 13:
                 raise ValueError(f"target position {targetPosition} out of range")
@@ -33,6 +33,7 @@ class GoToPosition(src.quests.MetaQuestSequence):
         self.idleMovement = idleMovement
 
         self.targetName = targetName
+        self.clearPath = clearPath
 
     def generateTextDescription(self):
         '''
@@ -240,7 +241,7 @@ Close this menu by pressing esc and follow the instructions on the left hand men
             self.path = character.container.getPathCommandTile(character.getSpacePosition(),self.targetPosition,ignoreEndBlocked=self.ignoreEndBlocked,character=character)[1]
         else:
             self.path = character.container.getPathCommandTile(character.getTilePosition(),character.getSpacePosition(),self.targetPosition,ignoreEndBlocked=self.ignoreEndBlocked,character=character)[1]
-        if not self.path:
+        if not self.path and not self.clearPath:
             #if character.room.isRoom:
             #    character.room.cachedPathfinder = None
             if not dryRun:
@@ -281,6 +282,11 @@ Close this menu by pressing esc and follow the instructions on the left hand men
         if not self.isPathSane(character):
             self.generatePath(character,dryRun=dryRun)
             if not self.path:
+                if self.clearPath:
+                    print(self.targetPosition)
+                    quest = src.quests.questMap["ClearPathToPosition"](targetPosition=self.targetPosition)
+                    print(quest)
+                    return ([quest],None)
                 return self._solver_trigger_fail(dryRun,"moving failed - no path found (solver)")
 
         if not ignoreCommands and character.macroState.get("submenue"):

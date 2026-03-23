@@ -29,6 +29,10 @@ class StoryCraftRod(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["ConsumeItem"](itemType="Rod",description="equip Rod",consumeVerb="equip")
             return ([quest],None)
 
+        if terrain.getEnemiesOnTile(character,(8,4,0)):
+            quest = src.quests.questMap["SecureTile"](toSecure=(8,4,0),description="secure crafting room",reason="be able to carft",endWhenCleared=True)
+            return ([quest],None)
+
         rods = crafting_room.getItemsByType("Rod")
         if rods:
             rod = rods[0]

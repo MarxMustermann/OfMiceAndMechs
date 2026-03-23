@@ -96,11 +96,11 @@ class Scrap(src.items.Item):
 
         # select the base tile
         if self.amount < 5:
-            tile_name = "Scrap_1_"+str(self.tile_index)
+            tile_name = "Scrap_1_"+str(self.amount)
         elif self.amount < 15:
-            tile_name = "Scrap_2_"+str(self.tile_index)
+            tile_name = "Scrap_2_"+str(self.amount)
         else:
-            tile_name = "Scrap_3_"+str(self.tile_index)
+            tile_name = "Scrap_3_"+str(min(self.amount,20))
 
         # select the borders to show
         if self.amount < 5:

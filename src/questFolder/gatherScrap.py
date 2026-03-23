@@ -19,16 +19,19 @@ class GatherScrap(src.quests.MetaQuestSequence):
             self.setParameters({"targetPosition":targetPosition})
 
     def generateTextDescription(self):
-        scrap1 = src.items.itemMap["Scrap"](amount=1)
-        scrap2 = src.items.itemMap["Scrap"](amount=6)
-        scrap3 = src.items.itemMap["Scrap"](amount=20)
+        scrap1_item = src.items.itemMap["Scrap"](amount=1)
+        scrap1 = src.interaction.ItemMeta(scrap1_item,scrap1_item.render())
+        scrap2_item = src.items.itemMap["Scrap"](amount=6)
+        scrap2 = src.interaction.ItemMeta(scrap2_item,scrap2_item.render())
+        scrap3_item = src.items.itemMap["Scrap"](amount=20)
+        scrap3 = src.interaction.ItemMeta(scrap3_item,scrap3_item.render())
         reason = ""
         if self.reason:
             reason = f", to {self.reason}"
         return ["""
 Fill your inventory with scrap""",reason,""".
 Scrap can be found in scrapfields and
-looks like this: """,scrap1.render()," or ",scrap2.render()," or ",scrap3.render(),"""
+looks like this: """,scrap1," or ",scrap2," or ",scrap3,"""
 
 
 Scrapfields are shown on the minimap as white ss"""]

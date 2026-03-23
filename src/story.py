@@ -999,6 +999,7 @@ class MainGame(BasicPhase):
 
         self.has_shown_congratz = False
         self.has_shown_get_weapon = False
+        self.has_shown_leave = False
         super().__init__("MainGame", seed=seed)
 
         src.gamestate.gamestate.stern["last_implant_interaction"] = -100
@@ -4000,6 +4001,7 @@ This memorial contains:
             self.stopWatching(listenItem[0], listenItem[1], listenItem[2])
 
     def _add_cooldown_color(self,description):
+        return description
         if 100-(src.gamestate.gamestate.tick - src.gamestate.gamestate.stern["last_implant_interaction"]) > 0 and not src.gamestate.gamestate.stern.get("command_disabled") and src.gamestate.gamestate.stern.get("revealed_implant_flaw"):
             description = (src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"#000"),description)
         return description
@@ -4157,11 +4159,22 @@ The whole room will explode soon.
                     return
 
                 text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),congratz_text))
-            else:
-                weapon_text = """
+            elif terrain.getEnemiesOnTile(mainChar,(7,4,0)):
+                leave_text = """
 We should leave.
 
-The facility is overrun with enemies that blocks your way out of here.
+The facility is overrun with enemies so we may have to fight.
+"""
+                if not self.has_shown_leave:
+                    mainChar.showTextMenu(leave_text+"\n\npress enter to continue\n")
+                    mainChar.takeTime(amount=1,reason="waiting for implant")
+                    self.has_shown_leave = True
+                    return
+
+                text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),leave_text))
+            else:
+                weapon_text = """
+
 You didn't even bring weapons!
 We should try find something to defend ourselves with.
 """
@@ -4178,15 +4191,8 @@ In case you hit your head and don't remember:
 I'm your implant and i'll be helping you with your tasks.
 The most recommended option is on top.
 
-
 """)
-            if src.gamestate.gamestate.stern["last_implant_interaction"] > src.gamestate.gamestate.tick - 100 and src.gamestate.gamestate.tick > 200 and not src.gamestate.gamestate.stern.get("command_disabled"):
-                text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),f"""
-Command submodule resetting ... wait {100-(src.gamestate.gamestate.tick - src.gamestate.gamestate.stern["last_implant_interaction"])} ticks
-"""))
             text.append("""
-
-
 What may i help you with?
 """)
 
@@ -4198,14 +4204,7 @@ What may i help you with?
             shown_worker_wake = False
             shown_worker_watch = False
             shown_disable = False
-
-            if self.num_ignored_cooldown > 2 and not src.gamestate.gamestate.stern.get("command_disabled") and src.gamestate.gamestate.stern["last_implant_interaction"] > src.gamestate.gamestate.tick - 100 and not self.reenabled_command:
-                shown_disable = True
-                name = "disable command module"
-                options.append((name, "disable command submodule"))
-                extraDescriptions[name] = ["""
-The command resolution submodule seems to be permanently broken.\n
-Reduce the strain on the implant by disabling it.""",]
+            shown_read_plate = False
 
             if terrain.getRoomByPosition((7,7,0)):
                 name = "explosion"
@@ -4249,6 +4248,24 @@ Look around to see if there are useful items around.
 """
                 shown_observe_option = True
 
+            if self._get_local_unread_memorialPlates(mainChar) and not mainChar.getBigPosition() == (7,5,0):
+                name = "read information plate"
+                description = self._add_cooldown_color("read information plate")
+                options.append((name, description))
+                extraDescriptions[name] = """
+There is a information plate in this room.
+We should read it to see if there is interesting information.
+"""
+                shown_read_plate = True
+
+            if mainChar.health < 50 and not mainChar.getNearbyEnemies() and mainChar.getBigPosition() == (6,5,0):
+                name = "meditate"
+                description = self._add_cooldown_color("heal by meditating")
+                options.append((name, description))
+                extraDescriptions[name] = ["""
+You are hurt badly. Meditate to recover some health.
+"""]
+
             if mainChar.health < mainChar.maxHealth // 2 and mainChar.searchInventory("Vial"):
                 name = "heal"
                 description = self._add_cooldown_color("help me heal")
@@ -4261,61 +4278,54 @@ So ""","\"",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_co
 shift+j then shift+h
 """]
 
-            if self._get_local_unread_memorialPlates(mainChar):
-                name = "read information plate"
-                description = self._add_cooldown_color("read information plate")
-                options.append((name, description))
-                extraDescriptions[name] = """
-There is a information plate in this room.
-We should read it to see if there is interesting information.
-"""
-
             if self._get_path_to_clear_to_exit(mainChar):
-                name = "clear path to exit"
-                description = self._add_cooldown_color("clear path to exit")
+                name = "clear next room on path to exit"
+                description = self._add_cooldown_color("clear next room on path to exit")
                 options.append((name, description))
                 extraDescriptions[name] = """
-There are enemies on the path to the crafting room.
-Clear a room on the path to the crafting room.
+There are enemies on the path to the exit.
+Get rid of them.
 """
 
-            if self.get_crafting_room_enemies(mainChar):
-                name = "secure crafting room"
-                description = self._add_cooldown_color("secure crafting room")
-                options.append((name, description))
-                extraDescriptions[name] = """
+            if src.gamestate.gamestate.tick > 25:
+                if not terrain.getEnemiesOnTile(mainChar,(7,4,0)):
+                    if self.get_crafting_room_enemies(mainChar):
+                        name = "secure crafting room"
+                        description = self._add_cooldown_color("secure crafting room")
+                        options.append((name, description))
+                        extraDescriptions[name] = """
 We should be able to build a weapon there.
 """
-            elif not mainChar.weapon:
-                name = "craft rod"
-                description = self._add_cooldown_color("help me craft a weapon")
-                options.append((name, description))
-                extraDescriptions[name] = """
+                    elif not mainChar.weapon and src.gamestate.gamestate.tick > 25:
+                        name = "craft rod"
+                        description = self._add_cooldown_color("help me craft a weapon")
+                        options.append((name, description))
+                        extraDescriptions[name] = """
 We can build a Rod here. I doesn't hit hard, but it will do.
 We just need to collect scrap, produce MetalBars.
 Then form the Metalbars into a Rod.
 """
 
-            if self._get_unread_memorialPlates(mainChar):
-                name = "read information plate"
-                description = self._add_cooldown_color("read information plate")
-                options.append((name, description))
-                extraDescriptions[name] = """
+                    if not shown_read_plate and self._get_local_unread_memorialPlates(mainChar):
+                        name = "read information plate"
+                        description = self._add_cooldown_color("read information plate")
+                        options.append((name, description))
+                        extraDescriptions[name] = """
 The rooms have plates with information on them.
 Read them to gather some information.
 """
+                        shown_read_plate = True
 
-            if self.last_worker_spawn > src.gamestate.gamestate.tick-100:
-                shown_worker_watch = True
-                name = "watch worker"
-                description = self._add_cooldown_color("watch worker work")
-                options.append((name, description))
-                extraDescriptions[name] = """
+                    if self.last_worker_spawn > src.gamestate.gamestate.tick-100:
+                        shown_worker_watch = True
+                        name = "watch worker"
+                        description = self._add_cooldown_color("watch worker work")
+                        options.append((name, description))
+                        extraDescriptions[name] = """
 You just woke a worker.
 Let's watch what he is doing for a bit.
 """
 
-            if src.gamestate.gamestate.tick > 30:
                 if self._get_crafting_room_position() in self.get_wakeable_workers(mainChar):
                     shown_worker_wake = True
                     name = "wake worker"
@@ -4334,35 +4344,46 @@ There is a filled stasis Tank in the crafting area.
 Maybe we can wake the worker inside it.
 """
 
-            if self.get_rooms_to_explore_towards_teleporter(mainChar):
-                name = "explore toward teleporter room"
-                description = self._add_cooldown_color("help me explore my way out")
-                options.append((name, description))
-                extraDescriptions[name] = """
+                if not terrain.getEnemiesOnTile(mainChar,(7,4,0)):
+                    if self.get_rooms_to_explore_towards_teleporter(mainChar):
+                        name = "explore toward teleporter room"
+                        description = self._add_cooldown_color("help me explore my way out")
+                        options.append((name, description))
+                        extraDescriptions[name] = """
 There is a teleporter in the base. It is in the room (6,6,0).
 
 We should slowly move towards it, while keeping an eye out for interesting things.
 """
 
-            if mainChar.getBigPosition() != (7,8,0):
-                name = "go to teleporter room"
-                description = self._add_cooldown_color("help me find a way out of here")
-                options.append((name, description))
-                extraDescriptions[name] = """
+                if mainChar.getBigPosition() != (7,8,0):
+                    name = "go to teleporter room"
+                    description = self._add_cooldown_color("help me find a way out of here")
+                    options.append((name, description))
+                    extraDescriptions[name] = """
 There is a teleporter in the base. It is in the room (6,6,0).
 We may need to fight our way towards it.
 
 If we reach it we can leave this place.
 """
-            else:
-                name = "teleport"
-                description = self._add_cooldown_color("help me leave")
-                options.append((name, description))
-                extraDescriptions[name] = """
+                else:
+                    name = "teleport"
+                    description = self._add_cooldown_color("help me leave")
+                    options.append((name, description))
+                    extraDescriptions[name] = """
 We can leave this place now.
 
 We probably can't return, though.
 """
+
+                if not shown_read_plate and self._get_unread_memorialPlates(mainChar):
+                    name = "read information plate"
+                    description = self._add_cooldown_color("read information plate")
+                    options.append((name, description))
+                    extraDescriptions[name] = """
+The rooms have plates with information on them.
+Read them to gather some information.
+"""
+
 
             if not shown_help_option:
                 name = "help"
@@ -4393,8 +4414,8 @@ Let's watch what the workers are doing for a bit.
                 extraDescriptions[name] = ["""
 Wait for the implant to recover again""",]
 
-            if src.gamestate.gamestate.tick > 200:
-                if not src.gamestate.gamestate.stern.get("command_disabled") and not shown_disable:
+            if src.gamestate.gamestate.tick > 200 and not shown_disable:
+                if not src.gamestate.gamestate.stern.get("command_disabled"):
                     name = "disable command module"
                     options.append((name, "disable command submodule"))
                     extraDescriptions[name] = ["""
@@ -5026,7 +5047,7 @@ This will close the tutorial and let you do your own thing.
             self.addQuest(quest,character)
             return
 
-        if quest_type == "clear path to exit":
+        if quest_type == "clear next room on path to exit":
             candides = self._get_path_to_clear_to_exit(character)
             if candides:
                 room_position = candides[0]
@@ -5059,6 +5080,11 @@ This will close the tutorial and let you do your own thing.
                 self.addQuest(quest,character)
                 self.clear_implant_quest(character)
                 return
+
+        if quest_type == "meditate":
+            quest = src.quests.questMap["Meditate"](targetPositionBig=(6,5,0),targetPosition=(4,8,0))
+            self.addQuest(quest,character)
+            return
 
         if quest_type == "wait implant":
             quest = src.quests.questMap["WaitQuest"](lifetime=99,batchWait=True)
@@ -5412,6 +5438,8 @@ This will close the tutorial and let you do your own thing.
             return []
         if character.getNearbyEnemies():
             return []
+        if character.getBigPosition() == (7,5,0):
+            return []
 
         room = character.container
         known_memorialPlates = src.gamestate.gamestate.stern.get("readMemorialPlates",[])
@@ -5435,6 +5463,8 @@ This will close the tutorial and let you do your own thing.
 
         for room in terrain.rooms:
             if terrain.getEnemiesOnTile(character,room.getPosition()):
+                continue
+            if room.getPosition() == (7,5,0):
                 continue
 
             items = room.getItemsByType("MemorialPlate")

@@ -77,3 +77,4 @@ import src.questFolder.searchForRuins
 import src.questFolder.goInside
 import src.questFolder.decide
 import src.questFolder.examine
+import src.questFolder.meditate

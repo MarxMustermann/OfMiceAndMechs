@@ -420,6 +420,7 @@ class Item:
         return terrain
 
     def raw_apply(self,character):
+        character.changed("raw applied",{"character":character,"item":self})
         return self.apply(character)
 
     def apply(self, character):

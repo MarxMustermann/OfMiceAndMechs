@@ -67,10 +67,10 @@ Activate item on Position {self.targetPosition} in tile {self.targetPositionBig}
         if self.character:
             return
 
-        self.startWatching(character, self.handleReadMemorialPlate, "read memorial plate")
+        self.startWatching(character, self.handleRawApplied, "raw applied")
         super().assignToCharacter(character)
 
-    def handleReadMemorialPlate(self,extraInfo):
+    def handleRawApplied(self,extraInfo):
         if self.completed:
             1/0
         if not self.active:

@@ -46,14 +46,14 @@ class ActivateItem(src.quests.MetaQuestSequence):
             return action
 
         if not character.getBigPosition() == self.targetPositionBig:
-            quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="reach the information plate",description="go to room with information plate")
+            quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="reach the item",description="go to room with the item")
             return ([quest],None)
 
         if not character.container.isRoom:
             return (None,(".","stand around confused"))
 
         if character.getDistance(self.targetPosition) > 0:
-            quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,reason="to be able to use the MemorialPlate",description="go to information plate",clearPath=True)
+            quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,reason="to be able to use the item",description="go to item",clearPath=True)
             return ([quest],None)
 
         return (None,("j","activate information plate"))

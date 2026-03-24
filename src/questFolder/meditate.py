@@ -24,39 +24,8 @@ class Meditate(src.quests.MetaQuestSequence):
         if not character:
             return (None,None)
 
-        # enter rooms properly
-        if not character.container.isRoom:
-            if character.xPosition%15 == 0:
-                return (None,("d","enter room"))
-            if character.xPosition%15 == 14:
-                return (None,("a","enter room"))
-            if character.yPosition%15 == 0:
-                return (None,("s","enter room"))
-            if character.yPosition%15 == 14:
-                return (None,("w","enter room"))
-
-        # handle menus
-        submenue = character.macroState.get("submenue")
-        if submenue and not ignoreCommands:
-            return (None,(["esc"],"close the menu"))
-
-        # activate correct item when marked
-        action = self.generate_confirm_interaction_command(allowedItems=("MeditationPlate",))
-        if action:
-            return action
-
-        if not character.getBigPosition() == self.targetPositionBig:
-            quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="reach the information plate",description="go to room with meditation plate")
-            return ([quest],None)
-
-        if not character.container.isRoom:
-            return (None,(".","stand around confused"))
-
-        if character.getDistance(self.targetPosition) > 0:
-            quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,reason="to be able to use the MeditationPlate",description="go to meditation plate")
-            return ([quest],None)
-
-        return (None,("j","activate meditation plate"))
+        quest = src.quests.questMap["ActivateItem"](targetPosition=self.targetPosition,targetPositionBig=self.targetPositionBig,reason="mediate")
+        return ([quest],None)
 
     def generateTextDescription(self):
         return [f"""

@@ -1787,7 +1787,7 @@ This memorial contains:
 """,(src.interaction.urwid.AttrSpec("#ff0","black"),'''"Time heals all wounds"'''),"""
 
 Clones heal over time.
-The more hurt the Clones are the faster they heal.
+The more hurt the Clones are, the faster they heal.
 The process can be sped up by meditation to some degree.
 
 """,(src.interaction.urwid.AttrSpec("#777","black"),"""
@@ -4174,7 +4174,6 @@ The facility is overrun with enemies so we may have to fight.
                 text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),leave_text))
             else:
                 weapon_text = """
-
 You didn't even bring weapons!
 We should try find something to defend ourselves with.
 """
@@ -4217,7 +4216,7 @@ Wait by pressing "." (period)""",(src.interaction.urwid.AttrSpec("#ff0","black")
 "." is a period "," is a comma
 """),]
 
-            if not self.has_shown_HelpMenu and src.gamestate.gamestate.tick < 30:
+            if not self.has_shown_HelpMenu and src.gamestate.gamestate.tick > 25 and src.gamestate.gamestate.tick < 200:
                 name = "help"
                 description = self._add_cooldown_color("show me how play the game")
                 options.append((name, description))
@@ -4239,7 +4238,7 @@ Be aware: We will have to fight an enemy there.
 """)]
                 shown_observe_option = True
 
-            if not self.has_shown_observeMenu and src.gamestate.gamestate.tick < 100:
+            if not self.has_shown_observeMenu and src.gamestate.gamestate.tick > 25 and src.gamestate.gamestate.tick < 100:
                 name = "observe"
                 description = self._add_cooldown_color("observe environment")
                 options.append((name, description))
@@ -4258,7 +4257,8 @@ We should read it to see if there is interesting information.
 """
                 shown_read_plate = True
 
-            if mainChar.health < 50 and not mainChar.getNearbyEnemies() and mainChar.getBigPosition() == (6,5,0):
+            if mainChar.health < 50 and not mainChar.getNearbyEnemies() and mainChar.getBigPosition() == (6,5,0) and ((6,5,0),(9,3,0)) in src.gamestate.gamestate.stern.get("readMemorialPlates",[]):
+                print(src.gamestate.gamestate.stern)
                 name = "meditate"
                 description = self._add_cooldown_color("heal by meditating")
                 options.append((name, description))
@@ -4278,7 +4278,7 @@ So ""","\"",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_co
 shift+j then shift+h
 """]
 
-            if self._get_path_to_clear_to_exit(mainChar):
+            if self._get_path_to_clear_to_exit(mainChar) and not terrain.getEnemiesOnTile(mainChar,(7,5,0)):
                 name = "clear next room on path to exit"
                 description = self._add_cooldown_color("clear next room on path to exit")
                 options.append((name, description))
@@ -4355,21 +4355,22 @@ There is a teleporter in the base. It is in the room (6,6,0).
 We should slowly move towards it, while keeping an eye out for interesting things.
 """
 
-                if mainChar.getBigPosition() != (7,8,0):
-                    name = "go to teleporter room"
-                    description = self._add_cooldown_color("help me find a way out of here")
-                    options.append((name, description))
-                    extraDescriptions[name] = """
+                if mainChar.weapon:
+                    if mainChar.getBigPosition() != (7,8,0):
+                        name = "go to teleporter room"
+                        description = self._add_cooldown_color("help me find a way out of here")
+                        options.append((name, description))
+                        extraDescriptions[name] = """
 There is a teleporter in the base. It is in the room (6,6,0).
 We may need to fight our way towards it.
 
 If we reach it we can leave this place.
 """
-                else:
-                    name = "teleport"
-                    description = self._add_cooldown_color("help me leave")
-                    options.append((name, description))
-                    extraDescriptions[name] = """
+                    else:
+                        name = "teleport"
+                        description = self._add_cooldown_color("help me leave")
+                        options.append((name, description))
+                        extraDescriptions[name] = """
 We can leave this place now.
 
 We probably can't return, though.
@@ -4387,14 +4388,14 @@ Read them to gather some information.
 
             if not shown_help_option:
                 name = "help"
-                description = self._add_cooldown_color("show me how to play the game")
+                description = self._add_cooldown_color((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"show me how to play the game"))
                 options.append((name, description))
                 extraDescriptions[name] = """
 Shows you how to open the games help menu.
 """
             if not shown_observe_option:
                 name = "observe"
-                description = self._add_cooldown_color("show me how to look around")
+                description = self._add_cooldown_color((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"show me how to look around"))
                 options.append((name, description))
                 extraDescriptions[name] = """
 Shows you how to open the games observe menu.
@@ -4402,17 +4403,19 @@ Shows you how to open the games observe menu.
 
             if self.last_worker_spawn > 0 and not shown_worker_watch:
                 name = "watch worker"
-                description = self._add_cooldown_color("remind me how to watch the workers")
+                description = self._add_cooldown_color((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"remind me how to watch the workers"))
                 options.append((name, description))
                 extraDescriptions[name] = """
 Let's watch what the workers are doing for a bit.
 """
 
+            '''
             if src.gamestate.gamestate.stern["last_implant_interaction"] > src.gamestate.gamestate.tick - 100 and src.gamestate.gamestate.tick > 200 and not src.gamestate.gamestate.stern.get("command_disabled"):
                 name = "wait implant"
                 options.append((name, "wait for the implant reset"))
                 extraDescriptions[name] = ["""
 Wait for the implant to recover again""",]
+            '''
 
             if src.gamestate.gamestate.tick > 200 and not shown_disable:
                 if not src.gamestate.gamestate.stern.get("command_disabled"):

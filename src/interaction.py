@@ -1201,39 +1201,39 @@ def doAdvancedInteraction(params):
             (char.xPosition, char.yPosition - 1, char.zPosition)
         )
         if items:
-            items[0].apply(char)
+            items[0].raw_apply(char)
             char.takeTime(char.movementSpeed,"advanced interaction m")
     elif key == "s":
         items = char.container.getItemByPosition(
             (char.xPosition, char.yPosition + 1, char.zPosition)
         )
         if items:
-            items[0].apply(char)
+            items[0].raw_apply(char)
             char.takeTime(char.movementSpeed,"advanced interaction m")
     elif key == "d":
         items = char.container.getItemByPosition(
             (char.xPosition + 1, char.yPosition, char.zPosition)
         )
         if items:
-            items[0].apply(char)
+            items[0].raw_apply(char)
             char.takeTime(char.movementSpeed,"advanced interaction m")
     elif key == "a":
         items = char.container.getItemByPosition(
             (char.xPosition - 1, char.yPosition, char.zPosition)
         )
         if items:
-            items[0].apply(char)
+            items[0].raw_apply(char)
             char.takeTime(char.movementSpeed,"advanced interaction m")
     elif key == ".":
         items = char.container.getItemByPosition(
             (char.xPosition, char.yPosition, char.zPosition)
         )
         if items:
-            items[0].apply(char)
+            items[0].raw_apply(char)
             char.takeTime(char.movementSpeed,"advanced interaction m")
     elif key == "i":
         if char.inventory:
-            char.inventory[-1].apply(char)
+            char.inventory[-1].raw_apply(char)
     elif key == "j":
         character = char
         if not character.jobOrders:
@@ -1245,38 +1245,38 @@ def doAdvancedInteraction(params):
             return
 
         if character.jobOrders:
-            character.jobOrders[-1].apply(character)
+            character.jobOrders[-1].raw_apply(character)
         else:
             for item in reversed(character.inventory):
                 if isinstance(item, src.items.itemMap["JobOrder"]):
-                    item.apply(char)
+                    item.raw_apply(char)
                     char.addMessage("ran job Order")
                     break
     elif key == "f":
         character = char
         for item in character.inventory:
             if isinstance(item, src.items.itemMap["GooFlask"]) and item.uses > 0:
-                item.apply(character)
+                item.raw_apply(character)
                 break
             if (
                 isinstance(item, src.items.itemMap["BioMass"]) or isinstance(item,src.items.itemMap["Bloom"]) or isinstance(item,src.items.itemMap["PressCake"]) or isinstance(item,src.items.itemMap["SickBloom"])
             ):
-                item.apply(character)
+                item.raw_apply(character)
                 character.removeItemFromInventory(item)
                 break
             if isinstance(item, src.items.itemMap["Corpse"]):
-                item.apply(character)
+                item.raw_apply(character)
                 break
     elif key in {"h","H"}:
         character = char
         for item in character.inventory:
             if isinstance(item, src.items.itemMap["Vial"]) and item.uses > 0:
                 if key == "h":
-                    item.apply(character)
+                    item.raw_apply(character)
                     break
 
                 while item.uses and character.health < character.adjustedMaxHealth:
-                    item.apply(character)
+                    item.raw_apply(character)
 
 def doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags):
     if not char.container:
@@ -2843,7 +2843,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
                     return None
 
             if char.tool:
-                char.tool.apply(char)
+                char.tool.raw_apply(char)
                 if key in ("W",):
                     charState["itemMarkedLast"] = moveCharacter("north",char,noAdvanceGame,header,urwid,dash=True)
                     if charState["itemMarkedLast"]:
@@ -2931,7 +2931,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
             else:
                 # for item in char.container.itemsOnFloor:
                 #    if item.xPosition == char.xPosition and item.yPosition == char.yPosition:
-                #        item.apply(char)
+                #        item.raw_apply(char)
                 #        break
                 if not char.container:
                     return None
@@ -2948,14 +2948,14 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
                 if not charState["itemMarkedLast"].container:
                     return None
 
-                charState["itemMarkedLast"].apply(char)
+                charState["itemMarkedLast"].raw_apply(char)
                 char.takeTime(char.movementSpeed,"activate item marked")
 
             # activate an item on floor
             else:
                 # for item in char.container.itemsOnFloor:
                 #    if item.xPosition == char.xPosition and item.yPosition == char.yPosition:
-                #        item.apply(char)
+                #        item.raw_apply(char)
                 #        break
                 if not (
                     char.xPosition is None
@@ -2968,7 +2968,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
                     )
 
                     if entry:
-                        entry[0].apply(char)
+                        entry[0].raw_apply(char)
                         char.takeTime(char.movementSpeed,"activate item not marked")
             return None
 

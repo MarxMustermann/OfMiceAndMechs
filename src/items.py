@@ -419,6 +419,9 @@ class Item:
             terrain = None
         return terrain
 
+    def raw_apply(self,character):
+        return self.apply(character)
+
     def apply(self, character):
         """
         handles usage by a character

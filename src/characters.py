@@ -2594,7 +2594,7 @@ press any other key to attack normally"""
             # open doors
             # bad pattern: this should not happen here
             if isinstance(item, src.items.Door):
-                item.apply(self)
+                item.raw_apply(self)
             return False
 
         # smooth over impossible state
@@ -2809,7 +2809,7 @@ press any other key to attack normally"""
 
         #if self.satiation in (300 - 1, 200 - 1, 100 - 1, 30 - 1):
         if self.satiation < 300 and self.flask and self.flask.uses > 0:
-            self.flask.apply(self)
+            self.flask.raw_apply(self)
 
         if self.satiation == 299:
             self.changed("thirst")
@@ -2817,18 +2817,18 @@ press any other key to attack normally"""
         if self.satiation < 30:
             for item in self.inventory:
                 if isinstance(item, src.items.itemMap["GooFlask"]) and item.uses > 0:
-                    item.apply(self)
+                    item.raw_apply(self)
                     break
 
                 if (
                     isinstance(item, src.items.itemMap["BioMass"]) or isinstance(item, src.items.itemMap["Bloom"]) or (item, src.items.itemMap["PressCake"]) or (item, src.items.itemMap["SickBloom"])
                 ):
-                    item.apply(self)
+                    item.raw_apply(self)
                     if item in self.inventory:
                         self.inventory.remove(item)
                     break
                 if isinstance(item, src.items.itemMap["Corpse"]):
-                    item.apply(self)
+                    item.raw_apply(self)
                     break
 
         if self.satiation == 30 - 1:

@@ -2448,7 +2448,7 @@ XXX
         for item in self.itemsOnFloor:
             if item.bolted and item.type == "CorpseAnimator":
                 item.filled = True
-                item.apply(character)
+                item.raw_apply(character)
 
     def resetDirect(self):
         self.inputSlots = []

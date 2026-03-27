@@ -66,47 +66,14 @@ use the manufacturing table on {self.targetPosition}{reason}.
         if self.subQuests:
             return (None,None)
 
-        if self.targetPositionBig and character.getBigPosition() != self.targetPositionBig:
-            quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="get to the tile the machine is on")
-            return ([quest],None)
-
-        pos = character.getPosition()
-        if self.targetPosition not in (pos,(pos[0],pos[1]+1,pos[2]),(pos[0]-1,pos[1],pos[2]),(pos[0]+1,pos[1],pos[2]),(pos[0],pos[1]-1,pos[2])):
-            quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True,reason="get near the machine")
-            return ([quest],None)
-
         submenue = character.macroState.get("submenue")
-        if submenue and not ignoreCommands:
-            if submenue.tag == "applyOptionSelection":
-                command = submenue.get_command_to_select_option("produce item")
-                if command:
-                    return (None,(command,"start producing"))
-            if submenue.tag not in ("advancedInteractionSelection",):
-                return (None,(["esc"],"close the menu"))
+        if not submenue or submenue.tag != "applyOptionSelection":
+            quest = src.quests.questMap["ActivateItem"](targetPosition=self.targetPosition,targetPositionBig=self.targetPositionBig,reason="operate machine")
+            return ([quest],None)
 
-        # activate correct item when marked
-        action = self.generate_confirm_interaction_command(allowedItems=("ManufacturingTable",))
-        if action:
-            return action
-
-        interaction_command = "J"
-        if submenue:
-            if submenue.tag == "advancedInteractionSelection":
-                interaction_command = ""
-            else:
-                return (None,(["esc"],"close menu"))
-        message = "manufacture item"
-        if (pos[0],pos[1],pos[2]) == self.targetPosition:
-            return (None,("jj",message))
-        if (pos[0]-1,pos[1],pos[2]) == self.targetPosition:
-            return (None,(interaction_command+"aj",message))
-        if (pos[0]+1,pos[1],pos[2]) == self.targetPosition:
-            return (None,(interaction_command+"dj",message))
-        if (pos[0],pos[1]-1,pos[2]) == self.targetPosition:
-            return (None,(interaction_command+"wj",message))
-        if (pos[0],pos[1]+1,pos[2]) == self.targetPosition:
-            return (None,(interaction_command+"sj",message))
-        return (None,(".","stand around confused"))
+        command = submenue.get_command_to_select_option("produce item")
+        if command:
+            return (None,(command,"start producing"))
 
     def getQuestMarkersTile(self,character):
         result = super().getQuestMarkersTile(character)

@@ -24,7 +24,7 @@ class Meditate(src.quests.MetaQuestSequence):
         if not character:
             return (None,None)
 
-        quest = src.quests.questMap["ActivateItem"](targetPosition=self.targetPosition,targetPositionBig=self.targetPositionBig,reason="mediate")
+        quest = src.quests.questMap["ActivateItem"](targetPosition=self.targetPosition,targetPositionBig=self.targetPositionBig,reason="mediate",activateFromTop=True)
         return ([quest],None)
 
     def generateTextDescription(self):

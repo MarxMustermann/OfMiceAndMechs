@@ -5,13 +5,14 @@ class ActivateItem(src.quests.MetaQuestSequence):
     story quest pretending to try to contact a higher command
     '''
     type = "ActivateItem"
-    def __init__(self, description="activate item", creator=None, lifetime=None, targetPosition=None, targetPositionBig=None, reason=None):
+    def __init__(self, description="activate item", creator=None, lifetime=None, targetPosition=None, targetPositionBig=None, reason=None, activateFromTop=False):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
         self.reason = reason
         self.targetPosition = targetPosition
         self.targetPositionBig = targetPositionBig
+        self.activateFromTop = activateFromTop
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
         '''
@@ -35,11 +36,6 @@ class ActivateItem(src.quests.MetaQuestSequence):
             if character.yPosition%15 == 14:
                 return (None,("w","enter room"))
 
-        # handle menus
-        submenue = character.macroState.get("submenue")
-        if submenue and not ignoreCommands:
-            return (None,(["esc"],"close the menu"))
-
         # activate correct item when marked
         action = self.generate_confirm_interaction_command(allowedItems=("MemorialPlate",))
         if action:
@@ -49,14 +45,49 @@ class ActivateItem(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="reach the item",description="go to room with the item")
             return ([quest],None)
 
-        if not character.container.isRoom:
-            return (None,(".","stand around confused"))
+        # handle from top activation
+        if self.activateFromTop:
+            if character.getDistance(self.targetPosition) > 0:
+                quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,reason="to be able to use the item",description="go to item",clearPath=True)
+                return ([quest],None)
 
-        if character.getDistance(self.targetPosition) > 0:
-            quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,reason="to be able to use the item",description="go to item",clearPath=True)
+            return (None,("j","activate information plate"))
+
+        # handle menus
+        submenue = character.macroState["submenue"]
+        if submenue and not ignoreCommands:
+            if submenue.tag not in ("advancedInteractionSelection",):
+                return (None,(["esc"],"close menu"))
+
+        # go to the tile the item is on
+        if self.targetPositionBig and character.getBigPosition() != self.targetPositionBig:
+            quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="get to the tile the item is on")
             return ([quest],None)
 
-        return (None,("j","activate information plate"))
+        # go to the item
+        pos = character.getPosition()
+        if self.targetPosition not in (pos,(pos[0],pos[1]+1,pos[2]),(pos[0]-1,pos[1],pos[2]),(pos[0]+1,pos[1],pos[2]),(pos[0],pos[1]-1,pos[2])):
+            quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True,reason="get near the item")
+            return ([quest],None)
+
+        # activate the item
+        interactionCommand = "J"
+        if submenue:
+            if submenue.tag == "advancedInteractionSelection":
+                interactionCommand = ""
+            else:
+                return (None,(["esc"],"close menu"))
+        if (pos[0],pos[1],pos[2]) == self.targetPosition:
+            return (None,("j","activate item"))
+        if (pos[0]-1,pos[1],pos[2]) == self.targetPosition:
+            return (None,(interactionCommand+"a","activate item"))
+        if (pos[0]+1,pos[1],pos[2]) == self.targetPosition:
+            return (None,(interactionCommand+"d","activate item"))
+        if (pos[0],pos[1]-1,pos[2]) == self.targetPosition:
+            return (None,(interactionCommand+"w","activate item"))
+        if (pos[0],pos[1]+1,pos[2]) == self.targetPosition:
+            return (None,(interactionCommand+"s","activate item"))
+        return (None,(".","stand around confused"))
 
     def generateTextDescription(self):
         return [f"""

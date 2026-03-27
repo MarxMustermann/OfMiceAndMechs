@@ -70,68 +70,30 @@ Activate the StasisTank to release the worker.
         if self.subQuests:
             return (None,None)
 
-        # handle menus
-        submenue = character.macroState["submenue"]
-        if submenue and not ignoreCommands:
-            if submenue.tag not in ("advancedInteractionSelection",):
-                return (None,(["esc"],"close menu"))
+        targetPosition = self.targetPosition
+        if not targetPosition:
+            rooms = character.getTerrain().getRoomByPosition(self.targetPositionBig)
+            if not rooms:
+                return self._solver_trigger_fail(dryRun,"target room gone")
+            room = rooms[0]
 
-        # activate correct item when marked
-        action = self.generate_confirm_interaction_command(allowedItems=("StasisTank",))
-        if action:
-            return action
+            stasisTanks = room.getItemsByType("StasisTank")
+            if not stasisTanks:
+                return self._solver_trigger_fail(dryRun,"stasis tank missing")
 
-        if self.targetPositionBig and character.getBigPosition() != self.targetPositionBig:
-            quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="get to the tile the machine is on")
-            return ([quest],None)
+            nearBy_stasisTanks = []
+            for stasisTank in stasisTanks:
+                if character.getDistance(stasisTank.getPosition()) > 1:
+                    continue
+                nearBy_stasisTanks.append(stasisTank)
 
-         # enter rooms fully
-        if not character.container.isRoom:
-            if character.xPosition%15 == 0:
-                return (None,("d","enter room"))
-            if character.xPosition%15 == 14:
-                return (None,("a","enter room"))
-            if character.yPosition%15 == 0:
-                return (None,("s","enter room"))
-            if character.yPosition%15 == 14:
-                return (None,("w","enter room"))
-            return self._solver_trigger_fail(dryRun,"room missing")
-        room = character.container
+            if not nearBy_stasisTanks:
+                stasisTank = random.choice(stasisTanks)
 
-        stasisTanks = room.getItemsByType("StasisTank")
-        if not stasisTanks:
-            return self._solver_trigger_fail(dryRun,"stasis tank missing")
+            targetPosition = stasisTank.getPosition()
 
-        nearBy_stasisTanks = []
-        for stasisTank in stasisTanks:
-            if character.getDistance(stasisTank.getPosition()) > 1:
-                continue
-            nearBy_stasisTanks.append(stasisTank)
-
-        if not nearBy_stasisTanks:
-            stasisTank = random.choice(stasisTanks)
-            quest = src.quests.questMap["GoToPosition"](targetPosition=stasisTank.getPosition(),ignoreEndBlocked=True,reason="be able to use the StasisTank")
-            return ([quest],None)
-
-        pos = character.getPosition()
-        targetPosition = random.choice(nearBy_stasisTanks).getPosition()
-        interactionCommand = "J"
-        if submenue:
-            if submenue.tag == "advancedInteractionSelection":
-                interactionCommand = ""
-            else:
-                return (None,(["esc"],"close menu"))
-        if (pos[0],pos[1],pos[2]) == targetPosition:
-            return (None,("j","activate machine"))
-        if (pos[0]-1,pos[1],pos[2]) == targetPosition:
-            return (None,(interactionCommand+"a","activate machine"))
-        if (pos[0]+1,pos[1],pos[2]) == targetPosition:
-            return (None,(interactionCommand+"d","activate machine"))
-        if (pos[0],pos[1]-1,pos[2]) == targetPosition:
-            return (None,(interactionCommand+"w","activate machine"))
-        if (pos[0],pos[1]+1,pos[2]) == targetPosition:
-            return (None,(interactionCommand+"s","activate machine"))
-        return (None,(".","stand around confused"))
+        quest = src.quests.questMap["ActivateItem"](targetPosition=targetPosition,targetPositionBig=self.targetPositionBig,reason="smash StasisTank")
+        return ([quest],None)
 
     def getQuestMarkersTile(self,character):
         result = super().getQuestMarkersTile(character)

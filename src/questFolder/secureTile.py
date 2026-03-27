@@ -179,7 +179,6 @@ Use simple attacks only.
                     y= src.helpers.clamp(y+int(random.uniform(-3,3)),2,11)
                     quest = src.quests.questMap["GoToPosition"](targetPosition = (x,y),reason="get to a nicer spot",idleMovement=True)
                     return ([quest], None)
-                return (None, (".","wait"))
                 if not character.rank and character.charType == "Clone":
                     return (None, ("....","wait"))
                 else:
@@ -189,6 +188,7 @@ Use simple attacks only.
                         y= src.helpers.clamp(y+int(random.uniform(-3,3)),2,11)
                         quest = src.quests.questMap["GoToPosition"](targetPosition = (x,y),idleMovement=True)
                         return ([quest], None)
+                    return (None, (".","wait"))
                     return (None, (";","wait"))
 
         # let super class handle further details

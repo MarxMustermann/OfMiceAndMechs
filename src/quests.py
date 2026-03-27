@@ -152,13 +152,19 @@ class Quest:
     def generateSubquests(self,character=None,dryRun=True):
         pass
 
-    def generate_confirm_interaction_command(self,allowedItems=None,activationCommand="j",description="activate"):
+    def generate_confirm_interaction_command(self,allowedItems=None,activationCommand="j",description="activate",targetPosition=None,targetPositionBig=None):
         if not self.character:
             return
         
         if self.character.macroState.get("itemMarkedLast"):
             item = self.character.macroState["itemMarkedLast"]
-            if not allowedItems or item.type in allowedItems:
+            activate = False
+            if targetPosition and (targetPosition == item.getSmallPosition() and (not targetPositionBig or targetPositionBig == item.getBigPosition())):
+                activate = True
+            elif not allowedItems or item.type in allowedItems:
+                activate = True
+
+            if activate:
                 return (None,(activationCommand,description))
             else:
                 return (None,(".","undo selection"))

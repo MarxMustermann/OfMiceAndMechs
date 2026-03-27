@@ -37,11 +37,11 @@ class ActivateItem(src.quests.MetaQuestSequence):
                 return (None,("w","enter room"))
 
         # activate correct item when marked
-        action = self.generate_confirm_interaction_command(allowedItems=("MemorialPlate",))
+        action = self.generate_confirm_interaction_command(targetPosition=self.targetPosition,targetPositionBig=self.targetPositionBig)
         if action:
             return action
 
-        if not character.getBigPosition() == self.targetPositionBig:
+        if self.targetPositionBig and character.getBigPosition() != self.targetPositionBig:
             quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="reach the item",description="go to room with the item")
             return ([quest],None)
 

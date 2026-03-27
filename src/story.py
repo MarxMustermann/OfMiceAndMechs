@@ -4174,8 +4174,9 @@ The facility is overrun with enemies so we may have to fight.
                 text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),leave_text))
             else:
                 weapon_text = """
-You didn't even bring weapons!
-We should try find something to defend ourselves with.
+You made it to the facilities exit.
+We can leave now, but you did not prepare well.
+We should make some preparations.
 """
                 if not self.has_shown_get_weapon:
                     mainChar.showTextMenu(weapon_text+"\n\npress enter to continue\n")
@@ -4258,12 +4259,19 @@ We should read it to see if there is interesting information.
                 shown_read_plate = True
 
             if mainChar.health < 50 and not mainChar.getNearbyEnemies() and mainChar.getBigPosition() == (6,5,0) and ((6,5,0),(9,3,0)) in src.gamestate.gamestate.stern.get("readMemorialPlates",[]):
-                print(src.gamestate.gamestate.stern)
                 name = "meditate"
                 description = self._add_cooldown_color("heal by meditating")
                 options.append((name, description))
                 extraDescriptions[name] = ["""
 You are hurt badly. Meditate to recover some health.
+"""]
+
+            if mainChar.container.isRoom and mainChar.getFreeInventorySpace() and not mainChar.getNearbyEnemies() and mainChar.container.getItemsByType("Vial") and ((6,4,0),(9,9,0)) in src.gamestate.gamestate.stern.get("readMemorialPlates",[]):
+                name = "pick up Vial"
+                description = self._add_cooldown_color("pick up Vial")
+                options.append((name, description))
+                extraDescriptions[name] = ["""
+Pick up the Vial nearby. You can use it to heal.
 """]
 
             if mainChar.health < mainChar.maxHealth // 2 and mainChar.searchInventory("Vial"):
@@ -4301,6 +4309,9 @@ We should be able to build a weapon there.
                         description = self._add_cooldown_color("help me craft a weapon")
                         options.append((name, description))
                         extraDescriptions[name] = """
+You didn't even bring weapons!
+We should try find something to defend ourselves with.
+
 We can build a Rod here. I doesn't hit hard, but it will do.
 We just need to collect scrap, produce MetalBars.
 Then form the Metalbars into a Rod.
@@ -5083,6 +5094,15 @@ This will close the tutorial and let you do your own thing.
                 self.addQuest(quest,character)
                 self.clear_implant_quest(character)
                 return
+
+        if quest_type == "pick up Vial":
+            if character.getFreeInventorySpace() and character.container.isRoom:
+                vials = character.container.getItemsByType("Vial")
+                random.shuffle(vials)
+                for vial in vials:
+                    quest = src.quests.questMap["CleanSpace"](targetPositionBig=vial.getBigPosition(),targetPosition=vial.getPosition())
+                    self.addQuest(quest,character)
+                    return
 
         if quest_type == "meditate":
             quest = src.quests.questMap["Meditate"](targetPositionBig=(6,5,0),targetPosition=(4,8,0))

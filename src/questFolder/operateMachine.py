@@ -63,43 +63,8 @@ operate the machine on {self.targetPosition}{reason}.
         if self.subQuests:
             return (None,None)
 
-        # activate correct item when marked
-        action = self.generate_confirm_interaction_command(allowedItems=("Machine","ScrapCompactor","MaggotFermenter","BioPress","GooProducer","Electrifier","BloomShredder","CorpseShredder","Merger"))
-        if action:
-            return action
-
-        # handle menus
-        submenue = character.macroState["submenue"]
-        if submenue and not ignoreCommands:
-            if submenue.tag not in ("advancedInteractionSelection",):
-                return (None,(["esc"],"close menu"))
-
-        if self.targetPositionBig and character.getBigPosition() != self.targetPositionBig:
-            quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="get to the tile the machine is on")
-            return ([quest],None)
-
-        pos = character.getPosition()
-        if self.targetPosition not in (pos,(pos[0],pos[1]+1,pos[2]),(pos[0]-1,pos[1],pos[2]),(pos[0]+1,pos[1],pos[2]),(pos[0],pos[1]-1,pos[2])):
-            quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True,reason="get near the machine")
-            return ([quest],None)
-
-        interactionCommand = "J"
-        if submenue:
-            if submenue.tag == "advancedInteractionSelection":
-                interactionCommand = ""
-            else:
-                return (None,(["esc"],"close menu"))
-        if (pos[0],pos[1],pos[2]) == self.targetPosition:
-            return (None,("j","activate machine"))
-        if (pos[0]-1,pos[1],pos[2]) == self.targetPosition:
-            return (None,(interactionCommand+"a","activate machine"))
-        if (pos[0]+1,pos[1],pos[2]) == self.targetPosition:
-            return (None,(interactionCommand+"d","activate machine"))
-        if (pos[0],pos[1]-1,pos[2]) == self.targetPosition:
-            return (None,(interactionCommand+"w","activate machine"))
-        if (pos[0],pos[1]+1,pos[2]) == self.targetPosition:
-            return (None,(interactionCommand+"s","activate machine"))
-        return (None,(".","stand around confused"))
+        quest = src.quests.questMap["ActivateItem"](targetPosition=self.targetPosition,targetPositionBig=self.targetPositionBig,reason="operate machine")
+        return ([quest],None)
 
     def getQuestMarkersTile(self,character):
         result = super().getQuestMarkersTile(character)

@@ -5478,7 +5478,6 @@ This will close the tutorial and let you do your own thing.
 
         return memorialPlates
 
-
     def _get_unread_memorialPlates(self,character):
         memorialPlates = []
         terrain = character.getTerrain()

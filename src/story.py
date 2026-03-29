@@ -1734,19 +1734,19 @@ May he forever rest in peace.
             maze_room_easy_path_1.addWalkingSpace((6,y,0))
         for pos in [(6,5,0),(6,4,0)]:
             maze_room_easy_path_1.addWalkingSpace(pos)
-        for pos in [(3,7,0),(3,8,0),(3,9,0)]:
+        for pos in [(3,7,0),(3,8,0)]:
             maze_room_easy_path_1.addWalkingSpace(pos)
         item = src.items.itemMap["Corpse"]()
         maze_room_easy_path_1.addItem(item,(3,9,0))
-        for pos in [(9,7,0),(9,8,0),(9,9,0)]:
+        for pos in [(9,7,0),(9,8,0)]:
             maze_room_easy_path_1.addWalkingSpace(pos)
         item = src.items.itemMap["Corpse"]()
         maze_room_easy_path_1.addItem(item,(9,9,0))
-        for pos in [(9,5,0),(9,4,0),(9,3,0)]:
+        for pos in [(9,5,0),(9,4,0)]:
             maze_room_easy_path_1.addWalkingSpace(pos)
         item = src.items.itemMap["Corpse"]()
         maze_room_easy_path_1.addItem(item,(9,3,0))
-        for pos in [(3,5,0),(3,4,0),(3,3,0)]:
+        for pos in [(3,5,0),(3,4,0)]:
             maze_room_easy_path_1.addWalkingSpace(pos)
         item = src.items.itemMap["Corpse"]()
         maze_room_easy_path_1.addItem(item,(3,3,0))
@@ -1844,6 +1844,11 @@ This memorial contains:
             maze_room_exit.addWalkingSpace((6,y,0))
         for x in range(1,12):
             maze_room_exit.addWalkingSpace((x,6,0))
+
+        item = src.items.itemMap["Scrap"](amount=2)
+        maze_room_exit.addItem(item,(7,6,0))
+        item = src.items.itemMap["Scrap"](amount=2)
+        maze_room_exit.addItem(item,(9,6,0))
  
         maze_room_hard_path_1 = architect.doAddRoom(
                 {
@@ -4286,6 +4291,14 @@ So ""","\"",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_co
 shift+j then shift+h
 """]
 
+            if mainChar.health < 30 and not mainChar.getNearbyEnemies() and ((6,5,0),(9,3,0)) in src.gamestate.gamestate.stern.get("readMemorialPlates",[]):
+                name = "meditate"
+                description = self._add_cooldown_color("heal by meditating")
+                options.append((name, description))
+                extraDescriptions[name] = ["""
+You are hurt badly. Meditate to recover some health.
+"""]
+
             if self._get_path_to_clear_to_exit(mainChar) and not terrain.getEnemiesOnTile(mainChar,(7,5,0)):
                 name = "clear next room on path to exit"
                 description = self._add_cooldown_color("clear next room on path to exit")
@@ -5154,7 +5167,7 @@ This will close the tutorial and let you do your own thing.
         if quest_type == "explore toward teleporter room":
             rooms = self.get_rooms_to_explore_towards_teleporter(character)
             if rooms:
-                quest = src.quests.questMap["SecureTile"](toSecure=rooms[0],endWhenCleared=True)
+                quest = src.quests.questMap["SecureTile"](toSecure=rooms[0],endWhenCleared=True,suicidal=True)
                 quest.free_command_module = free_command_module
                 self.addQuest(quest,character)
                 self.clear_implant_quest(character)
@@ -5468,10 +5481,14 @@ This will close the tutorial and let you do your own thing.
         known_memorialPlates = src.gamestate.gamestate.stern.get("readMemorialPlates",[])
         memorialPlates = []
 
-        items = room.getItemsByType("MemorialPlate")
-        for item in items:
+        memorial_plates = room.getItemsByType("MemorialPlate")
+        for item in memorial_plates:
             identifier = (item.getBigPosition(),item.getPosition())
             if identifier in known_memorialPlates:
+                continue
+
+            items = room.getItemByPosition(item.getPosition())
+            if items[0] != item:
                 continue
 
             memorialPlates.append(item)

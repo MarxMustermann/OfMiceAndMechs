@@ -111,7 +111,7 @@ Activate item on Position {self.targetPosition} in tile {self.targetPositionBig}
 
         if item.getPosition() != self.targetPosition:
             return
-        if item.getBigPosition() != self.targetPositionBig:
+        if self.targetPositionBig and item.getBigPosition() != self.targetPositionBig:
             return
 
         self.postHandler()

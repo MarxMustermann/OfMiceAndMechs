@@ -19,7 +19,7 @@ class StoryFetchScrap(src.quests.MetaQuestSequence):
             return (None,None)
 
         terrain = character.getTerrain()
-        rooms = terrain.getRoomByPosition((7,6,0))
+        rooms = terrain.getRoomByPosition((7,4,0))
 
         if rooms:
             hub_room = rooms[0]

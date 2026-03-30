@@ -44,7 +44,7 @@ class GoToPosition(src.quests.MetaQuestSequence):
 
         reason = ""
         if self.reason:
-            reason = f",\nto {self.reason}"
+            reason = f", to {self.reason}"
         extraText = ""
         if self.ignoreEndBlocked:
             extraText = """
@@ -58,8 +58,26 @@ So it is enough to go next to the target position to end this quest.
         else:
             containerString = "tile"
 
+        character_position = self.character.getSpacePosition()
+        directions = []
+        if self.targetPosition[0] < character_position[0]:
+            amount_steps = character_position[0]-self.targetPosition[0]
+            directions.append(f"{amount_steps} steps to the west")
+        if self.targetPosition[0] > character_position[0]:
+            amount_steps = self.targetPosition[0]-character_position[0]
+            directions.append(f"{amount_steps} steps to the east")
+        if self.targetPosition[1] < character_position[1]:
+            amount_steps = character_position[1]-self.targetPosition[1]
+            directions.append(f"{amount_steps} steps to the north")
+        if self.targetPosition[1] > character_position[1]:
+            amount_steps = self.targetPosition[1]-character_position[1]
+            directions.append(f"{amount_steps} steps to the south")
+        direction_string = " and ".join(directions)
+
         text = f"""
 Go to position {self.targetPosition} in the same {containerString} you are in{reason}.
+Your current position is {character_position} your target position is {direction_string}.
+Use wasd or the arrow keys to move.
 
 This quest ends after you do this.{extraText}"""
 

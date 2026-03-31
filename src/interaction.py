@@ -4558,6 +4558,7 @@ def calculate_UI_layout(char):
 
     uiElements.append({"type":"healthInfo","offset":[(assumedScreenWidth-mapWidth)//2,1],"width":mapWidth})
     uiElements.append({"type":"indicators","offset":[(assumedScreenWidth-mapWidth)//2,2],"width":mapWidth})
+    uiElements.append({"type":"legend","offset":[0,tcodConsole.height-1],"width":assumedScreenWidth,"height":1})
 
     if not char.hasMagic:
         displayString = "press ? for help"
@@ -5016,6 +5017,30 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                 sdl_renderer2.draw_blend_mode = tcod.sdl.render.BlendMode(1)
                 sdl_renderer2.draw_color = (0,0,0,100)
                 sdl_renderer2.fill_rect((offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height))
+
+        if uiElement["type"] == "legend":
+            offsetLeft = uiElement["offset"][0]*tileWidth*2
+            offsetTop = uiElement["offset"][1]*tileHeight
+
+            root_console = tcod.console.Console(uiElement["width"], uiElement["height"], order="F")
+
+            items = []
+            for offset in [(0,0,0),(0,-1,0),(-1,0,0),(0,1,0),(1,0,0)]:
+                items.extend(char.container.getItemByPosition(char.getPosition(offset=offset)))
+
+            output = []
+            for item in items:
+                output.append([ItemMeta(item,content=item.render()),": ",item.name," "])
+            output_width = len(stringifyUrwid(text))
+            output.insert(0," "*((root_console.width-output_width)//2))
+            printUrwidToTcod(output,(0,0),explecitConsole=root_console)
+
+            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_map)
+            console_render = tcod.render.SDLConsoleRender(atlas)
+            renderedToTexture = console_render.render(root_console)
+            sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
+
+            printUrwidToSDL(output,uiElement["offset"])
 
     submenue = char.macroState.get("submenue")
     if specialRender or submenue:

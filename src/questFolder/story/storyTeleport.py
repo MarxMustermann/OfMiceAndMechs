@@ -19,72 +19,15 @@ class StoryTeleport(src.quests.MetaQuestSequence):
             return (None,None)
 
         terrain = character.getTerrain()
-
-        if not character.container.isRoom:
-            if character.xPosition%15 == 0:
-                return (None,("d","enter room"))
-            if character.xPosition%15 == 14:
-                return (None,("a","enter room"))
-            if character.yPosition%15 == 0:
-                return (None,("s","enter room"))
-            if character.yPosition%15 == 14:
-                return (None,("w","enter room"))
-
-        if character.macroState.get("submenue"):
-            return (None,(["esc"],"close the menu"))
-
-        # activate correct item when marked
-        action = self.generate_confirm_interaction_command(allowedItems=("PersonnelTeleporter",))
-        if action:
-            return action
-
-        target_pos = None
-        if character.getBigPosition() == (7,5,0):
-            target_pos = (7,6,0)
-        if character.getBigPosition() == (7,6,0):
-            target_pos = random.choice([(6,6,0),(8,6,0)])
-        if character.getBigPosition() == (6,6,0):
-            target_pos = (6,7,0)
-        if character.getBigPosition() == (6,7,0):
-            target_pos = (6,8,0)
-        if character.getBigPosition() == (8,6,0):
-            target_pos = (8,7,0)
-        if character.getBigPosition() == (8,7,0):
-            target_pos = (8,8,0)
-        if target_pos:
-            if terrain.getEnemiesOnTile(character,target_pos):
-                quest = src.quests.questMap["SecureTile"](toSecure=target_pos,reason="be able to leave",description="search for teleporter",endWhenCleared=True)
-            else:
-                quest = src.quests.questMap["GoToTile"](targetPosition=target_pos)
-            return ([quest],None)
-
-        if not character.getBigPosition() == (7,8,0):
-            quest = src.quests.questMap["GoToTile"](targetPosition=(7,8,0),reason="go to the teleporter room",description="go to teleporter room")
-            return ([quest],None)
-
-        if not character.container.isRoom:
-            return (None,(".","stand around confused"))
-
+        rooms = terrain.getRoomByPosition((7,8,0))
+        if not rooms:
+            return self._solver_trigger_fail(dryRun,"target room gone")
         personnelTeleporter = character.container.getItemByType("PersonnelTeleporter")
         if not personnelTeleporter:
             return self._solver_trigger_fail(dryRun,"no teleporter found")
 
-        itemPos = personnelTeleporter.getPosition()
-        if character.getDistance(itemPos) > 1:
-            quest = src.quests.questMap["GoToPosition"](targetPosition=personnelTeleporter.getPosition(),reason="to be able to use the teleporter",description="go to teleporter",ignoreEndBlocked=True)
-            return ([quest],None)
-
-        direction = ""
-        if character.getPosition(offset=(1,0,0)) == itemPos:
-            direction = "d"
-        if character.getPosition(offset=(-1,0,0)) == itemPos:
-            direction = "a"
-        if character.getPosition(offset=(0,1,0)) == itemPos:
-            direction = "s"
-        if character.getPosition(offset=(0,-1,0)) == itemPos:
-            direction = "w"
-
-        return (None,(direction+"j","activate teleporter"))
+        quest = src.quests.questMap["ActivateItem"](targetPosition=personnelTeleporter.getPosition(),targetPositionBig=personnelTeleporter.getBigPosition(),reason="teleport",targetItemType="PersonnelTeleporter")
+        return ([quest],None)
 
     def generateTextDescription(self):
         return ["""

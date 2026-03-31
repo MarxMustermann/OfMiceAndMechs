@@ -95,6 +95,7 @@ class StoryCraftRod(src.quests.MetaQuestSequence):
         return ["""
 Craft a Rod by:
 
+* securing the crafting room
 * collecting Scrap
 * putting the Scrap next to a scrap compactor
 * producing a Metal by with the scrap compactor

@@ -76,6 +76,10 @@ Activate the MemorialPlate to read it.
         if not renderForTile:
             if isinstance(character.container,src.rooms.Room):
                 for item in character.container.itemsOnFloor:
+                    if self.targetPositionBig and item.getBigPosition() != self.targetPositionBig:
+                        break
+                    if self.targetPosition and item.getPosition() != self.targetPosition:
+                        continue
                     if not item.type == "MemorialPlate":
                         continue
                     if not item.bolted:

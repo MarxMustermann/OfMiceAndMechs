@@ -31,7 +31,37 @@ class SecureTile(src.quests.questMap["GoToTile"]):
         storyString = ""
         if self.story:
             storyString = self.story+"\n"
-        text  = f"""{storyString}Secure the tile {self.targetPosition}{reasonString}.
+
+        rooms = self.character.getTerrain().getRoomByPosition(self.targetPosition)
+        target_type_string = "tile"
+        if rooms:
+            target_type_string = "room"
+
+        character_position = self.character.getBigPosition()
+        directions = []
+        if self.targetPosition[0] < character_position[0]:
+            amount_steps = character_position[0]-self.targetPosition[0]
+            directions.append(f"{amount_steps} tiles to the west")
+        if self.targetPosition[0] > character_position[0]:
+            amount_steps = self.targetPosition[0]-character_position[0]
+            directions.append(f"{amount_steps} tiles to the east")
+        if self.targetPosition[1] < character_position[1]:
+            amount_steps = character_position[1]-self.targetPosition[1]
+            directions.append(f"{amount_steps} tiles to the north")
+        if self.targetPosition[1] > character_position[1]:
+            amount_steps = self.targetPosition[1]-character_position[1]
+            directions.append(f"{amount_steps} tiles to the south")
+        direction_string = " and ".join(directions)
+
+
+        rooms = self.character.getTerrain().getRoomByPosition(self.targetPositionBig)
+        characterPosition_type_string = "tile"
+        if rooms:
+            characterPosition_type_string = "room"
+        text  = f"""{storyString}Secure the {target_type_string} on coordinate {self.targetPosition}{reasonString}.
+You are in the {characterPosition_type_string} on coordinate {character_position}.
+Tiles are the 15x15 step sections divided by the blue lines.
+The target tile is {direction_string}.
 
 This means you should go to the tile and kill all enemies you find."""
         if not self.endWhenCleared:

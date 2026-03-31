@@ -22,6 +22,8 @@ class ConsumeItem(src.quests.MetaQuestSequence):
             reason = f",\nto {self.reason}"
         text = f"""
 {self.consumeVerb} an item of the type {self.itemType} from your inventory{reason}.
+
+Do this by opening your inventory by pressing i and then activating the item.
 """
         return text
 

@@ -52,18 +52,23 @@ class SecureTile(src.quests.questMap["GoToTile"]):
             amount_steps = self.targetPosition[1]-character_position[1]
             directions.append(f"{amount_steps} tiles to the south")
         direction_string = " and ".join(directions)
+        direction_string = f"The target tile is {direction_string}.\n"
+        if character_position == self.targetPosition:
+            direction_string = ""
 
-
-        rooms = self.character.getTerrain().getRoomByPosition(self.targetPositionBig)
+        rooms = self.character.getTerrain().getRoomByPosition(self.targetPosition)
         characterPosition_type_string = "tile"
         if rooms:
             characterPosition_type_string = "room"
-        text  = f"""{storyString}Secure the {target_type_string} on coordinate {self.targetPosition}{reasonString}.
+        text = ""
+        if character_position != self.targetPosition:
+            text += f"""{storyString}Secure the {target_type_string} on coordinate {self.targetPosition}{reasonString}.
 You are in the {characterPosition_type_string} on coordinate {character_position}.
 Tiles are the 15x15 step sections divided by the blue lines.
-The target tile is {direction_string}.
-
-This means you should go to the tile and kill all enemies you find."""
+{direction_string}
+Go to the tile and kill all enemies you find."""
+        else:
+            text += f"""Kill all enemies you find on this tile."""
         if not self.endWhenCleared:
             text = "\n"+text+"\n\nStay there and kill all enemies arriving"
             if self.wandering:

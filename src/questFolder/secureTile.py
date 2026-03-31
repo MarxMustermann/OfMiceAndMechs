@@ -3,12 +3,15 @@ import random
 import src
 
 
-class SecureTile(src.quests.questMap["GoToTile"]):
+class SecureTile(src.quests.MetaQuestSequence):
     type = "SecureTile"
 
-    def __init__(self, description="secure tile", toSecure=None, endWhenCleared=False, reputationReward=0,rewardText=None,strict=False,alwaysHuntDown=False,reason=None,story=None, wandering = False, lifetime=None, simpleAttacksOnly=False, noHeal=False, suicidal=False):
-        super().__init__(description=description,targetPosition=toSecure,lifetime=lifetime)
+    def __init__(self, description="secure tile", creator=None, toSecure=None, endWhenCleared=False, reputationReward=0,rewardText=None,strict=False,alwaysHuntDown=False,reason=None,story=None, wandering = False, lifetime=None, simpleAttacksOnly=False, noHeal=False, suicidal=False):
+        questList = []
+        super().__init__(questList,creator=creator)
         self.metaDescription = description
+        self.baseDescription = description
+
         self.endWhenCleared = endWhenCleared
         self.reputationReward = reputationReward
         self.rewardText = rewardText
@@ -23,6 +26,9 @@ class SecureTile(src.quests.questMap["GoToTile"]):
             raise Exception("Out of bounds" + str(toSecure))
         self.simpleAttacksOnly = simpleAttacksOnly
         self.suicidal = suicidal
+        if len(toSecure) < 3:
+            toSecure = (toSecure[0],toSecure[1],0)
+        self.targetPosition = toSecure
 
     def generateTextDescription(self):
         reasonString = ""
@@ -186,13 +192,18 @@ Use simple attacks only.
                     else:
                         quest = src.quests.questMap["Fight"](simpleOnly=self.simpleAttacksOnly,reason="reduce danger",suicidal=self.suicidal)
                         return ([quest],None)
+
+        # ensure all enemies are dead
         enemies = character.getNearbyEnemies()
         if enemies:
             quest = src.quests.questMap["Fight"](simpleOnly=self.simpleAttacksOnly,reason="defend yourself",suicidal=self.suicidal)
             return ([quest],None)
 
         # wait for enemies
-        if character.getBigPosition() == self.targetPosition:
+        targetPosition = self.targetPosition
+        if len(targetPosition) < 3:
+            targetPosition = (targetPosition[0],targetPosition[1],0)
+        if character.getBigPosition() == targetPosition:
 
             # enter tiles properly
             pos = character.getSpacePosition()
@@ -226,7 +237,9 @@ Use simple attacks only.
                     return (None, (".","wait"))
                     return (None, (";","wait"))
 
-        # let super class handle further details
-        return super().getNextStep(character=character,ignoreCommands=ignoreCommands,dryRun=dryRun)
+            return (None, (".","wait"))
+
+        quest = src.quests.questMap["GoToTile"](targetPosition = self.targetPosition, reason="be able to secure the area")
+        return ([quest], None)
 
 src.quests.addType(SecureTile)

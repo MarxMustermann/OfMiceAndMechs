@@ -5,7 +5,7 @@ class ActivateItem(src.quests.MetaQuestSequence):
     story quest pretending to try to contact a higher command
     '''
     type = "ActivateItem"
-    def __init__(self, description="activate item", creator=None, lifetime=None, targetPosition=None, targetPositionBig=None, reason=None, activateFromTop=False):
+    def __init__(self, description="activate item", creator=None, lifetime=None, targetPosition=None, targetPositionBig=None, reason=None, activateFromTop=False, targetItemType=None):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
@@ -13,6 +13,7 @@ class ActivateItem(src.quests.MetaQuestSequence):
         self.targetPosition = targetPosition
         self.targetPositionBig = targetPositionBig
         self.activateFromTop = activateFromTop
+        self.targetItemType = targetItemType
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
         '''
@@ -45,10 +46,17 @@ class ActivateItem(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="reach the item",description="go to room with the item")
             return ([quest],None)
 
+        if self.targetItemType:
+            if self.targetPosition:
+                items = character.container.getItemByPosition(self.targetPosition)
+                if items and items[0].type != self.targetItemType:
+                    quest = src.quests.questMap["CleanSpace"](targetPosition=self.targetPosition,targetPositionBig=character.getBigPosition(),reason="free up item",abortOnfullInventory=False)
+                    return ([quest],None)
+
         # handle from top activation
         if self.activateFromTop:
             if character.getDistance(self.targetPosition) > 0:
-                quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,reason="to be able to use the item",description="go to item",clearPath=True)
+                quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,reason="be able to use the item",description="go to item",clearPath=True)
                 return ([quest],None)
 
             return (None,("j","activate information plate"))
@@ -67,7 +75,7 @@ class ActivateItem(src.quests.MetaQuestSequence):
         # go to the item
         pos = character.getPosition()
         if self.targetPosition not in (pos,(pos[0],pos[1]+1,pos[2]),(pos[0]-1,pos[1],pos[2]),(pos[0]+1,pos[1],pos[2]),(pos[0],pos[1]-1,pos[2])):
-            quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True,reason="get near the item")
+            quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True,reason="get near the item",clearPath=True)
             return ([quest],None)
 
         # activate the item
@@ -90,9 +98,19 @@ class ActivateItem(src.quests.MetaQuestSequence):
         return (None,(".","stand around confused"))
 
     def generateTextDescription(self):
-        return [f"""
-Activate item on Position {self.targetPosition} in tile {self.targetPositionBig}.
-"""]
+        type_string = "item"
+        if self.targetItemType:
+            type_string = self.targetItemType
+        tile_string = ""
+        if self.targetPositionBig and self.character.getBigPosition() != self.targetPositionBig:
+            tile_string = f" in tile {self.targetPositionBig}"
+        description = f"""
+Activate the {type_string} on position {self.targetPosition}{tile_string}.
+
+You can activate items by using the j or J key.
+For more information consult the Help menu by pressing ?
+"""
+        return description
 
     def assignToCharacter(self, character):
         if self.character:

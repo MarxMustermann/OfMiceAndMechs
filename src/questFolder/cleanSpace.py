@@ -39,6 +39,8 @@ class CleanSpace(src.quests.MetaQuestSequence):
             reason = f",\nto {self.reason}"
         text = f"""
 Remove all items from the space {self.targetPosition} on tile {self.targetPositionBig}{reason}.
+
+You can pick up items by pressing the k or K key.
 """
         return text
 

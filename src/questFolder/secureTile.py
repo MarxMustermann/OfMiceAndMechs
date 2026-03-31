@@ -191,7 +191,7 @@ Use simple attacks only.
             quest = src.quests.questMap["Fight"](simpleOnly=self.simpleAttacksOnly,reason="defend yourself",suicidal=self.suicidal)
             return ([quest],None)
 
-        # go to the position to secure
+        # wait for enemies
         if character.getBigPosition() == self.targetPosition:
 
             # enter tiles properly

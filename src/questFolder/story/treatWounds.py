@@ -117,24 +117,13 @@ You have a Vial in your inventory. Use it to heal yourself.
 """)
         result.extend(["""
 
-Try to collect more vials and other useful things.
-Your inventory is now shown on the top right side of the screen.
-You can access the inventory menu by pressing i.
+The quickes way to heal is to press ""","\"",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"J")," ",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"H"),"\"",""".
+Note that capital letters are shown with a blueish tint.
 
-
-Right now you are looking at the quest menu.
-Detailed descriptions are shown here.
-The keys to press are shown on the left side of the screen.
-
-For example:
-
-if the suggested action is \"""",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"J")," ",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"H"),"""\":
-
-    press shift+j then
-    press shift+h
+So you need to 
+    press shift+j to open the advanced interaction menu and then
+    press shift+h to batch heal
 ""","""
-
-For now ignore the options below and press esc to continue.
 
 """])
         return result

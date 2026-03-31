@@ -24,7 +24,7 @@ class ReadMemorialPlate(src.quests.MetaQuestSequence):
         if not character:
             return (None,None)
 
-        quest = src.quests.questMap["ActivateItem"](targetPosition=self.targetPosition,targetPositionBig=self.targetPositionBig,reason="read the information plate")
+        quest = src.quests.questMap["ActivateItem"](targetPosition=self.targetPosition,targetPositionBig=self.targetPositionBig,reason="read the information plate",targetItemType="MemorialPlate")
         return ([quest],None)
 
     def generateTextDescription(self):
@@ -76,6 +76,8 @@ Activate the MemorialPlate to read it.
         if not renderForTile:
             if isinstance(character.container,src.rooms.Room):
                 for item in character.container.itemsOnFloor:
+                    if not item.container:
+                        continue
                     if self.targetPositionBig and item.getBigPosition() != self.targetPositionBig:
                         break
                     if self.targetPosition and item.getPosition() != self.targetPosition:

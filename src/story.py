@@ -4210,6 +4210,7 @@ What may i help you with?
             shown_worker_watch = False
             shown_disable = False
             shown_read_plate = False
+            shown_meditate = False
 
             if terrain.getRoomByPosition((7,7,0)):
                 name = "explosion"
@@ -4270,6 +4271,7 @@ We should read it to see if there is interesting information.
                 extraDescriptions[name] = ["""
 You are hurt badly. Meditate to recover some health.
 """]
+                shown_meditate = True
 
             if mainChar.container.isRoom and mainChar.getFreeInventorySpace() and not mainChar.getNearbyEnemies() and mainChar.container.getItemsByType("Vial") and ((6,4,0),(9,9,0)) in src.gamestate.gamestate.stern.get("readMemorialPlates",[]):
                 name = "pick up Vial"
@@ -4291,13 +4293,14 @@ So ""","\"",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_co
 shift+j then shift+h
 """]
 
-            if mainChar.health < 30 and not mainChar.getNearbyEnemies() and ((6,5,0),(9,3,0)) in src.gamestate.gamestate.stern.get("readMemorialPlates",[]):
+            if not shown_meditate and mainChar.health < 30 and not mainChar.getNearbyEnemies() and ((6,5,0),(9,3,0)) in src.gamestate.gamestate.stern.get("readMemorialPlates",[]):
                 name = "meditate"
                 description = self._add_cooldown_color("heal by meditating")
                 options.append((name, description))
                 extraDescriptions[name] = ["""
 You are hurt badly. Meditate to recover some health.
 """]
+                shown_meditate = True
 
             if self._get_path_to_clear_to_exit(mainChar) and not terrain.getEnemiesOnTile(mainChar,(7,5,0)):
                 name = "clear next room on path to exit"

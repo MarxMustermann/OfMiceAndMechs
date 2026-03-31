@@ -5079,7 +5079,7 @@ This will close the tutorial and let you do your own thing.
             if candides:
                 room_position = candides[0]
 
-                quest = src.quests.questMap["SecureTile"](toSecure=room_position,endWhenCleared=True,suicidal=True)
+                quest = src.quests.questMap["SecureTile"](toSecure=room_position,endWhenCleared=True,suicidal=True,reason="clear an escape path")
                 self.addQuest(quest,character)
                 return
 

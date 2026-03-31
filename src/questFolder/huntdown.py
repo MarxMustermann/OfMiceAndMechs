@@ -20,7 +20,8 @@ class Huntdown(src.quests.MetaQuestSequence):
         if self.reason:
             reasonText += f", to {self.reason}"
         text = f"""
-Hunt down enemy{reasonText}."""
+Hunt down the enemy{reasonText}.
+"""
 
         out.append(text)
         return out

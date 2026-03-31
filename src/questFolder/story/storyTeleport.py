@@ -31,31 +31,6 @@ class StoryTeleport(src.quests.MetaQuestSequence):
                 return (None,("w","enter room"))
 
         if character.macroState.get("submenue"):
-            submenue = character.macroState.get("submenue")
-            if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu):
-                foundOption = False
-                rewardIndex = 0
-                if rewardIndex == 0:
-                    counter = 1
-                    for option in submenue.options.items():
-                        if option[1] == "contact main base":
-                            foundOption = True
-                            break
-                        counter += 1
-                    rewardIndex = counter
-
-                if not foundOption:
-                    return (None,(["esc"],"to close menu"))
-
-                offset = rewardIndex-submenue.selectionIndex
-                command = ""
-                if offset > 0:
-                    command += "s"*offset
-                else:
-                    command += "w"*(-offset)
-                command += "j"
-                return (None,(command,"contact command"))
-            
             return (None,(["esc"],"close the menu"))
 
         # activate correct item when marked

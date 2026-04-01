@@ -1003,6 +1003,7 @@ class MainGame(BasicPhase):
         super().__init__("MainGame", seed=seed)
 
         src.gamestate.gamestate.stern["last_implant_interaction"] = -100
+        src.gamestate.gamestate.stern["implant_callback"] = self.reachOutImplant
 
     def get_free_position(self,tag):
         pos = random.choice(self.available_positions)
@@ -4025,6 +4026,9 @@ This memorial contains:
             description = (src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"#000"),description)
         return description
 
+    def reachOutImplant(self):
+        self.openedQuestsStory()
+
     def openedQuestsStory(self):
         if not src.gamestate.gamestate.stern.get("first_reachout_done"):
             src.gamestate.gamestate.stern["first_reachout_done"] = True
@@ -4237,6 +4241,11 @@ Wait by pressing "." (period)""",(src.interaction.urwid.AttrSpec("#ff0","black")
 "." is a period "," is a comma
 """),]
 
+                self.handle_player_intro_lab_quest_choice({"character":mainChar,"quest_type":name})
+                mainChar.runCommandString(["esc"])
+                return
+
+            '''
             if not self.has_shown_HelpMenu and src.gamestate.gamestate.tick > 25 and src.gamestate.gamestate.tick < 200:
                 name = "help"
                 description = self._add_cooldown_color("show me how play the game")
@@ -4246,6 +4255,11 @@ This will show you how to access the help menu.
 The help menu will show you the keybindings.
 """
                 shown_help_option = True
+
+                self.handle_player_intro_lab_quest_choice({"character":mainChar,"quest_type":name})
+                mainChar.runCommandString(["esc"])
+                return
+            '''
 
             if mainChar.getBigPosition() == (7,6,0) and terrain.getEnemiesOnTile(mainChar,(7,5,0)):
                 name = "clear first room"
@@ -4259,6 +4273,11 @@ Be aware: We will have to fight an enemy there.
 """)]
                 shown_observe_option = True
 
+                self.handle_player_intro_lab_quest_choice({"character":mainChar,"quest_type":name})
+                mainChar.runCommandString(["esc"])
+                return
+
+            '''
             if not self.has_shown_observeMenu and src.gamestate.gamestate.tick > 25 and src.gamestate.gamestate.tick < 100:
                 name = "observe"
                 description = self._add_cooldown_color("observe environment")
@@ -4267,6 +4286,7 @@ Be aware: We will have to fight an enemy there.
 Look around to see if there are useful items around.
 """
                 shown_observe_option = True
+            '''
 
             if self._get_local_unread_memorialPlates(mainChar) and not mainChar.getBigPosition() == (7,5,0):
                 name = "read information plate"
@@ -4324,6 +4344,10 @@ You are hurt badly. Meditate to recover some health.
 There are enemies on the path to the exit.
 Get rid of them.
 """
+
+                self.handle_player_intro_lab_quest_choice({"character":mainChar,"quest_type":name})
+                mainChar.runCommandString(["esc"])
+                return
 
             if src.gamestate.gamestate.tick > 25:
                 if not terrain.getEnemiesOnTile(mainChar,(7,4,0)):
@@ -4535,6 +4559,7 @@ What can i help you with?
                 extraDescriptions[name] = """
 The lab burning down will surely be spectacular.
 """
+                
             shown_help_option = False
             if not self.has_shown_HelpMenu and src.gamestate.gamestate.tick < 30:
                 name = "help"

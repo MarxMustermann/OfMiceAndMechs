@@ -302,6 +302,10 @@ class Character:
         self.add_submenu(submenu)
         self.runCommandString("~",nativeKey=True)
 
+    def reachImplant(self):
+        if self == src.gamestate.gamestate.mainChar:
+            src.gamestate.gamestate.stern["implant_callback"]()
+
     def castMagic(self,extraInformation):
         match extraInformation["keyPressed"]:
             case "j":

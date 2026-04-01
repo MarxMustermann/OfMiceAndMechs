@@ -1396,6 +1396,11 @@ class Character:
         if self.disabled:
             self.disabled = False
 
+        self.waitForEnemy = 0
+        self.waitForEnemyApproach = 0
+        self.hasOwnAction = False
+        self.runCommandString("",clear=True)
+
         if self.addExhaustionOnHurt:
             self.exhaustion += damage//10+1
         if self.addRandomExhaustionOnHurt:

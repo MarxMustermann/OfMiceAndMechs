@@ -8959,13 +8959,6 @@ def advanceChar(char,render=True, pull_events = True, singleStep=False):
                  charState=state, noAdvanceGame=True, char=char)
             rerender = True
             skipNextRender = False
-        elif char.hasOwnAction > 0:
-            for commandChar in char.getOwnAction():
-                processInput(
-                    (commandChar,["norecord"]),
-                     charState=state, noAdvanceGame=True, char=char)
-            rerender = True
-            skipNextRender = False
         elif state["commandKeyQueue"]:
             key = state["commandKeyQueue"].pop()
             if (char == src.gamestate.gamestate.mainChar):
@@ -8982,6 +8975,11 @@ def advanceChar(char,render=True, pull_events = True, singleStep=False):
 
             if singleStep:
                 break
+        elif char.hasOwnAction > 0:
+            command = char.getOwnAction()
+            char.runCommandString(command)
+            rerender = True
+            skipNextRender = False
         elif char.autoAdvance:
             char.runCommandString("+")
             #char.timeTaken += 1
@@ -9056,16 +9054,14 @@ def advanceChar_disabled(char):
                 processInput(
                         (char.doHuntKill(),["norecord"]),
                         charState=state, noAdvanceGame=True, char=char)
-            elif char.hasOwnAction > 0:
-                for commandChar in char.getOwnAction():
-                    processInput(
-                            (commandChar,["norecord"]),
-                            charState=state, noAdvanceGame=True, char=char)
             elif state["commandKeyQueue"]:
                 key = state["commandKeyQueue"].pop()
                 processInput(
                     key, charState=state, noAdvanceGame=True, char=char
                 )
+            elif char.hasOwnAction > 0:
+                command = char.getOwnAction()
+                char.runCommandString(command)
             elif hasAutosolveQuest:
                 char.runCommandString("+")
             else:

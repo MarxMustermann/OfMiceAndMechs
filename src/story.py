@@ -4242,7 +4242,6 @@ Wait by pressing "." (period)""",(src.interaction.urwid.AttrSpec("#ff0","black")
 """),]
 
                 self.handle_player_intro_lab_quest_choice({"character":mainChar,"quest_type":name})
-                mainChar.runCommandString(["esc"])
                 return
 
             '''
@@ -4257,7 +4256,6 @@ The help menu will show you the keybindings.
                 shown_help_option = True
 
                 self.handle_player_intro_lab_quest_choice({"character":mainChar,"quest_type":name})
-                mainChar.runCommandString(["esc"])
                 return
             '''
 
@@ -4274,7 +4272,6 @@ Be aware: We will have to fight an enemy there.
                 shown_observe_option = True
 
                 self.handle_player_intro_lab_quest_choice({"character":mainChar,"quest_type":name})
-                mainChar.runCommandString(["esc"])
                 return
 
             '''
@@ -4298,7 +4295,7 @@ We should read it to see if there is interesting information.
 """
                 shown_read_plate = True
 
-            if mainChar.health < 50 and not mainChar.getNearbyEnemies() and mainChar.getBigPosition() == (6,5,0) and ((6,5,0),(9,3,0)) in src.gamestate.gamestate.stern.get("readMemorialPlates",[]):
+            if mainChar.health < 50 and not mainChar.getNearbyEnemies() and mainChar.getBigPosition() == (6,5,0):
                 name = "meditate"
                 description = self._add_cooldown_color("heal by meditating")
                 options.append((name, description))
@@ -4306,6 +4303,9 @@ We should read it to see if there is interesting information.
 You are hurt badly. Meditate to recover some health.
 """]
                 shown_meditate = True
+
+                self.handle_player_intro_lab_quest_choice({"character":mainChar,"quest_type":name})
+                return
 
             if mainChar.container.isRoom and mainChar.getFreeInventorySpace() and not mainChar.getNearbyEnemies() and mainChar.container.getItemsByType("Vial") and ((6,4,0),(9,9,0)) in src.gamestate.gamestate.stern.get("readMemorialPlates",[]):
                 name = "pick up Vial"
@@ -4346,7 +4346,6 @@ Get rid of them.
 """
 
                 self.handle_player_intro_lab_quest_choice({"character":mainChar,"quest_type":name})
-                mainChar.runCommandString(["esc"])
                 return
 
             if src.gamestate.gamestate.tick > 25:
@@ -5867,7 +5866,6 @@ Once you understand things try to find better solutions.
         src.gamestate.gamestate.mainChar.quests.append(containerQuest)
         containerQuest.activate()
         containerQuest.assignToCharacter(src.gamestate.gamestate.mainChar)
-        containerQuest.endTrigger = {"container": self, "method": "openedQuests"}
 
     def doMaintenance(self):
         main_char = self.activeStory["mainChar"]

@@ -294,7 +294,7 @@ class QuestMenu(src.subMenu.SubMenu):
                                 color = src.interaction.upper_case_letter_color
                             convertedCommanString.append((src.interaction.urwid.AttrSpec(color, "default"), letter))
                             convertedCommanString.append(" ")
-                        if solvingCommangString in ("esc","enter","backspace",):
+                        if solvingCommangString in ("esc","enter","backspace","tab",):
                             convertedCommanString = [(src.interaction.urwid.AttrSpec("#bb9", "default"),solvingCommangString)]
                         nextstep = [f"suggested action: \npress "]+convertedCommanString+[f" \nto {reason}\n\n"]
                 else:

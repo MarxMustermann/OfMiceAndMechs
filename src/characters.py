@@ -2298,7 +2298,7 @@ press any other key to attack normally"""
                     hasComand = True
 
                 if hasComand:
-                    if commandString[0] != "+" and commandString[0] != "q":
+                    if commandString[0] != "+" and commandString[0] != "q" and commandString[0][0] != "tab":
                         self.runCommandString(".")
                         return
 

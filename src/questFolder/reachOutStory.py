@@ -14,6 +14,7 @@ class ReachOutStory(src.quests.MetaQuestSequence):
         return False
 
     def handleQuestsOpened(self,extraInfo=None):
+        return
         if self.character.quests[0] == self:
             self.postHandler()
 
@@ -32,6 +33,6 @@ class ReachOutStory(src.quests.MetaQuestSequence):
         if not ignoreCommands and character.macroState.get("submenue"):
             return (None, (["esc"],"close submenu"))
         else:
-            return (None, ("q","reach out to implant"))
+            return (None, (["tab"],"reach out to implant"))
 
 src.quests.addType(ReachOutStory)

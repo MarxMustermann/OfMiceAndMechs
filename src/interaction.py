@@ -5030,7 +5030,7 @@ def renderGameDisplay(renderChar=None,showSaving=False):
 
             output = []
             for item in items:
-                output.append([ItemMeta(item,content=item.render())," ",item.name," ",(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),f"{item.getSmallPosition()}")," "])
+                output.append([ItemMeta(item,content=item.render())," ",(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),item.name)," ",(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),f"{item.getSmallPosition()}")," "])
             output_width = len(stringifyUrwid(output))
             output.insert(0," "*((root_console.width-output_width)//2))
             printUrwidToTcod(output,(0,0),explecitConsole=root_console)

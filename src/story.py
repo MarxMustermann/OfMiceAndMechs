@@ -1691,13 +1691,29 @@ The creator of all things.
 May he forever rest in peace.
 """)
         hubRoom.addItem(item,(6,6,0))
+        item = src.items.itemMap["MeditationPlate"]()
+        hubRoom.addItem(item,(3,3,0))
+        item = src.items.itemMap["MeditationPlate"]()
+        hubRoom.addItem(item,(9,3,0))
+        item = src.items.itemMap["MeditationPlate"]()
+        hubRoom.addItem(item,(3,9,0))
+        item = src.items.itemMap["MeditationPlate"]()
+        hubRoom.addItem(item,(9,9,0))
+        for pos in [(7,9,0),(8,9,0),(8,10,0),(9,10,0),(10,10,0),(10,9,0),(10,8,0),(9,8,0),(9,7,0),]:
+            hubRoom.addWalkingSpace(pos)
+        for pos in [(9,5,0),(9,4,0),(10,4,0),(10,3,0),(10,2,0),(9,2,0),(8,2,0),(8,3,0),(7,3,0),]:
+            hubRoom.addWalkingSpace(pos)
+        for pos in [(5,3,0),(4,3,0),(4,2,0),(3,2,0),(2,2,0),(2,3,0),(2,4,0),(3,4,0),(3,5,0),]:
+            hubRoom.addWalkingSpace(pos)
+        for pos in [(3,7,0),(3,8,0),(2,8,0),(2,9,0),(2,10,0),(3,10,0),(4,10,0),(4,9,0),(5,9,0),]:
+            hubRoom.addWalkingSpace(pos)
 
         # add teleport room
         teleporterRoom = architect.doAddRoom(
                 {
                        "coordinate": (7,8,0),
                        "roomType": "EmptyRoom",
-                       "doors": "6,0 0,6 12,6 6,12",
+                       "doors": "6,0 0,6 12,6",
                        "offset": [1,1],
                        "size": [13, 13],
                 },
@@ -1706,15 +1722,13 @@ May he forever rest in peace.
         teleporterRoom.tag = "teleporter room"
         teleporter = src.items.itemMap["PersonnelTeleporter"](targetPositionBig=self.sternsBasePosition)
         teleporterRoom.addItem(teleporter,(6,6,0))
-        for y in (11,10,9,8,7):
-            teleporterRoom.addWalkingSpace((6,y,0))
         for y in (5,):
             teleporterRoom.addWalkingSpace((6,y,0))
         for x in (11,10,9,8,7):
             teleporterRoom.addWalkingSpace((x,6,0))
         for x in (5,4,3,2,1,):
             teleporterRoom.addWalkingSpace((x,6,0))
-        for pos in [(5,7,0),(7,7,0),(7,5,0),(5,5,0)]:
+        for pos in [(5,7,0),(7,7,0),(7,5,0),(5,5,0),(6,7,0)]:
             teleporterRoom.addWalkingSpace(pos)
 
         # build maze path

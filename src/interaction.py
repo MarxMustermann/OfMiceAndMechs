@@ -2825,6 +2825,9 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
                 handleCollision(char,charState)
             return None
 
+        if key in ("tab","\t",):
+            char.reachImplant()
+
         # move the player
         if key in (
             "W",
@@ -4036,6 +4039,8 @@ def getTcodEvents():
                     continue
                 if key in (tcod.event.KeySym.RETURN, tcod.event.KeySym.KP_ENTER):
                     translatedKey = "enter"
+                if key in (tcod.event.KeySym.TAB,):
+                    translatedKey = "tab"
                 if key == tcod.event.KeySym.BACKSPACE:
                     translatedKey = "backspace"
                 """
@@ -4558,7 +4563,7 @@ def calculate_UI_layout(char):
 
     uiElements.append({"type":"healthInfo","offset":[(assumedScreenWidth-mapWidth)//2,1],"width":mapWidth})
     uiElements.append({"type":"indicators","offset":[(assumedScreenWidth-mapWidth)//2,2],"width":mapWidth})
-    uiElements.append({"type":"legend","offset":[0,tcodConsole.height-1],"width":assumedScreenWidth,"height":1})
+    uiElements.append({"type":"legend","offset":[0,tcodConsole.height-2],"width":assumedScreenWidth,"height":2})
 
     if not char.hasMagic:
         displayString = "press ? for help"
@@ -5033,6 +5038,8 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                 output.append([ItemMeta(item,content=item.render())," ",(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),item.name)," ",(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),f"{item.getSmallPosition()}")," "])
             output_width = len(stringifyUrwid(output))
             output.insert(0," "*((root_console.width-output_width)//2))
+            output.insert(0,"\n")
+
             printUrwidToTcod(output,(0,0),explecitConsole=root_console)
 
             atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_map)

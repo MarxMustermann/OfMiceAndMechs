@@ -234,7 +234,6 @@ Use simple attacks only.
                         y= src.helpers.clamp(y+int(random.uniform(-3,3)),2,11)
                         quest = src.quests.questMap["GoToPosition"](targetPosition = (x,y),idleMovement=True)
                         return ([quest], None)
-                    return (None, (".","wait"))
                     return (None, (";","wait"))
 
             return (None, (".","wait"))

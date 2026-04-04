@@ -24,6 +24,10 @@ class ClearPathToPosition(src.quests.MetaQuestSequence):
 Clear path to position {self.targetPosition}{reason}.
 
 Pick up and unbolt items that are in the way.
+
+Clear the path by picking item up by using the k and K keys.
+Drop items by using the l and L keys if your inventory has space.
+Unbolt items by using a complex action, if needed.
 """
 
         return text

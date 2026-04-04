@@ -81,12 +81,6 @@ Use wasd or the arrow keys to move.
 
 This quest ends after you do this.{extraText}"""
 
-        text += """
-
-
-This quest will not resolve further into subQuests.
-Close this menu by pressing esc and follow the instructions on the left hand menu.
-"""
         return text
 
     def getQuestMarkersSmall(self,character,renderForTile=False):

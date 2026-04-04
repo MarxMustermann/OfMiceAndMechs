@@ -94,7 +94,7 @@ The target tile is {direction[5:]}
 Try as hard as you can to achieve this.
 If you don't find the items to place, produce them.
 """
-        return out
+        return text
 
     def assignToCharacter(self, character):
         if self.character:

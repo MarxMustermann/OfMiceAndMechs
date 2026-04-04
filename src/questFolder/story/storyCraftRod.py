@@ -36,7 +36,7 @@ class StoryCraftRod(src.quests.MetaQuestSequence):
         rods = crafting_room.getItemsByType("Rod")
         if rods:
             rod = rods[0]
-            quest = src.quests.questMap["CleanSpace"](targetPosition=rod.getPosition(), targetPositionBig=rod.getBigPosition())
+            quest = src.quests.questMap["CleanSpace"](targetPosition=rod.getPosition(), targetPositionBig=rod.getBigPosition(),abortOnfullInventory=False)
             return ([quest],None)
 
         for manufacturingTable in crafting_room.getItemsByType("ManufacturingTable"):
@@ -77,7 +77,7 @@ class StoryCraftRod(src.quests.MetaQuestSequence):
 
         items_out = crafting_room.getItemByPosition((5,11,0))
         if items_out:
-            quest = src.quests.questMap["CleanSpace"](targetPosition=(5,11,0), targetPositionBig=(8,4,0))
+            quest = src.quests.questMap["CleanSpace"](targetPosition=(5,11,0), targetPositionBig=(8,4,0),abortOnfullInventory=False)
             return ([quest],None)
         items_in = crafting_room.getItemByPosition((2,11,0))
         if not items_in: 

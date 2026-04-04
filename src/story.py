@@ -5212,7 +5212,7 @@ This will close the tutorial and let you do your own thing.
                     return
 
         if quest_type == "meditate":
-            quest = src.quests.questMap["Meditate"](targetPositionBig=(6,5,0),targetPosition=(4,8,0))
+            quest = src.quests.questMap["Meditate"](targetPositionBig=(7,6,0),targetPosition=(3,3,0))
             self.addQuest(quest,character)
             return
 
@@ -5355,7 +5355,7 @@ This will close the tutorial and let you do your own thing.
             return
 
         if quest_type == "help":
-            character.showTextMenu("""\nyou can open the help menu by pressing "?"\n\nThis will show the keybindings and some general informaiton.\n\nDo this to complete this quest.\nInstructions are shown on the left side of the screen\n""",do_not_scale=True,allowHelp=True,tag="open help info")
+            character.showTextMenu("""\nyou can open the help menu by pressing "?"\n\nThis will show the keybindings and some general informaiton.\n\nDo this to complete this quest.\nInstructions are shown on the left side of the screen\nYou will need to wait for the cooldown to see them.\n""",do_not_scale=True,allowHelp=True,tag="open help info")
             self.has_shown_HelpMenu = True
             quest = src.quests.questMap["OpenHelpMenu"]()
             quest.free_command_module = free_command_module

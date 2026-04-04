@@ -4,14 +4,29 @@ import src
 class ReachOutStory(src.quests.MetaQuestSequence):
     type = "ReachOutStory"
 
-    def __init__(self, description="reach out to implant", creator=None):
+    def __init__(self, description="reach out to implant", creator=None, reason=None):
         questList = []
         super().__init__(creator=creator)
         self.metaDescription = description
         self.type = "ReachOutStory"
+        self.reason = reason
 
     def triggerCompletionCheck(self,character=None,dryRun=True):
         return False
+
+    def generateTextDescription(self):
+        '''
+        get a long text description to show on the UI
+        '''
+        reasonString = ""
+        if self.reason:
+            reasonString = ", to "+self.reason
+        text = [f"""
+Contact your implant for further advice.
+
+""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"default"),"""You can contact the implant by pressing tab after closing this menu."""),"""
+"""]
+        return text
 
     def handleQuestsOpened(self,extraInfo=None):
         return

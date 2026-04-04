@@ -4128,7 +4128,7 @@ Contact me by pressing tab once you are ready.
             return
 
         # reveal implant flaw
-        if not src.gamestate.gamestate.stern.get("revealed_implant_flaw") and src.gamestate.gamestate.tick > 1000:
+        if not src.gamestate.gamestate.stern.get("revealed_implant_flaw") and src.gamestate.gamestate.tick > 10000:
             recovering_ticks_remaining = src.gamestate.gamestate.stern.get("revealed_implant_flaw_recovering",5)
             if recovering_ticks_remaining:
                 recovering_ticks_remaining = recovering_ticks_remaining-1
@@ -4313,7 +4313,7 @@ Wait by pressing "." (period)""",(src.interaction.urwid.AttrSpec("#ff0","black")
 "." is a period "," is a comma
 """),]
 
-            if not self.has_shown_HelpMenu and src.gamestate.gamestate.tick > 25 and src.gamestate.gamestate.tick < 1000:
+            if not self.has_shown_HelpMenu and src.gamestate.gamestate.tick > 25:
                 name = "help"
                 description = self._add_cooldown_color("show me how play the game")
                 options.append((name, description))
@@ -4534,7 +4534,7 @@ Let's watch what the workers are doing for a bit.
 Wait for the implant to recover again""",]
             '''
 
-            if src.gamestate.gamestate.tick > 1000 and not shown_disable:
+            if src.gamestate.gamestate.tick > 10000 and not shown_disable:
                 if not src.gamestate.gamestate.stern.get("command_disabled"):
                     name = "disable command module"
                     options.append((name, "disable command submodule"))
@@ -5150,7 +5150,7 @@ This will close the tutorial and let you do your own thing.
         character.clear_quests()
 
         free_command_module = False
-        if src.gamestate.gamestate.tick > 1000 and not src.gamestate.gamestate.stern.get("command_disabled"):
+        if src.gamestate.gamestate.tick > 10000 and not src.gamestate.gamestate.stern.get("command_disabled"):
             if src.gamestate.gamestate.stern["last_implant_interaction"] <= src.gamestate.gamestate.tick - 100:
                 free_command_module = True
             else:

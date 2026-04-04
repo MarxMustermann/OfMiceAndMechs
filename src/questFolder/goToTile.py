@@ -158,17 +158,18 @@ You are on the target tile.
             direction = ""
             diffXBig = self.targetPosition[0] - self.character.getBigPosition()[0]
             if diffXBig < 0:
-                direction += f"and {-diffXBig} tiles to the west"
+                direction += f"and {-diffXBig} tiles to the west "
             if diffXBig > 0:
-                direction += f"and {diffXBig} tiles to the east"
+                direction += f"and {diffXBig} tiles to the east "
             diffYBig = self.targetPosition[1] - self.character.getBigPosition()[1]
             if diffYBig < 0:
-                direction += f"and {-diffYBig} tiles to the north"
+                direction += f"and {-diffYBig} tiles to the north "
             if diffYBig > 0:
-                direction += f"and {diffYBig} tiles to the south"
-            text += f"""
+                direction += f"and {diffYBig} tiles to the south "
+            if len(direction) > 5:
+                text += f"""
 
-The target tile is {direction[4:]}
+The target tile is {direction[4:-1]}.
 """
         if self.paranoid:
             text += "Be paranoid."

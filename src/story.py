@@ -4110,6 +4110,8 @@ Bump into the enemies to attack them.
 
         if not self.has_shown_reached_exit:
             self.has_shown_reached_exit = True
+            src.gamestate.gamestate.stern["has_shown_reached_exit"] = True
+            src.gamestate.gamestate.stern["last_implant_interaction"] = src.gamestate.gamestate.tick
 
             exit_text = """
 You made it to the facilities exit.

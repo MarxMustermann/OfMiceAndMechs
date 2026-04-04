@@ -5034,6 +5034,11 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                 items.extend(char.container.getItemByPosition(char.getPosition(offset=offset)))
 
             output = []
+            for other_character in char.getTerrain().getEnemiesOnTile(char):
+                if other_character == char:
+                    continue
+                output.append([other_character.render()," ",(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),[other_character.charType," ",str(other_character.getSpacePosition())," "])])
+
             for item in items:
                 output.append([ItemMeta(item,content=item.render())," ",(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),item.name)," ",(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),f"{item.getSmallPosition()}")," "])
             output_width = len(stringifyUrwid(output))
@@ -9002,7 +9007,7 @@ def advanceChar(char,render=True, pull_events = True, singleStep=False):
         elif char.autoExpandQuests2 and char.autoExpandCounter < 10 and char.getActiveQuest() and char.getActiveQuest().getSolvingCommandString(char) == "+":
             char.autoExpandCounter += 1
             char.runCommandString("+",nativeKey=True)
-        elif char.autoExpandQuests2 and char.autoExpandCounter < 10 and char.getActiveQuest() and char.getActiveQuest().type == "ReachOutStory" and char.getActiveQuest().getSolvingCommandString(char)[0][0] == "tab" and not src.gamestate.gamestate.stern.get("first_silenced"):
+        elif char.autoExpandQuests2 and char.autoExpandCounter < 10 and char.getActiveQuest() and char.getActiveQuest().type == "ReachOutStory" and char.getActiveQuest().getSolvingCommandString(char)[0][0] == "tab" and not src.gamestate.gamestate.stern.get("first_silenced") and not src.gamestate.gamestate.stern.get("has_shown_reached_exit"):
             char.autoExpandCounter += 1
             char.runCommandString("+",nativeKey=True)
         else:

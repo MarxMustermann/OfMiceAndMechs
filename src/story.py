@@ -1000,6 +1000,7 @@ class MainGame(BasicPhase):
         self.has_shown_congratz = False
         self.has_shown_get_weapon = False
         self.has_shown_leave = False
+        self.has_shown_reached_exit = False
         super().__init__("MainGame", seed=seed)
 
         src.gamestate.gamestate.stern["last_implant_interaction"] = -100
@@ -4043,8 +4044,89 @@ This memorial contains:
         if len(mainChar.quests) > 1 or (mainChar.quests and mainChar.quests[0].type != "ReachOutStory"):
             return
 
+        # flee initial room
+        if mainChar.container.tag == "the architects tomb":
+            quest = src.quests.questMap["EscapeLab"]()
+            self.addQuest(quest,mainChar)
+            return
+
+        # do initial sequence
+        if homeTerrain.getEnemiesOnTile(mainChar,(7,4,0)) or src.gamestate.gamestate.tick < 30:
+            text = []
+            if homeTerrain.getRoomByPosition((7,7,0)):
+                congratz_text = """
+You made it out of the burning room.
+Stop touching machinery you don't know how to use!
+
+The whole room will explode soon.
+You should wait for that to happen before we move on.
+
+You can wait by pressing "." (period / dot)
+"""
+                
+                if not self.has_shown_congratz:
+                    mainChar.showTextMenu(congratz_text+"\n\npress enter to continue\n")
+                    mainChar.takeTime(amount=1,reason="waiting for implant")
+                    self.has_shown_congratz = True
+                    return
+
+                text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),congratz_text))
+            elif homeTerrain.getEnemiesOnTile(mainChar,(7,4,0)):
+                leave_text = """
+We should leave.
+The facility is overrun with enemies so we may have to fight.
+
+Enemies are shown with red corners.
+Bump into the enemies to attack them.
+"""
+                if not self.has_shown_leave:
+                    mainChar.showTextMenu(leave_text+"\n\npress enter to continue\n")
+                    mainChar.takeTime(amount=1,reason="waiting for implant")
+                    self.has_shown_leave = True
+                    return
+
+                text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),leave_text))
+
+            if homeTerrain.getRoomByPosition((7,7,0)):
+                name = "explosion"
+                self.handle_player_intro_lab_quest_choice({"character":mainChar,"quest_type":name})
+                return
+
+            if mainChar.getBigPosition() == (7,6,0) and homeTerrain.getEnemiesOnTile(mainChar,(7,5,0)):
+                name = "clear first room"
+                self.handle_player_intro_lab_quest_choice({"character":mainChar,"quest_type":name})
+                return
+
+            if mainChar.health < 30 and not mainChar.getNearbyEnemies():
+                name = "meditate"
+                self.handle_player_intro_lab_quest_choice({"character":mainChar,"quest_type":name})
+                return
+
+            if self._get_path_to_clear_to_exit(mainChar) and not homeTerrain.getEnemiesOnTile(mainChar,(7,5,0)):
+                name = "clear next room on path to exit"
+                self.handle_player_intro_lab_quest_choice({"character":mainChar,"quest_type":name})
+                return
+
+
+        if not self.has_shown_reached_exit:
+            self.has_shown_reached_exit = True
+
+            exit_text = """
+You made it to the facilities exit.
+We can leave now, but you did not prepare well.
+We should make some preparations.
+
+
+I need to conserve energy.
+You need to decide what to do now.
+Contact me by pressing tab once you are ready.
+"""
+            mainChar.showTextMenu(exit_text+"\n\npress enter to continue\n")
+            mainChar.takeTime(amount=1,reason="waiting for implant")
+            return
+
         # reveal implant flaw
-        if not src.gamestate.gamestate.stern.get("revealed_implant_flaw") and src.gamestate.gamestate.tick > 200:
+        if not src.gamestate.gamestate.stern.get("revealed_implant_flaw") and src.gamestate.gamestate.tick > 1000:
             recovering_ticks_remaining = src.gamestate.gamestate.stern.get("revealed_implant_flaw_recovering",5)
             if recovering_ticks_remaining:
                 recovering_ticks_remaining = recovering_ticks_remaining-1
@@ -4078,7 +4160,7 @@ Tendrils of pain shoot through your implant and hurt your brain.
 
         '''
         # prevent implant
-        if src.gamestate.gamestate["last_implant_interaction"] > src.gamestate.gamestate.tick - 100 and src.gamestate.gamestate.tick > 200 and not src.gamestate.gamestate.stern.get("command_disabled"):
+        if src.gamestate.gamestate["last_implant_interaction"] > src.gamestate.gamestate.tick - 100 and src.gamestate.gamestate.tick > 1000 and not src.gamestate.gamestate.stern.get("command_disabled"):
             options = []
             extraDescriptions = {}
             text = [f"""
@@ -4129,12 +4211,6 @@ Give up on reaching out to the implant for now.
             self.addQuest(quest,mainChar)
             return
         
-        # flee initial room
-        if mainChar.container.tag == "the architects tomb":
-            quest = src.quests.questMap["EscapeLab"]()
-            self.addQuest(quest,mainChar)
-            return
-
         # do the initial lab sequence
         architects_pos = self.architectsLabPosition
         if len(architects_pos):
@@ -4201,12 +4277,6 @@ You made it to the facilities exit.
 We can leave now, but you did not prepare well.
 We should make some preparations.
 """
-                if not self.has_shown_get_weapon:
-                    mainChar.showTextMenu(weapon_text+"\n\npress enter to continue\n")
-                    mainChar.takeTime(amount=1,reason="waiting for implant")
-                    self.has_shown_get_weapon = True
-                    return
-
                 text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),weapon_text))
 
             text.append("""
@@ -4241,11 +4311,7 @@ Wait by pressing "." (period)""",(src.interaction.urwid.AttrSpec("#ff0","black")
 "." is a period "," is a comma
 """),]
 
-                self.handle_player_intro_lab_quest_choice({"character":mainChar,"quest_type":name})
-                return
-
-            '''
-            if not self.has_shown_HelpMenu and src.gamestate.gamestate.tick > 25 and src.gamestate.gamestate.tick < 200:
+            if not self.has_shown_HelpMenu and src.gamestate.gamestate.tick > 25 and src.gamestate.gamestate.tick < 1000:
                 name = "help"
                 description = self._add_cooldown_color("show me how play the game")
                 options.append((name, description))
@@ -4254,10 +4320,6 @@ This will show you how to access the help menu.
 The help menu will show you the keybindings.
 """
                 shown_help_option = True
-
-                self.handle_player_intro_lab_quest_choice({"character":mainChar,"quest_type":name})
-                return
-            '''
 
             if mainChar.getBigPosition() == (7,6,0) and terrain.getEnemiesOnTile(mainChar,(7,5,0)):
                 name = "clear first room"
@@ -4271,10 +4333,6 @@ Be aware: We will have to fight an enemy there.
 """)]
                 shown_observe_option = True
 
-                self.handle_player_intro_lab_quest_choice({"character":mainChar,"quest_type":name})
-                return
-
-            '''
             if not self.has_shown_observeMenu and src.gamestate.gamestate.tick > 25 and src.gamestate.gamestate.tick < 100:
                 name = "observe"
                 description = self._add_cooldown_color("observe environment")
@@ -4283,7 +4341,6 @@ Be aware: We will have to fight an enemy there.
 Look around to see if there are useful items around.
 """
                 shown_observe_option = True
-            '''
 
             if self._get_local_unread_memorialPlates(mainChar) and not mainChar.getBigPosition() == (7,5,0):
                 name = "read information plate"
@@ -4303,9 +4360,6 @@ We should read it to see if there is interesting information.
 You are hurt badly. Meditate to recover some health.
 """]
                 shown_meditate = True
-
-                self.handle_player_intro_lab_quest_choice({"character":mainChar,"quest_type":name})
-                return
 
             if mainChar.container.isRoom and mainChar.getFreeInventorySpace() and not mainChar.getNearbyEnemies() and mainChar.container.getItemsByType("Vial") and ((6,4,0),(9,9,0)) in src.gamestate.gamestate.stern.get("readMemorialPlates",[]):
                 name = "pick up Vial"
@@ -4344,9 +4398,6 @@ You are hurt badly. Meditate to recover some health.
 There are enemies on the path to the exit.
 Get rid of them.
 """
-
-                self.handle_player_intro_lab_quest_choice({"character":mainChar,"quest_type":name})
-                return
 
             if src.gamestate.gamestate.tick > 25:
                 if not terrain.getEnemiesOnTile(mainChar,(7,4,0)):
@@ -4474,14 +4525,14 @@ Let's watch what the workers are doing for a bit.
 """
 
             '''
-            if src.gamestate.gamestate.stern["last_implant_interaction"] > src.gamestate.gamestate.tick - 100 and src.gamestate.gamestate.tick > 200 and not src.gamestate.gamestate.stern.get("command_disabled"):
+            if src.gamestate.gamestate.stern["last_implant_interaction"] > src.gamestate.gamestate.tick - 100 and src.gamestate.gamestate.tick > 1000 and not src.gamestate.gamestate.stern.get("command_disabled"):
                 name = "wait implant"
                 options.append((name, "wait for the implant reset"))
                 extraDescriptions[name] = ["""
 Wait for the implant to recover again""",]
             '''
 
-            if src.gamestate.gamestate.tick > 200 and not shown_disable:
+            if src.gamestate.gamestate.tick > 1000 and not shown_disable:
                 if not src.gamestate.gamestate.stern.get("command_disabled"):
                     name = "disable command module"
                     options.append((name, "disable command submodule"))
@@ -5097,7 +5148,7 @@ This will close the tutorial and let you do your own thing.
         character.clear_quests()
 
         free_command_module = False
-        if src.gamestate.gamestate.tick > 200 and not src.gamestate.gamestate.stern.get("command_disabled"):
+        if src.gamestate.gamestate.tick > 1000 and not src.gamestate.gamestate.stern.get("command_disabled"):
             if src.gamestate.gamestate.stern["last_implant_interaction"] <= src.gamestate.gamestate.tick - 100:
                 free_command_module = True
             else:
@@ -5108,8 +5159,6 @@ This will close the tutorial and let you do your own thing.
             src.gamestate.gamestate.stern["last_implant_interaction"] = src.gamestate.gamestate.tick
 
         if quest_type == "clear first room":
-
-            character.showTextMenu("Fight enemies by bumping into them.\nSo if an enemy is to your north press w to attack.\n\npress enter to close menu",do_not_scale=True)
 
             quest = src.quests.questMap["SecureTile"](toSecure=(7,5,0),endWhenCleared=True,suicidal=True)
             self.addQuest(quest,character)
@@ -5140,7 +5189,9 @@ This will close the tutorial and let you do your own thing.
             return
 
         if quest_type == "read information plate":
-            memorialPlates = self._get_unread_memorialPlates(character)
+            memorialPlates = self._get_local_unread_memorialPlates(character)
+            if not memorialPlates:
+                memorialPlates = self._get_unread_memorialPlates(character)
             if memorialPlates:
                 memorialPlate = random.choice(memorialPlates)
                 quest = src.quests.questMap["ReadMemorialPlate"](targetPosition=memorialPlate.getPosition(),targetPositionBig=memorialPlate.getBigPosition())

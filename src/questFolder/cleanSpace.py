@@ -56,6 +56,8 @@ You can pick up items by pressing the k or K key.
         '''
         if not character:
             return False
+        if not self.targetPositionBig:
+            return False
         terrain = character.getTerrain()
         rooms = terrain.getRoomByPosition(self.targetPositionBig)
         if rooms:
@@ -69,7 +71,7 @@ You can pick up items by pressing the k or K key.
             if not items or ((not self.pickUpBolted) and items[0].bolted):
                 self.postHandler()
                 return True
-        return None
+        return False
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
         '''

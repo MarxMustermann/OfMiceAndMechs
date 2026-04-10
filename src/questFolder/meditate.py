@@ -5,7 +5,7 @@ class Meditate(src.quests.MetaQuestSequence):
     story quest pretending to try to contact a higher command
     '''
     type = "Meditate"
-    def __init__(self, description="meditate", creator=None, lifetime=None, targetPosition=None, targetPositionBig=None, reason=None):
+    def __init__(self, description="recover", creator=None, lifetime=None, targetPosition=None, targetPositionBig=None, reason=None):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
@@ -29,7 +29,8 @@ class Meditate(src.quests.MetaQuestSequence):
 
     def generateTextDescription(self):
         return [f"""
-Meditate on the Meditatioplate on {self.targetPosition} in room {self.targetPositionBig}
+Meditate on the MeditationPlate on {self.targetPosition} in room {self.targetPositionBig}
+This will recover you health up to 50 HP.
 
 Activate the MeditationPlate to meditate
 """]
@@ -59,6 +60,10 @@ Activate the MeditationPlate to meditate
     def triggerCompletionCheck(self,character=None, dryRun=True):
         if not character:
             return False
+        if character.health > 50:
+            if not dryRun:
+                self.postHandler()
+            return True
         return False
 
     def getQuestMarkersSmall(self,character,renderForTile=False):

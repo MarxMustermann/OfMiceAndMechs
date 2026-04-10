@@ -8,7 +8,7 @@ class SecureTile(src.quests.MetaQuestSequence):
 
     def __init__(self, description="secure tile", creator=None, toSecure=None, endWhenCleared=False, reputationReward=0,rewardText=None,strict=False,alwaysHuntDown=False,reason=None,story=None, wandering = False, lifetime=None, simpleAttacksOnly=False, noHeal=False, suicidal=False):
         questList = []
-        super().__init__(questList,creator=creator)
+        super().__init__(questList,creator=creator,lifetime=lifetime)
         self.metaDescription = description
         self.baseDescription = description
 
@@ -91,6 +91,8 @@ But you can use your environment to your advantage, too."""
 
 Use simple attacks only.
 """
+
+        text += f"\n\nlifetime: {self.lifetime}"
 
         return text
 

@@ -99,9 +99,14 @@ You can pick up items by pressing the k or K key.
             quest = src.quests.questMap["ClearInventory"](reason="be able to pick up more items",returnToTile=False,disallowLocations=[(self.targetPositionBig, self.targetPosition)])
             return ([quest],None)
 
-        if character.getBigPosition() != self.targetPositionBig:
+        if character.getBigPosition() != self.targetPositionBig and self.targetPositionBig[0] is not None:
             quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="get near the target tile")
             return ([quest], None)
+
+        if not self.targetPosition or self.targetPosition[0] is None:
+            if not dryRun:
+                self.fail("invalid target postion")
+            return (None,("+","abort quest"))
 
         if rooms:
             room = rooms[0]

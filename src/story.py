@@ -1816,6 +1816,19 @@ This memorial contains:
                 {
                        "coordinate": (6,4,0),
                        "roomType": "EmptyRoom",
+                       "doors": "6,0 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        for y in range(1,12):
+            maze_room_easy_path_3.addWalkingSpace((6,y,0))
+
+        maze_room_easy_path_4 = architect.doAddRoom(
+                {
+                       "coordinate": (6,3,0),
+                       "roomType": "EmptyRoom",
                        "doors": "12,6 6,12",
                        "offset": [1,1],
                        "size": [13, 13],
@@ -1823,16 +1836,16 @@ This memorial contains:
                 None,
            )
         for y in range(7,12):
-            maze_room_easy_path_3.addWalkingSpace((6,y,0))
+            maze_room_easy_path_4.addWalkingSpace((6,y,0))
         for x in range(6,12):
-            maze_room_easy_path_3.addWalkingSpace((x,6,0))
+            maze_room_easy_path_4.addWalkingSpace((x,6,0))
         for pos in [(5,6,0),(4,6,0),(4,5,0),(4,4,4),(5,4,0),(6,4,0),(6,5,0),]:
-            maze_room_easy_path_3.addWalkingSpace(pos)
+            maze_room_easy_path_4.addWalkingSpace(pos)
         for pos in [(7,9,0),(8,9,0),(9,9,0),(9,8,0),(9,7,0),]:
-            maze_room_easy_path_3.addWalkingSpace(pos)
+            maze_room_easy_path_4.addWalkingSpace(pos)
         item = src.items.itemMap["Vial"]()
         item.uses = 1
-        maze_room_easy_path_3.addItem(item,(4,4,0))
+        maze_room_easy_path_4.addItem(item,(4,4,0))
         item = src.items.itemMap["MemorialPlate"](inscription=["""
 """,(src.interaction.urwid.AttrSpec("#ff0","black"),'''"Goo is life"'''),"""
 
@@ -1844,22 +1857,118 @@ Clones can drink from those to heal.
 This memorial contains:
 * 1 Vial
 """),])
-        maze_room_easy_path_3.addItem(item,(9,9,0))
+        maze_room_easy_path_4.addItem(item,(9,9,0))
 
         maze_room_exit = architect.doAddRoom(
                 {
+                       "coordinate": (7,3,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "12,6 0,6 6,0 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        for y in range(1,12):
+            maze_room_exit.addWalkingSpace((6,y,0))
+        for x in range(1,12):
+            maze_room_exit.addWalkingSpace((x,6,0))
+
+        item = src.items.itemMap["Scrap"](amount=2)
+        maze_room_exit.addItem(item,(7,6,0))
+        item = src.items.itemMap["Scrap"](amount=2)
+        maze_room_exit.addItem(item,(9,6,0))
+ 
+        npc_room = architect.doAddRoom(
+                {
                        "coordinate": (7,4,0),
                        "roomType": "EmptyRoom",
-                       "doors": "12,6 0,6 6,0",
+                       "doors": "6,0",
                        "offset": [1,1],
                        "size": [13, 13],
                 },
                 None,
            )
         for y in range(1,6):
-            maze_room_exit.addWalkingSpace((6,y,0))
-        for x in range(1,12):
-            maze_room_exit.addWalkingSpace((x,6,0))
+            npc_room.addWalkingSpace((6,y,0))
+        for pos in [(5,5,0),(6,5,0),(7,5,0),(7,6,0),(7,7,0),(6,7,0),(5,7,0),(5,6,0),]:
+            npc_room.addWalkingSpace(pos)
+
+        main_npc = src.characters.characterMap["Clone"]()
+        main_npc.questsDone = [
+                "NaiveMoveQuest",
+                "MoveQuestMeta",
+                "NaiveActivateQuest",
+                "ActivateQuestMeta",
+                "NaivePickupQuest",
+                "PickupQuestMeta",
+                "DrinkQuest",
+                "CollectQuestMeta",
+                "FireFurnaceMeta",
+                "ExamineQuest",
+                "NaiveDropQuest",
+                "DropQuestMeta",
+                "LeaveRoomQuest",
+            ]
+        main_npc.solvers = [
+                "SurviveQuest",
+                "Serve",
+                "NaiveMoveQuest",
+                "MoveQuestMeta",
+                "NaiveActivateQuest",
+                "ActivateQuestMeta",
+                "NaivePickupQuest",
+                "PickupQuestMeta",
+                "DrinkQuest",
+                "ExamineQuest",
+                "FireFurnaceMeta",
+                "CollectQuestMeta",
+                "WaitQuest" "NaiveDropQuest",
+                "NaiveDropQuest",
+                "DropQuestMeta",
+            ]
+
+        main_npc.flask = src.items.itemMap["GooFlask"]()
+        main_npc.flask.uses = 100
+        main_npc.faction = faction
+
+        main_npc.duties = []
+        main_npc.registers["HOMEx"] = 7
+        main_npc.registers["HOMEy"] = 5
+        main_npc.registers["HOMETx"] = currentTerrain.xPosition
+        main_npc.registers["HOMETy"] = currentTerrain.yPosition
+
+        main_npc.personality["autoFlee"] = False
+        main_npc.personality["abortMacrosOnAttack"] = False
+        main_npc.personality["autoCounterAttack"] = False
+
+        quest = src.quests.questMap["BeUsefull"](strict=True)
+        quest.autoSolve = True
+        quest.assignToCharacter(main_npc)
+        quest.activate()
+        main_npc.assignQuest(quest,active=True)
+        main_npc.foodPerRound = 1
+        main_npc.duties.append("resource gathering")
+        main_npc.duties.append("scrap hammering")
+        main_npc.duties.append("resource fetching")
+        main_npc.duties.append("hauling")
+        main_npc.duties.append("metal working")
+        main_npc.duties.append("machine placing")
+        main_npc.duties.append("maggot gathering")
+        main_npc.duties.append("painting")
+        main_npc.duties.append("cleaning")
+        main_npc.duties.append("machine operation")
+        main_npc.duties.append("manufacturing")
+        main_npc.duties.append("praying")
+        main_npc.dutyPriorities["cleaning"] = 10
+        main_npc.dutyPriorities["machine operation"] = 2
+        main_npc.dutyPriorities["hauling"] = 3
+        main_npc.dutyPriorities["manufacturing"] = 4
+
+        item = src.items.itemMap["StasisTank"]()
+        item.character = main_npc
+        npc_room.addItem(item,(6,6,0))
+
 
         item = src.items.itemMap["Scrap"](amount=2)
         maze_room_exit.addItem(item,(7,6,0))
@@ -1881,10 +1990,23 @@ This memorial contains:
         for y in range(1,6):
             maze_room_hard_path_1.addWalkingSpace((6,y,0))
 
+        maze_room_hard_path_2 = architect.doAddRoom(
+                {
+                       "coordinate": (8,4,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,0 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        for y in range(1,12):
+            maze_room_hard_path_2.addWalkingSpace((6,y,0))
+
         # add teleport room
         craftingRoom = architect.doAddRoom(
                 {
-                       "coordinate": (8,4,0),
+                       "coordinate": (8,3,0),
                        "roomType": "EmptyRoom",
                        "doors": "6,12 0,6",
                        "offset": [1,1],
@@ -1944,82 +2066,6 @@ This memorial contains:
 
         scrap = src.items.itemMap["Scrap"](amount=2)
         craftingRoom.addItem(scrap,(1,10,0))
-
-        main_npc = src.characters.characterMap["Clone"]()
-        main_npc.questsDone = [
-                "NaiveMoveQuest",
-                "MoveQuestMeta",
-                "NaiveActivateQuest",
-                "ActivateQuestMeta",
-                "NaivePickupQuest",
-                "PickupQuestMeta",
-                "DrinkQuest",
-                "CollectQuestMeta",
-                "FireFurnaceMeta",
-                "ExamineQuest",
-                "NaiveDropQuest",
-                "DropQuestMeta",
-                "LeaveRoomQuest",
-            ]
-
-        main_npc.solvers = [
-                "SurviveQuest",
-                "Serve",
-                "NaiveMoveQuest",
-                "MoveQuestMeta",
-                "NaiveActivateQuest",
-                "ActivateQuestMeta",
-                "NaivePickupQuest",
-                "PickupQuestMeta",
-                "DrinkQuest",
-                "ExamineQuest",
-                "FireFurnaceMeta",
-                "CollectQuestMeta",
-                "WaitQuest" "NaiveDropQuest",
-                "NaiveDropQuest",
-                "DropQuestMeta",
-            ]
-
-        main_npc.flask = src.items.itemMap["GooFlask"]()
-        main_npc.flask.uses = 100
-        main_npc.faction = faction
-
-        main_npc.duties = []
-        main_npc.registers["HOMEx"] = 7
-        main_npc.registers["HOMEy"] = 5
-        main_npc.registers["HOMETx"] = currentTerrain.xPosition
-        main_npc.registers["HOMETy"] = currentTerrain.yPosition
-
-        main_npc.personality["autoFlee"] = False
-        main_npc.personality["abortMacrosOnAttack"] = False
-        main_npc.personality["autoCounterAttack"] = False
-
-        quest = src.quests.questMap["BeUsefull"](strict=True)
-        quest.autoSolve = True
-        quest.assignToCharacter(main_npc)
-        quest.activate()
-        main_npc.assignQuest(quest,active=True)
-        main_npc.foodPerRound = 1
-        main_npc.duties.append("resource gathering")
-        main_npc.duties.append("scrap hammering")
-        main_npc.duties.append("resource fetching")
-        main_npc.duties.append("hauling")
-        main_npc.duties.append("metal working")
-        main_npc.duties.append("machine placing")
-        main_npc.duties.append("maggot gathering")
-        main_npc.duties.append("painting")
-        main_npc.duties.append("cleaning")
-        main_npc.duties.append("machine operation")
-        main_npc.duties.append("manufacturing")
-        main_npc.duties.append("praying")
-        main_npc.dutyPriorities["cleaning"] = 10
-        main_npc.dutyPriorities["machine operation"] = 2
-        main_npc.dutyPriorities["hauling"] = 3
-        main_npc.dutyPriorities["manufacturing"] = 4
-
-        item = src.items.itemMap["StasisTank"]()
-        item.character = main_npc
-        craftingRoom.addItem(item,(6,3,0))
 
         rooms_to_decorate = []
 
@@ -4051,7 +4097,7 @@ This memorial contains:
             return
 
         # do initial sequence
-        if homeTerrain.getEnemiesOnTile(mainChar,(7,4,0)) or src.gamestate.gamestate.tick < 30:
+        if homeTerrain.getEnemiesOnTile(mainChar,(7,3,0)) or src.gamestate.gamestate.tick < 30:
             text = []
             if homeTerrain.getRoomByPosition((7,7,0)):
                 congratz_text = """
@@ -4071,7 +4117,7 @@ You can wait by pressing "." (period / dot)
                     return
 
                 text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),congratz_text))
-            elif homeTerrain.getEnemiesOnTile(mainChar,(7,4,0)):
+            elif homeTerrain.getEnemiesOnTile(mainChar,(7,3,0)):
                 leave_text = """
 We should leave.
 The facility is overrun with enemies so we may have to fight.
@@ -4495,7 +4541,7 @@ We probably can't return, though.
 
                 if not shown_read_plate and self._get_unread_memorialPlates(mainChar):
                     name = "read information plate"
-                    description = self._add_cooldown_color("read information plate")
+                    description = self._add_cooldown_color((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"read information plate"))
                     options.append((name, description))
                     extraDescriptions[name] = """
 The rooms have plates with information on them.
@@ -5412,7 +5458,7 @@ This will close the tutorial and let you do your own thing.
     def _get_path_to_clear_to_exit(self, character):
         terrain = character.getTerrain()
 
-        candidates = [(7,5,0),(6,5,0),(6,4,0),(7,4,0),]
+        candidates = [(7,5,0),(6,5,0),(6,4,0),(6,3,0),(7,3,0),]
         result = []
         for candidate in candidates:
             if not terrain.getEnemiesOnTile(character,candidate):

@@ -58,6 +58,8 @@ You can pick up items by pressing the k or K key.
             return False
         if not self.targetPositionBig:
             return False
+        if self.targetPositionBig[0] is None:
+            return False
         terrain = character.getTerrain()
         rooms = terrain.getRoomByPosition(self.targetPositionBig)
         if rooms:

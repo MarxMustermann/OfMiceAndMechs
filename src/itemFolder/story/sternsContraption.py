@@ -311,7 +311,7 @@ class MainContraption(src.items.Item):
                         room.addCharacter(crawler,pos[0],pos[1])
 
                 # fill initial maze rooms
-                for room_pos in ((7,5,0),(6,5,0),(6,4,0),(7,4,0),):
+                for room_pos in ((7,5,0),(6,5,0),(6,3,0),(7,3,0),):
                     room = self.getTerrain().getRoomByPosition(room_pos)[0]
 
                     # add enemies
@@ -328,7 +328,7 @@ class MainContraption(src.items.Item):
                         room.addCharacter(crawler,pos[0],pos[1])
 
                 # set up crafting room enemy
-                room = self.getTerrain().getRoomByPosition((8,4,0))[0]
+                room = self.getTerrain().getRoomByPosition((8,3,0))[0]
                 crawler = src.characters.characterMap["Mechanical_Crawler"]()
 
                 quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
@@ -341,7 +341,7 @@ class MainContraption(src.items.Item):
                 room.addCharacter(crawler,pos[0],pos[1])
 
                 # set up crafting room enemy
-                room = self.getTerrain().getRoomByPosition((8,4,0))[0]
+                room = self.getTerrain().getRoomByPosition((8,3,0))[0]
 
                 self.container.destroy()
                 return

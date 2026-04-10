@@ -3443,14 +3443,7 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
     # repeat autoadvance keystrokes
     # bad code: keystrokes are abused here, a timer would be more appropriate
     if key in (commandChars.autoAdvance,):
-        if char.disableCommandsOnPlus:
-            return
-        if not charState["ignoreNextAutomated"]:
-            char.runCommandString(commandChars.autoAdvance)
-            char.runCommandString(commandChars.advance)
-            return
-        else:
-            charState["ignoreNextAutomated"] = False
+        char.autoAdvance = True
 
     if key in (commandChars.advance, commandChars.autoAdvance):
         char.showThinking = True

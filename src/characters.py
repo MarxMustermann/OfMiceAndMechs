@@ -105,6 +105,7 @@ class Character:
         self.foodPerRound = 0
 
         self.level = None
+        self.specialDisplay = None
 
         super().__init__()
 
@@ -813,6 +814,7 @@ class Character:
         returns:
             the command to run
         '''
+
         foundEnemy = None
         commands = []
         command = None
@@ -843,7 +845,9 @@ class Character:
                     return "~"
 
             if self.waitForEnemyApproach <= 0:
+                self.waitForEnemyApproach = 0
                 self.hasOwnAction = 0
+                return "~"
             for enemy in self.getNearbyEnemies():
                 if self.getDistance(enemy.getPosition()) < 3:
                     self.waitForEnemyApproach -= 0.1

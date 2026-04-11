@@ -2015,10 +2015,10 @@ This memorial contains:
                 None,
            )
         craftingRoom.tag = "crafting room"
-        item = src.items.itemMap["SwordSharpener"]()
-        craftingRoom.addItem(item,(3,9,0))
-        item = src.items.itemMap["ArmorReinforcer"]()
-        craftingRoom.addItem(item,(9,9,0))
+        #item = src.items.itemMap["SwordSharpener"]()
+        #craftingRoom.addItem(item,(3,9,0))
+        #item = src.items.itemMap["ArmorReinforcer"]()
+        #craftingRoom.addItem(item,(9,9,0))
         for y in (11,10,9,8,7,6,5,4):
             craftingRoom.addWalkingSpace((6,y,0))
         for x in (2,3,4,5,7,8,9,10,):
@@ -2034,11 +2034,11 @@ This memorial contains:
         item.numUsed = 1000
         item.onlyProduceOne = True
         craftingRoom.addItem(item,(8,7,0))
-        item.configureItem({"type":"Sheet","character":None})
-        item = src.items.itemMap["ManufacturingTable"]()
-        item.numUsed = 1000
-        item.onlyProduceOne = True
-        craftingRoom.addItem(item,(4,7,0))
+        #item.configureItem({"type":"Sheet","character":None})
+        #item = src.items.itemMap["ManufacturingTable"]()
+        #item.numUsed = 1000
+        #item.onlyProduceOne = True
+        #craftingRoom.addItem(item,(4,7,0))
         item.configureItem({"type":"Rod","character":None})
         for y in (11,10,9,8,7,5,4,3,2,1):
             craftingRoom.addStorageSlot((1,y,0),None)
@@ -4495,7 +4495,7 @@ Let's watch what he is doing for a bit.
                     description = self._add_cooldown_color("wake worker")
                     options.append((name, description))
                     extraDescriptions[name] = """
-There is a filled stasis Tank in the crafting area.
+There is a filled stasis Tank in a nearby memorial.
 Maybe we can wake the worker inside it.
 """
                 if not shown_worker_wake and self.get_wakeable_workers(mainChar):
@@ -5322,10 +5322,24 @@ This will close the tutorial and let you do your own thing.
             return
 
         if quest_type == "teleport":
-            quest = src.quests.questMap["StoryTeleport"]()
-            quest.free_command_module = free_command_module
+            options = [("yes", "yes"), ("no", "no"),]
+            submenu = src.menuFolder.selectionMenu.SelectionMenu(
+                """
+There is no guarantee that you will be able to return after using this teleporter.
+Are you sure you want to leave?
+""", options,
+            )
+            submenu.do_not_scale = True
+            character.macroState["submenue"] = submenu
+            character.macroState["submenue"].followUp = {
+                "container": self,
+                "method": "runTeleport",
+                "params": {"character":character}
+            }
+
+            quest = src.quests.questMap["Decide"]()
+            quest.endTrigger = {"container": self, "method": "reachImplant"}
             self.addQuest(quest,character)
-            self.clear_implant_quest(character)
             return
 
         if quest_type == "explosion":
@@ -5421,6 +5435,15 @@ This will close the tutorial and let you do your own thing.
             return
 
         src.interaction.send_tracking_ping("handle_player_intro_lab_quest_choice_fell_through")
+
+    def runTeleport(self, extraInfo):
+        character = extraInfo["character"]
+        selection = extraInfo["selection"]
+
+        if selection == "yes":
+            quest = src.quests.questMap["StoryTeleport"]()
+            self.addQuest(quest,character)
+            self.clear_implant_quest(character)
 
     def get_rooms_to_explore_towards_teleporter(self, character):
         terrain = character.getTerrain()

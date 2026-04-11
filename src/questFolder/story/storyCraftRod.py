@@ -101,8 +101,8 @@ Craft a Rod by:
 
 * securing the crafting room
 * collecting Scrap
-* putting the Scrap next to a scrap compactor
-* producing a Metal by with the scrap compactor
+* putting the Scrap next to a ScrapCompactor
+* producing a MetalBar by with the ScrapCompactor
 * place the MetalBars at the ManufacturingTable for Rod
 * produce the Rod
 * equip the Rod

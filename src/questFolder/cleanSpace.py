@@ -18,6 +18,14 @@ class CleanSpace(src.quests.MetaQuestSequence):
     type = "CleanSpace"
 
     def __init__(self, description="clean space", creator=None, targetPositionBig=None, targetPosition=None, reason=None, abortOnfullInventory=True,pickUpBolted=False,tryHard=False):
+        if targetPosition[0] is None:
+            raise ValueError(f"invalid target position")
+        if targetPosition:
+            if targetPosition[0] < 1 or targetPosition[0] > 13:
+                raise ValueError(f"target position {targetPosition} out of range")
+            if targetPosition[1] < 1 or targetPosition[1] > 13:
+                raise ValueError(f"target position {targetPosition} out of range")
+
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description+" "+str(targetPosition)

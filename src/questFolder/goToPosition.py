@@ -108,7 +108,10 @@ This quest ends after you do this.{extraText}"""
                 pos = (pos[0]+step[0],pos[1]+step[1])
                 result.append((pos,"path"))
 
-        result.append(((self.targetPosition[0]+character.getBigPosition()[0]*15,self.targetPosition[1]%15+character.getBigPosition()[1]*15),"target"))
+        if not character.container.isRoom:
+            result.append(((self.targetPosition[0]+character.getBigPosition()[0]*15,self.targetPosition[1]%15+character.getBigPosition()[1]*15),"target"))
+        else:
+            result.append((self.targetPosition,"target"))
         return result
 
     def handleMoved(self, extraInfo):
@@ -295,9 +298,7 @@ This quest ends after you do this.{extraText}"""
             self.generatePath(character,dryRun=dryRun)
             if not self.path:
                 if self.clearPath:
-                    print(self.targetPosition)
                     quest = src.quests.questMap["ClearPathToPosition"](targetPosition=self.targetPosition)
-                    print(quest)
                     return ([quest],None)
                 return self._solver_trigger_fail(dryRun,"moving failed - no path found (solver)")
 

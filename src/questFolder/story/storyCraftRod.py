@@ -106,6 +106,9 @@ Craft a Rod by:
 * place the MetalBars at the ManufacturingTable for Rod
 * produce the Rod
 * equip the Rod
+
+As this quest has multiple sub steps, it will split into subquests.
+press d to see the subquest descriptions and press a to return to the parent quest.
 """]
 
     def handleEquiped(self, extraParameter):

@@ -32,6 +32,8 @@ class QuestMenu(src.subMenu.SubMenu):
         '''
         baseList = self.char.quests
         self.questCursor = []
+        self.questCursor.append(0)
+        return
         while len(baseList):
             quest = baseList[0]
             try:
@@ -78,7 +80,7 @@ class QuestMenu(src.subMenu.SubMenu):
         # add interaction instructions
         if not self.char.quests or self.char.quests[0].type != "EscapeLab":
             if not self.sidebared:
-                text.extend(
+                text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"#000"),
                     [
                         "\n",
                         "* press esc to close this menu\n",
@@ -87,11 +89,11 @@ class QuestMenu(src.subMenu.SubMenu):
                         "* press x to delete selected quest\n",
                         "* press X to delete sub quests\n",
                         "* press r to generate sub quests\n",
-                    "* press R to regenerate sub quests\n",
-                    "* press k to check if that quest has been completed\n",
-                    "* press K to mark the selected quest for auto completion\n",
+                        "* press R to regenerate sub quests\n",
+                        "* press k to check if that quest has been completed\n",
+                        "* press K to mark the selected quest for auto completion\n",
                     ]
-                )
+                ))
 
         # flatten the mix of strings and urwid format so that it is less recursive to workaround an urwid bug
         # bad code: should be elsewhere

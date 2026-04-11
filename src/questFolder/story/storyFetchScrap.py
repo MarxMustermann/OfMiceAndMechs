@@ -34,8 +34,15 @@ class StoryFetchScrap(src.quests.MetaQuestSequence):
         return ([quest],None)
 
     def generateTextDescription(self):
+        scrap1_item = src.items.itemMap["Scrap"](amount=1)
+        scrap1 = src.interaction.ItemMeta(scrap1_item,scrap1_item.render())
+        scrap2_item = src.items.itemMap["Scrap"](amount=6)
+        scrap2 = src.interaction.ItemMeta(scrap2_item,scrap2_item.render())
+        scrap3_item = src.items.itemMap["Scrap"](amount=20)
+        scrap3 = src.interaction.ItemMeta(scrap3_item,scrap3_item.render())
+
         return ["""
-Find Scrap. 
+Find Scrap. Scrap looks like this: """,scrap1," or ",scrap2," or ",scrap3,"""
 
 If you don't find Scrap in the room, collect some from the exploded room.
 """]

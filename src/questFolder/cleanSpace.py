@@ -195,6 +195,10 @@ You can pick up items by pressing the k or K key.
             if not renderForTile:
                 return []
 
+        targetPositionBig = self.targetPositionBig
+        if not targetPositionBig:
+            targetPositionBig = character.getBigPosition()
+
         result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
         if renderForTile:
             if character.getTerrain().getRoomByPosition(self.targetPositionBig):

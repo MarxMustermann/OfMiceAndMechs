@@ -1050,6 +1050,7 @@ class Room:
                 display = item.render()
                 #chars[item.yPosition][item.xPosition] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": (item.xPosition,item.yPosition,0)}},content=display)
                 if item.yPosition == None:
+                    self.itemsOnFloor.remove(item)
                     logger.error("drawing non positioned item")
                     continue
                 try:

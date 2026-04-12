@@ -69,59 +69,20 @@ Use a CityPlaner to do this.
                 if command:
                     return (None,(command,"schedule building a room"))
 
-            # close unkown menus
-            if submenue.tag not in ("advancedInteractionSelection",):
-                return (None,(["esc"],"close menu"))
+        if not character.getTerrain() == character.getHomeTerrain():
+            quest = src.quests.questMap["GoHome"](reason="get back to base")
+            return  ([quest],None)
 
-        # activate production item when marked
-        action = self.generate_confirm_interaction_command(allowedItems=["CityPlaner"])
-        if action:
-            return action
+        terrain = character.getTerrain()
+        for room in terrain.rooms:
+            items = room.getItemsByType("CityPlaner",needsBolted=True)
+            if not items:
+                continue
+            item = items[0]
+            quest = src.quests.questMap["ActivateItem"](targetPosition=item.getPosition(),targetPositionBig=item.getBigPosition(),reason="get promoted")
+            return ([quest],None)
 
-        # enter room
-        if not character.container.isRoom:
-            if character.getTerrain().getRoomByPosition(character.getBigPosition()):
-                quest = src.quests.questMap["EnterRoom"]()
-                return ([quest],None)
-            else:
-                quest = src.quests.questMap["GoHome"]()
-                return ([quest],None)
-
-        # go to room with city planer
-        cityPlaner = character.container.getItemByType("CityPlaner")
-        if not cityPlaner:
-            for room in character.getTerrain().rooms:
-                if not room.getItemByType("CityPlaner"):
-                    continue
-                quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),description="go to command centre",reason="go to command centre")
-                return ([quest],None)
-
-            return self._solver_trigger_fail(dryRun,"no planer")
-
-        # start using the city planer
-        command = None
-        if character.getPosition(offset=(1,0,0)) == cityPlaner.getPosition():
-            command = "d"
-        if character.getPosition(offset=(-1,0,0)) == cityPlaner.getPosition():
-            command = "a"
-        if character.getPosition(offset=(0,1,0)) == cityPlaner.getPosition():
-            command = "s"
-        if character.getPosition(offset=(0,-1,0)) == cityPlaner.getPosition():
-            command = "w"
-        if character.getPosition(offset=(0,0,0)) == cityPlaner.getPosition():
-            command = "."
-        if command:
-            interactionCommand = "J"
-            if submenue:
-                if submenue.tag == "advancedInteractionSelection":
-                    interactionCommand = ""
-                else:
-                    return (None,(["esc"],"close menu"))
-            return (None,(interactionCommand+command,"activate the CityPlaner"))
-
-        # go to the city planer
-        quest = src.quests.questMap["GoToPosition"](targetPosition=cityPlaner.getPosition(), description="go to CityPlaner",ignoreEndBlocked=True, reason="go to the CityPlaner")
-        return ([quest],None)
+        return self._solver_trigger_fail(dryRun,"no CityPlaner found")
 
     def triggerCompletionCheck(self,character=None,dryRun=True):
         '''

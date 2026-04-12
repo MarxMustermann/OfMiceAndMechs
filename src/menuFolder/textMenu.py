@@ -47,6 +47,10 @@ class TextMenu(src.subMenu.SubMenu):
             self.done = True
             return True
 
+        if key == ".":
+            character.takeTime(amount=1,reason="waiting")
+            return False
+
         if key in self.specialKeys:
             self.callIndirect(self.specialKeys[key])
             return True

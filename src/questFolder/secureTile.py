@@ -93,7 +93,7 @@ Use simple attacks only.
 """
 
         if self.lifetime:
-            text += f"\n\nlifetime: {self.lifetime}"
+            text += f"\n\nremaining lifetime: {self.getRemainingLifetime()}"
 
         if self.subQuests:
             text += f"\n\npress d to see the subquest descriptions and press a to return to the parent quest."

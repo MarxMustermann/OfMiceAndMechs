@@ -216,7 +216,11 @@ class GameState:
         # load the actual gamefile
         import pickle
         with open(f"gamestate/gamestate_{savestateId}", 'rb') as file:
-            newSelf = pickle.loads(zlib.decompress(file.read()))
+            try:
+                newSelf = pickle.loads(zlib.decompress(file.read()))
+            except:
+                with open(f"gamestate/gamestate_{savestateId}_backup", 'rb') as file:
+                    newSelf = pickle.loads(zlib.decompress(file.read()))
 
         return newSelf
 

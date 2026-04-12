@@ -566,6 +566,9 @@ class Quest:
     def timeOut(self):
         self.fail()
 
+    def getRemainingLifetime(self):
+        return (self.startTick + self.lifetime) - src.gamestate.gamestate.tick
+
     """
     switch from just existing to active
     """
@@ -586,7 +589,7 @@ class Quest:
 
         # add automatic termination
         if self.lifetime and not self.lifetimeEvent:
-            if self.startTick + self.lifetime < src.gamestate.gamestate.tick:
+            if self.getRemainingLifetime() < 1:
                 self.timeOut()
                 return
             self.lifetimeEvent = src.events.EndQuestEvent(

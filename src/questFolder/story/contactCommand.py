@@ -22,19 +22,9 @@ class ContactCommand(src.quests.MetaQuestSequence):
         if not character:
             return (None,None)
 
-        if not character.container.isRoom:
-            if character.xPosition%15 == 0:
-                return (None,("d","enter room"))
-            if character.xPosition%15 == 14:
-                return (None,("a","enter room"))
-            if character.yPosition%15 == 0:
-                return (None,("s","enter room"))
-            if character.yPosition%15 == 14:
-                return (None,("w","enter room"))
-
         submenue = character.macroState.get("submenue")
         if submenue and not ignoreCommands:
-            if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu):
+            if submenue.tag == "communicatorActicitySelection":
                 foundOption = False
                 rewardIndex = 0
                 if rewardIndex == 0:
@@ -60,38 +50,16 @@ class ContactCommand(src.quests.MetaQuestSequence):
             
             return (None,(["esc"],"close the menu"))
 
-        # activate correct item when marked
-        action = self.generate_confirm_interaction_command(allowedItems=("Communicator",))
-        if action:
-            return action
-
-        if not character.getBigPosition() == (7,7,0):
-            quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),reason="reach the communicator",description="go to command centre")
+        terrain = character.getTerrain()
+        for room in terrain.rooms:
+            items = room.getItemsByType("Communicator")
+            if not items:
+                continue
+            item = items[0]
+            quest = src.quests.questMap["ActivateItem"](targetPosition=item.getPosition(),targetPositionBig=item.getBigPosition(),reason="start communicating")
             return ([quest],None)
 
-        if not character.container.isRoom:
-            return (None,(".","stand around confused"))
-
-        communicator = character.container.getItemByType("Communicator")
-        if not communicator:
-            return self._solver_trigger_fail(dryRun,"no communicator found")
-
-        itemPos = communicator.getPosition()
-        if character.getDistance(itemPos) > 1:
-            quest = src.quests.questMap["GoToPosition"](targetPosition=communicator.getPosition(),reason="to be able to use the communicator",description="go to communicator",ignoreEndBlocked=True)
-            return ([quest],None)
-
-        direction = ""
-        if character.getPosition(offset=(1,0,0)) == itemPos:
-            direction = "d"
-        if character.getPosition(offset=(-1,0,0)) == itemPos:
-            direction = "a"
-        if character.getPosition(offset=(0,1,0)) == itemPos:
-            direction = "s"
-        if character.getPosition(offset=(0,-1,0)) == itemPos:
-            direction = "w"
-
-        return (None,(direction+"j","activate communicator"))
+        return self._solver_trigger_fail(dryRun,"no communicator found")
 
     def generateTextDescription(self):
         return ["""

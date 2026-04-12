@@ -219,34 +219,12 @@ class SpawnClone(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["FetchItems"](toCollect="GooFlask",amount=1,reason="be able to spawn a clone")
             return ([quest],None)
 
-        itemPos = growthTank.getPosition()
-        if character.getDistance(itemPos) > 1:
-            quest = src.quests.questMap["GoToPosition"](targetPosition=growthTank.getPosition(),reason="be able to use the growth tank",description="go to growth tank",ignoreEndBlocked=True)
-            return ([quest],None)
-
-        if character.macroState.get("itemMarkedLast"):
-            if character.macroState["itemMarkedLast"].type == "GrowthTank":
-                if character.macroState["itemMarkedLast"].filled:
-                    return (None,("j","spawn clone"))
-                else:
-                    return (None,("j","refill growth tank"))
-            else:
-                return (None,(".","undo selection"))
-
-        direction = ""
-        if character.getPosition(offset=(1,0,0)) == itemPos:
-            direction = "d"
-        if character.getPosition(offset=(-1,0,0)) == itemPos:
-            direction = "a"
-        if character.getPosition(offset=(0,1,0)) == itemPos:
-            direction = "s"
-        if character.getPosition(offset=(0,-1,0)) == itemPos:
-            direction = "w"
-
+        reason = "refill growth tank"
         if growthTank.filled:
-            return (None,(direction+"j","spawn clone"))
+            reason = "spawn clone"
+        quest = src.quests.questMap["ActivateItem"](targetPosition=growthTank.getPosition(),targetPositionBig=growthTank.getBigPosition(),reason=reason)
+        return ([quest],None)
 
-        return (None,(direction+"j","refill growth tank"))
 
     def generateTextDescription(self):
         '''

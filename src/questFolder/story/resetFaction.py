@@ -17,50 +17,28 @@ class ResetFaction(src.quests.MetaQuestSequence):
         if not character:
             return (None,None)
 
-        if not character.container.isRoom:
-            pos = character.getSpacePosition()
-            if pos == (14,7,0):
-                return (None,("a","enter room"))
-            if pos == (0,7,0):
-                return (None,("d","enter room"))
-            if pos == (7,14,0):
-                return (None,("w","enter room"))
-            if pos == (7,0,0):
-                return (None,("s","enter room"))
-
-        if character.macroState.get("itemMarkedLast"):
-            if character.macroState["itemMarkedLast"].type == "FactionSetter":
-                return (None,("j","reset faction"))
-            else:
-                return (None,(".","undo selection"))
-
         if not character.getBigPosition() == (7,8,0):
             quest = src.quests.questMap["GoToTile"](targetPosition=(7,8,0),reason="go to spawning room",description="go to spawning room")
             return ([quest],None)
+        
+        # find the spawning room
+        rooms = character.getTerrain().getRoomByPosition((7,8,0))
+        if not rooms:
+            if not dryRun:
+                self.fail("spawning room found")
+            return True
 
-        if not character.container.isRoom:
-            return (None,(".","stand around confused"))
+        # find the faction setter
+        items = rooms[0].getItemsByType("FactionSetter")
+        if not items or items[0].type not in ("FactionSetter",):
+            if not dryRun:
+                self.fail("no faction setter found")
+            return True
 
-        factionSetter = character.container.getItemByType("FactionSetter")
-        if not factionSetter:
-            return self._solver_trigger_fail(dryRun,"no faction setter found")
-
-        itemPos = factionSetter.getPosition()
-        if character.getDistance(itemPos) > 1:
-            quest = src.quests.questMap["GoToPosition"](targetPosition=factionSetter.getPosition(),reason="to be able to use the faction setter",description="go to faction setter",ignoreEndBlocked=True)
-            return ([quest],None)
-
-        direction = ""
-        if character.getPosition(offset=(1,0,0)) == itemPos:
-            direction = "d"
-        if character.getPosition(offset=(-1,0,0)) == itemPos:
-            direction = "a"
-        if character.getPosition(offset=(0,1,0)) == itemPos:
-            direction = "s"
-        if character.getPosition(offset=(0,-1,0)) == itemPos:
-            direction = "w"
-
-        return (None,(direction+"j","reset faction"))
+        # use the faction setter
+        item = items[0]
+        quest = src.quests.questMap["ActivateItem"](targetPosition=item.getPosition(),targetPositionBig=item.getBigPosition(),reason="reset your faction marker")
+        return ([quest],None)
 
     def generateTextDescription(self):
         return ["""

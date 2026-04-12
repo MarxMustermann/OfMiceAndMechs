@@ -92,7 +92,11 @@ But you can use your environment to your advantage, too."""
 Use simple attacks only.
 """
 
-        text += f"\n\nlifetime: {self.lifetime}"
+        if self.lifetime:
+            text += f"\n\nlifetime: {self.lifetime}"
+
+        if self.subQuests:
+            text += f"\n\npress d to see the subquest descriptions and press a to return to the parent quest."
 
         return text
 

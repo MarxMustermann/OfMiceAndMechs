@@ -43,6 +43,7 @@ class RestockRoom(src.quests.MetaQuestSequence):
 Restock {roomString} with {typeString} from your inventory{reason}.
 
 Place the items in the correct input or storage stockpile.
+Press the l or L keys to drop items.
 """
         if self.targetPosition:
             text += f"""Use the stocpile in position {self.targetPosition}"""

@@ -117,7 +117,7 @@ You have a Vial in your inventory. Use it to heal yourself.
 """)
         result.extend(["""
 
-The quickes way to heal is to press ""","\"",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"J")," ",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"H"),"\"",""".
+The quickest way to heal is to press ""","\"",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"J")," ",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"H"),"\"",""".
 Note that capital letters are shown with a blueish tint.
 
 So you need to 

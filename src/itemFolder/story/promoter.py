@@ -224,6 +224,7 @@ You can only have one close combat perk
                     options=options,
                     targetParamName="rewardType",
                     extraDescriptions=extraDescriptions,
+                    tag="promotionRewardSelection",
                 )
                 submenu.do_not_scale = True
 
@@ -253,6 +254,7 @@ You can only have one special movement perk
                     options=options,
                     targetParamName="rewardType",
                     extraDescriptions=extraDescriptions,
+                    tag="promotionRewardSelection",
                 )
                 submenu.do_not_scale = True
 
@@ -282,6 +284,7 @@ You can only have one ranged attack perk
                     options=options,
                     targetParamName="rewardType",
                     extraDescriptions=extraDescriptions,
+                    tag="promotionRewardSelection",
                 )
                 submenu.do_not_scale = True
 
@@ -311,6 +314,7 @@ You can only have one attribute perk
                     options=options,
                     targetParamName="rewardType",
                     extraDescriptions=extraDescriptions,
+                    tag="promotionRewardSelection",
                 )
                 submenu.do_not_scale = True
 

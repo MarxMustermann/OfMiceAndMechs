@@ -104,8 +104,11 @@ class ActivateItem(src.quests.MetaQuestSequence):
         tile_string = ""
         if self.targetPositionBig and self.character.getBigPosition() != self.targetPositionBig:
             tile_string = f" in tile {self.targetPositionBig}"
+        reason_string = ""
+        if self.reason:
+            reason_string = f", to {self.reason}"
         description = f"""
-Activate the {type_string} on position {self.targetPosition}{tile_string}.
+Activate the {type_string} on position {self.targetPosition}{tile_string}{reason_string}.
 
 You can activate items by using the j or J key.
 For more information consult the Help menu by pressing ?

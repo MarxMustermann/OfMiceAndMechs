@@ -68,7 +68,7 @@ Use the Promotor to do this.
 
         submenue = character.macroState.get("submenue")
         if submenue and not ignoreCommands:
-            if isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu):
+            if submenue.tag == "promotionRewardSelection":
                 return (None,("j","select reward"))
             if submenue.tag == "promotionIntro":
                 return (None,("j","continue"))
@@ -79,60 +79,17 @@ Use the Promotor to do this.
             quest = src.quests.questMap["GoHome"](reason="get back to base")
             return  ([quest],None)
 
-        # activate production item when marked
-        if character.macroState.get("itemMarkedLast"):
-            item = character.macroState["itemMarkedLast"]
-            if item.type == "Promoter":
-                return (None,("j","activate Promoter"))
-            else:
-                return (None,(".","undo selection"))
-
-        if not character.container.isRoom:
-            pos = character.getSpacePosition()
-            if pos == (14,7,0):
-                return (None,("a","enter room"))
-            if pos == (0,7,0):
-                return (None,("d","enter room"))
-            if pos == (7,14,0):
-                return (None,("w","enter room"))
-            if pos == (7,0,0):
-                return (None,("s","enter room"))
-
-        if isinstance(character.container, src.rooms.Room):
-            room = character.container
-            
-            for item in room.itemsOnFloor:
-                if not item.bolted:
-                    continue
-                if item.type != "Promoter":
-                    continue
-
-                interactionCommand = "J"
-                if submenue:
-                    if submenue.tag == "advancedInteractionSelection":
-                        interactionCommand = ""
-                    else:
-                        return (None,(["esc"],"close menu"))
-                if item.getPosition() == (character.xPosition-1,character.yPosition,0):
-                    return (None,(interactionCommand+"a","get promotion"))
-                if item.getPosition() == (character.xPosition+1,character.yPosition,0):
-                    return (None,(interactionCommand+"d","get promotion"))
-                if item.getPosition() == (character.xPosition,character.yPosition-1,0):
-                    return (None,(interactionCommand+"w","get promotion"))
-                if item.getPosition() == (character.xPosition,character.yPosition+1,0):
-                    return (None,(interactionCommand+"s","get promotion"))
-                
-                quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to promoter ")
-                return  ([quest],None)
-            
         terrain = character.getTerrain()
         for room in terrain.rooms:
-            if room.getItemByType("Promoter"):
-                quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),description="go to command centre")
-                return ([quest],None)
+            items = room.getItemsByType("Promoter")
+            if not items:
+                continue
+            item = items[0]
+            quest = src.quests.questMap["ActivateItem"](targetPosition=item.getPosition(),targetPositionBig=item.getBigPosition(),reason="get promoted")
+            return ([quest],None)
 
-        return self._solver_trigger_fail(dryRun,"no Promoter")
-
+        return self._solver_trigger_fail(dryRun,"no Promoter found")
+            
     def getQuestMarkersSmall(self,character,renderForTile=False):
         '''
         return the quest markers for the normal map

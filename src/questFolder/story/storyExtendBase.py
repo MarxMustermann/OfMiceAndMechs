@@ -184,8 +184,6 @@ class StoryExtendBase(src.quests.MetaQuestSequence):
                             if small_pos[0] in (1,13) or small_pos[1] in (1,13):
                                 continue
 
-                            print(item.getBigPosition())
-                            print(small_pos)
                             quest = src.quests.questMap["CleanSpace"](targetPosition=small_pos, targetPositionBig=item.getBigPosition(), reason="pick up a Wall")
                             return ([quest],None)
 

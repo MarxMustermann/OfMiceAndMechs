@@ -59,64 +59,20 @@ Set the floor plan: {self.floorPlanType}
                 command = submenue.get_command_to_select_option(self.floorPlanType)
                 return (None,(command,"select the floor plan"))
 
-            # close unkown menues
-            if submenue.tag not in ("advancedInteractionSelection",):
-                return (None,(["esc"],"close menu"))
+        if not character.getTerrain() == character.getHomeTerrain():
+            quest = src.quests.questMap["GoHome"](reason="get back to base")
+            return  ([quest],None)
 
-        # activate production item when marked
-        action = self.generate_confirm_interaction_command(allowedItems=["CityPlaner"])
-        if action:
-            return action
+        terrain = character.getTerrain()
+        for room in terrain.rooms:
+            items = room.getItemsByType("CityPlaner",needsBolted=True)
+            if not items:
+                continue
+            item = items[0]
+            quest = src.quests.questMap["ActivateItem"](targetPosition=item.getPosition(),targetPositionBig=item.getBigPosition(),reason="get promoted")
+            return ([quest],None)
 
-        # enter room
-        if not character.container.isRoom:
-            if character.getTerrain().getRoomByPosition(character.getBigPosition()):
-                quest = src.quests.questMap["EnterRoom"](reason="be able to act properly")
-                return ([quest],None)
-
-        # go to room with city planer
-        cityPlaner = None
-        if character.container.isRoom:
-            cityPlaner = character.container.getItemByType("CityPlaner",needsBolted=True)
-        if not cityPlaner:
-            for room in character.getTerrain().rooms:
-                cityPlaner = room.getItemByType("CityPlaner",needsBolted=True)
-                if not cityPlaner:
-                    continue
-                quest = src.quests.questMap["GoToTile"](targetPosition=cityPlaner.getBigPosition(),description="go to command centre",reason="go to command centre")
-                return ([quest],None)
-
-            return self._solver_trigger_fail(dryRun,"no planer")
-
-        # soft fail on weird state
-        if not character.container.isRoom:
-            return (None,(".","stand around confused"))
-
-        # activate the CityPlaner
-        cityPlaner = character.container.getItemsByType("CityPlaner")[0]
-        command = None
-        if character.getPosition(offset=(1,0,0)) == cityPlaner.getPosition():
-            command = "d"
-        if character.getPosition(offset=(-1,0,0)) == cityPlaner.getPosition():
-            command = "a"
-        if character.getPosition(offset=(0,1,0)) == cityPlaner.getPosition():
-            command = "s"
-        if character.getPosition(offset=(0,-1,0)) == cityPlaner.getPosition():
-            command = "w"
-        if character.getPosition(offset=(0,0,0)) == cityPlaner.getPosition():
-            command = "."
-        if command:
-            interactionCommand = "J"
-            if submenue:
-                if submenue.tag == "advancedInteractionSelection":
-                    interactionCommand = ""
-                else:
-                    return (None,(["esc"],"close menu"))
-            return (None,(interactionCommand+command,"activate the CityPlaner"))
-
-        # go to the CityPlaner
-        quest = src.quests.questMap["GoToPosition"](targetPosition=cityPlaner.getPosition(), description="go to CityPlaner",ignoreEndBlocked=True,reason="be able to reach the CityPlaner")
-        return ([quest],None)
+        return self._solver_trigger_fail(dryRun,"no CityPlaner found")
 
     """
     never complete

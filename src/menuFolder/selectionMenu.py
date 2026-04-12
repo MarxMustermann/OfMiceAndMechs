@@ -44,6 +44,9 @@ class SelectionMenu(src.subMenu.SubMenu):
             if self.followUp:
                 self.callIndirect(self.followUp,extraParams={self.targetParamName:None})
             return True
+        if key == ".":
+            character.takeTime(amount=1,reason="waiting")
+            return False
         if not noRender and src.interaction.header:
             src.interaction.header.set_text("")
 

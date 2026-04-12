@@ -23,7 +23,7 @@ class Communicator(src.items.Item):
         options = []
         options.append(("contact base leader","contact base leader"))
         options.append(("contact main base","contact main base"))
-        submenue = src.menuFolder.selectionMenu.SelectionMenu("what do you want to do?",options,targetParamName="type")
+        submenue = src.menuFolder.selectionMenu.SelectionMenu("what do you want to do?",options,targetParamName="type",tag="communicatorActicitySelection")
         character.macroState["submenue"] = submenue
         character.macroState["submenue"].followUp = {"container":self,"method":"makeContact","params":{"character":character}}
         character.runCommandString("~")

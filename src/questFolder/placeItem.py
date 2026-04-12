@@ -164,10 +164,6 @@ If you don't find the items to place, produce them.
         if self.subQuests:
             return (None,None)
 
-        # end when completed
-        if self.triggerCompletionCheck(dryRun=dryRun):
-            return (None,(".","stand around confused"))
-
         # go to placement location
         if self.targetPositionBig:
             terrain = character.getTerrain()

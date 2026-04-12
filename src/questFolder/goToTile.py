@@ -172,6 +172,7 @@ You are on the target tile.
                 text += f"""
 
 The target tile is {direction[4:-1]}.
+There is a mini map shown on the top left of the screen showing a quest marker.
 """
         if self.paranoid:
             text += "Be paranoid."

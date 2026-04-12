@@ -130,45 +130,16 @@ class EnsureMaindutyClone(src.quests.MetaQuestSequence):
 
                 return self._solver_trigger_fail(dryRun,"duty not found")
 
-            # close generic menues
-            if submenue.tag not in ("advancedInteractionSelection",):
-                return (None,(["esc"],"close menu"))
-
-        # do nothing if no duty artwork was found
-        if not dutyArtwork:
-            return self._solver_trigger_fail(dryRun,"no duty artwork")
-
-        # go to the tile the duty artwork is on
-        if character.getBigPosition() != dutyArtwork.container.getPosition():
-            quest = src.quests.questMap["GoToTile"](targetPosition=dutyArtwork.container.getPosition(),description="go to the command centre",reason="to reach the DutyArtwork")
+        terrain = character.getTerrain()
+        for room in terrain.rooms:
+            items = room.getItemsByType("DutyArtwork")
+            if not items:
+                continue
+            item = items[0]
+            quest = src.quests.questMap["ActivateItem"](targetPosition=item.getPosition(),targetPositionBig=item.getBigPosition(),reason="start doing worker management")
             return ([quest],None)
 
-        # go to the siege manager
-        if character.getDistance(dutyArtwork.getPosition()) > 1:
-            quest = src.quests.questMap["GoToPosition"](targetPosition=dutyArtwork.getPosition(),ignoreEndBlocked=True,description="go to the DutyArtwork",reason="to be able to activate the DutyArtwork")
-            return ([quest],None)
-        
-        # get the direction the duty artwork is in
-        target_pos = dutyArtwork.getPosition()
-        pos = character.getPosition()
-        direction = "."
-        if (pos[0]-1,pos[1],pos[2]) == target_pos:
-            direction = "a"
-        if (pos[0]+1,pos[1],pos[2]) == target_pos:
-            direction = "d"
-        if (pos[0],pos[1]-1,pos[2]) == target_pos:
-            direction = "w"
-        if (pos[0],pos[1]+1,pos[2]) == target_pos:
-            direction = "s"
-
-        # generate the actual command to start using the siege manager
-        interactionCommand = "J"
-        if submenue:
-            if submenue.tag == "advancedInteractionSelection":
-                interactionCommand = ""
-            else:
-                return (None,(["esc"],"close menu"))
-        return (None,(interactionCommand+direction+"j","open the configuration menu"))
+        return self._solver_trigger_fail(dryRun,"no DutyArtwork found")
 
     def generateTextDescription(self):
         '''

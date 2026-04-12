@@ -63,53 +63,20 @@ class LiftOutsideRestrictions(src.quests.MetaQuestSequence):
                 command += "j"
                 return (None,(command,"contact command"))
             
-            if submenue.tag not in ("advancedInteractionSelection",):
-                return (None,(["esc"],"to close menu"))
+        if not character.getTerrain() == character.getHomeTerrain():
+            quest = src.quests.questMap["GoHome"](reason="get back to base")
+            return  ([quest],None)
 
-        # activate production item when marked
-        action = self.generate_confirm_interaction_command(allowedItems=["SiegeManager"])
-        if action:
-            return action
-        
         terrain = character.getTerrain()
-        siegeManager = None
         for room in terrain.rooms:
-            item = room.getItemByType("SiegeManager",needsBolted=True)
-            if not item:
+            items = room.getItemsByType("SiegeManager",needsBolted=True)
+            if not items:
                 continue
-            
-            siegeManager = item
-
-        if not siegeManager:
-            return self._solver_trigger_fail(dryRun,"no siege manager")
-
-        if character.getBigPosition() != siegeManager.container.getPosition():
-            quest = src.quests.questMap["GoToTile"](targetPosition=siegeManager.container.getPosition(),description="go to the command centre",reason="reach the SiegeManager")
+            item = items[0]
+            quest = src.quests.questMap["ActivateItem"](targetPosition=item.getPosition(),targetPositionBig=item.getBigPosition(),reason="get promoted")
             return ([quest],None)
 
-        if character.getDistance(siegeManager.getPosition()) > 1:
-            quest = src.quests.questMap["GoToPosition"](targetPosition=siegeManager.getPosition(),ignoreEndBlocked=True,description="go to the SiegeManager",reason="be able to activate the SiegeManager")
-            return ([quest],None)
-        
-        target_pos = siegeManager.getPosition()
-        pos = character.getPosition()
-        direction = "."
-        if (pos[0]-1,pos[1],pos[2]) == target_pos:
-            direction = "a"
-        if (pos[0]+1,pos[1],pos[2]) == target_pos:
-            direction = "d"
-        if (pos[0],pos[1]-1,pos[2]) == target_pos:
-            direction = "w"
-        if (pos[0],pos[1]+1,pos[2]) == target_pos:
-            direction = "s"
-
-        interactionCommand = "J"
-        if submenue:
-            if submenue.tag == "advancedInteractionSelection":
-                interactionCommand = ""
-            else:
-                return (None,(["esc"],"close menu"))
-        return (None,(interactionCommand+direction,"disable the outside restrictions"))
+        return self._solver_trigger_fail(dryRun,"no SiegeManager found")
 
     def generateTextDescription(self):
         reasonString = ""

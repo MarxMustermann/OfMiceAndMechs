@@ -879,7 +879,7 @@ class MetaQuestSequence(Quest,ABC):
             if self.subQuests[0].completed:
                 quest = self.subQuests.pop(0)
                 self.stopWatchingTarget(quest)
-                continue
+                return
             if not self.subQuests[0].active:
                 self.subQuests[0].activate()
             break

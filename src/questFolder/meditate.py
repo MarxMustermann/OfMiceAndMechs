@@ -5,7 +5,7 @@ class Meditate(src.quests.MetaQuestSequence):
     story quest pretending to try to contact a higher command
     '''
     type = "Meditate"
-    def __init__(self, description="recover", creator=None, lifetime=None, targetPosition=None, targetPositionBig=None, reason=None):
+    def __init__(self, description="recover health", creator=None, lifetime=None, targetPosition=None, targetPositionBig=None, reason=None):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
@@ -24,16 +24,23 @@ class Meditate(src.quests.MetaQuestSequence):
         if not character:
             return (None,None)
 
-        quest = src.quests.questMap["ActivateItem"](targetPosition=self.targetPosition,targetPositionBig=self.targetPositionBig,reason="mediate",activateFromTop=True)
+        quest = src.quests.questMap["ActivateItem"](targetPosition=self.targetPosition,targetPositionBig=self.targetPositionBig,reason="mediate",activateFromTop=True,targetItemType="MeditationPlate")
         return ([quest],None)
 
     def generateTextDescription(self):
-        return [f"""
+        result = [f"""
 Meditate on the MeditationPlate on {self.targetPosition} in room {self.targetPositionBig}
 This will recover you health up to 50 HP.
 
 Activate the MeditationPlate to meditate
 """]
+        if self.subQuests:
+            result.append("""
+This quest has subquests. More information is shown there.
+Press the d key to show the subquest description.
+Press the a key to return to this quest again.
+""")
+        return result
 
     def assignToCharacter(self, character):
         if self.character:

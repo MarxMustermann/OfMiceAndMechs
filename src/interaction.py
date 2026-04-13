@@ -2698,7 +2698,7 @@ def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
             raise EndGame("the game was ended manually")
 
     char.macroState["submenue"].followUp = trigger
-    char.runCommandString(".",nativeKey=True)
+    char.runCommandString("~",nativeKey=True)
 
 def doSpecialAction(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
     if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:

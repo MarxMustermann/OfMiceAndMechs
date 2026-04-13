@@ -34,7 +34,9 @@ class LootRoom(src.quests.MetaQuestSequence):
         text = f"""{storyString}
 Loot the room on tile {self.targetPositionBig}{reasonString}.
 
-Remove all items that are not bolted down."""
+Remove all items that are not bolted down.
+
+Use the k or K keys to pick up items."""
         return text
 
     def changedTile(self, extraInfo=None):

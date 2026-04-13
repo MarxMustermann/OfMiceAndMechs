@@ -1152,13 +1152,15 @@ class Item:
         baseProgressbar = "X" * int(params["doneTime"] // 10) + "." * int(
             barLength - (params["doneTime"] // 10)
         )
-        progressBar = str(params["doneTime"])+"/"+str(params["delayTime"])+"\n"
+        progressBar = str(params["doneTime"])+"/"+str(params["delayTime"])+" ticks\n"
         while len(baseProgressbar) > 10:
             progressBar += baseProgressbar[:10]+"\n"
             baseProgressbar = baseProgressbar[10:]
         progressBar += baseProgressbar
 
-        submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(progressBar, targetParamName="abortKey")
+        text = [progressBar]
+
+        submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text, targetParamName="abortKey")
         submenue.tag = "Wait"
         submenue.do_not_scale = True
         character.macroState["submenue"] = submenue

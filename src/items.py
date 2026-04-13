@@ -1158,7 +1158,10 @@ class Item:
             baseProgressbar = baseProgressbar[10:]
         progressBar += baseProgressbar
 
-        text = [progressBar]
+        description = ""
+        if params.get("description"):
+            description = params.get("description")
+        text = [description,progressBar]
 
         submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text, targetParamName="abortKey")
         submenue.tag = "Wait"

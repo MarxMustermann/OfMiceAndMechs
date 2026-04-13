@@ -5,7 +5,12 @@ class ActivateItem(src.quests.MetaQuestSequence):
     story quest pretending to try to contact a higher command
     '''
     type = "ActivateItem"
-    def __init__(self, description="activate item", creator=None, lifetime=None, targetPosition=None, targetPositionBig=None, reason=None, activateFromTop=False, targetItemType=None):
+    def __init__(self, description=None, creator=None, lifetime=None, targetPosition=None, targetPositionBig=None, reason=None, activateFromTop=False, targetItemType=None):
+        if not description:
+            if targetItemType:
+                description = f"activate {targetItemType}"
+            else:
+                description = "activate item"
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description

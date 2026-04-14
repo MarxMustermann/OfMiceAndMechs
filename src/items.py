@@ -1160,7 +1160,7 @@ class Item:
 
         description = ""
         if params.get("description"):
-            description = params.get("description")
+            description = [params.get("description"),"\n"]
         text = [description,progressBar]
 
         submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text, targetParamName="abortKey")

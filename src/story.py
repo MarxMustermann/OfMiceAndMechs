@@ -4462,7 +4462,7 @@ We should be able to build a weapon there.
                         options.append((name, description))
                         extraDescriptions[name] = """
 You didn't even bring weapons!
-We should try find something to defend ourselves with.
+We should try to find something to defend ourselves with.
 
 We can build a Rod here. I doesn't hit hard, but it will do.
 We just need to collect scrap, produce MetalBars.

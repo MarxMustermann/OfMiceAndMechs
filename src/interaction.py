@@ -5022,18 +5022,58 @@ def renderGameDisplay(renderChar=None,showSaving=False):
 
             root_console = tcod.console.Console(uiElement["width"], uiElement["height"], order="F")
 
-            items = []
-            for offset in [(0,0,0),(0,-1,0),(-1,0,0),(0,1,0),(1,0,0)]:
-                items.extend(char.container.getItemByPosition(char.getPosition(offset=offset)))
-
             output = []
+
             for other_character in char.getTerrain().getEnemiesOnTile(char):
                 if other_character == char:
                     continue
                 output.append([other_character.render()," ",(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),[other_character.charType," ",str(other_character.getSpacePosition())," "])])
 
+            items = []
+            for offset in [(0,0,0),(0,-1,0),(-1,0,0),(0,1,0),(1,0,0)]:
+                items.extend(char.container.getItemByPosition(char.getPosition(offset=offset)))
             for item in items:
                 output.append([ItemMeta(item,content=item.render())," ",(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),item.name)," ",(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),f"{item.getSmallPosition()}")," "])
+
+            output.append([(src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "),(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),f" you {src.gamestate.gamestate.mainChar.getSpacePosition()} ")])
+
+            if src.gamestate.gamestate.mainChar.container and src.gamestate.gamestate.mainChar.container.isRoom:
+                pos = src.gamestate.gamestate.mainChar.getPosition()
+                for offset in [(0,0,0),(0,-1,0),(-1,0,0),(0,1,0),(1,0,0)]:
+                    check_pos = (pos[0]-offset[0],pos[1]-offset[1],pos[2]-offset[2])
+                    markers = src.gamestate.gamestate.mainChar.container.getMarkersOnPosition(check_pos)
+                    for marker in markers:
+                        marker_render = "::"
+                        marker_type = marker[0]
+                        extra_info = ""
+                        if marker_type == "walkingSpace":
+                            marker_render = (src.interaction.urwid.AttrSpec("#888", "black"), "::")
+                        if marker_type == "inputSlot":
+                            marker_render = (src.interaction.urwid.AttrSpec("#f88", "black"), "::")
+                        if marker_type == "outputSlot":
+                            marker_render = (src.interaction.urwid.AttrSpec("#88f", "black"), "::")
+                        if marker_type == "storageSlot":
+                            if marker[1][2]:
+                                marker_render = (src.interaction.urwid.AttrSpec("#f00", "black"), "::")
+                            elif marker[1][1]:
+                                marker_render = (src.interaction.urwid.AttrSpec("#f0f", "black"), "::")
+                            else:
+                                marker_render = (src.interaction.urwid.AttrSpec("#fff", "black"), "::")
+                        if marker_type == "buildSite":
+                            if marker[1] == "TriggerPlate":
+                                marker_render = (src.interaction.urwid.AttrSpec("#292", "black"), "::")
+                            else:
+                                marker_render = (src.interaction.urwid.AttrSpec("#0f0", "black"), "::")
+
+
+                        extra_info = ""
+                        if marker_type != "walkingSpace":
+                            extra_info = str(marker[1][1])+" "
+                            if marker[1][2]:
+                                extra_info += str(marker[1][2])+" "
+
+                        output.append([marker_render,(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),[" ",marker[0]," ",extra_info,str(check_pos)," "])])
+
             output_width = len(stringifyUrwid(output))
             output.insert(0," "*((root_console.width-output_width)//2))
             output.insert(0,"\n")

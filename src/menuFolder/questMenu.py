@@ -280,8 +280,10 @@ class QuestMenu(src.subMenu.SubMenu):
                         else:
                             nextstep.append(f"""ready in {100-(src.gamestate.gamestate.tick-src.gamestate.gamestate.stern["last_implant_interaction"])} ticks\n\n""")
                     elif src.gamestate.gamestate.stern.get("has_shown_reached_exit") and src.gamestate.gamestate.tick - src.gamestate.gamestate.stern["last_implant_interaction"] < 100:
-                        nextstep = [f"suggested action: \n--- command submodule overheated ---\n"]
+                        nextstep = []
+                        nextstep.append(f"--- command submodule overheated ---\n")
                         nextstep.append(f"""{100-(src.gamestate.gamestate.tick - src.gamestate.gamestate.stern["last_implant_interaction"])} ticks remaining for cooldown\n""")
+                        nextstep.append(f"suggested action: \n")
                         if char.macroState.get("submenue"):
                             nextstep.append("press esc to close menu\n")
                         else:

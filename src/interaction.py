@@ -6167,7 +6167,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                     case "confirmQuit":
                         if isinstance(event, tcod.event.KeyDown):
                             key = event.sym
-                            if key in (tcod.event.KeySym.RETURN, tcod.event.KeySym.y, tcod.event.KeySym.j):
+                            if key in (tcod.event.KeySym.RETURN, tcod.event.KeySym.y, tcod.event.KeySym.j, tcod.event.KeySym.KP_ENTER):
                                 if src.interaction.tcodMixer:
                                     src.interaction.tcodMixer.close()
                                 raise SystemExit()
@@ -6428,7 +6428,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 case "custom_difficulty":
                     if isinstance(event, tcod.event.KeyDown):
                         key = event.sym
-                        if key == tcod.event.KeySym.RETURN:
+                        if key in (tcod.event.KeySym.RETURN, tcod.event.KeySym.KP_ENTER):
 
                             def SetKey(key, v):
                                 if "." in key:
@@ -6490,7 +6490,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                     if isinstance(event, tcod.event.KeyDown):
                         key = event.sym
 
-                        if key in (tcod.event.KeySym.ESCAPE, tcod.event.KeySym.RETURN):
+                        if key in (tcod.event.KeySym.ESCAPE, tcod.event.KeySym.RETURN, tcod.event.KeySym.KP_ENTER):
                             submenu.pop()
                         if key == tcod.event.KeySym.BACKSPACE:
                             custom_diff_name = custom_diff_name[:-1]
@@ -6526,7 +6526,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 case "confirmQuit":
                     if isinstance(event, tcod.event.KeyDown):
                         key = event.sym
-                        if key in (tcod.event.KeySym.RETURN, tcod.event.KeySym.y):
+                        if key in (tcod.event.KeySym.RETURN, tcod.event.KeySym.KP_ENTER, tcod.event.KeySym.y):
                             if src.interaction.tcodMixer:
                                 src.interaction.tcodMixer.close()
                             raise SystemExit()
@@ -6562,7 +6562,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                             sdl_window.fullscreen = not sdl_window.fullscreen
                         if key == tcod.event.KeySym.ESCAPE:
                             submenu.append("confirmQuit")
-                        if key == tcod.event.KeySym.p or key == tcod.event.KeySym.RETURN:
+                        if key in (tcod.event.KeySym.p, tcod.event.KeySym.RETURN, tcod.event.KeySym.KP_ENTER):
                             startGame = True
                         if key == tcod.event.KeySym.g:
                             submenu.append("gameslot")
@@ -6629,7 +6629,7 @@ def showInterruptText(text):
                 raise SystemExit()
             if isinstance(event,tcod.event.KeyDown):
                 key = event.sym
-                if key in (tcod.event.KeySym.ESCAPE,tcod.event.KeySym.RETURN,tcod.event.KeySym.SPACE):
+                if key in (tcod.event.KeySym.ESCAPE,tcod.event.KeySym.RETURN, tcod.event.KeySym.SPACE, tcod.event.KeySym.KP_ENTER):
                     return
 
 def showIntro():
@@ -7717,7 +7717,7 @@ FOLLOW YOUR ORDERS
                 else:
                     if key == tcod.event.KeySym.F11:
                         sdl_window.fullscreen = not sdl_window.fullscreen
-                    if key == tcod.event.KeySym.RETURN:
+                    if key in (tcod.event.KeySym.RETURN, tcod.event.KeySym.KP_ENTER):
                         skip = True
                         src.interaction.send_tracking_ping("advanced_first_intro")
                     if key == tcod.event.KeySym.SPACE and stage == 4:
@@ -7779,7 +7779,7 @@ press esc to return to main menu
                     sdl_window.fullscreen = not sdl_window.fullscreen
                 if key == tcod.event.KeySym.ESCAPE:
                     continue_game = True
-                if key == tcod.event.KeySym.RETURN:
+                if key in (tcod.event.KeySym.RETURN, tcod.event.KeySym.KP_ENTER):
                     import webbrowser
                     webbrowser.open_new_tab("http://ofmiceandmechs.com/playtest_questionaire.php")
                 if key == tcod.event.KeySym.c:
@@ -8056,7 +8056,7 @@ press enter to continue playing"""]
                             src.gamestate.gamestate = None
                             raise EndGame("the game was won")
 
-                if key == tcod.event.KeySym.RETURN:
+                if key in (tcod.event.KeySym.RETURN, tcod.event.KeySym.KP_ENTER):
                     if endingType == "bad" and stage == 2 and subStep2 > 200:
                         numStruggled += 1
                     if not endingType == "bad" or stage < 2:
@@ -8707,7 +8707,7 @@ to remember"""
                 if key == tcod.event.KeySym.ESCAPE:
                     src.interaction.send_tracking_ping("skipped_run_intro")
                     stage = 7
-                if key == tcod.event.KeySym.RETURN:
+                if key in (tcod.event.KeySym.RETURN, tcod.event.KeySym.KP_ENTER):
                     src.interaction.send_tracking_ping("moved_run_intro")
                     if stage != 3:
                         # move to next stage

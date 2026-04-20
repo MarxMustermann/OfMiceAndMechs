@@ -1633,7 +1633,6 @@ def doEnumerateState(key,char,charState,main,header,footer,urwid,flags):
     if char.interactionState["enumerateState"][-1]["type"] is None:
         char.interactionState["enumerateState"][-1]["type"] = key
         if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-            header.set_text((urwid.AttrSpec("default", "default"), "observe"))
             main.set_text(
                 (
                     urwid.AttrSpec("default", "default"),
@@ -2460,7 +2459,6 @@ def startStopRecording(key,char,charState,main,header,footer,urwid,flags):
     if not charState["recording"]:
         char.addMessage("press key to record to")
         if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-            header.set_text((urwid.AttrSpec("default", "default"), "observe"))
             text = """
 
 press key to record to.
@@ -2702,7 +2700,6 @@ def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
 
 def doSpecialAction(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
     if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-        header.set_text((urwid.AttrSpec("default", "default"), "observe"))
         main.set_text(
             (
                 urwid.AttrSpec("default", "default"),
@@ -2721,7 +2718,6 @@ select what you want to do
 
 def doStartObserve(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
     if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-        header.set_text((urwid.AttrSpec("default", "default"), "observe"))
         main.set_text(
             (
                 urwid.AttrSpec("default", "default"),

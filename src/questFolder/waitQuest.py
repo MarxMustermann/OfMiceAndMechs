@@ -21,14 +21,14 @@ class WaitQuest(src.quests.MetaQuestSequence):
         if self.reason:
             reason_string = f", to {self.reason}"
 
-        text = f"""
+        text = ["""
 Wait{reason_string}.
 
-You can wait by pressing "." to wait for one tick or by pressing ";" to wait 100 ticks"""
+""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"default"),"""You can wait by pressing "." to wait for one tick or by pressing ";" to wait 100 ticks""")]
         if self.lifetimeEvent:
-            text += f"""
+            text.append(f"""
 
-This quest will end in {self.lifetimeEvent.tick - src.gamestate.gamestate.tick} ticks"""
+This quest will end in {self.lifetimeEvent.tick - src.gamestate.gamestate.tick} ticks""")
         return text
 
     def isPaused(self):

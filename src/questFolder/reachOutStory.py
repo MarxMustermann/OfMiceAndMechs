@@ -25,6 +25,12 @@ class ReachOutStory(src.quests.MetaQuestSequence):
 Contact your implant for further advice.
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"default"),"""You can contact the implant by pressing tab after closing this menu."""),"""
+
+Right now you are looking at the quest menu.
+The quest menu shows you general instructions on how to do things.
+Currently you are looking at the quest to reach out to you implant.
+
+Once you contacted the implant this menu will hold more useful information.
 """]
         return text
 

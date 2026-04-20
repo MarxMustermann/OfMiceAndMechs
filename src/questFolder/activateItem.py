@@ -112,12 +112,12 @@ class ActivateItem(src.quests.MetaQuestSequence):
         reason_string = ""
         if self.reason:
             reason_string = f", to {self.reason}"
-        description = f"""
+        description = [f"""
 Activate the {type_string} on position {self.targetPosition}{tile_string}{reason_string}.
 
-You can activate items by using the j or J key.
+""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"default"),"""You can activate items by using the j or J key."""),"""
 For more information consult the Help menu by pressing ?
-"""
+"""]
         return description
 
     def assignToCharacter(self, character):

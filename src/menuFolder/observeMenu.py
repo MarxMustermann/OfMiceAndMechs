@@ -88,8 +88,13 @@ class ObserveMenu(src.subMenu.SubMenu):
             quest.autoSolve = True
             self.character.assignQuest(quest,active=True)
 
-        if key in ("M",):
-            quest = src.quests.questMap["SecureTile"](toSecure=self.index_big,endWhenCleared=True)
+        if key in ("L",):
+            quest = src.quests.questMap["RestockRoom"](targetPositionBig=self.index_big)
+            quest.autoSolve = True
+            self.character.assignQuest(quest,active=True)
+
+        if key in ("C",):
+            quest = src.quests.questMap["ClearTile"](targetPositionBig=self.index_big)
             quest.autoSolve = True
             self.character.assignQuest(quest,active=True)
 

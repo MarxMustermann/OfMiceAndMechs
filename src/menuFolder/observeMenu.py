@@ -73,6 +73,11 @@ class ObserveMenu(src.subMenu.SubMenu):
             quest.autoSolve = True
             self.character.assignQuest(quest,active=True)
 
+        if key in ("j",):
+            quest = src.quests.questMap["ActivateItem"](targetPosition=self.index,targetPositionBig=self.index_big)
+            quest.autoSolve = True
+            self.character.assignQuest(quest,active=True)
+
         # emit event
         self.character.changed("lookedAt",{"index":self.index,"index_big":self.index_big})
 

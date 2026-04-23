@@ -223,6 +223,9 @@ class SubMenu(object):
 
         return False
 
+    def get_map_position(self):
+        return None
+
     def render(self):
         # show question
         out = []

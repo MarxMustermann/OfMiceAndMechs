@@ -1169,6 +1169,9 @@ def doObserveSelection(params):
     elif key == "i":
         submenue = src.menuFolder.itemInfoMenu.ItemInfoMenu(char=char)
         char.macroState["submenue"] = submenue
+    elif key == "e":
+        submenue = src.menuFolder.experimentalObserveMenu.ExperimentalObserveMenu(char=char)
+        char.macroState["submenue"] = submenue
     else:
         char.addMessage("unknown option")
 
@@ -3606,7 +3609,7 @@ lastCenterX = None
 lastCenterY = None
 
 # bad code: should be contained somewhere
-def render(char):
+def render(char,mapSize):
     """
     render the map
 
@@ -3676,13 +3679,7 @@ def render(char):
     )
 
     # render the map
-    renderHeight = window_charheight-7
-    if renderHeight%15 == 1:
-        renderHeight -= 1
-    if renderHeight%15 == 1:
-        renderHeight -= 1
-    if renderHeight%15 == 1:
-        renderHeight -= 1
+    renderHeight = mapSize
     if (
         char.room
         and not char.room.xPosition
@@ -4341,7 +4338,7 @@ def printUrwidToTcod(inData,offset,color=None,internalOffset=None,size=None, act
 
     #footertext = stringifyUrwid(inData)
 
-def printUrwidToSDL(inData,offset,color=None,internalOffset=None,size=None, actionMeta=None):
+def printUrwidToSDL(inData,offset,color=None,internalOffset=None,size=None, actionMeta=None, fineOffset=(0,0)):
 
     if not internalOffset:
         internalOffset = [0,0]
@@ -4384,23 +4381,23 @@ def printUrwidToSDL(inData,offset,color=None,internalOffset=None,size=None, acti
 
 
     if isinstance(inData,tuple):
-        printUrwidToSDL(inData[1],offset,(inData[0].get_rgb_values()[:3],inData[0].get_rgb_values()[3:]),internalOffset,size,actionMeta)
+        printUrwidToSDL(inData[1],offset,(inData[0].get_rgb_values()[:3],inData[0].get_rgb_values()[3:]),internalOffset,size,actionMeta,fineOffset)
 
     if isinstance(inData,int):
-        printUrwidToSDL(src.canvas.displayChars.indexedMapping[inData],offset,color,internalOffset,size,actionMeta)
+        printUrwidToSDL(src.canvas.displayChars.indexedMapping[inData],offset,color,internalOffset,size,actionMeta,fineOffset)
 
     if isinstance(inData,list):
         for item in inData:
-            printUrwidToSDL(item,offset,color,internalOffset,size,actionMeta)
+            printUrwidToSDL(item,offset,color,internalOffset,size,actionMeta,fineOffset)
 
     if isinstance(inData, ActionMeta):
-        printUrwidToSDL(inData.content,offset,color,internalOffset,size,inData.payload)
+        printUrwidToSDL(inData.content,offset,color,internalOffset,size,inData.payload,fineOffset)
 
     if isinstance(inData, CharacterMeta):
-        printUrwidToSDL(inData.content,offset,color,internalOffset,size,actionMeta)
+        printUrwidToSDL(inData.content,offset,color,internalOffset,size,actionMeta,fineOffset)
 
     if isinstance(inData, ItemMeta):
-        printUrwidToSDL(inData.content,offset,color,internalOffset,size,actionMeta)
+        printUrwidToSDL(inData.content,offset,color,internalOffset,size,actionMeta,fineOffset)
 
         if src.interaction.settings["SDL"]:
 
@@ -4409,7 +4406,7 @@ def printUrwidToSDL(inData,offset,color=None,internalOffset=None,size=None, acti
             content = inData.content
             x = offset[0]+internalOffset[0]
             y = offset[1]+internalOffset[1]
-            basePos = ((x-2)*tileWidth,y*tileHeight)
+            basePos = ((x-2)*tileWidth+fineOffset[0],y*tileHeight+fineOffset[1])
             if isinstance(content, int):
                 content = src.canvas.displayChars.indexedMapping[content]
 
@@ -4996,7 +4993,7 @@ def renderGameDisplay(renderChar=None,showSaving=False):
             sdl_renderer2.fill_rect((offsetLeft,offsetTop,500,500))
 
             root_console = tcod.console.Console(map_size[0]*2, map_size[1], order="F")
-            canvas = render(char)
+            canvas = render(char,uiElement["map_width"])
             canvas.printTcod(root_console,0,0,warning=warning)
 
             atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_map)
@@ -5007,7 +5004,7 @@ def renderGameDisplay(renderChar=None,showSaving=False):
             canvas.drawSdl(sdl_renderer2,offsetLeft,offsetTop,warning=warning)
 
             submenue = char.macroState.get("submenue")
-            if (specialRender or submenue) and (not submenue or submenue.tag != "Wait"):
+            if specialRender or (submenue and submenue.tag != "Wait" and not submenue.get_map_position()):
                 sdl_renderer2.draw_blend_mode = tcod.sdl.render.BlendMode(1)
                 sdl_renderer2.draw_color = (0,0,0,100)
                 sdl_renderer2.fill_rect((offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height))
@@ -5113,70 +5110,151 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                     width = last_menu_dimension[0]
                     height = last_menu_dimension[1]
 
-            distance_left = max(src.interaction.tcodConsole.width//2-width//2,1)
-            distance_top = max(min(src.interaction.tcodConsole.height//2-height//2,17),1)
-            offsetLeft = distance_left*tileWidth
-            offsetTop = distance_top*tileHeight
+            pos = submenue.get_map_position()
 
-            positions = []
-            for x in range(-1,width//2+3):
-                for y in range(-1,height+4):
-                    positions.append((offsetLeft//2+x,offsetTop+y))
-            for position in positions:
-                if position in sdl_map:
-                    del sdl_map[position]
+            if pos:
+                for ui_element in uiElements:
+                    if ui_element["type"] != "gameMap":
+                        continue
 
-            display_height = tileHeight*height
-            display_width = tileWidth*width
+                    map_width = ui_element["map_width"]
+                    line_width = 5
+                    padding = 15
 
-            padding = 15
-            line_width = 5
-            overhang = 25
-            outline = 4
-            sdl_renderer2.draw_color = (0,0,0,255)
+                    distance_left = ui_element["offset"][0]
+                    distance_top = ui_element["offset"][1]
 
-            # draw backgound
-            sdl_renderer2.fill_rect((offsetLeft-padding-outline,offsetTop-padding-outline,display_width+2*padding+2*outline,display_height+2*padding+2*outline))
-            # draw upper line background
-            sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop-padding-line_width-outline,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
-            # draw tile line background
-            if submenue and submenue.getTitle():
-                sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop-padding-line_width-outline+2*tileHeight,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
-            # draw lower line backgound
-            sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop+padding+display_height-outline,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
-            # left line background
-            sdl_renderer2.fill_rect((offsetLeft-padding-line_width-outline,offsetTop-padding-overhang-outline,line_width+2*outline,display_height+2*(padding+overhang+2*outline)))
-            # right line background
-            sdl_renderer2.fill_rect((offsetLeft+padding+display_width-outline,offsetTop-padding-overhang-outline,line_width+2*outline,display_height+2*(padding+overhang)+2*outline))
+                    distance_left = map_width//2+distance_left
+                    distance_top = map_width//2+distance_top
 
-            sdl_renderer2.draw_color = (100,100,100,255)
-            if (submenue and submenue.tag == "Wait"):
-                sdl_renderer2.draw_color = (255,255,255,255)
-            if submenue and submenue.golden_border:
-                sdl_renderer2.draw_color = (255,155,0,0)
-            # draw upper line
-            sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop-padding-line_width,display_width+2*(padding+overhang),line_width))
-            # draw lower line
-            sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop+padding+display_height,display_width+2*(padding+overhang),line_width))
-            # left line
-            sdl_renderer2.fill_rect((offsetLeft-padding-line_width,offsetTop-padding-overhang,line_width,display_height+2*(padding+overhang)))
-            # right line
-            sdl_renderer2.fill_rect((offsetLeft+padding+display_width,offsetTop-padding-overhang,line_width,display_height+2*(padding+overhang)))
+                    if char.container.isRoom:
+                        big_position = char.getBigPosition()
+                        small_position = char.getSpacePosition()
+                        char_pos = (big_position[0]*15+small_position[0], big_position[1]*15+small_position[1], big_position[2]*15+small_position[2])
+                    else:
+                        char_pos = char.getPosition()
+                        char_pos = (char_pos-1,char_pos-1,0)
 
-            root_console = tcod.console.Console(width, height, order="F")
-            printUrwidToTcod(text,(0,0),explecitConsole=root_console)
+                    distance_left += pos[0]-char_pos[0]
+                    distance_top += pos[1]-char_pos[1]
 
-            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
-            console_render = tcod.render.SDLConsoleRender(atlas)
-            renderedToTexture = console_render.render(root_console)
-            sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
+                    distance_left = distance_left*2
 
-            printUrwidToSDL(text,(distance_left,distance_top))
+                    offsetLeft = distance_left*tileWidth
+                    offsetTop = distance_top*tileHeight
 
-            # draw title line
-            if submenue and submenue.getTitle():
+                    display_height = tileHeight*height
+                    display_width = tileWidth*width
+
+                    # draw focus marker
+                    #sdl_renderer2.draw_color = (255,255,0,255)
+                    #sdl_renderer2.fill_rect((offsetLeft-line_width,offsetTop-line_width,tileHeight+line_width*2,tileHeight+line_width*2))
+                    sdl_renderer2.draw_color = (150,150,150,255)
+                    sdl_renderer2.fill_rect((offsetLeft-line_width,offsetTop-line_width,tileHeight+line_width*2,line_width))
+                    sdl_renderer2.fill_rect((offsetLeft-line_width,offsetTop-line_width,line_width,tileHeight+line_width*2))
+                    sdl_renderer2.fill_rect((offsetLeft+tileHeight,offsetTop-line_width,line_width,tileHeight+line_width*2))
+                    sdl_renderer2.fill_rect((offsetLeft-line_width,offsetTop+tileHeight,tileHeight+line_width*2,line_width))
+
+                    distance_left = ui_element["offset"][0]
+                    distance_top = ui_element["offset"][1]
+                    distance_left = map_width//2+distance_left
+                    distance_top = map_width//2+distance_top
+                    distance_left += pos[0]-char_pos[0]+1
+                    distance_top += pos[1]-char_pos[1]
+                    distance_left = distance_left*2
+
+                    offsetLeft = distance_left*tileWidth
+                    offsetTop = distance_top*tileHeight
+
+                    # draw submenu content
+                    sdl_renderer2.draw_color = (0,0,0,255)
+                    sdl_renderer2.fill_rect((offsetLeft,offsetTop,display_width+padding*2,display_height+padding*2))
+
+                    root_console = tcod.console.Console(width, height, order="F")
+                    printUrwidToTcod(text,(0,0),explecitConsole=root_console)
+
+                    atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
+                    console_render = tcod.render.SDLConsoleRender(atlas)
+                    renderedToTexture = console_render.render(root_console)
+                    sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft+padding,offsetTop+padding,renderedToTexture.width,renderedToTexture.height),)
+
+                    printUrwidToSDL(text,(distance_left,distance_top),fineOffset=(padding,padding))
+
+                    # draw submenu border
+                    sdl_renderer2.draw_color = (150,150,150,255)
+                    sdl_renderer2.fill_rect((offsetLeft,offsetTop,display_width+padding*2,line_width))
+                    sdl_renderer2.fill_rect((offsetLeft,offsetTop,line_width,display_height+padding*2))
+                    sdl_renderer2.fill_rect((offsetLeft+display_width+2*padding-line_width,offsetTop,line_width,display_height+padding*2))
+                    sdl_renderer2.fill_rect((offsetLeft,offsetTop+display_height+2*padding-line_width,display_width+padding*2,line_width))
+                    #sdl_renderer2.fill_rect((offsetLeft-line_width,offsetTop-line_width,tileHeight+line_width*2,line_width))
+                    #sdl_renderer2.fill_rect((offsetLeft-line_width,offsetTop-line_width,line_width,tileHeight+line_width*2))
+                    #sdl_renderer2.fill_rect((offsetLeft+tileHeight,offsetTop-line_width,line_width,tileHeight+line_width*2))
+                    #sdl_renderer2.fill_rect((offsetLeft-line_width,offsetTop+tileHeight,tileHeight+line_width*2,line_width))
+            else:
+                distance_left = max(src.interaction.tcodConsole.width//2-width//2,1)
+                distance_top = max(min(src.interaction.tcodConsole.height//2-height//2,17),1)
+                offsetLeft = distance_left*tileWidth
+                offsetTop = distance_top*tileHeight
+
+                positions = []
+                for x in range(-1,width//2+3):
+                    for y in range(-1,height+4):
+                        positions.append((offsetLeft//2+x,offsetTop+y))
+                for position in positions:
+                    if position in sdl_map:
+                        del sdl_map[position]
+
+                display_height = tileHeight*height
+                display_width = tileWidth*width
+
+                padding = 15
+                line_width = 5
+                overhang = 25
+                outline = 4
+                sdl_renderer2.draw_color = (0,0,0,255)
+
+                # draw backgound
+                sdl_renderer2.fill_rect((offsetLeft-padding-outline,offsetTop-padding-outline,display_width+2*padding+2*outline,display_height+2*padding+2*outline))
+                # draw upper line background
+                sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop-padding-line_width-outline,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
+                # draw tile line background
+                if submenue and submenue.getTitle():
+                    sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop-padding-line_width-outline+2*tileHeight,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
+                # draw lower line backgound
+                sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop+padding+display_height-outline,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
+                # left line background
+                sdl_renderer2.fill_rect((offsetLeft-padding-line_width-outline,offsetTop-padding-overhang-outline,line_width+2*outline,display_height+2*(padding+overhang+2*outline)))
+                # right line background
+                sdl_renderer2.fill_rect((offsetLeft+padding+display_width-outline,offsetTop-padding-overhang-outline,line_width+2*outline,display_height+2*(padding+overhang)+2*outline))
+
                 sdl_renderer2.draw_color = (100,100,100,255)
-                sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop-padding-line_width+2*tileHeight,display_width+2*(padding+overhang),line_width))
+                if (submenue and submenue.tag == "Wait"):
+                    sdl_renderer2.draw_color = (255,255,255,255)
+                if submenue and submenue.golden_border:
+                    sdl_renderer2.draw_color = (255,155,0,0)
+                # draw upper line
+                sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop-padding-line_width,display_width+2*(padding+overhang),line_width))
+                # draw lower line
+                sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop+padding+display_height,display_width+2*(padding+overhang),line_width))
+                # left line
+                sdl_renderer2.fill_rect((offsetLeft-padding-line_width,offsetTop-padding-overhang,line_width,display_height+2*(padding+overhang)))
+                # right line
+                sdl_renderer2.fill_rect((offsetLeft+padding+display_width,offsetTop-padding-overhang,line_width,display_height+2*(padding+overhang)))
+
+                root_console = tcod.console.Console(width, height, order="F")
+                printUrwidToTcod(text,(0,0),explecitConsole=root_console)
+
+                atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
+                console_render = tcod.render.SDLConsoleRender(atlas)
+                renderedToTexture = console_render.render(root_console)
+                sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
+
+                printUrwidToSDL(text,(distance_left,distance_top))
+
+                # draw title line
+                if submenue and submenue.getTitle():
+                    sdl_renderer2.draw_color = (100,100,100,255)
+                    sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop-padding-line_width+2*tileHeight,display_width+2*(padding+overhang),line_width))
     else:
         last_menu_dimension = None
 

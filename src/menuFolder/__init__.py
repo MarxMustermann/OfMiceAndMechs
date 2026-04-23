@@ -40,3 +40,4 @@ import src.menuFolder.characterStatsMenu
 import src.menuFolder.itemInfoMenu
 import src.menuFolder.observeMenu
 import src.menuFolder.examineMenu
+import src.menuFolder.experimentalObserveMenu

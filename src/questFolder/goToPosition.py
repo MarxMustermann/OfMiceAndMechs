@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 class GoToPosition(src.quests.MetaQuestSequence):
     type = "GoToPosition"
 
-    def __init__(self, description="go to position", creator=None,targetPosition=None,ignoreEndBlocked=False,reason=None,lifetime=None, idleMovement=False, targetName=None, clearPath=False):
+    def __init__(self, description="go to position", creator=None,targetPosition=None,ignoreEndBlocked=False,reason=None,lifetime=None, idleMovement=False, targetName=None, clearPath=False, targetPositionBig=None):
         if targetPosition:
             if targetPosition[0] < 0 or targetPosition[0] > 13:
                 raise ValueError(f"target position {targetPosition} out of range")
@@ -34,6 +34,8 @@ class GoToPosition(src.quests.MetaQuestSequence):
 
         self.targetName = targetName
         self.clearPath = clearPath
+
+        self.targetPositionBig = targetPositionBig
 
     def generateTextDescription(self):
         '''
@@ -100,6 +102,9 @@ This quest ends after you do this.{extraText}"""
             if not renderForTile:
                 return []
 
+        if self.targetPositionBig and self.targetPositionBig != character.getBigPosition():
+            return []
+
         self.getSolvingCommandString(character)
         result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
         if self.path:
@@ -163,7 +168,9 @@ This quest ends after you do this.{extraText}"""
             return
         if self.completed:
             1/0
-        self.fail()
+
+        if not self.targetPositionBig:
+            self.fail()
 
     def handleCollision(self, extraInfo=None):
         '''
@@ -228,6 +235,14 @@ This quest ends after you do this.{extraText}"""
         if not self.active:
             return False
 
+        try:
+            self.targetPositionBig
+        except:
+            self.targetPositionBig = None
+
+        if self.targetPositionBig and self.targetPositionBig != character.getBigPosition():
+            return False
+
         if character.xPosition%15 == self.targetPosition[0] and character.yPosition%15 == self.targetPosition[1]:
             if not dryRun:
                 self.postHandler()
@@ -290,6 +305,10 @@ This quest ends after you do this.{extraText}"""
 
         if self.triggerCompletionCheck(character,dryRun=dryRun):
             return (None,(".","stand around confused"))
+
+        if self.targetPositionBig and self.targetPositionBig != character.getBigPosition():
+            quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig)
+            return ([quest],None)
 
         if not self.path:
             self.generatePath(character,dryRun=dryRun)

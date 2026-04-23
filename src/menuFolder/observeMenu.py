@@ -58,7 +58,7 @@ class ObserveMenu(src.subMenu.SubMenu):
         if key in ("D",):
             self.index_big = (self.index_big[0]+1,self.index_big[1],0)
 
-        # hanldle out of bound by the big cursor
+        # handle out of bound by the big cursor
         if self.index_big[0] < 1:
             self.index_big = (13,self.index_big[1],0)
         if self.index_big[0] > 13:

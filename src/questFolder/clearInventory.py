@@ -7,7 +7,7 @@ class ClearInventory(src.quests.MetaQuestSequence):
     '''
     type = "ClearInventory"
     lowLevel = True
-    def __init__(self, description="clear inventory", creator=None, targetPosition=None, returnToTile=True,tryHard=False,reason=None, disallowLocations=None):
+    def __init__(self, description="clear inventory", creator=None, returnToTile=True,tryHard=False,reason=None, disallowLocations=None):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description

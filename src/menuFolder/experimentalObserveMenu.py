@@ -69,6 +69,11 @@ class ExperimentalObserveMenu(src.subMenu.SubMenu):
         if self.index_big[1] > 13:
             self.index_big = (self.index_big[0],1,0)
 
+        if key in ("g",):
+            quest = src.quests.questMap["GoToPosition"](targetPosition=self.index,targetPositionBig=self.index_big)
+            quest.autoSolve = True
+            self.character.assignQuest(quest,active=True)
+
         if key in ("c",):
             quest = src.quests.questMap["CleanSpace"](targetPosition=self.index,targetPositionBig=self.index_big)
             quest.autoSolve = True

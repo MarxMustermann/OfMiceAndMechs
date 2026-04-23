@@ -12,8 +12,16 @@ class ObserveMenu(src.subMenu.SubMenu):
         if character == src.gamestate.gamestate.mainChar:
             src.interaction.send_tracking_ping("created_observe_menu")
 
+        self.planedActions = []
+
     def getTitle(self):
         return "OBSERVE"
+
+    def runQuests(self):
+        for quest in reversed(self.planedActions):
+            quest.autoSolve = True
+            self.character.assignQuest(quest,active=True)
+        self.planedActions = []
 
     def handleKey(self, key, noRender=False, character = None):
         src.interaction.send_tracking_ping("created_observe_menu_key_pressed_"+str(key))
@@ -68,35 +76,45 @@ class ObserveMenu(src.subMenu.SubMenu):
         if self.index_big[1] > 13:
             self.index_big = (self.index_big[0],1,0)
 
-        if key in ("g",):
+        if key in ("g","G",):
             quest = src.quests.questMap["GoToPosition"](targetPosition=self.index,targetPositionBig=self.index_big)
-            quest.autoSolve = True
-            self.character.assignQuest(quest,active=True)
+            self.planedActions.append(quest)
+            if key == "g":
+                self.runQuests()
 
-        if key in ("k",):
+        if key in ("k","K",):
             quest = src.quests.questMap["CleanSpace"](targetPosition=self.index,targetPositionBig=self.index_big)
-            quest.autoSolve = True
-            self.character.assignQuest(quest,active=True)
+            self.planedActions.append(quest)
+            if key == "k":
+                self.runQuests()
 
-        if key in ("j",):
+        if key in ("j","J",):
             quest = src.quests.questMap["ActivateItem"](targetPosition=self.index,targetPositionBig=self.index_big)
-            quest.autoSolve = True
-            self.character.assignQuest(quest,active=True)
+            self.planedActions.append(quest)
+            if key == "j":
+                self.runQuests()
 
-        if key in ("M",):
+        if key in ("m","M"):
             quest = src.quests.questMap["SecureTile"](toSecure=self.index_big,endWhenCleared=True)
-            quest.autoSolve = True
-            self.character.assignQuest(quest,active=True)
+            self.planedActions.append(quest)
+            if key == "m":
+                self.runQuests()
 
-        if key in ("L",):
+        if key in ("l","L"):
+            quest = src.quests.questMap["PlaceItem"](targetPositionBig=self.index_big,targetPosition=self.index)
+            self.planedActions.append(quest)
+            if key == "l":
+                self.runQuests()
+
+        if key in ("R",):
             quest = src.quests.questMap["RestockRoom"](targetPositionBig=self.index_big)
-            quest.autoSolve = True
-            self.character.assignQuest(quest,active=True)
+            self.planedActions.append(quest)
+            self.runQuests()
 
         if key in ("C",):
             quest = src.quests.questMap["ClearTile"](targetPositionBig=self.index_big)
-            quest.autoSolve = True
-            self.character.assignQuest(quest,active=True)
+            self.planedActions.append(quest)
+            self.runQuests()
 
         # emit event
         self.character.changed("lookedAt",{"index":self.index,"index_big":self.index_big})
@@ -235,6 +253,10 @@ class ObserveMenu(src.subMenu.SubMenu):
             text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"#000"),"steel floor (inside)\n"))
         else:
             text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"#000"),"mud floor (outside)\n"))
+
+        text.append("\n")
+        for action in self.planedActions:
+            text.append(f"{action}\n")
 
         text.append("\n\n")
         text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"#000"),"press w/a/s/d to change what spot you look at\n"))

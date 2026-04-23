@@ -5110,7 +5110,9 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                     width = last_menu_dimension[0]
                     height = last_menu_dimension[1]
 
-            pos = submenue.get_map_position()
+            pos = None
+            if submenue:
+                pos = submenue.get_map_position()
 
             if pos:
                 for ui_element in uiElements:
@@ -5133,7 +5135,6 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                         char_pos = (big_position[0]*15+small_position[0], big_position[1]*15+small_position[1], big_position[2]*15+small_position[2])
                     else:
                         char_pos = char.getPosition()
-                        char_pos = (char_pos-1,char_pos-1,0)
 
                     distance_left += pos[0]-char_pos[0]
                     distance_top += pos[1]-char_pos[1]
@@ -5147,9 +5148,7 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                     display_width = tileWidth*width
 
                     # draw focus marker
-                    #sdl_renderer2.draw_color = (255,255,0,255)
-                    #sdl_renderer2.fill_rect((offsetLeft-line_width,offsetTop-line_width,tileHeight+line_width*2,tileHeight+line_width*2))
-                    sdl_renderer2.draw_color = (150,150,150,255)
+                    sdl_renderer2.draw_color = (255,255,255,255)
                     sdl_renderer2.fill_rect((offsetLeft-line_width,offsetTop-line_width,tileHeight+line_width*2,line_width))
                     sdl_renderer2.fill_rect((offsetLeft-line_width,offsetTop-line_width,line_width,tileHeight+line_width*2))
                     sdl_renderer2.fill_rect((offsetLeft+tileHeight,offsetTop-line_width,line_width,tileHeight+line_width*2))

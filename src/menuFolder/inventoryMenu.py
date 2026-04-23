@@ -155,6 +155,11 @@ class InventoryMenu(src.subMenu.SubMenu):
             if self.cursor < 0:
                 self.cursor = len(self.char.inventory) - 1
 
+            if key in ("c",):
+                quest = src.quests.questMap["ClearInventory"]()
+                quest.autoSolve = True
+                self.char.assignQuest(quest,active=True)
+
         if not noRender:
             src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\ninventory overview\n\n"))
 
@@ -238,7 +243,7 @@ class InventoryMenu(src.subMenu.SubMenu):
                     extra_rows = (self.min_lines-5)-num_rows
                     txt.append("\n"*(extra_rows))
                     num_rows += extra_rows
-                txt.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"#000"),["press ws to move cursor\npress ",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"L")," to drop item nearby\npress l to drop item\npress j to activate item\npress e to examine item"]))
+                txt.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"#000"),["press ws to move cursor\npress ",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"L")," to drop item nearby\npress l to drop item\npress j to activate item\npress e to examine item\npress c to clear inventory"]))
                 num_rows += 4
         else:
             txt.append("empty Inventory\n")

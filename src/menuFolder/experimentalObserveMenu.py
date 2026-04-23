@@ -74,7 +74,7 @@ class ExperimentalObserveMenu(src.subMenu.SubMenu):
             quest.autoSolve = True
             self.character.assignQuest(quest,active=True)
 
-        if key in ("c",):
+        if key in ("k",):
             quest = src.quests.questMap["CleanSpace"](targetPosition=self.index,targetPositionBig=self.index_big)
             quest.autoSolve = True
             self.character.assignQuest(quest,active=True)

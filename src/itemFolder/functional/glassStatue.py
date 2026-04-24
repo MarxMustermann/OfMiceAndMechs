@@ -411,5 +411,14 @@ Currently the GlassStatue has {self.charges} charges.
 This GlassStatue was used teleported {self.numTeleportsDone} times.
 """
 
+    def drawSDL(self, renderer, basePos, fg_color=(255,255,255,255), bg_color=(0,0,0,255), tileSize=None):
+        tile_name = self.type
+        if self.hasItem:
+            tile_name += "_heart"
+        elif self.charges >= 5:
+            tile_name += "_ready"
+        self.drawTileSDL(renderer, basePos, fg_color=fg_color, bg_color=bg_color, tileSize=tileSize, tileName=tile_name)
+
+
 # register item type
 src.items.addType(GlassStatue)

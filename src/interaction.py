@@ -4983,6 +4983,26 @@ def renderGameDisplay(renderChar=None,showSaving=False):
 
             canvas.drawSdl(sdl_renderer2,offsetLeft,offsetTop,warning=warning)
 
+            line_width = 3
+            sdl_renderer2.draw_color = (70,70,130,255)
+            for room in thisTerrain.rooms:
+                pos = room.getPosition()
+                base_pos = (offsetLeft+tileHeight*pos[0],offsetTop+tileHeight+pos[1]*tileHeight)
+                for position in [(6,0,0),(0,6,0),(6,12,0),(12,6,0)]:
+                    # filter open connections
+                    if room.getPositionWalkable(position):
+                        continue
+
+                    # draw line
+                    if position == (0,6,0):
+                        sdl_renderer2.fill_rect((base_pos[0],base_pos[1],line_width,tileHeight))
+                    elif position == (12,6,0):
+                        sdl_renderer2.fill_rect((base_pos[0]+tileHeight-line_width,base_pos[1],line_width,tileHeight))
+                    elif position == (6,12,0):
+                        sdl_renderer2.fill_rect((base_pos[0],base_pos[1]+tileHeight-line_width,tileHeight,line_width))
+                    elif position == (6,0,0):
+                        sdl_renderer2.fill_rect((base_pos[0],base_pos[1],tileHeight,line_width))
+
         if uiElement["type"] == "gameMap":
             offsetLeft = uiElement["offset"][0]*tileWidth*2
             offsetTop = uiElement["offset"][1]*tileHeight

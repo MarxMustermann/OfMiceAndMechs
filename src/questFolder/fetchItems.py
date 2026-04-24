@@ -21,8 +21,10 @@ class FetchItems(src.quests.MetaQuestSequence):
         self.reason = reason
         self.topUpInventory = topUpInventory
 
-        if toCollect:
-            self.setParameters({"toCollect":toCollect})
+        if not toCollect:
+            raise ValueError(f"no item type given")
+
+        self.setParameters({"toCollect":toCollect})
         if amount:
             self.setParameters({"amount":amount})
         if returnToTile:

@@ -276,7 +276,7 @@ Press d to move the cursor and show the subquests description.
                             return (None,(command,"pick up item"))
 
                     outputSlot = random.choice(outputSlots)
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=outputSlot[0],ignoreEndBlocked=True,description="go to "+self.toCollect,reason=f"be able to pick up the {self.toCollect}")
+                    quest = src.quests.questMap["GoToPosition"](targetPosition=outputSlot[0],ignoreEndBlocked=True,description=f"go to {self.toCollect}",reason=f"be able to pick up the {self.toCollect}")
                     return ([quest],None)
 
             # collect any items from the base

@@ -143,7 +143,7 @@ If you don't find the items to place, produce them.
     def checkPlacedItem(self,item):
         if not item.container:
             return
-        if item.type == self.itemType:
+        if item.type == self.itemType or not self.itemType:
             if isinstance(item.container,src.characters.Character):
                 return
             if item.container.isRoom:
@@ -223,6 +223,11 @@ If you don't find the items to place, produce them.
                 if item.type == self.itemType:
                     itemFound = item
                     break
+
+            if not self.itemType:
+                if character.inventory:
+                    itemFound = character.inventory[-1]
+                    itemIndex = 1
 
             if not itemFound:
                 quest = src.quests.questMap["FetchItems"](toCollect=self.itemType,amount=1,takeAnyUnbolted=self.tryHard,tryHard=self.tryHard,reason="have an item to place")

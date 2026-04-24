@@ -131,7 +131,7 @@ def teleportToTerrain(character, terrainPosition, spawnOutside=False):
                 if terrain.getEnemiesOnTile(character,pos=(x,y,0)):
                     continue
                 candidates.append((x,y,0))
-        if candidates:
+        if not candidates:
             for x in range(1,14):
                 for y in range(1,14):
                     if terrain.getRoomByPosition((x,y,0)):

@@ -4016,9 +4016,22 @@ def getTcodEvents():
                     smallCoordinate = (click_coordinate[0]%15,click_coordinate[1]%15,0)
 
                     if event.button == tcod.event.MouseButton.LEFT:
-                        quest = src.quests.questMap["GoToPosition"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
-                        quest.autoSolve = True
-                        src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
+                        terrain = src.gamestate.gamestate.mainChar.getTerrain()
+                        rooms = terrain.getRoomByPosition(bigCoordinate)
+                        if rooms:
+                            items = rooms[0].getItemByPosition(smallCoordinate)
+                        else:
+                            items = terrain.getItemByPosition(click_coordinate)
+
+                        if items:
+                            item = items[0]
+                            quest = src.quests.questMap["ActivateItem"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
+                            quest.autoSolve = True
+                            src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
+                        else:
+                            quest = src.quests.questMap["GoToPosition"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
+                            quest.autoSolve = True
+                            src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
                     else:
                         print(event)
             if isinstance(event, tcod.event.Quit):

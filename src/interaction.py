@@ -3987,6 +3987,40 @@ def getTcodEvents():
         ignoreNext = False
         for event in events:
             foundEvent = True
+            if isinstance(event, tcod.event.MouseButtonDown):
+                raw_pos = event.position
+                raw_pos = (raw_pos.x,raw_pos.y,0)
+                tile_pos = (raw_pos[0]//tileHeight,raw_pos[1]//tileHeight,0)
+                uiElements = calculate_UI_layout(src.gamestate.gamestate.mainChar)
+                for uiElement in uiElements:
+                    if uiElement["type"] != "gameMap":
+                        continue
+                    if uiElement["offset"][0] > tile_pos[0]:
+                        continue
+                    if uiElement["offset"][0]+uiElement["map_width"] < tile_pos[0]:
+                        continue
+                    if uiElement["offset"][1] > tile_pos[1]:
+                        continue
+                    if uiElement["offset"][1]+uiElement["map_width"] < tile_pos[1]:
+                        continue
+                    offset_x = tile_pos[0]-(uiElement["offset"][0]+uiElement["map_width"]//2)
+                    offset_y = tile_pos[1]-(uiElement["offset"][1]+uiElement["map_width"]//2)
+                    offset = (offset_x,offset_y)
+                    character_position = src.gamestate.gamestate.mainChar.getPosition()
+                    if src.gamestate.gamestate.mainChar.container.isRoom:
+                        big_pos = src.gamestate.gamestate.mainChar.getBigPosition()
+                        character_position = (big_pos[0]*15+character_position[0],big_pos[1]*15+character_position[1],0)
+                    click_coordinate = (character_position[0]+offset[0],character_position[1]+offset[1],0)
+
+                    bigCoordinate = (click_coordinate[0]//15,click_coordinate[1]//15,0)
+                    smallCoordinate = (click_coordinate[0]%15,click_coordinate[1]%15,0)
+
+                    if event.button == tcod.event.MouseButton.LEFT:
+                        quest = src.quests.questMap["GoToPosition"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
+                        quest.autoSolve = True
+                        src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
+                    else:
+                        print(event)
             if isinstance(event, tcod.event.Quit):
                 if src.interaction.tcodMixer:
                     src.interaction.tcodMixer.close()

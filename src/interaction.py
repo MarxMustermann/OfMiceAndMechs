@@ -3988,6 +3988,9 @@ def getTcodEvents():
         for event in events:
             foundEvent = True
             if isinstance(event, tcod.event.MouseButtonDown):
+                if src.gamestate.gamestate.mainChar.macroState.get("submenue"):
+                    src.gamestate.gamestate.mainChar.runCommandString(["esc"])
+                    continue
                 raw_pos = event.position
                 raw_pos = (raw_pos.x,raw_pos.y,0)
                 tile_pos = (raw_pos[0]//tileHeight,raw_pos[1]//tileHeight,0)

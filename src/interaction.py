@@ -4023,14 +4023,28 @@ def getTcodEvents():
                         rooms = terrain.getRoomByPosition(bigCoordinate)
                         if rooms:
                             items = rooms[0].getItemByPosition(smallCoordinate)
+                            other_characters = rooms[0].getCharactersOnPosition(smallCoordinate)
                         else:
                             items = terrain.getItemByPosition(click_coordinate)
+                            other_characters = terrain.getCharactersOnPosition(click_coordinate)
 
-                        if items:
+                        if other_characters:
+                            for other_character in other_characters:
+                                if other_character.faction != src.gamestate.gamestate.mainChar.faction:
+                                    quest = src.quests.questMap["Huntdown"](target=other_character,suicidal=True)
+                                    quest.autoSolve = True
+                                    src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
+                                    break
+                        elif items:
                             item = items[0]
-                            quest = src.quests.questMap["ActivateItem"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
-                            quest.autoSolve = True
-                            src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
+                            if item.bolted:
+                                quest = src.quests.questMap["ActivateItem"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
+                                quest.autoSolve = True
+                                src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
+                            else:
+                                quest = src.quests.questMap["CleanSpace"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
+                                quest.autoSolve = True
+                                src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
                         else:
                             quest = src.quests.questMap["GoToPosition"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
                             quest.autoSolve = True

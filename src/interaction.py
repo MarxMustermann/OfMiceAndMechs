@@ -3969,13 +3969,18 @@ def keyboardListener(key, targetCharacter=None):
 
 lastAdvance = 0
 lastAutosave = 0
+inputBlock = None
 
 lastcheck = time.time()
 def getTcodEvents():
     src.gamestate.gamestate.waitedForInputThisTurn = True
     global lastcheck
+    global inputBlock
 
     foundEvent = False
+
+    if inputBlock and inputBlock < time.time():
+        inputBlock = None
 
     if lastcheck < time.time()-0.01:
         events = tcod.event.get()
@@ -3989,6 +3994,8 @@ def getTcodEvents():
             if isinstance(event, tcod.event.WindowResized):
                 checkResetWindowSize(event.width,event.height)
             if isinstance(event, tcod.event.WindowEvent):
+                if event.type in ("WindowTakeFocus","WindowFocusGained",):
+                    inputBlock = time.time()+0.1
                 if event.type == "WINDOWCLOSE":
                     if src.interaction.tcodMixer:
                         src.interaction.tcodMixer.close()
@@ -4019,6 +4026,8 @@ def getTcodEvents():
             """
 
             if isinstance(event,tcod.event.KeyDown):
+                if inputBlock and inputBlock > time.time():
+                    continue
                 key = event.sym
                 translatedKey = None
                 if key in (tcod.event.KeySym.LSHIFT,4097):
@@ -4026,7 +4035,8 @@ def getTcodEvents():
                 if key in (tcod.event.KeySym.RETURN, tcod.event.KeySym.KP_ENTER):
                     translatedKey = "enter"
                 if key in (tcod.event.KeySym.TAB,):
-                    translatedKey = "tab"
+                    if not event.mod:
+                        translatedKey = "tab"
                 if key == tcod.event.KeySym.BACKSPACE:
                     translatedKey = "backspace"
                 """

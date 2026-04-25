@@ -119,6 +119,9 @@ class ObserveMenu(src.subMenu.SubMenu):
         if key in (".",):
             self.character.takeTime(1,"waited")
 
+        if key in ("enter",):
+            self.runQuests()
+
         # emit event
         self.character.changed("lookedAt",{"index":self.index,"index_big":self.index_big})
 

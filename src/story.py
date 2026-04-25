@@ -3373,6 +3373,7 @@ This memorial contains:
                 },
                 None,
            )
+        mainRoom.tag = "central chamber"
 
         # set up meta information about dungeon
         mainPath = [(7,7)]
@@ -3579,9 +3580,11 @@ This memorial contains:
         logger.info(f"runmodifer dungeon {itemID}: {runModifier}")
         counter = 0
         for room in reversed(rooms[1:-2]):
+            room.tag = f"main path {counter}"
 
             if counter == 0:
                 counter += 1
+                room.tag = f"welcome room"
                 continue
 
             for _i in range(1):
@@ -3611,6 +3614,7 @@ This memorial contains:
 
         # add guardian room
         room = rooms[0]
+        room.tag = "guardian room"
         pos = (7,7,0)
         guardian = src.characters.characterMap["Guardian"](7,7,level=level)
         quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
@@ -3625,6 +3629,8 @@ This memorial contains:
         max_implants = 1
 
         for room in reversed(extraRooms):
+            room.tag = "extra room"
+
             for _i in range(1):
                 pos = (random.randint(1,11),random.randint(1,11),0)
                 golem = src.characters.characterMap["Golem"](4,4,level = level,runModifier = runModifier)
@@ -3674,6 +3680,9 @@ This memorial contains:
             if counter == endIndex:
                 item = src.items.itemMap["CoalBurner"]()
                 room.addItem(item,(6,6,0))
+
+            if counter == endIndex+1:
+                room.tag = f"entry chamber"
 
             if self.difficulty != "difficult":
                 if counter == endIndex+1:

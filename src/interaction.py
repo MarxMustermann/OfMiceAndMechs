@@ -4024,17 +4024,32 @@ def getTcodEvents():
                         if rooms:
                             items = rooms[0].getItemByPosition(smallCoordinate)
                             other_characters = rooms[0].getCharactersOnPosition(smallCoordinate)
+                            markers = rooms[0].getMarkersOnPosition(smallCoordinate)
                         else:
                             items = terrain.getItemByPosition(click_coordinate)
                             other_characters = terrain.getCharactersOnPosition(click_coordinate)
+                            markers = []
 
                         if other_characters:
+                            assigned_quest = False
                             for other_character in other_characters:
                                 if other_character.faction != src.gamestate.gamestate.mainChar.faction:
                                     quest = src.quests.questMap["Huntdown"](target=other_character,suicidal=True)
                                     quest.autoSolve = True
                                     src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
+                                    assigned_quest = True
                                     break
+                            if not assigned_quest:
+                                for other_character in other_characters:
+                                    if other_character.faction == src.gamestate.gamestate.mainChar.faction:
+                                        submenue = src.chats.ChatMenu(other_character)
+                                        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenue
+                                        src.gamestate.gamestate.mainChar.runCommandString("~")
+                                        break
+                        elif markers and markers[0][0] in ("inputSlot",):
+                            quest = src.quests.questMap["RestockRoom"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
+                            quest.autoSolve = True
+                            src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
                         elif items:
                             item = items[0]
                             if item.bolted:

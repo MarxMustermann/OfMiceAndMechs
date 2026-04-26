@@ -8,6 +8,9 @@ class IdleChatNPCMenu(src.subMenu.SubMenu):
         self.infoType = None
         super().__init__()
 
+    def getTitle(self):
+        return "CHAT"
+
     def handleKey(self, key, noRender=False, character = None):
         if self.subMenu:
             subMenuDone = self.subMenu.handleKey(key, noRender=noRender, character=character)

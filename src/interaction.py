@@ -4638,7 +4638,7 @@ def calculate_UI_layout(char):
 
     uiElements.append({"type":"healthInfo","offset":[(assumedScreenWidth-mapWidth)//2,1],"width":mapWidth})
     uiElements.append({"type":"indicators","offset":[(assumedScreenWidth-mapWidth)//2,2],"width":mapWidth})
-    uiElements.append({"type":"legend","offset":[0,tcodConsole.height-2],"width":assumedScreenWidth,"height":2})
+    uiElements.append({"type":"legend","offset":[0,tcodConsole.height-2],"width":assumedScreenWidth,"height":3})
 
     if not char.hasMagic:
         displayString = "press ? for help"

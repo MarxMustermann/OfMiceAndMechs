@@ -10,7 +10,7 @@ class SelectionMenu(src.subMenu.SubMenu):
         default: the default value
         targetParamName: name of the parameter the selection should be stored in
     '''
-    def __init__(self, text="", options=None, default=None, targetParamName="selection",extraDescriptions=None, selected=None, tag=None):
+    def __init__(self, text="", options=None, default=None, targetParamName="selection",extraDescriptions=None, selected=None, tag=None, title=None):
         if not options:
             options = []
 
@@ -26,6 +26,11 @@ class SelectionMenu(src.subMenu.SubMenu):
                     self.selectionIndex = counter
 
         self.extraDescriptions = extraDescriptions
+
+        self.title = title
+
+    def getTitle(self):
+        return self.title
 
     def handleKey(self, key, noRender=False, character = None):
         '''

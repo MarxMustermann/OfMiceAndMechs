@@ -80,6 +80,7 @@ class GameState:
         self.story = None
         self.teleporterGroups = {}
         self.itemToUpdatePerTick = []
+
     # bad code: initialization should happen in story or from loading
     def setup(self, phase=None, seed=0):
         """

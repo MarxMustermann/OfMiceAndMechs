@@ -997,6 +997,7 @@ class MainGame(BasicPhase):
         self.num_ignored_cooldown = 0
         self.reenabled_command = False
 
+        self.has_shown_hello = False
         self.has_shown_congratz = False
         self.has_shown_get_weapon = False
         self.has_shown_leave = False
@@ -4094,6 +4095,30 @@ This memorial contains:
         # get helper variables
         mainChar = self.activeStory["mainChar"]
         homeTerrain = src.gamestate.gamestate.terrainMap[mainChar.registers["HOMETy"]][mainChar.registers["HOMETx"]]
+
+        # introduce the implant
+        if not self.has_shown_hello:
+            introduction_text = ["""
+""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),"""
+
+
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Hello!"),"""
+
+You must be confused.
+
+I'm your implant and i'm here to help you.
+You can contact me by pressing tab.
+
+The machinery around you is burning and exploding.
+So i recommend leaving the room before you get hurt.
+The exit is on the north side, you can move by pressing the wasd keys,
+
+
+""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"press enter to close this window"),"""
+"""]
+            mainChar.showTextMenu(introduction_text)
+            self.has_shown_hello = True
+            return
 
         # reduce edge cases
         if len(mainChar.quests) > 1 or (mainChar.quests and mainChar.quests[0].type != "ReachOutStory"):

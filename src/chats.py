@@ -1790,7 +1790,7 @@ class ChatMenu(Chat):
                     return True
 
         # maybe exit the submenu
-        if key == "esc" and not self.subMenu:
+        if key == "esc":
             # abort the chat
             return True
 

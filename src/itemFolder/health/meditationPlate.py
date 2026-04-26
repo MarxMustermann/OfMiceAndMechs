@@ -33,12 +33,14 @@ class MeditationPlate(src.items.Item):
         character.heal(heal_amount,reason="meditation")
 
         if heal_amount:
-            character.addMessage(f"{heal_amount} you don't heal, you already have 50 health")
+            text = f"you heal by {heal_amount} HP to reach 50 HP"
+            character.showTextMenu(text)
+            character.addMessage(text)
             return
         else:
-            character.addMessage("you don't heal, you already have 50 health")
+            text = "you don't heal, you already have 50 health"
+            character.showTextMenu(text)
+            character.addMessage(text)
             return
-
-        heal_amount = max(0,(min(character.adjustedMaxHealth,50)-character.health))
 
 src.items.addType(MeditationPlate)

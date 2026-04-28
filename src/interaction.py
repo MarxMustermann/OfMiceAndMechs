@@ -5181,19 +5181,19 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                 raw_click_pos = mousePos
                 tile_pos = (raw_click_pos[0]//tileHeight,raw_click_pos[1]//tileHeight,0)
                 uiElements = calculate_UI_layout(src.gamestate.gamestate.mainChar)
-                for uiElement in uiElements:
-                    if uiElement["type"] != "gameMap":
+                for check_uiElement in uiElements:
+                    if check_uiElement["type"] != "gameMap":
                         continue
-                    if uiElement["offset"][0] > tile_pos[0]:
+                    if check_uiElement["offset"][0] > tile_pos[0]:
                         continue
-                    if uiElement["offset"][0]+uiElement["map_width"] < tile_pos[0]:
+                    if check_uiElement["offset"][0]+check_uiElement["map_width"] < tile_pos[0]:
                         continue
-                    if uiElement["offset"][1] > tile_pos[1]:
+                    if check_uiElement["offset"][1] > tile_pos[1]:
                         continue
-                    if uiElement["offset"][1]+uiElement["map_width"] < tile_pos[1]:
+                    if check_uiElement["offset"][1]+check_uiElement["map_width"] < tile_pos[1]:
                         continue
-                    offset_x = tile_pos[0]-(uiElement["offset"][0]+uiElement["map_width"]//2)
-                    offset_y = tile_pos[1]-(uiElement["offset"][1]+uiElement["map_width"]//2)
+                    offset_x = tile_pos[0]-(check_uiElement["offset"][0]+check_uiElement["map_width"]//2)
+                    offset_y = tile_pos[1]-(check_uiElement["offset"][1]+check_uiElement["map_width"]//2)
                     offset = (offset_x,offset_y)
                     character_position = src.gamestate.gamestate.mainChar.getPosition()
                     if src.gamestate.gamestate.mainChar.container.isRoom:

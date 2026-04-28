@@ -394,10 +394,6 @@ class Canvas:
                         except:
                             logger.warn("drawing off screen")
                         extraX += 1
-                    #console.print(x=2*x+numPrinted,y=y,fg=item[0],bg=item[1],string=text)
-                    #if actionMeta:
-                    #    src.gamestate.gamestate.clickMap[(2*x+numPrinted,y)] = actionMeta
-                    #    src.gamestate.gamestate.clickMap[(2*x+numPrinted+1,y)] = actionMeta
                     numPrinted += 1
                 x += 1
             y += 1

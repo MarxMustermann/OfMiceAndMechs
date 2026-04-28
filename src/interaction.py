@@ -4100,28 +4100,6 @@ def getTcodEvents():
                     raise SystemExit()
                 if event.type == "WINDOWEXPOSED":
                     renderGameDisplay()
-            """
-            if isinstance(event,tcod.event.MouseButtonDown):# or isinstance(event,tcod.event.MouseButtonUp):
-                tcodContext.convert_event(event)
-                clickPos = (event.tile.x,event.tile.y)
-                if src.gamestate.gamestate.clickMap:
-                    if clickPos not in src.gamestate.gamestate.clickMap:
-                        continue
-
-                    value = src.gamestate.gamestate.clickMap[clickPos]
-                    if isinstance(value, list | str):
-                        src.gamestate.gamestate.mainChar.runCommandString(value,nativeKey=True)
-                    elif isinstance(value,dict):
-                        if "params" not in value:
-                            value["params"] = {}
-                        value["params"]["event"] = event
-                        src.saveing.Saveable.callIndirect(None,value)
-                    else:
-                        value()
-
-                if isinstance(event,tcod.event.MouseButtonUp):
-                    src.gamestate.gamestate.dragState = None
-            """
 
             if isinstance(event,tcod.event.KeyDown):
                 if inputBlock and inputBlock > time.time():
@@ -4477,9 +4455,6 @@ def printUrwidToSDL(inData,offset,color=None,internalOffset=None,size=None, acti
             if not skipPrint:
                 x = offset[0]+internalOffset[0]
                 y = offset[1]+internalOffset[1]
-                if actionMeta:
-                    for i in range(len(toPrint)):
-                        src.gamestate.gamestate.clickMap[(x+i,y)] = actionMeta
                 #tcodConsole.print(x=x,y=y,string=toPrint,fg=color[0],bg=color[1])
 
             internalOffset[0] += len(line)
@@ -4564,10 +4539,6 @@ def printUrwidToDummy(dummy,inData,offset,color=None,internalOffset=None,size=No
             if not skipPrint:
                 x = offset[0]+internalOffset[0]
                 y = offset[1]+internalOffset[1]
-                #if actionMeta:
-                #    for i in range(0,len(toPrint)):
-                #        src.gamestate.gamestate.clickMap[(x+i,y)] = actionMeta
-                #tcodConsole.print(x=x,y=y,string=toPrint,fg=color[0],bg=color[1])
 
                 extraX = 0
                 for char in toPrint:
@@ -4682,8 +4653,6 @@ def renderGameDisplay(renderChar=None,showSaving=False):
     click_map = []
 
     pseudoDisplay = []
-
-    src.gamestate.gamestate.clickMap = {}
 
     text = ""
 

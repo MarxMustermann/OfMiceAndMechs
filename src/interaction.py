@@ -5207,10 +5207,14 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                     terrain = src.gamestate.gamestate.mainChar.getTerrain()
                     rooms = terrain.getRoomByPosition(bigCoordinate)
                     if rooms:
+                        if not src.gamestate.gamestate.mainChar.container.isRoom:
+                            smallCoordinate = (smallCoordinate[0]-1,smallCoordinate[1]-1,0)
                         items = rooms[0].getItemByPosition(smallCoordinate)
                         other_characters = rooms[0].getCharactersOnPosition(smallCoordinate)
                         markers = rooms[0].getMarkersOnPosition(smallCoordinate)
                     else:
+                        if src.gamestate.gamestate.mainChar.container.isRoom:
+                            click_coordinate = (click_coordinate[0]+1,click_coordinate[1]+1,0)
                         items = terrain.getItemByPosition(click_coordinate)
                         other_characters = terrain.getCharactersOnPosition(click_coordinate)
                         markers = []

@@ -2664,6 +2664,32 @@ def doDockRight(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame)
         char.macroState["submenue"].handleKey("~", noRender=False, character=char)
         char.specialRender = True
 
+def handle_main_menu_selected():
+    char = src.gamestate.gamestate.mainChar
+    submenu = char.macroState["submenue"]
+    selection = submenu.getSelection()
+    if selection == "save":
+        tmp = char.macroState["submenue"]
+        char.macroState["submenue"] = None
+        src.gamestate.gamestate.save()
+        char.macroState["submenue"] = tmp
+    elif selection == "quit":
+        char.macroState["submenue"] = None
+        char.specialRender = False
+        src.gamestate.gamestate.save()
+        # src.interaction.tcodMixer.close()
+        raise SystemExit() #HACK: workaround for bug that causes memory leak
+    elif selection == "help":
+        charState["submenue"] = src.menuFolder.helpMenu.HelpMenu()
+    elif selection == "change settings":
+        charState["submenue"] = src.menuFolder.settingMenu.SettingMenu() 
+    elif selection == "main menu":
+        char.macroState["submenue"] = None
+        char.specialRender = False
+        src.gamestate.gamestate.save()
+        src.gamestate.gamestate = None
+        raise EndGame("the game was ended manually")
+
 def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
     options = [("save", "save"),
                ("main menu","save and back to main menu"),
@@ -2675,31 +2701,7 @@ def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
     submenu.do_not_scale = True
     char.macroState["submenue"] = submenu
 
-    def trigger():
-        selection = submenu.getSelection()
-        if selection == "save":
-            tmp = char.macroState["submenue"]
-            char.macroState["submenue"] = None
-            src.gamestate.gamestate.save()
-            char.macroState["submenue"] = tmp
-        elif selection == "quit":
-            char.macroState["submenue"] = None
-            char.specialRender = False
-            src.gamestate.gamestate.save()
-            # src.interaction.tcodMixer.close()
-            raise SystemExit() #HACK: workaround for bug that causes memory leak
-        elif selection == "help":
-            charState["submenue"] = src.menuFolder.helpMenu.HelpMenu()
-        elif selection == "change settings":
-            charState["submenue"] = src.menuFolder.settingMenu.SettingMenu() 
-        elif selection == "main menu":
-            char.macroState["submenue"] = None
-            char.specialRender = False
-            src.gamestate.gamestate.save()
-            src.gamestate.gamestate = None
-            raise EndGame("the game was ended manually")
-
-    char.macroState["submenue"].followUp = trigger
+    char.macroState["submenue"].followUp = handle_main_menu_selected
     char.runCommandString("~",nativeKey=True)
 
 def doSpecialAction(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):

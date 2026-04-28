@@ -4045,10 +4045,17 @@ def getTcodEvents():
 
                         bigCoordinate = (click_coordinate[0]//15,click_coordinate[1]//15,0)
                         smallCoordinate = (click_coordinate[0]%15,click_coordinate[1]%15,0)
+                        terrain = src.gamestate.gamestate.mainChar.getTerrain()
+                        rooms = terrain.getRoomByPosition(bigCoordinate)
+                        if rooms:
+                            if not src.gamestate.gamestate.mainChar.container.isRoom:
+                                smallCoordinate = (smallCoordinate[0]-1,smallCoordinate[1]-1,0)
+                        else:
+                            if src.gamestate.gamestate.mainChar.container.isRoom:
+                                click_coordinate = (click_coordinate[0]+1,click_coordinate[1]+1,0)
+                                smallCoordinate = (smallCoordinate[0]+1,smallCoordinate[1]+1,0)
 
                         if event.button == tcod.event.MouseButton.LEFT:
-                            terrain = src.gamestate.gamestate.mainChar.getTerrain()
-                            rooms = terrain.getRoomByPosition(bigCoordinate)
                             if rooms:
                                 items = rooms[0].getItemByPosition(smallCoordinate)
                                 other_characters = rooms[0].getCharactersOnPosition(smallCoordinate)

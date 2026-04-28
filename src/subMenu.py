@@ -226,6 +226,19 @@ class SubMenu(object):
     def get_map_position(self):
         return None
 
+    def select_option(self,key,origKey=None):
+        print(key)
+        self.selection = self.options[key]
+        self.options = None
+        if self.followUp:
+            self.callIndirect(self.followUp,extraParams={self.targetParamName:self.selection,"key":origKey})
+        self.origKey = origKey
+
+    def option_click(self,extraParams=None):
+        key = extraParams["selection"]
+        self.select_option(key)
+        src.gamestate.gamestate.mainChar.runCommandString("~")
+
     def render(self):
         # show question
         out = []
@@ -236,13 +249,15 @@ class SubMenu(object):
         extraDescription = None
         counter = 0
         for k, v in self.niceOptions.items():
+            rendered_option = []
             counter += 1
             if counter == self.selectionIndex:
-                out.extend([" -> ", v, "\n"])
+                rendered_option.extend([" -> ", v, "\n"])
                 if self.extraDescriptions and self.options[k] in self.extraDescriptions:
                     extraDescription = ["\n",self.extraDescriptions[self.options[k]],"\n\n"]
             else:
-                out.extend(["    ", v, "\n"])
+                rendered_option.extend(["    ", v, "\n"])
+            out.append(src.interaction.ActionMeta(content=rendered_option,payload=(self.option_click,{"selection":k})))
         if extraDescription:
             out.extend(extraDescription)
 

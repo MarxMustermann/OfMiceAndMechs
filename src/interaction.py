@@ -4004,7 +4004,10 @@ def getTcodEvents():
                     if click_zone[0][1]+click_zone[1][1] < raw_click_pos[1]:
                         continue
                     handled_click = True
-                    src.gamestate.gamestate.mainChar.runCommandString(click_zone[2])
+                    if isinstance(click_zone[2],str):
+                        src.gamestate.gamestate.mainChar.runCommandString(click_zone[2])
+                    else:
+                        click_zone[2][0](click_zone[2][1])
                     break
 
                 if not handled_click:

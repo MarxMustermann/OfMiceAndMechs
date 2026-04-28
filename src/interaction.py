@@ -44,6 +44,7 @@ speed = None
 libtcodpy = None
 noFlicker = False
 noDemo = False
+click_map = []
 
 upper_case_letter_color = "#66f"
 disabled_ui_color = "#777"
@@ -3991,81 +3992,99 @@ def getTcodEvents():
                 if src.gamestate.gamestate.mainChar.macroState.get("submenue"):
                     src.gamestate.gamestate.mainChar.runCommandString(["esc"])
                     continue
-                raw_pos = event.position
-                raw_pos = (raw_pos.x,raw_pos.y,0)
-                tile_pos = (raw_pos[0]//tileHeight,raw_pos[1]//tileHeight,0)
-                uiElements = calculate_UI_layout(src.gamestate.gamestate.mainChar)
-                for uiElement in uiElements:
-                    if uiElement["type"] != "gameMap":
-                        continue
-                    if uiElement["offset"][0] > tile_pos[0]:
-                        continue
-                    if uiElement["offset"][0]+uiElement["map_width"] < tile_pos[0]:
-                        continue
-                    if uiElement["offset"][1] > tile_pos[1]:
-                        continue
-                    if uiElement["offset"][1]+uiElement["map_width"] < tile_pos[1]:
-                        continue
-                    offset_x = tile_pos[0]-(uiElement["offset"][0]+uiElement["map_width"]//2)
-                    offset_y = tile_pos[1]-(uiElement["offset"][1]+uiElement["map_width"]//2)
-                    offset = (offset_x,offset_y)
-                    character_position = src.gamestate.gamestate.mainChar.getPosition()
-                    if src.gamestate.gamestate.mainChar.container.isRoom:
-                        big_pos = src.gamestate.gamestate.mainChar.getBigPosition()
-                        character_position = (big_pos[0]*15+character_position[0],big_pos[1]*15+character_position[1],0)
-                    click_coordinate = (character_position[0]+offset[0],character_position[1]+offset[1],0)
 
-                    bigCoordinate = (click_coordinate[0]//15,click_coordinate[1]//15,0)
-                    smallCoordinate = (click_coordinate[0]%15,click_coordinate[1]%15,0)
+                handled_click = False
 
-                    if event.button == tcod.event.MouseButton.LEFT:
-                        terrain = src.gamestate.gamestate.mainChar.getTerrain()
-                        rooms = terrain.getRoomByPosition(bigCoordinate)
-                        if rooms:
-                            items = rooms[0].getItemByPosition(smallCoordinate)
-                            other_characters = rooms[0].getCharactersOnPosition(smallCoordinate)
-                            markers = rooms[0].getMarkersOnPosition(smallCoordinate)
-                        else:
-                            items = terrain.getItemByPosition(click_coordinate)
-                            other_characters = terrain.getCharactersOnPosition(click_coordinate)
-                            markers = []
+                raw_click_pos = event.position
+                raw_click_pos = (raw_click_pos.x,raw_click_pos.y,0)
 
-                        if other_characters:
-                            assigned_quest = False
-                            for other_character in other_characters:
-                                if other_character.faction != src.gamestate.gamestate.mainChar.faction:
-                                    quest = src.quests.questMap["Huntdown"](target=other_character,suicidal=True)
+                for click_zone in click_map:
+                    if click_zone[0][0] > raw_click_pos[0]:
+                        continue
+                    if click_zone[0][1] > raw_click_pos[1]:
+                        continue
+                    if click_zone[0][0]+click_zone[1][0] < raw_click_pos[0]:
+                        continue
+                    if click_zone[0][1]+click_zone[1][1] < raw_click_pos[1]:
+                        continue
+                    handled_click = True
+                    src.gamestate.gamestate.mainChar.runCommandString(click_zone[2])
+                    break
+
+                if not handled_click:
+                    tile_pos = (raw_click_pos[0]//tileHeight,raw_click_pos[1]//tileHeight,0)
+                    uiElements = calculate_UI_layout(src.gamestate.gamestate.mainChar)
+                    for uiElement in uiElements:
+                        if uiElement["type"] != "gameMap":
+                            continue
+                        if uiElement["offset"][0] > tile_pos[0]:
+                            continue
+                        if uiElement["offset"][0]+uiElement["map_width"] < tile_pos[0]:
+                            continue
+                        if uiElement["offset"][1] > tile_pos[1]:
+                            continue
+                        if uiElement["offset"][1]+uiElement["map_width"] < tile_pos[1]:
+                            continue
+                        offset_x = tile_pos[0]-(uiElement["offset"][0]+uiElement["map_width"]//2)
+                        offset_y = tile_pos[1]-(uiElement["offset"][1]+uiElement["map_width"]//2)
+                        offset = (offset_x,offset_y)
+                        character_position = src.gamestate.gamestate.mainChar.getPosition()
+                        if src.gamestate.gamestate.mainChar.container.isRoom:
+                            big_pos = src.gamestate.gamestate.mainChar.getBigPosition()
+                            character_position = (big_pos[0]*15+character_position[0],big_pos[1]*15+character_position[1],0)
+                        click_coordinate = (character_position[0]+offset[0],character_position[1]+offset[1],0)
+
+                        bigCoordinate = (click_coordinate[0]//15,click_coordinate[1]//15,0)
+                        smallCoordinate = (click_coordinate[0]%15,click_coordinate[1]%15,0)
+
+                        if event.button == tcod.event.MouseButton.LEFT:
+                            terrain = src.gamestate.gamestate.mainChar.getTerrain()
+                            rooms = terrain.getRoomByPosition(bigCoordinate)
+                            if rooms:
+                                items = rooms[0].getItemByPosition(smallCoordinate)
+                                other_characters = rooms[0].getCharactersOnPosition(smallCoordinate)
+                                markers = rooms[0].getMarkersOnPosition(smallCoordinate)
+                            else:
+                                items = terrain.getItemByPosition(click_coordinate)
+                                other_characters = terrain.getCharactersOnPosition(click_coordinate)
+                                markers = []
+
+                            if other_characters:
+                                assigned_quest = False
+                                for other_character in other_characters:
+                                    if other_character.faction != src.gamestate.gamestate.mainChar.faction:
+                                        quest = src.quests.questMap["Huntdown"](target=other_character,suicidal=True)
+                                        quest.autoSolve = True
+                                        src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
+                                        assigned_quest = True
+                                        break
+                                if not assigned_quest:
+                                    for other_character in other_characters:
+                                        if other_character.faction == src.gamestate.gamestate.mainChar.faction:
+                                            submenue = src.chats.ChatMenu(other_character)
+                                            src.gamestate.gamestate.mainChar.macroState["submenue"] = submenue
+                                            src.gamestate.gamestate.mainChar.runCommandString("~")
+                                            break
+                            elif markers and markers[0][0] in ("inputSlot",):
+                                quest = src.quests.questMap["RestockRoom"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
+                                quest.autoSolve = True
+                                src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
+                            elif items:
+                                item = items[0]
+                                if item.bolted:
+                                    quest = src.quests.questMap["ActivateItem"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
                                     quest.autoSolve = True
                                     src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
-                                    assigned_quest = True
-                                    break
-                            if not assigned_quest:
-                                for other_character in other_characters:
-                                    if other_character.faction == src.gamestate.gamestate.mainChar.faction:
-                                        submenue = src.chats.ChatMenu(other_character)
-                                        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenue
-                                        src.gamestate.gamestate.mainChar.runCommandString("~")
-                                        break
-                        elif markers and markers[0][0] in ("inputSlot",):
-                            quest = src.quests.questMap["RestockRoom"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
-                            quest.autoSolve = True
-                            src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
-                        elif items:
-                            item = items[0]
-                            if item.bolted:
-                                quest = src.quests.questMap["ActivateItem"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
-                                quest.autoSolve = True
-                                src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
+                                else:
+                                    quest = src.quests.questMap["CleanSpace"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
+                                    quest.autoSolve = True
+                                    src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
                             else:
-                                quest = src.quests.questMap["CleanSpace"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
+                                quest = src.quests.questMap["GoToPosition"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
                                 quest.autoSolve = True
                                 src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
                         else:
-                            quest = src.quests.questMap["GoToPosition"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
-                            quest.autoSolve = True
-                            src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
-                    else:
-                        print(event)
+                            print(event)
             if isinstance(event, tcod.event.Quit):
                 if src.interaction.tcodMixer:
                     src.interaction.tcodMixer.close()
@@ -4397,9 +4416,6 @@ def printUrwidToTcod(inData,offset,color=None,internalOffset=None,size=None, act
             if not skipPrint:
                 x = offset[0]+internalOffset[0]
                 y = offset[1]+internalOffset[1]
-                if actionMeta:
-                    for i in range(len(toPrint)):
-                        src.gamestate.gamestate.clickMap[(x+i,y)] = actionMeta
                 tcodConsole_local.print(x=x,y=y,string=toPrint,fg=color[0],bg=color[1])
 
             internalOffset[0] += len(line)
@@ -4417,6 +4433,7 @@ def printUrwidToTcod(inData,offset,color=None,internalOffset=None,size=None, act
             printUrwidToTcod(item,offset,color,internalOffset,size,actionMeta,explecitConsole = tcodConsole_local)
 
     if isinstance(inData, ActionMeta):
+        click_map.append((((offset[0]+internalOffset[0])*tileWidth,(offset[1]+internalOffset[1])*tileHeight),(len(stringifyUrwid(inData.content))*tileHeight,tileHeight),inData.payload))
         printUrwidToTcod(inData.content,offset,color,internalOffset,size,inData.payload,explecitConsole = tcodConsole_local)
 
     if isinstance(inData, CharacterMeta):
@@ -4660,6 +4677,9 @@ def calculate_UI_layout(char):
 last_menu_dimension = None
 def renderGameDisplay(renderChar=None,showSaving=False):
     global last_menu_dimension
+    global click_map
+
+    click_map = []
 
     pseudoDisplay = []
 

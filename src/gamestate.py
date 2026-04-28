@@ -76,7 +76,6 @@ class GameState:
                         {"type":"zoneMap","offset":(66,1)},
                         ]
 
-        self.clickMap = {}
         self.story = None
         self.teleporterGroups = {}
         self.itemToUpdatePerTick = []

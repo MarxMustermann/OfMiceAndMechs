@@ -5386,6 +5386,11 @@ def renderGameDisplay(renderChar=None,showSaving=False):
 
         sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
 
+    for click_zone in click_map:
+        sdl_renderer2.draw_blend_mode = tcod.sdl.render.BlendMode(1)
+        sdl_renderer2.draw_color = (255,255,0,50)
+        sdl_renderer2.fill_rect((click_zone[0][0],click_zone[0][1],click_zone[1][0],click_zone[1][1]))
+
     sdl_renderer2.present()
 
     if renderChar:

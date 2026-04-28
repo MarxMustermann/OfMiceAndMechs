@@ -3989,10 +3989,6 @@ def getTcodEvents():
         for event in events:
             foundEvent = True
             if isinstance(event, tcod.event.MouseButtonDown):
-                if src.gamestate.gamestate.mainChar.macroState.get("submenue"):
-                    src.gamestate.gamestate.mainChar.runCommandString(["esc"])
-                    continue
-
                 handled_click = False
 
                 raw_click_pos = event.position
@@ -4012,6 +4008,10 @@ def getTcodEvents():
                     break
 
                 if not handled_click:
+                    if src.gamestate.gamestate.mainChar.macroState.get("submenue"):
+                        src.gamestate.gamestate.mainChar.runCommandString(["esc"])
+                        continue
+
                     tile_pos = (raw_click_pos[0]//tileHeight,raw_click_pos[1]//tileHeight,0)
                     uiElements = calculate_UI_layout(src.gamestate.gamestate.mainChar)
                     for uiElement in uiElements:
@@ -4357,7 +4357,7 @@ def tcodPresent(noPresent=False):
     if not noPresent:
         sdl_renderer2.present()
 
-def printUrwidToTcod(inData,offset,color=None,internalOffset=None,size=None, actionMeta=None, explecitConsole=None):
+def printUrwidToTcod(inData,offset,color=None,internalOffset=None,size=None, actionMeta=None, explecitConsole=None, console_offset=(0,0)):
     if explecitConsole:
         tcodConsole_local = explecitConsole
     else:
@@ -4401,27 +4401,27 @@ def printUrwidToTcod(inData,offset,color=None,internalOffset=None,size=None, act
 
 
     if isinstance(inData,tuple):
-        printUrwidToTcod(inData[1],offset,(inData[0].get_rgb_values()[:3],inData[0].get_rgb_values()[3:]),internalOffset,size,actionMeta,explecitConsole = tcodConsole_local)
+        printUrwidToTcod(inData[1],offset,(inData[0].get_rgb_values()[:3],inData[0].get_rgb_values()[3:]),internalOffset,size,actionMeta,explecitConsole = tcodConsole_local, console_offset=console_offset)
 
     if isinstance(inData,int):
-        printUrwidToTcod(src.canvas.displayChars.indexedMapping[inData],offset,color,internalOffset,size,actionMeta,explecitConsole = tcodConsole_local)
+        printUrwidToTcod(src.canvas.displayChars.indexedMapping[inData],offset,color,internalOffset,size,actionMeta,explecitConsole = tcodConsole_local, console_offset=console_offset)
 
     if isinstance(inData,list):
         for item in inData:
-            printUrwidToTcod(item,offset,color,internalOffset,size,actionMeta,explecitConsole = tcodConsole_local)
+            printUrwidToTcod(item,offset,color,internalOffset,size,actionMeta,explecitConsole = tcodConsole_local, console_offset=console_offset)
 
     if isinstance(inData, ActionMeta):
         line_count = 0
         for line in stringifyUrwid(inData.content).split("\n"):
-            click_map.append((((offset[0]+internalOffset[0])*tileWidth,(offset[1]+internalOffset[1])*tileHeight+line_count*tileHeight),(len(line)*tileWidth,tileHeight),inData.payload))
+            click_map.append((((offset[0]+internalOffset[0])*tileWidth+console_offset[0],(offset[1]+internalOffset[1])*tileHeight+line_count*tileHeight+console_offset[1]),(len(line)*tileWidth,tileHeight),inData.payload))
             line_count += 1
-        printUrwidToTcod(inData.content,offset,color,internalOffset,size,inData.payload,explecitConsole = tcodConsole_local)
+        printUrwidToTcod(inData.content,offset,color,internalOffset,size,inData.payload,explecitConsole = tcodConsole_local, console_offset=console_offset)
 
     if isinstance(inData, CharacterMeta):
-        printUrwidToTcod(inData.content,offset,color,internalOffset,size,actionMeta,explecitConsole = tcodConsole_local)
+        printUrwidToTcod(inData.content,offset,color,internalOffset,size,actionMeta,explecitConsole = tcodConsole_local, console_offset=console_offset)
 
     if isinstance(inData, ItemMeta):
-        printUrwidToTcod(inData.content,offset,color,internalOffset,size,actionMeta,explecitConsole = tcodConsole_local)
+        printUrwidToTcod(inData.content,offset,color,internalOffset,size,actionMeta,explecitConsole = tcodConsole_local, console_offset=console_offset)
 
     #footertext = stringifyUrwid(inData)
 
@@ -5271,7 +5271,7 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                     sdl_renderer2.fill_rect((offsetLeft,offsetTop,display_width+padding*2,display_height+padding*2))
 
                     root_console = tcod.console.Console(width, height, order="F")
-                    printUrwidToTcod(text,(0,0),explecitConsole=root_console)
+                    printUrwidToTcod(text,(0,0),explecitConsole=root_console,console_offset=pos)
 
                     atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
                     console_render = tcod.render.SDLConsoleRender(atlas)
@@ -5342,7 +5342,7 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                 sdl_renderer2.fill_rect((offsetLeft+padding+display_width,offsetTop-padding-overhang,line_width,display_height+2*(padding+overhang)))
 
                 root_console = tcod.console.Console(width, height, order="F")
-                printUrwidToTcod(text,(0,0),explecitConsole=root_console)
+                printUrwidToTcod(text,(0,0),explecitConsole=root_console,console_offset=(offsetLeft,offsetTop))
 
                 atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
                 console_render = tcod.render.SDLConsoleRender(atlas)

@@ -120,6 +120,8 @@ class ExperimentalObserveMenu(src.subMenu.SubMenu):
         pos = self.index
         if not rooms:
             pos = (self.index_big[0]*15+self.index[0]+1, self.index_big[1]*15+self.index[1]+1, 0)
+        if not self.character.container.isRoom:
+            pos = (pos[0]-1,pos[1]-1,pos[2])
 
         # list characters on postion
         text.append("\n")

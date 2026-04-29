@@ -60,6 +60,7 @@ class ActivateItem(src.quests.MetaQuestSequence):
 
         # handle from top activation
         if self.activateFromTop:
+            print(character.getDistance(self.targetPosition))
             if character.getDistance(self.targetPosition) > 0:
                 quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,reason="be able to use the item",description="go to item",clearPath=True)
                 return ([quest],None)
@@ -78,7 +79,7 @@ class ActivateItem(src.quests.MetaQuestSequence):
             return ([quest],None)
 
         # go to the item
-        pos = character.getPosition()
+        pos = character.getSpacePosition()
         if self.targetPosition not in (pos,(pos[0],pos[1]+1,pos[2]),(pos[0]-1,pos[1],pos[2]),(pos[0]+1,pos[1],pos[2]),(pos[0],pos[1]-1,pos[2])):
             quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True,reason="get near the item",clearPath=True)
             return ([quest],None)
@@ -135,7 +136,7 @@ For more information consult the Help menu by pressing ?
 
         item = extraInfo["item"]
 
-        if item.getPosition() != self.targetPosition:
+        if item.getSmallPosition() != self.targetPosition:
             return
         if self.targetPositionBig and item.getBigPosition() != self.targetPositionBig:
             return

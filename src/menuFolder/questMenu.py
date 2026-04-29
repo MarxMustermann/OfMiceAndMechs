@@ -340,7 +340,7 @@ class QuestMenu(src.subMenu.SubMenu):
 
                     solvingCommangString = char.getActiveQuest().getSolvingCommandString(char)
 
-            if char.quests[0].type != "EscapeLab":
+            if (not char.quests) or char.quests[0].type != "EscapeLab":
                 if not sidebared:
                     txt.append("select quest:\n\n")
 

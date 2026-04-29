@@ -4032,6 +4032,8 @@ def getTcodEvents():
 
                     tile_pos = (raw_click_pos[0]//tileHeight,raw_click_pos[1]//tileHeight,0)
                     uiElements = calculate_UI_layout(src.gamestate.gamestate.mainChar)
+
+                    # handle clicks on the map
                     for uiElement in uiElements:
                         if uiElement["type"] != "gameMap":
                             continue

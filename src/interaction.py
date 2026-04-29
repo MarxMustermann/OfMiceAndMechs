@@ -4142,6 +4142,17 @@ def getTcodEvents():
                                     quest = src.quests.questMap["GoToPosition"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
                                     quest.autoSolve = True
                                     src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
+                        elif event.button == tcod.event.MouseButton.MIDDLE:
+                            if rooms:
+                                if not src.gamestate.gamestate.mainChar.container.isRoom:
+                                    smallCoordinate = (smallCoordinate[0]+1,smallCoordinate[1]+1,0)
+                            else:
+                                if src.gamestate.gamestate.mainChar.container.isRoom:
+                                    smallCoordinate = (smallCoordinate[0]-1,smallCoordinate[1]-1,0)
+                            submenu = src.menuFolder.experimentalObserveMenu.ExperimentalObserveMenu(src.gamestate.gamestate.mainChar)
+                            submenu.index = smallCoordinate
+                            submenu.index_big = bigCoordinate
+                            src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
                         else:
                             print(event)
             if isinstance(event, tcod.event.Quit):

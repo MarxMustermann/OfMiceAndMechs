@@ -397,8 +397,9 @@ class Item:
             return
 
         # call the function set for the selection
-        if selection+"_"+params.get("key","") in self.applyMap:
-            self.applyMap[selection+"_"+params.get("key","")](character)
+        action = self.applyMap.get(selection+"_"+str(params.get("key","")))
+        if action:
+            action(character)
             return
 
         self.applyMap[selection](character)

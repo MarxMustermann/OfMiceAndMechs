@@ -4047,7 +4047,6 @@ def getTcodEvents():
                             continue
                         offset_x = tile_pos[0]-uiElement["offset"][0]
                         offset_y = tile_pos[1]-uiElement["offset"][1]-1
-                        print(offset_x,offset_y)
 
                         if offset_y < 1:
                             continue

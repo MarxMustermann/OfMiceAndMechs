@@ -251,7 +251,7 @@ sdl_cache = []
 sdl_map = {}
 
 def playSound(soundName,channelName,loop=False):
-    if settings["sound"] != 0 and setting.get("sound_enabled") == True:
+    if settings["sound"] != 0 and settings.get("sound_enabled"):
         if src.interaction.tcodMixer:
             channel = src.interaction.tcodMixer.get_channel(channelName)
             if not channel.busy:

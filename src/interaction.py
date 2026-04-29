@@ -4033,6 +4033,34 @@ def getTcodEvents():
                     tile_pos = (raw_click_pos[0]//tileHeight,raw_click_pos[1]//tileHeight,0)
                     uiElements = calculate_UI_layout(src.gamestate.gamestate.mainChar)
 
+                    # handle cicks on the mini map
+                    for uiElement in uiElements:
+                        if uiElement["type"] != "miniMap":
+                            continue
+                        if uiElement["offset"][0] > tile_pos[0]:
+                            continue
+                        if uiElement["offset"][0]+15 < tile_pos[0]:
+                            continue
+                        if uiElement["offset"][1] > tile_pos[1]:
+                            continue
+                        if uiElement["offset"][1]+15 < tile_pos[1]:
+                            continue
+                        offset_x = tile_pos[0]-uiElement["offset"][0]
+                        offset_y = tile_pos[1]-uiElement["offset"][1]-1
+                        print(offset_x,offset_y)
+
+                        if offset_y < 1:
+                            continue
+                        if offset_y > 13:
+                            continue
+                        if offset_x < 1:
+                            continue
+                        if offset_x > 13:
+                            continue
+                        quest = src.quests.questMap["GoToTile"](targetPosition=(offset_x,offset_y,0))
+                        quest.autoSolve = True
+                        src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
+
                     # handle clicks on the map
                     for uiElement in uiElements:
                         if uiElement["type"] != "gameMap":

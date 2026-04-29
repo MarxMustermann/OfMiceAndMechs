@@ -134,7 +134,12 @@ class InventoryMenu(src.subMenu.SubMenu):
 
                 # do drop
                 if key == "L":
-                    self.subMenu = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu("What direcetion do you want to drop the item?\n\n w - north\n s - south\n a - west\n d - east")
+                    self.subMenu = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu([
+                        "What direcetion do you want to drop the item?\n\n",
+                        src.interaction.ActionMeta(payload="w",content=" w - north"),"\n",
+                        src.interaction.ActionMeta(payload="s",content=" s - south"),"\n",
+                        src.interaction.ActionMeta(payload="a",content=" a - west"),"\n",
+                        src.interaction.ActionMeta(payload="d",content=" d - east") ])
                     self.subMenu.handleKey("~", noRender=noRender, character=character)
                     self.subMenu.tag = "dropDirection"
                     self.drop = True
@@ -243,7 +248,13 @@ class InventoryMenu(src.subMenu.SubMenu):
                     extra_rows = (self.min_lines-5)-num_rows
                     txt.append("\n"*(extra_rows))
                     num_rows += extra_rows
-                txt.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"#000"),["press ws to move cursor\npress ",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"L")," to drop item nearby\npress l to drop item\npress j to activate item\npress e to examine item\npress c to clear inventory"]))
+                txt.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"#000"),[
+                                   src.interaction.ActionMeta(payload="w",content="press w"),"/",src.interaction.ActionMeta(payload="s",content="s to move cursor"),"\n",
+                                   src.interaction.ActionMeta(payload="L",content=["press ",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"L")," to drop item nearby"]),"\n",
+                                   src.interaction.ActionMeta(payload="l",content="press l to drop item"),"\n",
+                                   src.interaction.ActionMeta(payload="j",content="press j to activate item"),"\n",
+                                   src.interaction.ActionMeta(payload="e",content="press e to examine item"),"\n",
+                                   src.interaction.ActionMeta(payload="c",content="press c to clear inventory")]))
                 num_rows += 4
         else:
             txt.append("empty Inventory\n")

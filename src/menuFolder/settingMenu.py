@@ -40,7 +40,7 @@ class SettingMenu(src.subMenu.SubMenu):
             if change_event and self.index == i:
                 match setting:
                     case "sound":
-                        src.interaction.settings["sound"] = 32 if src.interaction.settings["sound"] == 0 else 0
+                        src.interaction.settings["sound_enabled"] = not src.interaction.settings.get("sound_enabled",False)
                         src.interaction.changeVolume()
                     case "set sound volume":
                         src.interaction.settings["sound"] += -1 if key in ("a","left") else +1
@@ -72,7 +72,7 @@ class SettingMenu(src.subMenu.SubMenu):
             match setting:
                 case "sound":
                     text += setting + ":               "
-                    if src.interaction.settings["sound"] == 0:
+                    if not src.interaction.settings.get("sound_enabled",False):
                         text += "Off"
                     else:
                         text += "On"

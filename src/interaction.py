@@ -251,7 +251,7 @@ sdl_cache = []
 sdl_map = {}
 
 def playSound(soundName,channelName,loop=False):
-    if settings["sound"] != 0:
+    if settings["sound"] != 0 and setting.get("sound_enabled") == True:
         if src.interaction.tcodMixer:
             channel = src.interaction.tcodMixer.get_channel(channelName)
             if not channel.busy:
@@ -320,7 +320,7 @@ def setUpTcod():
                 with open("config/globalSettings.json") as f:
                     settings = json.loads(f.read())
     else:
-        settings = {"auto save": False, "sound": 16, "fullscreen": True, "SDL":True} #Default Settings
+        settings = {"auto save": False, "sound": 16, "fullscreen": True, "SDL":True, "sound_enabled": True} #Default Settings
     
     import tcod as internalTcod
     global tcod
@@ -502,17 +502,25 @@ def setUpTcod():
     """
     if tcodMixer:
         tcodMixer.get_channel("background").play(sound = sounds["loop1_start"],volume = settings["sound"]/ 160.0,on_end = sound_loop)
+        changeVolume()
 
 def sound_loop(ch):
     if random.random() < 0.5:
         ch.play(sound = sounds["loop1"],volume = settings["sound"]/160.0,on_end = sound_loop)
+        changeVolume()
     else:
         ch.play(sound = sounds["loop2"],volume = settings["sound"]/160.0,on_end = sound_loop)
+        changeVolume()
 
 def changeVolume():
+    if not settings.get("sound_enabled"):
+        volume = 0
+    else:
+        volume = settings["sound"]/ 160.0
+
     if tcodMixer:
         channel = tcodMixer.get_channel("background")
-        channel.volume = settings["sound"]/ 160.0
+        channel.volume = volume
 
 def send_tracking_ping(eventType):
     if not src.interaction.settings.get("tracking"):
@@ -2666,7 +2674,8 @@ def doDockRight(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame)
 
 def handle_main_menu_selected():
     char = src.gamestate.gamestate.mainChar
-    submenu = char.macroState["submenue"]
+    charState = char.macroState
+    submenu = charState["submenue"]
     selection = submenu.getSelection()
     if selection == "save":
         tmp = char.macroState["submenue"]
@@ -4056,49 +4065,54 @@ def getTcodEvents():
                                 smallCoordinate = (smallCoordinate[0]+1,smallCoordinate[1]+1,0)
 
                         if event.button == tcod.event.MouseButton.LEFT:
-                            if rooms:
-                                items = rooms[0].getItemByPosition(smallCoordinate)
-                                other_characters = rooms[0].getCharactersOnPosition(smallCoordinate)
-                                markers = rooms[0].getMarkersOnPosition(smallCoordinate)
+                            if bigCoordinate != src.gamestate.gamestate.mainChar.getBigPosition():
+                                quest = src.quests.questMap["GoToTile"](targetPosition=bigCoordinate)
+                                quest.autoSolve = True
+                                src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
                             else:
-                                items = terrain.getItemByPosition(click_coordinate)
-                                other_characters = terrain.getCharactersOnPosition(click_coordinate)
-                                markers = []
+                                if rooms:
+                                    items = rooms[0].getItemByPosition(smallCoordinate)
+                                    other_characters = rooms[0].getCharactersOnPosition(smallCoordinate)
+                                    markers = rooms[0].getMarkersOnPosition(smallCoordinate)
+                                else:
+                                    items = terrain.getItemByPosition(click_coordinate)
+                                    other_characters = terrain.getCharactersOnPosition(click_coordinate)
+                                    markers = []
 
-                            if other_characters:
-                                assigned_quest = False
-                                for other_character in other_characters:
-                                    if other_character.faction != src.gamestate.gamestate.mainChar.faction:
-                                        quest = src.quests.questMap["Huntdown"](target=other_character,suicidal=True)
+                                if other_characters:
+                                    assigned_quest = False
+                                    for other_character in other_characters:
+                                        if other_character.faction != src.gamestate.gamestate.mainChar.faction:
+                                            quest = src.quests.questMap["Huntdown"](target=other_character,suicidal=True)
+                                            quest.autoSolve = True
+                                            src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
+                                            assigned_quest = True
+                                            break
+                                    if not assigned_quest:
+                                        for other_character in other_characters:
+                                            if other_character.faction == src.gamestate.gamestate.mainChar.faction:
+                                                submenue = src.chats.ChatMenu(other_character)
+                                                src.gamestate.gamestate.mainChar.macroState["submenue"] = submenue
+                                                src.gamestate.gamestate.mainChar.runCommandString("~")
+                                                break
+                                elif markers and markers[0][0] in ("inputSlot",):
+                                    quest = src.quests.questMap["RestockRoom"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
+                                    quest.autoSolve = True
+                                    src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
+                                elif items:
+                                    item = items[0]
+                                    if item.bolted:
+                                        quest = src.quests.questMap["ActivateItem"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
                                         quest.autoSolve = True
                                         src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
-                                        assigned_quest = True
-                                        break
-                                if not assigned_quest:
-                                    for other_character in other_characters:
-                                        if other_character.faction == src.gamestate.gamestate.mainChar.faction:
-                                            submenue = src.chats.ChatMenu(other_character)
-                                            src.gamestate.gamestate.mainChar.macroState["submenue"] = submenue
-                                            src.gamestate.gamestate.mainChar.runCommandString("~")
-                                            break
-                            elif markers and markers[0][0] in ("inputSlot",):
-                                quest = src.quests.questMap["RestockRoom"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
-                                quest.autoSolve = True
-                                src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
-                            elif items:
-                                item = items[0]
-                                if item.bolted:
-                                    quest = src.quests.questMap["ActivateItem"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
-                                    quest.autoSolve = True
-                                    src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
+                                    else:
+                                        quest = src.quests.questMap["CleanSpace"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
+                                        quest.autoSolve = True
+                                        src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
                                 else:
-                                    quest = src.quests.questMap["CleanSpace"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
+                                    quest = src.quests.questMap["GoToPosition"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
                                     quest.autoSolve = True
                                     src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
-                            else:
-                                quest = src.quests.questMap["GoToPosition"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
-                                quest.autoSolve = True
-                                src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
                         else:
                             print(event)
             if isinstance(event, tcod.event.Quit):

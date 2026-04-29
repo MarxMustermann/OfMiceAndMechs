@@ -8,6 +8,7 @@ class ShockTower(src.items.Item):
     """
 
     type = "ShockTower"
+    name = "shock tower"
     description = "a tower that can arch static electricity towards a target"
     def __init__(self):
         """

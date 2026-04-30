@@ -2249,6 +2249,17 @@ class Terrain:
             color = "#334"
             chars[room.yPosition][room.xPosition] = room.displayChar
 
+            if room.tag == "entry chamber":
+                chars[room.yPosition][room.xPosition] = "EC"
+            if room.tag == "welcome room":
+                chars[room.yPosition][room.xPosition] = "WR"
+            if room.tag == "guardian room":
+                chars[room.yPosition][room.xPosition] = "GR"
+            if room.tag == "central chamber":
+                chars[room.yPosition][room.xPosition] = "CC"
+            if room.tag.startswith("main path"):
+                chars[room.yPosition][room.xPosition] = "MP"
+
         homePos = (src.gamestate.gamestate.mainChar.registers.get("HOMEx"),src.gamestate.gamestate.mainChar.registers.get("HOMEy"))
         homePosTerrain = (src.gamestate.gamestate.mainChar.registers.get("HOMETx"),src.gamestate.gamestate.mainChar.registers.get("HOMETy"),0)
         if homePosTerrain == src.gamestate.gamestate.mainChar.getTerrainPosition() and homePos[0] and homePos[1]:

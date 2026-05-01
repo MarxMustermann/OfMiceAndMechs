@@ -5269,10 +5269,10 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                             else:
                                 marker_render = (src.interaction.urwid.AttrSpec("#0f0", "black"), "::")
 
-
                         extra_info = ""
                         if marker_type != "walkingSpace":
-                            extra_info = str(marker[1][1])+" "
+                            if marker[1][1]:
+                                extra_info += str(marker[1][1])+" "
                             if marker[1][2]:
                                 extra_info += str(marker[1][2])+" "
 
@@ -5351,7 +5351,9 @@ def renderGameDisplay(renderChar=None,showSaving=False):
 
                         extra_info = ""
                         if marker_type != "walkingSpace":
-                            extra_info = str(marker[1][1])+" "
+                            extra_info = ""
+                            if marker[1][1]:
+                                extra_info += str(marker[1][1])+" "
                             if marker[1][2]:
                                 extra_info += str(marker[1][2])+" "
 

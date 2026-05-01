@@ -20,7 +20,7 @@ class Shrine(src.items.Item):
                     ("wish", "wish"),
                     #("challenge", "pray"),
                     #("taunt", "taunt"),
-                    ("teleport", "telport home"),
+                    ("teleport", "teleport home"),
                         ]
                         )
         self.applyMap = {

@@ -4095,11 +4095,7 @@ def getTcodEvents():
                                 smallCoordinate = (smallCoordinate[0]+1,smallCoordinate[1]+1,0)
 
                         if event.button == tcod.event.MouseButton.LEFT:
-                            if bigCoordinate != mainChar.getBigPosition():
-                                quest = src.quests.questMap["GoToTile"](targetPosition=bigCoordinate)
-                                quest.autoSolve = True
-                                mainChar.assignQuest(quest,active=True)
-                            else:
+                            if not terrain.getEnemiesOnTile(mainChar,bigCoordinate):
                                 if rooms:
                                     items = rooms[0].getItemByPosition(smallCoordinate)
                                     other_characters = rooms[0].getCharactersOnPosition(smallCoordinate)
@@ -4143,6 +4139,49 @@ def getTcodEvents():
                                     quest = src.quests.questMap["GoToPosition"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
                                     quest.autoSolve = True
                                     mainChar.assignQuest(quest,active=True)
+                            else:
+                                if bigCoordinate != mainChar.getBigPosition():
+                                    quest = src.quests.questMap["GoToTile"](targetPosition=bigCoordinate)
+                                    quest.autoSolve = True
+                                    mainChar.assignQuest(quest,active=True)
+                                else:
+                                    character_position = mainChar.getSpacePosition()
+                                    offset = (smallCoordinate[0]-character_position[0],smallCoordinate[1]-character_position[1],0)
+                                    if abs(offset[0])+abs(offset[1]) > 0:
+                                        candidates = []
+                                        if offset[0] > 0:
+                                            candidates.extend([(1,0,0)]*offset[0])
+                                        if offset[0] < 0:
+                                            candidates.extend([(-1,0,0)]*(-offset[0]))
+                                        if offset[1] > 0:
+                                            candidates.extend([(0,1,0)]*offset[1])
+                                        if offset[1] < 0:
+                                            candidates.extend([(0,-1,0)]*(-offset[1]))
+
+                                        if not candidates:
+                                            continue
+
+                                        good_candidates = []
+                                        for candidate in candidates:
+                                            if mainChar.container.getPositionWalkable(mainChar.getPosition(offset=candidate)):
+                                                good_candidates.append(candidate)
+
+                                        if good_candidates:
+                                            selected = random.choice(good_candidates)
+                                        else:
+                                            selected = random.choice(candidates)
+
+                                        if selected == (1,0,0):
+                                            direction = "d"
+                                        if selected == (-1,0,0):
+                                            direction = "a"
+                                        if selected == (0,1,0):
+                                            direction = "s"
+                                        if selected == (0,-1,0):
+                                            direction = "w"
+
+                                        mainChar.runCommandString(direction)
+
                         elif event.button == tcod.event.MouseButton.MIDDLE:
                             if rooms:
                                 if not mainChar.container.isRoom:

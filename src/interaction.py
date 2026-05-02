@@ -4125,6 +4125,10 @@ def getTcodEvents():
                                     quest = src.quests.questMap["RestockRoom"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
                                     quest.autoSolve = True
                                     mainChar.assignQuest(quest,active=True)
+                                elif markers and markers[0][0] in ("storageSlot",) and not items and mainChar.inventory:
+                                    quest = src.quests.questMap["RestockRoom"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate,toRestock=mainChar.inventory[-1].type,allowAny=True)
+                                    quest.autoSolve = True
+                                    mainChar.assignQuest(quest,active=True)
                                 elif items:
                                     item = items[0]
                                     if item.bolted:

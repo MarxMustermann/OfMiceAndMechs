@@ -4136,7 +4136,10 @@ def getTcodEvents():
                                         quest.autoSolve = True
                                         mainChar.assignQuest(quest,active=True)
                                 else:
-                                    quest = src.quests.questMap["GoToPosition"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
+                                    if smallCoordinate[0] < 1 and smallCoordinate[0] > 13 and smallCoordinate[1] < 1 and smallCoordinate[1] > 13:
+                                        quest = src.quests.questMap["GoToTile"](targetPositionBig=bigCoordinate)
+                                    else:
+                                        quest = src.quests.questMap["GoToPosition"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
                                     quest.autoSolve = True
                                     mainChar.assignQuest(quest,active=True)
                             else:

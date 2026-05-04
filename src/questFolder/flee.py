@@ -87,7 +87,7 @@ class Flee(src.quests.MetaQuestSequence):
 
         # heal
         if character.health < character.maxHealth//5 and character.canHeal():
-            return (None,"JH","heal")
+            return (None,("JH","heal"))
 
         # close other menus
         if not ignoreCommands:

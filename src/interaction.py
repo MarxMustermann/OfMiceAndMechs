@@ -4105,6 +4105,18 @@ def getTcodEvents():
                                     other_characters = terrain.getCharactersOnPosition(click_coordinate)
                                     markers = []
 
+                                edge_click = False
+                                if not rooms and (smallCoordinate[0] < 1 or smallCoordinate[0] > 13 or smallCoordinate[1] < 1 or smallCoordinate[1] > 13):
+                                    edge_click = True
+                                if rooms and (smallCoordinate[0] < 1 or smallCoordinate[0] > 11 or smallCoordinate[1] < 1 or smallCoordinate[1] > 11):
+                                    edge_click = True
+                                if edge_click:
+                                    quest = src.quests.questMap["GoToTile"](targetPosition=bigCoordinate)
+                                    quest.autoSolve = True
+                                    mainChar.assignQuest(quest,active=True)
+                                    assigned_quest = True
+                                    break
+
                                 if other_characters:
                                     assigned_quest = False
                                     for other_character in other_characters:
@@ -4140,10 +4152,7 @@ def getTcodEvents():
                                         quest.autoSolve = True
                                         mainChar.assignQuest(quest,active=True)
                                 else:
-                                    if smallCoordinate[0] < 1 and smallCoordinate[0] > 13 and smallCoordinate[1] < 1 and smallCoordinate[1] > 13:
-                                        quest = src.quests.questMap["GoToTile"](targetPositionBig=bigCoordinate)
-                                    else:
-                                        quest = src.quests.questMap["GoToPosition"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
+                                    quest = src.quests.questMap["GoToPosition"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
                                     quest.autoSolve = True
                                     mainChar.assignQuest(quest,active=True)
                             else:

@@ -332,6 +332,9 @@ class Item:
         character.jobOrders.append(jobOrder)
         character.runCommandString("Jj.j")
 
+    def getApplyOptions(self):
+        return self.applyOptions
+
     def gatherApplyActions(self, character=None):
         """
         returns a list of actions that should be run when using this item
@@ -346,7 +349,7 @@ class Item:
         result = []
 
         # add spawning menus if applicable
-        if self.applyOptions:
+        if self.getApplyOptions():
             result.append(self.__spawnApplyMenu)
 
         # eat food on activation
@@ -365,7 +368,7 @@ class Item:
         """
 
         options = []
-        for option in self.applyOptions:
+        for option in self.getApplyOptions():
             options.append(option)
         submenu = src.menuFolder.selectionMenu.SelectionMenu(
             "what do you want to do?", options

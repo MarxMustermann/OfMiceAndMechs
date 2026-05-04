@@ -188,7 +188,7 @@ def Death(extraParam):
                 numpy.copyto(src.interaction.tcodConsole.rgba, current_content)
             if (isinstance(event, tcod.event.KeyDown) and event.sym == tcod.event.KeySym.RETURN) or runStar:
                 new_console = tcod.console.Console(src.interaction.tcodConsole.width,src.interaction.tcodConsole.height,src.interaction.tcodConsole._order)
-                src.interaction.render(src.gamestate.gamestate.mainChar).printTcod(new_console, (assumedScreenWidth-mapWidth)//4, 6, False)
+                src.interaction.render(src.gamestate.gamestate.mainChar,mapWidth).printTcod(new_console, (assumedScreenWidth-mapWidth)//4, 6, False)
                 src.helpers.draw_frame_text(new_console, width, height, text, x, y)
                 target_console = new_console.rgb
                 total_frames = 5

@@ -238,6 +238,7 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
         if self.toProduce == "MetalBars":
             params["delayTime"] = params["delayTime"]//10
         params["action"]= "output_produced_item"
+        params["description"] = f"you produce a {self.toProduce}\n"
         self.delayedAction(params)
         self.numUsed += 1
         self.inUse = True

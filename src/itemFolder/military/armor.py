@@ -122,6 +122,12 @@ protects you in combat
             if self in character.inventory:
                 character.removeItemFromInventory(self)
 
+        if oldArmor:
+            if character.getFreeInventorySpace():
+                character.addToInventory(oldArmor)
+            else:
+                character.container.addItem(oldArmor,character.getPosition())
+
     def upgrade(self):
         self.armorValue += 1
         super().upgrade()

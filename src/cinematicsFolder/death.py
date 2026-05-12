@@ -109,6 +109,7 @@ def Death(extraParam):
         questMenu.sidebared = True
         chosen_candidate.rememberedMenu.append(questMenu)
         messagesMenu = src.menuFolder.messagesMenu.MessagesMenu(chosen_candidate)
+        messagesMenu.sidebared = True
         chosen_candidate.rememberedMenu2.append(messagesMenu)
         inventoryMenu = src.menuFolder.inventoryMenu.InventoryMenu(chosen_candidate)
         inventoryMenu.sidebared = True

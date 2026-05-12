@@ -187,7 +187,6 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
                 self.lastInteraction
             except:
                 self.lastInteraction = src.gamestate.gamestate.tick
-            print(self.lastInteraction)
             if self.lastInteraction+10 <= src.gamestate.gamestate.tick:
                 character.addMessage("This item is in use")
                 character.changed("failed manufacturing",{})

@@ -95,6 +95,7 @@ or use this item with MoldFeed in your inventory.
             self.container.addAnimation(self.getPosition(),"smoke",8,{})
 
         params = {"character":character,"amount_to_burn":amount_to_burn,"delayTime":30,"action":"doHealing"}
+        params["description"] = "You burn some MoldFeed\n"
         self.delayedAction(params)
 
     def doHealing(self,params):

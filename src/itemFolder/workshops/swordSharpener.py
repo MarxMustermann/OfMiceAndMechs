@@ -221,17 +221,6 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             else:
                 return f"You will need {grindstone_consumed} grindstone to be able to upgrade"
 
-        # workaround for backwards compability
-        # TODO: removeme
-        try:
-            self.preferredMaxDamage
-        except:
-            self.preferredMaxDamage = 25
-        try:
-            self.preferredMaxDamage
-        except:
-            self.preferredMaxDamage = None
-
         # calculate a reasonable default amount to upgrade
         defaultValue = sword.baseDamage
         available_grindstones = len(grindstones)

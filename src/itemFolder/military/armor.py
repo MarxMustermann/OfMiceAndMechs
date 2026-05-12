@@ -109,6 +109,7 @@ protects you in combat
         character.container.addAnimation(character.getPosition(),"showchar",5,{"char":charSequence[-1]})
         character.container.addAnimation(character.getPosition(),"showchar",2,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"), "ar")})
 
+        oldArmor = None
         if character.armor:
             oldArmor = character.armor
             character.armor = None

@@ -7,6 +7,8 @@ class ManaCrystal(src.items.Item):
     '''
     type = "ManaCrystal"
     name = "mana crystal"
+    description = "The power of the gods in crystal form"
+
     def __init__(self):
         super().__init__(display="ma")
         self.name = "mana crystal"

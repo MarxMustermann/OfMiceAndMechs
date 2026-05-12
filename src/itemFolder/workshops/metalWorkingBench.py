@@ -161,7 +161,7 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
             timeModifier = 4
         params["delayTime"] = 100*timeModifier
         params["action"]= "output_produced_item"
-        params["description"] = f"you produce a {params['type']}"
+        params["description"] = f"you produce a {params['type']}\n"
         self.delayedAction(params)
 
     def output_produced_item(self,params):

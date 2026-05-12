@@ -134,6 +134,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             params["improvementAmount"] = improvementAmount
             params["cost"] = amount_grindstone_consumed
             params["action"]= "output_produced_item"
+            params["description"]= "you sharpen your sword\n"
             self.delayedAction(params)
             return
 

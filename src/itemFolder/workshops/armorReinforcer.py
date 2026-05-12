@@ -258,6 +258,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         params["improvementAmount"] = improvementAmount
         params["cost"] = chitinPlates_consumed
         params["action"]= "output_produced_item"
+        params["description"]= "you improve your armor\n"
         self.delayedAction(params)
 
     def output_produced_item(self,params):

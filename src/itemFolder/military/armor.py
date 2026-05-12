@@ -113,7 +113,6 @@ protects you in combat
         if character.armor:
             oldArmor = character.armor
             character.armor = None
-            character.container.addItem(oldArmor,character.getPosition())
 
         character.armor = self
         character.changed("equipedItem",(character,self))

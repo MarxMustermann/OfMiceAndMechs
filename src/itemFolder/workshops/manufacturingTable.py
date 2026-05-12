@@ -478,4 +478,12 @@ numUsed: {self.numUsed}
         display = (src.interaction.urwid.AttrSpec(color, "black"), base_characters)
         return display
 
+    def getApplyOptions(self):
+        options = []
+        if self.toProduce:
+            options.append(("produce item",f"produce {self.toProduce}"))
+        options.append(("configure item", "configure item"))
+        options.append(("draw stockpiles", "draw stockpiles"))
+        return options
+
 src.items.addType(ManufacturingTable)

@@ -256,6 +256,8 @@ class Item:
 
     def getSmallPosition(self,offset=(0,0,0)):
         pos = self.getPosition()
+        if pos[0] is None:
+            return (None,None,None)
         return (pos[0]%15,pos[1]%15,pos[2]%15)
 
     def useJoborderRelayToLocalRoom(self, character, tasks, itemType, information=None):

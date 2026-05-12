@@ -43,6 +43,7 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
         self.disabled = False
         self.priority = 0
         self.onlyProduceOne = False
+        self.lastInteraction = None
 
     def boltAction(self, character):
         self.numUsed = 0
@@ -182,9 +183,17 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
             return
 
         if self.inUse:
-            character.addMessage("This item is in use")
-            character.changed("failed manufacturing",{})
-            return
+            try:
+                self.lastInteraction
+            except:
+                self.lastInteraction = src.gamestate.gamestate.tick
+            print(self.lastInteraction)
+            if self.lastInteraction+10 <= src.gamestate.gamestate.tick:
+                character.addMessage("This item is in use")
+                character.changed("failed manufacturing",{})
+                return
+            else:
+                self.inUse = False
 
         params = {"character":character,"type":self.toProduce,"key":"k"}
 
@@ -232,6 +241,7 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
         self.delayedAction(params)
         self.numUsed += 1
         self.inUse = True
+        self.lastInteraction = src.gamestate.gamestate.tick
         character.working = True
 
     def output_produced_item(self,params):
@@ -466,6 +476,5 @@ numUsed: {self.numUsed}
 
         display = (src.interaction.urwid.AttrSpec(color, "black"), base_characters)
         return display
-        
 
 src.items.addType(ManufacturingTable)

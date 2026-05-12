@@ -472,7 +472,8 @@ class Item:
         character.addMessage("you pick up a %s" % self.type)
         if not self.walkable:
             character.addMessage("it's heavy and slows you down")
-        self.container.removeItem(self)
+        if self.container:
+            self.container.removeItem(self)
         character.addToInventory(self)
 
     def gatherPickupActions(self, character=None):

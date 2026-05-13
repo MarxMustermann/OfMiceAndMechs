@@ -44,7 +44,7 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
         if hasattr(char,"rank"):
             text.append(f"rank:      {char.rank}\n")
         text.append("\n")
-        text.append(f"page: {self.page}/3\n")
+        text.append([f"page: ",src.interaction.ActionMeta(payload="a",content="<"),f" {self.page}/3 ",src.interaction.ActionMeta(payload="d",content=">"),"\n"])
         text.append("\n")
         if self.page == 1:
             text.append(f"health:       {char.health}\n")

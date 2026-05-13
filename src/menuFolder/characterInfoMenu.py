@@ -37,50 +37,50 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
         if char.dead:
             return ""
 
-        text = ""
+        text = []
 
-        text += f"name:      {char.name}\n"
-        text += f"faction:   {char.faction}\n"
+        text.append(f"name:      {char.name}\n")
+        text.append(f"faction:   {char.faction}\n")
         if hasattr(char,"rank"):
-            text += f"rank:      {char.rank}\n"
-        text += "\n"
-        text += f"page: {self.page}/3\n"
-        text += "\n"
+            text.append(f"rank:      {char.rank}\n")
+        text.append("\n")
+        text.append(f"page: {self.page}/3\n")
+        text.append("\n")
         if self.page == 1:
-            text += f"health:       {char.health}\n"
-            text += f"max health:   {char.adjustedMaxHealth}\n"
-            text += f"exhaustion:   {char.exhaustion}\n"
-            text += f"time taken:   {char.timeTaken}\n"
-            text += "\n"
-            text += "weapon:       "
+            text.append(f"health:       {char.health}\n")
+            text.append(f"max health:   {char.adjustedMaxHealth}\n")
+            text.append(f"exhaustion:   {char.exhaustion}\n")
+            text.append(f"time taken:   {char.timeTaken}\n")
+            text.append("\n")
+            text.append("weapon:       ")
             weaponBaseDamage = None
             if char.weapon:
-                text += char.weapon.name
-                text += f" ({char.weapon.baseDamage})"
+                text.append(char.weapon.name)
+                text.append(f" ({char.weapon.baseDamage})")
             else:
-                text += "no weapon"
-            text += "\n"
-            text += "armor:        "
+                text.append("no weapon")
+            text.append("\n")
+            text.append("armor:        ")
             armorValue = None
             if char.armor:
-                text += char.armor.name
-                text += f" ({char.armor.armorValue})"
+                text.append(char.armor.name)
+                text.append(f" ({char.armor.armorValue})")
             else:
-                text += "no armor"
-            text += "\n"
+                text.append("no armor")
+            text.append("\n")
             tool_text = "no tool"
             if char.tool:
                 tool_text = char.tool.name
-                text += f"tool:         {tool_text}\n"
-            text += "\n"
-            text += f"baseDamage:     {char.baseDamage}\n"
-            text += f"movementSpeed:  {char.adjustedMovementSpeed}\n"
-            text += f"attackSpeed:    {char.attackSpeed}\n"
-            text += "\n"
-            text += f"position:          {char.getSpacePosition()}\n"
-            text += f"big position:      {char.getBigPosition()}\n"
-            text += f"terrain position:  {char.getTerrainPosition()}\n"
-            text += "\n"
+                text.append(f"tool:         {tool_text}\n")
+            text.append("\n")
+            text.append(f"baseDamage:     {char.baseDamage}\n")
+            text.append(f"movementSpeed:  {char.adjustedMovementSpeed}\n")
+            text.append(f"attackSpeed:    {char.attackSpeed}\n")
+            text.append("\n")
+            text.append(f"position:          {char.getSpacePosition()}\n")
+            text.append(f"big position:      {char.getBigPosition()}\n")
+            text.append(f"terrain position:  {char.getTerrainPosition()}\n")
+            text.append("\n")
 
             statusEffectString = ""
             for statusEffect in char.statusEffects:
@@ -88,14 +88,14 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
             if not statusEffectString == "":
                 statusEffectString = statusEffectString[:-2]
             statusEffectString = "[]"
-            text += f"status effects: {statusEffectString}\npress e to view a detailed buff list\n"
+            text.append(f"status effects: {statusEffectString}\npress e to view a detailed buff list\n")
             
         if self.page == 2:
             if len(char.duties) < 5:
                 dutyString = ",\n        ".join(char.duties)
-                text += "duties: {dutyString}\n"
+                text.append("duties: {dutyString}\n")
             else:
-                text += "duties: "
+                text.append("duties: ")
                 duties_to_show = char.duties[:]
                 counter = 0
                 while duties_to_show:
@@ -108,60 +108,60 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
                         else:
                             text += ", "
                             counter += 1
-                text += "\n"
-            text += "\n"
-            text += f"skills:      {char.skills}"
-            text += f"grievances:  {char.grievances}\n"
+                text.append("\n")
+            text.append("\n")
+            text.append(f"skills:      {char.skills}")
+            text.append(f"grievances:  {char.grievances}\n")
         
         if self.page == 3:
             if hasattr(char,"superior"):
-                text += f"superior:   {char.superior}\n"
-            text += f"reputation: {char.reputation}\n"
+                text.append(f"superior:   {char.superior}\n")
+            text.append(f"reputation: {char.reputation}\n")
             flaskInfo = "-"
             if char.flask:
                 flaskInfo = str(char.flask.uses)+" flask charges"
-            text += f"satiation:  {char.satiation} ({flaskInfo})\n"
-            text += "\n"
-            text += f"hasSpecialAttacks:      {char.hasSpecialAttacks}\n"
-            text += f"hasSwapAttack:          {char.hasSwapAttack}\n"
-            text += f"hasRun:                 {char.hasRun}\n"
-            text += f"hasJump:                {char.hasJump}\n"
-            text += f"hasLineShot:            {char.hasLineShot}\n"
-            text += f"hasRandomShot:          {char.hasRandomShot}\n"
-            text += f"hasMovementSpeedBoost:  {char.hasMovementSpeedBoost}\n"
-            text += f"hasMaxHealthBoost:      {char.hasMaxHealthBoost}\n"
-            text += f"hasMagic:               {char.hasMagic}\n"
-            text += "\n"
+            text.append(f"satiation:  {char.satiation} ({flaskInfo})\n")
+            text.append("\n")
+            text.append(f"hasSpecialAttacks:      {char.hasSpecialAttacks}\n")
+            text.append(f"hasSwapAttack:          {char.hasSwapAttack}\n")
+            text.append(f"hasRun:                 {char.hasRun}\n")
+            text.append(f"hasJump:                {char.hasJump}\n")
+            text.append(f"hasLineShot:            {char.hasLineShot}\n")
+            text.append(f"hasRandomShot:          {char.hasRandomShot}\n")
+            text.append(f"hasMovementSpeedBoost:  {char.hasMovementSpeedBoost}\n")
+            text.append(f"hasMaxHealthBoost:      {char.hasMaxHealthBoost}\n")
+            text.append(f"hasMagic:               {char.hasMagic}\n")
+            text.append("\n")
             if char.lastMapSync:
-                text += f"lastMapSync: {src.gamestate.gamestate.tick-char.lastMapSync}\n"
-                text += "\n"
+                text.append(f"lastMapSync: {src.gamestate.gamestate.tick-char.lastMapSync}\n")
+                text.append("\n")
             for jobOrder in char.jobOrders:
-                text += str(jobOrder.taskName)
-                text += ": %s \n" % json.dumps(jobOrder.tasks)#,indent=4)
-            text += f"combat value:                {char.getStrengthSelfEstimate()}\n"
-            text += f"numAttackedWithoutResponse:  {char.numAttackedWithoutResponse}\n"
-            text += f"terrainName:                 {char.getTerrain().tag}\n"
-            text += f"disableCommandsOnPlus:       {char.disableCommandsOnPlus}\n"
-            text += f"autoExpandQuests:            {char.autoExpandQuests}\n"
-            text += f"autoExpandQuests2:           {char.autoExpandQuests2}\n"
-            text += f"burnedIn:                    {char.burnedIn}\n"
+                text.append(str(jobOrder.taskName))
+                text.append(": %s \n" % json.dumps(jobOrder.tasks))
+            text.append(f"combat value:                {char.getStrengthSelfEstimate()}\n")
+            text.append(f"numAttackedWithoutResponse:  {char.numAttackedWithoutResponse}\n")
+            text.append(f"terrainName:                 {char.getTerrain().tag}\n")
+            text.append(f"disableCommandsOnPlus:       {char.disableCommandsOnPlus}\n")
+            text.append(f"autoExpandQuests:            {char.autoExpandQuests}\n")
+            text.append(f"autoExpandQuests2:           {char.autoExpandQuests2}\n")
+            text.append(f"burnedIn:                    {char.burnedIn}\n")
 
-        text += "\n"
+        text.append("\n")
 
-        dimensions = self._get_text_dimensions(text)
+        dimensions = self._get_text_dimensions(src.interaction.stringifyUrwid(text))
         if dimensions[0]+5 <= self.min_lines:
-            text += "\n"*(self.min_lines-(dimensions[0]+5))
+            text.append("\n"*(self.min_lines-(dimensions[0]+5)))
         else:
             self.min_lines = dimensions[0]+5
 
-        text += "\n"
-        text += "press a/d to change what information is shown"
-        text += "\n"
-        text += "\npress e to view the status effect on the character"
-        text += "\npress s to view the character statistics\n"
+        text.append("\n")
+        text.append("press a/d to change what information is shown")
+        text.append("\n")
+        text.append("\npress e to view the status effect on the character")
+        text.append("\npress s to view the character statistics\n")
 
         if dimensions[1] <= self.min_cols:
-            text += " "*(self.min_cols-dimensions[1])
+            text.append(" "*(self.min_cols-dimensions[1]))
         else:
             self.min_cols = dimensions[1]
 

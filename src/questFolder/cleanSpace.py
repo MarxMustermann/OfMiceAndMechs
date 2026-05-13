@@ -238,7 +238,12 @@ You can pick up items by pressing the k or K key.
 
                     if not items:
                         continue
-                    if items[0].bolted:
+
+                    item = items[0]
+                    if item.bolted:
+                        continue
+                    if not item.container == room:
+                        room.removeItem(item)
                         continue
 
                     if character.getFreeInventorySpace() <= 0:
@@ -262,7 +267,12 @@ You can pick up items by pressing the k or K key.
                 items = room.getItemByPosition(slot[0])
                 if not items:
                     continue
-                if items[0].bolted:
+
+                item = items[0]
+                if item.bolted:
+                    continue
+                if not item.container == room:
+                    room.removeItem(item)
                     continue
 
                 misplacmentFound = False

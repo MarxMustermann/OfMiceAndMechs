@@ -138,7 +138,6 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
             for jobOrder in char.jobOrders:
                 text += str(jobOrder.taskName)
                 text += ": %s \n" % json.dumps(jobOrder.tasks)#,indent=4)
-            text += f"lastJobOrder:                {char.lastJobOrder}\n"
             text += f"combat value:                {char.getStrengthSelfEstimate()}\n"
             text += f"numAttackedWithoutResponse:  {char.numAttackedWithoutResponse}\n"
             text += f"terrainName:                 {char.getTerrain().tag}\n"

@@ -5866,7 +5866,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
             gameIndex = 0
 
         start_name = "start run"
-        if gameIndex < len(saves):
+        if gameIndex < len(saves) and saves[gameIndex]["hasSave"]:
             start_name = "continue run"
         main_menu_entries = [start_name,"open feedback form","change game settings","manage worlds",]
 

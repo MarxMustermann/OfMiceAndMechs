@@ -4095,7 +4095,7 @@ def getTcodEvents():
                                 smallCoordinate = (smallCoordinate[0]+1,smallCoordinate[1]+1,0)
 
                         if event.button == tcod.event.MouseButton.LEFT:
-                            if not terrain.getEnemiesOnTile(mainChar,bigCoordinate):
+                            if not terrain.getEnemiesOnTile(mainChar,bigCoordinate) and not terrain.getEnemiesOnTile(mainChar):
                                 if rooms:
                                     items = rooms[0].getItemByPosition(smallCoordinate)
                                     other_characters = rooms[0].getCharactersOnPosition(smallCoordinate)
@@ -4156,7 +4156,7 @@ def getTcodEvents():
                                     quest.autoSolve = True
                                     mainChar.assignQuest(quest,active=True)
                             else:
-                                if bigCoordinate != mainChar.getBigPosition():
+                                if bigCoordinate != mainChar.getBigPosition() and not terrain.getEnemiesOnTile(mainChar):
                                     quest = src.quests.questMap["GoToTile"](targetPosition=bigCoordinate)
                                     quest.autoSolve = True
                                     mainChar.assignQuest(quest,active=True)

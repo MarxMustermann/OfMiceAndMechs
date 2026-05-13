@@ -39,8 +39,6 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
 
         text = ""
 
-        print(char.registers)
-
         text += "name:      %s\n" % char.name
         text += "faction:   %s\n" % char.faction
         if hasattr(char,"rank"):

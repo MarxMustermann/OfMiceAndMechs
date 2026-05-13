@@ -234,10 +234,12 @@ Remove all items from the walkways that are not bolted down."""
 
             if not items:
                 continue
-            if items[0].bolted:
+            item = items[0]
+
+            if item.bolted:
                 continue
 
-            foundItems.append(items[0])
+            foundItems.append(item)
 
         return foundItems
 

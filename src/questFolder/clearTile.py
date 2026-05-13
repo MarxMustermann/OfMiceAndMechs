@@ -238,6 +238,8 @@ Remove all items from the walkways that are not bolted down."""
 
             if item.bolted:
                 continue
+
+            # remove ghost items
             if not item.container == room:
                 room.removeItem(item)
                 continue

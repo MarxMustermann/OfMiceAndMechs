@@ -242,6 +242,8 @@ You can pick up items by pressing the k or K key.
                     item = items[0]
                     if item.bolted:
                         continue
+
+                    # remove ghost items
                     if not item.container == room:
                         room.removeItem(item)
                         continue
@@ -271,6 +273,8 @@ You can pick up items by pressing the k or K key.
                 item = items[0]
                 if item.bolted:
                     continue
+
+                # remove ghost items
                 if not item.container == room:
                     room.removeItem(item)
                     continue

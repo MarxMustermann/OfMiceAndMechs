@@ -155,10 +155,15 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
             self.min_lines = dimensions[0]+5
 
         text.append("\n")
-        text.append("press a/d to change what information is shown")
+        text.append(src.interaction.ActionMeta(payload="a",content="press a"))
+        text.append("/")
+        text.append(src.interaction.ActionMeta(payload="d",content="d to change what information is shown"))
         text.append("\n")
-        text.append("\npress e to view the status effect on the character")
-        text.append("\npress s to view the character statistics\n")
+        text.append("\n")
+        text.append(src.interaction.ActionMeta(payload="e",content="press e to view the status effect on the character"))
+        text.append("\n")
+        text.append(src.interaction.ActionMeta(payload="s",content="press s to view the character statistics"))
+        text.append("\n")
 
         if dimensions[1] <= self.min_cols:
             text.append(" "*(self.min_cols-dimensions[1]))

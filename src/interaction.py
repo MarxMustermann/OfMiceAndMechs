@@ -6128,7 +6128,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
         if manage_worlds:
             counter = 0
             for save_entry in saves:
-                menu_entry = str(save_entry)
+                menu_entry = f"world {save_entry['savestateId']}"
                 indicator = ""
                 if counter == index:
                     indicator = "=> "

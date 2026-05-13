@@ -39,18 +39,18 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
 
         text = ""
 
-        text += "name:      %s\n" % char.name
-        text += "faction:   %s\n" % char.faction
+        text += f"name:      {char.name}\n"
+        text += f"faction:   {char.faction}\n"
         if hasattr(char,"rank"):
-            text += "rank:      %s\n" % char.rank
+            text += f"rank:      {char.rank}\n"
         text += "\n"
         text += f"page: {self.page}/3\n"
         text += "\n"
         if self.page == 1:
-            text += "health:       %s" % char.health + "\n"
-            text += "max health:   %s" % char.adjustedMaxHealth + "\n"
-            text += "exhaustion:   %s" % char.exhaustion + "\n"
-            text += "time taken:   %s" % char.timeTaken + "\n"
+            text += f"health:       {char.health}\n"
+            text += f"max health:   {char.adjustedMaxHealth}\n"
+            text += f"exhaustion:   {char.exhaustion}\n"
+            text += f"time taken:   {char.timeTaken}\n"
             text += "\n"
             text += "weapon:       "
             weaponBaseDamage = None
@@ -71,7 +71,7 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
             tool_text = "no tool"
             if char.tool:
                 tool_text = char.tool.name
-                text += f"tool:         %s\n" % tool_text
+                text += f"tool:         {tool_text}\n"
             text += "\n"
             text += f"baseDamage:     {char.baseDamage}\n"
             text += f"movementSpeed:  {char.adjustedMovementSpeed}\n"
@@ -88,17 +88,19 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
             if not statusEffectString == "":
                 statusEffectString = statusEffectString[:-2]
             statusEffectString = "[]"
-            text += f"status effects: %s\npress e to view a detailed buff list\n"%(statusEffectString,)
+            text += f"status effects: {statusEffectString}\npress e to view a detailed buff list\n"
             
         if self.page == 2:
             if len(char.duties) < 5:
-                text += "duties: %s\n" % ",\n        ".join(char.duties)
+                dutyString = ",\n        ".join(char.duties)
+                text += "duties: {dutyString}\n"
             else:
                 text += "duties: "
                 duties_to_show = char.duties[:]
                 counter = 0
                 while duties_to_show:
-                    text += "%s" % duties_to_show.pop(0)
+                    duty_to_show = duties_to_show.pop(0)
+                    text += f"{duties_to_show}"
                     if duties_to_show:
                         if counter > 5:
                             text += ",\n      "
@@ -106,15 +108,15 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
                         else:
                             text += ", "
                             counter += 1
-                text += "\n" % char.duties
+                text += "\n"
             text += "\n"
-            text += f"skills:      %s\n" % char.skills
+            text += f"skills:      {char.skills}"
             text += f"grievances:  {char.grievances}\n"
         
         if self.page == 3:
             if hasattr(char,"superior"):
-                text += "superior:   %s\n" % char.superior
-            text += "reputation: %s\n" % char.reputation
+                text += f"superior:   {char.superior}\n"
+            text += f"reputation: {char.reputation}\n"
             flaskInfo = "-"
             if char.flask:
                 flaskInfo = str(char.flask.uses)+" flask charges"
@@ -136,14 +138,14 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
             for jobOrder in char.jobOrders:
                 text += str(jobOrder.taskName)
                 text += ": %s \n" % json.dumps(jobOrder.tasks)#,indent=4)
-            text += f"lastJobOrder:                %s\n" % char.lastJobOrder
-            text += f"combat value:                %s" % char.getStrengthSelfEstimate() + "\n"
-            text += f"numAttackedWithoutResponse:  %s\n" % char.numAttackedWithoutResponse
-            text += f"terrainName:                 %s\n" % char.getTerrain().tag
-            text += f"disableCommandsOnPlus:       %s\n" % char.disableCommandsOnPlus
-            text += f"autoExpandQuests:            %s\n" % char.autoExpandQuests
-            text += f"autoExpandQuests2:           %s\n" % char.autoExpandQuests2
-            text += f"burnedIn:                    %s\n" % char.burnedIn
+            text += f"lastJobOrder:                {char.lastJobOrder}\n"
+            text += f"combat value:                {char.getStrengthSelfEstimate()}\n"
+            text += f"numAttackedWithoutResponse:  {char.numAttackedWithoutResponse}\n"
+            text += f"terrainName:                 {char.getTerrain().tag}\n"
+            text += f"disableCommandsOnPlus:       {char.disableCommandsOnPlus}\n"
+            text += f"autoExpandQuests:            {char.autoExpandQuests}\n"
+            text += f"autoExpandQuests2:           {char.autoExpandQuests2}\n"
+            text += f"burnedIn:                    {char.burnedIn}\n"
 
         text += "\n"
 

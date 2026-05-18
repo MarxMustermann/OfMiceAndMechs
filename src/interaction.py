@@ -4210,6 +4210,11 @@ def getTcodEvents():
                             submenu.index = smallCoordinate
                             submenu.index_big = bigCoordinate
                             mainChar.macroState["submenue"] = submenu
+                        elif event.button == tcod.event.MouseButton.RIGHT:
+                            submenu = src.menuFolder.contextListMenu.ContextListMenu(mainChar)
+                            submenu.index = smallCoordinate
+                            submenu.index_big = bigCoordinate
+                            mainChar.macroState["submenue"] = submenu
                         else:
                             print(event)
             if isinstance(event, tcod.event.Quit):

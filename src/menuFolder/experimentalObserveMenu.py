@@ -23,60 +23,6 @@ class ExperimentalObserveMenu(src.subMenu.SubMenu):
         if key in ("esc"," ",):
             return True
 
-        # move small cursor
-        if key in ("w","up",):
-            self.index = (self.index[0],self.index[1]-1,0)
-        if key in ("s","down",):
-            self.index = (self.index[0],self.index[1]+1,0)
-        if key in ("a","left",):
-            self.index = (self.index[0]-1,self.index[1],0)
-        if key in ("d","right",):
-            self.index = (self.index[0]+1,self.index[1],0)
-
-        # handle out of bounds by small cursor
-        if self.index[0] < 0:
-            self.index_big = (self.index_big[0]-1,self.index_big[1],0)
-            self.index = (13,self.index[1],0)
-        if self.index[0] > 13:
-            self.index_big = (self.index_big[0]+1,self.index_big[1],0)
-            self.index = (0,self.index[1],0)
-        if self.index[1] < 0:
-            self.index_big = (self.index_big[0],self.index_big[1]-1,0)
-            self.index = (self.index[0],13,0)
-        if self.index[1] > 13:
-            self.index_big = (self.index_big[0],self.index_big[1]+1,0)
-            self.index = (self.index[0],0,0)
-
-        # move big cursor
-        if key in ("W",):
-            self.index_big = (self.index_big[0],self.index_big[1]-1,0)
-        if key in ("S",):
-            self.index_big = (self.index_big[0],self.index_big[1]+1,0)
-        if key in ("A",):
-            self.index_big = (self.index_big[0]-1,self.index_big[1],0)
-        if key in ("D",):
-            self.index_big = (self.index_big[0]+1,self.index_big[1],0)
-
-        # hanldle out of bound by the big cursor
-        if self.index_big[0] < 1:
-            self.index_big = (13,self.index_big[1],0)
-        if self.index_big[0] > 13:
-            self.index_big = (1,self.index_big[1],0) 
-        if self.index_big[1] < 1:
-            self.index_big = (self.index_big[0],13,0)
-        if self.index_big[1] > 13:
-            self.index_big = (self.index_big[0],1,0)
-
-        if key in ("g",):
-            quest = src.quests.questMap["GoToPosition"](targetPosition=self.index,targetPositionBig=self.index_big)
-            quest.autoSolve = True
-            self.character.assignQuest(quest,active=True)
-
-        if key in ("k",):
-            quest = src.quests.questMap["CleanSpace"](targetPosition=self.index,targetPositionBig=self.index_big)
-            quest.autoSolve = True
-            self.character.assignQuest(quest,active=True)
-
         # signal menu is still active
         return False
 

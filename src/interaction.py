@@ -5479,7 +5479,7 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                     sdl_renderer2.fill_rect((offsetLeft,offsetTop,display_width+padding*2,display_height+padding*2))
 
                     root_console = tcod.console.Console(width, height, order="F")
-                    printUrwidToTcod(text,(0,0),explecitConsole=root_console,console_offset=pos)
+                    printUrwidToTcod(text,(0,0),explecitConsole=root_console,console_offset=(offsetLeft+padding,offsetTop+padding))
 
                     atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
                     console_render = tcod.render.SDLConsoleRender(atlas)

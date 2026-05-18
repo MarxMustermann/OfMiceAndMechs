@@ -4540,7 +4540,8 @@ def printUrwidToTcod(inData,offset,color=None,internalOffset=None,size=None, act
     if isinstance(inData, ActionMeta):
         line_count = 0
         for line in stringifyUrwid(inData.content).split("\n"):
-            click_map.append((((offset[0]+internalOffset[0])*tileWidth+console_offset[0],(offset[1]+internalOffset[1])*tileHeight+line_count*tileHeight+console_offset[1]),(len(line)*tileWidth,tileHeight),inData.payload))
+            click_area = (((offset[0]+internalOffset[0])*tileWidth+console_offset[0],(offset[1]+internalOffset[1])*tileHeight+line_count*tileHeight+console_offset[1]),(len(line)*tileWidth,tileHeight),inData.payload)
+            click_map.append(click_area)
             line_count += 1
         printUrwidToTcod(inData.content,offset,color,internalOffset,size,inData.payload,explecitConsole = tcodConsole_local, console_offset=console_offset)
 

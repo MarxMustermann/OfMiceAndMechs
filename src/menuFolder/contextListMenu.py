@@ -90,6 +90,8 @@ class ContextListMenu(src.menues.SubMenu):
         text = []
 
         # show the interaction options
+        text.append(src.interaction.ActionMeta(payload=(self.open_main_menu,{}),content="open main menu"))
+        text.append("\n")
         text.append(src.interaction.ActionMeta(payload=(self.trigger_clearSpot,{}),content="clear spot"))
         text.append("\n")
         text.append(src.interaction.ActionMeta(payload=(self.trigger_goToPosition,{}),content="go to position"))
@@ -98,6 +100,9 @@ class ContextListMenu(src.menues.SubMenu):
 
         # return rendered text
         return text
+
+    def open_main_menu(self,extraParams=None):
+        self.character.runCommandString(["esc","esc"])
 
     def trigger_goToPosition(self,extraParams=None):
         quest = src.quests.questMap["GoToPosition"](targetPositionBig=self.index_big, targetPosition=self.index)

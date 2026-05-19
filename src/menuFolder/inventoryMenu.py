@@ -217,15 +217,14 @@ class InventoryMenu(src.menues.SubMenu):
                 if not sidebared and counter == cursor + 1:
                     cursor_indicator = " -> "
                 if isinstance(item.render(), int):
-                    txt.extend(
-                        [
+                    line = [
                             str(counter),
                             cursor_indicator,
                             src.interaction.ItemMeta(content=item.render(),item=item),
                             " - ",
                             item.name,
                         ]
-                    )
+                    txt.append(line)
                 else:
                     txt.extend([str(counter), cursor_indicator, src.interaction.ItemMeta(content=item.render(),item=item), " - ", item.name])
                 txt.append("\n")

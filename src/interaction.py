@@ -9401,11 +9401,6 @@ def advanceChar(char,render=True, pull_events = True, singleStep=False):
                 continue
             hasAutosolveQuest = True
 
-        try:
-            char.autoExpandCounter
-        except:
-            char.autoExpandCounter = 0
-
         if char.huntkilling:
             processInput(
                 (char.doHuntKill(),["norecord"]),

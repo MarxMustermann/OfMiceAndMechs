@@ -226,6 +226,7 @@ class InventoryMenu(src.menues.SubMenu):
                         ]
                 else:
                     line = [str(counter), cursor_indicator, src.interaction.ItemMeta(content=item.render(),item=item), " - ", item.name]
+                line = src.interaction.ActionMeta(payload=(self.trigger_itemActivate,{"item":item}),content=line)
                 txt.append(line)
                 txt.append("\n")
                 num_rows += 1
@@ -274,6 +275,10 @@ class InventoryMenu(src.menues.SubMenu):
             else:
                 self.min_cols = num_columns
         return txt
+
+    def trigger_itemActivate(self,extraParams=None):
+        item = extraParams["item"]
+        item.raw_apply(self.char)
 
     def get_command_to_select_item(self,item_to_select=None,item_type=None,selectionCommand="j"):
         """

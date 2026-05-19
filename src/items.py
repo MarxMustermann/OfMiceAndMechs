@@ -216,10 +216,6 @@ class Item:
         self.watched.remove((target, callback, tag))
 
     def stopWatchingAll(self):
-        try:
-            self.watched
-        except:
-            self.watched = []
         for listenItem in self.watched[:]:
             self.stopWatching(listenItem[0], listenItem[1], listenItem[2])
 

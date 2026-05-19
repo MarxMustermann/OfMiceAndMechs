@@ -99,9 +99,16 @@ class ContextListMenu(src.subMenu.SubMenu):
 
         # show the interaction options
         text.append(src.interaction.ActionMeta(payload=(self.trigger_clearSpot,{}),content="clear spot"))
+        text.append("\n")
+        text.append(src.interaction.ActionMeta(payload=(self.trigger_goToPosition,{}),content="go to position"))
 
         # return rendered text
         return text
+
+    def trigger_goToPosition(self,extraParams=None):
+        quest = src.quests.questMap["GoToPosition"](targetPositionBig=self.index_big, targetPosition=self.index)
+        quest.autoSolve = True
+        self.character.assignQuest(quest,active=True)
 
     def trigger_clearSpot(self,extraParams=None):
         quest = src.quests.questMap["CleanSpace"](targetPositionBig=self.index_big, targetPosition=self.index)

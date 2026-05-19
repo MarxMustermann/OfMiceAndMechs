@@ -1,6 +1,6 @@
 import src
 
-class TextMenu(src.subMenu.SubMenu):
+class TextMenu(src.menues.SubMenu):
     """
     a menu showing a text
     """

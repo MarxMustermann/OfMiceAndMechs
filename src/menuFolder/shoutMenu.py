@@ -2,7 +2,7 @@ import src
 import src.rooms
 
 
-class ShoutMenu(src.subMenu.SubMenu):
+class ShoutMenu(src.menues.SubMenu):
     shout_options = ["Stop and Wait For X tick!!!!!"]
 
     def __init__(self):

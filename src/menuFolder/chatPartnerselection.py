@@ -2,7 +2,7 @@ import src
 
 # bad code: since there is no need to wait for some return this submenue should not wrap around the Chat menu
 # bad code: sub menues should be implemented in the base class
-class ChatPartnerselection(src.subMenu.SubMenu):
+class ChatPartnerselection(src.menues.SubMenu):
     """
     Spawns a Chat submenu with a player selected character
     """

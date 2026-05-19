@@ -2,7 +2,7 @@ import src
 
 from decimal import Decimal as D
 
-class SliderMenu(src.subMenu.SubMenu):
+class SliderMenu(src.menues.SubMenu):
     """
     menu to get a string input from the user
     """

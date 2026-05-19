@@ -1,6 +1,6 @@
 import src
 
-class RoomDutyMenu(src.subMenu.SubMenu):
+class RoomDutyMenu(src.menues.SubMenu):
     """
     """
 

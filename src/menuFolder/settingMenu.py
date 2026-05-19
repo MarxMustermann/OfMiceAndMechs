@@ -2,7 +2,7 @@ import json
 
 import src
 
-class SettingMenu(src.subMenu.SubMenu):
+class SettingMenu(src.menues.SubMenu):
     type = "SettingMenu"
     setting_options = ["auto save", "sound", "set sound volume", "fullscreen", "change npc rendering","SDL","tracking"]
 

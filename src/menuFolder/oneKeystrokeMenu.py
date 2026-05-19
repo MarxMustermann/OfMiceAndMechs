@@ -1,6 +1,6 @@
 import src
 
-class OneKeystrokeMenu(src.subMenu.SubMenu):
+class OneKeystrokeMenu(src.menues.SubMenu):
     '''
     a menu getting a single keystroke from the character
     Parameters:

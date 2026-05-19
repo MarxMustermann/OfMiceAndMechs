@@ -1,6 +1,6 @@
 import src
 
-class InstructNPCMenu(src.subMenu.SubMenu):
+class InstructNPCMenu(src.menues.SubMenu):
     def __init__(self,npc=None):
         self.npc = npc
         self.type = "InstructNPCMenu"

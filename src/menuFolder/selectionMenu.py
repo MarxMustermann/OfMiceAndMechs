@@ -1,7 +1,7 @@
 import src
 
 # bad code: this does nothing the Submenu doesn't do
-class SelectionMenu(src.subMenu.SubMenu):
+class SelectionMenu(src.menues.SubMenu):
     '''
     does a simple selection and terminates
     Parameters:

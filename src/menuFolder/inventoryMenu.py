@@ -5,7 +5,7 @@ logger = logging.getLogger(__name__)
 
 # bad code: should be abstracted
 # bad code: uses global functions to render
-class InventoryMenu(src.subMenu.SubMenu):
+class InventoryMenu(src.menues.SubMenu):
     """
     shows and interacts with a characters inventory
     """

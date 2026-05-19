@@ -1,6 +1,6 @@
 import src
 
-class ExperimentalObserveMenu(src.subMenu.SubMenu):
+class ExperimentalObserveMenu(src.menues.SubMenu):
     type = "ExperimentalObserveMenu"
 
     def __init__(self,char):

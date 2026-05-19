@@ -2,7 +2,7 @@ import src
 
 # bad code: should be abstracted
 # bad code: uses global function to render
-class ItemInfoMenu(src.subMenu.SubMenu):
+class ItemInfoMenu(src.menues.SubMenu):
     """
     menu to show the players attributes
     """

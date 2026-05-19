@@ -1,6 +1,6 @@
 import src
 
-class MessagesMenu(src.subMenu.SubMenu):
+class MessagesMenu(src.menues.SubMenu):
 
     def render(self):
         char = self.char

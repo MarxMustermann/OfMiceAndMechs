@@ -1,6 +1,6 @@
 import src
 
-class setNPCDutiesMenu(src.subMenu.SubMenu):
+class setNPCDutiesMenu(src.menues.SubMenu):
     def __init__(self,npc=None):
         self.npc = npc
         self.type = "setNPCDutiesMenu"

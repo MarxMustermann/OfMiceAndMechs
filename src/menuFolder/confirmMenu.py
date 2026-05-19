@@ -1,7 +1,7 @@
 import src
 
 
-class ConfirmMenu(src.subMenu.SubMenu):
+class ConfirmMenu(src.menues.SubMenu):
     def __init__(self, text, onConfirm, onCancel=None):
         self.text = text
         self.onConfirm = onConfirm

@@ -2,7 +2,7 @@ import collections
 
 import src
 
-class ChangeViewsMenu(src.subMenu.SubMenu):
+class ChangeViewsMenu(src.menues.SubMenu):
     type = "ChangeViewsMenu"
 
     def __init__(self):

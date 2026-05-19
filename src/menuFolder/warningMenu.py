@@ -1,7 +1,7 @@
 import src
 
 
-class WarningMenu(src.subMenu.SubMenu):
+class WarningMenu(src.menues.SubMenu):
     def __init__(self, text, onReturn=None):
         self.text = text
         self.onReturn = onReturn

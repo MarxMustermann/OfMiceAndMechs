@@ -10,7 +10,7 @@ import src.menuFolder.textMenu
 import src.menuFolder.warningMenu
 
 
-class TeleporterGroupMenu(src.subMenu.SubMenu):
+class TeleporterGroupMenu(src.menues.SubMenu):
     def __init__(self, teleporter):
         self.type = "TeleporterGroupMenu"
         self.value = D("87.5") if not teleporter.group else teleporter.group

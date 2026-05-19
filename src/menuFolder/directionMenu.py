@@ -2,7 +2,7 @@ import src
 from src.helpers import clamp
 
 
-class DirectionMenu(src.subMenu.SubMenu):
+class DirectionMenu(src.menues.SubMenu):
     def __init__(self, text, current_dir, dirChosen):
         self.type = "DirectionMenu"
         if current_dir:

@@ -1,6 +1,6 @@
 import src
 
-class NameGhoulMenu(src.subMenu.SubMenu):
+class NameGhoulMenu(src.menues.SubMenu):
     def __init__(self,npc=None):
         self.npc = npc
         self.type = "NameGhoulMenu"

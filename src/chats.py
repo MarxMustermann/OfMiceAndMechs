@@ -14,7 +14,7 @@ import src
 
 logger = logging.getLogger(__name__)
 
-class Chat(src.subMenu.SubMenu):
+class Chat(src.menues.SubMenu):
     """
     the main class for chats
     """
@@ -626,7 +626,7 @@ for a brain.\n\n"""
 
 # bad code: story specific
 # obsolete: needs to be reintegrated
-class ReReport(src.subMenu.SubMenu):
+class ReReport(src.menues.SubMenu):
     """
     a dialog for reentering the command chain
     """

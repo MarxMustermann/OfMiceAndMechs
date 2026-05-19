@@ -1,7 +1,7 @@
 import src
 import tcod
 
-class InputMenu(src.subMenu.SubMenu):
+class InputMenu(src.menues.SubMenu):
     """
     menu to get a string input from the user
     """

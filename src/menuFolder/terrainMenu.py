@@ -1,7 +1,7 @@
 import src
 
 
-class TerrainMenu(src.subMenu.SubMenu):
+class TerrainMenu(src.menues.SubMenu):
     type = "TerrainMenu"
 
     def __init__(self, functionMap=None, extraText="", cursor=None, applyKey="coordinate", gridSize=15, limits=(1, 13), char=None):

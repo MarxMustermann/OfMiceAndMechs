@@ -1,6 +1,6 @@
 import src
 
-class ContextListMenu(src.subMenu.SubMenu):
+class ContextListMenu(src.menues.SubMenu):
     type = "ContextListMenu"
 
     def __init__(self,char):

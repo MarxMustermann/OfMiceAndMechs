@@ -7,7 +7,7 @@ import regex
 import src
 
 
-class DebugMenu(src.subMenu.SubMenu):
+class DebugMenu(src.menues.SubMenu):
     """
     menu offering debug ability
     """

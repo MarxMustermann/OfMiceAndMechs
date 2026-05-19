@@ -1,4 +1,4 @@
-import src.subMenu
+import src.menues
 import src.characters           # holds the logic for characters
 import src.monster
 import src.characterFolder

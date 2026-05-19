@@ -19,7 +19,6 @@ class ContextListMenu(src.subMenu.SubMenu):
         return pos
 
     def handleKey(self, key, noRender=False, character = None):
-        src.interaction.send_tracking_ping("created_observe_menu_key_pressed_"+str(key))
 
         # exit the submenu
         if key in ("esc"," ",):
@@ -78,9 +77,6 @@ class ContextListMenu(src.subMenu.SubMenu):
             quest = src.quests.questMap["CleanSpace"](targetPosition=self.index,targetPositionBig=self.index_big)
             quest.autoSolve = True
             self.character.assignQuest(quest,active=True)
-
-        # emit event
-        self.character.changed("lookedAt",{"index":self.index,"index_big":self.index_big})
 
         # signal menu is still active
         return False

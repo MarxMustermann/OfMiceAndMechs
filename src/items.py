@@ -196,10 +196,6 @@ class Item:
         if tag == "":
             1/0
 
-        try:
-            self.watched
-        except:
-            self.watched = []
         target.addListener(callback, tag)
         self.watched.append((target, callback,tag))
 

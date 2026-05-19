@@ -1214,35 +1214,35 @@ def doAdvancedInteraction(params):
         )
         if items:
             items[0].raw_apply(char)
-            char.takeTime(char.movementSpeed,"advanced interaction m")
+            char.takeTime(char.movementSpeed,"advanced interaction w")
     elif key == "s":
         items = char.container.getItemByPosition(
             (char.xPosition, char.yPosition + 1, char.zPosition)
         )
         if items:
             items[0].raw_apply(char)
-            char.takeTime(char.movementSpeed,"advanced interaction m")
+            char.takeTime(char.movementSpeed,"advanced interaction s")
     elif key == "d":
         items = char.container.getItemByPosition(
             (char.xPosition + 1, char.yPosition, char.zPosition)
         )
         if items:
             items[0].raw_apply(char)
-            char.takeTime(char.movementSpeed,"advanced interaction m")
+            char.takeTime(char.movementSpeed,"advanced interaction d")
     elif key == "a":
         items = char.container.getItemByPosition(
             (char.xPosition - 1, char.yPosition, char.zPosition)
         )
         if items:
             items[0].raw_apply(char)
-            char.takeTime(char.movementSpeed,"advanced interaction m")
+            char.takeTime(char.movementSpeed,"advanced interaction a")
     elif key == ".":
         items = char.container.getItemByPosition(
             (char.xPosition, char.yPosition, char.zPosition)
         )
         if items:
             items[0].raw_apply(char)
-            char.takeTime(char.movementSpeed,"advanced interaction m")
+            char.takeTime(char.movementSpeed,"advanced interaction .")
     elif key == "i":
         if char.inventory:
             char.inventory[-1].raw_apply(char)

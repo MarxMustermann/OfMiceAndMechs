@@ -4781,6 +4781,21 @@ def calculate_UI_layout(char):
 
     return uiElements
 
+def unSidebar(extraParams):
+
+    # unpack parameters
+    menu = extraParams["menu"]
+    character = extraParams["character"]
+
+    # remove menu from sidebar
+    if menu in character.rememberedMenu:
+        character.rememberedMenu.remove(menu)
+    if menu in character.rememberedMenu2:
+        character.rememberedMenu2.remove(menu)
+
+    # set menu as open menu
+    character.macroState["submenue"] = menu
+
 last_menu_dimension = None
 def renderGameDisplay(renderChar=None,showSaving=False):
     global last_menu_dimension
@@ -5107,7 +5122,7 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                         chars = []
                         counter = 0
                         for menu in reversed(char.rememberedMenu):
-                            chars.extend([(src.pseudoUrwid.AttrSpec(disabled_ui_color,"black"),"------------- "),ActionMeta(content=">",payload=["lESC"]),"\n\n"])
+                            chars.extend([(src.pseudoUrwid.AttrSpec(disabled_ui_color,"black"),"------------- "),ActionMeta(content=">",payload=(unSidebar,{"menu":menu,"character":char})),"\n\n"])
                             chars.extend(menu.render())
                             counter += 1
                         size = uiElement["size"]
@@ -5118,7 +5133,7 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                     if uiElement["type"] == "rememberedMenu2" and char.rememberedMenu2:
                         chars = []
                         for menu in reversed(char.rememberedMenu2):
-                            chars.extend([(src.pseudoUrwid.AttrSpec(disabled_ui_color,"black"),"------------- "),ActionMeta(content="<",payload=["rESC"]),"\n\n"])
+                            chars.extend([(src.pseudoUrwid.AttrSpec(disabled_ui_color,"black"),"------------- "),ActionMeta(content="<",payload=(unSidebar,{"menu":menu,"character":char})),"\n\n"])
                             chars.extend(menu.render())
                         size = uiElement["size"]
                         offset = uiElement["offset"]

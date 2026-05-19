@@ -6,10 +6,7 @@ import logging
 import random
 
 import config
-import src.canvas
-import src.gamestate
-import src.interaction
-import src.quests
+
 import src
 
 logger = logging.getLogger(__name__)

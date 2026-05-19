@@ -418,12 +418,20 @@ class Item:
         return terrain
 
     def raw_apply(self,character):
+        """
+        handles usage by a character
+        this method should not be ovewritten
+
+        Parameters:
+            character: the character using the item
+        """
         character.changed("raw applied",{"character":character,"item":self})
         return self.apply(character)
 
     def apply(self, character):
         """
         handles usage by a character
+        this method can be ovewritten
 
         Parameters:
             character: the character using the item

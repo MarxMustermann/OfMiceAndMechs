@@ -93,6 +93,8 @@ class ContextListMenu(src.menues.SubMenu):
         text.append(src.interaction.ActionMeta(payload=(self.trigger_clearSpot,{}),content="clear spot"))
         text.append("\n")
         text.append(src.interaction.ActionMeta(payload=(self.trigger_goToPosition,{}),content="go to position"))
+        text.append("\n")
+        text.append(src.interaction.ActionMeta(payload=(self.trigger_restock,{}),content="restock stockpile"))
 
         # return rendered text
         return text
@@ -104,6 +106,11 @@ class ContextListMenu(src.menues.SubMenu):
 
     def trigger_clearSpot(self,extraParams=None):
         quest = src.quests.questMap["CleanSpace"](targetPositionBig=self.index_big, targetPosition=self.index)
+        quest.autoSolve = True
+        self.character.assignQuest(quest,active=True)
+
+    def trigger_restock(self,extraParams=None):
+        quest = src.quests.questMap["RestockRoom"](targetPositionBig=self.index_big, targetPosition=self.index)
         quest.autoSolve = True
         self.character.assignQuest(quest,active=True)
 

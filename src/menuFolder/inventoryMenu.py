@@ -261,10 +261,6 @@ class InventoryMenu(src.menues.SubMenu):
             num_rows += 1
         txt.append("\n")
         num_rows += 1
-        try:
-            self.min_lines
-        except:
-            self.min_lines = 8
         if not sidebared:
             if num_rows <= self.min_lines:
                 txt.append("\n"*(self.min_lines-num_rows))

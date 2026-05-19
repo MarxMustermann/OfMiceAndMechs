@@ -69,14 +69,10 @@ class ContextListMenu(src.menues.SubMenu):
             self.index_big = (self.index_big[0],1,0)
 
         if key in ("g",):
-            quest = src.quests.questMap["GoToPosition"](targetPosition=self.index,targetPositionBig=self.index_big)
-            quest.autoSolve = True
-            self.character.assignQuest(quest,active=True)
+            self.trigger_goToPosition()
 
         if key in ("k",):
-            quest = src.quests.questMap["CleanSpace"](targetPosition=self.index,targetPositionBig=self.index_big)
-            quest.autoSolve = True
-            self.character.assignQuest(quest,active=True)
+            self.trigger_clearSpot()
 
         # signal menu is still active
         return False

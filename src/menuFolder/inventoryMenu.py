@@ -226,7 +226,8 @@ class InventoryMenu(src.menues.SubMenu):
                         ]
                     txt.append(line)
                 else:
-                    txt.extend([str(counter), cursor_indicator, src.interaction.ItemMeta(content=item.render(),item=item), " - ", item.name])
+                    line = [str(counter), cursor_indicator, src.interaction.ItemMeta(content=item.render(),item=item), " - ", item.name]
+                    txt.append(line)
                 txt.append("\n")
                 num_rows += 1
 

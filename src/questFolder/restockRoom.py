@@ -30,6 +30,10 @@ class RestockRoom(src.quests.MetaQuestSequence):
         self.shortCode = "r"
 
     def generateTextDescription(self):
+        '''
+        generates a human readable description of the quest
+        '''
+
         reason = ""
         if self.reason:
             reason = f",\nto {self.reason}"

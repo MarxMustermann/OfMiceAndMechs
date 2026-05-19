@@ -2,13 +2,6 @@ from decimal import Decimal as D
 from functools import partial
 
 import src
-import src.helpers
-import src.menuFolder
-import src.menuFolder.confirmMenu
-import src.menuFolder.inputMenu
-import src.menuFolder.textMenu
-import src.menuFolder.warningMenu
-
 
 class TeleporterGroupMenu(src.menues.SubMenu):
     def __init__(self, teleporter):

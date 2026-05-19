@@ -161,9 +161,7 @@ class InventoryMenu(src.menues.SubMenu):
                 self.cursor = len(self.char.inventory) - 1
 
             if key in ("c",):
-                quest = src.quests.questMap["ClearInventory"]()
-                quest.autoSolve = True
-                self.char.assignQuest(quest,active=True)
+                self.trigger_clearInventory()
 
         if not noRender:
             src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\ninventory overview\n\n"))
@@ -271,6 +269,11 @@ class InventoryMenu(src.menues.SubMenu):
             else:
                 self.min_cols = num_columns
         return txt
+
+    def trigger_clearInventory(self,extraParams=None):
+        quest = src.quests.questMap["ClearInventory"]()
+        quest.autoSolve = True
+        self.char.assignQuest(quest,active=True)
 
     def trigger_itemActivate(self,extraParams=None):
         item = extraParams["item"]

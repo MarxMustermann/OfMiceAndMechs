@@ -254,6 +254,9 @@ class InventoryMenu(src.menues.SubMenu):
                                    src.interaction.ActionMeta(payload="e",content="press e to examine item"),"\n",
                                    src.interaction.ActionMeta(payload="c",content="press c to clear inventory")]))
                 num_rows += 4
+            else:
+                txt.append(src.interaction.ActionMeta(payload=(self.trigger_clearInventory,{}),content="c"))
+                num_rows += 1
         else:
             txt.append("empty Inventory\n")
             num_rows += 1

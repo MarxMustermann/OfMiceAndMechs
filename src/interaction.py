@@ -3995,6 +3995,11 @@ def moveCharacterTowardsCursor():
     offset_y = tile_pos[1]-(mouseCombatMap["offset"][1]+mouseCombatMap["map_width"]//2)
     offset = (offset_x,offset_y)
 
+    time_waited = time.time()-mouseCombatLastMove
+    if time_waited < 0.5:
+        return
+    mouseCombatLastMove = time.time()
+
     if abs(offset[0])+abs(offset[1]) > 0:
         candidates = []
         if offset[0] > 0:
@@ -9453,10 +9458,7 @@ def advanceChar(char,render=True, pull_events = True, singleStep=False):
             lastLoop = time.time()
 
             if mouseCombatMove:
-                time_waited = time.time()-mouseCombatLastMove
-                if time_waited > 0.5:
-                    moveCharacterTowardsCursor()
-                    mouseCombatLastMove = time.time()
+                moveCharacterTowardsCursor()
 
         hasAutosolveQuest = False
         for quest in char.getActiveQuests():

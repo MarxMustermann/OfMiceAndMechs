@@ -259,6 +259,8 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             "params": params,
         }
 
+        character.runCommandString("~",nativeKey=True)
+
     def output_produced_item(self, params):
         '''
         actually do the sword sharpening

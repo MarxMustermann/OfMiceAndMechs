@@ -129,6 +129,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
                         self.container.removeItem(grindStone)
 
             improvementAmount = chosenDamageValue - swordOriginalDamage
+
             # trigger the actual productions process
             params["delayTime"] = 20 * improvementAmount
             params["improvementAmount"] = improvementAmount

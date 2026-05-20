@@ -250,6 +250,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         )
         character.macroState["submenue"] = submenue
         submenue.tag = "SwordSharpenerSlider"
+        params = {}
         params["sword"] = sword
         params["nextUpgradeCost"] = amount_grindstone_needed_for_upgrade
         params["grindstones"] = grindstones

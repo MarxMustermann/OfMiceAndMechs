@@ -3984,6 +3984,51 @@ lastAdvance = 0
 lastAutosave = 0
 inputBlock = None
 mousePos = None
+mouseCombatMove = False
+mouseCombatLastMove = None
+mouseCombatMap = None
+
+def moveCharacterTowardsCursor():
+    mainChar = src.gamestate.gamestate.mainChar
+    tile_pos = (mousePos[0]//tileHeight,mousePos[1]//tileHeight,0)
+    offset_x = tile_pos[0]-(mouseCombatMap["offset"][0]+mouseCombatMap["map_width"]//2)
+    offset_y = tile_pos[1]-(mouseCombatMap["offset"][1]+mouseCombatMap["map_width"]//2)
+    offset = (offset_x,offset_y)
+
+    if abs(offset[0])+abs(offset[1]) > 0:
+        candidates = []
+        if offset[0] > 0:
+            candidates.extend([(1,0,0)]*offset[0])
+        if offset[0] < 0:
+            candidates.extend([(-1,0,0)]*(-offset[0]))
+        if offset[1] > 0:
+            candidates.extend([(0,1,0)]*offset[1])
+        if offset[1] < 0:
+            candidates.extend([(0,-1,0)]*(-offset[1]))
+
+        if not candidates:
+            return
+
+        good_candidates = []
+        for candidate in candidates:
+            if mainChar.container.getPositionWalkable(mainChar.getPosition(offset=candidate)):
+                good_candidates.append(candidate)
+
+        if good_candidates:
+            selected = random.choice(good_candidates)
+        else:
+            selected = random.choice(candidates)
+
+        if selected == (1,0,0):
+            direction = "d"
+        if selected == (-1,0,0):
+            direction = "a"
+        if selected == (0,1,0):
+            direction = "s"
+        if selected == (0,-1,0):
+            direction = "w"
+
+        mainChar.runCommandString(direction)
 
 lastcheck = time.time()
 def getTcodEvents():
@@ -3991,6 +4036,9 @@ def getTcodEvents():
     global lastcheck
     global inputBlock
     global mousePos
+    global mouseCombatMove
+    global mouseCombatLastMove
+    global mouseCombatMap
 
     foundEvent = False
 
@@ -4002,6 +4050,10 @@ def getTcodEvents():
         ignoreNext = False
         for event in events:
             foundEvent = True
+            if isinstance(event, tcod.event.MouseButtonUp):
+                mouseCombatMove = False
+                mouseCombatLastMove = None
+                mouseCombatMap = None
             if isinstance(event, tcod.event.MouseMotion):
                 mousePos = event.position
             if isinstance(event, tcod.event.MouseButtonDown):
@@ -4162,6 +4214,10 @@ def getTcodEvents():
                                     quest.autoSolve = True
                                     mainChar.assignQuest(quest,active=True)
                                 else:
+                                    mouseCombatMove = True
+                                    mouseCombatLastMove = time.time()
+                                    mouseCombatMap = uiElement
+
                                     character_position = mainChar.getSpacePosition()
                                     offset = (smallCoordinate[0]-character_position[0],smallCoordinate[1]-character_position[1],0)
                                     if abs(offset[0])+abs(offset[1]) > 0:
@@ -9336,6 +9392,7 @@ def clearMessages(char):
 skipNextRender = False
 lastRender = None
 def advanceChar(char,render=True, pull_events = True, singleStep=False):
+    global mouseCombatLastMove
     global skipNextRender
 
     state = char.macroState
@@ -9394,6 +9451,12 @@ def advanceChar(char,render=True, pull_events = True, singleStep=False):
             if timeDiff < desiredTime:
                 time.sleep(desiredTime-timeDiff)
             lastLoop = time.time()
+
+            if mouseCombatMove:
+                time_waited = time.time()-mouseCombatLastMove
+                if time_waited > 0.5:
+                    moveCharacterTowardsCursor()
+                    mouseCombatLastMove = time.time()
 
         hasAutosolveQuest = False
         for quest in char.getActiveQuests():

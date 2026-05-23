@@ -5699,7 +5699,7 @@ def showMainMenu(args=None):
             saves = rawState["worlds"]
             gameIndex = rawState["lastGameIndex"]
     except:
-        saves = [0,0,0,0,0,0,0,0,0,0]
+        saves = []
         gameIndex = 0
 
     scenarios = [

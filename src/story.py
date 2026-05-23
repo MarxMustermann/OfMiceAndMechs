@@ -207,7 +207,7 @@ class PrefabDesign(BasicPhase):
             with open("gamestate/globalInfo.json") as globalInfoFile:
                 rawState = json.loads(globalInfoFile.read())
         except:
-            rawState = {"saves": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"customPrefabs":[]}
+            rawState = {"saves": [],"customPrefabs":[]}
 
         rawState["customPrefabs"].append(converted)
 

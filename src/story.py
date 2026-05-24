@@ -5361,7 +5361,7 @@ This will close the tutorial and let you do your own thing.
                 """
 There is no guarantee that you will be able to return after using this teleporter.
 Are you sure you want to leave?
-""", options,
+""", options, tag="decision_confirm"
             )
             submenu.do_not_scale = True
             character.macroState["submenue"] = submenu

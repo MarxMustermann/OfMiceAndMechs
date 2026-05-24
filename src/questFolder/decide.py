@@ -30,10 +30,13 @@ Decide{reasonString}.
 
         # handle menus
         submenue = character.macroState["submenue"]
-        if not submenue or submenue.tag != "player_quest_selection":
+        if not submenue or submenue.tag not in ("player_quest_selection","decision_confirm"):
             if not dryRun:
                 self.postHandler()
             return (None,("+","end quest"))
+
+        if submenue.tag == "decision_confirm":
+            return (None,("j","select current option"))
 
         if submenue.selectionIndex > 1+submenue.shift:
             return (None,("w","move cursor up"))
@@ -50,7 +53,7 @@ Decide{reasonString}.
             return False
 
         submenue = character.macroState["submenue"]
-        if not submenue or submenue.tag != "player_quest_selection":
+        if not submenue or submenue.tag not in ("player_quest_selection","decision_confirm"):
             if not dryRun:
                 self.postHandler()
             return True

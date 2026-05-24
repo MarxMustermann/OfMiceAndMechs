@@ -3985,10 +3985,12 @@ lastAutosave = 0
 inputBlock = None
 mousePos = None
 mouseCombatMove = False
-mouseCombatLastMove = None
 mouseCombatMap = None
+mouseCombatLastMove = None
 
 def moveCharacterTowardsCursor():
+    global mouseCombatLastMove
+
     mainChar = src.gamestate.gamestate.mainChar
     tile_pos = (mousePos[0]//tileHeight,mousePos[1]//tileHeight,0)
     offset_x = tile_pos[0]-(mouseCombatMap["offset"][0]+mouseCombatMap["map_width"]//2)

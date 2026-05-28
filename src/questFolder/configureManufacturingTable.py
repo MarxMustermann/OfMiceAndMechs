@@ -134,7 +134,7 @@ Configure the manufacturing table on {self.targetPosition}{reason} to produce {s
             return ([quest],None)
 
         # start configuring the manufacturing table
-        message = "configure item type"
+        message = "activate item"
         activationCommand = "J"
         if submenue:
             if submenue.tag == "advancedInteractionSelection":
@@ -153,7 +153,7 @@ Configure the manufacturing table on {self.targetPosition}{reason} to produce {s
         if (pos[0],pos[1]+1,pos[2]) == self.targetPosition:
             direction = "s"
         if direction:
-            return (None,(activationCommand+direction+"sj",message))
+            return (None,(activationCommand+direction,message))
         return (None,(".","stand around confused"))
 
     def getQuestMarkersTile(self,character):

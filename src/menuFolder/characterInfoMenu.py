@@ -93,7 +93,7 @@ class CharacterInfoMenu(src.menues.SubMenu):
         if self.page == 2:
             if len(char.duties) < 5:
                 dutyString = ",\n        ".join(char.duties)
-                text.append("duties: {dutyString}\n")
+                text.append(f"duties: {dutyString}\n")
             else:
                 text.append("duties: ")
                 duties_to_show = char.duties[:]

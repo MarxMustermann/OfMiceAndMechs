@@ -2854,8 +2854,9 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
                         char.selectSpecialAttack(enemy)
                     elif char.hasSwapAttack:
                         char.attack(enemy,swap=True)
-                    char.showTextMenu("you have no alternate attack")
-                    return None
+                    else:
+                        char.showTextMenu("you have no alternate attack")
+                        return None
 
             if char.tool:
                 char.tool.raw_apply(char)

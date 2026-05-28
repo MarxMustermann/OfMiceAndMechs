@@ -1,4 +1,5 @@
 import src
+
 import random
 
 class ConfigureManufacturingTable(src.quests.MetaQuestSequence):
@@ -15,6 +16,7 @@ class ConfigureManufacturingTable(src.quests.MetaQuestSequence):
 
     def handleManufactured(self, extraInfo):
         return 
+
     def handleConfigured(self, extraInfo):
         if self.completed:
             1/0

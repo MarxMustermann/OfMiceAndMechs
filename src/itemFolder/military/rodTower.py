@@ -85,7 +85,7 @@ class RodTower(src.items.Item):
         else:
             renderer.fill_rect((basePos[0],basePos[1],tileSize,border_width))
             renderer.fill_rect((basePos[0],basePos[1],border_width,tileSize))
-            renderer.fill_rect((basePos[0],basePos[1]+tileHeight-border_width,tileSize,border_width))
+            renderer.fill_rect((basePos[0],basePos[1]+src.interaction.tileHeight-border_width,tileSize,border_width))
             renderer.fill_rect((basePos[0]+tileSize-border_width,basePos[1],border_width,tileSize))
 
     def apply(self, character):

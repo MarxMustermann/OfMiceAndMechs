@@ -1078,6 +1078,8 @@ class MainGame(BasicPhase):
             self.setUpGlassHeartDungeon(dungeonPositions[i], gods[i], i+1)
 
         if self.preselection == "Story":
+            self.desolatedLab = self.get_free_position("desolated lab")
+            self.setUpDesolatedLab(self.desolatedLab)
             self.sternsBasePosition = self.get_free_position("the architects base")
             self.setUpSternsBase(self.sternsBasePosition)
             self.architectsLabPosition = self.get_free_position("the architects mausoleum")
@@ -1638,6 +1640,151 @@ but they are likely to explode when disturbed.
             mutantSpider = src.characters.characterMap["Spider"](mutated=True)
 
             currentTerrain.addCharacter(mutantSpider,bigX*15+smallX, bigY*15+smallY)
+
+    def setUpDesolatedLab(self,pos):
+        currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
+        currentTerrain.tag = "the architects mausoleum"
+        currentTerrain.maxMana = 50
+
+        thisFactionId = self.factionCounter
+        faction = f"architecture"
+        self.factionCounter += 1
+
+        architect = src.magic.getArchitect(currentTerrain)
+
+        used_spots = []
+        used_spots.extend([(7,6,0),(7,5,0)])
+
+        # add the actual room
+        startRoom = architect.doAddRoom(
+                {
+                       "coordinate": (7,7,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,0 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        used_spots.append(startRoom.getPosition())
+        startRoom.tag = "the architects tomb"
+        startRoom.getItemByPosition((6,12,0))[0].walkable = False
+
+        # add the actual room
+        baseCoreRoom = architect.doAddRoom(
+                {
+                       "coordinate": (7,4,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        used_spots.append(baseCoreRoom.getPosition())
+        baseCoreRoom.tag = "the groundskeepers place"
+
+        main_npc = src.characters.characterMap["Clone"]()
+        main_npc.questsDone = [
+                "NaiveMoveQuest",
+                "MoveQuestMeta",
+                "NaiveActivateQuest",
+                "ActivateQuestMeta",
+                "NaivePickupQuest",
+                "PickupQuestMeta",
+                "DrinkQuest",
+                "CollectQuestMeta",
+                "FireFurnaceMeta",
+                "ExamineQuest",
+                "NaiveDropQuest",
+                "DropQuestMeta",
+                "LeaveRoomQuest",
+            ]
+        main_npc.solvers = [
+                "SurviveQuest",
+                "Serve",
+                "NaiveMoveQuest",
+                "MoveQuestMeta",
+                "NaiveActivateQuest",
+                "ActivateQuestMeta",
+                "NaivePickupQuest",
+                "PickupQuestMeta",
+                "DrinkQuest",
+                "ExamineQuest",
+                "FireFurnaceMeta",
+                "CollectQuestMeta",
+                "WaitQuest" "NaiveDropQuest",
+                "NaiveDropQuest",
+                "DropQuestMeta",
+            ]
+
+        main_npc.flask = src.items.itemMap["GooFlask"]()
+        main_npc.flask.uses = 100
+        main_npc.faction = faction
+
+        main_npc.duties = []
+        main_npc.registers["HOMEx"] = 7
+        main_npc.registers["HOMEy"] = 4
+        main_npc.registers["HOMETx"] = currentTerrain.xPosition
+        main_npc.registers["HOMETy"] = currentTerrain.yPosition
+
+        main_npc.personality["autoFlee"] = False
+        main_npc.personality["abortMacrosOnAttack"] = False
+        main_npc.personality["autoCounterAttack"] = False
+
+        quest = src.quests.questMap["BeUsefull"](strict=True)
+        quest.autoSolve = True
+        quest.assignToCharacter(main_npc)
+        quest.activate()
+        main_npc.assignQuest(quest,active=True)
+        main_npc.foodPerRound = 1
+        main_npc.duties.append("resource gathering")
+        main_npc.duties.append("scrap hammering")
+        main_npc.duties.append("resource fetching")
+        main_npc.duties.append("hauling")
+        main_npc.duties.append("metal working")
+        main_npc.duties.append("machine placing")
+        main_npc.duties.append("maggot gathering")
+        main_npc.duties.append("painting")
+        main_npc.duties.append("cleaning")
+        main_npc.duties.append("machine operation")
+        main_npc.duties.append("manufacturing")
+        main_npc.duties.append("praying")
+        main_npc.dutyPriorities["cleaning"] = 10
+        main_npc.dutyPriorities["machine operation"] = 2
+        main_npc.dutyPriorities["hauling"] = 3
+        main_npc.dutyPriorities["manufacturing"] = 4
+
+        item = src.items.itemMap["StasisTank"]()
+        item.character = main_npc
+        baseCoreRoom.addItem(item,(6,6,0))
+
+
+        # add decoration for flavour
+        for pos in [(6,1,0),(6,2,0),(6,3,0),(6,4,0),(6,5,0), 
+                    (5,5,0),(4,5,0),(4,6,0),(4,7,0),(4,8,0),(5,8,0),(6,8,0),(7,8,0),(8,8,0),(8,7,0),(8,6,0),(8,5,0),(7,5,0)]:
+            startRoom.addWalkingSpace(pos)
+        for pos in [(5,6,0),(7,6,0),(5,7,0),(6,6,0),(7,7,0),
+                    (9,9,0),(10,9,0),(8,9,0),(9,8,0),(9,10,0),
+                    (3,9,0),(2,9,0),(4,9,0),(3,8,0),(3,10,0),
+                    (9,3,0),(9,2,0),(9,4,0),(8,3,0),(10,3,0),
+                    (3,3,0),(4,3,0),(2,3,0),(3,2,0),(3,4,0),]:
+            item = src.items.itemMap["Contraption"]()
+            item.display = "OT"
+            startRoom.addItem(item,pos)
+
+        # spawn background scrap
+        for big_x in range(1,13):
+            for big_y in range(1,13):
+                if (big_x,big_y,0) in used_spots:
+                    continue
+                for _i in range(100):
+                    amount = random.randint(1,15)
+                    pos = (big_x*15+random.randint(1,14),big_y*15+random.randint(1,14),0)
+                    if currentTerrain.getItemByPosition(pos):
+                        continue
+                    scrap = src.items.itemMap["Scrap"](amount=amount)
+                    currentTerrain.addItem(scrap,pos)
 
     def setUpArchitectsLab(self,pos):
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
@@ -3953,7 +4100,7 @@ This memorial contains:
         return storyStartInfo
             
     def createStoryStart(self):
-        homeTerrain = src.gamestate.gamestate.terrainMap[self.architectsLabPosition[1]][self.architectsLabPosition[0]]
+        homeTerrain = src.gamestate.gamestate.terrainMap[self.desolatedLab[1]][self.desolatedLab[0]]
 
         mainChar = src.characters.characterMap["Clone"]()
         mainChar.flask = src.items.itemMap["GooFlask"]()
@@ -3971,8 +4118,8 @@ This memorial contains:
         mainChar.faction = f"architecture"
         self.factionCounter += 1
 
-        mainChar.registers["HOMETx"] = self.architectsLabPosition[0]
-        mainChar.registers["HOMETy"] = self.architectsLabPosition[1]
+        mainChar.registers["HOMETx"] = self.desolatedLab[0]
+        mainChar.registers["HOMETy"] = self.desolatedLab[1]
         mainChar.registers["HOMEx"] = 7
         mainChar.registers["HOMEy"] = 7
 

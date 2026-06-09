@@ -573,7 +573,8 @@ class Terrain:
                 new_pos = char.getBigPosition()
                 old_pos = (new_pos[0]+1,new_pos[1],new_pos[2])
                 char.changed("changedTile",{"old_pos":old_pos,"new_pos":new_pos})
-                self.removeItems(self.getItemByPosition((char.xPosition-1,char.yPosition,char.zPosition)))
+                if not self.getPositionWalkable((char.xPosition-1,char.yPosition,char.zPosition)):
+                    self.removeItems(self.getItemByPosition((char.xPosition-1,char.yPosition,char.zPosition)))
                 char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
             if char.xPosition % 15 == 0:
                 oldBigPos = char.getBigPosition()
@@ -610,7 +611,8 @@ class Terrain:
                 new_pos = char.getBigPosition()
                 old_pos = (new_pos[0]-1,new_pos[1],new_pos[2])
                 char.changed("changedTile",{"old_pos":old_pos,"new_pos":new_pos})
-                self.removeItems(self.getItemByPosition((char.xPosition+1,char.yPosition,char.zPosition)))
+                if not self.getPositionWalkable((char.xPosition+1,char.yPosition,char.zPosition)):
+                    self.removeItems(self.getItemByPosition((char.xPosition+1,char.yPosition,char.zPosition)))
                 char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
             if char.xPosition % 15 == 14:
                 oldBigPos = char.getBigPosition()
@@ -650,7 +652,8 @@ class Terrain:
                 new_pos = char.getBigPosition()
                 old_pos = (new_pos[0],new_pos[1]+1,new_pos[2])
                 char.changed("changedTile",{"old_pos":old_pos,"new_pos":new_pos})
-                self.removeItems(self.getItemByPosition((char.xPosition,char.yPosition-1,char.zPosition)))
+                if not self.getPositionWalkable((char.xPosition,char.yPosition-1,char.zPosition)):
+                    self.removeItems(self.getItemByPosition((char.xPosition,char.yPosition-1,char.zPosition)))
                 char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
             if char.yPosition % 15 == 0:
                 oldBigPos = char.getBigPosition()
@@ -688,7 +691,8 @@ class Terrain:
                 new_pos = char.getBigPosition()
                 old_pos = (new_pos[0],new_pos[1]-1,new_pos[2])
                 char.changed("changedTile",{"old_pos":old_pos,"new_pos":new_pos})
-                self.removeItems(self.getItemByPosition((char.xPosition,char.yPosition+1,char.zPosition)))
+                if not self.getPositionWalkable((char.xPosition,char.yPosition+1,char.zPosition)):
+                    self.removeItems(self.getItemByPosition((char.xPosition,char.yPosition+1,char.zPosition)))
                 char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
             if char.yPosition % 15 == 14:
                 oldBigPos = char.getBigPosition()

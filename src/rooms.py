@@ -198,6 +198,9 @@ class Room:
         self.storageSlots.append((position,itemType,extraInfo))
 
     def addWalkingSpace(self,position):
+        '''
+        adds a walkingspace designator
+        '''
         self.walkingSpace.add(position)
 
     def addRandomItems(self):

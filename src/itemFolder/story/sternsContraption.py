@@ -261,7 +261,10 @@ class MainContraption(src.items.Item):
 
                 # fill proper exploration rooms
                 for room_pos in ((6,6,0),(6,7,0),(6,8,0),(8,6,0),(8,7,0),(8,8,0),(8,5,0)):
-                    room = self.getTerrain().getRoomByPosition(room_pos)[0]
+                    rooms = self.getTerrain().getRoomByPosition(room_pos)
+                    if not rooms:
+                        continue
+                    room = rooms[0]
 
                     # add scrap
                     scrap_amount = 20
@@ -312,7 +315,10 @@ class MainContraption(src.items.Item):
 
                 # fill initial maze rooms
                 for room_pos in ((7,5,0),(6,5,0),(6,3,0),(7,3,0),):
-                    room = self.getTerrain().getRoomByPosition(room_pos)[0]
+                    rooms = self.getTerrain().getRoomByPosition(room_pos)
+                    if not rooms:
+                        continue
+                    room = rooms[0]
 
                     # add enemies
                     for _i in range(0,1):
@@ -328,20 +334,19 @@ class MainContraption(src.items.Item):
                         room.addCharacter(crawler,pos[0],pos[1])
 
                 # set up crafting room enemy
-                room = self.getTerrain().getRoomByPosition((8,3,0))[0]
-                crawler = src.characters.characterMap["Mechanical_Crawler"]()
+                room = self.getTerrain().getRoomByPosition((8,3,0))
+                if rooms:
+                    room = rooms[0] 
+                    crawler = src.characters.characterMap["Mechanical_Crawler"]()
 
-                quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
-                quest.autoSolve = True
-                quest.assignToCharacter(crawler)
-                quest.activate()
-                crawler.quests.append(quest)
+                    quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
+                    quest.autoSolve = True
+                    quest.assignToCharacter(crawler)
+                    quest.activate()
+                    crawler.quests.append(quest)
 
-                pos = (2,6,0)
-                room.addCharacter(crawler,pos[0],pos[1])
-
-                # set up crafting room enemy
-                room = self.getTerrain().getRoomByPosition((8,3,0))[0]
+                    pos = (2,6,0)
+                    room.addCharacter(crawler,pos[0],pos[1])
 
                 self.container.destroy()
                 return

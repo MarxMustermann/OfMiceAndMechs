@@ -1684,6 +1684,23 @@ but they are likely to explode when disturbed.
             paving = src.items.itemMap["Paving"]()
             pos = (big_pos[0]*15+7,big_pos[1]*15+y,0)
             currentTerrain.addItem(paving,pos)
+        for _i in range(10):
+            amount = random.randint(1,5)
+            pos = (big_pos[0]*15+random.randint(1,14),big_pos[1]*15+random.randint(1,14),0)
+            if currentTerrain.getItemByPosition(pos):
+                continue
+            scrap = src.items.itemMap["Scrap"](amount=amount)
+            currentTerrain.addItem(scrap,pos)
+
+        # add enemy
+        enemy = src.characters.characterMap["Spiderling"]()
+        enemy.faction = "insects"
+        quest = src.quests.questMap["SecureTile"](toSecure=big_pos,alwaysHuntDown=True,wandering = True)
+        quest.autoSolve = True
+        quest.assignToCharacter(enemy)
+        quest.activate()
+        enemy.quests.append(quest)
+        currentTerrain.addCharacter(enemy,big_pos[0]*15+random.randint(3,12),big_pos[1]*15+random.randint(3,12))
 
         # add the actual room
         baseCoreRoom = architect.doAddRoom(
@@ -1698,6 +1715,8 @@ but they are likely to explode when disturbed.
            )
         used_spots.append(baseCoreRoom.getPosition())
         baseCoreRoom.tag = "the groundskeepers place"
+        for pos in [(6,11,0),(6,10,0),(6,9,0),(6,8,0),(6,7,0),(7,7,0),(7,6,0),(7,5,0),(6,5,0),(5,5,0),(5,6,0),(5,7,0)]:
+            baseCoreRoom.addWalkingSpace(pos)
 
         main_npc = src.characters.characterMap["Clone"]()
         main_npc.questsDone = [

@@ -531,7 +531,10 @@ Press d to move the cursor and show the subquests description.
 
         homePos = character.getHomeRoomCord()
         if homePos:
-            room = character.getTerrain().getRoomByPosition(character.getHomeRoomCord())[0]
+            rooms = character.getTerrain().getRoomByPosition(character.getHomeRoomCord())
+            room = None
+            if rooms:
+                room = rooms[0]
             if room != character.container:
                 quest = src.quests.questMap["GoToTile"](targetPosition=homePos,description="go to meeting hall")
                 if not dryRun:

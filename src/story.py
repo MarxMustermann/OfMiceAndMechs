@@ -1653,9 +1653,8 @@ but they are likely to explode when disturbed.
         architect = src.magic.getArchitect(currentTerrain)
 
         used_spots = []
-        used_spots.extend([(7,6,0),(7,5,0)])
 
-        # add the actual room
+        # add the start room
         startRoom = architect.doAddRoom(
                 {
                        "coordinate": (7,7,0),
@@ -1669,6 +1668,21 @@ but they are likely to explode when disturbed.
         used_spots.append(startRoom.getPosition())
         startRoom.tag = "the architects tomb"
         startRoom.getItemByPosition((6,12,0))[0].walkable = False
+
+        # add the first tile the npc steps on
+        big_pos = (7,6,0)
+        used_spots.append(big_pos)
+        for y in range(1,14):
+            paving = src.items.itemMap["Paving"]()
+            pos = (big_pos[0]*15+7,big_pos[1]*15+y,0)
+            currentTerrain.addItem(paving,pos)
+
+        # add the tile in front of the first room
+        big_pos = (7,5,0)
+        used_spots.append(big_pos)
+        for y in range(1,14):
+            paving = src.items.itemMap["Paving"]()
+            pos = (big_pos[0]*15+7,big_pos[1]*15+y,0)
 
         # add the actual room
         baseCoreRoom = architect.doAddRoom(

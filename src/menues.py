@@ -45,6 +45,12 @@ class SubMenu(object):
         self.query = ""
 
     def getTitle(self):
+        """
+        generates a title for the mene
+        
+        Returns:
+            the title as string of None if there is no title
+        """
         return None
 
     def rerender(self):

@@ -1785,10 +1785,17 @@ but they are likely to explode when disturbed.
         main_npc.duties.append("machine operation")
         main_npc.duties.append("manufacturing")
         main_npc.duties.append("praying")
+        main_npc.duties.append("scavenging")
+        main_npc.duties.append("room building")
+
+        for duty in main_npc.duties:
+            main_npc.dutyPriorities[duty] = 2
+
         main_npc.dutyPriorities["cleaning"] = 10
-        main_npc.dutyPriorities["machine operation"] = 2
-        main_npc.dutyPriorities["hauling"] = 3
-        main_npc.dutyPriorities["manufacturing"] = 4
+        main_npc.dutyPriorities["machine operation"] = 3
+        main_npc.dutyPriorities["hauling"] = 4
+        main_npc.dutyPriorities["manufacturing"] = 5
+        main_npc.dutyPriorities["scavenging"] = 1
 
         item = src.items.itemMap["StasisTank"]()
         item.character = main_npc

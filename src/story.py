@@ -1792,6 +1792,7 @@ but they are likely to explode when disturbed.
             main_npc.dutyPriorities[duty] = 2
 
         main_npc.dutyPriorities["cleaning"] = 10
+        main_npc.dutyPriorities["room building"] = 9
         main_npc.dutyPriorities["machine operation"] = 3
         main_npc.dutyPriorities["hauling"] = 4
         main_npc.dutyPriorities["manufacturing"] = 5

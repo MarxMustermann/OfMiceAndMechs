@@ -245,4 +245,16 @@ There is {self.amount} in this pile
 
         self.setWalkable()
 
+    def configure(self, character):
+        if self in character.inventory:
+            character.removeItemFromInventory(self)
+        else:
+            self.container.removeItem(self)
+
+        anvil = src.items.itemMap["Anvil"]()
+
+        container = character.container
+        pos = character.getPosition()
+        container.addItem(anvil,pos)
+
 src.items.addType(Scrap)

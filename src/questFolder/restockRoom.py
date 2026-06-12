@@ -475,6 +475,8 @@ Press the l or L keys to drop items.
                         if not hasItem:
                             reason = "have items to drop (duty: hauling)"
                             if trueInput:
+                                if not inputSlot[1]:
+                                    return (quests,None)
                                 quests.append(src.quests.questMap["FetchItems"](toCollect=inputSlot[1],reason=reason))
                                 if not dryRun:
                                     beUsefull.idleCounter = 0
@@ -536,6 +538,8 @@ Press the l or L keys to drop items.
                         if not hasItem:
                             reason = "to have items to store (duty: hauling)"
                             if trueInput:
+                                if not inputSlot[1]:
+                                    return (quests,None)
                                 quests.append(src.quests.questMap["FetchItems"](toCollect=inputSlot[1],reason=reason))
                                 if not dryRun:
                                     beUsefull.idleCounter = 0

@@ -304,10 +304,6 @@ This quest will end when your inventory is full."""
         generate the quests for the scavenging duty
         '''
         terrain = character.getTerrain()
-        try:
-            terrain.alarm
-        except:
-            terrain.alarm = False
         if terrain.alarm:
             return (None,None)
 

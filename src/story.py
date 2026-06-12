@@ -1674,6 +1674,7 @@ but they are likely to explode when disturbed.
         used_spots.append(big_pos)
         for y in range(1,14):
             paving = src.items.itemMap["Paving"]()
+            paving.bolted = True
             pos = (big_pos[0]*15+7,big_pos[1]*15+y,0)
             currentTerrain.addItem(paving,pos)
 

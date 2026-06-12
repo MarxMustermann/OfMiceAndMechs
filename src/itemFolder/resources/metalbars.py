@@ -18,4 +18,17 @@ class MetalBars(src.items.Item):
         """
 
         super().__init__(display = src.canvas.displayChars.metalBars)
+
+    def configure(self, character):
+        if self in character.inventory:
+            character.removeItemFromInventory(self)
+        else:
+            self.container.removeItem(self)
+
+        metalWorkingBench = src.items.itemMap["MetalWorkingBench"]()
+
+        container = character.container
+        pos = character.getPosition()
+        container.addItem(metalWorkingBench,pos)
+
 src.items.addType(MetalBars)

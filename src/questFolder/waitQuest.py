@@ -21,7 +21,7 @@ class WaitQuest(src.quests.MetaQuestSequence):
         if self.reason:
             reason_string = f", to {self.reason}"
 
-        text = ["""
+        text = [f"""
 Wait{reason_string}.
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"default"),"""You can wait by pressing "." to wait for one tick or by pressing ";" to wait 100 ticks""")]

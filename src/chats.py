@@ -1818,11 +1818,13 @@ class ChatMenu(Chat):
                     ("moveEast", "move east"),
                 ]
 
-                options = []
-                if self.partner in character.subordinates:
-                    options.append(("giveInstruction", "give instruction"))
-                    options.append(("talkWork", "talk about work"))
-                options.append(("chat", "chat idly"))
+                options = self.partner.getSpecialChatOptions()
+                if not options:
+                    options = []
+                    if self.partner in character.subordinates:
+                        options.append(("giveInstruction", "give instruction"))
+                        options.append(("talkWork", "talk about work"))
+                    options.append(("chat", "chat idly"))
 
                 if isinstance(self.partner,src.characters.characterMap["Ghoul"]):
                     options = []

@@ -281,6 +281,9 @@ class Character:
 
         self.working = False
 
+    def getSpecialChatOptions(self):
+        return None
+
     def repeatLastCast(self):
         try:
             self.lastCast

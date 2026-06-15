@@ -44,7 +44,7 @@ The ejected character will be placed to the south of the stasis tank and will st
 
         if self.character:
             spwaned_character = self.character
-            self.container.addCharacter(spwaned_character, self.xPosition, self.yPosition + 1)
+            self.container.addCharacter(spwaned_character, self.xPosition, self.yPosition)
             spwaned_character.stasis = False
             self.character = None
             self.characterTimeEntered = None

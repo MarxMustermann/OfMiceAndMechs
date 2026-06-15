@@ -69,13 +69,8 @@ but after some seconds it starts to move."""
 
 This Clone is burned in and will only do the {duty_string}.
 """
-                else:
-                    text += """
-It has no memory of how it got here,
-but it will continue its work here."""
                 text += f"""
-\n
-The Clones name is {spwaned_character.name} ({short_code})
+The Clones nametag reads "{spwaned_character.name} ({short_code})"
 """
                 character.showTextMenu(text,do_not_scale=True)
                 character.changed("woke clone",{"character":character,"awoken":spwaned_character})

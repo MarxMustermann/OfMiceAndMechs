@@ -37,7 +37,7 @@ This quest will end in {self.lifetimeEvent.tick - src.gamestate.gamestate.tick} 
         return False
 
     def triggerCompletionCheck(self, character=None, dryRun=True):
-        if (self.lifetimeEvent.tick - src.gamestate.gamestate.tick) <= 0:
+        if self.lifetimeEvent and (self.lifetimeEvent.tick - src.gamestate.gamestate.tick) <= 0:
             if not dryRun:
                 self.postHandler()
             return True

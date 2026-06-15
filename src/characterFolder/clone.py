@@ -31,6 +31,7 @@ class Clone(src.characters.Character):
         self.charType = "Clone"
         self.lastMapSync = None
         self.waitLength = 1
+        self.specialChatOptions = []
 
     '''
     drop a implant in addition to the corpse
@@ -51,6 +52,9 @@ class Clone(src.characters.Character):
 
     def description(self):
         return self.getLoreDescription()+"\n\n---- "+self.getFunctionalDescription()
+
+    def getSpecialChatOptions(self):
+        return self.specialChatOptions
 
 # register the creature type
 src.characters.add_character(Clone)

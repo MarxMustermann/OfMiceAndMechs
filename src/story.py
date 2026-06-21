@@ -1835,6 +1835,9 @@ I'll better get started then ...
         main_npc.personality["abortMacrosOnAttack"] = False
         main_npc.personality["autoCounterAttack"] = False
 
+        painter = src.items.itemMap["Painter"]()
+        main_npc.inventory.append(painter)
+
         quest = src.quests.questMap["WaitQuest"]()
         quest.autoSolve = True
         quest.assignToCharacter(main_npc)

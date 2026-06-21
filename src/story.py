@@ -1651,11 +1651,11 @@ but they are likely to explode when disturbed.
 I don't know.
 I have been mind wiped and hold no memory.
 
-Well, i'm a builder and my nametag says "{partner.name}".
-Since i'm a builder my duty is to build.
+Well, i know something: i'm a builder
+and my nametag says "{partner.name}".
+Since i'm a builder my duty is to build and maintain.
 
-I guess is should start to be usefull.
-I'll start by cleaning up this room.
+I'll better get started then ...
 """)
 
         quest = src.quests.questMap["BeUsefull"](strict=True)

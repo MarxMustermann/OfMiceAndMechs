@@ -1651,9 +1651,9 @@ but they are likely to explode when disturbed.
 I don't know.
 I have been mind wiped and hold no memory.
 
-Well, i know something: i'm a builder
+Well, i know something: i'm a groundskeeper
 and my nametag says "{partner.name}".
-Since i'm a builder my duty is to build and maintain.
+Since i'm a groundskeeper my duty is to maintain the premises.
 
 I'll better get started then ...
 """)

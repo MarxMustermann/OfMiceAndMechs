@@ -1768,9 +1768,15 @@ I'll better get started then ...
         baseCoreRoom.tag = "the groundskeepers place"
         for pos in [(6,11,0),(6,10,0),(6,9,0),(6,8,0),(6,7,0),(7,7,0),(7,6,0),(7,5,0),(6,5,0),(5,5,0),(5,6,0),(5,7,0)]:
             baseCoreRoom.addWalkingSpace(pos)
+
         floorPlan = {}
         walkingSpace = []
         storageSlots = []
+        inputSlots = []
+        outputSlots = []
+        buildSites = []
+
+        # add storage section
         for x in range(1,12):
             if x == 6:
                 continue
@@ -1783,8 +1789,37 @@ I'll better get started then ...
             if x == 6:
                 continue
             storageSlots.append(((x,11,0),None,{}))
+
+        # add anvil area
+        walkingSpace.extend([
+                (5,4,0),(4,4,0),(3,4,0),(2,4,0),(1,4,0),(1,3,0),(1,2,0),
+                (2,2,0),(2,1,0),(3,1,0),(4,1,0),(4,2,0),(5,2,0),(5,3,0)
+            ])
+        for x in range(2,5,):
+            storageSlots.append(((x,5,0),"Scrap",{"desiredState":"filled"}))
+        inputSlots.append(((2,3,0),"Scrap",{}))
+        inputSlots.append(((4,3,0),"Scrap",{}))
+        storageSlots.append(((3,2,0),"MetalBars",{}))
+        storageSlots.append(((3,2,0),"MetalBars",{}))
+        buildSites.append(((3,3,0),"Anvil",{}))
+
+        # add metalworking area
+        walkingSpace.extend([
+                (8,5,0),(8,4,0),(8,3,0),(8,2,0),(8,1,0),(9,1,0),(10,1,0),
+                (10,2,0),(11,2,0),(11,3,0),(11,4,0),(10,4,0),(10,5,0),(9,5,0)
+            ])
+        for y in range(2,5,):
+            storageSlots.append(((7,y,0),"MetalBars",{"desiredState":"filled"}))
+        outputSlots.append(((9,2,0),None,{}))
+        outputSlots.append(((9,4,0),None,{}))
+        inputSlots.append(((10,3,0),"MetalBars",{}))
+        buildSites.append(((9,3,0),"MetalWorkingBench",{}))
+
         floorPlan["walkingSpace"] = walkingSpace
         floorPlan["storageSlots"] = storageSlots
+        floorPlan["inputSlots"] = inputSlots
+        floorPlan["buildSites"] = buildSites
+        floorPlan["outputSlots"] = outputSlots
         baseCoreRoom.floorPlan = floorPlan
 
         main_npc = src.characters.characterMap["Clone"]()
@@ -1836,6 +1871,10 @@ I'll better get started then ...
         main_npc.personality["autoCounterAttack"] = False
 
         painter = src.items.itemMap["Painter"]()
+        main_npc.inventory.append(painter)
+        anvil = src.items.itemMap["Anvil"]()
+        main_npc.inventory.append(painter)
+        metalworkingBench = src.items.itemMap["MetalWorkingBench"]()
         main_npc.inventory.append(painter)
 
         quest = src.quests.questMap["WaitQuest"]()

@@ -1869,9 +1869,7 @@ class ChatMenu(Chat):
                     if not isinstance(selection, dict):
                         self.subMenu = selection(self.partner)
                     else:
-                        self.subMenu = selection["chat"](self.partner)
-                        if "params" in selection:
-                            self.subMenu.setUp(selection["params"])
+                        selection["method"](character=character,partner=self.partner)
 
                     self.subMenu.handleKey(key, noRender=noRender)
                 elif selection == "come to me":

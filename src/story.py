@@ -1768,6 +1768,24 @@ I'll better get started then ...
         baseCoreRoom.tag = "the groundskeepers place"
         for pos in [(6,11,0),(6,10,0),(6,9,0),(6,8,0),(6,7,0),(7,7,0),(7,6,0),(7,5,0),(6,5,0),(5,5,0),(5,6,0),(5,7,0)]:
             baseCoreRoom.addWalkingSpace(pos)
+        floorPlan = {}
+        walkingSpace = []
+        storageSlots = []
+        for x in range(1,12):
+            if x == 6:
+                continue
+            storageSlots.append(((x,9,0),None,{}))
+        for x in range(1,12):
+            if x == 6:
+                continue
+            walkingSpace.append((x,10,0))
+        for x in range(1,12):
+            if x == 6:
+                continue
+            storageSlots.append(((x,11,0),None,{}))
+        floorPlan["walkingSpace"] = walkingSpace
+        floorPlan["storageSlots"] = storageSlots
+        baseCoreRoom.floorPlan = floorPlan
 
         main_npc = src.characters.characterMap["Clone"]()
         main_npc.questsDone = [

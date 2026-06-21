@@ -59,15 +59,9 @@ class RoomMenu(src.menues.SubMenu):
                 logger.info("storageSlots")
                 logger.info(self.room.floorPlan["storageSlots"])
 
-        try:
-            self.room.requiredDuties
-        except:
-            self.room.requiredDuties = []
-
         if self.room.requiredDuties:
             self.persistentText.append("\n\nThis room has required duties.\n%s"%self.room.requiredDuties)
 
-        
         self.persistentText.append("\n")
         self.persistentText.append("- t: set room tag\n")
         self.persistentText.append("- c: clean room (quest)\n")

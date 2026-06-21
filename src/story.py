@@ -1870,11 +1870,13 @@ I'll better get started then ...
         main_npc.personality["abortMacrosOnAttack"] = False
         main_npc.personality["autoCounterAttack"] = False
 
-        painter = src.items.itemMap["Painter"]()
-        main_npc.inventory.append(painter)
         anvil = src.items.itemMap["Anvil"]()
-        main_npc.inventory.append(painter)
+        anvil.bolted = False
+        main_npc.inventory.append(anvil)
         metalworkingBench = src.items.itemMap["MetalWorkingBench"]()
+        metalworkingBench.bolted = False
+        main_npc.inventory.append(metalworkingBench)
+        painter = src.items.itemMap["Painter"]()
         main_npc.inventory.append(painter)
 
         quest = src.quests.questMap["WaitQuest"]()

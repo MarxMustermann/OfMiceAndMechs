@@ -222,11 +222,6 @@ You can pick up items by pressing the k or K key.
         '''
         generate the quest to complete a duty
         '''
-        if len(character.inventory):
-            quest = src.quests.questMap["ClearInventory"](reason="have space to pick up items (duty: clean)",returnToTile=False)
-            if not dryRun:
-                beUsefull.idleCounter = 0
-            return ([quest],None)
 
         for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
             if character.getTerrain().getEnemiesOnTile(character,room.getPosition()):

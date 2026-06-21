@@ -1641,6 +1641,51 @@ but they are likely to explode when disturbed.
 
             currentTerrain.addCharacter(mutantSpider,bigX*15+smallX, bigY*15+smallY)
 
+    def builder_asked_name(self,character,partner):
+        character.showTextMenu(f"""
+I don't know.
+I have been mind wiped and hold no memory.
+
+Well, i'm a builder and my nametag says "{partner.name}".
+Since i'm a builder my duty is to build.
+
+I guess is should start to be usefull.
+I'll start by cleaning up this room.
+""")
+
+        quest = src.quests.questMap["BeUsefull"](strict=True)
+        quest.autoSolve = True
+        quest.assignToCharacter(partner)
+        quest.activate()
+
+        partner.assignQuest(quest,active=True)
+        partner.foodPerRound = 1
+        partner.duties.append("resource gathering")
+        partner.duties.append("scrap hammering")
+        partner.duties.append("resource fetching")
+        partner.duties.append("hauling")
+        partner.duties.append("metal working")
+        partner.duties.append("machine placing")
+        partner.duties.append("maggot gathering")
+        partner.duties.append("painting")
+        partner.duties.append("cleaning")
+        partner.duties.append("machine operation")
+        partner.duties.append("manufacturing")
+        partner.duties.append("praying")
+        partner.duties.append("scavenging")
+        partner.duties.append("room building")
+
+        for duty in partner.duties:
+            partner.dutyPriorities[duty] = 3
+
+        partner.dutyPriorities["cleaning"] = 10
+        partner.dutyPriorities["room building"] = 9
+        partner.dutyPriorities["machine operation"] = 3
+        partner.dutyPriorities["hauling"] = 4
+        partner.dutyPriorities["manufacturing"] = 5
+        partner.dutyPriorities["scavenging"] = 2
+        partner.dutyPriorities["resource gathering"] = 1
+
     def setUpDesolatedLab(self,pos):
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
         currentTerrain.tag = "the architects mausoleum"
@@ -1767,37 +1812,13 @@ but they are likely to explode when disturbed.
         main_npc.personality["abortMacrosOnAttack"] = False
         main_npc.personality["autoCounterAttack"] = False
 
-        quest = src.quests.questMap["BeUsefull"](strict=True)
+        quest = src.quests.questMap["WaitQuest"]()
         quest.autoSolve = True
         quest.assignToCharacter(main_npc)
         quest.activate()
         main_npc.assignQuest(quest,active=True)
-        main_npc.foodPerRound = 1
-        main_npc.duties.append("resource gathering")
-        main_npc.duties.append("scrap hammering")
-        main_npc.duties.append("resource fetching")
-        main_npc.duties.append("hauling")
-        main_npc.duties.append("metal working")
-        main_npc.duties.append("machine placing")
-        main_npc.duties.append("maggot gathering")
-        main_npc.duties.append("painting")
-        main_npc.duties.append("cleaning")
-        main_npc.duties.append("machine operation")
-        main_npc.duties.append("manufacturing")
-        main_npc.duties.append("praying")
-        main_npc.duties.append("scavenging")
-        main_npc.duties.append("room building")
 
-        for duty in main_npc.duties:
-            main_npc.dutyPriorities[duty] = 3
-
-        main_npc.dutyPriorities["cleaning"] = 10
-        main_npc.dutyPriorities["room building"] = 9
-        main_npc.dutyPriorities["machine operation"] = 3
-        main_npc.dutyPriorities["hauling"] = 4
-        main_npc.dutyPriorities["manufacturing"] = 5
-        main_npc.dutyPriorities["scavenging"] = 2
-        main_npc.dutyPriorities["resource gathering"] = 1
+        main_npc.specialChatOptions = [({"method":self.builder_asked_name},"Who are you?")]
 
         item = src.items.itemMap["StasisTank"]()
         item.character = main_npc

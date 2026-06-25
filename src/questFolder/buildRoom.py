@@ -334,10 +334,13 @@ Press d to move the cursor and show the subquests description.
                     if not dryRun:
                         beUsefull.idleCounter = 0
                     return ([quest],None)
-        if not cityPlaner:
-            return (None,None)
 
-        if not cityPlaner or cityPlaner.autoExtensionThreashold > 0:
+        autoExtensionThreashold = 1
+        if cityPlaner:
+            autoExtensionThreashold = cityPlaner.autoExtensionThreashold
+
+        if autoExtensionThreashold > 0:
+
             # do not build more rooms when there is an empty room
             numEmptyRooms = 0
             for room in terrain.rooms:
@@ -347,11 +350,7 @@ Press d to move the cursor and show the subquests description.
                     continue
                 numEmptyRooms += 1
 
-            threashold = 1
-            if cityPlaner:
-                threashold = cityPlaner.autoExtensionThreashold
-
-            if numEmptyRooms >= threashold:
+            if numEmptyRooms >= autoExtensionThreashold:
                 return (None,None)
 
             baseNeighbours = []

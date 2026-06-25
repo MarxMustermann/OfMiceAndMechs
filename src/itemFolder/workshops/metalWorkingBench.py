@@ -32,6 +32,8 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         self.outs = [(0,1,0),(0,-1,0)]
         self.scheduledItems = []
         self.lastProduction = None
+        self.inUse = False
+        self.lastInteraction = None
 
     def produceItemHook(self,character):
         '''
@@ -77,6 +79,19 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
 
         # unpack parameters
         character = params["character"]
+
+        try:
+            self.inUse
+        except:
+            self.inUse = False
+
+        if self.inUse:
+            if self.lastInteraction+10 <= src.gamestate.gamestate.tick:
+                character.addMessage("This item is in use")
+                character.changed("failed manufacturing",{})
+                return
+            else:
+                self.inUse = False
 
         # show the UI to select the type of item to produce
         if "type" not in params:
@@ -164,6 +179,10 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         params["description"] = f"you produce a {params['type']}\n"
         self.delayedAction(params)
 
+        self.inUse = True
+        self.lastInteraction = src.gamestate.gamestate.tick
+        character.working = True
+
     def output_produced_item(self,params):
         '''
         actually produce the item
@@ -219,6 +238,8 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         if params["amount"]:
             params["doneTime"] = 0
             self.produceItem(params)
+
+        self.inUse = False
 
     def getInputItems(self):
         '''
@@ -340,6 +361,14 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         '''
         check if the item is ready to use
         '''
+        try:
+            self.inUse
+        except:
+            self.inUse = False
+
+        if self.inUse:
+            return False
+
         metalBarsFound = []
         for item in self.getInputItems():
             if item.type == "MetalBars":
@@ -348,6 +377,25 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
             return True
         else:
             return False
+
+    def _get_base_display_character(self):
+        try:
+            self.inUse
+        except:
+            self.inUse = False
+
+        characters = "WM"
+        if self.inUse and src.gamestate.gamestate.tick%2 == 0:
+            characters = "mw"
+        return characters
+
+    def drawSDL(self, renderer, basePos, fg_color=(255,255,255,255), bg_color=(0,0,0,255), tileSize=None):
+        base_characters = self._get_base_display_character()
+        tile_name = "MetalWorkingBench_"+base_characters
+        self.drawTileSDL(renderer, basePos, fg_color=fg_color, bg_color=bg_color, tileSize=tileSize, tileName=tile_name)
+
+    def render(self):
+        return self._get_base_display_character()
 
 # register item type
 src.items.addType(MetalWorkingBench)

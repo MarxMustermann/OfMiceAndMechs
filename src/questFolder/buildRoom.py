@@ -393,7 +393,6 @@ Press d to move the cursor and show the subquests description.
                 if not dryRun:
                         beUsefull.idleCounter = 0
                 return ([quest],None)
-            return (None,None)
         return (None,None)
 
 src.quests.addType(BuildRoom)

@@ -1759,12 +1759,16 @@ I'll better get started then ...
                 {
                        "coordinate": (7,4,0),
                        "roomType": "EmptyRoom",
-                       "doors": "6,12",
+                       "doors": "6,12 6,0 0,6 12,6",
                        "offset": [1,1],
                        "size": [13, 13],
                 },
                 None,
            )
+        for item in baseCoreRoom.getItemsByType("Door"):
+            if item.getPosition() == (6,12,0):
+                continue
+            item.walkable = False
         used_spots.append(baseCoreRoom.getPosition())
         baseCoreRoom.tag = "the groundskeepers place"
         for pos in [(6,11,0),(6,10,0),(6,9,0),(6,8,0),(6,7,0),(7,7,0),(7,6,0),(7,5,0),(6,5,0),(5,5,0),(5,6,0),(5,7,0)]:

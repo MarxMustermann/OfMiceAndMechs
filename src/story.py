@@ -1657,7 +1657,7 @@ and my nametag says "{partner.name}".
 Since i'm a groundskeeper my duty is to maintain the premises.""")
 
         if not partner.registers.get("askedForName"):
-            partner.specialChatOptions.append(({"method":self.builder_asked_nowork},"Why are you not working?"))
+            partner.specialChatOptions.insert(0,({"method":self.builder_asked_nowork},"Why are you not working?"))
             
         submenue = character.showTextMenu(base_response_text,title=partner.name.upper()+" SAYS")
         submenue.followUp = {"method":self.builder_asked_name_post,"params":{"character":character,"partner":partner}}
@@ -1675,7 +1675,7 @@ Since i'm a groundskeeper my duty is to maintain the premises.""")
         base_response_text = []
         base_response_text.append("""
 The City that was once standing here has been destroyed.
-There is nothing left except for rusty scrap and this empty room.
+There is almost nothing left except for rusty scrap and this empty room.
 Everything would have to be build anew.
 
 
@@ -1722,6 +1722,7 @@ Well, i'll better get started then ...""")
     def setUpDesolatedLab(self,pos):
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
         currentTerrain.tag = "the architects mausoleum"
+        currentTerrain.alarm = True
         currentTerrain.maxMana = 50
 
         thisFactionId = self.factionCounter
@@ -1937,6 +1938,22 @@ Well, i'll better get started then ...""")
             item = src.items.itemMap["Contraption"]()
             item.display = "OT"
             startRoom.addItem(item,pos)
+
+        # add alarm room
+        alarmRoom = architect.doAddRoom(
+                {
+                       "coordinate": (4,5,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,12 6,0 0,6 12,6",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        used_spots.append(alarmRoom.getPosition())
+        alarmRoom.tag = "alarm room"
+        siegeManager = src.items.itemMap["SiegeManager"]()
+        alarmRoom.addItem(siegeManager,(6,6,0))
 
         # spawn background scrap
         for big_x in range(1,13):

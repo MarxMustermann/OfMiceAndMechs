@@ -2028,6 +2028,12 @@ class Room:
         character.stats["steps taken"] = character.stats.get("steps taken", 0) + 1
         return None
 
+    def spawnItem(self,itemType,pos=None):
+        if pos == None:
+            pos = (random.randint(1,12),random.randint(1,12),0)
+        item =  src.items.itemMap[itemType]()
+        self.addItem(item,pos)
+
     def moveCharacter(self, character, newPosition):
         """
         move a character to a new position within room

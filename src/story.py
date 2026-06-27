@@ -1675,11 +1675,11 @@ Since i'm a groundskeeper my duty is to maintain the premises.""")
         base_response_text = []
         base_response_text.append("""
 The City that was once standing here has been destroyed.
-There is almost nothing left except for rusty scrap and this empty room.
+There is almost nothing left except for rusty scrap.
 Everything would have to be build anew.
 
 
-Well, i'll better get started then ...""")
+Well, i'll start by cleaning up this room.""")
         submenue = character.showTextMenu(base_response_text,title=partner.name.upper()+" SAYS")
 
         if not partner.registers.get("startedWorking"):
@@ -1769,6 +1769,15 @@ Well, i'll better get started then ...""")
             paving.bolted = True
             pos = (big_pos[0]*15+7,big_pos[1]*15+y,0)
             currentTerrain.addItem(paving,pos)
+        for x in range(1,14):
+            if x == 7:
+                continue
+            paving = src.items.itemMap["Paving"]()
+            paving.bolted = True
+            pos = (big_pos[0]*15+x,big_pos[1]*15+7,0)
+            currentTerrain.addItem(paving,pos)
+            if x not in (6,8,) and random.random() < 0.7:
+                paving.destroy()
         for _i in range(10):
             amount = random.randint(1,5)
             pos = (big_pos[0]*15+random.randint(1,14),big_pos[1]*15+random.randint(1,14),0)
@@ -1964,6 +1973,89 @@ Well, i'll better get started then ...""")
         alarmRoom.tag = "ruin"
         siegeManager = src.items.itemMap["SiegeManager"]()
         alarmRoom.addItem(siegeManager,(6,6,0))
+        for pos in [(3,3,0),(3,9,0),(9,9,0),(9,3,0)]:
+            enemy = src.characters.characterMap["Golem"]()
+            alarmRoom.addCharacter(enemy,pos[0],pos[1])
+
+            quest = src.quests.questMap["SecureTile"](toSecure=alarmRoom.getPosition())
+            quest.autoSolve = True
+            quest.assignToCharacter(enemy)
+            quest.activate()
+            enemy.quests.append(quest)
+
+        # add painter room
+        painterRoom = architect.doAddRoom(
+                {
+                       "coordinate": (10,5,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,12 6,0 0,6 12,6",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        used_spots.append(painterRoom.getPosition())
+        painterRoom.tag = "ruin"
+        painterRoom.spawnItem("Painter",(6,6,0))
+
+        # create paths
+        for big_pos in [(5,5,0),(6,5,0),(8,5,0),(9,5,0),]:
+            used_spots.append(big_pos)
+            for _i in range(100):
+                amount = random.randint(1,15)
+                pos = (big_pos[0]*15+random.randint(1,14),big_pos[1]*15+random.randint(1,14),0)
+                if currentTerrain.getItemByPosition(pos):
+                    continue
+                scrap = src.items.itemMap["Scrap"](amount=amount)
+                currentTerrain.addItem(scrap,pos)
+
+            for _i in range(1,10):
+                wall = src.items.itemMap["Wall"]()
+                wall.bolted = False
+                pos = (big_pos[0]*15+random.randint(1,14),big_pos[1]*15+random.randint(1,14),0)
+                if not currentTerrain.getItemByPosition(pos):
+                    currentTerrain.addItem(wall,pos)
+
+            for x in range(1,14):
+                pos = (big_pos[0]*15+x,big_pos[1]*15+7,0)
+                items = currentTerrain.getItemByPosition(pos)
+                currentTerrain.removeItems(items)
+                
+                scrap = src.items.itemMap["Scrap"](amount=1)
+                currentTerrain.addItem(scrap,pos)
+
+        """
+        # add build site
+        buildSite_position = (7,3,0)
+        for x in range(1,14):
+            if x == 7:
+                continue
+
+            wall = src.items.itemMap["Wall"]()
+            wall.bolted = False
+            pos = (buildSite_position[0]*15+x,buildSite_position[1]*15+1,0)
+            currentTerrain.addItem(wall,pos)
+
+            wall = src.items.itemMap["Wall"]()
+            wall.bolted = False
+            pos = (buildSite_position[0]*15+x,buildSite_position[1]*15+13,0)
+            currentTerrain.addItem(wall,pos)
+        for y in range(2,13):
+            if y == 7:
+                continue
+
+            wall = src.items.itemMap["Wall"]()
+            wall.bolted = False
+            pos = (buildSite_position[0]*15+1,buildSite_position[1]*15+y,0)
+            currentTerrain.addItem(wall,pos)
+
+            wall = src.items.itemMap["Wall"]()
+            wall.bolted = False
+            pos = (buildSite_position[0]*15+13,buildSite_position[1]*15+y,0)
+            currentTerrain.addItem(wall,pos)
+
+        used_spots.append(buildSite_position)
+        """
 
         # spawn background scrap
         for big_x in range(1,13):

@@ -1807,6 +1807,12 @@ Well, i'll better get started then ...""")
         for pos in [(6,11,0),(6,10,0),(6,9,0),(6,8,0),(6,7,0),(7,7,0),(7,6,0),(7,5,0),(6,5,0),(5,5,0),(5,6,0),(5,7,0)]:
             baseCoreRoom.addWalkingSpace(pos)
 
+        scrapPositions = []
+        scrapPositions.extend([(4,5,0),(3,5,0),(2,5,0),(3,4,0)])
+        for pos in scrapPositions:
+            scrap = src.items.itemMap["Scrap"](amount=random.randint(1,5))
+            baseCoreRoom.addItem(scrap,pos)
+
         floorPlan = {}
         walkingSpace = []
         storageSlots = []
@@ -1834,7 +1840,7 @@ Well, i'll better get started then ...""")
                 (2,2,0),(2,1,0),(3,1,0),(4,1,0),(4,2,0),(5,2,0),(5,3,0)
             ])
         for x in range(2,5,):
-            storageSlots.append(((x,5,0),"Scrap",{"desiredState":"filled"}))
+            baseCoreRoom.addStorageSlot((x,5,0),"Scrap",{"desiredState":"filled"})
         inputSlots.append(((2,3,0),"Scrap",{}))
         inputSlots.append(((4,3,0),"Scrap",{}))
         storageSlots.append(((3,2,0),"MetalBars",{}))

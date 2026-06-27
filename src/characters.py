@@ -404,6 +404,10 @@ class Character:
     def openObserveMenu(self, extraInfo = None):
         self.macroState["submenue"] = src.menuFolder.observeMenu.ObserveMenu(self)
 
+    def notify(self,text,do_not_scale=False):
+        self.showTextMenu(text,do_not_scale=True)
+        self.addMessage(text)
+
     def showTextMenu(self,text,do_not_scale=False,allowQuests=False,allowHelp=False,allowObserve=False,tag=None,title=None):
         '''
         show a popup to the character

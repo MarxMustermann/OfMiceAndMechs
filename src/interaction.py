@@ -5640,6 +5640,8 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                 # right line
                 sdl_renderer2.fill_rect((offsetLeft+padding+display_width,offsetTop-padding-overhang,line_width,display_height+2*(padding+overhang)))
 
+                width = min(width,window_charwidth)
+                height = min(height,window_charheight)
                 root_console = tcod.console.Console(width, height, order="F")
                 printUrwidToTcod(text,(0,0),explecitConsole=root_console,console_offset=(offsetLeft,offsetTop))
 

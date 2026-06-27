@@ -523,6 +523,8 @@ class Terrain:
             direction: the direction to move the character in
         """
 
+        char.working = False
+
         if char.xPosition > 207:
             if self.xPosition >= 13:
                 char.xPosition -= 1

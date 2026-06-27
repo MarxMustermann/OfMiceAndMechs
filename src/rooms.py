@@ -2039,6 +2039,8 @@ class Room:
             return item if the character collided with an item
         """
 
+        character.working = False
+
         # check if target position can be walked on
         triggeringItems = []
 

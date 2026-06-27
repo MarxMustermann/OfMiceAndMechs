@@ -292,6 +292,16 @@ You can pick up items by pressing the k or K key.
         '''
         fail recursively
         '''
+        reason = extraParam.get("reason")
+        quest = extraParam.get("quest")
+        character = self.character
+
+        if reason.startswith("moving failed - no path found") or reason.startswith("no path found"):
+            newQuest = src.quests.questMap["ClearPathToPosition"](targetPosition=quest.targetPosition)
+            self.addQuest(newQuest)
+            self.startWatching(newQuest,self.handleQuestFailure,"failed")
+            return
+
         self.fail()
 
 # reister the quest

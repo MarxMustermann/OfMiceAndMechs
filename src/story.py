@@ -1682,6 +1682,10 @@ Everything would have to be build anew.
 Well, i'll better get started then ...""")
         submenue = character.showTextMenu(base_response_text,title=partner.name.upper()+" SAYS")
 
+        if not partner.registers.get("startedWorking"):
+            partner.specialChatOptions.insert(0,("chat","chat idly"))
+            partner.registers["startedWorking"] = True
+
         partner.clear_quests()
 
         quest = src.quests.questMap["BeUsefull"](strict=True)

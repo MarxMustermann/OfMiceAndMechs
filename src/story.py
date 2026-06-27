@@ -1972,6 +1972,16 @@ Well, i'll better get started then ...""")
                     scrap = src.items.itemMap["Scrap"](amount=amount)
                     currentTerrain.addItem(scrap,pos)
 
+                if big_x > 5 and big_x < 9 and big_y > 2 and big_y < 9:
+                    continue
+
+                for _i in range(1,10):
+                    wall = src.items.itemMap["Wall"]()
+                    wall.bolted = False
+                    pos = (big_x*15+random.randint(1,14),big_y*15+random.randint(1,14),0)
+                    if not currentTerrain.getItemByPosition(pos):
+                        currentTerrain.addItem(wall,pos)
+
     def setUpArchitectsLab(self,pos):
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
         currentTerrain.tag = "the architects mausoleum"

@@ -141,7 +141,9 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
             if item.type == "MetalBars":
                 metalBarsFound.append(item)
         if not metalBarsFound:
-            character.addMessage("You need to have metal bars in your inventory to use the metal working bench")
+            message = "You need to have metal bars in your inventory to use the metal working bench"
+            character.addMessage(message)
+            character.showTextMenu(message,do_not_scale=True)
             character.changed("no metalBars error",{})
             return
         metalBar = metalBarsFound[-1]

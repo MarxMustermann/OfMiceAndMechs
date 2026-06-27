@@ -1647,49 +1647,53 @@ but they are likely to explode when disturbed.
             currentTerrain.addCharacter(mutantSpider,bigX*15+smallX, bigY*15+smallY)
 
     def builder_asked_name(self,character,partner):
-        character.showTextMenu(f"""
+        base_response_text = [f"""
 I don't know.
 I have been mind wiped and hold no memory.
 
 Well, i know something: i'm a groundskeeper
 and my nametag says "{partner.name}".
-Since i'm a groundskeeper my duty is to maintain the premises.
+Since i'm a groundskeeper my duty is to maintain the premises."""]
 
-I'll better get started then ...
-""")
+        if not partner.registers.get("askedForName"):
+            quest = src.quests.questMap["BeUsefull"](strict=True)
+            quest.autoSolve = True
+            quest.assignToCharacter(partner)
+            quest.activate()
 
-        quest = src.quests.questMap["BeUsefull"](strict=True)
-        quest.autoSolve = True
-        quest.assignToCharacter(partner)
-        quest.activate()
+            partner.assignQuest(quest,active=True)
+            partner.foodPerRound = 1
+            partner.duties.append("resource gathering")
+            partner.duties.append("scrap hammering")
+            partner.duties.append("resource fetching")
+            partner.duties.append("hauling")
+            partner.duties.append("metal working")
+            partner.duties.append("machine placing")
+            partner.duties.append("maggot gathering")
+            partner.duties.append("painting")
+            partner.duties.append("cleaning")
+            partner.duties.append("machine operation")
+            partner.duties.append("manufacturing")
+            partner.duties.append("praying")
+            partner.duties.append("scavenging")
+            partner.duties.append("room building")
 
-        partner.assignQuest(quest,active=True)
-        partner.foodPerRound = 1
-        partner.duties.append("resource gathering")
-        partner.duties.append("scrap hammering")
-        partner.duties.append("resource fetching")
-        partner.duties.append("hauling")
-        partner.duties.append("metal working")
-        partner.duties.append("machine placing")
-        partner.duties.append("maggot gathering")
-        partner.duties.append("painting")
-        partner.duties.append("cleaning")
-        partner.duties.append("machine operation")
-        partner.duties.append("manufacturing")
-        partner.duties.append("praying")
-        partner.duties.append("scavenging")
-        partner.duties.append("room building")
+            for duty in partner.duties:
+                partner.dutyPriorities[duty] = 3
 
-        for duty in partner.duties:
-            partner.dutyPriorities[duty] = 3
+            partner.dutyPriorities["cleaning"] = 10
+            partner.dutyPriorities["room building"] = 9
+            partner.dutyPriorities["machine operation"] = 3
+            partner.dutyPriorities["hauling"] = 4
+            partner.dutyPriorities["manufacturing"] = 5
+            partner.dutyPriorities["scavenging"] = 2
+            partner.dutyPriorities["resource gathering"] = 1
 
-        partner.dutyPriorities["cleaning"] = 10
-        partner.dutyPriorities["room building"] = 9
-        partner.dutyPriorities["machine operation"] = 3
-        partner.dutyPriorities["hauling"] = 4
-        partner.dutyPriorities["manufacturing"] = 5
-        partner.dutyPriorities["scavenging"] = 2
-        partner.dutyPriorities["resource gathering"] = 1
+            base_response_text.append("\n\nI'll better get started then ...")
+            
+        character.showTextMenu(base_response_text)
+
+        partner.registers["askedForName"] = True
 
     def setUpDesolatedLab(self,pos):
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]

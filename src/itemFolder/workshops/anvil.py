@@ -22,6 +22,8 @@ class Anvil(src.items.itemMap["WorkShop"]):
         self.outs = [(0,-1,0)]
         self.ins = [(1,0,0),(-1,0,0)]
         self.scheduledAmount = 0
+        self.inUse = False
+        self.lastInteraction = None
 
         self.applyOptions.extend(
                         [
@@ -61,13 +63,27 @@ class Anvil(src.items.itemMap["WorkShop"]):
         self.produceItemLooped({"amount":amount,"character":character,"preferInventoryOut":preferInventoryOut})
 
     def produceItemLooped(self,params):
-        if "rawAmount" in params:
-            params["amount"] = int(params["rawAmount"])
-            del params["rawAmount"]
 
         amount = params.get("amount")
         character = params.get("character")
         preferInventoryOut = params.get("preferInventoryOut")
+
+        try:
+            self.inUse
+        except:
+            self.inUse = False
+            
+        if self.inUse:
+            if self.lastInteraction+10 <= src.gamestate.gamestate.tick:
+                character.addMessage("This item is in use")
+                character.changed("failed scrap hammering",{})
+                return
+            else:
+                self.inUse = False
+
+        if "rawAmount" in params:
+            params["amount"] = int(params["rawAmount"])
+            del params["rawAmount"]
 
         if amount == None:
             submenue = src.menuFolder.inputMenu.InputMenu("Type how many of the items produce",targetParamName="rawAmount")
@@ -110,6 +126,10 @@ class Anvil(src.items.itemMap["WorkShop"]):
         params["delayTime"] = 10
         params["action"]= "output_produced_item"
         self.delayedAction(params)
+
+        self.inUse = True
+        self.lastInteraction = src.gamestate.gamestate.tick
+        character.working = True
 
     def output_produced_item(self,params):
         character = params["character"]
@@ -154,6 +174,8 @@ class Anvil(src.items.itemMap["WorkShop"]):
         if params["extraAmount"]:
             self.produceItem(character,preferInventoryOut=preferInventoryOut,amount=params["extraAmount"])
 
+        self.inUse = False
+
     def checkForDropSpotsFull(self):
         targetFull = True
 
@@ -197,5 +219,24 @@ class Anvil(src.items.itemMap["WorkShop"]):
 
     def scheduleProductionHook(self,character):
         self.scheduledAmount += 1
+
+    def _get_base_display_character(self):
+        try:
+            self.inUse
+        except:
+            self.inUse = False
+
+        characters = "WA"
+        if self.inUse and src.gamestate.gamestate.tick%2 == 0:
+            characters = "aw"
+        return characters
+
+    def drawSDL(self, renderer, basePos, fg_color=(255,255,255,255), bg_color=(0,0,0,255), tileSize=None):
+        base_characters = self._get_base_display_character()
+        tile_name = "Anvil_"+base_characters
+        self.drawTileSDL(renderer, basePos, fg_color=fg_color, bg_color=bg_color, tileSize=tileSize, tileName=tile_name)
+
+    def render(self):
+        return self._get_base_display_character()
 
 src.items.addType(Anvil)

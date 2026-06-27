@@ -1647,13 +1647,14 @@ but they are likely to explode when disturbed.
             currentTerrain.addCharacter(mutantSpider,bigX*15+smallX, bigY*15+smallY)
 
     def builder_asked_name(self,character,partner):
-        base_response_text = [f"""
+        base_response_text = []
+        base_response_text.append("""
 I don't know.
 I have been mind wiped and hold no memory.
 
 Well, i know something: i'm a groundskeeper
 and my nametag says "{partner.name}".
-Since i'm a groundskeeper my duty is to maintain the premises."""]
+Since i'm a groundskeeper my duty is to maintain the premises.""")
 
         if not partner.registers.get("askedForName"):
             quest = src.quests.questMap["BeUsefull"](strict=True)

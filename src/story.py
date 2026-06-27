@@ -1648,7 +1648,7 @@ but they are likely to explode when disturbed.
 
     def builder_asked_name(self,character,partner):
         base_response_text = []
-        base_response_text.append("""
+        base_response_text.append(f"""
 I don't know.
 I have been mind wiped and hold no memory.
 
@@ -1657,44 +1657,67 @@ and my nametag says "{partner.name}".
 Since i'm a groundskeeper my duty is to maintain the premises.""")
 
         if not partner.registers.get("askedForName"):
-            quest = src.quests.questMap["BeUsefull"](strict=True)
-            quest.autoSolve = True
-            quest.assignToCharacter(partner)
-            quest.activate()
-
-            partner.assignQuest(quest,active=True)
-            partner.foodPerRound = 1
-            partner.duties.append("resource gathering")
-            partner.duties.append("scrap hammering")
-            partner.duties.append("resource fetching")
-            partner.duties.append("hauling")
-            partner.duties.append("metal working")
-            partner.duties.append("machine placing")
-            partner.duties.append("maggot gathering")
-            partner.duties.append("painting")
-            partner.duties.append("cleaning")
-            partner.duties.append("machine operation")
-            partner.duties.append("manufacturing")
-            partner.duties.append("praying")
-            partner.duties.append("scavenging")
-            partner.duties.append("room building")
-
-            for duty in partner.duties:
-                partner.dutyPriorities[duty] = 3
-
-            partner.dutyPriorities["cleaning"] = 10
-            partner.dutyPriorities["room building"] = 9
-            partner.dutyPriorities["machine operation"] = 3
-            partner.dutyPriorities["hauling"] = 4
-            partner.dutyPriorities["manufacturing"] = 5
-            partner.dutyPriorities["scavenging"] = 2
-            partner.dutyPriorities["resource gathering"] = 1
-
-            base_response_text.append("\n\nI'll better get started then ...")
+            partner.specialChatOptions.append(({"method":self.builder_asked_nowork},"Why are you not working?"))
             
-        character.showTextMenu(base_response_text,title=partner.name.upper()+" SAYS")
+        submenue = character.showTextMenu(base_response_text,title=partner.name.upper()+" SAYS")
+        submenue.followUp = {"method":self.builder_asked_name_post,"params":{"character":character,"partner":partner}}
 
         partner.registers["askedForName"] = True
+
+    def builder_asked_name_post(self, extraParam):
+        character = extraParam["character"]
+        partner = extraParam["partner"]
+
+        character.add_submenu(src.chats.ChatMenu(partner))
+
+    def builder_asked_nowork(self,character,partner):
+
+        base_response_text = []
+        base_response_text.append("""
+The City that was once standing here has been destroyed.
+There is nothing left except for rusty scrap and this empty room.
+Everything would have to be build anew.
+
+
+Well, i'll better get started then ...""")
+        submenue = character.showTextMenu(base_response_text,title=partner.name.upper()+" SAYS")
+
+        partner.clear_quests()
+
+        quest = src.quests.questMap["BeUsefull"](strict=True)
+        quest.autoSolve = True
+        quest.assignToCharacter(partner)
+        quest.activate()
+
+        partner.assignQuest(quest,active=True)
+        partner.foodPerRound = 1
+        partner.duties.append("resource gathering")
+        partner.duties.append("scrap hammering")
+        partner.duties.append("resource fetching")
+        partner.duties.append("hauling")
+        partner.duties.append("metal working")
+        partner.duties.append("machine placing")
+        partner.duties.append("maggot gathering")
+        partner.duties.append("painting")
+        partner.duties.append("cleaning")
+        partner.duties.append("machine operation")
+        partner.duties.append("manufacturing")
+        partner.duties.append("praying")
+        partner.duties.append("scavenging")
+        partner.duties.append("room building")
+
+        for duty in partner.duties:
+            partner.dutyPriorities[duty] = 3
+
+        partner.dutyPriorities["cleaning"] = 10
+        partner.dutyPriorities["room building"] = 9
+        partner.dutyPriorities["manufacturing"] = 6
+        partner.dutyPriorities["hauling"] = 5
+        partner.dutyPriorities["machine operation"] = 4
+        partner.dutyPriorities["metal working"] = 3
+        partner.dutyPriorities["scavenging"] = 2
+        partner.dutyPriorities["resource gathering"] = 1
+
 
     def setUpDesolatedLab(self,pos):
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]

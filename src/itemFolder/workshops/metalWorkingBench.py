@@ -85,6 +85,11 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         except:
             self.inUse = False
 
+        if character.getPosition() == self.getPosition():
+            character.notify("you slip")
+            character.runCommandString(["esc","a"])
+            return
+
         if self.inUse:
             if self.lastInteraction+10 <= src.gamestate.gamestate.tick:
                 character.addMessage("This item is in use")

@@ -81,6 +81,11 @@ class Anvil(src.items.itemMap["WorkShop"]):
             else:
                 self.inUse = False
 
+        if character.getPosition() == self.getPosition():
+            character.notify("you slip")
+            character.runCommandString(["esc","s"])
+            return
+
         if "rawAmount" in params:
             params["amount"] = int(params["rawAmount"])
             del params["rawAmount"]

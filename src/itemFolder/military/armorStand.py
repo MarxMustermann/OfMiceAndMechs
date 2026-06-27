@@ -9,6 +9,7 @@ class ArmorStand(src.items.Item):
     """
 
     type = "ArmorStand"
+    description = "stores armor"
     name = "armor stand"
     bolted = False
     walkable = False

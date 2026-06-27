@@ -7,6 +7,9 @@ class MemoryFragment(src.items.Item):
     ingame item mainy used as ressource to buy reports
     '''
     type = "MemoryFragment"
+    description = "a small crystal holding a memory"
+    name = "memory fragment"
+
     def __init__(self):
         super().__init__(display="mf", name="Memory Fragment")
         self.walkable = True

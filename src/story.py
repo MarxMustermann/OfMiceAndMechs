@@ -1692,7 +1692,7 @@ Since i'm a groundskeeper my duty is to maintain the premises.""")
 
             base_response_text.append("\n\nI'll better get started then ...")
             
-        character.showTextMenu(base_response_text)
+        character.showTextMenu(base_response_text,title=partner.name.upper()+" SAYS")
 
         partner.registers["askedForName"] = True
 

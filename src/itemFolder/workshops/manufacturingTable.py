@@ -174,17 +174,17 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
 
     def produceItem(self,character):
         if self.disabled:
-            character.addMessage("This item is disabled")
+            character.notify("This item is disabled")
             character.changed("failed manufacturing",{})
             return False
         if not self.bolted:
-            character.addMessage("This item needs to be bolted down to be used")
+            character.notify("This item needs to be bolted down to be used")
             character.changed("failed manufacturing",{})
             return
 
         if self.inUse:
             if self.lastInteraction+10 <= src.gamestate.gamestate.tick:
-                character.addMessage("This item is in use")
+                character.notify("This item is in use")
                 character.changed("failed manufacturing",{})
                 return
             else:

@@ -1955,7 +1955,7 @@ Well, i'll better get started then ...""")
                 None,
            )
         used_spots.append(alarmRoom.getPosition())
-        alarmRoom.tag = "alarm room"
+        alarmRoom.tag = "ruin"
         siegeManager = src.items.itemMap["SiegeManager"]()
         alarmRoom.addItem(siegeManager,(6,6,0))
 

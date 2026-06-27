@@ -422,6 +422,8 @@ class Character:
         self.add_submenu(submenu)
         self.runCommandString("~",nativeKey=True)
 
+        return submenu
+
     def add_submenu(self,submenu):
         self.macroState["submenue"] = submenu
 

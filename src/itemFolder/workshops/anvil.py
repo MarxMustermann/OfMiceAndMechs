@@ -171,10 +171,10 @@ class Anvil(src.items.itemMap["WorkShop"]):
 
         character.changed("hammered scrap",{})
 
+        self.inUse = False
+
         if params["extraAmount"]:
             self.produceItem(character,preferInventoryOut=preferInventoryOut,amount=params["extraAmount"])
-
-        self.inUse = False
 
     def checkForDropSpotsFull(self):
         targetFull = True

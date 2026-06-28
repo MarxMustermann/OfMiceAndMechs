@@ -1670,6 +1670,55 @@ Since i'm a groundskeeper my duty is to maintain the premises.""")
 
         character.add_submenu(src.chats.ChatMenu(partner))
 
+    def builder_reset(self,builder):
+
+        builder.clear_quests()
+
+        quest = src.quests.questMap["GoToPosition"](targetPosition=(6,6,0))
+        quest.autoSolve = True
+        quest.assignToCharacter(builder)
+        builder.quests.append(quest)
+
+        quest = src.quests.questMap["WaitQuest"]()
+        quest.autoSolve = True
+        quest.assignToCharacter(builder)
+        builder.quests.append(quest)
+
+        quest = src.quests.questMap["BeUsefull"](strict=True,endOnIdle=True)
+        quest.autoSolve = True
+        quest.assignToCharacter(builder)
+        quest.activate()
+
+        builder.assignQuest(quest,active=True)
+        builder.foodPerRound = 1
+        builder.duties.append("resource gathering")
+        builder.duties.append("scrap hammering")
+        builder.duties.append("resource fetching")
+        builder.duties.append("hauling")
+        builder.duties.append("metal working")
+        builder.duties.append("machine placing")
+        builder.duties.append("maggot gathering")
+        builder.duties.append("painting")
+        builder.duties.append("cleaning")
+        builder.duties.append("machine operation")
+        builder.duties.append("manufacturing")
+        builder.duties.append("praying")
+        builder.duties.append("scavenging")
+        builder.duties.append("room building")
+
+        for duty in builder.duties:
+            builder.dutyPriorities[duty] = 3
+
+        builder.dutyPriorities["cleaning"] = 10
+        builder.dutyPriorities["room building"] = 9
+        builder.dutyPriorities["manufacturing"] = 6
+        builder.dutyPriorities["hauling"] = 5
+        builder.dutyPriorities["machine operation"] = 4
+        builder.dutyPriorities["metal working"] = 3
+        builder.dutyPriorities["scavenging"] = 2
+        builder.dutyPriorities["resource gathering"] = 1
+
+
     def builder_asked_nowork(self,character,partner):
 
         base_response_text = []
@@ -1678,50 +1727,67 @@ The City that was once standing here has been destroyed.
 There is almost nothing left except for rusty scrap.
 Everything would have to be build anew.
 
+""")
 
+        if not partner.registers.get("startedWorking"):
+            base_response_text.append("""
 Well, i'll start by cleaning up this room.""")
+        elif len(character.quests) < 2:
+            base_response_text.append("""
+I'll check if there is something to do now.""")
+        else:
+            base_response_text.append("""
+I am working right now. I'll repriotize though.""")
+
         submenue = character.showTextMenu(base_response_text,title=partner.name.upper()+" SAYS")
 
         if not partner.registers.get("startedWorking"):
             partner.specialChatOptions.insert(0,("chat","chat idly"))
+            partner.specialChatOptions.insert(0,({"method":self.builder_offered_help,"params":{"character":character,"partner":partner}},"offer help"))
             partner.registers["startedWorking"] = True
 
-        partner.clear_quests()
+        self.builder_reset(partner)
 
-        quest = src.quests.questMap["BeUsefull"](strict=True)
-        quest.autoSolve = True
-        quest.assignToCharacter(partner)
-        quest.activate()
+        character.runCommandString("."*3)
 
-        partner.assignQuest(quest,active=True)
-        partner.foodPerRound = 1
-        partner.duties.append("resource gathering")
-        partner.duties.append("scrap hammering")
-        partner.duties.append("resource fetching")
-        partner.duties.append("hauling")
-        partner.duties.append("metal working")
-        partner.duties.append("machine placing")
-        partner.duties.append("maggot gathering")
-        partner.duties.append("painting")
-        partner.duties.append("cleaning")
-        partner.duties.append("machine operation")
-        partner.duties.append("manufacturing")
-        partner.duties.append("praying")
-        partner.duties.append("scavenging")
-        partner.duties.append("room building")
+    def builder_offered_help(self,character,partner):
+        base_response_text = []
 
-        for duty in partner.duties:
-            partner.dutyPriorities[duty] = 3
+        painter = character.searchInventory("Painter")
+        if not painter:
+            base_response_text.append("""
+I am missing a painter. The painter is an important tool.
+It is used to draw markings on the floor.
+This helps a lot with keeping things organized.
 
-        partner.dutyPriorities["cleaning"] = 10
-        partner.dutyPriorities["room building"] = 9
-        partner.dutyPriorities["manufacturing"] = 6
-        partner.dutyPriorities["hauling"] = 5
-        partner.dutyPriorities["machine operation"] = 4
-        partner.dutyPriorities["metal working"] = 3
-        partner.dutyPriorities["scavenging"] = 2
-        partner.dutyPriorities["resource gathering"] = 1
+Bring me a painter so i can work better.
+""")
+        else:
+            base_response_text.append("""
+Thanks for the painter.
 
+That will be very help with organising the place.
+This will allow me to draw storage markers onto the floor.
+It is hard to do anything without a storage system.
+""")
+            character.inventory.remove(painter[0])
+            partner.inventory.append(painter[0])
+            self.builder_reset(partner)
+
+            if not partner.registers.get("gotPainter"):
+                partner.registers["gotPainter"] = True
+                partner.specialChatOptions.insert(0,({"method":self.builder_asked_help,"params":{"character":character,"partner":partner}},"ask for help"))
+
+        submenue = character.showTextMenu(base_response_text,title=partner.name.upper()+" SAYS")
+        character.add_submenu(submenue)
+
+    def builder_asked_help(self,character,partner):
+        base_response_text = []
+        base_response_text.append("""
+sure i'll produce equipment for you as long as you bring me the raw material.
+""")
+        submenue = character.showTextMenu(base_response_text,title=partner.name.upper()+" SAYS")
+        character.add_submenu(submenue)
 
     def setUpDesolatedLab(self,pos):
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
@@ -1929,8 +1995,6 @@ Well, i'll start by cleaning up this room.""")
         metalworkingBench = src.items.itemMap["MetalWorkingBench"]()
         metalworkingBench.bolted = False
         main_npc.inventory.append(metalworkingBench)
-        painter = src.items.itemMap["Painter"]()
-        main_npc.inventory.append(painter)
 
         quest = src.quests.questMap["WaitQuest"]()
         quest.autoSolve = True
@@ -2009,12 +2073,13 @@ Well, i'll start by cleaning up this room.""")
                 scrap = src.items.itemMap["Scrap"](amount=amount)
                 currentTerrain.addItem(scrap,pos)
 
-            for _i in range(1,10):
-                wall = src.items.itemMap["Wall"]()
-                wall.bolted = False
-                pos = (big_pos[0]*15+random.randint(1,14),big_pos[1]*15+random.randint(1,14),0)
-                if not currentTerrain.getItemByPosition(pos):
-                    currentTerrain.addItem(wall,pos)
+            if not (big_pos[0] > 5 and big_pos[0] < 9 and big_pos[1] > 2 and big_pos[1] < 9):
+                for _i in range(1,10):
+                    wall = src.items.itemMap["Wall"]()
+                    wall.bolted = False
+                    pos = (big_pos[0]*15+random.randint(1,14),big_pos[1]*15+random.randint(1,14),0)
+                    if not currentTerrain.getItemByPosition(pos):
+                        currentTerrain.addItem(wall,pos)
 
             for x in range(1,14):
                 pos = (big_pos[0]*15+x,big_pos[1]*15+7,0)

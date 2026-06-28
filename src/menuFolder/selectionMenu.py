@@ -50,7 +50,8 @@ class SelectionMenu(src.menues.SubMenu):
                 self.callIndirect(self.followUp,extraParams={self.targetParamName:None})
             return True
         if key == ".":
-            character.takeTime(amount=1,reason="waiting")
+            if character:
+                character.takeTime(amount=1,reason="waiting")
             return False
         if not noRender and src.interaction.header:
             src.interaction.header.set_text("")

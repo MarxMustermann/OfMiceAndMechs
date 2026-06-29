@@ -1744,6 +1744,7 @@ I am working right now. I'll repriotize though.""")
 
         if not partner.registers.get("startedWorking"):
             partner.specialChatOptions.insert(0,("chat","chat idly"))
+            partner.specialChatOptions.insert(0,({"method":self.builder_asked_help,"params":{"character":character,"partner":partner}},"ask for help"))
             partner.specialChatOptions.insert(0,({"method":self.builder_offered_help,"params":{"character":character,"partner":partner}},"offer help"))
             partner.registers["startedWorking"] = True
 
@@ -1754,30 +1755,51 @@ I am working right now. I'll repriotize though.""")
     def builder_offered_help(self,character,partner):
         base_response_text = []
 
-        painter = character.searchInventory("Painter")
-        if not painter:
-            base_response_text.append("""
+        if not partner.registers.get("gotPainter"):
+            painter = character.searchInventory("Painter")
+            if not painter:
+                base_response_text.append("""
 I am missing a painter. The painter is an important tool.
 It is used to draw markings on the floor.
 This helps a lot with keeping things organized.
 
 Bring me a painter so i can work better.
 """)
-        else:
-            base_response_text.append("""
+            else:
+                base_response_text.append("""
 Thanks for the painter.
 
 That will be very help with organising the place.
 This will allow me to draw storage markers onto the floor.
 It is hard to do anything without a storage system.
 """)
-            character.inventory.remove(painter[0])
-            partner.inventory.append(painter[0])
-            self.builder_reset(partner)
+                character.inventory.remove(painter[0])
+                partner.inventory.append(painter[0])
+                self.builder_reset(partner)
 
-            if not partner.registers.get("gotPainter"):
                 partner.registers["gotPainter"] = True
-                partner.specialChatOptions.insert(0,({"method":self.builder_asked_help,"params":{"character":character,"partner":partner}},"ask for help"))
+        if not partner.registers.get("gotAnvil"):
+            anvil = character.searchInventory("Anvil")
+            if not anvil:
+                base_response_text.append("""
+Now i need an anvil.
+""")
+            else:
+                base_response_text.append("""
+Thanks for the anvil.
+
+That will allow to process scrap to metal bars.
+MetalBars are needed to produce most things.
+""")
+                character.inventory.remove(anvil[0])
+                partner.inventory.append(anvil[0])
+                self.builder_reset(partner)
+
+                partner.registers["gotAnvil"] = True
+        else:
+            base_response_text.append("""
+I don't need anything right now.
+""")
 
         submenue = character.showTextMenu(base_response_text,title=partner.name.upper()+" SAYS")
         character.add_submenu(submenue)

@@ -1654,6 +1654,7 @@ I have been mind wiped and hold no memory.
 
 Well, i know something: i'm a groundskeeper
 and my nametag says "{partner.name}".
+
 Since i'm a groundskeeper my duty is to maintain the premises.""")
 
         if not partner.registers.get("askedForName"):
@@ -1989,13 +1990,6 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         main_npc.personality["abortMacrosOnAttack"] = False
         main_npc.personality["autoCounterAttack"] = False
 
-        anvil = src.items.itemMap["Anvil"]()
-        anvil.bolted = False
-        main_npc.inventory.append(anvil)
-        metalworkingBench = src.items.itemMap["MetalWorkingBench"]()
-        metalworkingBench.bolted = False
-        main_npc.inventory.append(metalworkingBench)
-
         quest = src.quests.questMap["WaitQuest"]()
         quest.autoSolve = True
         quest.assignToCharacter(main_npc)
@@ -2062,6 +2056,37 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         painterRoom.tag = "ruin"
         painterRoom.spawnItem("Painter",(6,6,0))
 
+        # add anvil room
+        anvilRoom = architect.doAddRoom(
+                {
+                       "coordinate": (10,7,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,12 6,0 0,6 12,6",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        used_spots.append(anvilRoom.getPosition())
+        anvilRoom.tag = "ruin"
+        anvilRoom.spawnItem("Anvil",(6,6,0))
+        anvilRoom.bolted = True
+
+        # add metalWorking room
+        metalWorkingRoom = architect.doAddRoom(
+                {
+                       "coordinate": (4,7,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,12 6,0 0,6 12,6",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        used_spots.append(metalWorkingRoom.getPosition())
+        metalWorkingRoom.tag = "ruin"
+        metalWorkingRoom.spawnItem("MetalWorkingBench",(6,6,0))
+
         # create paths
         for big_pos in [(5,5,0),(6,5,0),(8,5,0),(9,5,0),]:
             used_spots.append(big_pos)
@@ -2083,6 +2108,32 @@ sure i'll produce equipment for you as long as you bring me the raw material.
 
             for x in range(1,14):
                 pos = (big_pos[0]*15+x,big_pos[1]*15+7,0)
+                items = currentTerrain.getItemByPosition(pos)
+                currentTerrain.removeItems(items)
+                
+                scrap = src.items.itemMap["Scrap"](amount=1)
+                currentTerrain.addItem(scrap,pos)
+
+        for big_pos in [(10,6,0),(10,8,0),(4,6,0),(4,8,0),]:
+            used_spots.append(big_pos)
+            for _i in range(100):
+                amount = random.randint(1,15)
+                pos = (big_pos[0]*15+random.randint(1,14),big_pos[1]*15+random.randint(1,14),0)
+                if currentTerrain.getItemByPosition(pos):
+                    continue
+                scrap = src.items.itemMap["Scrap"](amount=amount)
+                currentTerrain.addItem(scrap,pos)
+
+            if not (big_pos[0] > 5 and big_pos[0] < 9 and big_pos[1] > 2 and big_pos[1] < 9):
+                for _i in range(1,10):
+                    wall = src.items.itemMap["Wall"]()
+                    wall.bolted = False
+                    pos = (big_pos[0]*15+random.randint(1,14),big_pos[1]*15+random.randint(1,14),0)
+                    if not currentTerrain.getItemByPosition(pos):
+                        currentTerrain.addItem(wall,pos)
+
+            for y in range(1,14):
+                pos = (big_pos[0]*15+7,big_pos[1]*15+y,0)
                 items = currentTerrain.getItemByPosition(pos)
                 currentTerrain.removeItems(items)
                 

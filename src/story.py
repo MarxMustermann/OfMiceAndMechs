@@ -1778,7 +1778,25 @@ It is hard to do anything without a storage system.
                 self.builder_reset(partner)
 
                 partner.registers["gotPainter"] = True
-        if not partner.registers.get("gotAnvil"):
+        elif not partner.registers.get("gotMetalWorkingBench"):
+            metalWorkingBench = character.searchInventory("MetalWorkingBench")
+            if not metalWorkingBench:
+                base_response_text.append("""
+Now i need a MetalWorkingBench.
+""")
+            else:
+                base_response_text.append("""
+Thanks for the MetalWorkingBench.
+
+That will allow to produce items from MetalBars.
+We will need a lot of MetalBars to produce a lot of things.
+""")
+                character.inventory.remove(metalWorkingBench[0])
+                partner.inventory.append(metalWorkingBench[0])
+                self.builder_reset(partner)
+
+                partner.registers["gotMetalWorkingBench"] = True
+        elif not partner.registers.get("gotAnvil"):
             anvil = character.searchInventory("Anvil")
             if not anvil:
                 base_response_text.append("""

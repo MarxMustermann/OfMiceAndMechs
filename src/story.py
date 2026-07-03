@@ -1784,7 +1784,50 @@ It is hard to do anything without a storage system.
             return
 
         base_response_text = []
+        base_response_text.append("""
+There are several things you can do to help me out:
+
+""")
+        tasks = []
+        extraDescriptions = {}
         if not partner.registers.get("gotMetalWorkingBench"):
+            name = "fetch MetalWorkingBench"
+            tasks.append((name,"fetch MetalWorkingBench"))
+            extraDescriptions[name] = "Aquireing a MetalWorkingBench will allow me to start crafting items"
+        if not partner.registers.get("gotAnvil"):
+            name = "fetch Anvil"
+            tasks.append((name,"fetch Anvil"))
+            extraDescriptions[name] = "Aquireing an Anvil will allow me to start processing Scrap"
+        if not partner.registers.get("disabledAlarm"):
+            name = "disable alarm"
+            tasks.append((name,"disable alarm"))
+            extraDescriptions[name] = "disabling the alarm will allow me to move more freely"
+
+        if not tasks:
+            base_response_text.append("""
+I don't need anything right now.
+""")
+            submenue = character.showTextMenu(base_response_text,title=partner.name.upper()+" SAYS")
+            character.add_submenu(submenue)
+            return
+
+        submenue = src.menuFolder.selectionMenu.SelectionMenu(
+            base_response_text, tasks, tag="builder_task_selection", targetParamName="task",extraDescriptions=extraDescriptions,title=partner.name.upper()+" ASKS"
+        )
+        character.add_submenu(submenue)
+        submenue.followUp = {
+            "container": self,
+            "method": "do_builder_task",
+            "params": {"character":character,"partner":partner}
+        }
+
+    def do_builder_task(self,extraParams):
+        task = extraParams.get("task")
+        character = extraParams.get("character")
+        partner = extraParams.get("partner")
+        base_response_text = []
+
+        if task == "fetch MetalWorkingBench":
             metalWorkingBench = character.searchInventory("MetalWorkingBench")
             if not metalWorkingBench:
                 base_response_text.append("""
@@ -1802,7 +1845,7 @@ We will need a lot of MetalBars to produce a lot of things.
                 self.builder_reset(partner)
 
                 partner.registers["gotMetalWorkingBench"] = True
-        elif not partner.registers.get("gotAnvil"):
+        elif task == "fetch Anvil":
             anvil = character.searchInventory("Anvil")
             if not anvil:
                 base_response_text.append("""
@@ -1820,7 +1863,7 @@ MetalBars are needed to produce most things.
                 self.builder_reset(partner)
 
                 partner.registers["gotAnvil"] = True
-        elif not partner.registers.get("disabledAlarm"):
+        elif task == "disable alarm":
             if partner.getTerrain().alarm:
                 base_response_text.append("""
 Protocol forbids to leave the base while the outside alarm is runnung.
@@ -1836,7 +1879,7 @@ I will collect resources now.
                 partner.registers["disabledAlarm"] = True
         else:
             base_response_text.append("""
-I don't need anything right now.
+I ..... seems to have forgotten what i was about to say.
 """)
 
         submenue = character.showTextMenu(base_response_text,title=partner.name.upper()+" SAYS")

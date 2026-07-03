@@ -1815,6 +1815,20 @@ MetalBars are needed to produce most things.
                 self.builder_reset(partner)
 
                 partner.registers["gotAnvil"] = True
+        elif not partner.registers.get("disabledAlarm"):
+            if partner.getTerrain().alarm:
+                base_response_text.append("""
+Protocol forbids to leave the base while the outside alarm is runnung.
+
+Disable the alarm so i can go out and collect resources.
+""")
+            else:
+                base_response_text.append("""
+Thanks for disabling the alarm.
+
+I will collect resources now.
+""")
+                partner.registers["disabledAlarm"] = True
         else:
             base_response_text.append("""
 I don't need anything right now.

@@ -92,7 +92,7 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
 
         if self.inUse:
             if self.lastInteraction+10 <= src.gamestate.gamestate.tick:
-                character.addMessage("This item is in use")
+                character.notify("This item is in use. It con only used by one clone.")
                 character.changed("failed manufacturing",{})
                 return
             else:

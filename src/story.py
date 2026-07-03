@@ -1754,9 +1754,9 @@ I am working right now. I'll repriotize though.""")
         character.runCommandString("."*3)
 
     def builder_offered_help(self,character,partner):
-        base_response_text = []
 
         if not partner.registers.get("gotPainter"):
+            base_response_text = []
             painter = character.searchInventory("Painter")
             if not painter:
                 base_response_text.append("""
@@ -1779,7 +1779,12 @@ It is hard to do anything without a storage system.
                 self.builder_reset(partner)
 
                 partner.registers["gotPainter"] = True
-        elif not partner.registers.get("gotMetalWorkingBench"):
+            submenue = character.showTextMenu(base_response_text,title=partner.name.upper()+" SAYS")
+            character.add_submenu(submenue)
+            return
+
+        base_response_text = []
+        if not partner.registers.get("gotMetalWorkingBench"):
             metalWorkingBench = character.searchInventory("MetalWorkingBench")
             if not metalWorkingBench:
                 base_response_text.append("""

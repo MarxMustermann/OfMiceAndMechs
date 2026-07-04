@@ -15,6 +15,7 @@ class ClearPathToPosition(src.quests.MetaQuestSequence):
         self.tryHard = tryHard
         self.reason = reason
         self.path = None
+        self.startTime = None
 
     def generateTextDescription(self):
         reason = ""
@@ -47,6 +48,24 @@ Unbolt items by using a complex action, if needed.
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
         if self.subQuests:
             return (None,None)
+
+        if not character:
+            return (None,None)
+
+        try:
+            self.startTime
+        except:
+            self.startTime = None
+        if not self.startTime:
+            if not dryRun:
+                self.startTime = src.gamestate.gamestate.tick
+            return (None,("+","remember the start time"))
+
+        submenue = character.macroState.get("submenue")
+        if submenue:
+            if isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu) and not character.getFreeInventorySpace():
+                return (None,("X","destroy item"))
+            return (None,(["esc"],"close the menu"))
 
         path = self.path
 
@@ -116,6 +135,8 @@ Unbolt items by using a complex action, if needed.
                 if not (character.yPosition in (13,14,) and not character.container.isRoom):
                     directions.append("s")
 
+                if (src.gamestate.gamestate.tick - self.startTime) > 100:
+                    return (None,("iX","destroy item"))
                 if character.inventory[-1].walkable:
                     return (None,("L"+random.choice(directions),"drop item"))
 

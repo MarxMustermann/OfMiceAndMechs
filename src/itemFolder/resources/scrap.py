@@ -149,6 +149,7 @@ class Scrap(src.items.Item):
             return
 
         if isinstance(self.container,src.characters.Character):
+            self.container.inventory.remove(self)
             return
 
         # get list of scrap on same location

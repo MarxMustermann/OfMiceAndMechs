@@ -1286,6 +1286,9 @@ class CityPlaner(src.items.Item):
         if not terrain:
             return
 
+        if cursor is None:
+            cursor = self.getBigPosition()
+
         # render empty map
         mapContent = []
         for x in range(15):

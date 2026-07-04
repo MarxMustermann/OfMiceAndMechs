@@ -148,6 +148,9 @@ class Scrap(src.items.Item):
         if not self.container:
             return
 
+        if isinstance(self.container,src.characters.Character):
+            return
+
         # get list of scrap on same location
         # bad code: should be handled in the container
         foundScraps = []

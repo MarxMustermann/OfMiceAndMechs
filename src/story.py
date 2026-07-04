@@ -1710,8 +1710,9 @@ Since i'm a groundskeeper my duty is to maintain the premises.""")
         for duty in builder.duties:
             builder.dutyPriorities[duty] = 3
 
-        builder.dutyPriorities["cleaning"] = 10
-        builder.dutyPriorities["machine placing"] = 9
+        builder.dutyPriorities["cleaning"] = 11
+        builder.dutyPriorities["machine placing"] = 10
+        builder.dutyPriorities["praying"] = 9
         builder.dutyPriorities["room building"] = 8
         builder.dutyPriorities["manufacturing"] = 6
         builder.dutyPriorities["hauling"] = 5

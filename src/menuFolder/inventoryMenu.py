@@ -122,7 +122,6 @@ class InventoryMenu(src.menues.SubMenu):
                 if key == "X":
                     item = self.char.inventory[self.cursor]
                     self.char.addMessage(f"you destroy a {item.type}")
-                    self.char.inventory.remove(item)
                     item.destroy()
 
                 # do drop

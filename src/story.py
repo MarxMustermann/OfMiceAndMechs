@@ -1804,13 +1804,17 @@ There are several things you can do to help me out:
             tasks.append((name,"disable alarm"))
             extraDescriptions[name] = "disabling the alarm will allow me to move more freely"
 
+        terrain = character.getTerrain()
+
         for room in terrain.rooms:
             if room.tag != "temple":
                 continue
             if room.floorPlan:
                 continue
+            name = "collect glass hearts"
+            tasks.append((name,name))
+            extraDescriptions[name] = "put society back together by collecting all the glass hearts"
 
-        terrain = character.getTerrain()
         if not terrain.alarm:
 
             # check inventory

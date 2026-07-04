@@ -1798,10 +1798,28 @@ There are several things you can do to help me out:
             name = "fetch Anvil"
             tasks.append((name,"fetch Anvil"))
             extraDescriptions[name] = "Aquireing an Anvil will allow me to start processing Scrap"
-        if not partner.registers.get("disabledAlarm"):
+        if character.getTerrain().alarm:
             name = "disable alarm"
             tasks.append((name,"disable alarm"))
             extraDescriptions[name] = "disabling the alarm will allow me to move more freely"
+
+        terrain = character.getTerrain()
+        if not terrain.alarm:
+            hasWalls = False
+            for room in terrain.rooms:
+                if room.tag == "ruin":
+                    continue
+                if room.getItemsByType("Wall",needsUnbolted=True):
+                    hasWalls = True
+
+            if not hasWalls:
+                name = "fetch Walls"
+                tasks.append((name,"fetch Walls"))
+                extraDescriptions[name] = "i need Walls to build new rooms"
+            else:
+                name = "build room"
+                tasks.append((name,"build room"))
+                extraDescriptions[name] = "help me set up the next room"
 
         if not tasks:
             base_response_text.append("""

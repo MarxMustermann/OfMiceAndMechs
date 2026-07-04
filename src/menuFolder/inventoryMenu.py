@@ -118,6 +118,13 @@ class InventoryMenu(src.menues.SubMenu):
                     item.apply(self.char)
                     self.char.takeTime(self.char.movementSpeed,"activated item")
 
+                # destroy item
+                if key == "X":
+                    item = self.char.inventory[self.cursor]
+                    self.char.addMessage(f"you destroy a {item.type}")
+                    self.char.inventory.remove(item)
+                    item.destroy()
+
                 # do drop
                 if key == "l":
                     item = self.char.inventory[self.cursor]
@@ -252,6 +259,7 @@ class InventoryMenu(src.menues.SubMenu):
                                    src.interaction.ActionMeta(payload="l",content="press l to drop item"),"\n",
                                    src.interaction.ActionMeta(payload="j",content="press j to activate item"),"\n",
                                    src.interaction.ActionMeta(payload="e",content="press e to examine item"),"\n",
+                                   src.interaction.ActionMeta(payload="X",content="press X to destroy item"),"\n",
                                    src.interaction.ActionMeta(payload="c",content="press c to clear inventory")]))
                 num_rows += 4
             else:

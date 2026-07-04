@@ -1803,23 +1803,67 @@ There are several things you can do to help me out:
             tasks.append((name,"disable alarm"))
             extraDescriptions[name] = "disabling the alarm will allow me to move more freely"
 
+        for room in terrain.rooms:
+            if room.tag != "temple":
+                continue
+            if room.floorPlan:
+                continue
+
         terrain = character.getTerrain()
         if not terrain.alarm:
+
+            # check inventory
             hasWalls = False
+            hasDoors = False
+            hasEmptyRoom = False
+            hasCityPlaner = False
             for room in terrain.rooms:
                 if room.tag == "ruin":
                     continue
+                if room.tag == None:
+                    hasEmptyRoom = True
                 if room.getItemsByType("Wall",needsUnbolted=True):
                     hasWalls = True
+                if room.getItemsByType("Door",needsUnbolted=True):
+                    hasDoors = True
+                if room.getItemsByType("CityPlaner",needsBolted=True):
+                    hasCityPlaner = True
 
-            if not hasWalls:
-                name = "fetch Walls"
-                tasks.append((name,"fetch Walls"))
-                extraDescriptions[name] = "i need Walls to build new rooms"
-            else:
-                name = "build room"
-                tasks.append((name,"build room"))
-                extraDescriptions[name] = "help me set up the next room"
+            # build temple
+            if hasEmptyRoom:
+
+                # ensure city planer
+                if not hasCityPlaner:
+                    name = "fetch CityPlaner"
+                    tasks.append((name,"fetch CityPlaner"))
+                    extraDescriptions[name] = "a city planer will allow to control how to expand the base"
+
+                # ensure temple
+                if hasCityPlaner:
+                    name = "plan temple"
+                    tasks.append((name,"schedule building a Temple"))
+                    extraDescriptions[name] = "the temple always has been the centerpiece of the city"
+
+            # expand base
+            if not hasEmptyRoom:
+
+                # ensure walls are available
+                if not hasWalls:
+                    name = "fetch Walls"
+                    tasks.append((name,"fetch Walls"))
+                    extraDescriptions[name] = "i need Walls to build new rooms"
+
+                # ensure doors are available
+                if not hasDoors:
+                    name = "fetch Doors"
+                    tasks.append((name,"fetch Doors"))
+                    extraDescriptions[name] = "i need Doors to build new rooms"
+
+                # ensure walls are available
+                if hasWalls and hasDoors:
+                    name = "build room"
+                    tasks.append((name,"build room"))
+                    extraDescriptions[name] = "help me set up the next room"
 
         if not tasks:
             base_response_text.append("""

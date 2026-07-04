@@ -380,7 +380,7 @@ class Character:
         get the duties ordered by priority but randomised within the same priority
         '''
         priotisedDuties = {}
-        for duty in self.duties:
+        for duty in list(set(self.duties)):
             priority = self.dutyPriorities.get(duty,1)
             if not priority in priotisedDuties:
                 priotisedDuties[priority] = []

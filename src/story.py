@@ -1815,6 +1815,18 @@ There are several things you can do to help me out:
             tasks.append((name,name))
             extraDescriptions[name] = "put society back together by collecting all the glass hearts"
 
+        itemsAvailabe = []
+        for room in terrain.rooms:
+            outputSlots = room.getNonEmptyOutputslots(allowStorage=True)
+            for outputSlot in outputSlots:
+                items = room.getItemByPosition(outputSlot[0])
+                if not items:
+                    continue
+                itemType = items[-1].type
+                if itemType in itemsAvailabe:
+                    continue
+                itemsAvailabe.append(itemType)
+
         itemsNeeded = []
         for room in terrain.rooms:
             buildSites = room.buildSites
@@ -1822,6 +1834,8 @@ There are several things you can do to help me out:
                 itemType = buildSite[1]
                 name = f"fetch {itemType}"
                 if itemType in itemsNeeded:
+                    continue
+                if itemType in itemsAvailabe:
                     continue
                 tasks.append((name,name))
                 extraDescriptions[name] = f"there is need for more {itemType}"
@@ -1831,6 +1845,8 @@ There are several things you can do to help me out:
             for inputSlot in inputSlots:
                 itemType = inputSlot[1]
                 if itemType in itemsNeeded:
+                    continue
+                if itemType in itemsAvailabe:
                     continue
                 name = f"fetch {itemType}"
                 tasks.append((name,name))

@@ -122,7 +122,7 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         # abort on weird states
         if params.get("type") not in src.items.itemMap:
             if params.get("type"):
-                character.addMessage("Item type unknown.")
+                character.notify("Item type unknown.")
             return
         if params.get("type") in src.items.nonManufacturedTypes:
             ty = params.get("type")

@@ -1822,7 +1822,7 @@ There are several things you can do to help me out:
                 tasks.append((name,name))
                 extraDescriptions[name] = f"there is need for more {buildSite[1]}"
 
-            inputSlots = room.getEmptyInputslots(allowStorage=False)
+            inputSlots = room.getEmptyInputslots(allowStorage=False,fullyEmpty=True)
             for inputSlot in inputSlots:
                 name = f"fetch {inputSlot[1]}"
                 tasks.append((name,name))

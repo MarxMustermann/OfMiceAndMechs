@@ -2379,6 +2379,13 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                     if not currentTerrain.getItemByPosition(pos):
                         currentTerrain.addItem(wall,pos)
 
+                for _i in range(1,10):
+                    metalBars = src.items.itemMap["MetalBars"]()
+                    pos = (big_x*15+random.randint(1,14),big_y*15+random.randint(1,14),0)
+                    if not currentTerrain.getItemByPosition(pos):
+                        currentTerrain.addItem(metalBars,pos)
+
+
     def setUpArchitectsLab(self,pos):
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
         currentTerrain.tag = "the architects mausoleum"

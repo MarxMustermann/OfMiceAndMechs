@@ -1819,14 +1819,13 @@ There are several things you can do to help me out:
         for room in terrain.rooms:
             buildSites = room.buildSites
             for buildSite in buildSites:
+                itemType = buildSite[1]
                 name = f"fetch {itemType}"
                 if itemType in itemsNeeded:
                     continue
-                itemType = buildSite[1]
                 tasks.append((name,name))
                 extraDescriptions[name] = f"there is need for more {itemType}"
                 itemsNeeded.append(itemType)
-
         for room in terrain.rooms:
             inputSlots = room.getEmptyInputslots(allowStorage=False,fullyEmpty=True)
             for inputSlot in inputSlots:

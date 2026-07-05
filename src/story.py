@@ -1827,6 +1827,7 @@ There are several things you can do to help me out:
                 extraDescriptions[name] = f"there is need for more {itemType}"
                 itemsNeeded.append(itemType)
 
+        for room in terrain.rooms:
             inputSlots = room.getEmptyInputslots(allowStorage=False,fullyEmpty=True)
             for inputSlot in inputSlots:
                 itemType = inputSlot[1]

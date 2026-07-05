@@ -1815,6 +1815,13 @@ There are several things you can do to help me out:
             tasks.append((name,name))
             extraDescriptions[name] = "put society back together by collecting all the glass hearts"
 
+        for room in terrain.rooms:
+            inputSlots = room.getEmptyInputslots(allowStorage=False)
+            for inputSlot in inputSlots:
+                name = f"fetch {inputSlot[1]}"
+                tasks.append((name,name))
+                extraDescriptions[name] = f"there is need for more {inputSlot[1]}"
+
         if not terrain.alarm:
 
             # check inventory

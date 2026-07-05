@@ -1815,20 +1815,27 @@ There are several things you can do to help me out:
             tasks.append((name,name))
             extraDescriptions[name] = "put society back together by collecting all the glass hearts"
 
+        itemsNeeded = []
         for room in terrain.rooms:
             buildSites = room.buildSites
             for buildSite in buildSites:
-                itemType = buildSite[1]
                 name = f"fetch {itemType}"
+                if itemType in itemsNeeded:
+                    continue
+                itemType = buildSite[1]
                 tasks.append((name,name))
                 extraDescriptions[name] = f"there is need for more {itemType}"
+                itemsNeeded.append(itemType)
 
             inputSlots = room.getEmptyInputslots(allowStorage=False,fullyEmpty=True)
             for inputSlot in inputSlots:
                 itemType = inputSlot[1]
+                if itemType in itemsNeeded:
+                    continue
                 name = f"fetch {itemType}"
                 tasks.append((name,name))
                 extraDescriptions[name] = f"there is need for more {itemType}"
+                itemsNeeded.append(itemType)
 
         if not terrain.alarm:
 

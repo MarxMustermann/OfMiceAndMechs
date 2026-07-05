@@ -1816,6 +1816,12 @@ There are several things you can do to help me out:
             extraDescriptions[name] = "put society back together by collecting all the glass hearts"
 
         for room in terrain.rooms:
+            buildSites = room.buildSites
+            for buildSite in buildSites:
+                name = f"fetch {buildSite[1]}"
+                tasks.append((name,name))
+                extraDescriptions[name] = f"there is need for more {buildSite[1]}"
+
             inputSlots = room.getEmptyInputslots(allowStorage=False)
             for inputSlot in inputSlots:
                 name = f"fetch {inputSlot[1]}"

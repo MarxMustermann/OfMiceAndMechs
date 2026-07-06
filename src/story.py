@@ -1765,6 +1765,7 @@ I am working right now. I'll repriotize though.""")
     def builder_accepted_quest(self,extraParam):
         accept_type = extraParam.get("accept_type")
         character = extraParam["character"]
+        terrain = character.getTerrain()
 
         if accept_type == "replace":
             character.clear_quests()
@@ -1774,6 +1775,20 @@ I am working right now. I'll repriotize though.""")
             if quest_selection == "painter":
                 quest = src.quests.questMap["LootRoom"](targetPositionBig=(10,5,0))
                 character.assignQuest(quest,active=True)
+            if quest_selection == "build room":
+                targetPosition = None
+                for x in range(1,14):
+                    for y in range(1,14):
+                        check_position = (x*15+7,y*15+7,0)
+                        items = terrain.getItemByPosition(check_position)
+                        if not len(items) == 1:
+                            continue
+                        if not items[0].type == "RoomBuilder":
+                            continue
+                        targetPosition = (x,y,0)
+                if targetPosition:
+                    quest = src.quests.questMap["BuildRoom"](targetPosition=targetPosition)
+                    character.assignQuest(quest,active=True)
 
     def builder_offered_help(self,character,partner):
 
@@ -1984,6 +1999,8 @@ I don't need anything right now.
         partner = extraParams.get("partner")
         base_response_text = []
 
+        offer_accept_options = False
+
         if task == "fetch MetalWorkingBench":
             metalWorkingBench = character.searchInventory("MetalWorkingBench")
             if not metalWorkingBench:
@@ -2034,13 +2051,41 @@ Thanks for disabling the alarm.
 I will collect resources now.
 """)
                 partner.registers["disabledAlarm"] = True
+        elif task == "build room":
+            base_response_text.append("""
+The base needs to be extended so i have more space to work with.
+
+Help me put together place the Walls and put together a new room.
+""")
+            offer_accept_options = True
         else:
             base_response_text.append("""
 I ..... seems to have forgotten what i was about to say.
 """)
 
-        submenue = character.showTextMenu(base_response_text,title=partner.name.upper()+" SAYS")
-        character.add_submenu(submenue)
+        if offer_accept_options:
+            options = []
+            extraDescriptions = {}
+            options.append(("add","add as quest"))
+            options.append(("replace","replace current quests"))
+            options.append(("continue","i'll see what i can do"))
+            extraDescriptions["add"] = "This will add the current task as quest"
+            extraDescriptions["replace"] = "This will add the current task as quest and remove the existing quests"
+            extraDescriptions["continue"] = "This will continue the conversation without changing your quests"
+
+            base_response_text.append("\n\nHow do you react?")
+            submenue = src.menuFolder.selectionMenu.SelectionMenu(
+                base_response_text, options, tag="builder_accept_quest", targetParamName="accept_type",extraDescriptions=extraDescriptions,title=partner.name.upper()+" ASKS"
+            )
+            character.add_submenu(submenue)
+            submenue.followUp = {
+                "container": self,
+                "method": "builder_accepted_quest",
+                "params": {"character":character,"partner":partner,"quest_selection":"build room"}
+            }
+        else:
+            submenue = character.showTextMenu(base_response_text,title=partner.name.upper()+" SAYS")
+            character.add_submenu(submenue)
 
     def builder_asked_help(self,character,partner):
         base_response_text = []

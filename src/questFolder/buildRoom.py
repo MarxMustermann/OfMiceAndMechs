@@ -200,9 +200,7 @@ Press d to move the cursor and show the subquests description.
                         hasWallSource = True
                     
                     if not hasWallSource:
-                        if not dryRun:
-                            self.fail("no source for item type Wall")
-                        return (None,("+","abort quest"))
+                        return self._solver_trigger_fail(dryRun,"no source for item type Wall")
 
                 amount = min(5,len(missingWallPositions),character.getFreeInventorySpace()-1)
                 quest = src.quests.questMap["FetchItems"](toCollect="Wall",takeAnyUnbolted=self.takeAnyUnbolted,tryHard=self.tryHard,amount=amount,reason="have walls for the rooms outline")

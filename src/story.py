@@ -1750,9 +1750,17 @@ I am working right now. I'll repriotize though.""")
             partner.specialChatOptions.insert(0,({"method":self.builder_offered_help,"params":{"character":character,"partner":partner}},"offer help"))
             partner.registers["startedWorking"] = True
 
+            submenue.followUp = {"method":self.builder_asked_name_post,"params":{"character":character,"partner":partner}}
+        else:
+            character.runCommandString("."*3)
+
         self.builder_reset(partner)
 
-        character.runCommandString("."*3)
+    def builder_asked_nowork_post(self, extraParam):
+        character = extraParam["character"]
+        partner = extraParam["partner"]
+
+        character.add_submenu(src.chats.ChatMenu(partner))
 
     def builder_offered_help(self,character,partner):
 

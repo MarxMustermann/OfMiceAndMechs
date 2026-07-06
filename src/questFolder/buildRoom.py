@@ -294,10 +294,6 @@ Press d to move the cursor and show the subquests description.
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
         terrain = character.getTerrain()
-        try:
-            terrain.alarm
-        except:
-            terrain.alarm = False
         if terrain.alarm:
             return (None,None)
 

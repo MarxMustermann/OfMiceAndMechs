@@ -1769,7 +1769,8 @@ I am working right now. I'll repriotize though.""")
             painter = character.searchInventory("Painter")
             if not painter:
                 base_response_text.append("""
-I am missing a painter. The painter is an important tool.
+I cannot work properly without a painter.
+The painter is an important tool.
 It is used to draw markings on the floor.
 This helps a lot with keeping things organized.
 

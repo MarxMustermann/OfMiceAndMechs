@@ -1792,33 +1792,9 @@ There are several things you can do to help me out:
         tasks = []
         extraDescriptions = {}
         itemsNeeded = []
-        if not partner.registers.get("gotMetalWorkingBench"):
-            name = "fetch MetalWorkingBench"
-            tasks.append((name,"fetch MetalWorkingBench"))
-            extraDescriptions[name] = "Aquireing a MetalWorkingBench will allow me to start crafting items"
-            itemsNeeded.append("MetalWorkingBench")
-        if not partner.registers.get("gotAnvil"):
-            name = "fetch Anvil"
-            tasks.append((name,"fetch Anvil"))
-            extraDescriptions[name] = "Aquireing an Anvil will allow me to start processing Scrap"
-            itemsNeeded.append("Anvil")
-        if character.getTerrain().alarm:
-            name = "disable alarm"
-            tasks.append((name,"disable alarm"))
-            extraDescriptions[name] = "disabling the alarm will allow me to move more freely"
-
+        itemsAvailabe = []
         terrain = character.getTerrain()
 
-        for room in terrain.rooms:
-            if room.tag != "temple":
-                continue
-            if room.floorPlan:
-                continue
-            name = "collect glass hearts"
-            tasks.append((name,name))
-            extraDescriptions[name] = "put society back together by collecting all the glass hearts"
-
-        itemsAvailabe = []
         for room in terrain.rooms:
             outputSlots = room.getNonEmptyOutputslots(allowStorage=True)
             for outputSlot in outputSlots:
@@ -1829,6 +1805,37 @@ There are several things you can do to help me out:
                 if itemType in itemsAvailabe:
                     continue
                 itemsAvailabe.append(itemType)
+        for item in partner.inventory:
+            itemType = item.type
+            if itemType in itemsAvailabe:
+                continue
+            itemsAvailabe.append(itemType)
+
+        if not partner.registers.get("gotMetalWorkingBench"):
+            if not "MetalWorkingBench" in itemsAvailabe:
+                name = "fetch MetalWorkingBench"
+                tasks.append((name,"fetch MetalWorkingBench"))
+                extraDescriptions[name] = "Acquiring a MetalWorkingBench will allow me to start crafting items"
+                itemsNeeded.append("MetalWorkingBench")
+        if not partner.registers.get("gotAnvil"):
+            if not "Anvil" in itemsAvailabe:
+                name = "fetch Anvil"
+                tasks.append((name,"fetch Anvil"))
+                extraDescriptions[name] = "Acquiring an Anvil will allow me to start processing Scrap"
+                itemsNeeded.append("Anvil")
+        if character.getTerrain().alarm:
+            name = "disable alarm"
+            tasks.append((name,"disable alarm"))
+            extraDescriptions[name] = "disabling the alarm will allow me to move more freely"
+
+        for room in terrain.rooms:
+            if room.tag != "temple":
+                continue
+            if room.floorPlan:
+                continue
+            name = "collect glass hearts"
+            tasks.append((name,name))
+            extraDescriptions[name] = "put society back together by collecting all the glass hearts"
 
         for room in terrain.rooms:
             buildSites = room.buildSites

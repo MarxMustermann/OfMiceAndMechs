@@ -157,8 +157,6 @@ To see your items open the your inventory by pressing i."""
             # restock rooms if possible
             rooms_to_check = []
             homeRoom = character.getHomeRoom()
-            if homeRoom:
-                rooms_to_check.extend(homeRoom.storageRooms)
             rooms_to_check.extend(character.getTerrain().rooms)
             for checkRoom in rooms_to_check:
                 if character.getTerrain().getEnemiesOnTile(character,checkRoom.getPosition()) and not self.tryHard:

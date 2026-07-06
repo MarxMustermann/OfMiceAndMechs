@@ -1791,14 +1791,17 @@ There are several things you can do to help me out:
 """)
         tasks = []
         extraDescriptions = {}
+        itemsNeeded = []
         if not partner.registers.get("gotMetalWorkingBench"):
             name = "fetch MetalWorkingBench"
             tasks.append((name,"fetch MetalWorkingBench"))
             extraDescriptions[name] = "Aquireing a MetalWorkingBench will allow me to start crafting items"
+            itemsNeeded.append("MetalWorkingBench")
         if not partner.registers.get("gotAnvil"):
             name = "fetch Anvil"
             tasks.append((name,"fetch Anvil"))
             extraDescriptions[name] = "Aquireing an Anvil will allow me to start processing Scrap"
+            itemsNeeded.append("Anvil")
         if character.getTerrain().alarm:
             name = "disable alarm"
             tasks.append((name,"disable alarm"))
@@ -1827,7 +1830,6 @@ There are several things you can do to help me out:
                     continue
                 itemsAvailabe.append(itemType)
 
-        itemsNeeded = []
         for room in terrain.rooms:
             buildSites = room.buildSites
             for buildSite in buildSites:

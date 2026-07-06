@@ -1762,12 +1762,25 @@ I am working right now. I'll repriotize though.""")
 
         character.add_submenu(src.chats.ChatMenu(partner))
 
+    def builder_accepted_quest(self,extraParam):
+        accept_type = extraParam.get("accept_type")
+        character = extraParam["character"]
+
+        if accept_type == "replace":
+            character.clear_quests()
+        if accept_type in ("add","replace"):
+            quest_selection = extraParam.get("quest_selection")
+
+            if quest_selection == "painter":
+                quest = src.quests.questMap["LootRoom"](targetPositionBig=(10,5,0))
+                character.assignQuest(quest,active=True)
+
     def builder_offered_help(self,character,partner):
 
         if not partner.registers.get("gotPainter"):
-            base_response_text = []
             painter = character.searchInventory("Painter")
             if not painter:
+                base_response_text = []
                 base_response_text.append("""
 I cannot work properly without a painter.
 The painter is an important tool.
@@ -1776,7 +1789,28 @@ This helps a lot with keeping things organized.
 
 Bring me a painter so i can work better.
 """)
+
+                options = []
+                extraDescriptions = {}
+                options.append(("add","add as quest"))
+                options.append(("replace","replace current quests"))
+                options.append(("continue","i'll see what i can do"))
+                extraDescriptions["add"] = "This will add the current task as quest"
+                extraDescriptions["replace"] = "This will add the current task as quest and remove the existing quests"
+                extraDescriptions["continue"] = "This will continue the conversation without changing your quests"
+
+                base_response_text.append("\n\nHow do you react?")
+                submenue = src.menuFolder.selectionMenu.SelectionMenu(
+                    base_response_text, options, tag="builder_accept_quest", targetParamName="accept_type",extraDescriptions=extraDescriptions,title=partner.name.upper()+" ASKS"
+                )
+                character.add_submenu(submenue)
+                submenue.followUp = {
+                    "container": self,
+                    "method": "builder_accepted_quest",
+                    "params": {"character":character,"partner":partner,"quest_selection":"painter"}
+                }
             else:
+                base_response_text = []
                 base_response_text.append("""
 Thanks for the painter.
 
@@ -1789,8 +1823,8 @@ It is hard to do anything without a storage system.
                 self.builder_reset(partner)
 
                 partner.registers["gotPainter"] = True
-            submenue = character.showTextMenu(base_response_text,title=partner.name.upper()+" SAYS")
-            character.add_submenu(submenue)
+                character.showTextMenu(base_response_text)
+
             return
 
         base_response_text = []

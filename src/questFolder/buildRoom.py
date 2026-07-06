@@ -293,7 +293,6 @@ Press d to move the cursor and show the subquests description.
 
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
-        #src.gamestate.gamestate.mainChar = character
         terrain = character.getTerrain()
         try:
             terrain.alarm

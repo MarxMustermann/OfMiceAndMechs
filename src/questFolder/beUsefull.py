@@ -287,6 +287,8 @@ Press d to move the cursor and show the subquests description.
         for room in character.getTerrain().rooms:
             if room.alarm:
                 continue
+            if room.tag == "ruin":
+                continue
             if not room.priority in prioSortedRooms:
                 prioSortedRooms[room.priority] = []
             prioSortedRooms[room.priority].append(room)

@@ -126,6 +126,11 @@ class GlassStatue(src.items.Item):
         '''
         saccrifice item to charge up the statue
         '''
+        if character.getPosition() == self.getPosition():
+            character.notify("you slip")
+            character.runCommandString(["esc",random.choice(["s","w","a","d"])])
+            return
+
         character.changed("prayed",{})
 
         if self.charges >= 9:

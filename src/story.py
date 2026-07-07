@@ -2214,18 +2214,20 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         buildSites = []
 
         # add storage section
-        for x in range(1,12):
-            if x == 6:
-                continue
-            storageSlots.append(((x,9,0),None,{}))
-        for x in range(1,12):
-            if x == 6:
-                continue
-            walkingSpace.append((x,10,0))
-        for x in range(1,12):
-            if x == 6:
-                continue
-            storageSlots.append(((x,11,0),None,{}))
+        for y in (7,9,11):
+            for x in range(1,12):
+                if x == 6:
+                    continue
+                if y == 7 and x in (5,6,7):
+                    continue
+                storageSlots.append(((x,y,0),None,{}))
+        for y in (8,10):
+            for x in range(1,12):
+                if x == 6:
+                    continue
+                if y == 7 and x in (5,6,7):
+                    continue
+                walkingSpace.append((x,y,0))
 
         # add anvil area
         walkingSpace.extend([

@@ -356,11 +356,42 @@ Press d to move the cursor and show the subquests description.
 
 
         terrain = character.getTerrain()
-        if not character.registers.get("HOMETx") or not character.registers.get("HOMETy"):
+        if not character.registers.get("HOMETx") or not character.registers.get("HOMETy") or not character.registers.get("HOMEx") or not character.registers.get("HOMEy"):
             if not dryRun:
                 character.registers["HOMETx"] = terrain.xPosition
                 character.registers["HOMETy"] = terrain.yPosition
+                if character.container.isRoom:
+                    character.registers["HOMEx"] = character.getBigPosition()[0]
+                    character.registers["HOMEy"] = character.getBigPosition()[1]
+                else:
+                    room = random.choice(terrain.rooms)
+                    if room:
+                        character.registers["HOMEx"] = room.getPosition()[0]
+                        character.registers["HOMEy"] = room.getPosition()[1]
             return (None,("+","set home"))
+        if not character.duties:
+            if not dryRun:
+                duties = [ "room building",
+                   "resource gathering",
+                   "scrap hammering",
+                   "mold farming",
+                   "resource fetching",
+                   "hauling",
+                   "metal working",
+                   "machine placing",
+                   "maggot gathering",
+                   "painting",
+                   "cleaning",
+                   "machine operation",
+                   "manufacturing",
+                   "scavenging",
+                   "praying" ]
+                character.duties = duties
+
+                for duty in duties:
+                    character.dutyPriorities[duty] = random.randint(1,4)
+            return (None,("+","set random duties"))
+
         if terrain.xPosition != character.registers["HOMETx"] or terrain.yPosition != character.registers["HOMETy"]:
             quest = src.quests.questMap["GoHome"]()
             return ([quest],None)

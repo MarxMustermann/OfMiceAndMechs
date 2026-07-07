@@ -1,9 +1,6 @@
 import src
 import random
 
-import src.popups
-
-
 class GlassStatue(src.items.Item):
     '''
     basic item with different appearance

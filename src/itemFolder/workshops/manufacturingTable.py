@@ -1,6 +1,7 @@
 import src
 
 import numpy as np
+import random
 
 manufacturingTable_texture = {}
 
@@ -180,6 +181,10 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
         if not self.bolted:
             character.notify("This item needs to be bolted down to be used")
             character.changed("failed manufacturing",{})
+            return
+        if character.getPosition() == self.getPosition():
+            character.notify("you slip")
+            character.runCommandString(["esc",random.choice(["s","w","a","d"])])
             return
 
         if self.inUse:

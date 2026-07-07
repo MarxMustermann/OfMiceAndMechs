@@ -173,6 +173,8 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
                 base = D(armor.armorValue)
                 if base == level and not allowed:
                     return "the armor won't be upgraded"
+                if base > level and not allowed:
+                    return "the armor will be downgraded"
 
                 while base < level:
                     chitinPlates_consumed += self.amountNeededForOneUpgrade(base)
@@ -208,7 +210,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
             submenue = src.menuFolder.sliderMenu.SliderMenu(
                 "choose the armor level to upgrade to",
                 defaultValue=defaultValue,
-                minValue=D(armor.armorValue),
+                minValue=D(1),
                 maxValue=D(8),
                 stepValue=D(0.5),
                 bigStepValue=D(1.0),

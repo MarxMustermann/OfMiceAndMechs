@@ -196,6 +196,9 @@ After getting spawned the Clone will activate the item to the east of the Growth
         self.gooCharges = 0
         new_character.flask = flask
 
+        if character:
+            new_character.faction = character.faction
+
         # inhabit character
         # character.fallUnconcious()
         # character.hasFloorPermit = False

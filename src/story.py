@@ -2231,9 +2231,6 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         walkingSpace.extend([
                 (5,4,0),(4,4,0),(3,4,0),(2,4,0),(1,4,0),(1,3,0),(1,2,0),
                 (2,2,0),(2,1,0),(3,1,0),(4,1,0),(4,2,0),(5,2,0),(5,3,0),
-                (6,4,0),(6,3,0),(6,2,0),(6,1,0),
-                (4,6,0),(3,6,0),(2,6,0),(1,6,0),
-                (8,6,0),(9,6,0),(10,6,0),(11,6,0),
             ])
         for x in range(2,5,):
             baseCoreRoom.addStorageSlot((x,5,0),"Scrap",{"desiredState":"filled"})
@@ -2242,6 +2239,13 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         storageSlots.append(((3,2,0),"MetalBars",{}))
         storageSlots.append(((3,2,0),"MetalBars",{}))
         buildSites.append(((3,3,0),"Anvil",{}))
+
+        # add walking spaces
+        walkingSpace.extend([
+                (6,4,0),(6,3,0),(6,2,0),(6,1,0),
+                (4,6,0),(3,6,0),(2,6,0),(1,6,0),
+                (8,6,0),(9,6,0),(10,6,0),(11,6,0),
+            ])
 
         # add metalworking area
         walkingSpace.extend([

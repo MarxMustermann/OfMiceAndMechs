@@ -210,6 +210,8 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             grindstone_consumed = 0
             if sword.baseDamage == level and not allowed:
                 return "the sword won't be upgraded"
+            if sword.baseDamage > level and not allowed:
+                return "the sword will be downgraded"
             for i in range(sword.baseDamage, level):
                 grindstone_consumed += self.amountNeededForOneUpgrade(i)
 
@@ -241,7 +243,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         submenue = src.menuFolder.sliderMenu.SliderMenu(
             query="choose the damage level to upgrade to",
             defaultValue=defaultValue,
-            minValue=sword.baseDamage,
+            minValue=10,
             maxValue=30,
             stepValue=1,
             bigStepValue=2,

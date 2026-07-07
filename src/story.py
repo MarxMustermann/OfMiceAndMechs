@@ -1692,6 +1692,8 @@ Since i'm a groundskeeper my duty is to maintain the premises.""")
 
         builder.assignQuest(quest,active=True)
         builder.foodPerRound = 1
+
+        builder.duties = []
         builder.duties.append("resource gathering")
         builder.duties.append("scrap hammering")
         builder.duties.append("resource fetching")
@@ -1710,12 +1712,13 @@ Since i'm a groundskeeper my duty is to maintain the premises.""")
         for duty in builder.duties:
             builder.dutyPriorities[duty] = 3
 
-        builder.dutyPriorities["cleaning"] = 11
-        builder.dutyPriorities["machine placing"] = 10
-        builder.dutyPriorities["praying"] = 9
+        builder.dutyPriorities["cleaning"] = 13
+        builder.dutyPriorities["machine placing"] = 12
+        builder.dutyPriorities["praying"] = 11
+        builder.dutyPriorities["hauling"] = 10
+        builder.dutyPriorities["resource fetching"] = 9
         builder.dutyPriorities["room building"] = 8
         builder.dutyPriorities["manufacturing"] = 6
-        builder.dutyPriorities["hauling"] = 5
         builder.dutyPriorities["machine operation"] = 4
         builder.dutyPriorities["metal working"] = 3
         builder.dutyPriorities["scavenging"] = 2

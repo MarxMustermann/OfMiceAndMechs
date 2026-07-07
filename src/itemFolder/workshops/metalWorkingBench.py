@@ -240,13 +240,14 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         # notify listeners
         character.changed("worked metal",{"item":new})
 
+        self.inUse = False
+
         # repeat if more items should be produced
         params["amount"] -= 1
         if params["amount"]:
             params["doneTime"] = 0
             self.produceItem(params)
 
-        self.inUse = False
 
     def getInputItems(self):
         '''

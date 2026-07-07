@@ -38,6 +38,7 @@ class MemoryFragment(src.items.Item):
                 manaCrystal = src.items.itemMap["ManaCrystal"]()
                 if character.getFreeInventorySpace():
                     character.inventory.append(manaCrystal)
+                    manaCrystal.container = character
                 else:
                     character.container.addItem(manaCrystal,character.getPosition())
                 text += f"\nThe memory fragment crystalises."

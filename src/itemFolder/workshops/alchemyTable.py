@@ -123,7 +123,7 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
             for ing in needed_ingredients:
                 if needed_ingredients[ing] is None:
                     missing_ingredients.append(ing.name)
-            character.addMessage("you don't have the "+ ", ".join(missing_ingredients) +" ingredient in your inventory")
+            character.addMessage("You are missing ingredients. You need:\n" + ", ".join(missing_ingredients))
             return
 
         # remove potion from todo list

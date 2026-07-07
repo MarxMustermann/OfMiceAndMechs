@@ -188,12 +188,6 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
                 else:
                     return f"You will need {chitinPlates_consumed} ChitinPlates to be able to upgrade"
 
-            # DELETEME: backward compability
-            try:
-                self.preferredMaxDefense
-            except:
-                self.preferredMaxDefense = 6
-
             # calculate a reasonable default amount to upgrade
             defaultValue = armor.armorValue
             available_chitinPlates = len(chitinPlates)

@@ -174,6 +174,8 @@ Press d to move the cursor and show the subquests description.
             failedDuty = "painting"
         if quest.type == "SetUpMachine":
             failedDuty = "machine placing"
+        if quest.type in ("FarmMold","SetUpMachine"):
+            failedDuty = "mold farming"
         if failedDuty:
             self.dutySkipps[failedDuty] = 3
 

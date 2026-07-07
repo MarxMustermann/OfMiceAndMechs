@@ -1775,7 +1775,7 @@ I am working right now. I'll repriotize though.""")
             if quest_selection == "painter":
                 quest = src.quests.questMap["LootRoom"](targetPositionBig=(10,5,0))
                 character.assignQuest(quest,active=True)
-            if quest_selection == "build room":
+            elif quest_selection == "build room":
                 targetPosition = None
                 for x in range(1,14):
                     for y in range(1,14):
@@ -1789,6 +1789,11 @@ I am working right now. I'll repriotize though.""")
                 if targetPosition:
                     quest = src.quests.questMap["BuildRoom"](targetPosition=targetPosition)
                     character.assignQuest(quest,active=True)
+            elif quest_selection == "fetch Walls":
+                quest = src.quests.questMap["Scavenge"](toCollect="Wall")
+                character.assignQuest(quest,active=True)
+            else:
+                character.addMessage("no quest set for this task")
 
     def builder_offered_help(self,character,partner):
 
@@ -2058,6 +2063,13 @@ The base needs to be extended so i have more space to work with.
 Help me put together place the Walls and put together a new room.
 """)
             offer_accept_options = True
+        elif task == "fetch Walls":
+            base_response_text.append("""
+I need Walls to build more rooms.
+
+Try to find some. They should be Walls scattered around everywhere.
+""")
+            offer_accept_options = True
         else:
             base_response_text.append("""
 I ..... seems to have forgotten what i was about to say.
@@ -2081,7 +2093,7 @@ I ..... seems to have forgotten what i was about to say.
             submenue.followUp = {
                 "container": self,
                 "method": "builder_accepted_quest",
-                "params": {"character":character,"partner":partner,"quest_selection":"build room"}
+                "params": {"character":character,"partner":partner,"quest_selection":task}
             }
         else:
             submenue = character.showTextMenu(base_response_text,title=partner.name.upper()+" SAYS")

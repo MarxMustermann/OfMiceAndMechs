@@ -169,14 +169,20 @@ Press d to move the cursor and show the subquests description.
 
         # check for missing Walls
         wallPositions = [(1,1,0),(1,13,0),(13,1,0),(13,13,0)]
-        wallPositions.extend([(2,1,0),(3,1,0),(4,1,0),(5,1,0),(6,1,0)])
-        wallPositions.extend([(8,1,0),(9,1,0),(10,1,0),(11,1,0),(12,1,0)])
-        wallPositions.extend([(2,13,0),(3,13,0),(4,13,0),(5,13,0),(6,13,0)])
-        wallPositions.extend([(8,13,0),(9,13,0),(10,13,0),(11,13,0),(12,13,0)])
-        wallPositions.extend([(1,2,0),(1,3,0),(1,4,0),(1,5,0),(1,6,0)])
-        wallPositions.extend([(13,2,0),(13,3,0),(13,4,0),(13,5,0),(13,6,0)])
-        wallPositions.extend([(1,8,0),(1,9,0),(1,10,0),(1,11,0),(1,12,0)])
-        wallPositions.extend([(13,8,0),(13,9,0),(13,10,0),(13,11,0),(13,12,0)])
+        random.shuffle(wallPositions)
+        sides = [
+                    [(2,1,0),(3,1,0),(4,1,0),(5,1,0),(6,1,0)],
+                    [(8,1,0),(9,1,0),(10,1,0),(11,1,0),(12,1,0)],
+                    [(2,13,0),(3,13,0),(4,13,0),(5,13,0),(6,13,0)],
+                    [(8,13,0),(9,13,0),(10,13,0),(11,13,0),(12,13,0)],
+                    [(1,2,0),(1,3,0),(1,4,0),(1,5,0),(1,6,0)],
+                    [(13,2,0),(13,3,0),(13,4,0),(13,5,0),(13,6,0)],
+                    [(1,8,0),(1,9,0),(1,10,0),(1,11,0),(1,12,0)],
+                    [(13,8,0),(13,9,0),(13,10,0),(13,11,0),(13,12,0)],
+                ]
+        random.shuffle(sides)
+        for side in sides:
+            wallPositions.extend(side)
         missingWallPositions = []
         for wallPos in wallPositions:
             items = character.getTerrain().getItemByPosition((15*self.targetPosition[0]+wallPos[0],15*self.targetPosition[1]+wallPos[1],0))
@@ -218,6 +224,7 @@ Press d to move the cursor and show the subquests description.
 
         # check for missing Doors
         doorPositions = [(7,1,0),(1,7,0),(7,13,0),(13,7,0)]
+        random.shuffle(doorPositions)
         missingDoorPositions = []
         for doorPos in doorPositions:
             items = character.getTerrain().getItemByPosition((15*self.targetPosition[0]+doorPos[0],15*self.targetPosition[1]+doorPos[1],0))

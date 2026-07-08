@@ -6112,6 +6112,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 src.gamestate.gamestate.currentPhase.start(
                     seed=None, difficulty=difficulty, difficultyMap=difficultyMap
                 )
+
                 terrain = src.gamestate.gamestate.terrainMap[7][7]
 
                 if tcod.event.get_modifier_state() & tcod.event.Modifier.CAPS:
@@ -8558,6 +8559,7 @@ def showRunIntro():
     room = None
     subStep = 0
     subStep2 = 1
+    gameEnded = False
     sleepAmountGrow = 0.125
     painPositions = []
     while 1:
@@ -8580,7 +8582,69 @@ def showRunIntro():
 
         tcodConsole.clear()
         c_offset = int(tcodConsole.width / 2 - 81)
-        if stage == 0:
+        if gameEnded:
+
+            tcodPresent(noPresent=True)
+
+            padding = 15
+            line_width = 5
+            overhang = 25
+            outline = 4
+
+            width = 71
+            height = 13
+            display_width = width*tileWidth
+            display_height = height*tileHeight
+            
+            offsetLeft = (45 + c_offset) * tileWidth
+            offsetTop = 17 * tileHeight
+
+            # draw background
+            sdl_renderer2.fill_rect((offsetLeft-padding,offsetTop-padding,display_width+2*padding,display_height+2*padding))
+            # draw top line background
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop-padding-line_width-outline,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
+            # draw logo divider background
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop-padding-line_width-outline+17*tileHeight,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
+            # draw lower line backgound
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop+padding+display_height-outline,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
+            # left line background
+            sdl_renderer2.fill_rect((offsetLeft-padding-line_width-outline,offsetTop-padding-overhang-outline,line_width+2*outline,display_height+2*(padding+overhang+outline)))
+            # right line background
+            sdl_renderer2.fill_rect((offsetLeft+padding+display_width-outline,offsetTop-padding-overhang-outline,line_width+2*outline,display_height+2*(padding+overhang)+2*outline))
+
+            sdl_renderer2.draw_color = (255,255,255,255)
+            # draw upper line
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop-padding-line_width,display_width+2*(padding+overhang),line_width))
+            # draw lower line
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop+padding+display_height,display_width+2*(padding+overhang),line_width))
+            # left line
+            sdl_renderer2.fill_rect((offsetLeft-padding-line_width,offsetTop-padding-overhang,line_width,display_height+2*(padding+overhang)))
+            # right line
+            sdl_renderer2.fill_rect((offsetLeft+padding+display_width,offsetTop-padding-overhang,line_width,display_height+2*(padding+overhang)))
+    
+            # add text
+            textBase = ["""
+You won the game, congratulations.""","\n"*9,"""
+press any key to go back to main menu
+"""]
+            text = "".join(textBase)
+
+            root_console = tcod.console.Console(width+1, height, order="F")
+            printUrwidToTcod(text, (0,0), explecitConsole=root_console)
+
+            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
+            console_render = tcod.render.SDLConsoleRender(atlas)
+            renderedToTexture = console_render.render(root_console)
+            sdl_renderer2.copy(
+                        renderedToTexture,
+                        (0,0,renderedToTexture.width,renderedToTexture.height),
+                        (offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),
+                    )
+
+            # draw
+            sdl_renderer2.present()
+
+        elif stage == 0:
             if stageState is None:
                 stageState = {"substep":1,"lastChange":time.time(),"send_tracking_ping":False}
 
@@ -8631,9 +8695,8 @@ def showRunIntro():
 You see """,".",".",".",""" nothing
 ""","You hear ",".",".",".",""" nothing
 ""","You know ",".",".",".",""" nothing
-""","You feel ",".",".",".",""" A sharp pain burrowing through your brain.     \n\
-You remember how tendrils of pain grew from from your implant.     \n\n
-It burned your flesh and eats your minddddddddddddddddddddddddddddddddd.
+""","You feel ",".",".",".",""" how tendrils of pain grow from your implant.     \n\n
+It burns your flesh and starts to eat your minddddddddddddddddddddddddddddddddd.
 d.d..ddd.dd..d.d.d...ddd.d..d.dd.dd.d..d....d....d.....d.....dd.....d...
 .d..d.....d....d...d....d.......d.d............d............d...........
 ..d.....................................................................
@@ -8648,6 +8711,9 @@ d.d..ddd.dd..d.d.d...ddd.d..d.dd.dd.d..d....d....d.....d.....dd.....d...
 
             if subStep2 > 170:
                 printUrwidToTcod("press enter to stop struggling", (0, 12),explecitConsole=root_console)
+            if subStep2 >= 358:
+                gameEnded = True
+                continue
 
             atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
             console_render = tcod.render.SDLConsoleRender(atlas)
@@ -9181,6 +9247,8 @@ to remember"""
                     src.interaction.tcodMixer.close()
                 raise SystemExit()
             if isinstance(event,tcod.event.KeyDown):
+                if gameEnded:
+                    raise src.interaction.EndGame("game won")
                 key = event.sym
                 if key == tcod.event.KeySym.F11:
                     sdl_window.fullscreen = not sdl_window.fullscreen

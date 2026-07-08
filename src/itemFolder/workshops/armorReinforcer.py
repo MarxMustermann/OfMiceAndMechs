@@ -125,8 +125,6 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         if "amount" not in params:
 
             # get available chitin plates
-
-            # show warning message when upgrade items are missing
             chitinPlates = self.getAvailableChitinPlates(character)
             if not chitinPlates:
                 character.addMessage("you don't have ChitinPlates, you need ChitinPlates to upgrade your Armor up to more than 3")

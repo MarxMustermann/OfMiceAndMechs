@@ -166,8 +166,8 @@ if __name__ == '__main__':
 
             while 1:
                 try:
-                    interaction.showMainMenu(args)
                     try:
+                        interaction.showMainMenu(args)
                         interaction.gameLoop(None, None)
                     except src.interaction.EndGame:
                         logger.info("ended game")

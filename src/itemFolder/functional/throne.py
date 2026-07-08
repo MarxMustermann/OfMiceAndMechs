@@ -26,6 +26,7 @@ A throne. A symbol of power.
         if character == src.gamestate.gamestate.mainChar:
             src.gamestate.gamestate.stern["failedAscend"] = True
 
+        '''
         if not character.rank or character.rank > 2:
 
             submenu = src.menuFolder.textMenu.TextMenu("""
@@ -38,7 +39,7 @@ You need to be rank 2 to interact with the throne.
             character.runCommandString("~",nativeKey=True)
             character.hurt(40,reason="touching the throne")
             return
-
+        '''
 
         hasAllSpecialItems = True
         currentTerrain = character.getTerrain()

@@ -8711,7 +8711,7 @@ d.d..ddd.dd..d.d.d...ddd.d..d.dd.dd.d..d....d....d.....d.....dd.....d...
 
             if subStep2 > 170:
                 printUrwidToTcod("press enter to stop struggling", (0, 12),explecitConsole=root_console)
-            if subStep2 >= 358:
+            if subStep2 >= 353:
                 gameEnded = True
                 continue
 
@@ -8992,14 +8992,22 @@ grows and grows and grows and grows
             # add text
             text = ""
             text += """
-Something breaks and"""
+Something breaks and """
+            if subStep > 3:
+                text += "."
+            if subStep > 6:
+                text += "."
+            if subStep > 9:
+                text += "."
+            if subStep > 12:
+                text += "."
             if subStep > 15:
                 baseText = """
 your implant stops emitting pain.
 
 For a moment you hear terrible silence,"""
                 #text += " ".join(baseText.split(" ")[:(subStep-15)])
-                text += "".join(list(baseText)[:(subStep*3-15*3)])
+                text += "".join(list(baseText)[:(subStep*2-15*2)])
             if subStep > 55:
                 baseText = """
 but slowly you hear that familiar voice again."""

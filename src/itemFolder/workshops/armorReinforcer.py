@@ -105,6 +105,11 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         # unpack the parameters
         character = params["character"]
 
+        # enforce usage constraints
+        if self.bolted == False:
+            character.notify("This item need to be bolted down to be used")
+            return
+
         # get user input on what armor to upgrade
         if "choice" not in params:
             options = [("reinforce equipped armor", "reinforce equipped armor"), ("reinforce inventory armor", "reinforce armor from inventory")]

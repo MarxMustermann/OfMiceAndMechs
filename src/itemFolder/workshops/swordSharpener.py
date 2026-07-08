@@ -109,6 +109,11 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         # unnpack paramters
         character = params["character"]
 
+        # enforce usage constraints
+        if self.bolted == False:
+            character.notify("This item need to be bolted down to be used")
+            return
+
         # start the actual sword sharpening
         if "amount" in params:
             chosenDamageValue = params["amount"]

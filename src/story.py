@@ -1248,7 +1248,7 @@ class MainGame(BasicPhase):
 
         messagesMenu = src.menuFolder.messagesMenu.MessagesMenu(mainChar)
         messagesMenu.sidebared = True
-        mainChar.rememberedMenu.append(messagesMenu)
+        mainChar.rememberedMenu2.append(messagesMenu)
 
         questMenu = src.menuFolder.questMenu.QuestMenu(mainChar)
         questMenu.sidebared = True
@@ -1275,6 +1275,7 @@ class MainGame(BasicPhase):
         src.gamestate.gamestate.mainChar.messages = []
         src.gamestate.gamestate.story = self
         src.interaction.showRunIntro()
+
         self.kickoff()
         src.gamestate.gamestate.save()
 

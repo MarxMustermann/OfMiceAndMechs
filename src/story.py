@@ -1895,14 +1895,29 @@ There are several things you can do to help me out:
             tasks.append((name,"disable alarm"))
             extraDescriptions[name] = "disabling the alarm will allow me to move more freely"
 
+        numGlassHearts = 0
+        hasTemple = False
         for room in terrain.rooms:
             if room.tag != "temple":
                 continue
             if room.floorPlan:
                 continue
-            name = "collect glass hearts"
-            tasks.append((name,name))
-            extraDescriptions[name] = "put society back together by collecting all the glass hearts"
+            hasTemple = True
+            glassStatues = room.getItemsByType("GlassStatue")
+            for glassStatue in glassStatues:
+                if not glassStatue.hasItem:
+                    continue
+                numGlassHearts += 1
+
+        if hasTemple:
+            if numGlassHearts < 7:
+                name = "collect glass hearts"
+                tasks.append((name,name))
+                extraDescriptions[name] = "put society back together by collecting all the glass hearts"
+            else:
+                name = "ascend"
+                tasks.append((name,name))
+                extraDescriptions[name] = "put society back together by replacing the dead leader"
 
         for room in terrain.rooms:
             buildSites = room.buildSites

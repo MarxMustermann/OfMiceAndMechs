@@ -29,7 +29,7 @@ class SubMenu(object):
         self.followUp = None
         self.done = False
         self.tag = tag
-        self.extraInfo ={}
+        self.extraInfo = {}
         self.shift = 0
         self.golden_border = False
 

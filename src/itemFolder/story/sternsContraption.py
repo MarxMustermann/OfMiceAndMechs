@@ -96,22 +96,12 @@ class MainContraption(src.items.Item):
                 self.container.addAnimation(self.getPosition(),"smoke",2,{})
                 self.container.addAnimation(self.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#faa", "#f00"), "%%")]})
 
-            if tick == 2:
-                for character in self.container.characters[:]:
-                    character.addMessage("something explodes and sends shrapnel into the room")
-                    character.hurt(character.health//2,reason="hit by shrapnel")
-                    if character == src.gamestate.gamestate.mainChar:
-                        src.interaction.send_tracking_ping("shrapnel_1")
-
             if tick > 6:
                 self.container.addAnimation(self.getPosition(),"smoke",2,{})
                 self.container.addAnimation(self.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#faa", "#f00"), "%%")]})
             if tick == 6:
                 for character in self.container.characters[:]:
                     character.addMessage("something explodes into shrapnel")
-                    character.hurt(25,reason="hit by shrapnel")
-                    if character == src.gamestate.gamestate.mainChar:
-                        src.interaction.send_tracking_ping("shrapnel_2")
                 for i in range(1,2):
                     pos = (random.randint(1,13),random.randint(1,13),0)
                     self.container.addAnimation(pos,"smoke",6,{})
@@ -134,7 +124,16 @@ class MainContraption(src.items.Item):
             if tick == 15:
                 for character in self.container.characters[:]:
                     character.addMessage("you hear a *BOOM* and *klink**klink**klink*")
-                    character.hurt(30,reason="hit by shrapnel")
+
+                    damage = character.health/2
+                    baseText = f"something explodes and sends shrapnel into the room.\n\nThe shrapnel hits you for {damage}HP\nYour health is shown above your character or on top of the screen."
+                    character.showTextMenu([baseText,"\n\n\n","press ? to show help+keybindings\npress tab to reach out to implant\npress enter/esc/j/k to close this menu"])
+                    character.addMessage(baseText)
+
+                    character.hurt(damage,reason="hit by shrapnel")
+                    if character == src.gamestate.gamestate.mainChar:
+                        src.interaction.send_tracking_ping("shrapnel_1")
+
                     character.addMessage("your implant screams:\nleave NOW!\nDo this by follow the suggested action\nIt is shown on the left side of the screen.")
                     if character == src.gamestate.gamestate.mainChar:
                         src.interaction.send_tracking_ping("shrapnel_3")

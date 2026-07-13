@@ -3226,6 +3226,7 @@ press key for advanced drop
                 item.pickUp(char)
 
                 char.container.addAnimation(char.getPosition(),"charsequence",1,{"chars":["--",item.render()]})
+                return None
 
         # open chat partner selection
         if key in (commandChars.hail,):

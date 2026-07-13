@@ -466,8 +466,8 @@ class Item:
 
         # apply restrictions
         if self.bolted:
-            character.addMessage("you cannot pick up bolted items")
             character.changed("pickup bolted fail",{"item":self})
+            character.notify("you cannot pick up bolted down items")
             return
 
         # do the pick up

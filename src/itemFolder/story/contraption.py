@@ -110,4 +110,7 @@ class Contraption(src.items.Item):
             return (src.interaction.urwid.AttrSpec("#faa", "#f00"), "%%")
         return super().render()
 
+    def apply(self,character):
+        character.notify("you do not understand what this machinery is.\n\nSo you can not use it") 
+
 src.items.addType(Contraption)

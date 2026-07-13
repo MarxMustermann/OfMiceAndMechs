@@ -113,4 +113,9 @@ class Contraption(src.items.Item):
     def apply(self,character):
         character.notify("you do not understand what this machinery is.\n\nSo you can not use it") 
 
+    def configure(self,character):
+        character.notify("You spend some ticks trying to understand the machinery,\n\nbut the only gives you a strong headache.")
+        if character.health > 11:
+            character.hurt(10,reason="headache")
+
 src.items.addType(Contraption)

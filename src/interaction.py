@@ -8624,7 +8624,11 @@ def showRunIntro():
     
             # add text
             textBase = ["""
-You won the game, congratulations.""","\n"*9,"""
+You fight and win.
+
+The influence does not reach your implant,
+but your mind breaks and the world falls silent.
+""","\n"*6,"""
 press any key to go back to main menu
 """]
             text = "".join(textBase)
@@ -8695,11 +8699,12 @@ press any key to go back to main menu
 You see """,".",".",".",""" nothing
 ""","You hear ",".",".",".",""" nothing
 ""","You know ",".",".",".",""" nothing
-""","You feel ",".",".",".",""" how tendrils of pain grow from your implant.     \n\n
-It burns your flesh and starts to eat your minddddddddddddddddddddddddddddddddd.
+""","You feel ",".",".",".",""" tendrils of pain reaching for your implant.     \n\n
+They burn your flesh and start to eat your minddddddddddddddddddddddddddddddddd.
 d.d..ddd.dd..d.d.d...ddd.d..d.dd.dd.d..d....d....d.....d.....dd.....d...
 .d..d.....d....d...d....d.......d.d............d............d...........
 ..d.....................................................................
+........................................................................
 """,
             ]
             text = "".join(textBase[0:subStep])
@@ -8711,7 +8716,7 @@ d.d..ddd.dd..d.d.d...ddd.d..d.dd.dd.d..d....d....d.....d.....dd.....d...
 
             if subStep2 > 170:
                 printUrwidToTcod("press enter to stop struggling", (0, 12),explecitConsole=root_console)
-            if subStep2 >= 353:
+            if subStep2 >= 425:
                 gameEnded = True
                 continue
 
@@ -8990,39 +8995,34 @@ grows and grows and grows and grows
     
 
             # add text
-            text = ""
-            text += """
-Something breaks and """
+            text = []
+            text.append("""
+Something breaks in your implant and """)
             if subStep > 3:
-                text += "."
+                text.append(".")
             if subStep > 6:
-                text += "."
+                text.append(".")
             if subStep > 9:
-                text += "."
+                text.append(".")
             if subStep > 12:
-                text += "."
+                text.append(".")
             if subStep > 15:
                 baseText = """
-your implant stops emitting pain.
+the pain stops.
 
-For a moment you hear terrible silence,"""
-                #text += " ".join(baseText.split(" ")[:(subStep-15)])
-                text += "".join(list(baseText)[:(subStep*2-15*2)])
-            if subStep > 55:
-                baseText = """
+For a moment you hear terrible silence,"""+" "*8+"""
 but slowly you hear that familiar voice again."""
-                #text += " ".join(baseText.split(" ")[:(subStep-35)])
-                text += "".join(list(baseText)[:(subStep*3-55*3)])
+                #text += " ".join(baseText.split(" ")[:(subStep-15)])
+                text.append("".join(list(baseText)[:(subStep*2-15*2)]))
             if subStep > 100:
-                text += """
-
+                text.append("""
 
 
 
 
 suggested action:
 press enter to continue
-"""
+""")
             root_console = tcod.console.Console(width+1, height, order="F")
             printUrwidToTcod(text, (0,0), explecitConsole=root_console)
 

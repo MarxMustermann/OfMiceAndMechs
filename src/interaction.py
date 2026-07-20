@@ -461,11 +461,11 @@ def setUpTcod():
     sounds["itemPickedUp"] = sound_clip
     sound_clip, samplerate = src.interaction.soundloader.read('sounds/machineUsed.ogg',dtype='float32')
     sounds["machineUsed"] = sound_clip
-    sound_clip, samplerate = src.interaction.soundloader.read('sounds/loop1.wav',dtype='float32')
+    sound_clip, samplerate = src.interaction.soundloader.read('sounds/ASCIIGAME_v1_FULL_loop.wav',dtype='float32')
     sounds["loop1"] = sound_clip
-    sound_clip, samplerate = src.interaction.soundloader.read('sounds/loop2.wav',dtype='float32')
+    sound_clip, samplerate = src.interaction.soundloader.read('sounds/ASCIIGAME_v1_FULL_loop.wav',dtype='float32')
     sounds["loop2"] = sound_clip
-    sound_clip, samplerate = src.interaction.soundloader.read("sounds/loop1_start.wav", dtype="float32")
+    sound_clip, samplerate = src.interaction.soundloader.read("sounds/ASCIIGAME_v1_FULL_start.wav", dtype="float32")
     sounds["loop1_start"] = sound_clip
     global tcodAudio
     tcodAudio = audio
@@ -509,7 +509,7 @@ def sound_loop(ch):
         ch.play(sound = sounds["loop1"],volume = settings["sound"]/160.0,on_end = sound_loop)
         changeVolume()
     else:
-        ch.play(sound = sounds["loop2"],volume = settings["sound"]/160.0,on_end = sound_loop)
+        ch.play(sound = sounds["loop2"],volume = settings["sound"]/120.0,on_end = sound_loop)
         changeVolume()
 
 def changeVolume():
@@ -9594,9 +9594,6 @@ def advanceChar(char,render=True, pull_events = True, singleStep=False):
         elif char.autoExpandQuests and char.getActiveQuest() and not (char.getActiveQuest().getSolvingCommandString(char)):
             char.runCommandString("+",nativeKey=True)
         elif char.autoExpandQuests2 and char.autoExpandCounter < 10 and char.getActiveQuest() and char.getActiveQuest().getSolvingCommandString(char) == "+":
-            char.autoExpandCounter += 1
-            char.runCommandString("+",nativeKey=True)
-        elif char.autoExpandQuests2 and char.autoExpandCounter < 10 and char.getActiveQuest() and char.getActiveQuest().type == "ReachOutStory" and char.getActiveQuest().getSolvingCommandString(char)[0][0] == "tab" and not src.gamestate.gamestate.stern.get("first_silenced") and not src.gamestate.gamestate.stern.get("has_shown_reached_exit") and src.gamestate.gamestate.stern.get("first_reachout_done"):
             char.autoExpandCounter += 1
             char.runCommandString("+",nativeKey=True)
         else:

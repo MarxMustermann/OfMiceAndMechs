@@ -39,6 +39,7 @@ class Character:
         creator=None,
         characterId=None,
         seed=None,
+        firstname=None,
     ):
         if quests is None:
             quests = []
@@ -109,7 +110,8 @@ class Character:
 
         super().__init__()
 
-        firstName = random.choice([
+        if not firstname:
+            firstname = random.choice([
                 "Isla","Charlotte","Olivia","Amelia","Ava","Mia","Grace","Willow","Matilda","Ella","Harper",
                 "Chloe","Lily","Ivy","Isabella","Evie","Sophie","Zoe","Mila","Sophia","Ruby","Evelyn",
                 "Sienna","Hazel","Lucy","Aria","Audrey","Violet","Layla","Scarlett","Frankie","Georgia",
@@ -130,7 +132,7 @@ class Character:
                 "Michael","Theo","Billy","Charles","Felix","Aiden","Owen","Gabriel","Matthew","Adam",
                 "Parker","Caleb","Leon","Jude","Hamish","Fletcher","Zachary","Miles","Darcy","Ryder",
                 "Ali","Leonardo","Ashton","Lennox","Nicholas","Luke","Connor","Elias","Vincent",
-        ])
+            ])
 
         mainNameCore = random.choice([
             "Mountain","Steel","Hammer","Herb","Bar","Oak","Seven","Iron","Bear","Dog","Chain","Rock",
@@ -142,7 +144,7 @@ class Character:
             "crown","hammerer"
         ])
 
-        name = firstName+" "+mainNameCore+postfix
+        name = firstname+" "+mainNameCore+postfix
 
         if display is None:
             display = src.canvas.displayChars.staffCharacters[0]
@@ -307,8 +309,9 @@ class Character:
         self.runCommandString("~",nativeKey=True)
 
     def reachImplant(self):
-        if self == src.gamestate.gamestate.mainChar:
-            src.gamestate.gamestate.stern["implant_callback"]()
+        self.add_submenu(src.menuFolder.implantInteraction.ImplantInteraction(self))
+        #if self == src.gamestate.gamestate.mainChar:
+        #    src.gamestate.gamestate.stern["implant_callback"]()
 
     def castMagic(self,extraInformation):
         match extraInformation["keyPressed"]:
@@ -404,11 +407,14 @@ class Character:
     def openObserveMenu(self, extraInfo = None):
         self.macroState["submenue"] = src.menuFolder.observeMenu.ObserveMenu(self)
 
+    def openImplantMenu(self, extraInfo = None):
+        self.macroState["submenue"] = src.menuFolder.implantMenu.ImplantMenu(self)
+
     def notify(self,text,do_not_scale=False):
         self.showTextMenu(text,do_not_scale=True)
         self.addMessage(text)
 
-    def showTextMenu(self,text,do_not_scale=False,allowQuests=False,allowHelp=False,allowObserve=False,tag=None,title=None):
+    def showTextMenu(self,text,do_not_scale=False,allowQuests=False,allowHelp=True,allowObserve=False,tag=None,title=None):
         '''
         show a popup to the character
         '''
@@ -421,6 +427,7 @@ class Character:
             specialKeys["?"] = {"container": self, "method": "openHelpMenu"}
         if allowObserve:
             specialKeys["o"] = {"container": self, "method": "openObserveMenu"}
+        specialKeys["tab"] = {"container": self, "method": "openImplantMenu"}
         submenu = src.menuFolder.textMenu.TextMenu(text,specialKeys=specialKeys,tag=tag,title=title)
         submenu.do_not_scale = do_not_scale
         self.add_submenu(submenu)
@@ -2281,6 +2288,7 @@ press any other key to attack normally"""
             self.inventory.remove(item)
 
     def generateQuests(self):
+        self.takeTime(1,"waiting for quest")
         pass
 
     # obsolete: should probably rewritten
@@ -2328,6 +2336,7 @@ press any other key to attack normally"""
                 if not (hasAutoSolve or self.macroState["commandKeyQueue"]):
                     self.runCommandString("~",nativeKey=True)
             return
+
         return
 
     # bad code: obsolete

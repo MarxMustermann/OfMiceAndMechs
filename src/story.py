@@ -1754,6 +1754,7 @@ I am working right now. I'll repriotize though.""")
             partner.specialChatOptions.insert(0,({"method":self.builder_asked_help,"params":{"character":character,"partner":partner}},"ask for help"))
             partner.specialChatOptions.insert(0,({"method":self.builder_offered_help,"params":{"character":character,"partner":partner}},"offer help"))
             partner.registers["startedWorking"] = True
+            character.changed("fixed groundskeeper")
 
             submenue.followUp = {"method":self.builder_asked_name_post,"params":{"character":character,"partner":partner}}
         else:
@@ -1795,7 +1796,39 @@ I am working right now. I'll repriotize though.""")
                     quest = src.quests.questMap["BuildRoom"](targetPosition=targetPosition)
                     character.assignQuest(quest,active=True)
             elif quest_selection == "fetch Walls":
+                quest = src.quests.questMap["RestockRoom"](targetPositionBig=(7,4,0))
+                character.assignQuest(quest,active=True)
                 quest = src.quests.questMap["Scavenge"](toCollect="Wall")
+                character.assignQuest(quest,active=True)
+                if character.getFreeInventorySpace() < 1:
+                    quest = src.quests.questMap["ClearInventory"]()
+                    character.assignQuest(quest,active=True)
+            elif quest_selection == "fetch Doors":
+                quest = src.quests.questMap["RestockRoom"](targetPositionBig=(7,4,0))
+                character.assignQuest(quest,active=True)
+                quest = src.quests.questMap["Scavenge"](toCollect="Door")
+                character.assignQuest(quest,active=True)
+                if character.getFreeInventorySpace() < 1:
+                    quest = src.quests.questMap["ClearInventory"]()
+                    character.assignQuest(quest,active=True)
+            elif quest_selection == "fetch MetalWorkingBench":
+                quest = src.quests.questMap["LootRoom"](targetPositionBig=(4,7,0),collectBig=True)
+                character.assignQuest(quest,active=True)
+            elif quest_selection == "fetch Anvil":
+                quest = src.quests.questMap["LootRoom"](targetPositionBig=(10,7,0),collectBig=True)
+                character.assignQuest(quest,active=True)
+            elif quest_selection == "fetch Scrap":
+                quest = src.quests.questMap["RestockRoom"](targetPositionBig=(7,4,0))
+                character.assignQuest(quest,active=True)
+                quest = src.quests.questMap["GatherScrap"]()
+                character.assignQuest(quest,active=True)
+            elif quest_selection == "disable alarm":
+                quest = src.quests.questMap["LiftOutsideRestrictions"]()
+                character.assignQuest(quest,active=True)
+                quest = src.quests.questMap["SecureTile"](toSecure=(4,5,0),endWhenCleared=True)
+                character.assignQuest(quest,active=True)
+            elif quest_selection == "free up storage":
+                quest = src.quests.questMap["FreeUpStorage"](amount=5)
                 character.assignQuest(quest,active=True)
             else:
                 character.addMessage("no quest set for this task")
@@ -1842,6 +1875,9 @@ Thanks for the painter.
 That will be very help with organising the place.
 This will allow me to draw storage markers onto the floor.
 It is hard to do anything without a storage system.
+
+I'll busy and will not need your help for a bit.
+But once i am done painting, help would be appreachiated.
 """)
                 character.inventory.remove(painter[0])
                 partner.inventory.append(painter[0])
@@ -1850,6 +1886,23 @@ It is hard to do anything without a storage system.
                 partner.registers["gotPainter"] = True
                 character.showTextMenu(base_response_text)
 
+            return
+
+        terrain = character.getTerrain()
+
+        for room in terrain.rooms:
+            if not room.tag == "the groundskeepers place":
+                continue
+            if not room.floorPlan:
+                break
+
+            base_response_text = []
+            base_response_text.append("""
+I need to focus on painting the floor markers.
+
+There will be more work to do once i'm done.
+""")
+            character.showTextMenu(base_response_text)
             return
 
         base_response_text = []
@@ -1861,7 +1914,6 @@ There are several things you can do to help me out:
         extraDescriptions = {}
         itemsNeeded = []
         itemsAvailabe = []
-        terrain = character.getTerrain()
 
         for room in terrain.rooms:
             outputSlots = room.getNonEmptyOutputslots(allowStorage=True)
@@ -1920,30 +1972,47 @@ There are several things you can do to help me out:
                 tasks.append((name,name))
                 extraDescriptions[name] = "put society back together by replacing the dead leader"
 
+        num_empty_storage = 0
+        num_storage = 0
         for room in terrain.rooms:
-            buildSites = room.buildSites
-            for buildSite in buildSites:
-                itemType = buildSite[1]
-                name = f"fetch {itemType}"
-                if itemType in itemsNeeded:
+            storageSlots = room.storageSlots
+            for storageSlot in storageSlots:
+                if storageSlot[1]:
                     continue
-                if itemType in itemsAvailabe:
+                num_storage += 1
+                if room.getItemByPosition(storageSlot[0]):
                     continue
-                tasks.append((name,name))
-                extraDescriptions[name] = f"there is need for more {itemType}"
-                itemsNeeded.append(itemType)
-        for room in terrain.rooms:
-            inputSlots = room.getEmptyInputslots(allowStorage=False,fullyEmpty=True)
-            for inputSlot in inputSlots:
-                itemType = inputSlot[1]
-                if itemType in itemsNeeded:
-                    continue
-                if itemType in itemsAvailabe:
-                    continue
-                name = f"fetch {itemType}"
-                tasks.append((name,name))
-                extraDescriptions[name] = f"there is need for more {itemType}"
-                itemsNeeded.append(itemType)
+                num_empty_storage += 1
+        if num_empty_storage <= 0 and num_storage:
+            name = "free up storage"
+            tasks.append((name,name))
+            extraDescriptions[name] = "the whole storage is filled and space is needed. Get rid of some of the things in storage"
+
+        if num_empty_storage > 0:
+            for room in terrain.rooms:
+                buildSites = room.buildSites
+                for buildSite in buildSites:
+                    itemType = buildSite[1]
+                    name = f"fetch {itemType}"
+                    if itemType in itemsNeeded:
+                        continue
+                    if itemType in itemsAvailabe:
+                        continue
+                    tasks.append((name,name))
+                    extraDescriptions[name] = f"there is need for more {itemType}"
+                    itemsNeeded.append(itemType)
+            for room in terrain.rooms:
+                inputSlots = room.getEmptyInputslots(allowStorage=False,fullyEmpty=True)
+                for inputSlot in inputSlots:
+                    itemType = inputSlot[1]
+                    if itemType in itemsNeeded:
+                        continue
+                    if itemType in itemsAvailabe:
+                        continue
+                    name = f"fetch {itemType}"
+                    tasks.append((name,name))
+                    extraDescriptions[name] = f"there is need for more {itemType}"
+                    itemsNeeded.append(itemType)
 
         if not terrain.alarm:
 
@@ -1973,8 +2042,8 @@ There are several things you can do to help me out:
                     tasks.append((name,"fetch CityPlaner"))
                     extraDescriptions[name] = "a city planer will allow to control how to expand the base"
 
-                # ensure temple
-                if hasCityPlaner:
+            # ensure temple
+            if hasCityPlaner:
                     name = "plan temple"
                     tasks.append((name,"schedule building a Temple"))
                     extraDescriptions[name] = "the temple always has been the centerpiece of the city"
@@ -1983,13 +2052,13 @@ There are several things you can do to help me out:
             if not hasEmptyRoom:
 
                 # ensure walls are available
-                if not hasWalls:
+                if not hasWalls and num_empty_storage > 0:
                     name = "fetch Walls"
                     tasks.append((name,"fetch Walls"))
                     extraDescriptions[name] = "i need Walls to build new rooms"
 
                 # ensure doors are available
-                if not hasDoors:
+                if not hasDoors and num_empty_storage > 0:
                     name = "fetch Doors"
                     tasks.append((name,"fetch Doors"))
                     extraDescriptions[name] = "i need Doors to build new rooms"
@@ -2032,6 +2101,7 @@ I don't need anything right now.
                 base_response_text.append("""
 Now i need a MetalWorkingBench.
 """)
+                offer_accept_options = True
             else:
                 base_response_text.append("""
 Thanks for the MetalWorkingBench.
@@ -2050,6 +2120,7 @@ We will need a lot of MetalBars to produce a lot of things.
                 base_response_text.append("""
 Now i need an anvil.
 """)
+                offer_accept_options = True
             else:
                 base_response_text.append("""
 Thanks for the anvil.
@@ -2069,6 +2140,7 @@ Protocol forbids to leave the base while the outside alarm is runnung.
 
 Disable the alarm so i can go out and collect resources.
 """)
+                offer_accept_options = True
             else:
                 base_response_text.append("""
 Thanks for disabling the alarm.
@@ -2088,6 +2160,21 @@ Help me put together place the Walls and put together a new room.
 I need Walls to build more rooms.
 
 Try to find some. They should be Walls scattered around everywhere.
+""")
+            offer_accept_options = True
+        elif task == "fetch Scrap":
+            base_response_text.append("""
+I need Scrap to produce MetalBars
+
+Fetch some. it is nearly everywhere.
+""")
+            offer_accept_options = True
+        elif task == "free up storage":
+            base_response_text.append("""
+The whole storage is filled with stuff.
+Some free storage is needed to continue production.
+
+Get rid of some things, preferably Scrap.
 """)
             offer_accept_options = True
         else:
@@ -2288,7 +2375,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         floorPlan["outputSlots"] = outputSlots
         baseCoreRoom.floorPlan = floorPlan
 
-        main_npc = src.characters.characterMap["Clone"]()
+        main_npc = src.characters.characterMap["Clone"](firstname="Eddi")
         main_npc.questsDone = [
                 "NaiveMoveQuest",
                 "MoveQuestMeta",
@@ -2401,6 +2488,22 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         used_spots.append(painterRoom.getPosition())
         painterRoom.tag = "ruin"
         painterRoom.spawnItem("Painter",(6,6,0))
+
+        # add rod room
+        anvilRoom = architect.doAddRoom(
+                {
+                       "coordinate": (10,7,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,12 6,0 0,6 12,6",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        used_spots.append(anvilRoom.getPosition())
+        anvilRoom.tag = "ruin"
+        anvilRoom.spawnItem("Anvil",(6,6,0))
+        anvilRoom.bolted = True
 
         # add anvil room
         anvilRoom = architect.doAddRoom(
@@ -2520,8 +2623,8 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         """
 
         # spawn background scrap
-        for big_x in range(1,13):
-            for big_y in range(1,13):
+        for big_x in range(1,14):
+            for big_y in range(1,14):
                 if (big_x,big_y,0) in used_spots:
                     continue
                 for _i in range(100):
@@ -2535,19 +2638,34 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                 if big_x > 5 and big_x < 9 and big_y > 2 and big_y < 9:
                     continue
 
-                for _i in range(1,10):
-                    wall = src.items.itemMap["Wall"]()
-                    wall.bolted = False
+                if random.random() < 0.5:
+                    for _i in range(1,10):
+                        wall = src.items.itemMap["Wall"]()
+                        wall.bolted = False
+                        pos = (big_x*15+random.randint(1,14),big_y*15+random.randint(1,14),0)
+                        if not currentTerrain.getItemByPosition(pos):
+                            currentTerrain.addItem(wall,pos)
+
+                if random.random() < 0.5:
+                    door = src.items.itemMap["Door"]()
+                    door.bolted = False
                     pos = (big_x*15+random.randint(1,14),big_y*15+random.randint(1,14),0)
                     if not currentTerrain.getItemByPosition(pos):
-                        currentTerrain.addItem(wall,pos)
+                        currentTerrain.addItem(door,pos)
 
-                for _i in range(1,10):
-                    metalBars = src.items.itemMap["MetalBars"]()
+                if random.random() < 0.2:
+                    door = src.items.itemMap["Rod"]()
+                    door.bolted = False
                     pos = (big_x*15+random.randint(1,14),big_y*15+random.randint(1,14),0)
                     if not currentTerrain.getItemByPosition(pos):
-                        currentTerrain.addItem(metalBars,pos)
+                        currentTerrain.addItem(door,pos)
 
+                if random.random() < 0.5:
+                    for _i in range(1,10):
+                        metalBars = src.items.itemMap["MetalBars"]()
+                        pos = (big_x*15+random.randint(1,14),big_y*15+random.randint(1,14),0)
+                        if not currentTerrain.getItemByPosition(pos):
+                            currentTerrain.addItem(metalBars,pos)
 
     def setUpArchitectsLab(self,pos):
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]

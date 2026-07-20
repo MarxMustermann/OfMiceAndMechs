@@ -63,7 +63,7 @@ def Death(extraParam):
     playerpos = (mapStart[0] + mapWidth//2 + 1, mapStart[1]+ mapHeight//2 + 1)
 
     src.interaction.tcodConsole.rgb[playerpos[0], playerpos[1]] = ord("@"),(255, 255, 255),(0, 0, 0)
-    src.interaction.tcodConsole.rgb[playerpos[0]+1, playerpos[1]]= ord(" "),(0, 0, 0)
+    src.interaction.tcodConsole.rgb[playerpos[0]+1, playerpos[1]]= ord(" "),(0, 0, 0),(0,0,0)
 
     if pre:
         if src.gamestate.gamestate.difficulty == "difficult":

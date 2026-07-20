@@ -39,11 +39,15 @@ Once you contacted the implant this menu will hold more useful information.
         if self.character.quests[0] == self:
             self.postHandler()
 
+    def handleImplantinteractionDone(self,extraInfo=None):
+        self.postHandler()
+
     def assignToCharacter(self,character):
         if self.character:
             return None
 
         self.startWatching(character,self.handleQuestsOpened,"opened quest menu")
+        self.startWatching(character,self.handleImplantinteractionDone,"completed implant interaction")
         return super().assignToCharacter(character)
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
@@ -51,7 +55,10 @@ Once you contacted the implant this menu will hold more useful information.
             self.postHandler()
             character.runCommandString("q",nativeKey=True)
             return (None,(".",""))
-        if not ignoreCommands and character.macroState.get("submenue"):
+        submenue = character.macroState.get("submenue")
+        if not ignoreCommands and submenue:
+            if isinstance(submenue,src.menuFolder.implantInteraction.ImplantInteraction):
+                return (None, ("j","interact"))
             return (None, (["esc"],"close submenu"))
         else:
             return (None, (["tab"],"reach out to implant"))

@@ -65,7 +65,6 @@ class EscapeLab(src.quests.MetaQuestSequence):
         text.append("""
 You reach out to your implant and it answers:
 
-
 This room is exploding! We need to leave fast.
 """)
 

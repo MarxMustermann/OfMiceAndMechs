@@ -49,6 +49,7 @@ You reach out to your implant and it answers:
 The room is burning.
 
 Get some distance and watch it explode
+Use the "." key to wait and the wasd keys to move
 """])
         return text
 

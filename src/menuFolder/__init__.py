@@ -42,3 +42,4 @@ import src.menuFolder.observeMenu
 import src.menuFolder.examineMenu
 import src.menuFolder.experimentalObserveMenu
 import src.menuFolder.contextListMenu
+import src.menuFolder.implantInteraction

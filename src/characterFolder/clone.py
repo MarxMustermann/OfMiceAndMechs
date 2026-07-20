@@ -14,6 +14,7 @@ class Clone(src.characters.Character):
         name=None,
         creator=None,
         characterId=None,
+        firstname=None
     ):
         if quests is None:
             quests = []
@@ -26,6 +27,7 @@ class Clone(src.characters.Character):
             name,
             creator=creator,
             characterId=characterId,
+            firstname=firstname
         )
 
         self.charType = "Clone"

@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 class LootRoom(src.quests.MetaQuestSequence):
     type = "LootRoom"
 
-    def __init__(self, description="loot room", creator=None, targetPositionBig=None, reason=None, story=None, endWhenFull=False):
+    def __init__(self, description="loot room", creator=None, targetPositionBig=None, reason=None, story=None, endWhenFull=False, collectBig=False):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
@@ -18,6 +18,7 @@ class LootRoom(src.quests.MetaQuestSequence):
         self.reason = reason
         self.story = story
         self.endWhenFull = endWhenFull
+        self.collectBig = collectBig
 
         self.visited_target_tile = False
 
@@ -31,10 +32,16 @@ class LootRoom(src.quests.MetaQuestSequence):
         if self.story:
             storyString = self.story
 
+        if self.collectBig:
+            collectBigString = "Pick up big items."
+        else:
+            collectBigString = "Do not pick up big items."
+
         text = f"""{storyString}
 Loot the room on tile {self.targetPositionBig}{reasonString}.
 
 Remove all items that are not bolted down.
+{collectBigString}
 
 Use the k or K keys to pick up items."""
         return text
@@ -158,7 +165,7 @@ Use the k or K keys to pick up items."""
             for item in items:
                 if item.type in ("Scrap","MetalBars","MoldFeed",):
                     continue
-                if item.walkable == False:
+                if item.walkable == False and not self.collectBig:
                     continue
                 foundValuableItem = True
             if not foundValuableItem:
@@ -290,7 +297,7 @@ Use the k or K keys to pick up items."""
                 continue
             if item_pos[0] > 13:
                 continue
-            if item.walkable == False:
+            if item.walkable == False and not self.collectBig:
                 continue
             if item.type in ["Bolt"] and character.getFreeInventorySpace() <= 1:
                 continue
@@ -346,7 +353,7 @@ Use the k or K keys to pick up items."""
                 continue
             if item.type == "Bolt" and character.getFreeInventorySpace() <= 1:
                 continue
-            if item.walkable == False:
+            if item.walkable == False and not self.collectBig:
                 continue
 
             invalidStack = False

@@ -78,22 +78,21 @@ class QuestMenu(src.menues.SubMenu):
                 min_cols = num_cols
 
         # add interaction instructions
-        if not self.char.quests or self.char.quests[0].type != "EscapeLab":
-            if not self.sidebared:
-                text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"#000"),
-                    [
-                        "\n",
-                        "* press esc to close this menu\n",
-                        "* press wasd to select quest\n",
-                        "* press j to make selected quest the active quest\n",
-                        "* press x to delete selected quest\n",
-                        "* press X to delete sub quests\n",
-                        "* press r to generate sub quests\n",
-                        "* press R to regenerate sub quests\n",
-                        "* press k to check if that quest has been completed\n",
-                        "* press K to mark the selected quest for auto completion\n",
-                    ]
-                ))
+        if not self.sidebared:
+            text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"#000"),
+                [
+                    "\n",
+                    "* press esc to close this menu\n",
+                    "* press wasd to select quest\n",
+                    "* press j to make selected quest the active quest\n",
+                    "* press x to delete selected quest\n",
+                    "* press X to delete sub quests\n",
+                    "* press r to generate sub quests\n",
+                    "* press R to regenerate sub quests\n",
+                    "* press k to check if that quest has been completed\n",
+                    "* press K to mark the selected quest for auto completion\n",
+                ]
+            ))
 
         # flatten the mix of strings and urwid format so that it is less recursive to workaround an urwid bug
         # bad code: should be elsewhere
@@ -334,27 +333,25 @@ class QuestMenu(src.menues.SubMenu):
                     except:
                         baseList = None
                 txt.append(quest.generateTextDescription())
-                if char.quests[0].type != "EscapeLab":
-                    txt.append("\n")
-                    txt.append("\n")
+                txt.append("\n")
+                txt.append("\n")
 
-                    solvingCommangString = char.getActiveQuest().getSolvingCommandString(char)
+                solvingCommangString = char.getActiveQuest().getSolvingCommandString(char)
 
-            if (not char.quests) or char.quests[0].type != "EscapeLab":
-                if not sidebared:
-                    txt.append("select quest:\n\n")
+            if not sidebared:
+                txt.append("select quest:\n\n")
 
-                counter = 0
-                for quest in char.quests:
-                    if questCursor and counter == questCursor[0]:
-                        newCursor = questCursor[1:]
-                    else:
-                        newCursor = None
-                    txt.extend(
-                        quest.render(cursor=newCursor,sidebared=sidebared)
-                            )
-                    txt.extend("\n\n")
-                    counter += 1
+            counter = 0
+            for quest in char.quests:
+                if questCursor and counter == questCursor[0]:
+                    newCursor = questCursor[1:]
+                else:
+                    newCursor = None
+                txt.extend(
+                    quest.render(cursor=newCursor,sidebared=sidebared)
+                        )
+                txt.extend("\n\n")
+                counter += 1
 
             if sidebared:
                 txt.append("press q to see detailed descriptions\n")

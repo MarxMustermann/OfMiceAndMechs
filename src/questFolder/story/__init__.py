@@ -37,3 +37,6 @@ import src.questFolder.story.storyFetchScrap
 import src.questFolder.story.storyWakeWorker
 import src.questFolder.story.storyReachTeleporterRoom
 import src.questFolder.story.readMemorialPlate
+import src.questFolder.story.fixGroundskeeper
+import src.questFolder.story.helpGroundskeeper
+import src.questFolder.story.storyExploreHomeTerrain

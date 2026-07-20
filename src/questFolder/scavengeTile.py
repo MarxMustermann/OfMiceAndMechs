@@ -105,6 +105,14 @@ This quest will end when the target tile has no items left."""
             if len(path) or item.getPosition() == character.getPosition():
                 quest = src.quests.questMap["CleanSpace"](targetPosition=item.getSmallPosition(),targetPositionBig=self.targetPositionBig,reason="pick up the items",pickUpBolted=True)
                 return ([quest],None)
+
+        items = self.getLeftoverItems(character)
+        for item in items:
+            quest = src.quests.questMap["ClearPathToPosition"](targetPosition=item.getSmallPosition(),reason="be able to pick up the item")
+            return ([quest],None)
+
+        return (None,(".","stand around confused"))
+    
     
     def getLeftoverItems(self,character):
         terrain = character.getTerrain()

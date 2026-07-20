@@ -6,15 +6,12 @@ class DiscardItemsInside(src.quests.MetaQuestSequence):
     type = "DiscardItemsInside"
     lowLevel = True
 
-    def __init__(self, description="discard items inside", creator=None, toCollect=None, lifetime=None, reason=None):
+    def __init__(self, description="discard items inside", creator=None, lifetime=None, reason=None):
         self.lastMoveDirection = None
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
         self.reason = reason
-        if toCollect:
-            self.metaDescription += " for "+toCollect
-        self.toCollect = toCollect
 
     def generateTextDescription(self):
         out = []

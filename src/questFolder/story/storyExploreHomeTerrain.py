@@ -77,7 +77,7 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
         if not character.weapon:
             item = character.searchInventory("Rod")
             if item:
-                quest = src.quests.questMap["ConsumeItem"](reason="arm yourself",itemType="Rod",consumeVerb="equip")
+                quest = src.quests.questMap["ConsumeItem"](reason="arm yourself",itemType="Rod",consumeVerb="equip",description="equip rod")
                 return ([quest],None)
 
         # go home
@@ -157,7 +157,7 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
         if self.reason:
             reasonString = ", to "+self.reason
         text = [f"""
-Go out and adventure on tile {self.targetTerrain}{reasonString}.
+Explore the terrain{reasonString}.
 
 """]
 

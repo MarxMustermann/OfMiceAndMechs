@@ -2490,7 +2490,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         painterRoom.spawnItem("Painter",(6,6,0))
 
         # add rod room
-        anvilRoom = architect.doAddRoom(
+        rodRoom = architect.doAddRoom(
                 {
                        "coordinate": (10,7,0),
                        "roomType": "EmptyRoom",
@@ -2500,15 +2500,14 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                 },
                 None,
            )
-        used_spots.append(anvilRoom.getPosition())
-        anvilRoom.tag = "ruin"
-        anvilRoom.spawnItem("Anvil",(6,6,0))
-        anvilRoom.bolted = True
+        used_spots.append(rodRoom.getPosition())
+        rodRoom.tag = "ruin"
+        rodRoom.spawnItem("Rod",(6,6,0))
 
         # add anvil room
         anvilRoom = architect.doAddRoom(
                 {
-                       "coordinate": (10,7,0),
+                       "coordinate": (8,9,0),
                        "roomType": "EmptyRoom",
                        "doors": "6,12 6,0 0,6 12,6",
                        "offset": [1,1],

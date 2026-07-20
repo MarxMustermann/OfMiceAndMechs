@@ -73,6 +73,13 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
         # set up helper variables
         currentTerrain = character.getTerrain()
 
+        # equip weapon
+        if not character.weapon:
+            item = character.searchInventory("Rod")
+            if item:
+                quest = src.quests.questMap["ConsumeItem"](reason="arm yourself",itemType="Rod",consumeVerb="equip")
+                return ([quest],None)
+
         # go home
         if not character.isOnHomeTerrain():
             quest = src.quests.questMap["GoHome"]()

@@ -57,14 +57,14 @@ Talk to the groundskeeper and ask why it is not working.
 Press h to talk to nearby clones or left click on a clone to talk to it."""]
         return text
 
-    def handleFixedGroundskeeper(self,extraInfo=None):
+    def handleNoBuilderQuest(self,extraInfo=None):
         self.postHandler()
 
     def assignToCharacter(self,character):
         if self.character:
             return None
 
-        self.startWatching(character,self.handleFixedGroundskeeper,"fixed groundskeeper")
+        self.startWatching(character,self.handleNoBuilderQuest,"no_builder_quest")
         return super().assignToCharacter(character)
 
 src.quests.addType(HelpGroundskeeper)

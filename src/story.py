@@ -2505,10 +2505,25 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         rodRoom.tag = "ruin"
         rodRoom.spawnItem("Rod",(6,6,0))
 
+        # add loot room
+        lootRoom = architect.doAddRoom(
+                {
+                       "coordinate": (4,9,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,12 6,0 0,6 12,6",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        used_spots.append(lootRoom.getPosition())
+        lootRoom.tag = "ruin"
+        lootRoom.spawnItem("Armor",(6,6,0))
+
         # add anvil room
         anvilRoom = architect.doAddRoom(
                 {
-                       "coordinate": (8,9,0),
+                       "coordinate": (10,9,0),
                        "roomType": "EmptyRoom",
                        "doors": "6,12 6,0 0,6 12,6",
                        "offset": [1,1],
@@ -2536,8 +2551,8 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         metalWorkingRoom.tag = "ruin"
         metalWorkingRoom.spawnItem("MetalWorkingBench",(6,6,0))
 
-        # create paths
-        for big_pos in [(5,5,0),(6,5,0),(8,5,0),(9,5,0),]:
+        # create horizontal paths
+        for big_pos in [(5,5,0),(6,5,0),(8,5,0),(9,5,0),(9,9,0),(7,9,0),(8,9,0),(6,9,0),(5,9,0)]:
             used_spots.append(big_pos)
             for _i in range(100):
                 amount = random.randint(1,15)
@@ -2563,6 +2578,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                 scrap = src.items.itemMap["Scrap"](amount=1)
                 currentTerrain.addItem(scrap,pos)
 
+        # create vertical paths
         for big_pos in [(10,6,0),(10,8,0),(4,6,0),(4,8,0),]:
             used_spots.append(big_pos)
             for _i in range(100):

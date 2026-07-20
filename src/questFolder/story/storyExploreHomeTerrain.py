@@ -58,8 +58,6 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
             return (None,None)
         if not character:
             return (None,None)
-        if character.is_low_health():
-            return self._solver_trigger_fail(dryRun,"low health")
 
         # handle menu interaction
         if character.macroState["submenue"]:

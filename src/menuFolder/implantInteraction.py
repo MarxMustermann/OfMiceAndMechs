@@ -226,7 +226,7 @@ This will trigger an attack.
 
 {implant_intro_text}
 
-You are outside and need to find shelter.
+""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""You are outside and need to find shelter."""),"""
 The old groundskeepers place is nearby.
 Go there.
 
@@ -260,7 +260,7 @@ There is a StasisTank in the groundskeepers place. Look there.
 
 
 There is a StasisTank in this room. 
-It should contain a survivior.
+""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""It should contain a survivior."""),"""
 That could be useful for us.
 
 Free the survivor.

@@ -286,7 +286,7 @@ Free the survivor.
                 base_text = ["""
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),"""
 
-The groundskeeper lives.
+""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""The groundskeeper lives."""),"""
 This could be very useful.
 
 It doesn't work though.

@@ -1903,6 +1903,7 @@ I need to focus on painting the floor markers.
 There will be more work to do once i'm done.
 """)
             character.showTextMenu(base_response_text)
+            character.changed("no_builder_quest")
             return
 
         base_response_text = []

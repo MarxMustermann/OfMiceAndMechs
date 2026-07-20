@@ -204,7 +204,7 @@ You can pass time by pressing the "." key.
 You are outside and need to find shelter.
 
 There is shelter to the north,
-but there is an enemy blocking your path.
+but """,(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""there is an enemy blocking your path."""),"""
 kill the enemy. Enemy are shown with red edges.
 
 The simplest way to fight enemies is to walk against them.

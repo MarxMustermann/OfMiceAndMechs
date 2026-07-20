@@ -1839,14 +1839,14 @@ I am working right now. I'll repriotize though.""")
             painter = character.searchInventory("Painter")
             if not painter:
                 base_response_text = []
-                base_response_text.append("""
+                base_response_text.extend(["""
 I cannot work properly without a painter.
 The painter is an important tool.
 It is used to draw markings on the floor.
 This helps a lot with keeping things organized.
 
-Bring me a painter so i can work better.
-""")
+""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Bring me a painter so i can work better."""),"""
+"""])
 
                 options = []
                 extraDescriptions = {}

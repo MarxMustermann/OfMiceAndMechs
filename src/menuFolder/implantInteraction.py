@@ -306,7 +306,8 @@ Find out why.
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),"""
 
 The groundskeeper is working now,
-but it seems to missing something very essential.
+but """,(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""it seems to missing something very essential."""),"""
+This could be very useful.
 
 Check if you can help out.
 

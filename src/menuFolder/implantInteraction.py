@@ -326,7 +326,7 @@ Check if you can help out.
 The groundskeeper seems to be busy.
 We cannot help right now.
 
-I think we should explore the ruins around us a bit.
+""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""I think we should explore the ruins around us a bit."""),"""
 
 There are many useful items around.
 

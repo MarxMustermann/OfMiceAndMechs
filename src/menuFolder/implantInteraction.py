@@ -210,7 +210,7 @@ kill the enemy. Enemy are shown with red edges.
 The simplest way to fight enemies is to walk against them.
 This will trigger an attack.
 
-""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Shall i assign you a quest to kill the enemy?"""),"""
+""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to kill the enemy?"""),"""
 """]
                 options = [("yes","yes"),("no","no")]
                 self.submenu = src.menuFolder.selectionMenu.SelectionMenu(base_text,options=options)
@@ -230,7 +230,7 @@ This will trigger an attack.
 The old groundskeepers place is nearby.
 Go there.
 
-""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Shall i assign you a quest to find shelter?"""),"""
+""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to find shelter?"""),"""
 """]
                 options = [("yes","yes"),("no","no")]
                 self.submenu = src.menuFolder.selectionMenu.SelectionMenu(base_text,options=options)
@@ -247,7 +247,7 @@ Explore the rooms and try to find something useful.
 
 There is a StasisTank in the groundskeepers place. Look there.
 
-""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Shall i assign you a quest to go to the groundskeepers place?"""),"""
+""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to go to the groundskeepers place?"""),"""
 """]
                 options = [("yes","yes"),("no","no")]
                 self.submenu = src.menuFolder.selectionMenu.SelectionMenu(base_text,options=options)
@@ -265,7 +265,7 @@ That could be useful for us.
 
 Free the survivor.
 
-""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Shall i assign you a quest to free the survivor?"""),"""
+""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to free the survivor?"""),"""
 """]
             options = [("yes","yes"),("no","no")]
             self.submenu = src.menuFolder.selectionMenu.SelectionMenu(base_text,options=options)
@@ -292,7 +292,7 @@ This could be very useful.
 It doesn't work though.
 Find out why.
 
-""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Shall i assign you a quest to talk to the survivor?"""),"""
+""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to talk to the survivor?"""),"""
 """]
                 options = [("yes","yes"),("no","no")]
                 self.submenu = src.menuFolder.selectionMenu.SelectionMenu(base_text,options=options)
@@ -310,7 +310,7 @@ but it seems to missing something very essential.
 
 Check if you can help out.
 
-""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Shall i assign you a quest to help to groundskeeper?"""),"""
+""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to help to groundskeeper?"""),"""
 """]
                 options = [("yes","yes"),("no","no")]
                 self.submenu = src.menuFolder.selectionMenu.SelectionMenu(base_text,options=options)
@@ -329,7 +329,7 @@ I think we should explore the ruins around us a bit.
 
 There are many useful items around.
 
-""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Shall i assign you a quest to explore the environment?"""),"""
+""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to explore the environment?"""),"""
 """]
                 options = [("yes","yes"),("no","no")]
                 self.submenu = src.menuFolder.selectionMenu.SelectionMenu(base_text,options=options)
@@ -346,7 +346,7 @@ It will start to rebuild its working area.
 
 Help it get set up.
 
-""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Shall i assign you a quest to help to groundskeeper?"""),"""
+""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to help to groundskeeper?"""),"""
 """]
             options = [("yes","yes"),("no","no")]
             self.submenu = src.menuFolder.selectionMenu.SelectionMenu(base_text,options=options)

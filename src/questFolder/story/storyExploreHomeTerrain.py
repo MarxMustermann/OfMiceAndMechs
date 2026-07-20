@@ -78,6 +78,13 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["ConsumeItem"](reason="arm yourself",itemType="Rod",consumeVerb="equip",description="equip rod")
                 return ([quest],None)
 
+        # equip weapon
+        if not character.armor:
+            item = character.searchInventory("Armor")
+            if item:
+                quest = src.quests.questMap["ConsumeItem"](reason="protect yourself",itemType="Armor",consumeVerb="equip",description="equip armor")
+                return ([quest],None)
+
         # go home
         if not character.isOnHomeTerrain():
             quest = src.quests.questMap["GoHome"]()

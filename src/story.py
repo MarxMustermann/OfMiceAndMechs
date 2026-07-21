@@ -2573,7 +2573,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         floorPlan["outputSlots"] = outputSlots
         baseCoreRoom.floorPlan = floorPlan
 
-        main_npc = src.characters.characterMap["Clone"](firstname="Eddi")
+        main_npc = src.characters.characterMap["GroundsKeeper"](firstname="Eddi")
         main_npc.questsDone = [
                 "NaiveMoveQuest",
                 "MoveQuestMeta",

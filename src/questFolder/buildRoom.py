@@ -298,10 +298,15 @@ Press d to move the cursor and show the subquests description.
 
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
+
+        # generate helper variables
         terrain = character.getTerrain()
+
+        # do nothing in emergencies
         if terrain.alarm:
             return (None,None)
 
+        # continue building on existing build sites
         for x in range(1,13):
             for y in range(1,13):
                 items = terrain.getItemByPosition((x*15+7,y*15+7,0))
@@ -311,6 +316,7 @@ Press d to move the cursor and show the subquests description.
                         beUsefull.idleCounter = 0
                     return ([quest],None)
 
+        # starting new build sites on preplanned positions
         rooms = terrain.rooms
         cityPlaner = None
         for room in rooms:
@@ -335,13 +341,15 @@ Press d to move the cursor and show the subquests description.
                         beUsefull.idleCounter = 0
                     return ([quest],None)
 
+        # extend the base a bit even without city planer
         autoExtensionThreashold = 1
         if cityPlaner:
             autoExtensionThreashold = cityPlaner.autoExtensionThreashold
 
+        # extend base
         if autoExtensionThreashold > 0:
 
-            # do not build more rooms when there is an empty room
+            # check if the base needs to be extended
             numEmptyRooms = 0
             for room in terrain.rooms:
                 if room.tag:
@@ -349,10 +357,10 @@ Press d to move the cursor and show the subquests description.
                 if (len(room.itemsOnFloor) > 13+13+11+11 or room.floorPlan or room.storageSlots or len(room.walkingSpace) > 4 or room.inputSlots or room.buildSites):
                     continue
                 numEmptyRooms += 1
-
             if numEmptyRooms >= autoExtensionThreashold:
                 return (None,None)
 
+            # find places to expand to
             baseNeighbours = []
             offsets = ((0,1,0),(1,0,0),(0,-1,0),(-1,0,0))
             for room in terrain.rooms:
@@ -368,12 +376,14 @@ Press d to move the cursor and show the subquests description.
                     baseNeighbours.append(checkPos)
             random.shuffle(baseNeighbours)
 
+            # filter out invalid build sites
             possibleBuildSites = []
             for candidate in baseNeighbours:
                 if (candidate not in terrain.scrapFields) and (candidate not in terrain.forests):
                     possibleBuildSites.append(candidate)
             random.shuffle(possibleBuildSites)
 
+            # continue building on existing build sites (dead code?)
             for candidate in possibleBuildSites:
                 items = terrain.itemsByCoordinate.get((candidate[0]*15+7,candidate[1]*15+7,0))
                 if items and items[-1].type == "RoomBuilder":
@@ -382,17 +392,22 @@ Press d to move the cursor and show the subquests description.
                         beUsefull.idleCounter = 0
                     return ([quest],None)
 
+            # prefer building on non cluttered places
             for candidate in possibleBuildSites:
                 if len(terrain.itemsByBigCoordinate.get(candidate,[])) < 5:
                     quest = src.quests.questMap["BuildRoom"](targetPosition=candidate,lifetime=1000,reason="make base bigger")
                     if not dryRun:
                         beUsefull.idleCounter = 0
                     return ([quest],None)
+
+            # build room
             for candidate in possibleBuildSites:
                 quest = src.quests.questMap["BuildRoom"](targetPosition=candidate,lifetime=1000,reason="increase the size of the base")
                 if not dryRun:
                         beUsefull.idleCounter = 0
                 return ([quest],None)
+
+        # do nothing
         return (None,None)
 
 src.quests.addType(BuildRoom)

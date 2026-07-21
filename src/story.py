@@ -1771,6 +1771,9 @@ I am working right now. I'll repriotize though.""")
         character.add_submenu(src.chats.ChatMenu(partner))
 
     def builder_accepted_quest(self,extraParam):
+        '''
+        generates a quest after accepting a builder task
+        '''
         accept_type = extraParam.get("accept_type")
         character = extraParam["character"]
         terrain = character.getTerrain()

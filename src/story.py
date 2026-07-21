@@ -2073,6 +2073,12 @@ There are several things you can do to help me out:
 
             # ensure temple
             if hasCityPlaner:
+                hasTemple = False
+                for room in terrain.rooms:
+                    if room.tag != "temple":
+                        continue
+                    hasTemple = True
+                if not hasTemple:
                     name = "plan temple"
                     tasks.append((name,"schedule building a Temple"))
                     extraDescriptions[name] = "the temple always has been the centerpiece of the city"

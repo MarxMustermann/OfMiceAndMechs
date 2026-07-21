@@ -1019,6 +1019,11 @@ def setUpRuin(pos):
     make_room = True
     filled_cord = []
     for i in range(random.randint(2,6)):
+        # randomise setting for next POI placed
+        if i != 0:
+            rand_pos = (random.randint(3,11),random.randint(3,11))
+            make_room = random.random() < 0.4
+
         if rand_pos in filled_cord:
             continue
         filled_cord.append(rand_pos)
@@ -1116,10 +1121,6 @@ def setUpRuin(pos):
                 if item.type == "Vial":
                     item.uses = 10
                 currentTerrain.addItem(item, (pos[0] + rand_pos[0] * 15, pos[1] + rand_pos[1] * 15,0))
-
-        # randomise setting for next POI placed
-        rand_pos = (random.randint(3,11),random.randint(3,11))
-        make_room = random.random() < 0.4
 
 def setUpThroneDungeon(pos):
     #set up dungeons

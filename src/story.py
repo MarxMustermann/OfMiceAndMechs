@@ -2434,6 +2434,9 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         inputSlots.append(((10,3,0),"MetalBars",{}))
         buildSites.append(((9,3,0),"MetalWorkingBench",{}))
 
+        # add city planner
+        buildSites.append(((6,6,0),"CityPlaner",{}))
+
         floorPlan["walkingSpace"] = walkingSpace
         floorPlan["storageSlots"] = storageSlots
         floorPlan["inputSlots"] = inputSlots

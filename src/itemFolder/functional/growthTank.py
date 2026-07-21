@@ -198,6 +198,11 @@ After getting spawned the Clone will activate the item to the east of the Growth
 
         if character:
             new_character.faction = character.faction
+        containerQuest = src.quests.questMap["BeUsefull"]()
+        new_character.quests.append(containerQuest)
+        containerQuest.assignToCharacter(new_character)
+        containerQuest.activate()
+        containerQuest.autoSolve = True
 
         # inhabit character
         # character.fallUnconcious()

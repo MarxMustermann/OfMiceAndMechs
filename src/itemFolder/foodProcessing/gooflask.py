@@ -4,7 +4,7 @@ import src
 class GooFlask(src.items.Item):
     type = "GooFlask"
     description = "a flask that holds goo"
-    def __init__(self,uses=0):
+    def __init__(self,uses=100):
         """
         configure super class
         """

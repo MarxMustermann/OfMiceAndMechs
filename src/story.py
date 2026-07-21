@@ -1955,7 +1955,24 @@ There are several things you can do to help me out:
         extraDescriptions = {}
         itemsNeeded = []
         itemsAvailabe = []
-        itemsObtainable = ["Scrap","MetalBars","Door","Wall"]
+
+        # check what items can be obtained
+        itemsObtainable = []
+        for big_x in range(1,14):
+            for big_y in range(1,14):
+                rooms = terrain.getRoomByPosition((big_x,big_y,0))
+                if rooms:
+                    room = rooms[0]
+                    if room.tag != "ruin":
+                        continue
+                    itemList = room.getItems()
+                else:
+                    itemList = terrain.itemsByBigCoordinate.get((big_x,big_y,0),[])
+                for item in itemList:
+                    item_type = item.type
+                    if item_type in itemsObtainable:
+                        continue
+                    itemsObtainable.append(item_type)
 
         # check for available items
         for room in terrain.rooms:

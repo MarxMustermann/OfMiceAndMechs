@@ -2870,6 +2870,19 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                         if not currentTerrain.getItemByPosition(pos):
                             currentTerrain.addItem(metalBars,pos)
 
+                if random.random() < 0.2:
+                    item = src.items.itemMap["GooFlask"]()
+                    pos = (big_x*15+random.randint(1,14),big_y*15+random.randint(1,14),0)
+                    if not currentTerrain.getItemByPosition(pos):
+                        currentTerrain.addItem(item,pos)
+
+                if random.random() < 0.05:
+                    item = src.items.itemMap["GrowthTank"]()
+                    pos = (big_x*15+random.randint(1,14),big_y*15+random.randint(1,14),0)
+                    if not currentTerrain.getItemByPosition(pos):
+                        currentTerrain.addItem(item,pos)
+
+
         # add enemies
         for big_x in range(1,14):
             for big_y in range(1,14):

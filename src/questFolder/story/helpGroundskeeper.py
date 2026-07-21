@@ -20,6 +20,7 @@ class HelpGroundskeeper(src.quests.MetaQuestSequence):
         if self.subQuests:
             return (None,None)
 
+        # find the groundskeeper
         keeper_position = None
         keeper = None
         terrain = character.getHomeTerrain()
@@ -28,15 +29,15 @@ class HelpGroundskeeper(src.quests.MetaQuestSequence):
                 continue
             keeper_position = candidate.getBigPosition()
             keeper = candidate
-
         if not keeper_position:
             return self._solver_trigger_fail(dryRun,"keeper not found")
 
+        # go near the groundskeeper
         if not character.getBigPosition() == keeper_position:
             quest = src.quests.questMap["GoToTile"](targetPosition=keeper_position)
             return ([quest],None)
         
-        # close open menues
+        # handle open menues
         submenue = character.macroState.get("submenue")
         if submenue and not ignoreCommands:
             if isinstance(submenue,src.menuFolder.chatPartnerselection.ChatPartnerselection):

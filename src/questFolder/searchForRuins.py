@@ -108,17 +108,22 @@ Find an unexplored ruin{reason}.
         '''
         check and end quest if completed
         '''
+
+        # handle weird edge
         if not character:
             return False
 
+        # continue, if no ruin was found
         currentTerrain = character.getTerrain()
         if not currentTerrain.tag == "ruin":
             return False
 
+        # continue, if ruin was already looted
         info = character.terrainInfo[currentTerrain.getPosition()]
         if info.get("looted"):
             return False
 
+        # end, when ruin was found
         if not dryRun:
             self.postHandler()
         return True

@@ -140,10 +140,12 @@ class Room:
             result.append(item)
         return result
 
-    def getItems(self,floorItemsOnly=True):
+    def getItems(self,floorItemsOnly=True,needsUnbolted=False):
         result = []
         for item in self.itemsOnFloor:
             if floorItemsOnly and (item.xPosition in (0,12,) or item.yPosition in (0,12,)):
+                continue
+            if needsUnbolted and item.bolted:
                 continue
             result.append(item)
         return result

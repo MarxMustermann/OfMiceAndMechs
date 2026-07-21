@@ -2479,9 +2479,9 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         # add alarm room
         alarmRoom = architect.doAddRoom(
                 {
-                       "coordinate": (4,5,0),
+                       "coordinate": (7,11,0),
                        "roomType": "EmptyRoom",
-                       "doors": "6,12 12,6",
+                       "doors": "6,0",
                        "offset": [1,1],
                        "size": [13, 13],
                 },
@@ -2490,8 +2490,8 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         used_spots.append(alarmRoom.getPosition())
         alarmRoom.tag = "ruin"
         siegeManager = src.items.itemMap["SiegeManager"]()
-        alarmRoom.addItem(siegeManager,(3,3,0))
-        for pos in [(5,5,0),(5,9,0),(9,9,0),(9,5,0)]:
+        alarmRoom.addItem(siegeManager,(6,9,0))
+        for pos in [(5,5,0),(5,8,0),(9,8,0),(9,5,0)]:
             enemy = src.characters.characterMap["Golem"]()
             alarmRoom.addCharacter(enemy,pos[0],pos[1])
 
@@ -2506,7 +2506,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                 {
                        "coordinate": (10,5,0),
                        "roomType": "EmptyRoom",
-                       "doors": "6,12 6,0 0,6 12,6",
+                       "doors": "6,12 0,6",
                        "offset": [1,1],
                        "size": [13, 13],
                 },
@@ -2521,7 +2521,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                 {
                        "coordinate": (10,7,0),
                        "roomType": "EmptyRoom",
-                       "doors": "6,12 6,0 0,6 12,6",
+                       "doors": "6,12 6,0",
                        "offset": [1,1],
                        "size": [13, 13],
                 },
@@ -2536,7 +2536,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                 {
                        "coordinate": (4,9,0),
                        "roomType": "EmptyRoom",
-                       "doors": "6,12 6,0 0,6 12,6",
+                       "doors": "6,0 12,6",
                        "offset": [1,1],
                        "size": [13, 13],
                 },
@@ -2546,12 +2546,40 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         lootRoom.tag = "ruin"
         lootRoom.spawnItem("Armor",(6,6,0))
 
+        # add loot room
+        lootRoom = architect.doAddRoom(
+                {
+                       "coordinate": (4,5,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,12 12,6",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        used_spots.append(lootRoom.getPosition())
+        lootRoom.tag = "ruin"
+
+        # add loot room
+        lootRoom = architect.doAddRoom(
+                {
+                       "coordinate": (7,9,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,12 0,6 12,6",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        used_spots.append(lootRoom.getPosition())
+        lootRoom.tag = "ruin"
+
         # add anvil room
         anvilRoom = architect.doAddRoom(
                 {
                        "coordinate": (10,9,0),
                        "roomType": "EmptyRoom",
-                       "doors": "6,12 6,0 0,6 12,6",
+                       "doors": "6,0 0,6",
                        "offset": [1,1],
                        "size": [13, 13],
                 },
@@ -2559,6 +2587,10 @@ sure i'll produce equipment for you as long as you bring me the raw material.
            )
         used_spots.append(anvilRoom.getPosition())
         anvilRoom.tag = "ruin"
+        for _i in range(0,10):
+            pos = (random.randint(1,11),random.randint(1,11),0)
+            itemType = random.choice(["MetalBars","Frame","Flask"])
+            rodRoom.spawnItem(itemType,pos)
         anvilRoom.spawnItem("Anvil",(6,6,0))
         anvilRoom.bolted = True
 
@@ -2567,7 +2599,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                 {
                        "coordinate": (4,7,0),
                        "roomType": "EmptyRoom",
-                       "doors": "6,12 6,0 0,6 12,6",
+                       "doors": "6,12 6,0",
                        "offset": [1,1],
                        "size": [13, 13],
                 },
@@ -2578,7 +2610,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         metalWorkingRoom.spawnItem("MetalWorkingBench",(6,6,0))
 
         # create horizontal paths
-        for big_pos in [(5,5,0),(6,5,0),(8,5,0),(9,5,0),(9,9,0),(7,9,0),(8,9,0),(6,9,0),(5,9,0)]:
+        for big_pos in [(5,5,0),(6,5,0),(8,5,0),(9,5,0),(9,9,0),(8,9,0),(6,9,0),(5,9,0)]:
             used_spots.append(big_pos)
             for _i in range(100):
                 amount = random.randint(1,15)
@@ -2605,7 +2637,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                 currentTerrain.addItem(scrap,pos)
 
         # create vertical paths
-        for big_pos in [(10,6,0),(10,8,0),(4,6,0),(4,8,0),]:
+        for big_pos in [(10,6,0),(10,8,0),(4,6,0),(4,8,0),(7,10,0)]:
             used_spots.append(big_pos)
             for _i in range(100):
                 amount = random.randint(1,15)
@@ -2663,6 +2695,17 @@ sure i'll produce equipment for you as long as you bring me the raw material.
 
         used_spots.append(buildSite_position)
         """
+        
+        for room in currentTerrain.rooms:
+            if room.tag != "ruin":
+                continue
+
+            for _i in range(0,10):
+                pos = (random.randint(1,11),random.randint(1,11),0)
+                itemType = random.choice(["MetalBars","Frame","Flask"])
+                if room.getItemByPosition(pos):
+                    continue
+                room.spawnItem(itemType,pos)
 
         # spawn background scrap
         for big_x in range(1,14):

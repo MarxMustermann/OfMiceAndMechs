@@ -1846,6 +1846,14 @@ I am working right now. I'll repriotize though.""")
             elif quest_selection == "free up storage":
                 quest = src.quests.questMap["FreeUpStorage"](amount=5)
                 character.assignQuest(quest,active=True)
+            elif quest_selection == "plan temple":
+                for room in terrain.rooms:
+                    if room.tag:
+                        continue
+                    if room.getItems():
+                        continue
+                    quest = src.quests.questMap["AssignFloorPlan"](roomPosition=room.getPosition(), floorPlanType="temple")
+                    character.assignQuest(quest,active=True)
             else:
                 character.addMessage("no quest set for this task")
 
@@ -2235,6 +2243,14 @@ The whole storage is filled with stuff.
 Some free storage is needed to continue production.
 
 Get rid of some things, preferably Scrap.
+""")
+            offer_accept_options = True
+        elif task == "plan temple":
+            base_response_text.append("""
+The gods need to be worthiped.
+At least it is very useful to do so.
+
+Schedule building a temple.
 """)
             offer_accept_options = True
         else:

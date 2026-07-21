@@ -32,13 +32,6 @@ class SpawnClone(src.quests.MetaQuestSequence):
         reason = extraParam.get("reason")
         if reason == "no source for item GooFlask":
 
-            # go to spawn room (obsolete?)
-            if not self.character.getBigPosition() == (7,8,0):
-                newQuest = src.quests.questMap["GoToTile"](targetPosition=(7,8,0),reason="go to spawning room",description="go to spawning room")
-                self.addQuest(newQuest)
-                self.startWatching(newQuest,self.handleQuestFailure,"failed")
-                return
-
             # pick up goo flask from the environment
             for (coord,itemList) in self.character.getTerrain().itemsByBigCoordinate.items():
                 if self.character.getTerrain().getRoomByPosition(coord):

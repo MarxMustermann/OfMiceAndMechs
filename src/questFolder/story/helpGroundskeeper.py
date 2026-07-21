@@ -25,7 +25,7 @@ class HelpGroundskeeper(src.quests.MetaQuestSequence):
         keeper = None
         terrain = character.getHomeTerrain()
         for candidate in terrain.getAllCharacters():
-            if not candidate.name.startswith("Eddi "):
+            if not isinstance(candidate,src.characters.characterMap["GroundsKeeper"]):
                 continue
             keeper_position = candidate.getBigPosition()
             keeper = candidate
@@ -46,7 +46,7 @@ class HelpGroundskeeper(src.quests.MetaQuestSequence):
                 groundskeeper_index = None
                 counter = 1
                 for option in submenue.options.values():
-                    if option.name.startswith("Eddi "):
+                    if isinstance(option,src.characters.characterMap["GroundsKeeper"]):
                         groundskeeper_index = counter
                     counter += 1
 

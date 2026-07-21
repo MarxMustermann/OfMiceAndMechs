@@ -345,7 +345,7 @@ There are many useful items around.
 The groundskeeper is working now.
 It will start to rebuild its working area.
 
-Help it get set up.
+""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Help it get set up."""),"""
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to help to groundskeeper?"""),"""
 """]

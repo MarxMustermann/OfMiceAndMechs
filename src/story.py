@@ -1798,7 +1798,7 @@ I am working right now. I'll repriotize though.""")
 
                 # keep building the build site in progress
                 if targetPosition:
-                    quest = src.quests.questMap["BuildRoom"](targetPosition=targetPosition)
+                    quest = src.quests.questMap["BuildRoom"](targetPosition=targetPosition,lifetime=500)
                     character.assignQuest(quest,active=True)
             elif quest_selection == "fetch Walls":
                 quest = src.quests.questMap["RestockRoom"](targetPositionBig=(7,4,0),allowAny=True)

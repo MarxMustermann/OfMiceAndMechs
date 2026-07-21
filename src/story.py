@@ -1802,53 +1802,38 @@ I am working right now. I'll repriotize though.""")
                 if targetPosition:
                     quest = src.quests.questMap["BuildRoom"](targetPosition=targetPosition,lifetime=500)
                     character.assignQuest(quest,active=True)
-            elif quest_selection == "fetch Walls":
-                quest = src.quests.questMap["RestockRoom"](targetPositionBig=(7,4,0),allowAny=True)
-                character.assignQuest(quest,active=True)
-                quest = src.quests.questMap["Scavenge"](toCollect="Wall")
-                character.assignQuest(quest,active=True)
-                if character.getFreeInventorySpace() < 1:
-                    quest = src.quests.questMap["ClearInventory"]()
-                    character.assignQuest(quest,active=True)
-            elif quest_selection == "fetch Doors":
-                quest = src.quests.questMap["RestockRoom"](targetPositionBig=(7,4,0),allowAny=True)
-                character.assignQuest(quest,active=True)
-                quest = src.quests.questMap["Scavenge"](toCollect="Door")
-                character.assignQuest(quest,active=True)
-                if character.getFreeInventorySpace() < 1:
-                    quest = src.quests.questMap["ClearInventory"]()
-                    character.assignQuest(quest,active=True)
-            elif quest_selection == "fetch MetalWorkingBench":
-                quest = src.quests.questMap["LootRoom"](targetPositionBig=(4,7,0),collectBig=True)
-                character.assignQuest(quest,active=True)
-            elif quest_selection == "fetch Anvil":
-                for room in terrain.rooms:
-                    if not room.getItemsByType("Anvil"):
-                        continue
-                    quest = src.quests.questMap["LootRoom"](targetPositionBig=room.getPosition(),collectBig=True)
-                    character.assignQuest(quest,active=True)
-                    break
-            elif quest_selection == "fetch CityPlaner":
-                for room in terrain.rooms:
-                    if not room.getItemsByType("CityPlaner"):
-                        continue
-                    quest = src.quests.questMap["LootRoom"](targetPositionBig=room.getPosition(),collectBig=True)
-                    character.assignQuest(quest,active=True)
-                    break
             elif quest_selection == "fetch Scrap":
                 quest = src.quests.questMap["RestockRoom"](targetPositionBig=(7,4,0),allowAny=True)
                 character.assignQuest(quest,active=True)
                 quest = src.quests.questMap["GatherScrap"]()
                 character.assignQuest(quest,active=True)
             elif quest_selection.startswith("fetch ") and len(quest_selection.split(" ")) > 1:
+
+                # get item type
                 item_type = quest_selection.split(" ")[1]
-                quest = src.quests.questMap["RestockRoom"](targetPositionBig=(7,4,0),allowAny=True)
-                character.assignQuest(quest,active=True)
-                quest = src.quests.questMap["Scavenge"](toCollect=item_type)
-                character.assignQuest(quest,active=True)
-                if character.getFreeInventorySpace() < 1:
-                    quest = src.quests.questMap["ClearInventory"]()
+
+                # loot rooms containing the item
+                found_loot_room = False
+                for room in terrain.rooms:
+                    if not room.getItemsByType(item_type):
+                        continue
+                    found_loot_room = True
+                    quest = src.quests.questMap["LootRoom"](targetPositionBig=room.getPosition(),collectBig=True)
                     character.assignQuest(quest,active=True)
+                    if not room.getEnemiesOnTile(character):
+                        quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
+                        character.assignQuest(quest,active=True)
+                    break
+
+                # loot item outside
+                if not found_loot_room = True:
+                    quest = src.quests.questMap["RestockRoom"](targetPositionBig=(7,4,0),allowAny=True)
+                    character.assignQuest(quest,active=True)
+                    quest = src.quests.questMap["Scavenge"](toCollect=item_type)
+                    character.assignQuest(quest,active=True)
+                    if character.getFreeInventorySpace() < 1:
+                        quest = src.quests.questMap["ClearInventory"]()
+                        character.assignQuest(quest,active=True)
             elif quest_selection == "disable alarm":
                 quest = src.quests.questMap["LiftOutsideRestrictions"]()
                 character.assignQuest(quest,active=True)

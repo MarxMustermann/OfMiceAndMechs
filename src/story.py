@@ -2100,6 +2100,8 @@ I don't need anything right now.
 """]
             submenue = character.showTextMenu(base_response_text,title=partner.name.upper()+" SAYS")
             character.add_submenu(submenue)
+            character.changed("no_builder_quest")
+            src.gamestate.gamestate.stern["no_groundskeeper_quest"] = src.gamestate.gamestate.tick
             return
 
         submenue = src.menuFolder.selectionMenu.SelectionMenu(

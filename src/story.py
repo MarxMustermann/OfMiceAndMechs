@@ -1840,6 +1840,15 @@ I am working right now. I'll repriotize though.""")
                 character.assignQuest(quest,active=True)
                 quest = src.quests.questMap["GatherScrap"]()
                 character.assignQuest(quest,active=True)
+            elif quest_selection.startswith("fetch ") and len(quest_selection.split(" ")) > 1:
+                item_type = quest_selection.split(" ")[1]
+                quest = src.quests.questMap["RestockRoom"](targetPositionBig=(7,4,0),allowAny=True)
+                character.assignQuest(quest,active=True)
+                quest = src.quests.questMap["Scavenge"](toCollect=item_type)
+                character.assignQuest(quest,active=True)
+                if character.getFreeInventorySpace() < 1:
+                    quest = src.quests.questMap["ClearInventory"]()
+                    character.assignQuest(quest,active=True)
             elif quest_selection == "disable alarm":
                 quest = src.quests.questMap["LiftOutsideRestrictions"]()
                 character.assignQuest(quest,active=True)
@@ -2310,6 +2319,14 @@ Try to find some. They should be Doors scattered around everywhere.
 I need Scrap to produce MetalBars
 
 Fetch some. it is nearly everywhere.
+""")
+            offer_accept_options = True
+        elif task.startswith("fetch ") and len(task.split(" ")) > 1:
+            item_type = task.split(" ")[1]
+            base_response_text.append(f"""
+I need some {item_type}.
+
+Fetch some.
 """)
             offer_accept_options = True
         elif task == "free up storage":

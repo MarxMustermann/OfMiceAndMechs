@@ -1073,14 +1073,14 @@ def setUpRuin(pos):
                     # add monster
                     pos = (random.randint(1,11),random.randint(1,11),0)
                     level = random.randint(1,7)
-                    golem = src.characters.characterMap[monsterType](level=level)
-                    golem.godMode = True
+                    enemy = src.characters.characterMap[monsterType](level=level)
+                    enemy.godMode = True
                     quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
                     quest.autoSolve = True
-                    quest.assignToCharacter(golem)
+                    quest.assignToCharacter(enemy)
                     quest.activate()
-                    golem.quests.append(quest)
-                    room.addCharacter(golem, pos[0], pos[1])
+                    enemy.quests.append(quest)
+                    room.addCharacter(enemy, pos[0], pos[1])
             else:
                 # add functional room
                 item_type = random.choice(["SwordSharpener","ArmorReinforcer","MetalWorkingBench","CoalBurner"])
@@ -1091,14 +1091,14 @@ def setUpRuin(pos):
                 monsterType = random.choice(["Golem","ShieldBug"])
                 pos = (random.randint(1,11),random.randint(1,11),0)
                 level = random.randint(1,7)
-                golem = src.characters.characterMap[monsterType](level=level)
-                golem.godMode = True
+                enemy = src.characters.characterMap[monsterType](level=level)
+                enemy.godMode = True
                 quest = src.quests.questMap["SecureTile"](toSecure=rand_pos)
                 quest.autoSolve = True
-                quest.assignToCharacter(golem)
+                quest.assignToCharacter(enemy)
                 quest.activate()
-                golem.quests.append(quest)
-                currentTerrain.addCharacter(golem, pos[0] + rand_pos[0] * 15, pos[1] + rand_pos[1] * 15)
+                enemy.quests.append(quest)
+                currentTerrain.addCharacter(enemy, pos[0] + rand_pos[0] * 15, pos[1] + rand_pos[1] * 15)
 
             for i in range(random.randint(1,3)):
                 loot_types = ["Flask", "GooFlask", "Scrap", "Scrap", "MemoryFragment"]

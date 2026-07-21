@@ -170,14 +170,11 @@ class ExamineMenu(src.menues.SubMenu):
 
             counter += 1
         text.append("\n")
-        text.append("press W/A/S/D to change what spot you look at\n")
-        text.append("You can only examine the items below or next to you\n")
-        text.append("The character will follow the cursor when moved\n\n")
 
         # collect things to display
         (show_characters,items,markers) = self.get_things_to_show()
         total_amount_shown = len(items)+len(show_characters)+len(markers)
-        text.append(f"{total_amount_shown} things were found on the selected spot:\n(press w/s to view details for a different thing)\n\n")
+        text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),f"{total_amount_shown} things were found on the selected spot:\n(press w/s to view details for a different thing)\n\n"))
         display_counter = 0
 
         # list characters on postion
@@ -286,5 +283,9 @@ class ExamineMenu(src.menues.SubMenu):
             text.append("\n")
         else:
             text.append("nothing to show details on")
+
+        text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"press W/A/S/D to change what spot you look at\n"))
+        text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You can only examine the items below or next to you\n"))
+        text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"The character will follow the cursor when moved\n\n"))
 
         return text

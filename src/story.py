@@ -2009,7 +2009,7 @@ There are several things you can do to help me out:
                 numGlassHearts += 1
 
         # use temple
-        if hasTemple and numGlassStatues > 0:
+        if hasTemple and numGlassStatues > numGlassHearts:
             if numGlassHearts < 7:
                 name = "collect glass hearts"
                 tasks.append((name,name))

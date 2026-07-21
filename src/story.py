@@ -2326,7 +2326,7 @@ I need Scrap to produce MetalBars
 Fetch some. it is nearly everywhere.
 """)
             offer_accept_options = True
-        elif task.startswith("fetch ") and len(task.split(" ")) > 1:
+        elif isinstance(task,str) and task.startswith("fetch ") and len(task.split(" ")) > 1:
             item_type = task.split(" ")[1]
             base_response_text.append(f"""
 I need some {item_type}.

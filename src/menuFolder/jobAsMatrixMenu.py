@@ -34,6 +34,7 @@ class JobAsMatrixMenu(src.menues.SubMenu):
                 "resource gathering",
                 "praying",
                 "mold farming"
+                "storage management"
             ]))
 
     def get_short_form(self,duty_name):

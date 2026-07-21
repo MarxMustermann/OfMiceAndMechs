@@ -121,4 +121,28 @@ Currently {num_free_storage} storage slots are free."""
         self.startWatching(character,self.pickedUpItem, "itemPickedUp")
         return super().assignToCharacter(character)
 
+    @staticmethod
+    def generateDutyQuest(beUsefull,character,room, dryRun):
+        '''
+        generate the quests for the storage management duty
+        '''
+        terrain = character.getTerrain()
+        num_empty_storage = 0
+        num_storage = 0
+        for room in terrain.rooms:
+            storageSlots = room.storageSlots
+            for storageSlot in storageSlots:
+                if storageSlot[1]:
+                    continue
+                num_storage += 1
+                if room.getItemByPosition(storageSlot[0]):
+                    continue
+                num_empty_storage += 1
+        if num_empty_storage <= 0 and num_storage:
+            quest = src.quests.questMap["FreeUpStorage"](amount=5)
+            if not dryRun:
+                beUsefull.idleCounter = 0
+            return ([quest],None)
+        return (None,None)
+
 src.quests.addType(FreeUpStorage)

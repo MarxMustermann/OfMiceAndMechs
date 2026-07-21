@@ -176,6 +176,8 @@ Press d to move the cursor and show the subquests description.
             failedDuty = "machine placing"
         if quest.type in ("FarmMold","SetUpMachine"):
             failedDuty = "mold farming"
+        if quest.type in ("FreeUpStorage",):
+            failedDuty = "storage management"
         if failedDuty:
             self.dutySkipps[failedDuty] = 3
 
@@ -526,6 +528,8 @@ Press d to move the cursor and show the subquests description.
                     step = src.quests.questMap["Pray"].generateDutyQuest(self,character,room,dryRun)
                 case "mold farming":
                     step = src.quests.questMap["FarmMold"].generateDutyQuest(self,character,room,dryRun)
+                case "storage management":
+                    step = src.quests.questMap["FreeUpStorage"].generateDutyQuest(self,character,room,dryRun)
 
             if not isinstance(step,tuple):
                 print(duty)

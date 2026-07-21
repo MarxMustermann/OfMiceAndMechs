@@ -1045,17 +1045,23 @@ def setUpRuin(pos):
 
             # fill room
             if random.random() < 0.8:
+
                 # add monsters and loot
                 monsterType = random.choice(["Golem","ShieldBug"])
                 for i in range(0,random.randint(1,8)):
+
                     # add loot
                     if random.random() < 0.2:
+
+                        # add mana crystal
                         position = (6,6,0)
                         mana_crystal = src.items.itemMap["ManaCrystal"]()
                         if not room.getPositionWalkable(position):
                             continue
                         room.addItem(mana_crystal,position)
                     else:
+
+                        # add low level loot
                         position = (random.randint(1,12),random.randint(1,12),0)
                         item = src.items.itemMap[random.choice(loot_types)]()
                         if item.type == "GooFlask":
@@ -1087,6 +1093,7 @@ def setUpRuin(pos):
                 item = src.items.itemMap[item_type]()
                 room.addItem(item,(6,6,0))
         else:
+            # add enemies
             for i in range(random.randint(1,3)):
                 monsterType = random.choice(["Golem","ShieldBug"])
                 pos = (random.randint(1,11),random.randint(1,11),0)
@@ -1100,6 +1107,7 @@ def setUpRuin(pos):
                 enemy.quests.append(quest)
                 currentTerrain.addCharacter(enemy, pos[0] + rand_pos[0] * 15, pos[1] + rand_pos[1] * 15)
 
+            # add low level loot
             for i in range(random.randint(1,3)):
                 loot_types = ["Flask", "GooFlask", "Scrap", "Scrap", "MemoryFragment"]
                 item = src.items.itemMap[random.choice(loot_types)]()
@@ -1108,6 +1116,8 @@ def setUpRuin(pos):
                 if item.type == "Vial":
                     item.uses = 10
                 currentTerrain.addItem(item, (pos[0] + rand_pos[0] * 15, pos[1] + rand_pos[1] * 15,0))
+
+        # randomise setting for next POI placed
         rand_pos = (random.randint(3,11),random.randint(3,11))
         make_room = random.random() < 0.4
 

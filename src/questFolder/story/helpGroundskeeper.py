@@ -69,7 +69,7 @@ class HelpGroundskeeper(src.quests.MetaQuestSequence):
             return (None,(["esc"],"to close menu"))
 
         # open chat menu
-        if character.container == keeper.container:
+        if character.container != keeper.container:
             return (None,(".","stand around confused"))
         return (None,("h","start talking"))
 

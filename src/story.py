@@ -1823,12 +1823,14 @@ I am working right now. I'll repriotize though.""")
                 # loot rooms containing the item
                 found_loot_room = False
                 for room in terrain.rooms:
+                    if room.tag != "ruin":
+                        continue
                     if not room.getItemsByType(item_type):
                         continue
                     found_loot_room = True
                     quest = src.quests.questMap["LootRoom"](targetPositionBig=room.getPosition(),collectBig=True)
                     character.assignQuest(quest,active=True)
-                    if not room.getEnemiesOnTile(character):
+                    if room.getEnemiesOnTile(character):
                         quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
                         character.assignQuest(quest,active=True)
                     break
@@ -1857,6 +1859,14 @@ I am working right now. I'll repriotize though.""")
                     if room.getItems():
                         continue
                     quest = src.quests.questMap["AssignFloorPlan"](roomPosition=room.getPosition(), floorPlanType="temple")
+                    character.assignQuest(quest,active=True)
+            elif quest_selection == "plan gooProcessing":
+                for room in terrain.rooms:
+                    if room.tag:
+                        continue
+                    if room.getItems():
+                        continue
+                    quest = src.quests.questMap["AssignFloorPlan"](roomPosition=room.getPosition(), floorPlanType="gooProcessing")
                     character.assignQuest(quest,active=True)
             elif quest_selection == "collect glass hearts":
                 quest = src.quests.questMap["CollectGlassHearts"]()
@@ -2159,14 +2169,14 @@ There are several things you can do to help me out:
 
                 # ensure walls are available
                 if not hasWalls and num_empty_storage > 0:
-                    name = "fetch Walls"
-                    tasks.append((name,"fetch Walls"))
+                    name = "fetch Wall"
+                    tasks.append((name,"fetch Wall"))
                     extraDescriptions[name] = "i need Walls to build new rooms"
 
                 # ensure doors are available
                 if not hasDoors and num_empty_storage > 0:
-                    name = "fetch Doors"
-                    tasks.append((name,"fetch Doors"))
+                    name = "fetch Door"
+                    tasks.append((name,"fetch Door"))
                     extraDescriptions[name] = "i need Doors to build new rooms"
 
                 # ensure walls are available
@@ -2295,14 +2305,14 @@ The base needs to be extended so i have more space to work with.
 Help me put together place the Walls and put together a new room.
 """)
             offer_accept_options = True
-        elif task == "fetch Walls":
+        elif task == "fetch Wall":
             base_response_text.append("""
 I need Walls to build more rooms.
 
 Try to find some. They should be Walls scattered around everywhere.
 """)
             offer_accept_options = True
-        elif task == "fetch Doors":
+        elif task == "fetch Door":
             base_response_text.append("""
 I need Doors to build more rooms.
 
@@ -2338,6 +2348,13 @@ The gods need to be worthiped.
 At least it is very useful to do so.
 
 Schedule building a temple.
+""")
+            offer_accept_options = True
+        elif task == "plan gooProcessing":
+            base_response_text.append("""
+Goo is life. The Goo Processing room produces goo.
+
+Schedule building a goo processing room.
 """)
             offer_accept_options = True
         elif task == "collect glass hearts":

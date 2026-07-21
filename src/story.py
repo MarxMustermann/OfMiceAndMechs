@@ -2013,14 +2013,21 @@ There are several things you can do to help me out:
 
         # use temple
         if hasTemple and numGlassStatues > numGlassHearts:
-            if numGlassHearts < 7:
-                name = "collect glass hearts"
-                tasks.append((name,name))
-                extraDescriptions[name] = "put society back together by collecting all the glass hearts"
-            else:
-                name = "ascend"
-                tasks.append((name,name))
-                extraDescriptions[name] = "put society back together by replacing the dead leader"
+            hasGrowthTank = False
+            for room in terrain.rooms:
+                if not room.getItemsByType("GrowthTank",needsBolted=True):
+                    continue
+                hasGrowthTank = True
+
+            if hasGrowthTank:
+                if numGlassHearts < 7:
+                    name = "collect glass hearts"
+                    tasks.append((name,name))
+                    extraDescriptions[name] = "put society back together by collecting all the glass hearts"
+                else:
+                    name = "ascend"
+                    tasks.append((name,name))
+                    extraDescriptions[name] = "put society back together by replacing the dead leader"
 
         # ensure storage space
         num_empty_storage = 0

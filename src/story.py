@@ -2095,9 +2095,9 @@ There are several things you can do to help me out:
                         extraDescriptions[name] = "help me set up the next room"
 
         if not tasks:
-            base_response_text.append("""
+            base_response_text = ["""
 I don't need anything right now.
-""")
+"""]
             submenue = character.showTextMenu(base_response_text,title=partner.name.upper()+" SAYS")
             character.add_submenu(submenue)
             return

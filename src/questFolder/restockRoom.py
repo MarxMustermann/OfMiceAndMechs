@@ -385,6 +385,9 @@ Press the l or L keys to drop items.
         return ([quest],None)
 
     def getQuestMarkersTile(self,character):
+        '''
+        return the quest markers for the big map
+        '''
         result = super().getQuestMarkersTile(character)
         if self.targetPositionBig:
             result.append(((self.targetPositionBig[0],self.targetPositionBig[1]),"target"))

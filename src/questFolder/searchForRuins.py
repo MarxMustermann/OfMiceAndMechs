@@ -59,6 +59,8 @@ class SearchForRuins(src.quests.MetaQuestSequence):
         best_candidate = None
         best_distance = None
         current_pos = character.getTerrainPosition()
+        if current_pos in candidates:
+            candidates.remove(current_pos)
         for candidate in candidates:
             distance = src.helpers.distance_between_points(current_pos, candidate)
             distance += extraWeight[candidate]

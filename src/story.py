@@ -1854,6 +1854,9 @@ I am working right now. I'll repriotize though.""")
                         continue
                     quest = src.quests.questMap["AssignFloorPlan"](roomPosition=room.getPosition(), floorPlanType="temple")
                     character.assignQuest(quest,active=True)
+            elif quest_selection == "collect glass hearts":
+                quest = src.quests.questMap["CollectGlassHearts"]()
+                character.assignQuest(quest,active=True)
             else:
                 character.addMessage("no quest set for this task")
 
@@ -2290,6 +2293,13 @@ The gods need to be worthiped.
 At least it is very useful to do so.
 
 Schedule building a temple.
+""")
+            offer_accept_options = True
+        elif task == "collect glass hearts":
+            base_response_text.append("""
+Collecting the glass hearts in you temple gives you power.
+
+With that power you can accomplish wonders.
 """)
             offer_accept_options = True
         else:

@@ -381,6 +381,11 @@ class Quest:
             color = "#0b0"
         return [[(src.interaction.urwid.AttrSpec(color, "default"), description)]]
 
+    def getRemainingLifetime(self):
+        if self.lifetimeEvent:
+            return self.lifetimeEvent.tick - src.gamestate.gamestate.tick
+        return None
+
     """
     get the quests description
     bad code: colored and asList are somewhat out of place

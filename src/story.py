@@ -2304,12 +2304,20 @@ sure i'll produce equipment for you as long as you bring me the raw material.
             if x not in (6,8,) and random.random() < 0.7:
                 paving.destroy()
         for _i in range(10):
-            amount = random.randint(1,5)
+            amount = random.randint(1,3)
             pos = (big_pos[0]*15+random.randint(1,14),big_pos[1]*15+random.randint(1,14),0)
             if currentTerrain.getItemByPosition(pos):
                 continue
             scrap = src.items.itemMap["Scrap"](amount=amount)
             currentTerrain.addItem(scrap,pos)
+        for _i in range(10):
+            pos = (big_pos[0]*15+random.randint(1,14),big_pos[1]*15+random.randint(1,14),0)
+            if currentTerrain.getItemByPosition(pos):
+                continue
+            mold = src.items.itemMap["Mold"]()
+            mold.startSpawn()
+            currentTerrain.addItem(mold,pos)
+            currentTerrain.forests.append(big_pos)
 
         # add enemy
         enemy = src.characters.characterMap["Spiderling"]()

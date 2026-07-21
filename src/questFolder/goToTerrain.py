@@ -225,4 +225,29 @@ class GoToTerrain(src.quests.MetaQuestSequence):
         self.startWatching(character,self.handleChangedTile, "changedTile")
         super().assignToCharacter(character)
 
+
+    def handleQuestFailure(self,extraParam):
+        '''
+        react to a subquest failing
+        '''
+
+        # ensure the quest is actually active
+        if extraParam["quest"] not in self.subQuests:
+            return
+
+        # remove failed quest
+        self.subQuests.remove(extraParam["quest"])
+
+        # clear the path to target
+        if extraParam["reason"] and "no path found" in extraParam["reason"]:
+            if extraParam["quest"].idleMovement:
+                return
+            quest = src.quests.questMap["ClearPathToPosition"](targetPosition=extraParam["quest"].targetPosition)
+            self.addQuest(quest)
+            self.startWatching(quest,self.handleQuestFailure,"failed")
+            return
+
+        # fail recursively
+        self.fail(extraParam["reason"])
+
 src.quests.addType(GoToTerrain)

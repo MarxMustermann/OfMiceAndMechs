@@ -1826,6 +1826,13 @@ I am working right now. I'll repriotize though.""")
                     quest = src.quests.questMap["LootRoom"](targetPositionBig=room.getPosition(),collectBig=True)
                     character.assignQuest(quest,active=True)
                     break
+            elif quest_selection == "fetch CityPlaner":
+                for room in terrain.rooms:
+                    if not room.getItemsByType("CityPlaner"):
+                        continue
+                    quest = src.quests.questMap["LootRoom"](targetPositionBig=room.getPosition(),collectBig=True)
+                    character.assignQuest(quest,active=True)
+                    break
             elif quest_selection == "fetch Scrap":
                 quest = src.quests.questMap["RestockRoom"](targetPositionBig=(7,4,0),allowAny=True)
                 character.assignQuest(quest,active=True)
@@ -2160,6 +2167,23 @@ MetalBars are needed to produce most things.
                 self.builder_reset(partner)
 
                 partner.registers["gotAnvil"] = True
+        elif task == "fetch CityPlaner":
+            cityPlaner = character.searchInventory("CityPlaner")
+            if not cityPlaner:
+                base_response_text.append("""
+Now i need a CityPlaner.
+""")
+                offer_accept_options = True
+            else:
+                base_response_text.append("""
+Thanks for the CityPlaner.
+
+That will allow to coordinate how the base is getting expanded.
+""")
+                character.inventory.remove(cityPlaner[0])
+                partner.inventory.append(cityPlaner[0])
+                self.builder_reset(partner)
+
         elif task == "disable alarm":
             if partner.getTerrain().alarm:
                 base_response_text.append("""
@@ -2529,8 +2553,9 @@ sure i'll produce equipment for you as long as you bring me the raw material.
            )
         used_spots.append(cityPlanerRoom.getPosition())
         cityPlanerRoom.tag = "ruin"
-        siegeManager = src.items.itemMap["CityPlaner"]()
-        cityPlanerRoom.addItem(siegeManager,(6,9,0))
+        cityPlaner = src.items.itemMap["CityPlaner"]()
+        cityPlaner.bolted = False
+        cityPlanerRoom.addItem(cityPlaner,(6,9,0))
         for pos in [(5,5,0),(5,8,0),(9,8,0),(9,5,0)]:
             enemy = src.characters.characterMap["Golem"]()
             cityPlanerRoom.addCharacter(enemy,pos[0],pos[1])

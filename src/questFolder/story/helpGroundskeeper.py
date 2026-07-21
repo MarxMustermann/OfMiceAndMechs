@@ -21,11 +21,13 @@ class HelpGroundskeeper(src.quests.MetaQuestSequence):
             return (None,None)
 
         keeper_position = None
+        keeper = None
         terrain = character.getHomeTerrain()
         for candidate in terrain.getAllCharacters():
             if not candidate.name.startswith("Eddi "):
                 continue
             keeper_position = candidate.getBigPosition()
+            keeper = candidate
 
         if not keeper_position:
             return self._solver_trigger_fail(dryRun,"keeper not found")
@@ -66,6 +68,8 @@ class HelpGroundskeeper(src.quests.MetaQuestSequence):
             return (None,(["esc"],"to close menu"))
 
         # open chat menu
+        if character.container == keeper.container:
+            return (None,(".","stand around confused"))
         return (None,("h","start talking"))
 
     def generateTextDescription(self):

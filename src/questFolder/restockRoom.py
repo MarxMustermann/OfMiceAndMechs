@@ -407,10 +407,18 @@ Press the l or L keys to drop items.
         result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
         if not renderForTile:
             if isinstance(character.container,src.rooms.Room):
+                itemTypes = []
+                if self.toRestock:
+                    itemTypes.append(self.toRestock)
+                else:
+                    for item in character.inventory:
+                        itemTypes.append(item.type)
+
                 room = character.container
-                inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny,allowStorage=True,disallowLocations=self.disallowLocations)
-                for inputSlot in inputSlots:
-                    result.append((inputSlot[0],"target"))
+                for itemType in itemTypes:
+                    inputSlots = room.getEmptyInputslots(itemType=itemType,allowAny=self.allowAny,allowStorage=True,disallowLocations=self.disallowLocations)
+                    for inputSlot in inputSlots:
+                        result.append((inputSlot[0],"target"))
         return result
 
     @staticmethod

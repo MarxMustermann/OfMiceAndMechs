@@ -128,9 +128,11 @@ class Room:
             else:
                 function()
 
-    def getItemsByType(self,itemType, needsBolted = False, needsUnbolted = False):
+    def getItemsByType(self,itemType, needsBolted = False, needsUnbolted = False,floorItemsOnly=True):
         result = []
         for item in self.itemsOnFloor:
+            if floorItemsOnly and (item.xPosition in (0,12,) or item.yPosition in (0,12,)):
+                continue
             if needsBolted and not item.bolted:
                 continue
             if needsUnbolted and item.bolted:

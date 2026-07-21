@@ -129,7 +129,7 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
         # mark terrain as completed
         pointsOfInterest = self.getRemainingPointsOfInterests()
         if not pointsOfInterest:
-            quest = src.quests.questMap["Scavenge"](ignoreAlarm=True)
+            quest = src.quests.questMap["Scavenge"](ignoreAlarm=True,ignoreScrap=True)
             return ([quest],None)
 
         # mark current tile as explored

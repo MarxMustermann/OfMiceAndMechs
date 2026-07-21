@@ -2189,6 +2189,13 @@ I need Walls to build more rooms.
 Try to find some. They should be Walls scattered around everywhere.
 """)
             offer_accept_options = True
+        elif task == "fetch Doors":
+            base_response_text.append("""
+I need Doors to build more rooms.
+
+Try to find some. They should be Doors scattered around everywhere.
+""")
+            offer_accept_options = True
         elif task == "fetch Scrap":
             base_response_text.append("""
 I need Scrap to produce MetalBars

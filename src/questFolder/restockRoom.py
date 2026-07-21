@@ -404,11 +404,6 @@ Press the l or L keys to drop items.
             if not renderForTile:
                 return []
 
-        try:
-            self.disallowLocations
-        except:
-            self.disallowLocations = None
-
         result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
         if not renderForTile:
             if isinstance(character.container,src.rooms.Room):

@@ -90,6 +90,8 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
         # loot current tile
         if character.container.isRoom:
             itemsOnFloor = character.container.itemsOnFloor
+            if character.container.tag != "ruin":
+                itemsOnFloor = []
         else:
             itemsOnFloor = character.container.getNearbyItems(character)
         for item in itemsOnFloor:

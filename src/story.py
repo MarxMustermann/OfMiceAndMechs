@@ -2017,6 +2017,8 @@ There are several things you can do to help me out:
                         continue
                     if itemType in itemsAvailabe:
                         continue
+                    if itemType == "CityPlaner":
+                        continue
                     tasks.append((name,name))
                     extraDescriptions[name] = f"there is need for more {itemType}"
                     itemsNeeded.append(itemType)
@@ -2056,7 +2058,7 @@ There are several things you can do to help me out:
             if hasEmptyRoom:
 
                 # ensure city planer
-                if not hasCityPlaner:
+                if not "CityPlaner" in itemsAvailabe and not hasCityPlaner:
                     name = "fetch CityPlaner"
                     tasks.append((name,"fetch CityPlaner"))
                     extraDescriptions[name] = "a city planer will allow to control how to expand the base"

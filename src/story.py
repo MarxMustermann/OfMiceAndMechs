@@ -1826,7 +1826,7 @@ I am working right now. I'll repriotize though.""")
                     break
 
                 # loot item outside
-                if not found_loot_room = True:
+                if found_loot_room == False:
                     quest = src.quests.questMap["RestockRoom"](targetPositionBig=(7,4,0),allowAny=True)
                     character.assignQuest(quest,active=True)
                     quest = src.quests.questMap["Scavenge"](toCollect=item_type)

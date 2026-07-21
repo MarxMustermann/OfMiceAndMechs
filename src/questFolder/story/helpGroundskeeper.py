@@ -38,7 +38,25 @@ class HelpGroundskeeper(src.quests.MetaQuestSequence):
         submenue = character.macroState.get("submenue")
         if submenue and not ignoreCommands:
             if isinstance(submenue,src.menuFolder.chatPartnerselection.ChatPartnerselection):
-                return (None,("j","start conversation"))
+                if submenue.options is None:
+                    return (None,("j","start conversation"))
+                groundskeeper_index = None
+                counter = 1
+                for option in submenue.options.values():
+                    if option.name.startswith("Eddi "):
+                        groundskeeper_index = counter
+                    counter += 1
+
+                command = None
+                if groundskeeper_index is not None:
+                    command = ""
+                    command += "s"*(submenue.selectionIndex-groundskeeper_index)
+                    command += "w"*(groundskeeper_index-submenue.selectionIndex)
+                    command += "j"
+                if command:
+                    return (None,(command,"start conversation"))
+                else:
+                    return (None,(["esc"],"close menu"))
             if isinstance(submenue,src.chats.Chat):
                 return (None,("j","continue conversation"))
             if submenue.tag == "builder_task_selection":

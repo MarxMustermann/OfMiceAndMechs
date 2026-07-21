@@ -2825,7 +2825,15 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                     continue
                 room.spawnItem(itemType,pos)
 
-        # spawn background scrap
+        # spawn background items
+        toSpawn = [
+                    (0.5,10,"Wall"),
+                    (0.5,1,"Door"),
+                    (0.2,1,"Rod"),
+                    (0.5,10,"MetalBars"),
+                    (0.2,1,"GooFlask"),
+                    (0.05,1,"GrowthTank"),
+                ]
         for big_x in range(1,14):
             for big_y in range(1,14):
                 if (big_x,big_y,0) in used_spots:
@@ -2841,47 +2849,14 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                 if big_x > 5 and big_x < 9 and big_y > 2 and big_y < 9:
                     continue
 
-                if random.random() < 0.5:
-                    for _i in range(1,10):
-                        wall = src.items.itemMap["Wall"]()
-                        wall.bolted = False
-                        pos = (big_x*15+random.randint(1,14),big_y*15+random.randint(1,14),0)
-                        if not currentTerrain.getItemByPosition(pos):
-                            currentTerrain.addItem(wall,pos)
-
-                if random.random() < 0.5:
-                    door = src.items.itemMap["Door"]()
-                    door.bolted = False
-                    pos = (big_x*15+random.randint(1,14),big_y*15+random.randint(1,14),0)
-                    if not currentTerrain.getItemByPosition(pos):
-                        currentTerrain.addItem(door,pos)
-
-                if random.random() < 0.2:
-                    door = src.items.itemMap["Rod"]()
-                    door.bolted = False
-                    pos = (big_x*15+random.randint(1,14),big_y*15+random.randint(1,14),0)
-                    if not currentTerrain.getItemByPosition(pos):
-                        currentTerrain.addItem(door,pos)
-
-                if random.random() < 0.5:
-                    for _i in range(1,10):
-                        metalBars = src.items.itemMap["MetalBars"]()
-                        pos = (big_x*15+random.randint(1,14),big_y*15+random.randint(1,14),0)
-                        if not currentTerrain.getItemByPosition(pos):
-                            currentTerrain.addItem(metalBars,pos)
-
-                if random.random() < 0.2:
-                    item = src.items.itemMap["GooFlask"]()
-                    pos = (big_x*15+random.randint(1,14),big_y*15+random.randint(1,14),0)
-                    if not currentTerrain.getItemByPosition(pos):
-                        currentTerrain.addItem(item,pos)
-
-                if random.random() < 0.05:
-                    item = src.items.itemMap["GrowthTank"]()
-                    pos = (big_x*15+random.randint(1,14),big_y*15+random.randint(1,14),0)
-                    if not currentTerrain.getItemByPosition(pos):
-                        currentTerrain.addItem(item,pos)
-
+                for spawn_item in toSpawn:
+                    if random.random() < spawn_item[0]:
+                        for _i in range(spawn_item[1]):
+                            item = src.items.itemMap[spawn_item[2]]()
+                            item.bolted = False
+                            pos = (big_x*15+random.randint(1,14),big_y*15+random.randint(1,14),0)
+                            if not currentTerrain.getItemByPosition(pos):
+                                currentTerrain.addItem(item,pos)
 
         # add enemies
         for big_x in range(1,14):

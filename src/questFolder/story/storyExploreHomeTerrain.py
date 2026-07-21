@@ -20,11 +20,6 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
 
         currentTerrain = self.character.getTerrain()
 
-        #for char in currentTerrain.characters:
-        #    if char.faction == self.character.faction:
-        #        continue
-        #    if char.getBigPosition() not in result and char.getBigPosition() not in self.donePointsOfInterest:
-        #        result.append(char.getBigPosition())
         for room in currentTerrain.rooms:
             if room.tag != "ruin":
                 continue

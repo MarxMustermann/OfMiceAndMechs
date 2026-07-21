@@ -2083,46 +2083,53 @@ There are several things you can do to help me out:
                     extraDescriptions[name] = f"there is need for more {itemType}"
                     itemsNeeded.append(itemType)
 
+        # fill rooms with life
+        hasEmptyRoom = False
+        for room in terrain.rooms:
+            if room.tag == None:
+                hasEmptyRoom = True
+        if hasEmptyRoom:
+
+            # ensure city planer
+            if not "CityPlaner" in itemsAvailabe and not hasCityPlaner:
+                name = "fetch CityPlaner"
+                tasks.append((name,"fetch CityPlaner"))
+                extraDescriptions[name] = "a city planer will allow to control how to expand the base"
+
+            # ensure temple
+            if hasCityPlaner:
+                hasGooProcessing = False
+                hasTemple = False
+                for room in terrain.rooms:
+                    if room.tag == "temple":
+                        hasTemple = True
+                    if room.tag == "goo processing":
+                        hasGooProcessing = True
+                if not hasGooProcessing:
+                    name = "plan gooProcessing"
+                    tasks.append((name,"schedule building a goo procceing room"))
+                    extraDescriptions[name] = "goo is life"
+                if not hasTemple:
+                    name = "plan temple"
+                    tasks.append((name,"schedule building a Temple"))
+                    extraDescriptions[name] = "the temple always has been the centerpiece of the city"
+
         # expand base with temple
         if not terrain.alarm:
 
             # check inventory
             hasWalls = False
             hasDoors = False
-            hasEmptyRoom = False
             hasCityPlaner = False
             for room in terrain.rooms:
                 if room.tag == "ruin":
                     continue
-                if room.tag == None:
-                    hasEmptyRoom = True
                 if room.getItemsByType("Wall",needsUnbolted=True):
                     hasWalls = True
                 if room.getItemsByType("Door",needsUnbolted=True):
                     hasDoors = True
                 if room.getItemsByType("CityPlaner",needsBolted=True):
                     hasCityPlaner = True
-
-            # build temple
-            if hasEmptyRoom:
-
-                # ensure city planer
-                if not "CityPlaner" in itemsAvailabe and not hasCityPlaner:
-                    name = "fetch CityPlaner"
-                    tasks.append((name,"fetch CityPlaner"))
-                    extraDescriptions[name] = "a city planer will allow to control how to expand the base"
-
-            # ensure temple
-            if hasCityPlaner:
-                hasTemple = False
-                for room in terrain.rooms:
-                    if room.tag != "temple":
-                        continue
-                    hasTemple = True
-                if not hasTemple:
-                    name = "plan temple"
-                    tasks.append((name,"schedule building a Temple"))
-                    extraDescriptions[name] = "the temple always has been the centerpiece of the city"
 
             # expand base
             if not hasEmptyRoom:

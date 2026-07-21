@@ -1782,6 +1782,8 @@ I am working right now. I'll repriotize though.""")
                 quest = src.quests.questMap["LootRoom"](targetPositionBig=(10,5,0))
                 character.assignQuest(quest,active=True)
             elif quest_selection == "build room":
+
+                # checks for build sites in progress
                 targetPosition = None
                 for x in range(1,14):
                     for y in range(1,14):
@@ -1792,6 +1794,9 @@ I am working right now. I'll repriotize though.""")
                         if not items[0].type == "RoomBuilder":
                             continue
                         targetPosition = (x,y,0)
+
+
+                # keep building the build site in progress
                 if targetPosition:
                     quest = src.quests.questMap["BuildRoom"](targetPosition=targetPosition)
                     character.assignQuest(quest,active=True)
@@ -1815,8 +1820,12 @@ I am working right now. I'll repriotize though.""")
                 quest = src.quests.questMap["LootRoom"](targetPositionBig=(4,7,0),collectBig=True)
                 character.assignQuest(quest,active=True)
             elif quest_selection == "fetch Anvil":
-                quest = src.quests.questMap["LootRoom"](targetPositionBig=(10,7,0),collectBig=True)
-                character.assignQuest(quest,active=True)
+                for room in terrain.rooms:
+                    if not room.getItemsByType("Anvil"):
+                        continue
+                    quest = src.quests.questMap["LootRoom"](targetPositionBig=room.getPosition(),collectBig=True)
+                    character.assignQuest(quest,active=True)
+                    break
             elif quest_selection == "fetch Scrap":
                 quest = src.quests.questMap["RestockRoom"](targetPositionBig=(7,4,0))
                 character.assignQuest(quest,active=True)
@@ -1890,9 +1899,11 @@ But once i am done painting, help would be appreachiated.
 
         terrain = character.getTerrain()
 
+        groundskeepers_place = None
         for room in terrain.rooms:
             if not room.tag == "the groundskeepers place":
                 continue
+            groundskeepers_place = room
             if not room.floorPlan:
                 break
 
@@ -1939,7 +1950,7 @@ There are several things you can do to help me out:
                 extraDescriptions[name] = "Acquiring a MetalWorkingBench will allow me to start crafting items"
                 itemsNeeded.append("MetalWorkingBench")
         if not partner.registers.get("gotAnvil"):
-            if not "Anvil" in itemsAvailabe:
+            if not "Anvil" in itemsAvailabe and not groundskeepers_place.getItemByType("Anvil"):
                 name = "fetch Anvil"
                 tasks.append((name,"fetch Anvil"))
                 extraDescriptions[name] = "Acquiring an Anvil will allow me to start processing Scrap"
@@ -2066,9 +2077,22 @@ There are several things you can do to help me out:
 
                 # ensure walls are available
                 if hasWalls and hasDoors:
-                    name = "build room"
-                    tasks.append((name,"build room"))
-                    extraDescriptions[name] = "help me set up the next room"
+
+                    targetPosition = None
+                    for x in range(1,14):
+                        for y in range(1,14):
+                            check_position = (x*15+7,y*15+7,0)
+                            items = terrain.getItemByPosition(check_position)
+                            if not len(items) == 1:
+                                continue
+                            if not items[0].type == "RoomBuilder":
+                                continue
+                            targetPosition = (x,y,0)
+
+                    if targetPosition:
+                        name = "build room"
+                        tasks.append((name,"build room"))
+                        extraDescriptions[name] = "help me set up the next room"
 
         if not tasks:
             base_response_text.append("""
@@ -2455,7 +2479,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                 {
                        "coordinate": (4,5,0),
                        "roomType": "EmptyRoom",
-                       "doors": "6,12 6,0 0,6 12,6",
+                       "doors": "6,12 12,6",
                        "offset": [1,1],
                        "size": [13, 13],
                 },
@@ -2464,8 +2488,8 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         used_spots.append(alarmRoom.getPosition())
         alarmRoom.tag = "ruin"
         siegeManager = src.items.itemMap["SiegeManager"]()
-        alarmRoom.addItem(siegeManager,(6,6,0))
-        for pos in [(3,3,0),(3,9,0),(9,9,0),(9,3,0)]:
+        alarmRoom.addItem(siegeManager,(3,3,0))
+        for pos in [(5,5,0),(5,9,0),(9,9,0),(9,5,0)]:
             enemy = src.characters.characterMap["Golem"]()
             alarmRoom.addCharacter(enemy,pos[0],pos[1])
 

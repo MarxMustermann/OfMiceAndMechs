@@ -8,7 +8,7 @@ class Scavenge(src.quests.MetaQuestSequence):
     quest to collect items from the outside on a terrain
     '''
     type = "Scavenge"
-    def __init__(self, description="scavenge", creator=None, toCollect=None, lifetime=None, reason=None, ignoreAlarm=False, tryHard=False):
+    def __init__(self, description="scavenge", creator=None, toCollect=None, lifetime=None, reason=None, ignoreAlarm=False, tryHard=False, ignoreScrap=False):
         self.lastMoveDirection = None
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
@@ -20,6 +20,7 @@ class Scavenge(src.quests.MetaQuestSequence):
         self.doneTiles = []
         self.ignoreAlarm = ignoreAlarm
         self.tryHard = tryHard
+        self.ignoreScrap = ignoreScrap
 
     def generateTextDescription(self):
         '''
@@ -94,8 +95,8 @@ This quest will end when your inventory is full."""
         for item in terrain.getNearbyItems(character):
             if self.toCollect and item.type != self.toCollect:
                 continue
-            #if item.type == "Scrap":
-            #    continue
+            if self.ignoreScrap and item.type == "Scrap":
+                continue
             if item.bolted:
                 continue
 
@@ -121,7 +122,7 @@ This quest will end when your inventory is full."""
             if hasIdleSubordinate:
                 return (None,("Hjsssssj","make subordinate scavenge"))
             else:
-                quest = src.quests.questMap["ScavengeTile"](targetPositionBig=target,toCollect=self.toCollect,reason="fill your inventory",ignoreAlarm=self.ignoreAlarm,tryHard=self.tryHard)
+                quest = src.quests.questMap["ScavengeTile"](targetPositionBig=target,toCollect=self.toCollect,reason="fill your inventory",ignoreAlarm=self.ignoreAlarm,tryHard=self.tryHard,ignoreScrap=self.ignoreScrap)
                 return ([quest],None)
 
         # mark current tile as completed
@@ -293,6 +294,8 @@ This quest will end when your inventory is full."""
                     if item.bolted:
                         continue
                     if self.toCollect and item.type != self.toCollect:
+                        continue
+                    if self.ignoreScrap and item.type == "Scrap":
                         continue
                     result.append((item.getPosition(),"target"))
 

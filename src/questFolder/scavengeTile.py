@@ -6,7 +6,7 @@ import src
 class ScavengeTile(src.quests.MetaQuestSequence):
     type = "ScavengeTile"
 
-    def __init__(self, description="scavenge tile", creator=None, targetPositionBig=None,toCollect=None, reason=None, endOnFullInventory=False,tryHard=False,lifetime=None,ignoreAlarm=False):
+    def __init__(self, description="scavenge tile", creator=None, targetPositionBig=None,toCollect=None, reason=None, endOnFullInventory=False,tryHard=False,lifetime=None,ignoreAlarm=False, ignoreScrap=False):
         questList = []
         super().__init__(questList, creator=creator,lifetime=None)
         self.metaDescription = description
@@ -20,6 +20,7 @@ class ScavengeTile(src.quests.MetaQuestSequence):
         self.targetPositionBig = targetPositionBig
         self.tryHard = tryHard
         self.ignoreAlarm = ignoreAlarm
+        self.ignoreScrap = ignoreScrap
 
     def generateTextDescription(self):
         out = []
@@ -130,6 +131,8 @@ This quest will end when the target tile has no items left."""
                 continue
             if item.bolted:
                 continue
+            if self.ignoreScrap and item.type == "Scrap":
+                continue
 
             leftOverItems.append(item)
         return leftOverItems
@@ -171,6 +174,8 @@ This quest will end when the target tile has no items left."""
                 if item.bolted:
                     continue
                 if self.toCollect and item.type != self.toCollect:
+                    continue
+                if self.ignoreScrap and item.type == "Scrap":
                     continue
                 result.append((item.getPosition(),"target"))
 

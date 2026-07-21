@@ -1953,7 +1953,7 @@ There are several things you can do to help me out:
         extraDescriptions = {}
         itemsNeeded = []
         itemsAvailabe = []
-        itemsObtainable = ["Scrap","MetalBars","Door","Wall","Rod"]
+        itemsObtainable = ["Scrap","MetalBars","Door","Wall"]
 
         # check for available items
         for room in terrain.rooms:

@@ -2663,39 +2663,6 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                 scrap = src.items.itemMap["Scrap"](amount=1)
                 currentTerrain.addItem(scrap,pos)
 
-        """
-        # add build site
-        buildSite_position = (7,3,0)
-        for x in range(1,14):
-            if x == 7:
-                continue
-
-            wall = src.items.itemMap["Wall"]()
-            wall.bolted = False
-            pos = (buildSite_position[0]*15+x,buildSite_position[1]*15+1,0)
-            currentTerrain.addItem(wall,pos)
-
-            wall = src.items.itemMap["Wall"]()
-            wall.bolted = False
-            pos = (buildSite_position[0]*15+x,buildSite_position[1]*15+13,0)
-            currentTerrain.addItem(wall,pos)
-        for y in range(2,13):
-            if y == 7:
-                continue
-
-            wall = src.items.itemMap["Wall"]()
-            wall.bolted = False
-            pos = (buildSite_position[0]*15+1,buildSite_position[1]*15+y,0)
-            currentTerrain.addItem(wall,pos)
-
-            wall = src.items.itemMap["Wall"]()
-            wall.bolted = False
-            pos = (buildSite_position[0]*15+13,buildSite_position[1]*15+y,0)
-            currentTerrain.addItem(wall,pos)
-
-        used_spots.append(buildSite_position)
-        """
-        
         for room in currentTerrain.rooms:
             if room.tag != "ruin":
                 continue

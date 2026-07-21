@@ -1858,7 +1858,11 @@ I am working right now. I'll repriotize though.""")
                 character.addMessage("no quest set for this task")
 
     def builder_offered_help(self,character,partner):
+        '''
+        continues the dialog after the groundskeeper was offerd help
+        '''
 
+        # ask for a painter
         if not partner.registers.get("gotPainter"):
             painter = character.searchInventory("Painter")
             if not painter:
@@ -1912,16 +1916,18 @@ But once i am done painting, help would be appreachiated.
 
             return
 
+        # set up helper variables
         terrain = character.getTerrain()
 
+        # get the groundskeeper place
         groundskeepers_place = None
         for room in terrain.rooms:
             if not room.tag == "the groundskeepers place":
                 continue
             groundskeepers_place = room
-            if not room.floorPlan:
-                break
 
+        # pain the floor markers
+        if groundskeepers_place and groundskeepers_place.floorPlan:
             base_response_text = []
             base_response_text.append("""
 I need to focus on painting the floor markers.
@@ -1932,17 +1938,21 @@ There will be more work to do once i'm done.
             character.changed("no_builder_quest")
             return
 
+        # start collecting tasks
         base_response_text = []
         base_response_text.append("""
 There are several things you can do to help me out:
 
 """)
+
+        # set up helper variables
         tasks = []
         extraDescriptions = {}
         itemsNeeded = []
         itemsAvailabe = []
         itemsObtainable = ["Scrap","MetalBars","Door","Wall","Rod"]
 
+        # check for available items
         for room in terrain.rooms:
             outputSlots = room.getNonEmptyOutputslots(allowStorage=True)
             for outputSlot in outputSlots:
@@ -1959,23 +1969,29 @@ There are several things you can do to help me out:
                 continue
             itemsAvailabe.append(itemType)
 
+        # ensure MetalWorkingBench
         if not partner.registers.get("gotMetalWorkingBench"):
             if not "MetalWorkingBench" in itemsAvailabe:
                 name = "fetch MetalWorkingBench"
                 tasks.append((name,"fetch MetalWorkingBench"))
                 extraDescriptions[name] = "Acquiring a MetalWorkingBench will allow me to start crafting items"
                 itemsNeeded.append("MetalWorkingBench")
+
+        # ensure Anvil
         if not partner.registers.get("gotAnvil"):
             if not "Anvil" in itemsAvailabe and not groundskeepers_place.getItemByType("Anvil"):
                 name = "fetch Anvil"
                 tasks.append((name,"fetch Anvil"))
                 extraDescriptions[name] = "Acquiring an Anvil will allow me to start processing Scrap"
                 itemsNeeded.append("Anvil")
-        if character.getTerrain().alarm:
+
+        # turn off alarm
+        if terrain.alarm:
             name = "disable alarm"
             tasks.append((name,"disable alarm"))
             extraDescriptions[name] = "disabling the alarm will allow me to move more freely"
 
+        # check temple state
         numGlassHearts = 0
         numGlassStatues = 0
         hasTemple = False
@@ -1992,6 +2008,7 @@ There are several things you can do to help me out:
                     continue
                 numGlassHearts += 1
 
+        # use temple
         if hasTemple and numGlassStatues > 0:
             if numGlassHearts < 7:
                 name = "collect glass hearts"
@@ -2002,6 +2019,7 @@ There are several things you can do to help me out:
                 tasks.append((name,name))
                 extraDescriptions[name] = "put society back together by replacing the dead leader"
 
+        # ensure storage space
         num_empty_storage = 0
         num_storage = 0
         for room in terrain.rooms:
@@ -2018,7 +2036,10 @@ There are several things you can do to help me out:
             tasks.append((name,name))
             extraDescriptions[name] = "the whole storage is filled and space is needed. Get rid of some of the things in storage"
 
+        # generate fetch from the base state
         if num_empty_storage > 0:
+
+            # generate fetch quest for building item
             for room in terrain.rooms:
                 buildSites = room.buildSites
                 for buildSite in buildSites:
@@ -2035,6 +2056,8 @@ There are several things you can do to help me out:
                     tasks.append((name,name))
                     extraDescriptions[name] = f"there is need for more {itemType}"
                     itemsNeeded.append(itemType)
+
+            # generate fetch quest for input stockpiles
             for room in terrain.rooms:
                 inputSlots = room.getEmptyInputslots(allowStorage=False,fullyEmpty=True)
                 for inputSlot in inputSlots:
@@ -2050,6 +2073,7 @@ There are several things you can do to help me out:
                     extraDescriptions[name] = f"there is need for more {itemType}"
                     itemsNeeded.append(itemType)
 
+        # expand base with temple
         if not terrain.alarm:
 
             # check inventory
@@ -2124,6 +2148,7 @@ There are several things you can do to help me out:
                         tasks.append((name,"build room"))
                         extraDescriptions[name] = "help me set up the next room"
 
+        # signal "no jobs"
         if not tasks:
             base_response_text = ["""
 I don't need anything right now.
@@ -2134,6 +2159,7 @@ I don't need anything right now.
             src.gamestate.gamestate.stern["no_groundskeeper_quest"] = src.gamestate.gamestate.tick
             return
 
+        # generate menu to interact with
         submenue = src.menuFolder.selectionMenu.SelectionMenu(
             base_response_text, tasks, tag="builder_task_selection", targetParamName="task",extraDescriptions=extraDescriptions,title=partner.name.upper()+" ASKS"
         )

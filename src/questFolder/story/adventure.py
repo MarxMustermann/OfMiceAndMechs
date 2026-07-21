@@ -123,8 +123,13 @@ class Adventure(src.quests.MetaQuestSequence):
 
             # sync map
             if (not character.lastMapSync) or src.gamestate.gamestate.tick-character.lastMapSync > 100:
-                quest = src.quests.questMap["DoMapSync"](reason="allow the base to remember if you die")
-                return ([quest],None)
+                for room in currentTerrain.rooms:
+                    if room.tag == "ruin":
+                        continue
+                    if not room.getItemsByType("MapTable",needsBolted=True):
+                        continue
+                    quest = src.quests.questMap["DoMapSync"](reason="allow the base to remember if you die")
+                    return ([quest],None)
 
         # ensure basic equipment
         if not character.weapon or not character.armor:

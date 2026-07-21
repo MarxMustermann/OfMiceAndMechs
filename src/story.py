@@ -1941,6 +1941,7 @@ There are several things you can do to help me out:
         extraDescriptions = {}
         itemsNeeded = []
         itemsAvailabe = []
+        itemsObtainable = ["Scrap","MetalBars","Door","Wall","Rod"]
 
         for room in terrain.rooms:
             outputSlots = room.getNonEmptyOutputslots(allowStorage=True)
@@ -2025,6 +2026,8 @@ There are several things you can do to help me out:
                         continue
                     if itemType in itemsAvailabe:
                         continue
+                    if itemType not in itemsObtainable:
+                        continue
                     if itemType == "CityPlaner":
                         continue
                     tasks.append((name,name))
@@ -2037,6 +2040,8 @@ There are several things you can do to help me out:
                     if itemType in itemsNeeded:
                         continue
                     if itemType in itemsAvailabe:
+                        continue
+                    if itemType not in itemsObtainable:
                         continue
                     name = f"fetch {itemType}"
                     tasks.append((name,name))

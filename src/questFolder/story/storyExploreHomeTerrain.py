@@ -129,6 +129,9 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
         # mark terrain as completed
         pointsOfInterest = self.getRemainingPointsOfInterests()
         if not pointsOfInterest:
+            if character.getFreeInventorySpace() <= 2:
+                quest = src.quests.questMap["ClearInventory"]()
+                return ([quest],None)
             quest = src.quests.questMap["Scavenge"](ignoreAlarm=True,ignoreScrap=True)
             return ([quest],None)
 

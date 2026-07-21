@@ -1977,6 +1977,7 @@ There are several things you can do to help me out:
             extraDescriptions[name] = "disabling the alarm will allow me to move more freely"
 
         numGlassHearts = 0
+        numGlassStatues = 0
         hasTemple = False
         for room in terrain.rooms:
             if room.tag != "temple":
@@ -1986,11 +1987,12 @@ There are several things you can do to help me out:
             hasTemple = True
             glassStatues = room.getItemsByType("GlassStatue")
             for glassStatue in glassStatues:
+                numGlassStatues += 1
                 if not glassStatue.hasItem:
                     continue
                 numGlassHearts += 1
 
-        if hasTemple:
+        if hasTemple and numGlassStatues > 0:
             if numGlassHearts < 7:
                 name = "collect glass hearts"
                 tasks.append((name,name))

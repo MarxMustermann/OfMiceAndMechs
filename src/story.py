@@ -2719,6 +2719,25 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                         if not currentTerrain.getItemByPosition(pos):
                             currentTerrain.addItem(metalBars,pos)
 
+        # add enemies
+        for big_x in range(1,14):
+            for big_y in range(1,14):
+                if (big_x,big_y,0) in used_spots:
+                    continue
+                if big_x > 5 and big_x < 9 and big_y > 2 and big_y < 9:
+                    continue
+                if random.random() < 0.2:
+                    pos = (big_x*15+random.randint(1,14),big_y*15+random.randint(1,14),0)
+                    enemyType = random.choice(["Golem","ShieldBug","Spider","Spiderling"])
+                    enemy = src.characters.characterMap[enemyType]()
+                    currentTerrain.addCharacter(enemy,pos[0],pos[1])
+
+                    quest = src.quests.questMap["SecureTile"](toSecure=(big_x,big_y,0))
+                    quest.autoSolve = True
+                    quest.assignToCharacter(enemy)
+                    quest.activate()
+                    enemy.quests.append(quest)
+
     def setUpArchitectsLab(self,pos):
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
         currentTerrain.tag = "the architects mausoleum"

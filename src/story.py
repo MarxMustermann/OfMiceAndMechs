@@ -1774,12 +1774,17 @@ I am working right now. I'll repriotize though.""")
         '''
         generates a quest after accepting a builder task
         '''
+
+        # generate helper variables
         accept_type = extraParam.get("accept_type")
         character = extraParam["character"]
         terrain = character.getTerrain()
 
+        # remove old quests
         if accept_type == "replace":
             character.clear_quests()
+
+        # generate new quests
         if accept_type in ("add","replace"):
             quest_selection = extraParam.get("quest_selection")
 
@@ -2101,9 +2106,14 @@ There are several things you can do to help me out:
 
         # fill rooms with life
         hasEmptyRoom = False
+        hasCityPlaner = False
         for room in terrain.rooms:
             if room.tag == None:
                 hasEmptyRoom = True
+            if room.tag == "ruin":
+                continue
+            if room.getItemsByType("CityPlaner",needsBolted=True):
+                hasCityPlaner = True
         if hasEmptyRoom:
 
             # ensure city planer
@@ -2136,7 +2146,6 @@ There are several things you can do to help me out:
             # check inventory
             hasWalls = False
             hasDoors = False
-            hasCityPlaner = False
             for room in terrain.rooms:
                 if room.tag == "ruin":
                     continue
@@ -2144,8 +2153,6 @@ There are several things you can do to help me out:
                     hasWalls = True
                 if room.getItemsByType("Door",needsUnbolted=True):
                     hasDoors = True
-                if room.getItemsByType("CityPlaner",needsBolted=True):
-                    hasCityPlaner = True
 
             # expand base
             if not hasEmptyRoom:

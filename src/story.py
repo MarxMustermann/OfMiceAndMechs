@@ -2496,7 +2496,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                 {
                        "coordinate": (7,11,0),
                        "roomType": "EmptyRoom",
-                       "doors": "6,0",
+                       "doors": "6,0 6,12",
                        "offset": [1,1],
                        "size": [13, 13],
                 },
@@ -2511,6 +2511,31 @@ sure i'll produce equipment for you as long as you bring me the raw material.
             alarmRoom.addCharacter(enemy,pos[0],pos[1])
 
             quest = src.quests.questMap["SecureTile"](toSecure=alarmRoom.getPosition())
+            quest.autoSolve = True
+            quest.assignToCharacter(enemy)
+            quest.activate()
+            enemy.quests.append(quest)
+
+        # add city planer room
+        cityPlanerRoom = architect.doAddRoom(
+                {
+                       "coordinate": (7,12,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,0",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        used_spots.append(cityPlanerRoom.getPosition())
+        cityPlanerRoom.tag = "ruin"
+        siegeManager = src.items.itemMap["CityPlaner"]()
+        cityPlanerRoom.addItem(siegeManager,(6,9,0))
+        for pos in [(5,5,0),(5,8,0),(9,8,0),(9,5,0)]:
+            enemy = src.characters.characterMap["Golem"]()
+            cityPlanerRoom.addCharacter(enemy,pos[0],pos[1])
+
+            quest = src.quests.questMap["SecureTile"](toSecure=cityPlanerRoom.getPosition())
             quest.autoSolve = True
             quest.assignToCharacter(enemy)
             quest.activate()

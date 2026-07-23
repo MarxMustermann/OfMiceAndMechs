@@ -1861,7 +1861,7 @@ I am working right now. I'll repriotize though.""")
                 if found_loot_room == False:
                     quest = src.quests.questMap["RestockRoom"](targetPositionBig=(7,4,0),allowAny=True)
                     character.assignQuest(quest,active=True)
-                    quest = src.quests.questMap["Scavenge"](toCollect=item_type)
+                    quest = src.quests.questMap["Scavenge"](toCollect=item_type,amountToCollect=1)
                     character.assignQuest(quest,active=True)
                     if character.getFreeInventorySpace() < 1:
                         quest = src.quests.questMap["ClearInventory"]()

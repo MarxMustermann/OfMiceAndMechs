@@ -3316,7 +3316,6 @@ press key for what to observe
         if charState.get("itemMarkedLast"):
             del charState["itemMarkedLast"]
         return None
-        #charState["submenue"] = src.menuFolder.combatInfoMenu.CombatInfoMenu(char=char)
 
     # open the character information
     if key in ("x",):

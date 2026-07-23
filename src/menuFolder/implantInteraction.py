@@ -309,7 +309,7 @@ Check if you can help out.
                 return False
 
             current_time = src.gamestate.gamestate.tick
-            if groundskeepers_place.floorPlan or src.gamestate.gamestate.stern.get("no_groundskeeper_quest",current_time) > current_time-200:
+            if groundskeepers_place.floorPlan or src.gamestate.gamestate.stern.get("no_groundskeeper_quest",0) > current_time-200:
                 base_text = ["""
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),"""
 

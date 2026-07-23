@@ -11,7 +11,10 @@ class PlaceItem(src.quests.MetaQuestSequence):
     def __init__(self, description="place item", creator=None, lifetime=None, targetPosition=None, targetPositionBig=None, itemType=None, tryHard=False, boltDown=False,reason=None, clearPath = False, clearSpace=False):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
-        self.metaDescription = f"{description} {itemType} on position {targetPosition} on tile {targetPositionBig}"
+        itemString = ""
+        if itemType:
+            itemString = itemType+" "
+        self.metaDescription = f"{description} {itemString}on position {targetPosition} on tile {targetPositionBig}"
         self.targetPosition = targetPosition
         self.targetPositionBig = targetPositionBig
         self.itemType = itemType
@@ -49,19 +52,23 @@ class PlaceItem(src.quests.MetaQuestSequence):
         reason = ""
         if self.reason:
             reason = f",\nto {self.reason}"
+        itemString = ""
+        if self.itemType:
+            itemString = self.itemType+" "
         text = f"""
-Place item {self.itemType} on position {self.targetPosition} on tile {self.targetPositionBig}{reason}."""
+Place item {itemString}on position {self.targetPosition} on tile {self.targetPositionBig}{reason}."""
         if self.boltDown:
             text += """
 
 Bolt down the item after placing it."""
 
-        if not self.character.inventory or self.character.inventory[-1].type != self.itemType:
-            text += f"""
+        if self.itemType:
+            if not self.character.inventory or self.character.inventory[-1].type != self.itemType:
+                text += f"""
 
 You do not have a {self.itemType} in your inventory."""
-        else:
-            text += f"""
+            else:
+                text += f"""
 
 You have a {self.itemType} in your inventory.
 You can drop items by pressing l or L."""

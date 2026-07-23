@@ -219,7 +219,7 @@ the floorplan is available in basebuilder mode and main game now""")
 
     def askAction(self):
         options = [("generateFloorPlan", "generate floor plan"), ("simulateUsage", "simulate usage"), ("submitFloorPlan", "submit floor plan"), ("addFloorPlan", "add floor plan to loadable prefabs"),("donateFloorPlan", "donate floor plan")]
-        submenu = src.menuFolder.selectionMenu.SelectionMenu(
+        submenu = src.menues.menuMap["SelectionMenu"](
             "what do you want to do?", options,
         )
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
@@ -244,7 +244,7 @@ the floorplan is available in basebuilder mode and main game now""")
 
     def donateFloorPlan(self):
         options = [("yes", "Yes"), ("no", "No")]
-        submenu = src.menuFolder.selectionMenu.SelectionMenu(
+        submenu = src.menues.menuMap["SelectionMenu"](
             "Do you want to donate the room?\n\nSelect \"Yes\" to make the rooms design public domain and upload the room.\nThis will require an internet connection", options,
             targetParamName="upload",
         )
@@ -1929,7 +1929,8 @@ This helps a lot with keeping things organized.
                 extraDescriptions["continue"] = "This will continue the conversation without changing your quests"
 
                 base_response_text.append("\n\nHow do you react?")
-                submenue = src.menuFolder.selectionMenu.SelectionMenu(
+                submenue = src.menues.menuMap["SelectionMenu"](
+                submenue = src.menues.menuMap["SelectionMenu"](
                     base_response_text, options, tag="builder_accept_quest", targetParamName="accept_type",extraDescriptions=extraDescriptions,title=partner.name.upper()+" ASKS"
                 )
                 character.add_submenu(submenue)
@@ -2233,7 +2234,7 @@ I don't need anything right now.
             return
 
         # generate menu to interact with
-        submenue = src.menuFolder.selectionMenu.SelectionMenu(
+        submenue = src.menues.menuMap["SelectionMenu"](
             base_response_text, tasks, tag="builder_task_selection", targetParamName="task",extraDescriptions=extraDescriptions,title=partner.name.upper()+" ASKS"
         )
         character.add_submenu(submenue)
@@ -2403,7 +2404,7 @@ I ..... seems to have forgotten what i was about to say.
             extraDescriptions["continue"] = "This will continue the conversation without changing your quests"
 
             base_response_text.append("\n\nHow do you react?")
-            submenue = src.menuFolder.selectionMenu.SelectionMenu(
+            submenue = src.menues.menuMap["SelectionMenu"](
                 base_response_text, options, tag="builder_accept_quest", targetParamName="accept_type",extraDescriptions=extraDescriptions,title=partner.name.upper()+" ASKS"
             )
             character.add_submenu(submenue)
@@ -5583,7 +5584,7 @@ Give up on reaching out to the implant for now.
 """
 
 
-            submenu = src.menuFolder.selectionMenu.SelectionMenu(
+            submenu = src.menues.menuMap["SelectionMenu"](
                 text, options, tag="player_quest_selection", targetParamName="quest_type",extraDescriptions=extraDescriptions
             )
             submenu.followUp = {"container":self,"method":"handle_player_intro_lab_quest_choice","params":{"character":mainChar}}
@@ -5944,7 +5945,7 @@ reenable command module.""",]
 You remember and know what you are doing.
 """
 
-            submenu = src.menuFolder.selectionMenu.SelectionMenu(
+            submenu = src.menues.menuMap["SelectionMenu"](
                 text, options, tag="player_quest_selection", targetParamName="quest_type",extraDescriptions=extraDescriptions
             )
             submenu.followUp = {"container":self,"method":"handle_player_intro_lab_quest_choice","params":{"character":mainChar}}
@@ -6059,7 +6060,7 @@ This will close the tutorial and let you do your own thing for a bit.
 You can reopen the tutorial and any time.
 """
 
-            submenu = src.menuFolder.selectionMenu.SelectionMenu(
+            submenu = src.menues.menuMap["SelectionMenu"](
                 text, options, tag="player_quest_selection", targetParamName="quest_type",extraDescriptions=extraDescriptions
             )
             submenu.followUp = {"container":self,"method":"handle_player_intro_quest_choice","params":{"character":mainChar}}
@@ -6362,7 +6363,7 @@ You can ring the alarm to change that.
 This will close the tutorial and let you do your own thing.
 """
 
-            submenu = src.menuFolder.selectionMenu.SelectionMenu(
+            submenu = src.menues.menuMap["SelectionMenu"](
                 text, options, tag="player_quest_selection", targetParamName="quest_type",extraDescriptions=extraDescriptions
             )
             submenu.followUp = {"container":self,"method":"handle_player_quest_choice","params":{"character":mainChar}}
@@ -6668,7 +6669,7 @@ This will close the tutorial and let you do your own thing.
 
         if quest_type == "teleport":
             options = [("yes", "yes"), ("no", "no"),]
-            submenu = src.menuFolder.selectionMenu.SelectionMenu(
+            submenu = src.menues.menuMap["SelectionMenu"](
                 """
 There is no guarantee that you will be able to return after using this teleporter.
 Are you sure you want to leave?

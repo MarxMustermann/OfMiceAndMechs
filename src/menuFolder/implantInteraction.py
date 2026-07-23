@@ -28,7 +28,7 @@ class ImplantInteraction(src.menues.SubMenu):
                 "yes":"Assigns the quest to you. Press q to see quest details afterwards",
                 "no":"No quest will be assigned.",
             }
-        self.submenu = src.menuFolder.selectionMenu.SelectionMenu(base_text,options=options,extraDescriptions=extraDescriptions)
+        self.submenu = src.menues.menuMap["SelectionMenu"](base_text,options=options,extraDescriptions=extraDescriptions)
         self.submenu.extraInfo["task_type"] = task_type
 
     def handleKey(self, key, noRender=False, character = None):
@@ -142,7 +142,7 @@ This suggested action is shown on the left side of the screen.
 What do you want to do?
 """]
             options = [("abort quest","abort active quest"),("continue","continue")]
-            self.submenu = src.menuFolder.selectionMenu.SelectionMenu(base_text,options=options)
+            self.submenu = src.menues.menuMap["SelectionMenu"](base_text,options=options)
             self.submenu.handleKey(key, noRender, character)
             self.submenu.tag = "implant_meta_action_selection"
             return False
@@ -185,7 +185,7 @@ You can pass time by pressing the "." key.
 """]
                 extraDescriptions = {}
                 options = [("yes","yes"),("no","no"),("skip","skip")]
-                self.submenu = src.menuFolder.selectionMenu.SelectionMenu(base_text,options=options)
+                self.submenu = src.menues.menuMap["SelectionMenu"](base_text,options=options)
                 self.submenu.handleKey(key, noRender, character)
                 self.submenu.extraInfo["task_type"] = "wait_explosion"
                 return False

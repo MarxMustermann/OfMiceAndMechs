@@ -4,7 +4,7 @@ import src
 class DoGroundskeeping(src.quests.MetaQuestSequence):
     type = "DoGroundskeeping"
 
-    def __init__(self, description="do groundskeeper", creator=None):
+    def __init__(self, description="do groundskeeping", creator=None):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description

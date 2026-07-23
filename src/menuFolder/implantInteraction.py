@@ -25,7 +25,6 @@ class ImplantInteraction(src.menues.SubMenu):
     def _spawnSpawnTaskMenu(self,base_text,task_type):
         options = [("yes","yes"),("no","no")]
         self.submenu = src.menuFolder.selectionMenu.SelectionMenu(base_text,options=options)
-        self.submenu.handleKey(key, noRender, character)
         self.submenu.extraInfo["task_type"] = task_type
 
     def handleKey(self, key, noRender=False, character = None):

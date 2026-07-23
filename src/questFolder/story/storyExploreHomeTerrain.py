@@ -101,6 +101,7 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
                 for storageSlot in room.storageSlots:
                     if storageSlot[1]:
                         continue
+                    hasStorage = True
                 if hasStorage:
                     quest = src.quests.questMap["ClearInventory"]()
                     return ([quest],None)

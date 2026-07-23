@@ -40,3 +40,4 @@ import src.questFolder.story.readMemorialPlate
 import src.questFolder.story.fixGroundskeeper
 import src.questFolder.story.helpGroundskeeper
 import src.questFolder.story.storyExploreHomeTerrain
+import src.questFolder.story.doGroundskeeping

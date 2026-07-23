@@ -1676,17 +1676,7 @@ Since i'm a groundskeeper my duty is to maintain the premises.""")
 
         builder.clear_quests()
 
-        quest = src.quests.questMap["GoToPosition"](targetPosition=(6,6,0))
-        quest.autoSolve = True
-        quest.assignToCharacter(builder)
-        builder.quests.append(quest)
-
-        quest = src.quests.questMap["WaitQuest"]()
-        quest.autoSolve = True
-        quest.assignToCharacter(builder)
-        builder.quests.append(quest)
-
-        quest = src.quests.questMap["BeUsefull"](strict=True,endOnIdle=True)
+        quest = src.quests.questMap["DoGroundskeeping"]()
         quest.autoSolve = True
         quest.assignToCharacter(builder)
         quest.activate()

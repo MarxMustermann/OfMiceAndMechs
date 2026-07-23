@@ -1769,6 +1769,11 @@ I am working right now. I'll repriotize though.""")
         accept_type = extraParam.get("accept_type")
         character = extraParam["character"]
         terrain = character.getTerrain()
+        groundsKeeper = None
+        for check_character in terrain.getAllCharacters():
+            if not isinstance(check_character,src.characters.characterMap["GroundsKeeper"]):
+                continue
+            groundsKeeper = check_character
 
         # remove old quests
         if accept_type == "replace":
@@ -1779,7 +1784,17 @@ I am working right now. I'll repriotize though.""")
             quest_selection = extraParam.get("quest_selection")
 
             if quest_selection == "painter":
-                
+                hasPainter = False
+                if groundsKeeper.searchInventory("Painter"):
+                    hasPainter = True
+                for room in terrain.rooms:
+                    if room.tag == "ruin":
+                        continue
+                    if room.getItemByType("Painter"):
+                        hasPainter = True
+                if hasPainter:
+                    return
+
                 # loot unguarded rooms
                 found_loot_room = False
                 for room in terrain.rooms:
@@ -1907,7 +1922,7 @@ I am working right now. I'll repriotize though.""")
             if room.getItemByType("Painter"):
                 hasPainter = True
 
-        if not partner.registers.get("gotPainter") or hasPainter:
+        if not partner.registers.get("gotPainter") or not hasPainter:
             painter = character.searchInventory("Painter")
             if not painter:
                 base_response_text = []

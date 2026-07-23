@@ -40,6 +40,9 @@ class ImplantInteraction(src.menues.SubMenu):
             character.add_submenu(src.menuFolder.questMenu.QuestMenu(char=character))
             return True
 
+        # set up helper variable
+        terrain = character.getHomeTerrain()
+
         if src.gamestate.gamestate.stern.get("first_reachout_done") == None:
             src.gamestate.gamestate.stern["first_reachout_done"] = False
         else:
@@ -160,8 +163,6 @@ Big items like the machinery will block your movement.
             self.submenu.handleKey(key, noRender, character)
             self.submenu.extraInfo["task_type"] = "escape_lab"
             return False
-
-        terrain = character.getHomeTerrain()
 
         # wait for lab to burn down
         if not src.gamestate.gamestate.stern.get("skipped_explosion"):
@@ -302,7 +303,16 @@ Find out why.
                 self.submenu.extraInfo["task_type"] = "fix_groundskeeper"
                 return False
 
-            if not groundsKeeper.registers.get("gotPainter"):
+            hasPainter = False
+            if groundsKeeper.searchInventory("Painter"):
+                hasPainter = True
+            for room in terrain.rooms:
+                if room.tag == "ruin":
+                    continue
+                if room.getItemByType("Painter"):
+                    hasPainter = True
+
+            if not groundsKeeper.registers.get("gotPainter") or hasPainter:
                 # help groundskeeper set up
                 base_text = ["""
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),"""

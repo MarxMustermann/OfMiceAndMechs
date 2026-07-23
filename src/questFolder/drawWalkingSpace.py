@@ -123,7 +123,7 @@ Try as hard as you can to achieve this.
 
         # ensure player has a painter
         if not self.painterPos:
-            if not character.inventory or character.inventory[-1].type != "Painter":
+            if not character.searchInventory("Painter"):
                 quest = src.quests.questMap["FetchItems"](toCollect="Painter",amount=1,reason="be able to draw a stockpile")
                 return ([quest],None)
             painter = character.inventory[-1]
@@ -142,7 +142,17 @@ Try as hard as you can to achieve this.
             return ([quest],None)
 
         # drop the painter next to the target
-        return (None,("l","drop the Painter"))
+        if character.inventory[-1].type == "Painter":
+            command = "l"
+        else:
+            painterIndex = 0
+            command = "i"
+            for item in character.inventory:
+                if item.type == "Painter":
+                    break
+                command += "s"
+            command += "l"
+        return (None,(command,"drop the Painter"))
 
     def handleDrewMarking(self,extraInfo):
         if not self.active:

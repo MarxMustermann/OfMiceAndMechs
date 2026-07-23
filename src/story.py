@@ -2281,7 +2281,9 @@ I don't need anything right now.
 
         offer_accept_options = False
 
-        if task == "fetch MetalWorkingBench":
+        if task is None:
+            return
+        elif task == "fetch MetalWorkingBench":
             metalWorkingBench = character.searchInventory("MetalWorkingBench")
             if not metalWorkingBench:
                 base_response_text.append("""

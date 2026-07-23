@@ -368,6 +368,8 @@ Press d to move the cursor and show the subquests description.
         freeStorage = 0
         for room in character.getTerrain().rooms:
             for storageSlot in room.storageSlots:
+                if storageSlot[1]:
+                    continue
                 items = room.getItemByPosition(storageSlot[0])
                 if not items:
                     freeStorage += 1
@@ -377,7 +379,6 @@ Press d to move the cursor and show the subquests description.
                 items = room.getItemByPosition(outputSlot[0])
                 for item in items:
                     itemsInStorage[item.type] = itemsInStorage.get(item.type,0)+1
-
         
         # produce for build sites
         if freeStorage:

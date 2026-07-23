@@ -8548,6 +8548,9 @@ press enter to continue playing"""]
                         
 
 def showRunIntro():
+    '''
+    displays the cutscene when starting a new run
+    '''
     src.interaction.send_tracking_ping("started_run_intro")
 
     def fixRoomRender(render):
@@ -9084,7 +9087,8 @@ try to remember how you got here ...\n"""
             atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
             console_render = tcod.render.SDLConsoleRender(atlas)
             renderedToTexture = console_render.render(root_console)
-            sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),((131 + c_offset) * tileWidth,22*tileHeight,renderedToTexture.width,renderedToTexture.height),)
+
+            sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),((window_charwidth-45)*tileWidth,22*tileHeight,renderedToTexture.width,renderedToTexture.height),)
 
             if subStep == 0:
                 if not stageState.get("send_tracking_ping_sub_0"):

@@ -1945,7 +1945,7 @@ class ChatMenu(Chat):
                     character.macroState["submenue"] = submenue
                     submenue.handleKey("~", noRender=noRender,character=character)
                     return True
-                    submenue = src.menuFolder.characterInfoMenu.CharacterInfoMenu(char=self.partner)
+                    submenue = src.menues.menuMap["CharacterInfoMenu"](char=self.partner)
                     character.macroState["submenue"] = submenue
                     submenue.handleKey("~", noRender=noRender)
                     return True

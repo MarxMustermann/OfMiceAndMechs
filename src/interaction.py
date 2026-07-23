@@ -1182,7 +1182,7 @@ def doObserveSelection(params):
         submenue = src.menuFolder.experimentalObserveMenu.ExperimentalObserveMenu(char=char)
         char.macroState["submenue"] = submenue
     elif key == "C":
-        submenue = src.menuFolder.characterObserveMenu.CharacterObserveMenu(char=char)
+        submenue = src.menues.menuMap["CharacterObserveMenu"](char=char)
         char.macroState["submenue"] = submenue
     else:
         char.addMessage("unknown option")
@@ -3289,7 +3289,7 @@ press key for advanced drop
 
     # open the character information
     if key in (commandChars.show_characterInfo,"v",):
-        charState["submenue"] = src.menuFolder.characterInfoMenu.CharacterInfoMenu(char=char)
+        charState["submenue"] = src.menues.menuMap["CharacterInfoMenu"](char=char)
 
     # open the character information
     if key in ("o",):

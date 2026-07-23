@@ -37,7 +37,7 @@ class IdleChatNPCMenu(src.menues.SubMenu):
             self.subMenu = None
 
         if self.instructionType == "charInfo":
-            submenue = src.menuFolder.characterInfoMenu.CharacterInfoMenu(char=self.npc)
+            submenue = src.menues.menuMap["CharacterInfoMenu"](char=self.npc)
             character.macroState["submenue"] = submenue
             submenue.handleKey("~", noRender=noRender,character=character)
             self.subMenu = None

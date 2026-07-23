@@ -89,7 +89,7 @@ So if an enemy is to directly east of you:
         # navigate most menues
         submenue = character.macroState.get("submenue")
         if submenue and not ignoreCommands:
-            if not submenue.tag in ("specialAttackSelection","selectFireDirection","advancedInteractionSelection") and not isinstance(submenue,src.menuFolder.characterInfoMenu.CharacterInfoMenu):
+            if not submenue.tag in ("specialAttackSelection","selectFireDirection","advancedInteractionSelection") and not isinstance(submenue,src.menues.menuMap["CharacterInfoMenu"]):
                 return (None,(["esc"],"exit the menu"))
 
         # heal
@@ -108,7 +108,7 @@ So if an enemy is to directly east of you:
         if character.tool:
             if not submenue:
                 return (None,("v","open character menu"))
-            if not isinstance(submenue,src.menuFolder.characterInfoMenu.CharacterInfoMenu):
+            if not isinstance(submenue,src.menues.menuMap["CharacterInfoMenu"]):
                 return (None,(["esc"],"close menu"))
             return (None,("t","drop tool"))
 

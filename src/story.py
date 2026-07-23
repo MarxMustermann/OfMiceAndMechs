@@ -1998,6 +1998,8 @@ There are several things you can do to help me out:
         itemsObtainable = []
         for big_x in range(1,14):
             for big_y in range(1,14):
+                if self.getEnemiesOnTile(character,(big_x,big_y,0)):
+                    continue
                 rooms = terrain.getRoomByPosition((big_x,big_y,0))
                 if rooms:
                     room = rooms[0]

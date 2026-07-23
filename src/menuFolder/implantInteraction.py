@@ -279,7 +279,7 @@ Free the survivor.
                 continue
             if check_character == character:
                 continue
-            if isinstance(check_character,src.characters.characterMap["GroundsKeeper"]):
+            if not isinstance(check_character,src.characters.characterMap["GroundsKeeper"]):
                 continue
             groundsKeeper = check_character
         

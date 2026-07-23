@@ -2483,7 +2483,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                 },
                 None,
            )
-        for item in baseCoreRoom.getItemsByType("Door"):
+        for item in baseCoreRoom.getItemsByType("Door",floorItemsOnly=False):
             if item.getPosition() == (6,12,0):
                 continue
             item.walkable = False

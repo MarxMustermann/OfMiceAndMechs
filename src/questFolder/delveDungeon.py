@@ -286,8 +286,9 @@ suicidal"""
                             if item.charges < 5:
                                 continue
 
-                            quest = src.quests.questMap["ActivateGlassStatue"](targetPositionBig=room.getPosition(),targetPosition=item.getPosition(),reason="get to the dungeon")
-                            return ([quest],None)
+                            quest1 = src.quests.questMap["ClearInventory"]()
+                            quest2 = src.quests.questMap["ActivateGlassStatue"](targetPositionBig=room.getPosition(),targetPosition=item.getPosition(),reason="get to the dungeon")
+                            return ([quest2,quest1],None)
 
                 # try to go to the dungeon using other means
                 if not self.walkToTarget:

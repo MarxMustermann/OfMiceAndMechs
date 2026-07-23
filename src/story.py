@@ -1893,6 +1893,9 @@ I am working right now. I'll repriotize though.""")
             elif quest_selection == "collect glass hearts":
                 quest = src.quests.questMap["CollectGlassHearts"]()
                 character.assignQuest(quest,active=True)
+            elif quest_selection == "spawn clone":
+                quest = src.quests.questMap["SpawnClone"](fancyFetchFlask=False)
+                character.assignQuest(quest,active=True)
             else:
                 character.addMessage("no quest set for this task")
 
@@ -2047,6 +2050,33 @@ There are several things you can do to help me out:
             name = "disable alarm"
             tasks.append((name,"disable alarm"))
             extraDescriptions[name] = "disabling the alarm will allow me to move more freely"
+
+        # spawn more workers
+        growthTank = None
+        for room in terrain.rooms:
+            if room.tag == "ruin":
+                continue
+            items = room.getItemsByType("GrowthTank")
+            if not items:
+                continue
+            growthTank = items[0]
+        if growthTank:
+            if "GooFlask" not in itemsAvailabe:
+                if "GooFlask" in itemsObtainable:
+                    itemsNeeded.append("GooFlask")
+                    name = "fetch GooFlask"
+                    tasks.append((name,name))
+                    extraDescriptions[name] = "having enough goo helps spawning Clones"
+            else:
+                amount_clones = 0
+                for check_character in terrain.getAllCharacters():
+                    if check_character.faction != character.faction:
+                        continue
+                    amount_clones += 1
+                if amount_clones < 3:
+                    name = "spawn clone"
+                    tasks.append((name,name))
+                    extraDescriptions[name] = "more clones means more work getting done"
 
         # check temple state
         numGlassHearts = 0
@@ -2385,6 +2415,11 @@ Schedule building a goo processing room.
 Collecting the glass hearts in you temple gives you power.
 
 With that power you can accomplish wonders.
+""")
+            offer_accept_options = True
+        elif task == "spawn clone":
+            base_response_text.append("""
+Spawn a Clone. You can do this at the GrowthTank.
 """)
             offer_accept_options = True
         else:

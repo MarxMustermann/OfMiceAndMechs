@@ -6,12 +6,13 @@ class SpawnClone(src.quests.MetaQuestSequence):
     quest for a NPC to spawn more NPcs
     '''
     type = "SpawnClone"
-    def __init__(self, description="spawn clone", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None,reason=None,tryHard=False):
+    def __init__(self, description="spawn clone", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None,reason=None,tryHard=False,fancyFetchFlask=True):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
         self.reason = reason
         self.tryHard = tryHard
+        self.fancyFetchFlask = fancyFetchFlask
 
     def handleQuestFailure(self,extraParam):
         '''
@@ -30,7 +31,7 @@ class SpawnClone(src.quests.MetaQuestSequence):
 
         # try to get a goo flask
         reason = extraParam.get("reason")
-        if reason == "no source for item GooFlask":
+        if reason == "no source for item GooFlask" and self.fancyFetchFlask:
 
             # pick up goo flask from the environment
             for (coord,itemList) in self.character.getTerrain().itemsByBigCoordinate.items():

@@ -67,6 +67,11 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
 
         # set up helper variables
         currentTerrain = character.getTerrain()
+        groundskeepers_place = None
+        for room in currentTerrain.rooms:
+            if room.tag != "the groundskeepers place":
+                continue
+            groundskeepers_place = room
 
         # equip weapon
         if not character.weapon:
@@ -89,8 +94,22 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
 
         # ensure inventory space
         if character.getFreeInventorySpace() <= 2:
-            quest = src.quests.questMap["ClearInventory"]()
-            return ([quest],None)
+            for room in character.getTerrain().rooms:
+                if room.tag == "ruin":
+                    continue
+                hasStorage = False
+                for storageSlot in room.storageSlots:
+                    if storageSlot[1]:
+                        continue
+                if hasStorage:
+                    quest = src.quests.questMap["ClearInventory"]()
+                    return ([quest],None)
+
+
+                pos = random.choice(list(room.walkingSpace))
+                item = character.inventory[-1]
+                quest = src.quests.questMap["PlaceItem"](targetPositionBig=groundskeepers_place.getPosition(),targetPosition=pos)
+                return ([quest],None)
 
         # loot current tile
         if character.container.isRoom:

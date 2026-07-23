@@ -24,7 +24,7 @@ class DoGroundskeeping(src.quests.MetaQuestSequence):
         quest1 = src.quests.questMap["BeUsefull"](strict=True,endOnIdle=True)
         quest2 = src.quests.questMap["GoToPosition"](targetPosition=(6,6,0))
         quest3 = src.quests.questMap["WaitQuest"](lifetime=10)
-        return ([quest3,quest2,quest3],None)
+        return ([quest3,quest2,quest1],None)
 
     def generateTextDescription(self):
         text = ["""

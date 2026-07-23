@@ -1779,8 +1779,33 @@ I am working right now. I'll repriotize though.""")
             quest_selection = extraParam.get("quest_selection")
 
             if quest_selection == "painter":
-                quest = src.quests.questMap["LootRoom"](targetPositionBig=(10,5,0))
+                
+                # loot unguarded rooms
+                found_loot_room = False
+                for room in terrain.rooms:
+                    if room.tag != "ruin":
+                        continue
+                    if not room.getItemsByType("Painter"):
+                        continue
+                    if room.getEnemiesOnTile(character):
+                        continue
+                    found_loot_room = True
+                    quest = src.quests.questMap["LootRoom"](targetPositionBig=room.getPosition())
+                    character.assignQuest(quest,active=True)
+                    return
+
+                # loot outside painters
+                painter = terrain.search_item_by_type("Painter")
+                if painter:
+                    quest = src.quests.questMap["LootRoom"](targetPositionBig=painter.getBigPosition())
+                    character.assignQuest(quest,active=True)
+                    return
+
+                # try desperate solutuions
+                quest = src.quests.questMap["Adventure"]()
                 character.assignQuest(quest,active=True)
+                return
+
             elif quest_selection == "build room":
 
                 # checks for build sites in progress
@@ -1869,8 +1894,20 @@ I am working right now. I'll repriotize though.""")
         continues the dialog after the groundskeeper was offerd help
         '''
 
+        # set up helper variables
+        terrain = character.getTerrain()
+
         # ask for a painter
-        if not partner.registers.get("gotPainter"):
+        hasPainter = False
+        if partner.searchInventory("Painter"):
+            hasPainter = True
+        for room in terrain.rooms:
+            if room.tag == "ruin":
+                continue
+            if room.getItemByType("Painter"):
+                hasPainter = True
+
+        if not partner.registers.get("gotPainter") or hasPainter:
             painter = character.searchInventory("Painter")
             if not painter:
                 base_response_text = []
@@ -1922,9 +1959,6 @@ But once i am done painting, help would be appreachiated.
                 character.showTextMenu(base_response_text)
 
             return
-
-        # set up helper variables
-        terrain = character.getTerrain()
 
         # get the groundskeeper place
         groundskeepers_place = None
@@ -2701,7 +2735,9 @@ sure i'll produce equipment for you as long as you bring me the raw material.
            )
         used_spots.append(painterRoom.getPosition())
         painterRoom.tag = "ruin"
-        painterRoom.spawnItem("Painter",(6,6,0))
+        for _i in range(10):
+            pos = (random.randint(3,10),random.randint(2,9),0)
+            painterRoom.spawnItem("Painter",pos)
 
         # add rod room
         rodRoom = architect.doAddRoom(
@@ -2746,6 +2782,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
            )
         used_spots.append(lootRoom.getPosition())
         lootRoom.tag = "ruin"
+        lootRoom.spawnItem("Painter",(3,5,0))
 
         # add loot room
         lootRoom = architect.doAddRoom(
@@ -2869,6 +2906,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                     (0.5,10,"MetalBars"),
                     (0.2,1,"GooFlask"),
                     (0.05,1,"GrowthTank"),
+                    (0.2,1,"Painter"),
                 ]
         for big_x in range(1,14):
             for big_y in range(1,14):

@@ -1042,7 +1042,7 @@ def setUpRuin(pos):
             )
 
             # decide between mixed or pure loot room
-            loot_types = ["ScrapCompactor","MetalBars","Vial","MoldFeed","Bolt","Flask","GooFlask","Rod","Sword","Scrap","ManufacturingTable","MemoryFragment"]
+            loot_types = ["ScrapCompactor","MetalBars","Vial","MoldFeed","Bolt","Flask","GooFlask","Rod","Sword","Scrap","ManufacturingTable","MemoryFragment","Painter"]
             if src.gamestate.gamestate.difficulty == "easy":
                 loot_types.extend(["Vial","GooFlask","MemoryFragment"])
             if random.random() > 0.5:

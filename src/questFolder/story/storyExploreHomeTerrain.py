@@ -170,6 +170,10 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
 Explore the terrain{reasonString}.
 
 """]
+        if self.lifetime:
+            text.append(f"""
+Do this for {self.lifetime} ticks. {self.getRemainingLifetime()} ticks left.
+""")
 
         text.append(f"""points of interest:\n""")
         rawMap = []

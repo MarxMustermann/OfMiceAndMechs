@@ -312,7 +312,7 @@ Find out why.
                 if room.getItemByType("Painter"):
                     hasPainter = True
 
-            if not groundsKeeper.registers.get("gotPainter") or hasPainter:
+            if not groundsKeeper.registers.get("gotPainter") or not hasPainter:
                 # help groundskeeper set up
                 base_text = ["""
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),"""

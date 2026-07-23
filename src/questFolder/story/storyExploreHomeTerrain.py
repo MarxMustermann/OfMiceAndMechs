@@ -87,6 +87,11 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["GoHome"]()
             return ([quest],None)
 
+        # ensure inventory space
+        if character.getFreeInventorySpace() <= 2:
+            quest = src.quests.questMap["ClearInventory"]()
+            return ([quest],None)
+
         # loot current tile
         if character.container.isRoom:
             itemsOnFloor = character.container.itemsOnFloor

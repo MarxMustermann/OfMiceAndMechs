@@ -1784,15 +1784,7 @@ I am working right now. I'll repriotize though.""")
             quest_selection = extraParam.get("quest_selection")
 
             if quest_selection == "painter":
-                hasPainter = False
-                if groundsKeeper.searchInventory("Painter"):
-                    hasPainter = True
-                for room in terrain.rooms:
-                    if room.tag == "ruin":
-                        continue
-                    if room.getItemByType("Painter"):
-                        hasPainter = True
-                if hasPainter:
+                if groundsKeeper.hasPainter():
                     return
 
                 # loot unguarded rooms
@@ -1913,15 +1905,7 @@ I am working right now. I'll repriotize though.""")
         terrain = character.getTerrain()
 
         # ask for a painter
-        hasPainter = False
-        if partner.searchInventory("Painter"):
-            hasPainter = True
-        for room in terrain.rooms:
-            if room.tag == "ruin":
-                continue
-            if room.getItemByType("Painter"):
-                hasPainter = True
-
+        hasPainter = partner.hasPainter()
         if not partner.registers.get("gotPainter") or not hasPainter:
             painter = character.searchInventory("Painter")
             if not painter:

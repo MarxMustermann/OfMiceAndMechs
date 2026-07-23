@@ -29,5 +29,16 @@ class GroundsKeeper(src.characters.characterMap["Clone"]):
         )
         self.charType = "GroundsKeeper"
 
+    def hasPainter(self):
+        hasPainter = False
+        if self.searchInventory("Painter"):
+            hasPainter = True
+        for room in self.getTerrain().rooms:
+            if room.tag == "ruin":
+                continue
+            if room.getItemByType("Painter"):
+                hasPainter = True
+        return hasPainter
+
 # register the creature type
 src.characters.add_character(GroundsKeeper)

@@ -303,15 +303,7 @@ Find out why.
                 self.submenu.extraInfo["task_type"] = "fix_groundskeeper"
                 return False
 
-            hasPainter = False
-            if groundsKeeper.searchInventory("Painter"):
-                hasPainter = True
-            for room in terrain.rooms:
-                if room.tag == "ruin":
-                    continue
-                if room.getItemByType("Painter"):
-                    hasPainter = True
-
+            hasPainter = groundsKeeper.hasPainter()
             if not groundsKeeper.registers.get("gotPainter") or not hasPainter:
                 # help groundskeeper set up
                 base_text = ["""

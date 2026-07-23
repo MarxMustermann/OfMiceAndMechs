@@ -237,6 +237,8 @@ If you don't find the items to place, produce them.
                     itemIndex = 1
 
             if not itemFound:
+                if not self.itemType:
+                    return self._solver_trigger_fail(dryRun,"no item")
                 quest = src.quests.questMap["FetchItems"](toCollect=self.itemType,amount=1,takeAnyUnbolted=self.tryHard,tryHard=self.tryHard,reason="have an item to place")
                 return ([quest],None)
 

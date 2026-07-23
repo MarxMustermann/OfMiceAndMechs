@@ -2414,6 +2414,9 @@ XXX
         for outputSlot in self.outputSlots:
             if outputSlot[0] == position:
                 markers.append(("outputSlot",outputSlot))
+        for buildSite in self.buildSites:
+            if buildSite[0] == position:
+                markers.append(("buildSite",buildSite))
         return markers
 
     def magic_drawFloorplan(self):

@@ -21,6 +21,12 @@ class ImplantInteraction(src.menues.SubMenu):
 
     def getTitle(self):
         return "IMPLANT INTERACTION"
+    
+    def _spawnSpawnTaskMenu(base_text,task_type):
+        options = [("yes","yes"),("no","no")]
+        self.submenu = src.menuFolder.selectionMenu.SelectionMenu(base_text,options=options)
+        self.submenu.handleKey(key, noRender, character)
+        self.submenu.extraInfo["task_type"] = task_type
 
     def handleKey(self, key, noRender=False, character = None):
         """
@@ -158,10 +164,7 @@ Big items like the machinery will block your movement.
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Shall i assign you a quest to leave the room to avoid the explosion?"""),"""
 """]
-            options = [("yes","yes"),("no","no")]
-            self.submenu = src.menuFolder.selectionMenu.SelectionMenu(base_text,options=options)
-            self.submenu.handleKey(key, noRender, character)
-            self.submenu.extraInfo["task_type"] = "escape_lab"
+            self._spawnSpawnTaskMenu(base_text,"escape_lab")
             return False
 
         # wait for lab to burn down
@@ -213,10 +216,7 @@ This will trigger an attack.
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to kill the enemy?"""),"""
 """]
-                options = [("yes","yes"),("no","no")]
-                self.submenu = src.menuFolder.selectionMenu.SelectionMenu(base_text,options=options)
-                self.submenu.handleKey(key, noRender, character)
-                self.submenu.extraInfo["task_type"] = "kill_spiderling"
+                self._spawnSpawnTaskMenu(base_text,"kill_spiderling")
                 return False
 
 
@@ -233,10 +233,7 @@ Go there.
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to find shelter?"""),"""
 """]
-                options = [("yes","yes"),("no","no")]
-                self.submenu = src.menuFolder.selectionMenu.SelectionMenu(base_text,options=options)
-                self.submenu.handleKey(key, noRender, character)
-                self.submenu.extraInfo["task_type"] = "reach_shelter"
+                self._spawnSpawnTaskMenu(base_text,"reach_shelter")
                 return False
 
             if not character.container.tag == "the groundskeepers place":
@@ -250,10 +247,7 @@ There is a StasisTank in the groundskeepers place. Look there.
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to go to the groundskeepers place?"""),"""
 """]
-                options = [("yes","yes"),("no","no")]
-                self.submenu = src.menuFolder.selectionMenu.SelectionMenu(base_text,options=options)
-                self.submenu.handleKey(key, noRender, character)
-                self.submenu.extraInfo["task_type"] = "reach_shelter"
+                self._spawnSpawnTaskMenu(base_text,"reach_shelter")
                 return False
 
             base_text = ["""
@@ -268,10 +262,7 @@ Free the survivor.
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to free the survivor?"""),"""
 """]
-            options = [("yes","yes"),("no","no")]
-            self.submenu = src.menuFolder.selectionMenu.SelectionMenu(base_text,options=options)
-            self.submenu.handleKey(key, noRender, character)
-            self.submenu.extraInfo["task_type"] = "free_groundskeeper"
+            self._spawnSpawnTaskMenu(base_text,"free_groundskeeper")
             return False
 
         groundsKeeper = None
@@ -297,10 +288,7 @@ Find out why.
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to talk to the survivor?"""),"""
 """]
-                options = [("yes","yes"),("no","no")]
-                self.submenu = src.menuFolder.selectionMenu.SelectionMenu(base_text,options=options)
-                self.submenu.handleKey(key, noRender, character)
-                self.submenu.extraInfo["task_type"] = "fix_groundskeeper"
+                self._spawnSpawnTaskMenu(base_text,"fix_groundskeeper")
                 return False
 
             hasPainter = groundsKeeper.hasPainter()
@@ -317,10 +305,7 @@ Check if you can help out.
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to help to groundskeeper?"""),"""
 """]
-                options = [("yes","yes"),("no","no")]
-                self.submenu = src.menuFolder.selectionMenu.SelectionMenu(base_text,options=options)
-                self.submenu.handleKey(key, noRender, character)
-                self.submenu.extraInfo["task_type"] = "help_groundskeeper"
+                self._spawnSpawnTaskMenu(base_text,"help_groundskeeper")
                 return False
 
             current_time = src.gamestate.gamestate.tick
@@ -337,10 +322,7 @@ There are many useful items around.
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to explore the environment?"""),"""
 """]
-                options = [("yes","yes"),("no","no")]
-                self.submenu = src.menuFolder.selectionMenu.SelectionMenu(base_text,options=options)
-                self.submenu.handleKey(key, noRender, character)
-                self.submenu.extraInfo["task_type"] = "explore"
+                self._spawnSpawnTaskMenu(base_text,"explore")
                 return False
 
             # help groundskeeper set up
@@ -354,10 +336,7 @@ It will start to rebuild its working area.
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to help to groundskeeper?"""),"""
 """]
-            options = [("yes","yes"),("no","no")]
-            self.submenu = src.menuFolder.selectionMenu.SelectionMenu(base_text,options=options)
-            self.submenu.handleKey(key, noRender, character)
-            self.submenu.extraInfo["task_type"] = "help_groundskeeper"
+            self._spawnSpawnTaskMenu(base_text,"help_groundskeeper")
             return False
         1/0
 

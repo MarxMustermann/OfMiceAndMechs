@@ -82,3 +82,6 @@ class MessagesMenu(src.menues.SubMenu):
             self.scrollIndex += 1
 
         char = self.char
+
+# register the menu type
+src.menues.add_menu(MessagesMenu)

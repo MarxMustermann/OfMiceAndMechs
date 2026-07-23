@@ -20,3 +20,6 @@ class setNPCDutiesMenu(src.menues.SubMenu):
         # set primary duty
         # set secondary duty
         # set tertiary duty
+
+# register the menu type
+src.menues.add_menu(setNPCDutiesMenu)

@@ -92,3 +92,6 @@ class ItemInfoMenu(src.menues.SubMenu):
         if src.interaction.header:
             src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), ""))
         return None
+
+# register the menu type
+src.menues.add_menu(ItemInfoMenu)

@@ -139,3 +139,6 @@ class InstructNPCMenu(src.menues.SubMenu):
                     self.npc.assignQuest(quest,active=True)
                     return True
         return True
+
+# register the menu type
+src.menues.add_menu(InstructNPCMenu)

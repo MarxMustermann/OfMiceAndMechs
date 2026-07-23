@@ -289,3 +289,6 @@ class ExamineMenu(src.menues.SubMenu):
         text.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"The character will follow the cursor when moved\n\n"))
 
         return text
+
+# register the menu type
+src.menues.add_menu(ExamineMenu)

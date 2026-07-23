@@ -494,3 +494,6 @@ class DebugMenu(src.menues.SubMenu):
             dummy = src.items.Item()
             dummy.onDone = onDone
             dummy.delayedAction(params)
+
+# register the menu type
+src.menues.add_menu(DebugMenu)

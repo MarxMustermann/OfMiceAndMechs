@@ -63,3 +63,6 @@ class CharacterStatsMenu(src.menues.SubMenu):
             source = r.sub(" \\g<0>", source)
 
         return source.capitalize()
+
+# register the menu type
+src.menues.add_menu(CharacterStatsMenu)

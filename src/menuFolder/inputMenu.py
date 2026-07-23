@@ -133,3 +133,6 @@ class InputMenu(src.menues.SubMenu):
                         out,
                )
 
+
+# register the menu type
+src.menues.add_menu(InputMenu)

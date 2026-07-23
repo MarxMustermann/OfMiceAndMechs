@@ -238,3 +238,6 @@ class CharacterInfoMenu(src.menues.SubMenu):
         src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), [text]))
         src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), ""))
         return None
+
+# register the menu type
+src.menues.add_menu(CharacterInfoMenu)

@@ -64,3 +64,6 @@ class DirectionMenu(src.menues.SubMenu):
 
         # exit submenu
         return key == "esc"
+
+# register the menu type
+src.menues.add_menu(DirectionMenu)

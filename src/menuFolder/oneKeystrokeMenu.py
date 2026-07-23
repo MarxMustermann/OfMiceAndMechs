@@ -60,3 +60,5 @@ class OneKeystrokeMenu(src.menues.SubMenu):
         out.append("\n")
         return out
 
+# register the menu type
+src.menues.add_menu(OneKeystrokeMenu)

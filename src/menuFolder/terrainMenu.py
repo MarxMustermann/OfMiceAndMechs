@@ -129,3 +129,6 @@ class TerrainMenu(src.menues.SubMenu):
         rawMap[characterCoordinate[1]][characterCoordinate[0]] = (src.interaction.urwid.AttrSpec(color, "black"), "@@")
 
         return rawMap
+
+# register the menu type
+src.menues.add_menu(TerrainMenu)

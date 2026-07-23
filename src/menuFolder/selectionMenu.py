@@ -83,3 +83,6 @@ class SelectionMenu(src.menues.SubMenu):
         result.append(super().render())
         result.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"\npress w/s/up/down to move cursor\npress j/k/enter to select option\npress esc to close menu\npress a/d/left/right to shift options"))
         return result
+
+# register the menu type
+src.menues.add_menu(SelectionMenu)

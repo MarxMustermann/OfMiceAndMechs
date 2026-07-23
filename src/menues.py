@@ -282,3 +282,10 @@ class SubMenu(object):
         """
 
         main.set_text((urwid.AttrSpec("default", "default"), text))
+
+# supply a list of character types available
+menuMap = {
+    "SubMenu": SubMenu,
+}
+def add_menu(ty:type):
+    menuMap[ty.__name__] = ty

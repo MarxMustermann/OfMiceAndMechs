@@ -148,3 +148,6 @@ class MapMenu(src.menues.SubMenu):
         if cursor[1] < coordinate[1]:
             command += "s"*(coordinate[1]-cursor[1])
         return command+selectionCommand
+
+# register the menu type
+src.menues.add_menu(MapMenu)

@@ -92,3 +92,6 @@ class TeleporterGroupMenu(src.menues.SubMenu):
                 self.teleporter.addToGroup()
         except:
             params["character"].macroState["submenue"] = src.menuFolder.textMenu.TextMenu("Wrong input for Frequency")
+
+# register the menu type
+src.menues.add_menu(TeleporterGroupMenu)

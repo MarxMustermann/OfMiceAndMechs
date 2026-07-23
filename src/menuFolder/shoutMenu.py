@@ -87,3 +87,6 @@ class ShoutMenu(src.menues.SubMenu):
                     out.append(otherChar)
 
         return out
+
+# register the menu type
+src.menues.add_menu(ShoutMenu)

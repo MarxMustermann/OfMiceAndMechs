@@ -88,3 +88,6 @@ class StaffAsMatrixMenu(src.menues.SubMenu):
             roomCounter += 1
         return out
 
+
+# register the menu type
+src.menues.add_menu(StaffAsMatrixMenu)

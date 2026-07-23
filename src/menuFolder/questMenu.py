@@ -360,3 +360,6 @@ class QuestMenu(src.menues.SubMenu):
             txt.append("No Quest\n\n")
 
         return txt
+
+# register the menu type
+src.menues.add_menu(QuestMenu)

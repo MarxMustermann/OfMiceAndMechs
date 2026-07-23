@@ -291,3 +291,6 @@ class JobAsMatrixMenu(src.menues.SubMenu):
         self.persistentText = text
         src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.persistentText))
         return False
+
+# register the menu type
+src.menues.add_menu(JobAsMatrixMenu)

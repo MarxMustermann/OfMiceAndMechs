@@ -168,3 +168,6 @@ if the suggested action is \" """,(src.interaction.urwid.AttrSpec(src.interactio
         txt.append("\n")
 
         return txt
+
+# register the menu type
+src.menues.add_menu(HelpMenu)

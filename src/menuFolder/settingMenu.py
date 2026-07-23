@@ -109,3 +109,6 @@ class SettingMenu(src.menues.SubMenu):
 
             text+="\n"
         return text
+
+# register the menu type
+src.menues.add_menu(SettingMenu)

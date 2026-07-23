@@ -88,3 +88,6 @@ use w/s to select the status effect to show the details for.
         src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), [text]))
         src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), ""))
         return None
+
+# register the menu type
+src.menues.add_menu(StatusEffectMenu)

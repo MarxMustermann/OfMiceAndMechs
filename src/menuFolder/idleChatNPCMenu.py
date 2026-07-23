@@ -77,3 +77,6 @@ class IdleChatNPCMenu(src.menues.SubMenu):
         if self.subMenu:
             return self.subMenu.render()
         return super().render()
+
+# register the menu type
+src.menues.add_menu(IdleChatNPCMenu)

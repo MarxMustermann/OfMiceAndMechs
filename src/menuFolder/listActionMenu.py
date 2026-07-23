@@ -136,3 +136,6 @@ class ListActionMenu(src.menues.SubMenu):
             )
 
         return False
+
+# register the menu type
+src.menues.add_menu(ListActionMenu)

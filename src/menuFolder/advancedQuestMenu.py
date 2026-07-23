@@ -375,3 +375,6 @@ class AdvancedQuestMenu(src.menues.SubMenu):
         src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.persistentText))
 
         return False
+
+# register the menu type
+src.menues.add_menu(AdvancedQuestMenu)

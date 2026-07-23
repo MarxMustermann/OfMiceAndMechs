@@ -114,3 +114,6 @@ press j or enter to select
         self.firstRun = False
 
         return False
+
+# register the menu type
+src.menues.add_menu(RoomDutyMenu)

@@ -75,3 +75,6 @@ class ChangeViewsMenu(src.menues.SubMenu):
             self.done = True
             return True
         return None
+
+# register the menu type
+src.menues.add_menu(ChangeViewsMenu)

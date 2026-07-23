@@ -119,3 +119,5 @@ class ContextListMenu(src.menues.SubMenu):
         quest.autoSolve = True
         self.character.assignQuest(quest,active=True)
 
+# register the menu type
+src.menues.add_menu(ContextListMenu)

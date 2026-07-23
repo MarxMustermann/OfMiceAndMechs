@@ -205,3 +205,6 @@ class ViewNPCsMenu(src.menues.SubMenu):
 
         src.interaction.main.set_text(self.persistentText)
         return None
+
+# register the menu type
+src.menues.add_menu(ViewNPCsMenu)

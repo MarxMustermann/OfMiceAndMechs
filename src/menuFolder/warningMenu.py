@@ -24,3 +24,6 @@ class WarningMenu(src.menues.SubMenu):
                 self.onReturn()
             return True
         return False
+
+# register the menu type
+src.menues.add_menu(WarningMenu)

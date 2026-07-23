@@ -270,3 +270,6 @@ class ObserveMenu(src.menues.SubMenu):
 
         # return rendered text
         return text
+
+# register the menu type
+src.menues.add_menu(ObserveMenu)

@@ -348,3 +348,6 @@ It will start to rebuild its working area.
             return self.submenu.render()
         else:
             return ["""something went wrong"""]
+
+# register the menu type
+src.menues.add_menu(ImplantInteraction)

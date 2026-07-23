@@ -34,3 +34,6 @@ class NameGhoulMenu(src.menues.SubMenu):
         self.subMenu = None
 
         return True
+
+# register the menu type
+src.menues.add_menu(NameGhoulMenu)

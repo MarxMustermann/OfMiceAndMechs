@@ -317,3 +317,6 @@ class InventoryMenu(src.menues.SubMenu):
         if target_index is None:
             return None
         return "s"*(target_index-self.cursor)+"w"*(self.cursor-target_index)+selectionCommand
+
+# register the menu type
+src.menues.add_menu(InventoryMenu)

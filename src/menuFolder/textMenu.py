@@ -69,3 +69,6 @@ class TextMenu(src.menues.SubMenu):
 
     def render(self):
         return self.text
+
+# register the menu type
+src.menues.add_menu(TextMenu)

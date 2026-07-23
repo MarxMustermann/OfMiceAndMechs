@@ -56,3 +56,6 @@ class ConfirmMenu(src.menues.SubMenu):
                 self.onCancel()
             return True
         return False
+
+# register the menu type
+src.menues.add_menu(ConfirmMenu)

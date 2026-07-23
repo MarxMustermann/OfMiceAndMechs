@@ -1930,7 +1930,6 @@ This helps a lot with keeping things organized.
 
                 base_response_text.append("\n\nHow do you react?")
                 submenue = src.menues.menuMap["SelectionMenu"](
-                submenue = src.menues.menuMap["SelectionMenu"](
                     base_response_text, options, tag="builder_accept_quest", targetParamName="accept_type",extraDescriptions=extraDescriptions,title=partner.name.upper()+" ASKS"
                 )
                 character.add_submenu(submenue)

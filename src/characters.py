@@ -303,7 +303,7 @@ class Character:
         text += " h - heal yourself\n"
         text += " H - teleport home\n"
         text += " k - temporary speed\n"
-        submenu = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
+        submenu = src.menues.menuMap["OneKeystrokeMenu"](text)
         submenu.followUp = {"container":self,"method":"castMagic","params":{}}
         self.add_submenu(submenu)
         self.runCommandString("~",nativeKey=True)
@@ -428,7 +428,7 @@ class Character:
         if allowObserve:
             specialKeys["o"] = {"container": self, "method": "openObserveMenu"}
         specialKeys["tab"] = {"container": self, "method": "openImplantMenu"}
-        submenu = src.menuFolder.textMenu.TextMenu(text,specialKeys=specialKeys,tag=tag,title=title)
+        submenu = src.menues.menuMap["TextMenu"](text,specialKeys=specialKeys,tag=tag,title=title)
         submenu.do_not_scale = do_not_scale
         self.add_submenu(submenu)
         self.runCommandString("~",nativeKey=True)

@@ -100,7 +100,7 @@ class CharacterInfoMenu(src.menues.SubMenu):
                 counter = 0
                 while duties_to_show:
                     duty_to_show = duties_to_show.pop(0)
-                    text += f"{duties_to_show}"
+                    text += f"{duty_to_show}"
                     if duties_to_show:
                         if counter > 5:
                             text += ",\n      "

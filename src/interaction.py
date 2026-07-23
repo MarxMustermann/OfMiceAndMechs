@@ -1181,6 +1181,9 @@ def doObserveSelection(params):
     elif key == "e":
         submenue = src.menuFolder.experimentalObserveMenu.ExperimentalObserveMenu(char=char)
         char.macroState["submenue"] = submenue
+    elif key == "C":
+        submenue = src.menuFolder.characterObserveMenu.CharacterObserveMenu(char=char)
+        char.macroState["submenue"] = submenue
     else:
         char.addMessage("unknown option")
 
@@ -3305,6 +3308,7 @@ press key for what to observe
 
 * c =  observe combat
 * i =  observe items
+* C =  observe characters
 
 """
 

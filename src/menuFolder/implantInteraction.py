@@ -24,7 +24,11 @@ class ImplantInteraction(src.menues.SubMenu):
     
     def _spawnSpawnTaskMenu(self,base_text,task_type):
         options = [("yes","yes"),("no","no")]
-        self.submenu = src.menuFolder.selectionMenu.SelectionMenu(base_text,options=options)
+        extraDescriptions = {
+                "yes":"Assigns the quest to you. Press q to see quest details afterwards",
+                "no":"No quest will be assigned.",
+            }
+        self.submenu = src.menuFolder.selectionMenu.SelectionMenu(base_text,options=options,extraDescriptions=extraDescriptions)
         self.submenu.extraInfo["task_type"] = task_type
 
     def handleKey(self, key, noRender=False, character = None):

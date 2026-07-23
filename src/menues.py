@@ -110,7 +110,6 @@ class SubMenu(object):
         # set related state
         self.query = query
         self.selectionIndex = 1
-        self.lockOptions = True
         self.selection = None
         self.origKey = None
 
@@ -183,43 +182,39 @@ class SubMenu(object):
                 self.niceOptions[str(counter)] = oldNiceOptions[str(counter - 1)]
                 counter += 1
 
-        # handle the selection of options
-        if not self.lockOptions:
-            # change the marked option
-            if key in (
-                "w",
-                "up",
-            ):
-                self.selectionIndex -= 1
-                if self.selectionIndex == 0:
-                    self.selectionIndex = len(self.options)
-            if key in (
-                "s",
-                "down",
-            ):
-                self.selectionIndex += 1
-                if self.selectionIndex > len(self.options):
-                    self.selectionIndex = 1
-            # select the marked option
-            if key in ["enter", "j", "k","J","K"]:
-                # bad code: transforming the key to the shortcut is needlessly complicated
-                if len(self.options.items()):
-                    key = list(self.options.items())[self.selectionIndex - 1][0]
-                else:
-                    self.selection = None
-                    self.done = True
-                    return True
-
-            # select option by shortcut
-            if key in self.options:
-                self.selection = self.options[key]
-                self.options = None
-                if self.followUp:
-                    self.callIndirect(self.followUp,extraParams={self.targetParamName:self.selection,"key":origKey})
-                self.origKey = origKey
+        # change the marked option
+        if key in (
+            "w",
+            "up",
+        ):
+            self.selectionIndex -= 1
+            if self.selectionIndex == 0:
+                self.selectionIndex = len(self.options)
+        if key in (
+            "s",
+            "down",
+        ):
+            self.selectionIndex += 1
+            if self.selectionIndex > len(self.options):
+                self.selectionIndex = 1
+        # select the marked option
+        if key in ["enter", "j", "k","J","K"]:
+            # bad code: transforming the key to the shortcut is needlessly complicated
+            if len(self.options.items()):
+                key = list(self.options.items())[self.selectionIndex - 1][0]
+            else:
+                self.selection = None
+                self.done = True
                 return True
-        else:
-            self.lockOptions = False
+
+        # select option by shortcut
+        if key in self.options:
+            self.selection = self.options[key]
+            self.options = None
+            if self.followUp:
+                self.callIndirect(self.followUp,extraParams={self.targetParamName:self.selection,"key":origKey})
+            self.origKey = origKey
+            return True
 
         if not noRender:
             # show the rendered options

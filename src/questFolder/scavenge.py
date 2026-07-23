@@ -8,7 +8,7 @@ class Scavenge(src.quests.MetaQuestSequence):
     quest to collect items from the outside on a terrain
     '''
     type = "Scavenge"
-    def __init__(self, description="scavenge", creator=None, toCollect=None, lifetime=None, reason=None, ignoreAlarm=False, tryHard=False, ignoreScrap=False):
+    def __init__(self, description="scavenge", creator=None, toCollect=None, lifetime=None, reason=None, ignoreAlarm=False, tryHard=False, ignoreScrap=False, amountToCollect=None):
         self.lastMoveDirection = None
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
@@ -21,6 +21,7 @@ class Scavenge(src.quests.MetaQuestSequence):
         self.ignoreAlarm = ignoreAlarm
         self.tryHard = tryHard
         self.ignoreScrap = ignoreScrap
+        self.amountToCollect = amountToCollect
 
     def generateTextDescription(self):
         '''
@@ -40,6 +41,9 @@ Scavenge the outside area"""
 
 This quest will end when your inventory is full."""
         out.append(text)
+
+        if self.amountToCollect:
+            out.append(f"\nCollect {self.amountToCollect} more items")
         text = ""
 
         if self.doneTiles:
@@ -247,6 +251,12 @@ This quest will end when your inventory is full."""
         '''
         check for completion when picking up stuff
         '''
+        if self.amountToCollect:
+            if extraInfo[1].type == self.toCollect:
+                self.amountToCollect -= 1
+            if self.amountToCollect < 1:
+                self.postHandler()
+                return
         self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
     def assignToCharacter(self, character):

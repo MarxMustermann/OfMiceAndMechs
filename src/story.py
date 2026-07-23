@@ -2906,6 +2906,18 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                     (0.2,1,"GooFlask"),
                     (0.05,1,"GrowthTank"),
                     (0.2,1,"Painter"),
+                    (0.01,1,"MaggotFermenter"),
+                    (0.01,1,"BioPress"),
+                    (0.01,1,"GooProducer"),
+                    (0.01,1,"GooDispenser"),
+                    (0.01,1,"VialFiller"),
+                    (0.01,1,"CorpseAnimator"),
+                    (0.01,1,"CorpseShredder"),
+                    (0.2,1,"VatMaggot"),
+                    (0.2,1,"BioMass"),
+                    (0.2,1,"PressCake"),
+                    (0.1,1,"Corpse"),
+                    (0.01,5,"Corpse"),
                 ]
         for big_x in range(1,14):
             for big_y in range(1,14):

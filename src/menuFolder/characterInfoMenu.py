@@ -110,7 +110,7 @@ class CharacterInfoMenu(src.menues.SubMenu):
                             counter += 1
                 text.append("\n")
             text.append("\n")
-            text.append(f"skills:      {char.skills}")
+            text.append(f"skills:      {char.skills}\n")
             text.append(f"grievances:  {char.grievances}\n")
         
         if self.page == 3:

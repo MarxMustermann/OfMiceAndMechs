@@ -57,7 +57,7 @@ class SettingMenu(src.menues.SubMenu):
                     case "auto save":
                         src.interaction.settings["auto save"] = not src.interaction.settings.get("auto save",False)
                     case "change npc rendering":
-                        character.macroState["submenue"] = src.menuFolder.changeViewsMenu.ChangeViewsMenu()
+                        character.macroState["submenue"] = src.menues.menuMap["ChangeViewsMenu"]()
 
         text = self.render()
         src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), text))

@@ -403,7 +403,7 @@ class Shrine(src.items.Item):
             if foundFlask:
                 cost /= 2
 
-            duties = ["resource gathering","resource fetching","hauling","room building","scrap hammering","metal working","painting","scavenging","machine operation","machine placing","maggot gathering","cleaning","manufacturing","mold farming"]
+            duties = ["resource gathering","resource fetching","hauling","room building","scrap hammering","metal working","painting","scavenging","machine operation","machine placing","maggot gathering","cleaning","manufacturing","mold farming","storage management"]
             dutyMap = self.getDutyMap(character)
 
             for duty in duties:

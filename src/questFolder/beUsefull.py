@@ -389,7 +389,8 @@ Press d to move the cursor and show the subquests description.
                    "machine operation",
                    "manufacturing",
                    "scavenging",
-                   "praying" ]
+                   "praying",
+                   "storage management"]
                 character.duties = duties
 
                 for duty in duties:

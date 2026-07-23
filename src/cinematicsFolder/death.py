@@ -220,7 +220,7 @@ def Death(extraParam):
 
 def show_Stats(original_window_content, character):
     numpy.copyto(src.interaction.tcodConsole.rgba, original_window_content)
-    text = src.menuFolder.characterStatsMenu.CharacterStatsMenu(character).text(character)
+    text = src.menues.menuMap["CharacterStatsMenu"](character).text(character)
     text += "\npress enter to return"
 
     splitted = text.splitlines()

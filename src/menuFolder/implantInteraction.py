@@ -22,7 +22,7 @@ class ImplantInteraction(src.menues.SubMenu):
     def getTitle(self):
         return "IMPLANT INTERACTION"
     
-    def _spawnSpawnTaskMenu(base_text,task_type):
+    def _spawnSpawnTaskMenu(self,base_text,task_type):
         options = [("yes","yes"),("no","no")]
         self.submenu = src.menuFolder.selectionMenu.SelectionMenu(base_text,options=options)
         self.submenu.handleKey(key, noRender, character)

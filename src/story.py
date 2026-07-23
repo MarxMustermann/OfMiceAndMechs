@@ -214,7 +214,7 @@ class PrefabDesign(BasicPhase):
         with open("gamestate/globalInfo.json", "w") as globalInfoFile:
             json.dump(rawState,globalInfoFile)
 
-        submenu = src.menuFolder.textMenu.TextMenu("""
+        submenu = src.menues.menuMap["TextMenu"]("""
 the floorplan is available in basebuilder mode and main game now""")
 
     def askAction(self):
@@ -671,7 +671,7 @@ the floorplan is available in basebuilder mode and main game now""")
         self.maintananceLoop()
 
         ticksPerBar = 15000/self.stats["current"]["15000"]["produced"]
-        submenu = src.menuFolder.textMenu.TextMenu(f"""
+        submenu = src.menues.menuMap["TextMenu"](f"""
 your room produces a MetalBar every {ticksPerBar} ticks on average.""")
 
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
@@ -1331,7 +1331,7 @@ To get basic production active you need the following NPCs:
 a resource gatherer
 a scrap hammerer
 a metal worker"""
-                    submenu = src.menuFolder.textMenu.TextMenu(text+"""
+                    submenu = src.menues.menuMap["TextMenu"](text+"""
 
 = press esc to close this menu =
 """)
@@ -1355,7 +1355,7 @@ Until you bring set it into a GlassStatue again you are cursed.
 
 Your movement speed is halfed, so running from enemies is much harder.
 Bring the GlassHeart back to your base to lift that curse."""
-                    submenu = src.menuFolder.textMenu.TextMenu(text+"""
+                    submenu = src.menues.menuMap["TextMenu"](text+"""
 
 = press esc to close this menu =
     """)
@@ -1378,7 +1378,7 @@ For this you have to have a healing item like the Vial in you inventory.
 
 The less health you have the stronger the Vials healing effect.
 """
-                    submenu = src.menuFolder.textMenu.TextMenu(text+"""
+                    submenu = src.menues.menuMap["TextMenu"](text+"""
 
 = press esc to close this menu =
     """)
@@ -1402,7 +1402,7 @@ The GooFlask is destroyed in the progress though.
 
 So bring it with you to be able to spawn one NPC cheaper.
 """
-                    submenu = src.menuFolder.textMenu.TextMenu(text+"""
+                    submenu = src.menues.menuMap["TextMenu"](text+"""
 
 = press esc to close this menu =
     """)
@@ -1451,7 +1451,7 @@ Keep in mind that the GlassHeart is not the only reward in this room.
 
 Remember to take the additional items with you.
 """
-                    submenu = src.menuFolder.textMenu.TextMenu(text+"""
+                    submenu = src.menues.menuMap["TextMenu"](text+"""
 
 = press esc to close this menu =
 """)
@@ -1480,7 +1480,7 @@ If you have more than 10 exhaustion then you get penalities.
 
 To reduce your exhaustion press .
 """
-                    submenu = src.menuFolder.textMenu.TextMenu(text+"""
+                    submenu = src.menues.menuMap["TextMenu"](text+"""
 
 = press esc to close this menu =
 """)
@@ -1504,7 +1504,7 @@ The ranged combat allows you to fire bolts by pressing f.
 As long as you have Bolts in your inventory, you can shoot in straight lines.
 Each shot will consume a Bolt.
 """
-                    submenu = src.menuFolder.textMenu.TextMenu(text+"""
+                    submenu = src.menues.menuMap["TextMenu"](text+"""
 
 = press esc to close this menu =
 """)
@@ -1526,7 +1526,7 @@ I can hurt you quite a lot, too. So remember to keep a distance.
 
 
 """
-                        submenu = src.menuFolder.textMenu.TextMenu(text+"""
+                        submenu = src.menues.menuMap["TextMenu"](text+"""
 
 = press esc to close this menu =
 """)
@@ -1544,7 +1544,7 @@ Another thing you can to is to bait/kite enemies
 When you enter and leave a room sometimes enemies will chase you.
 You can use this to divide enemy groups and kite enemies into traps.
 """
-                    submenu = src.menuFolder.textMenu.TextMenu(text+"""
+                    submenu = src.menues.menuMap["TextMenu"](text+"""
 
 = press esc to close this menu =
 """)
@@ -1563,7 +1563,7 @@ When time passes you slowly heal, so you can just wait
 The more hurt you are the faster you heal.
 So this works best when you are near dead.
 """
-                    submenu = src.menuFolder.textMenu.TextMenu(text+"""
+                    submenu = src.menues.menuMap["TextMenu"](text+"""
 
 = press esc to close this menu =
 """)
@@ -1585,7 +1585,7 @@ but destroys the item itself.
 If you can reach and use it without getting killed,
 it is a very fast and HP saving way to clear a room.
 """
-                    submenu = src.menuFolder.textMenu.TextMenu(text+"""
+                    submenu = src.menues.menuMap["TextMenu"](text+"""
 
 = press esc to close this menu =
 """)
@@ -1620,7 +1620,7 @@ this can easily kill you if enemies are nearby.
 You can also pick up active LandMines,
 but they are likely to explode when disturbed.
 """
-                        submenu = src.menuFolder.textMenu.TextMenu(text+"""
+                        submenu = src.menues.menuMap["TextMenu"](text+"""
 
 = press esc to close this menu =
 """)

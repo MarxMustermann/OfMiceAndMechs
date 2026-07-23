@@ -1934,7 +1934,7 @@ class ChatMenu(Chat):
                     submenue.handleKey("~", noRender=noRender,character=character)
                     return True
                 elif selection == "talkWork":
-                    submenue = src.menuFolder.textMenu.TextMenu(
+                    submenue = src.menues.menuMap["TextMenu"](
                         text="Work is as hard as the day is long"
                     )
                     character.macroState["submenue"] = submenue

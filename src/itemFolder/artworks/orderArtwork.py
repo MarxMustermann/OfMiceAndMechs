@@ -407,7 +407,7 @@ That should usually be around 10-20 ticks."""
         text = "current active quest:\n"
         for (key,value) in questsCount.items():
             text += f"{key}: {value}\n"
-        submenue = src.menuFolder.textMenu.TextMenu(text)
+        submenue = src.menues.menuMap["TextMenu"](text)
         character.macroState["submenue"] = submenue
 
     def assignQuestToNumNPCs(self, character, questType, numNPCs, params=None):

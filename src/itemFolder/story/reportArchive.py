@@ -102,7 +102,7 @@ class ReportArchive(src.items.Item):
 
         # show basic description
         if self.fragments_unlocked < 1:
-            submenue = src.menuFolder.textMenu.TextMenu(
+            submenue = src.menues.menuMap["TextMenu"](
                 "== database error ==\n\n\nThe database cannot be accessed.\n\nCollect MemoryFragments to repair the database and make it accessible again."
             )
             character.macroState["submenue"] = submenue
@@ -178,7 +178,7 @@ class ReportArchive(src.items.Item):
 
         # open UI to read the report
         text = [f"== {report[0]} ==\n\n{report[1]}\n\n",pseudo_map]
-        submenue = src.menuFolder.textMenu.TextMenu(text)
+        submenue = src.menues.menuMap["TextMenu"](text)
         submenue.tag = "message"
         character.macroState["submenue"] = submenue
         character.runCommandString("~", nativeKey=True)
@@ -192,7 +192,7 @@ class ReportArchive(src.items.Item):
 
         if self.fragments_unlocked >= len(self.reports):
             text = "You can't unlock more reports"
-            submenue = src.menuFolder.textMenu.TextMenu(
+            submenue = src.menues.menuMap["TextMenu"](
                 text = text,
             )
             character.macroState["submenue"] = submenue
@@ -206,7 +206,7 @@ class ReportArchive(src.items.Item):
 
         if not fragments:
             text = "You need to have fragments in your inventory to decrypt them"
-            submenue = src.menuFolder.textMenu.TextMenu(
+            submenue = src.menues.menuMap["TextMenu"](
                 text = text,
             )
             character.macroState["submenue"] = submenue

@@ -53,7 +53,7 @@ class MemorialMonolith(src.items.Item):
         if self.inscription:
             character.addMessage("You read the inscription")
 
-            submenu = src.menuFolder.textMenu.TextMenu([(src.interaction.urwid.AttrSpec("#ff0","black"),self.inscription)])
+            submenu = src.menues.menuMap["TextMenu"]([(src.interaction.urwid.AttrSpec("#ff0","black"),self.inscription)])
             submenu.do_not_scale = True
             submenu.golden_border = True
             character.add_submenu(submenu)

@@ -28,7 +28,7 @@ class MemoryReader(src.items.itemMap["WorkShop"]):
         self.fragment_per_implant = 5
 
     def read(self, fragment_number, character):
-        submenue = src.menuFolder.textMenu.TextMenu(
+        submenue = src.menues.menuMap["TextMenu"](
             "you decrypt new fragment:\n" + self.messages[fragment_number],
         )
         submenue.tag = "message"

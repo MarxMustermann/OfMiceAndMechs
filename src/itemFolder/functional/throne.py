@@ -29,7 +29,7 @@ A throne. A symbol of power.
         '''
         if not character.rank or character.rank > 2:
 
-            submenu = src.menuFolder.textMenu.TextMenu("""
+            submenu = src.menues.menuMap["TextMenu"]("""
 You touch the throne and a shock runns through you.
 
 You need to be rank 2 to interact with the throne.
@@ -53,7 +53,7 @@ You need to be rank 2 to interact with the throne.
             foundMissingHeart = True
 
         if foundMissingHeart:
-            submenu = src.menuFolder.textMenu.TextMenu("""
+            submenu = src.menues.menuMap["TextMenu"]("""
 The throne rejects you.
 
 You need to collect all GlassHarts to be accepted as supreme leader.
@@ -86,7 +86,7 @@ You feel stronger now.
 
 = press enter to continue =
 """
-            submenu = src.menuFolder.textMenu.TextMenu(text)
+            submenu = src.menues.menuMap["TextMenu"](text)
             submenu.followUp = {"container":self,"method":"offerTeleport","params":{"character":character}}
             submenu.do_not_scale = True
             character.macroState["submenue"] = submenu
@@ -112,7 +112,7 @@ The amount of mana available on the current terrain should be shown on you HUD n
 
 = press enter to continue =
 """
-        submenu = src.menuFolder.textMenu.TextMenu(text)
+        submenu = src.menues.menuMap["TextMenu"](text)
         submenu.do_not_scale = True
         submenu.followUp = {"container":self,"method":"offerTeleport","params":{"character":character}}
         character.macroState["submenue"] = submenu

@@ -39,7 +39,7 @@ class Communicator(src.items.Item):
                 character.addMessage("You need to be at least rank 5.")
                 character.changed("permission denied",{})
 
-                submenu = src.menuFolder.textMenu.TextMenu("""
+                submenu = src.menues.menuMap["TextMenu"]("""
 Permission denied:
 
 You need to be at least rank 5 to contact the base leader.
@@ -51,7 +51,7 @@ You need to be at least rank 5 to contact the base leader.
                     src.gamestate.gamestate.stern["failedContact1"] = True
             else:
                 character.addMessage("no base commander")
-                submenu = src.menuFolder.textMenu.TextMenu("""
+                submenu = src.menues.menuMap["TextMenu"]("""
 no base leader found.
 """)
                 character.macroState["submenue"] = submenu
@@ -66,7 +66,7 @@ no base leader found.
                 character.addMessage("You need to be at least rank 2.")
                 character.changed("permission denied",{})
 
-                submenu = src.menuFolder.textMenu.TextMenu("""
+                submenu = src.menues.menuMap["TextMenu"]("""
 Permission denied:
 
 You need to be at least rank 2 to contact main base.
@@ -81,7 +81,7 @@ You need to be at least rank 2 to contact main base.
                 character.addMessage("no main base")
                 if not src.interaction.noDemo:
                     src.interaction.showDemoOutro()
-                submenu = src.menuFolder.textMenu.TextMenu("""
+                submenu = src.menues.menuMap["TextMenu"]("""
 no main base found.
 """)
                 character.macroState["submenue"] = submenu

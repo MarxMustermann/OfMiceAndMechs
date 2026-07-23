@@ -33,7 +33,7 @@ class InstructNPCMenu(src.menues.SubMenu):
             self.subMenu = None
 
         if self.instructionType == "createQuest":
-            submenue = src.menuFolder.advancedQuestMenu.AdvancedQuestMenu()
+            submenue = src.menues.menuMap["AdvancedQuestMenu"]()
             submenue.activeChar = character
             submenue.character = self.npc
             submenue.state = "questSelection"

@@ -86,7 +86,7 @@ class JobOrder(src.items.Item):
             taskStr += f"{task} \n"
 
         # spawn the submenu showing the information
-        submenue = src.menuFolder.textMenu.TextMenu(
+        submenue = src.menues.menuMap["TextMenu"](
             f"""
 taskName:
 {self.taskName}

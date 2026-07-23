@@ -107,7 +107,7 @@ class InventoryMenu(src.menues.SubMenu):
                     self.char.addMessage(f"you activate the {item.type}")
 
                     item_info = item.getLongInfo()
-                    self.subMenu = src.menuFolder.textMenu.TextMenu(item_info)
+                    self.subMenu = src.menues.menuMap["TextMenu"](item_info)
                     self.subMenu.handleKey("~", noRender=noRender, character=character)
                     return False
 

@@ -144,7 +144,7 @@ class ManufacturingManager(src.items.Item):
                 continue
             text += f"{item.toProduce} - numUsed: {min(50,item.numUsed)} pos: {item.getPosition()}\n"
 
-        submenue = src.menuFolder.textMenu.TextMenu(text)
+        submenue = src.menues.menuMap["TextMenu"](text)
         character.macroState["submenue"] = submenue
         return
 

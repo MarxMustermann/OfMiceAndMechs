@@ -469,7 +469,7 @@ suicidal"""
 The implant interrupts. This dungeon is too hard for you.
 
 Become stronger and return."""
-            character.macroState["submenue"] = src.menuFolder.textMenu.TextMenu(text)
+            character.macroState["submenue"] = src.menues.menuMap["TextMenu"](text)
 
         return self._solver_trigger_fail(dryRun,"dungeon too tough")
 

@@ -292,7 +292,7 @@ class DimensionTeleporter(src.items.Item):
         if network == "":
             network == "no netwrok is connected to the teleporter"
 
-        character.macroState["submenue"] = src.menuFolder.textMenu.TextMenu(
+        character.macroState["submenue"] = src.menues.menuMap["TextMenu"](
             self.getLongInfo(character) + f"\ncharges: {self.charges}\n\n{network}"
         )
 

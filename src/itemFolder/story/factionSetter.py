@@ -33,7 +33,7 @@ It claws into your head and connects to your implant.
 
 It changes your implant and sets your faction marker to {self.faction}.
 """
-        submenue = src.menuFolder.textMenu.TextMenu(text)
+        submenue = src.menues.menuMap["TextMenu"](text)
         character.macroState["submenue"] = submenue
 
         # reset rank

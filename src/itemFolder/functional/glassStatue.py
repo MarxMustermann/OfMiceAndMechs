@@ -67,7 +67,7 @@ class GlassStatue(src.items.Item):
                 if not numScrapFound:
                     if character:
                         text = "no Scrap to offer\n\nPlace the Scrap to offer on the floor of this room."
-                        submenue = src.menuFolder.textMenu.TextMenu(text)
+                        submenue = src.menues.menuMap["TextMenu"](text)
                         character.macroState["submenue"] = submenue
                         character.addMessage(text)
                     return
@@ -101,7 +101,7 @@ class GlassStatue(src.items.Item):
                 if not len(itemsFound):
                     if character:
                         text = f"you need to offer {itemType}.\n\nPlace the offered items on the floor of this room."
-                        submenue = src.menuFolder.textMenu.TextMenu(text)
+                        submenue = src.menues.menuMap["TextMenu"](text)
                         submenue.do_not_scale = True
                         character.macroState["submenue"] = submenue
                         character.addMessage(text)
@@ -132,7 +132,7 @@ class GlassStatue(src.items.Item):
 
         if self.charges >= 9:
             text = f"the glass statue has maximum charges now"
-            submenue = src.menuFolder.textMenu.TextMenu(text)
+            submenue = src.menues.menuMap["TextMenu"](text)
             character.macroState["submenue"] = submenue
             character.addMessage(text)
             return
@@ -153,7 +153,7 @@ class GlassStatue(src.items.Item):
             text += f"\n\nyour saccrifice was not enough for another charge"
 
 
-        submenue = src.menuFolder.textMenu.TextMenu(text)
+        submenue = src.menues.menuMap["TextMenu"](text)
         submenue.do_not_scale = True
         character.macroState["submenue"] = submenue
         character.addMessage(text)
@@ -359,7 +359,7 @@ class GlassStatue(src.items.Item):
         src.gamestate.gamestate.gods[self.itemID]["lastHeartPos"] = (character.getTerrain().xPosition,character.getTerrain().yPosition)
         character.changed("deliveredSpecialItem",{"itemID":self.itemID})
 
-        submenue = src.menuFolder.textMenu.TextMenu("""
+        submenue = src.menues.menuMap["TextMenu"]("""
 You insert the GlassHeart into the GlassStatue and make it whole.
 
 The GlassHeart scream and its agony takes physical form.

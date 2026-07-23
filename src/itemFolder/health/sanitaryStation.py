@@ -98,7 +98,7 @@ class SanitaryStation(src.items.Item):
             self.character.macroState["submenue"].followUp = self.setSetting
             self.settingName = None
         if self.submenue.selection == "showSettings":
-            self.submenue = src.menuFolder.textMenu.TextMenu(
+            self.submenue = src.menues.menuMap["TextMenu"](
                 f"health threshold: {self.healthThreshold}\nsatiation threshold: {self.satiationThreshold}"
             )
             self.character.macroState["submenue"] = self.submenue

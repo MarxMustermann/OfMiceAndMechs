@@ -89,7 +89,7 @@ You can select the routes and run the stored route.
             for (startNode, routePart) in self.routes.items():
                 for (endNode, route) in routePart.items():
                     text += f"{startNode} => {endNode} ({route})\n"
-            self.submenue = src.menuFolder.textMenu.TextMenu(text)
+            self.submenue = src.menues.menuMap["TextMenu"](text)
             self.character.macroState["submenue"] = self.submenue
         elif self.submenue.selection == "addMarker":
             self.addMarker()

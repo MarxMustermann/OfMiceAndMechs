@@ -1122,7 +1122,7 @@ class ArchitectArtwork(src.items.Item):
             mapText = ""
             for x in range(15):
                 mapText += "".join(mapContent[x]) + "\n"
-            self.submenue = src.menuFolder.textMenu.TextMenu(text=mapText)
+            self.submenue = src.menues.menuMap["TextMenu"](text=mapText)
             self.character.macroState["submenue"] = self.submenue
         elif self.submenue.selection == "addScrapField":
             self.submenue = None

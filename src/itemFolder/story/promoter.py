@@ -19,7 +19,7 @@ class Promoter(src.items.Item):
         handle activation by trying to promote the user
         '''
 
-        submenue = src.menuFolder.textMenu.TextMenu(f"""
+        submenue = src.menues.menuMap["TextMenu"](f"""
 You put your head into the machine.
 
 Its tendrils reach out and touch your implant.
@@ -67,7 +67,7 @@ Its tendrils reach out and touch your implant.
 
                     src.gamestate.gamestate.stern["rank5promotionfailed"] = True
 
-                    submenue = src.menuFolder.textMenu.TextMenu("""
+                    submenue = src.menues.menuMap["TextMenu"]("""
 Promotions from rank 6 to rank 5 are blocked.
 
 There need to be at least 1 clone besides you on the base to allow any promptions.
@@ -91,7 +91,7 @@ There need to be at least 1 clone besides you on the base to allow any promption
 
                     src.gamestate.gamestate.stern["rank4promotionfailed"] = True
 
-                    submenue = src.menuFolder.textMenu.TextMenu("""
+                    submenue = src.menues.menuMap["TextMenu"]("""
 Promotions from rank 5 to rank 4 are blocked.
 
 The base needs to consist out of at least 6 rooms.
@@ -135,7 +135,7 @@ Build more rooms.
 
                     src.gamestate.gamestate.stern["rank3promotionfailed"] = True
 
-                    submenue = src.menuFolder.textMenu.TextMenu("""
+                    submenue = src.menues.menuMap["TextMenu"]("""
 Promotions from rank 4 to rank 3 are blocked.
 Enemies are nearby.
 
@@ -172,7 +172,7 @@ There need to be at least 3 clones besides you on the base to allow any promptio
 
                     src.gamestate.gamestate.stern["rank2promotionfailed"] = True
 
-                    submenue = src.menuFolder.textMenu.TextMenu("""
+                    submenue = src.menues.menuMap["TextMenu"]("""
 Promotions from rank 3 to rank 2 are blocked.
 
 Kill all enemies on this terrain, to unlock the promotions to rank 2.
@@ -329,7 +329,7 @@ You can only have one attribute perk
                 return
             self.do_promotion(extraInfo)
 
-        submenu = src.menuFolder.textMenu.TextMenu(f"""
+        submenu = src.menues.menuMap["TextMenu"](f"""
 The tendrils retreat.
 
 You are rank {character.rank} now.
@@ -486,7 +486,7 @@ You move twice as fast now.
 """
 
         if rewardText:
-            submenu = src.menuFolder.textMenu.TextMenu(rewardText)
+            submenu = src.menues.menuMap["TextMenu"](rewardText)
 
             character.macroState["submenue"] = submenu
             submenu.followUp = {

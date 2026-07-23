@@ -785,7 +785,7 @@ class StockpileMetaManager(src.items.Item):
             return
 
         if self.submenue.selection == "showInfo":
-            self.submenue = src.menuFolder.textMenu.TextMenu(
+            self.submenue = src.menues.menuMap["TextMenu"](
                 str(self.stockPileInfo[self.stockPile])
             )
             self.character.macroState["submenue"] = self.submenue

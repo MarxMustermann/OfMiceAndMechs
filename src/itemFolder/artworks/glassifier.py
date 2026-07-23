@@ -143,7 +143,7 @@ class Glassifier(src.items.Item):
                     break
             if amountScrap < 10:
                 text = self.getPhaseInstruction()
-                submenue = src.menuFolder.textMenu.TextMenu(text)
+                submenue = src.menues.menuMap["TextMenu"](text)
                 character.macroState["submenue"] = submenue
 
                 character.addMessage("you need 10 units of Scrap in the room to pray.")
@@ -409,7 +409,7 @@ class Glassifier(src.items.Item):
         self.numPrayed = 0
 
         text = self.getPhaseInstruction()
-        submenue = src.menuFolder.textMenu.TextMenu(text)
+        submenue = src.menues.menuMap["TextMenu"](text)
         character.macroState["submenue"] = submenue
         character.addMessage(text)
 
@@ -420,7 +420,7 @@ class Glassifier(src.items.Item):
             if self.unstableLevel == 1:
                 character = src.gamestate.gamestate.mainChar
 
-                submenue = src.menuFolder.textMenu.TextMenu("The glassfifier is unstable. Stabilise it this epoch!")
+                submenue = src.menues.menuMap["TextMenu"]("The glassfifier is unstable. Stabilise it this epoch!")
                 character.macroState["submenue"] = submenue
                 self.unstableLevel += 1
             else:
@@ -450,7 +450,7 @@ class Glassifier(src.items.Item):
             currentTerrain.addEvent(event)
 
             text = self.getPhaseInstruction()
-            submenue = src.menuFolder.textMenu.TextMenu(text)
+            submenue = src.menues.menuMap["TextMenu"](text)
             character.macroState["submenue"] = submenue
             character.addMessage(text)
 

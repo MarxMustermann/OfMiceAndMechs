@@ -533,7 +533,7 @@ class Item:
         if self.container is None:
             return (None,None,None)
         if isinstance(self.container,src.characters.Character):
-            return src.container.getBigPosition()
+            return self.container.getBigPosition()
         if self.container.isRoom:
             return (self.container.xPosition+offset[0],self.container.yPosition+offset[1],offset[2])
         else:

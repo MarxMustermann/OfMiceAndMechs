@@ -46,14 +46,14 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
             for potionType in src.items.potionTypes:
                 options.append((potionType.type,potionType.name))
             options.append(("byName","produce by name"))
-            submenue = src.menuFolder.selectionMenu.SelectionMenu("what item to produce?",options,targetParamName="type")
+            submenue = src.menues.menuMap["SelectionMenu"]("what item to produce?",options,targetParamName="type")
             submenue.tag = "alchemyTableProductSelection"
             submenue.extraInfo["item"] = self
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"producePotion","params":params}
             return
         if params.get("type") == "byName":
-            submenue = src.menuFolder.inputMenu.InputMenu("Type the name of the item to produce",targetParamName="type")
+            submenue = src.menues.menuMap["InputMenu"]("Type the name of the item to produce",targetParamName="type")
             submenue.tag = "alchemyTableProductInput"
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"producePotion","params":params}
@@ -79,7 +79,7 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
             params["amount"] = int(params["rawAmount"])
             del params["rawAmount"]
         if not "amount" in params:
-            submenue = src.menuFolder.inputMenu.InputMenu("Type how many of the items produce",targetParamName="rawAmount")
+            submenue = src.menues.menuMap["InputMenu"]("Type how many of the items produce",targetParamName="rawAmount")
             submenue.tag = "metalWorkingAmountInput"
             submenue.extraInfo["item"] = self
             character.macroState["submenue"] = submenue
@@ -262,7 +262,7 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
             options.append(("IncreaseMaxHealthPotion","IncreaseMaxHealthPotion"))
             options.append(("StrengthPotion","StrengthPotion"))
             options.append(("byName","produce by name"))
-            submenue = src.menuFolder.selectionMenu.SelectionMenu("what potion to produce?",options,targetParamName="type")
+            submenue = src.menues.menuMap["SelectionMenu"]("what potion to produce?",options,targetParamName="type")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"scheduleProduction","params":params}
             return
@@ -274,7 +274,7 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
 
         # show UI to type in special potion names
         if params.get("type") == "byName":
-            submenue = src.menuFolder.inputMenu.InputMenu("Type the name of the potion to produce",targetParamName="type")
+            submenue = src.menues.menuMap["InputMenu"]("Type the name of the potion to produce",targetParamName="type")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"scheduleProduction","params":params}
             return
@@ -289,7 +289,7 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
             options.append((100,"100"))
             options.append((500,"500"))
             options.append((1000,"1000"))
-            submenue = src.menuFolder.selectionMenu.SelectionMenu("how many items to shedule?",options,targetParamName="amount")
+            submenue = src.menues.menuMap["SelectionMenu"]("how many items to shedule?",options,targetParamName="amount")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"scheduleProduction","params":params}
             return

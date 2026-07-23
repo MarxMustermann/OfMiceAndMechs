@@ -21,7 +21,7 @@ class EscapeLab(src.quests.MetaQuestSequence):
         if not self.shownGoToDoor:
             submenue = character.macroState["submenue"]
             if submenue and not ignoreCommands:
-                if isinstance(submenue,src.menuFolder.observeMenu.ObserveMenu):
+                if isinstance(submenue,src.menues.menuMap["ObserveMenu"]):
                     command = ""
                     command += "D"*(6-submenue.index_big[0])
                     command += "A"*(submenue.index_big[0]-6)

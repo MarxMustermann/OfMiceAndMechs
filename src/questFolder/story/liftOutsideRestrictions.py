@@ -39,7 +39,7 @@ class LiftOutsideRestrictions(src.quests.MetaQuestSequence):
         
         submenue = character.macroState.get("submenue")
         if submenue and not ignoreCommands:
-            if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu):
+            if isinstance(submenue,src.menues.menuMap["SelectionMenu"]):
                 foundOption = False
                 rewardIndex = 0
                 if rewardIndex == 0:

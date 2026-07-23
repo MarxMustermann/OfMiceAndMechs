@@ -50,7 +50,7 @@ class DimensionTeleporter(src.items.Item):
         '''
         show UI to set the teleporter direction
         '''
-        character.macroState["submenue"] = src.menuFolder.directionMenu.DirectionMenu(
+        character.macroState["submenue"] = src.menues.menuMap["DirectionMenu"](
             "choose input direction", self.direction, self.d_change
         )
 
@@ -58,7 +58,7 @@ class DimensionTeleporter(src.items.Item):
         '''
         show UI to set the teleporter direction
         '''
-        character.macroState["submenue"] = src.menuFolder.directionMenu.DirectionMenu(
+        character.macroState["submenue"] = src.menues.menuMap["DirectionMenu"](
             "choose output direction", self.direction, self.d_change
         )
 
@@ -123,7 +123,7 @@ class DimensionTeleporter(src.items.Item):
         if character:
             character.addMessage("broken")
         return
-        character.macroState["submenue"] = src.menuFolder.teleporterGroupMenu.TeleporterGroupMenu(self)
+        character.macroState["submenue"] = src.menues.menuMap["TeleporterGroupMenu"](self)
 
     def setMode(self, mode, character=None):
         '''

@@ -60,7 +60,7 @@ select the skill you want to train:
             character.changed("learnedSkill",character)
             return
 
-        submenue = src.menuFolder.selectionMenu.SelectionMenu(text,options,targetParamName="skillType")
+        submenue = src.menues.menuMap["SelectionMenu"](text,options,targetParamName="skillType")
         character.macroState["submenue"] = submenue
         params = {"character":character}
         character.macroState["submenue"].followUp = {"container":self,"method":"startTraining","params":params}

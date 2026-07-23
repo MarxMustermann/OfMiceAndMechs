@@ -43,7 +43,7 @@ Set the floor plan: {self.floorPlanType}
                 return (None,(command,"show the map"))
 
             # select build site on map
-            if isinstance(submenue,src.menuFolder.mapMenu.MapMenu) and not ignoreCommands:
+            if isinstance(submenue,src.menues.menuMap["MapMenu"]) and not ignoreCommands:
                 cityPlaner = character.container.getItemsByType("CityPlaner")[0]
                 if self.roomPosition not in cityPlaner.getAvailableRoomPositions():
                     return self._solver_trigger_fail(dryRun,"room already registered")

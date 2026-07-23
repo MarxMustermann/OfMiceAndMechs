@@ -45,7 +45,7 @@ Use a CityPlaner to do this.
         if submenue and not ignoreCommands:
 
             # schedule building the room
-            if isinstance(submenue,src.menuFolder.mapMenu.MapMenu):
+            if isinstance(submenue,src.menues.menuMap["MapMenu"]):
                 command = ""
                 if submenue.cursor[0] > self.roomPosition[0]:
                     command += "a"*(submenue.cursor[0]-self.roomPosition[0])
@@ -60,7 +60,7 @@ Use a CityPlaner to do this.
 
 
             # select the build menu
-            if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu):
+            if isinstance(submenue,src.menues.menuMap["SelectionMenu"]):
                 submenue = character.macroState["submenue"]
                 rewardIndex = 0
                 if rewardIndex == 0:

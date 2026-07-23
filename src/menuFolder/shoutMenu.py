@@ -33,7 +33,7 @@ class ShoutMenu(src.menues.SubMenu):
             if current_change:
                 match shout:
                     case "Stop and Wait For X tick!!!!!":
-                        character.macroState["submenue"] = src.menuFolder.inputMenu.InputMenu(
+                        character.macroState["submenue"] = src.menues.menuMap["InputMenu"](
                             "enter tick amount", targetParamName="waitTicks"
                         )
                         character.macroState["submenue"].followUp = {

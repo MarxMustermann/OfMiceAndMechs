@@ -23,7 +23,7 @@ class Integrator(src.items.Item):
 
         # show user feedback
         if len(character.quests):
-            character.macroState["submenue"] = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu("press j to confirm the assimilation of yourself as a base npc")
+            character.macroState["submenue"] = src.menues.menuMap["OneKeystrokeMenu"]("press j to confirm the assimilation of yourself as a base npc")
             character.macroState["submenue"].followUp = {"container":self,"method":"activate","params":{"character":character}}
         else:
             self.activate({"character":character,"keyPressed":"j"})

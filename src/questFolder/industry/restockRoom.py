@@ -164,7 +164,7 @@ Press the l or L keys to drop items.
         submenue = character.macroState.get("submenue")
         if character.macroState["submenue"] and not ignoreCommands:
             if not (
-                    isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu) or
+                    isinstance(submenue,src.menues.menuMap["InventoryMenu"]) or
                     submenue.tag in ("advancedInteractionSelection",)
                    ):
                 return (None,(["esc"],"close the menu"))
@@ -285,7 +285,7 @@ Press the l or L keys to drop items.
                     if counter > -1:
                         if not submenue:
                             inventoryCommand += "i"+"s"*counter
-                        if isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu):
+                        if isinstance(submenue,src.menues.menuMap["InventoryMenu"]):
                             if counter > submenue.cursor:
                                 inventoryCommand += "s"*(counter-submenue.cursor)
                             else:
@@ -298,7 +298,7 @@ Press the l or L keys to drop items.
                     if inventoryCommand == "":
                         if "advancedDrop" in character.interactionState:
                             interactionCommand = ""
-                        if isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu) and submenue.subMenu and submenue.subMenu.tag == "dropDirection":
+                        if isinstance(submenue,src.menues.menuMap["InventoryMenu"]) and submenue.subMenu and submenue.subMenu.tag == "dropDirection":
                             interactionCommand = ""
 
                     if foundDirectDrop[1] == (-1,0):

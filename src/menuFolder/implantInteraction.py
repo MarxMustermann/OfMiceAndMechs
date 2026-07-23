@@ -46,7 +46,7 @@ class ImplantInteraction(src.menues.SubMenu):
             return True
 
         if key == "q":
-            character.add_submenu(src.menuFolder.questMenu.QuestMenu(char=character))
+            character.add_submenu(src.menues.menuMap["QuestMenu"](char=character))
             return True
 
         # set up helper variable

@@ -120,7 +120,7 @@ tasks:
             options.append((index, task["task"]))
             index += 1
 
-        self.submenue = src.menuFolder.selectionMenu.SelectionMenu(
+        self.submenue = src.menues.menuMap["SelectionMenu"](
             "On what task do you want to set the breakpoint?", options
         )
         character.macroState["submenue"] = self.submenue

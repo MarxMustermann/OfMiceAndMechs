@@ -28,7 +28,7 @@ class RoomTagMenu(src.menues.SubMenu):
             return False
 
 
-        self.submenu = src.menuFolder.inputMenu.InputMenu(f"input the new tag. current tag is {self.room.tag}:")
+        self.submenu = src.menues.menuMap["InputMenu"](f"input the new tag. current tag is {self.room.tag}:")
         self.submenu.handleKey("~", noRender, character)
         return False
 

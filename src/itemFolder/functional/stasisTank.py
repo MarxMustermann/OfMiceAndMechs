@@ -90,7 +90,7 @@ The Clones nametag reads "{spwaned_character.name} ({short_code})"
             options = []
             options.append(("enter", "yes"))
             options.append(("noEnter", "no"))
-            self.submenue = src.menuFolder.selectionMenu.SelectionMenu(
+            self.submenue = src.menues.menuMap["SelectionMenu"](
                 "The stasis tank is empty. You will not be able to leave it on your on.\nDo you want to enter it?",
                 options,
             )

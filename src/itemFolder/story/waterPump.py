@@ -29,7 +29,7 @@ class WaterPump(src.items.Item):
         """
 
         options = [("drink", "drink"), ("rod", "add rod")]
-        self.submenue = src.menuFolder.selectionMenu.SelectionMenu(
+        self.submenue = src.menues.menuMap["SelectionMenu"](
             "what do you want to do?", options
         )
         character.macroState["submenue"] = self.submenue

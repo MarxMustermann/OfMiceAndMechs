@@ -227,7 +227,7 @@ If you don't find a {self.itemType} blueprint, research it.
                     quest = src.quests.questMap["PlaceItem"](targetPosition=machineMachine.getPosition(offset=(-1,0,0)),targetPositionBig=machineMachine.container.getPosition(),itemType="MetalBars",tryHard=self.tryHard,reason="supply the MachineMachine with MetalBars")
                     return ([quest], None)
 
-                if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
+                if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menues.menuMap["SelectionMenu"]) and not ignoreCommands:
                     submenue = character.macroState["submenue"]
                     if submenue.tag == "machineSelection":
                         counter = 1

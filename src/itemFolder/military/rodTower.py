@@ -89,7 +89,7 @@ class RodTower(src.items.Item):
             renderer.fill_rect((basePos[0]+tileSize-border_width,basePos[1],border_width,tileSize))
 
     def apply(self, character):
-        character.macroState["submenue"] = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu("\npress j to confirm manually activating the RodTower",ignoreFirstKey=False,do_not_scale=True,tag="confirm_RodTower")
+        character.macroState["submenue"] = src.menues.menuMap["OneKeystrokeMenu"]("\npress j to confirm manually activating the RodTower",ignoreFirstKey=False,do_not_scale=True,tag="confirm_RodTower")
         character.macroState["submenue"].followUp = {"container":self,"method":"activate","params":{"character":character}}
 
     def activate(self,extraParams):

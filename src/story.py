@@ -1246,15 +1246,15 @@ class MainGame(BasicPhase):
             mainChar.maxHealth = int(mainChar.maxHealth*0.5)
             mainChar.health = int(mainChar.health*0.5)
 
-        messagesMenu = src.menuFolder.messagesMenu.MessagesMenu(mainChar)
+        messagesMenu = src.menues.menuMap["MessagesMenu"](mainChar)
         messagesMenu.sidebared = True
         mainChar.rememberedMenu2.append(messagesMenu)
 
-        questMenu = src.menuFolder.questMenu.QuestMenu(mainChar)
+        questMenu = src.menues.menuMap["QuestMenu"](mainChar)
         questMenu.sidebared = True
         mainChar.rememberedMenu.append(questMenu)
 
-        inventoryMenu = src.menuFolder.inventoryMenu.InventoryMenu(mainChar)
+        inventoryMenu = src.menues.menuMap["InventoryMenu"](mainChar)
         inventoryMenu.sidebared = True
         mainChar.rememberedMenu2.append(inventoryMenu)
 
@@ -5612,7 +5612,7 @@ Give up on reaching out to the implant for now.
             terrain = mainChar.getTerrain()
 
             if len(mainChar.rememberedMenu2) < 2:
-                inventoryMenu = src.menuFolder.inventoryMenu.InventoryMenu(mainChar)
+                inventoryMenu = src.menues.menuMap["InventoryMenu"](mainChar)
                 inventoryMenu.sidebared = True
                 mainChar.rememberedMenu2.append(inventoryMenu)
 

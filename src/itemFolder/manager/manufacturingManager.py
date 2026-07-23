@@ -34,7 +34,7 @@ class ManufacturingManager(src.items.Item):
         character = params["character"]
 
         if "name" not in params:
-            submenue = src.menuFolder.inputMenu.InputMenu("Type the name of the item to produce",targetParamName="name")
+            submenue = src.menues.menuMap["InputMenu"]("Type the name of the item to produce",targetParamName="name")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"addItemType","params":params}
             return
@@ -64,7 +64,7 @@ class ManufacturingManager(src.items.Item):
             for option in self.basicOptions:
                 options.append((option,f"{option} {numActiveTables.get(option,0)}"))
 
-            submenue = src.menuFolder.selectionMenu.SelectionMenu(f"Manufacturingtables {numTablesUsed}/{len(manufacturingTables)}:\n(select and press j to increase)\n(select and press k to decrease)\n",options,targetParamName="type",selected=selected)
+            submenue = src.menues.menuMap["SelectionMenu"](f"Manufacturingtables {numTablesUsed}/{len(manufacturingTables)}:\n(select and press j to increase)\n(select and press k to decrease)\n",options,targetParamName="type",selected=selected)
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"changeProductionLoop","params":params}
             return
@@ -155,7 +155,7 @@ class ManufacturingManager(src.items.Item):
             for _item in self.prefabs["ScrapToMetalBars"]:
                 index += 1
                 options.append((index,f"prefab{index}"))
-            submenue = src.menuFolder.selectionMenu.SelectionMenu("what floorplan to use?",options,targetParamName="type")
+            submenue = src.menues.menuMap["SelectionMenu"]("what floorplan to use?",options,targetParamName="type")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"addScrapCompactorFromMap","params":params}
             return

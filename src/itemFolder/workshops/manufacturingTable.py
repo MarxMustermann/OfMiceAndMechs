@@ -135,12 +135,12 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
             options.append(("WeaponRack","WeaponRack"))
             options.append(("ManufacturingTable","ManufacturingTable"))
             options.append(("byName","produce by name"))
-            submenue = src.menuFolder.selectionMenu.SelectionMenu("what item to produce?",options,targetParamName="type",tag="manufacturingTableTypeConfigurationSelection")
+            submenue = src.menues.menuMap["SelectionMenu"]("what item to produce?",options,targetParamName="type",tag="manufacturingTableTypeConfigurationSelection")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"configureItem","params":params}
             return
         if params.get("type") == "byName":
-            submenue = src.menuFolder.inputMenu.InputMenu("Type the name of the item to produce",targetParamName="type",tag="manufacturingTableTypeConfigurationNameInput")
+            submenue = src.menues.menuMap["InputMenu"]("Type the name of the item to produce",targetParamName="type",tag="manufacturingTableTypeConfigurationNameInput")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"configureItem","params":params}
             return
@@ -398,7 +398,7 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
             self.priority
         except:
             self.priority = 0
-        character.macroState["submenue"] = src.menuFolder.sliderMenu.SliderMenu(
+        character.macroState["submenue"] = src.menues.menuMap["SliderMenu"](
             query = "set the preferred max amount of damage to upgrade to",
             defaultValue = self.priority,
             minValue = 0,

@@ -57,7 +57,7 @@ Once you contacted the implant this menu will hold more useful information.
             return (None,(".",""))
         submenue = character.macroState.get("submenue")
         if not ignoreCommands and submenue:
-            if isinstance(submenue,src.menuFolder.implantInteraction.ImplantInteraction):
+            if isinstance(submenue,src.menues.menuMap["ImplantInteraction"]):
                 return (None, ("j","interact"))
             return (None, (["esc"],"close submenu"))
         else:

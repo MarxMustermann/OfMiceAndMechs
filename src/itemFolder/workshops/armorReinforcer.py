@@ -113,7 +113,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         # get user input on what armor to upgrade
         if "choice" not in params:
             options = [("reinforce equipped armor", "reinforce equipped armor"), ("reinforce inventory armor", "reinforce armor from inventory")]
-            submenue = src.menuFolder.selectionMenu.SelectionMenu(
+            submenue = src.menues.menuMap["SelectionMenu"](
                 "Choose item To Reinforce", options, targetParamName="choice"
             )
             submenue.tag = "ArmorReinforceerSelection"
@@ -154,7 +154,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
             # abort and notify user if all upgrades are too expensive
             if D(armor.armorValue) >= D("8"):
                 text = "you can't improve the armor further."
-                submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
+                submenue = src.menues.menuMap["OneKeystrokeMenu"](text)
                 character.macroState["submenue"] = submenue
                 return
 
@@ -163,7 +163,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
             amount_ChitinPlates_needed_for_upgrade = self.amountNeededForOneUpgrade(next_upgrade_level)
             if amount_ChitinPlates_needed_for_upgrade > len(chitinPlates):
                 text = f"you can't improve your armor.\nYou need {amount_ChitinPlates_needed_for_upgrade} ChitinPlates to upgrade your armor."
-                submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
+                submenue = src.menues.menuMap["OneKeystrokeMenu"](text)
                 character.macroState["submenue"] = submenue
                 return
 
@@ -210,7 +210,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
             # spawn a slider to allow the user to select the amount to upgrade
             params["armor"] = armor
             params["chitinPlates"] = chitinPlates
-            submenue = src.menuFolder.sliderMenu.SliderMenu(
+            submenue = src.menues.menuMap["SliderMenu"](
                 "choose the armor level to upgrade to",
                 defaultValue=defaultValue,
                 minValue=D(1),
@@ -282,7 +282,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         spawns the UI for setting the max upgrade amount
         """
 
-        character.macroState["submenue"] = src.menuFolder.sliderMenu.SliderMenu(
+        character.macroState["submenue"] = src.menues.menuMap["SliderMenu"](
             "set the preferred max amount of defense to upgrade to",
             self.preferredMaxDefense if self.preferredMaxDefense else 3,
             3,

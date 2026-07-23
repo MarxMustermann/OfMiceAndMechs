@@ -147,7 +147,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         # make the user select the sword to sharpen
         if "choice" not in params:
             options = [("sharpen equipped sword", "sharpen equipped sword"), ("sharpen inventory sword", "sharpen sword from inventory")]
-            submenue = src.menuFolder.selectionMenu.SelectionMenu(
+            submenue = src.menues.menuMap["SelectionMenu"](
                 "Choose item To Sharpen", options, targetParamName="choice"
             )
             submenue.tag = "SwordSharpenerSelection"
@@ -181,7 +181,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
 
         # abort and notify the user if the sword is upgraded to the maximum already
         if sword.baseDamage == 30:
-            character.macroState["submenue"] = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(
+            character.macroState["submenue"] = src.menues.menuMap["OneKeystrokeMenu"](
                 "you can't further improve the sword"
             )
             return
@@ -195,7 +195,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         amount_grindstone_needed_for_upgrade = self.amountNeededForOneUpgrade(sword.baseDamage + improvementAmount + 1)
         if amount_grindstone_needed_for_upgrade is None:
             text = "you can't improve your sword further."
-            submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
+            submenue = src.menues.menuMap["OneKeystrokeMenu"](text)
             character.macroState["submenue"] = submenue
             character.changed("sharpened sword")
             return
@@ -203,7 +203,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         # abort and show user feedback if no upgrade can be afforded
         if amount_grindstone_needed_for_upgrade > len(grindstones) and improvementAmount == 0:
             text = f"you can't improve your sword.\nYou need {amount_grindstone_needed_for_upgrade} Grindstone to upgrade your sword."
-            submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
+            submenue = src.menues.menuMap["OneKeystrokeMenu"](text)
             character.macroState["submenue"] = submenue
             character.changed("sharpened sword")
             return
@@ -245,7 +245,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             defaultValue += 1
 
         # show the UI to select the actual value to upgrade
-        submenue = src.menuFolder.sliderMenu.SliderMenu(
+        submenue = src.menues.menuMap["SliderMenu"](
             query="choose the damage level to upgrade to",
             defaultValue=defaultValue,
             minValue=10,
@@ -292,7 +292,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         '''
         show the UI to set a maximum to sharpen to
         '''
-        character.macroState["submenue"] = src.menuFolder.sliderMenu.SliderMenu(
+        character.macroState["submenue"] = src.menues.menuMap["SliderMenu"](
             "set the preferred max amount of damage to upgrade to",
             self.preferredMaxDamage if self.preferredMaxDamage else 20,
             15,

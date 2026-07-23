@@ -53,7 +53,7 @@ Use a CityPlaner to do this.
         # navigate the build-menu and schedule building the room
         submenue = character.macroState["submenue"]
         if submenue and not ignoreCommands:
-            if isinstance(submenue,src.menuFolder.mapMenu.MapMenu):
+            if isinstance(submenue,src.menues.menuMap["MapMenu"]):
                 command = ""
                 if submenue.cursor[0] > self.roomPosition[0]:
                     command += "a"*(submenue.cursor[0]-self.roomPosition[0])
@@ -67,7 +67,7 @@ Use a CityPlaner to do this.
                 return (None,(command,"convert entryRoom to a trapRoom"))
 
         # select the build menu
-        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
+        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menues.menuMap["SelectionMenu"]) and not ignoreCommands:
             submenue = character.macroState["submenue"]
             rewardIndex = 0
             if rewardIndex == 0:

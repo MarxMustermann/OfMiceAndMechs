@@ -70,7 +70,7 @@ class BrewPotion(src.quests.MetaQuestSequence):
         # handle menu interactions
         submenue = character.macroState["submenue"]
         if submenue and not ignoreCommands:
-            if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu):
+            if isinstance(submenue,src.menues.menuMap["SelectionMenu"]):
                 if submenue.tag == "alchemyTableProductSelection":
                     selectionCommand = "j"
                     amount = self.amount

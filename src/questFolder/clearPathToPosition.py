@@ -63,7 +63,7 @@ Unbolt items by using a complex action, if needed.
 
         submenue = character.macroState.get("submenue")
         if submenue:
-            if isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu) and not character.getFreeInventorySpace():
+            if isinstance(submenue,src.menues.menuMap["InventoryMenu"]) and not character.getFreeInventorySpace():
                 return (None,("X","destroy item"))
             return (None,(["esc"],"close the menu"))
 

@@ -128,7 +128,7 @@ Do you you want to teleport there now?
 
 """
         options = [("yes","yes"),("no","no")]
-        submenu = src.menuFolder.selectionMenu.SelectionMenu(text,options)
+        submenu = src.menues.menuMap["SelectionMenu"](text,options)
         submenu.tag = "throneTeleport"
         submenu.do_not_scale = True
         submenu.followUp = {"container":self,"method":"teleport","params":{"character":character}}

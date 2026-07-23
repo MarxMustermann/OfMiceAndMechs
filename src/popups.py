@@ -19,7 +19,7 @@ class Popup(ABC):
         return True
 
     def openQuestMenu(self, extraInfo = None):
-        extraInfo["character"].macroState["submenue"] = src.menuFolder.questMenu.QuestMenu()
+        extraInfo["character"].macroState["submenue"] = src.menues.menuMap["QuestMenu"]()
 
     def onEvent(self,params = None):
         if self.conditionMet(params):

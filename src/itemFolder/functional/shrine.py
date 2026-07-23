@@ -40,7 +40,7 @@ class Shrine(src.items.Item):
             options.append((100,"100"))
             options.append((1000,"1000"))
             options.append((10000,"10000"))
-            submenue = src.menuFolder.selectionMenu.SelectionMenu("How long do you want to pray?",options,targetParamName="duration")
+            submenue = src.menues.menuMap["SelectionMenu"]("How long do you want to pray?",options,targetParamName="duration")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"waitPraySelection","params":{"character":character}}
         elif self.itemID == 2:
@@ -90,7 +90,7 @@ class Shrine(src.items.Item):
         options.append((7,"7 - god of crushing"))
         options.append((None,"all gods"))
 
-        submenu = src.menuFolder.selectionMenu.SelectionMenu(
+        submenu = src.menues.menuMap["SelectionMenu"](
             "Select what god to pray to", options,
             targetParamName="god",
         )
@@ -232,13 +232,13 @@ class Shrine(src.items.Item):
         if ticksLeft > 100:
             character.takeTime(100,"prayed")
             params["doneProductionTime"] += 100
-            submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(progressbarWithNewlines,targetParamName="abortKey")
+            submenue = src.menues.menuMap["OneKeystrokeMenu"](progressbarWithNewlines,targetParamName="abortKey")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"waitPrayWait","params":params}
         else:
             character.takeTime(ticksLeft,"prayed")
             params["doneProductionTime"] += ticksLeft
-            submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(progressbarWithNewlines,targetParamName="abortKey")
+            submenue = src.menues.menuMap["OneKeystrokeMenu"](progressbarWithNewlines,targetParamName="abortKey")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"waitPrayEnd","params":params}
         character.runCommandString(".",nativeKey=True)
@@ -501,7 +501,7 @@ class Shrine(src.items.Item):
             pass
 
         # show the selection menu to the user
-        submenue = src.menuFolder.selectionMenu.SelectionMenu(f"what do you wish for? You currently have {self.getTerrain().mana} mana",options,targetParamName="rewardType")
+        submenue = src.menues.menuMap["SelectionMenu"](f"what do you wish for? You currently have {self.getTerrain().mana} mana",options,targetParamName="rewardType")
         counter = 0
         for option in options:
             counter += 1

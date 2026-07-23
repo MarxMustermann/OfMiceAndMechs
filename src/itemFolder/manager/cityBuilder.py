@@ -1139,7 +1139,7 @@ class CityBuilder(src.items.Item):
         for task in reversed(self.tasks):
             extraText += f"{task}\n"
 
-        self.submenue = src.menuFolder.mapMenu.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText)
+        self.submenue = src.menues.menuMap["MapMenu"](mapContent=mapContent,functionMap=functionMap, extraText=extraText)
         character.macroState["submenue"] = self.submenue
 
     def startCityBuilding(self,character):
@@ -1194,7 +1194,7 @@ class CityBuilder(src.items.Item):
                 options.append(([basePlot[0]+1,basePlot[1]], "east"))
                 options.append(([basePlot[0]-1,basePlot[1]], "west"))
 
-            submenu = src.menuFolder.selectionMenu.SelectionMenu(
+            submenu = src.menues.menuMap["SelectionMenu"](
                 "Select scrapstockpile position", options,
                 targetParamName="scrapStorageCoordinate",
             )
@@ -1219,7 +1219,7 @@ class CityBuilder(src.items.Item):
                 options.append(([basePlot[0]+1,basePlot[1]], "east"))
                 options.append(([basePlot[0]-1,basePlot[1]], "west"))
 
-            submenu = src.menuFolder.selectionMenu.SelectionMenu(
+            submenu = src.menues.menuMap["SelectionMenu"](
                 "Select processing position", options,
                 targetParamName="processingCoordinate",
             )
@@ -1244,7 +1244,7 @@ class CityBuilder(src.items.Item):
                 options.append(([basePlot[0]+1,basePlot[1]], "east"))
                 options.append(([basePlot[0]-1,basePlot[1]], "west"))
 
-            submenu = src.menuFolder.selectionMenu.SelectionMenu(
+            submenu = src.menues.menuMap["SelectionMenu"](
                 "Select bar storage position", options,
                 targetParamName="barStorageCoordinate",
             )
@@ -1317,7 +1317,7 @@ class CityBuilder(src.items.Item):
                 ("UniformStockpileManager", "UniformStockpileManager"),
                 ("TypedStockpileManager", "TypedStockpileManager"),
             ]
-            submenu = src.menuFolder.selectionMenu.SelectionMenu(
+            submenu = src.menues.menuMap["SelectionMenu"](
                 "What type of stockpile should be placed?", options,
                 targetParamName="stockPileType",
             )
@@ -1331,7 +1331,7 @@ class CityBuilder(src.items.Item):
 
         if "stockPileFunction" not in params:
             options = [("storage", "storage"), ("source", "source"), ("sink", "sink")]
-            submenu = src.menuFolder.selectionMenu.SelectionMenu(
+            submenu = src.menues.menuMap["SelectionMenu"](
                 "what function should the stockpile have?", options,
                 targetParamName="stockPileFunction",
             )
@@ -1344,7 +1344,7 @@ class CityBuilder(src.items.Item):
             return
 
         if params["stockPileType"] == "UniformStockpileManager" and "stockPileItemType" not in params:
-            submenu = src.menuFolder.inputMenu.InputMenu(
+            submenu = src.menues.menuMap["InputMenu"](
                 "type ItemType",
                 targetParamName="stockPileItemType"
             )

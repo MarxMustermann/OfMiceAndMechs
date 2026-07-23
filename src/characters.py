@@ -309,7 +309,7 @@ class Character:
         self.runCommandString("~",nativeKey=True)
 
     def reachImplant(self):
-        self.add_submenu(src.menuFolder.implantInteraction.ImplantInteraction(self))
+        self.add_submenu(src.menues.menuMap["ImplantInteraction"](self))
         #if self == src.gamestate.gamestate.mainChar:
         #    src.gamestate.gamestate.stern["implant_callback"]()
 
@@ -335,7 +335,7 @@ class Character:
                 text += " a - west\n"
                 text += " s - south\n"
                 text += " d - east\n"
-                submenu = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
+                submenu = src.menues.menuMap["OneKeystrokeMenu"](text)
                 submenu.followUp = {"container":self,"method":"castLineDamageSpell","params":{}}
                 self.add_submenu(submenu)
                 self.runCommandString("~",nativeKey=True)
@@ -399,13 +399,13 @@ class Character:
         return resultList
 
     def openQuestMenu(self, extraInfo = None):
-        self.macroState["submenue"] = src.menuFolder.questMenu.QuestMenu()
+        self.macroState["submenue"] = src.menues.menuMap["QuestMenu"]()
 
     def openHelpMenu(self, extraInfo = None):
-        self.macroState["submenue"] = src.menuFolder.helpMenu.HelpMenu()
+        self.macroState["submenue"] = src.menues.menuMap["HelpMenu"]()
 
     def openObserveMenu(self, extraInfo = None):
-        self.macroState["submenue"] = src.menuFolder.observeMenu.ObserveMenu(self)
+        self.macroState["submenue"] = src.menues.menuMap["ObserveMenu"](self)
 
     def openImplantMenu(self, extraInfo = None):
         self.macroState["submenue"] = src.menuFolder.implantMenu.ImplantMenu(self)
@@ -1614,7 +1614,7 @@ press l/L for light attack
         text += """
 
 press any other key to attack normally"""
-        submenu = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
+        submenu = src.menues.menuMap["OneKeystrokeMenu"](text)
         submenu.tag = "specialAttackSelection"
         submenu.followUp = {"container":self,"method":"doSpecialAttack","params":{"target":target,"attacksOffered":attacksOffered}}
         self.add_submenu(submenu)
@@ -2729,7 +2729,7 @@ press any other key to attack normally"""
         offset = self.getOffset(pos)
         if offset[0] == None:
             return
-        submenu = src.menuFolder.examineMenu.ExamineMenu(self,offset=offset)
+        submenu = src.menues.menuMap["ExamineMenu"](self,offset=offset)
         self.add_submenu(submenu)
         return
 
@@ -2750,7 +2750,7 @@ press any other key to attack normally"""
         info = item.getLongInfo()
         if info:
             info += "\n\nregisterinformation:\n\n" + registerInfo
-            self.submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(info)
+            self.submenue = src.menues.menuMap["OneKeystrokeMenu"](info)
             self.add_submenu(submenue)
 
         # notify listeners

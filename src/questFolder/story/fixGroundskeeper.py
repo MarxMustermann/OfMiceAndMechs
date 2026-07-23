@@ -23,7 +23,7 @@ class FixGroundskeeper(src.quests.MetaQuestSequence):
         # close open menues
         submenue = character.macroState.get("submenue")
         if submenue and not ignoreCommands:
-            if isinstance(submenue,src.menuFolder.chatPartnerselection.ChatPartnerselection):
+            if isinstance(submenue,src.menues.menuMap["ChatPartnerselection"]):
                 return (None,("j","start conversation"))
             if isinstance(submenue,src.chats.Chat):
                 return (None,("j","continue conversation"))

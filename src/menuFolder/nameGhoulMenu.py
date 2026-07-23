@@ -22,7 +22,7 @@ class NameGhoulMenu(src.menues.SubMenu):
             return True
 
         if not self.subMenu:
-            self.subMenu = src.menuFolder.inputMenu.InputMenu("enter the new name for this Ghoul")
+            self.subMenu = src.menues.menuMap["InputMenu"]("enter the new name for this Ghoul")
             self.handleKey("~", noRender=noRender, character=character)
             return False
 

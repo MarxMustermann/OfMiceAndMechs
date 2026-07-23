@@ -26,7 +26,7 @@ class InstructNPCMenu(src.menues.SubMenu):
                 options = []
                 options.append(("command selection","select from a list of commands"))
                 options.append(("createQuest","create and issue quest"))
-                self.subMenu = src.menuFolder.selectionMenu.SelectionMenu("how do you want to give the instruction?", options)
+                self.subMenu = src.menues.menuMap["SelectionMenu"]("how do you want to give the instruction?", options)
                 self.handleKey("~", noRender=noRender, character=character)
                 return False
             self.instructionType = self.subMenu.selection
@@ -56,7 +56,7 @@ class InstructNPCMenu(src.menues.SubMenu):
                     options.append(("beUsefulHere","be useful here"))
                     options.append(("doDuty","do duty"))
                     options.append(("doDutyHere","do duty here"))
-                    self.subMenu = src.menuFolder.selectionMenu.SelectionMenu("what command do you want to give?", options)
+                    self.subMenu = src.menues.menuMap["SelectionMenu"]("what command do you want to give?", options)
                     self.handleKey("~", noRender=noRender, character=character)
                     return False
                 self.commandType = self.subMenu.selection
@@ -122,7 +122,7 @@ class InstructNPCMenu(src.menues.SubMenu):
                         options.append(("resource fetching","resource fetching"))
                         options.append(("cleaning","cleaning"))
                         options.append(("machine placing","machine placing"))
-                        self.subMenu = src.menuFolder.selectionMenu.SelectionMenu("What duty should be done?", options)
+                        self.subMenu = src.menues.menuMap["SelectionMenu"]("What duty should be done?", options)
                         self.handleKey("~", noRender=noRender, character=character)
                         return False
                     self.dutyType = self.subMenu.selection

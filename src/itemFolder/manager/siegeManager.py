@@ -182,7 +182,7 @@ class SiegeManager(src.items.Item):
             text.append("\n")
 
             # show UI and wait for user input
-            submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu([text],targetParamName="action")
+            submenue = src.menues.menuMap["OneKeystrokeMenu"]([text],targetParamName="action")
             submenue.tag = "configure siege manager main"
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"scheduleLoop","params":params}
@@ -257,7 +257,7 @@ class SiegeManager(src.items.Item):
                 options.append(("sound alarms",f"sound AlarmBells"))
                 options.append(("silence alarms",f"silence AlarmBells"))
                 options.append(("mop up",f"start mop up operation"))
-                submenue = src.menuFolder.selectionMenu.SelectionMenu("select action to schedule:\n\n",options,targetParamName="actionType")
+                submenue = src.menues.menuMap["SelectionMenu"]("select action to schedule:\n\n",options,targetParamName="actionType")
                 submenue.tag = "configure siege manager task selection"
                 character.macroState["submenue"] = submenue
                 character.macroState["submenue"].followUp = {"container":self,"method":"scheduleLoop","params":params}
@@ -282,7 +282,7 @@ class SiegeManager(src.items.Item):
 
             # get user input on what action to add
             if not "actionTick" in params:
-                submenue = src.menuFolder.sliderMenu.SliderMenu(f'choose the tick to schedule the action "{params["actionType"]}" for:\n\n',maxValue = 3375,targetParamName="actionTick")
+                submenue = src.menues.menuMap["SliderMenu"](f'choose the tick to schedule the action "{params["actionType"]}" for:\n\n',maxValue = 3375,targetParamName="actionTick")
                 character.macroState["submenue"] = submenue
                 submenue.tag = "configure siege manager time selection"
                 character.macroState["submenue"].followUp = {"container":self,"method":"scheduleLoop","params":params}

@@ -101,7 +101,7 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         # show the UI to select the type of item to produce
         if "type" not in params:
             options = self._get_item_options()
-            submenue = src.menuFolder.selectionMenu.SelectionMenu("what item to produce?",options,targetParamName="type")
+            submenue = src.menues.menuMap["SelectionMenu"]("what item to produce?",options,targetParamName="type")
             submenue.tag = "metalWorkingProductSelection"
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"produceItem","params":params}
@@ -113,7 +113,7 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
 
         # show special UI to select a type by typing it in
         if params.get("type") == "byName":
-            submenue = src.menuFolder.inputMenu.InputMenu("Type the name of the item to produce",targetParamName="type")
+            submenue = src.menues.menuMap["InputMenu"]("Type the name of the item to produce",targetParamName="type")
             submenue.tag = "metalWorkingProductInput"
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"produceItem","params":params}
@@ -134,7 +134,7 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
             params["amount"] = int(params["rawAmount"])
             del params["rawAmount"]
         if not "amount" in params:
-            submenue = src.menuFolder.inputMenu.InputMenu("Type how many of the items produce",targetParamName="rawAmount")
+            submenue = src.menues.menuMap["InputMenu"]("Type how many of the items produce",targetParamName="rawAmount")
             submenue.tag = "metalWorkingAmountInput"
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"produceItem","params":params}
@@ -328,7 +328,7 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         # show UI to select thy type of item to schedule
         if "type" not in params:
             options = self._get_item_options()
-            submenue = src.menuFolder.selectionMenu.SelectionMenu("what item to produce?",options,targetParamName="type")
+            submenue = src.menues.menuMap["SelectionMenu"]("what item to produce?",options,targetParamName="type")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"scheduleProduction","params":params}
             return
@@ -340,7 +340,7 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
 
         # show special UI to type in a type
         if params.get("type") == "byName":
-            submenue = src.menuFolder.inputMenu.InputMenu("Type the name of the item to produce",targetParamName="type")
+            submenue = src.menues.menuMap["InputMenu"]("Type the name of the item to produce",targetParamName="type")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"scheduleProduction","params":params}
             return
@@ -355,7 +355,7 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
             options.append((100,"100"))
             options.append((500,"500"))
             options.append((1000,"1000"))
-            submenue = src.menuFolder.selectionMenu.SelectionMenu("how many items to shedule?",options,targetParamName="amount")
+            submenue = src.menues.menuMap["SelectionMenu"]("how many items to shedule?",options,targetParamName="amount")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"scheduleProduction","params":params}
             return

@@ -34,7 +34,7 @@ class TeleporterArtwork(src.items.Item):
                                 }
 
     def teleport(self,character):
-        submenue = src.menuFolder.inputMenu.InputMenu(
+        submenue = src.menues.menuMap["InputMenu"](
                 "input the target coordinate", targetParamName="targetPos"
         )
         character.macroState["submenue"] = submenue

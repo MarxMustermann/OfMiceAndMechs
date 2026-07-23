@@ -822,11 +822,11 @@ def handleActivitySelection(key,char):
         terrain = char.getTerrain()
 
         # render empty map
-        mapContent = src.menuFolder.terrainMenu.TerrainMenu.renderZoneInfo(char)
+        mapContent = src.menues.menuMap["TerrainMenu"].renderZoneInfo(char)
         functionMap = {}
         extraText = "test"
 
-        submenue = src.menuFolder.mapMenu.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText, cursor=char.getTerrain().getPosition())
+        submenue = src.menues.menuMap["MapMenu"](mapContent=mapContent,functionMap=functionMap, extraText=extraText, cursor=char.getTerrain().getPosition())
         submenue.tag = "terrainMovementmenu"
         char.macroState["submenue"] = submenue
         char.runCommandString("~",nativeKey=True)
@@ -951,7 +951,7 @@ def handleActivitySelection(key,char):
 
         extraText = "\n\n"
 
-        submenue = src.menuFolder.mapMenu.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText, cursor=char.getBigPosition())
+        submenue = src.menues.menuMap["MapMenu"](mapContent=mapContent,functionMap=functionMap, extraText=extraText, cursor=char.getBigPosition())
         submenue.tag = "tileMovementmenu"
         char.macroState["submenue"] = submenue
         char.runCommandString("~",nativeKey=True)
@@ -1173,13 +1173,13 @@ def doObserveSelection(params):
     key = params["keyPressed"]
 
     if key == "c":
-        submenue = src.menuFolder.combatInfoMenu.CombatInfoMenu(char=char)
+        submenue = src.menues.menuMap["CombatInfoMenu"](char=char)
         char.macroState["submenue"] = submenue
     elif key == "i":
-        submenue = src.menuFolder.itemInfoMenu.ItemInfoMenu(char=char)
+        submenue = src.menues.menuMap["ItemInfoMenu"](char=char)
         char.macroState["submenue"] = submenue
     elif key == "e":
-        submenue = src.menuFolder.experimentalObserveMenu.ExperimentalObserveMenu(char=char)
+        submenue = src.menues.menuMap["ExperimentalObserveMenu"](char=char)
         char.macroState["submenue"] = submenue
     elif key == "C":
         submenue = src.menues.menuMap["CharacterObserveMenu"](char=char)
@@ -1192,19 +1192,19 @@ def doAdvancedExamine(params):
     key = params["keyPressed"]
 
     if key == "w":
-        submenu = src.menuFolder.examineMenu.ExamineMenu(char,offset=(0,-1,0))
+        submenu = src.menues.menuMap["ExamineMenu"](char,offset=(0,-1,0))
         char.add_submenu(submenu)
     elif key == "s":
-        submenu = src.menuFolder.examineMenu.ExamineMenu(char,offset=(0,1,0))
+        submenu = src.menues.menuMap["ExamineMenu"](char,offset=(0,1,0))
         char.add_submenu(submenu)
     elif key == "d":
-        submenu = src.menuFolder.examineMenu.ExamineMenu(char,offset=(1,0,0))
+        submenu = src.menues.menuMap["ExamineMenu"](char,offset=(1,0,0))
         char.add_submenu(submenu)
     elif key == "a":
-        submenu = src.menuFolder.examineMenu.ExamineMenu(char,offset=(-1,0,0))
+        submenu = src.menues.menuMap["ExamineMenu"](char,offset=(-1,0,0))
         char.add_submenu(submenu)
     elif key == ".":
-        submenu = src.menuFolder.examineMenu.ExamineMenu(char,offset=(0,0,0))
+        submenu = src.menues.menuMap["ExamineMenu"](char,offset=(0,0,0))
         char.add_submenu(submenu)
 
 def doAdvancedInteraction(params):
@@ -2692,9 +2692,9 @@ def handle_main_menu_selected():
         # src.interaction.tcodMixer.close()
         raise SystemExit() #HACK: workaround for bug that causes memory leak
     elif selection == "help":
-        charState["submenue"] = src.menuFolder.helpMenu.HelpMenu()
+        charState["submenue"] = src.menues.menuMap["HelpMenu"]()
     elif selection == "change settings":
-        charState["submenue"] = src.menuFolder.settingMenu.SettingMenu() 
+        charState["submenue"] = src.menues.menuMap["SettingMenu"]() 
     elif selection == "main menu":
         char.macroState["submenue"] = None
         char.specialRender = False
@@ -2708,7 +2708,7 @@ def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
                ("quit", "save and quit"),
                ("help","help"),
                ("change settings", "change settings")]
-    submenu = src.menuFolder.selectionMenu.SelectionMenu("What do you want to do?", options)
+    submenu = src.menues.menuMap["SelectionMenu"]("What do you want to do?", options)
     submenu.tag = "main menu"
     submenu.do_not_scale = True
     char.macroState["submenue"] = submenu
@@ -2789,7 +2789,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
     else:
         # open the debug menue
         if key in ("\'",):
-            charState["submenue"] = src.menuFolder.debugMenu.DebugMenu()
+            charState["submenue"] = src.menues.menuMap["DebugMenu"]()
 
         # destroy save and quit
         if key in (commandChars.quit_delete,):
@@ -3036,7 +3036,7 @@ press key for the advanced interaction
 
 """
 
-            submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text,ignoreFirstKey=False)
+            submenue = src.menues.menuMap["OneKeystrokeMenu"](text,ignoreFirstKey=False)
             submenue.followUp = {"method":doAdvancedInteraction,"params":{"character":char}}
             submenue.tag = "advancedInteractionSelection"
             char.macroState["submenue"] = submenue
@@ -3085,7 +3085,7 @@ press key for the configuration interaction
 
 """
 
-            submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text,ignoreFirstKey=False)
+            submenue = src.menues.menuMap["OneKeystrokeMenu"](text,ignoreFirstKey=False)
             submenue.followUp = {"method":doAdvancedExamine,"params":{"character":char}}
             submenue.tag = "advancedExamineSelection"
             char.macroState["submenue"] = submenue
@@ -3127,7 +3127,7 @@ press key to set fire direction
 
 """
 
-                submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text,ignoreFirstKey=False)
+                submenue = src.menues.menuMap["OneKeystrokeMenu"](text,ignoreFirstKey=False)
                 submenue.followUp = {"method":doRangedAttack,"params":{"character":char}}
                 submenue.tag = "selectFireDirection"
                 char.macroState["submenue"] = submenue
@@ -3155,7 +3155,7 @@ press key for advanced pickup
 
 """
 
-            submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text,ignoreFirstKey=False)
+            submenue = src.menues.menuMap["OneKeystrokeMenu"](text,ignoreFirstKey=False)
             submenue.followUp = {"method":doAdvancedPickup,"params":{"character":char}}
             submenue.tag = "advancedPickupSelection"
             char.macroState["submenue"] = submenue
@@ -3233,13 +3233,13 @@ press key for advanced drop
 
         # open chat partner selection
         if key in (commandChars.hail,):
-            charState["submenue"] = src.menuFolder.chatPartnerselection.ChatPartnerselection()
+            charState["submenue"] = src.menues.menuMap["ChatPartnerselection"]()
 
         #if key in ("H",):
-        #    charState["submenue"] = src.menuFolder.instructSubordinatesMenu.InstructSubordinatesMenu()
+        #    charState["submenue"] = src.menues.menuMap["InstructSubordinatesMenu"]()
 
         if key in ("r",) and char.room:
-            charState["submenue"] = src.menuFolder.roomMenu.RoomMenu(char.room)
+            charState["submenue"] = src.menues.menuMap["RoomMenu"](char.room)
 
         """
         # recalculate the questmarker since it could be tainted
@@ -3271,17 +3271,17 @@ press key for advanced drop
 
     # open quest menu
     if key in (commandChars.show_quests,):
-        charState["submenue"] = src.menuFolder.questMenu.QuestMenu()
+        charState["submenue"] = src.menues.menuMap["QuestMenu"]()
         char.changed("opened quest menu",(char,))
 
     # open help menu
     if key in (commandChars.show_help,"z"):
-        charState["submenue"] = src.menuFolder.helpMenu.HelpMenu()
+        charState["submenue"] = src.menues.menuMap["HelpMenu"]()
         char.changed("openedHelp")
 
     # open inventory
     if key in (commandChars.show_inventory,):
-        charState["submenue"] = src.menuFolder.inventoryMenu.InventoryMenu(char)
+        charState["submenue"] = src.menues.menuMap["InventoryMenu"](char)
 
     # open the menu for giving quests
     if key in (commandChars.show_quests_detailed,):
@@ -3294,7 +3294,7 @@ press key for advanced drop
     # open the character information
     if key in ("o",):
 
-        submenue = src.menuFolder.observeMenu.ObserveMenu(char)
+        submenue = src.menues.menuMap["ObserveMenu"](char)
         submenue.tag = "observe"
         char.macroState["submenue"] = submenue
 
@@ -3312,7 +3312,7 @@ press key for what to observe
 
 """
 
-        submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text,ignoreFirstKey=False)
+        submenue = src.menues.menuMap["OneKeystrokeMenu"](text,ignoreFirstKey=False)
         submenue.followUp = {"method":doObserveSelection,"params":{"character":char}}
         submenue.tag = "observeSelection"
         char.macroState["submenue"] = submenue
@@ -3323,7 +3323,7 @@ press key for what to observe
 
     # open the character information
     if key in ("x",):
-        charState["submenue"] = src.menuFolder.messagesMenu.MessagesMenu(char=char)
+        charState["submenue"] = src.menues.menuMap["MessagesMenu"](char=char)
 
     # open the help screen
     if key in (commandChars.show_help,):
@@ -3527,7 +3527,7 @@ def renderHeader(character):
     return ""
 
     # render the sections to display
-    questSection = src.menuFolder.questMenu.QuestMenu.renderQuests(maxQuests=2)
+    questSection = src.menues.menuMap["QuestMenu"].renderQuests(maxQuests=2)
     messagesSection = renderMessages(character)
 
     # calculate the size of the elements
@@ -4271,12 +4271,12 @@ def getTcodEvents():
                             else:
                                 if mainChar.container.isRoom:
                                     smallCoordinate = (smallCoordinate[0]-1,smallCoordinate[1]-1,0)
-                            submenu = src.menuFolder.experimentalObserveMenu.ExperimentalObserveMenu(mainChar)
+                            submenu = src.menues.menuMap["ExperimentalObserveMenu"](mainChar)
                             submenu.index = smallCoordinate
                             submenu.index_big = bigCoordinate
                             mainChar.macroState["submenue"] = submenu
                         elif event.button == tcod.event.MouseButton.RIGHT:
-                            submenu = src.menuFolder.contextListMenu.ContextListMenu(mainChar)
+                            submenu = src.menues.menuMap["ContextListMenu"](mainChar)
                             submenu.index = smallCoordinate
                             submenu.index_big = bigCoordinate
                             mainChar.macroState["submenue"] = submenu
@@ -4999,7 +4999,7 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                 for uiElement in uiElements:
 
                     if uiElement["type"] == "zoneMap":
-                        miniMapChars = src.menuFolder.terrainMenu.TerrainMenu.renderZoneInfo(src.gamestate.gamestate.mainChar)
+                        miniMapChars = src.menues.menuMap["TerrainMenu"].renderZoneInfo(src.gamestate.gamestate.mainChar)
                         canvas = src.canvas.Canvas(
                             size=(15, 15),
                             chars=miniMapChars,

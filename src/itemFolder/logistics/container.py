@@ -79,7 +79,7 @@ actions:
         options = []
         options.append(("load", "load items"))
         options.append(("unload", "unload items"))
-        self.submenue = src.menuFolder.selectionMenu.SelectionMenu(
+        self.submenue = src.menues.menuMap["SelectionMenu"](
             "select the item to produce", options
         )
         character.macroState["submenue"] = self.submenue

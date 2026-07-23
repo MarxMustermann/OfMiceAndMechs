@@ -34,7 +34,7 @@ class SimpleRunner(src.items.Item):
                         compressedMacro += "/" + keystroke + "/"
                 options.append((key, compressedMacro))
 
-            self.submenue = src.menuFolder.selectionMenu.SelectionMenu(
+            self.submenue = src.menues.menuMap["SelectionMenu"](
                 "select the macro you want to store", options
             )
             character.macroState["submenue"] = self.submenue

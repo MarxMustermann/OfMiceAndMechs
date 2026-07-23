@@ -106,7 +106,7 @@ class DebugMenu(src.menues.SubMenu):
                                     }
                                 }
 
-                        submenue = src.menuFolder.mapMenu.MapMenu(
+                        submenue = src.menues.menuMap["MapMenu"](
                             mapContent=mapContent,
                             functionMap=functionMap,
                             cursor=character.getBigPosition(),
@@ -153,7 +153,7 @@ class DebugMenu(src.menues.SubMenu):
 
                             if settingName is None:
                                 return
-                            submenu3 = src.menuFolder.inputMenu.InputMenu("input value")
+                            submenu3 = src.menues.menuMap["InputMenu"]("input value")
                             character.macroState["submenue"] = submenu3
                             character.macroState["submenue"].followUp = setValue
                             return
@@ -161,7 +161,7 @@ class DebugMenu(src.menues.SubMenu):
                         options = []
                         for (key, value) in character.personality.items():
                             options.append((key, f"{key}: {value}"))
-                        submenu2 = src.menuFolder.selectionMenu.SelectionMenu("select personality setting", options)
+                        submenu2 = src.menues.menuMap["SelectionMenu"]("select personality setting", options)
                         character.macroState["submenue"] = submenu2
                         character.macroState["submenue"].followUp = getValue
                         return True
@@ -251,7 +251,7 @@ class DebugMenu(src.menues.SubMenu):
                         1/0
                 case "Execute Code":
                     if current_change:
-                        submenue = src.menuFolder.inputMenu.InputMenu("Type the code to execute",targetParamName="code")
+                        submenue = src.menues.menuMap["InputMenu"]("Type the code to execute",targetParamName="code")
                         character.macroState["submenue"] = submenue
                         character.macroState["submenue"].followUp = {"container":self,"method":"action","params":{"character":character}}
                         return True
@@ -294,7 +294,7 @@ class DebugMenu(src.menues.SubMenu):
                             mapContent[room.yPosition][room.xPosition] = room.displayChar
                         for scrapField in terrain.scrapFields:
                             mapContent[scrapField[1]][scrapField[0]] = "ss"
-                        submenue = src.menuFolder.mapMenu.MapMenu(
+                        submenue = src.menues.menuMap["MapMenu"](
                             mapContent=mapContent,
                             functionMap=functionMap,
                             cursor=character.getBigPosition(),
@@ -337,7 +337,7 @@ class DebugMenu(src.menues.SubMenu):
                             mapContent[scrapField[1]][scrapField[0]] = "ss"
                             del functionMap[(scrapField[0], scrapField[1])]
 
-                        submenue = src.menuFolder.mapMenu.MapMenu(
+                        submenue = src.menues.menuMap["MapMenu"](
                             mapContent=mapContent,
                             functionMap=functionMap,
                             cursor=character.getBigPosition(),
@@ -360,7 +360,7 @@ class DebugMenu(src.menues.SubMenu):
                                     }
                                 }
 
-                        submenue = src.menuFolder.terrainMenu.TerrainMenu(
+                        submenue = src.menues.menuMap["TerrainMenu"](
                             functionMap=functionMap,
                             cursor=character.getTerrain().getPosition(),
                             applyKey="big_coordinate",
@@ -370,7 +370,7 @@ class DebugMenu(src.menues.SubMenu):
                         return True
                 case "Get Item":
                     if current_change:
-                        submenue = src.menuFolder.inputMenu.InputMenu("Type item name to spawn", targetParamName="item")
+                        submenue = src.menues.menuMap["InputMenu"]("Type item name to spawn", targetParamName="item")
                         character.macroState["submenue"] = submenue
                         character.macroState["submenue"].followUp = {
                             "container": self,
@@ -387,7 +387,7 @@ class DebugMenu(src.menues.SubMenu):
                         return True
                 case "pass time":
                     if current_change:
-                        submenue = src.menuFolder.inputMenu.InputMenu(
+                        submenue = src.menues.menuMap["InputMenu"](
                             "Type amount of ticks to pass", targetParamName="ticks"
                         )
                         character.macroState["submenue"] = submenue

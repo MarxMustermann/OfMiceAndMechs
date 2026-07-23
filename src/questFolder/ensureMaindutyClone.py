@@ -107,7 +107,7 @@ class EnsureMaindutyClone(src.quests.MetaQuestSequence):
                 return (None,(command,"open the duty menu"))
 
             # navigate the duty menu
-            if isinstance(submenue,src.menuFolder.jobAsMatrixMenu.JobAsMatrixMenu):
+            if isinstance(submenue,src.menues.menuMap["JobAsMatrixMenu"]):
                 if submenue.index[0] > -1:
                     return (None,("w","move cursor to duty line"))
 

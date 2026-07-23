@@ -219,7 +219,7 @@ As a a reward for getting promoted from rank 6 to rank 5 you can select a close 
 
 You can only have one close combat perk
 """
-                submenu = src.menuFolder.selectionMenu.SelectionMenu(
+                submenu = src.menues.menuMap["SelectionMenu"](
                     text = text,
                     options=options,
                     targetParamName="rewardType",
@@ -249,7 +249,7 @@ As a a reward for getting promoted from rank 5 to rank 4 you can select a specia
 
 You can only have one special movement perk 
 """
-                submenu = src.menuFolder.selectionMenu.SelectionMenu(
+                submenu = src.menues.menuMap["SelectionMenu"](
                     text = text,
                     options=options,
                     targetParamName="rewardType",
@@ -279,7 +279,7 @@ As a a reward for getting promoted from rank 4 to rank 3 you can select a ranged
 
 You can only have one ranged attack perk 
 """
-                submenu = src.menuFolder.selectionMenu.SelectionMenu(
+                submenu = src.menues.menuMap["SelectionMenu"](
                     text = text,
                     options=options,
                     targetParamName="rewardType",
@@ -309,7 +309,7 @@ As a a reward for getting promoted from rank 3 to rank 2 you can select a attrib
 
 You can only have one attribute perk 
 """
-                submenu = src.menuFolder.selectionMenu.SelectionMenu(
+                submenu = src.menues.menuMap["SelectionMenu"](
                     text = text,
                     options=options,
                     targetParamName="rewardType",

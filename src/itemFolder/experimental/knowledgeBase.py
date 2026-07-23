@@ -36,7 +36,7 @@ class KnowledgeBase(src.items.Item):
 
         params["search_term"] = search_term
 
-        submenu = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
+        submenu = src.menues.menuMap["OneKeystrokeMenu"](text)
         submenu.followUp = {"container":self,"method":"show_info","params":params}
         character.macroState["submenue"] = submenu
 

@@ -40,7 +40,7 @@ class HelpGroundskeeper(src.quests.MetaQuestSequence):
         # handle open menues
         submenue = character.macroState.get("submenue")
         if submenue and not ignoreCommands:
-            if isinstance(submenue,src.menuFolder.chatPartnerselection.ChatPartnerselection):
+            if isinstance(submenue,src.menues.menuMap["ChatPartnerselection"]):
                 if submenue.options is None:
                     return (None,("j","start conversation"))
                 groundskeeper_index = None

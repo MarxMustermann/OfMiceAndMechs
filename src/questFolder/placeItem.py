@@ -212,7 +212,7 @@ If you don't find the items to place, produce them.
         submenue = character.macroState.get("submenue")
         if submenue and not ignoreCommands:
             if not itemPlaced:
-                if isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu) and character.getSpacePosition() == self.targetPosition:
+                if isinstance(submenue,src.menues.menuMap["InventoryMenu"]) and character.getSpacePosition() == self.targetPosition:
                     command = submenue.get_command_to_select_item(item_type=self.itemType,selectionCommand="l")
                     if command:
                         return (None,(command,"drop the item"))

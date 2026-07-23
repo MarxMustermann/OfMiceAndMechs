@@ -83,7 +83,7 @@ class TriggerPlate(src.items.Item):
             return False
 
     def apply(self, character):
-        character.macroState["submenue"] = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu("\npress j to confirm manually triggering the TriggerPlate",ignoreFirstKey=False,do_not_scale=True,tag="confirm_TriggerPlate")
+        character.macroState["submenue"] = src.menues.menuMap["OneKeystrokeMenu"]("\npress j to confirm manually triggering the TriggerPlate",ignoreFirstKey=False,do_not_scale=True,tag="confirm_TriggerPlate")
         character.macroState["submenue"].followUp = {"container":self,"method":"activate","params":{"character":character}}
 
     def activate(self,extraParams):
@@ -208,7 +208,7 @@ class TriggerPlate(src.items.Item):
         for line in roomRender:
             line.append("\n")
 
-        submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu([roomRender,"\nselect the target position\npress wasd to move cursor\npress j to add/remove target"])
+        submenue = src.menues.menuMap["OneKeystrokeMenu"]([roomRender,"\nselect the target position\npress wasd to move cursor\npress j to add/remove target"])
         character.macroState["submenue"] = submenue
         character.macroState["submenue"].followUp = {"container":self,"method":"configureTargetPosition","params":params}
 

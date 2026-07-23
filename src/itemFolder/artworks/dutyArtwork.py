@@ -40,7 +40,7 @@ After changing the duties the clones should change their behaviour after complet
         #if not character.rank < 4:
         #    character.addMessage("you need to have rank 3 to do this. You can see the overview though.")
         #    return
-        self.submenue = src.menuFolder.jobAsMatrixMenu.JobAsMatrixMenu(self)
+        self.submenue = src.menues.menuMap["JobAsMatrixMenu"](self)
         character.macroState["submenue"] = self.submenue
 
 src.items.addType(DutyArtwork)

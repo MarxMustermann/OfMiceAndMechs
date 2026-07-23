@@ -140,7 +140,7 @@ class InventoryMenu(src.menues.SubMenu):
 
                 # do drop
                 if key == "L":
-                    self.subMenu = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu([
+                    self.subMenu = src.menues.menuMap["OneKeystrokeMenu"]([
                         "What direcetion do you want to drop the item?\n\n",
                         src.interaction.ActionMeta(payload="w",content=" w - north"),"\n",
                         src.interaction.ActionMeta(payload="s",content=" s - south"),"\n",

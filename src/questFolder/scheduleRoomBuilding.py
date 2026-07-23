@@ -61,7 +61,7 @@ Use a CityPlaner to do this.
                 return (None,(command,"show the map"))
 
             # build the build site from map
-            if isinstance(submenue,src.menuFolder.mapMenu.MapMenu) and not ignoreCommands:
+            if isinstance(submenue,src.menues.menuMap["MapMenu"]) and not ignoreCommands:
                 selection_command = "r"
                 if self.priorityBuild:
                     selection_command = "R"

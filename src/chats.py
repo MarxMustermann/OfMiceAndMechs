@@ -516,7 +516,7 @@ class FurnaceChat(Chat):
                 (self.phase.fireFurnaces, "yes"),
                 (self.phase.noFurnaceFirering, "no"),
             ]
-            self.submenue = src.menuFolder.selectionMenu.SelectionMenu(
+            self.submenue = src.menues.menuMap["SelectionMenu"](
                 "Say, do you like furnaces?", options
             )
             self.firstRun = False
@@ -891,7 +891,7 @@ class JobChatSecond(Chat):
                 if self.mainChar.reputation < 6:
                     addition += " (" + str(quest.reputationReward) + ")"
                 options.append((quest, quest.description.split("\n")[0] + addition))
-            self.submenue = src.menuFolder.selectionMenu.SelectionMenu("select the quest", options)
+            self.submenue = src.menues.menuMap["SelectionMenu"]("select the quest", options)
 
             return False
 
@@ -1105,7 +1105,7 @@ class JobChatThird(Chat):
                 if self.mainChar.reputation < 6:
                     addition += " (" + str(quest.reputationReward) + ")"
                 options.append((quest, quest.description.split("\n")[0] + addition))
-            self.submenue = src.menuFolder.selectionMenu.SelectionMenu("select the quest", options)
+            self.submenue = src.menues.menuMap["SelectionMenu"]("select the quest", options)
 
             return False
 
@@ -1855,7 +1855,7 @@ class ChatMenu(Chat):
                 #options.append(("exit", "let us proceed, " + self.partner.name))
 
                 # set the options
-                submenu = src.menuFolder.selectionMenu.SelectionMenu(options=options, text=f"You are about to start a conversation with {self.partner.name}.\n\nWhat kind of conversation do you want to start?\n")
+                submenu = src.menues.menuMap["SelectionMenu"](options=options, text=f"You are about to start a conversation with {self.partner.name}.\n\nWhat kind of conversation do you want to start?\n")
                 self.subMenu = submenu
 
             if self.subMenu:
@@ -1924,12 +1924,12 @@ class ChatMenu(Chat):
                 elif selection == "stop":
                     self.partner.runCommandString(".",clear=True)
                 elif selection == "set name":
-                    submenue = src.menuFolder.nameGhoulMenu.NameGhoulMenu(npc=self.partner)
+                    submenue = src.menues.menuMap["NameGhoulMenu"](npc=self.partner)
                     character.macroState["submenue"] = submenue
                     submenue.handleKey("~", noRender=noRender,character=character)
                     return True
                 elif selection == "giveInstruction":
-                    submenue = src.menuFolder.instructNPCMenu.InstructNPCMenu(npc=self.partner)
+                    submenue = src.menues.menuMap["InstructNPCMenu"](npc=self.partner)
                     character.macroState["submenue"] = submenue
                     submenue.handleKey("~", noRender=noRender,character=character)
                     return True
@@ -1941,7 +1941,7 @@ class ChatMenu(Chat):
                     submenue.handleKey(key, noRender=noRender)
                     return True
                 elif selection == "chat":
-                    submenue = src.menuFolder.idleChatNPCMenu.IdleChatNPCMenu(npc=self.partner)
+                    submenue = src.menues.menuMap["IdleChatNPCMenu"](npc=self.partner)
                     character.macroState["submenue"] = submenue
                     submenue.handleKey("~", noRender=noRender,character=character)
                     return True
@@ -1951,7 +1951,7 @@ class ChatMenu(Chat):
                     return True
                 elif selection == "showQuests":
                     # spawn quest submenu for partner
-                    submenue = src.menuFolder.questMenu.QuestMenu(char=self.partner)
+                    submenue = src.menues.menuMap["QuestMenu"](char=self.partner)
                     self.subMenu = submenue
                     submenue.handleKey(key, noRender=noRender)
                     return False
@@ -1962,7 +1962,7 @@ class ChatMenu(Chat):
                     src.gamestate.gamestate.mainChar.addMessage("copy macros")
                     return True
                 elif selection == "showFrustration":
-                    submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(
+                    submenue = src.menues.menuMap["OneKeystrokeMenu"](
                         text="my frustration is: %s" % self.partner.frustration
                     )
                     self.subMenu = submenue
@@ -2041,7 +2041,7 @@ class ChatMenu(Chat):
 
                     return True
                 elif selection == "runMacro":
-                    submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(
+                    submenue = src.menues.menuMap["OneKeystrokeMenu"](
                         text="press key for the macro to run"
                     )
                     self.subMenu = submenue

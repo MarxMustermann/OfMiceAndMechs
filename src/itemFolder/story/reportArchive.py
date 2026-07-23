@@ -121,7 +121,7 @@ class ReportArchive(src.items.Item):
         if self.fragments_unlocked < len(self.reports):
             text += """== partial database error ==\n\nThe database cannot be fully accessed\n\nCollect more MemoryFragments to fully repair the database.\n\n"""
         text += """Select what report to show:\n"""
-        submenue = src.menuFolder.selectionMenu.SelectionMenu(
+        submenue = src.menues.menuMap["SelectionMenu"](
             text = text,
             options=options
         )

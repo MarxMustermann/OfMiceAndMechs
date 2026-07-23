@@ -30,7 +30,7 @@ class IdleChatNPCMenu(src.menues.SubMenu):
                 options.append(("showInventory","What is in your inventory?"))
                 options.append(("showStats","What have you been doing?"))
                 options.append(("reset","You are behaving eratically. Get yourself together!"))
-                self.subMenu = src.menuFolder.selectionMenu.SelectionMenu("", options)
+                self.subMenu = src.menues.menuMap["SelectionMenu"]("", options)
                 self.handleKey("~", noRender=noRender, character=character)
                 return False
             self.instructionType = self.subMenu.selection
@@ -43,7 +43,7 @@ class IdleChatNPCMenu(src.menues.SubMenu):
             self.subMenu = None
             return True
         if self.instructionType == "showQuests":
-            submenue = src.menuFolder.questMenu.QuestMenu(char=self.npc)
+            submenue = src.menues.menuMap["QuestMenu"](char=self.npc)
             character.macroState["submenue"] = submenue
             submenue.handleKey("~", noRender=noRender,character=character)
             self.subMenu = None
@@ -55,7 +55,7 @@ class IdleChatNPCMenu(src.menues.SubMenu):
             self.subMenu = None
             return True
         if self.instructionType == "showInventory":
-            submenue = src.menuFolder.inventoryMenu.InventoryMenu(char=self.npc)
+            submenue = src.menues.menuMap["InventoryMenu"](char=self.npc)
             character.macroState["submenue"] = submenue
             submenue.handleKey("~", noRender=noRender,character=character)
             self.subMenu = None

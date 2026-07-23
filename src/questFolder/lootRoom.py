@@ -112,7 +112,7 @@ Use the k or K keys to pick up items."""
         if submenue and not ignoreCommands:
 
             # drop item from inventory
-            if isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu) and character.getFreeInventorySpace() <= 1:
+            if isinstance(submenue,src.menues.menuMap["InventoryMenu"]) and character.getFreeInventorySpace() <= 1:
                 command = submenue.get_command_to_select_item(item_type="Bolt",selectionCommand="l")
                 if command:
                     return (None,(command,"drop the item"))

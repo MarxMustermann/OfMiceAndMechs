@@ -75,19 +75,19 @@ class RoomMenu(src.menues.SubMenu):
             return None
 
         if character and key in ("c",):
-            character.macroState["submenue"] = src.menuFolder.createQuestMenu.CreateQuestMenu("ClearTile", [character], character)
+            character.macroState["submenue"] = src.menues.menuMap["CreateQuestMenu"]("ClearTile", [character], character)
         if character and key in ("s",):
-            character.macroState["submenue"] = src.menuFolder.createQuestMenu.CreateQuestMenu("RestockRoom", [character], character)
+            character.macroState["submenue"] = src.menues.menuMap["CreateQuestMenu"]("RestockRoom", [character], character)
         """
         if character and key in ("q",):
             character.macroState["submenue"] = src.menuFolder.roomDutyMenu.RoomDutyMenu(self.room)
 
         if character and key in ("r",):
-            character.macroState["submenue"] = src.menuFolder.roomSourceMenu.RoomSourceMenu(self.room)
+            character.macroState["submenue"] = src.menues.menuMap["RoomSourceMenu"](self.room)
         """
 
         if character and key in ("t",):
-            character.macroState["submenue"] = src.menuFolder.roomTagMenu.RoomTagMenu(self.room)
+            character.macroState["submenue"] = src.menues.menuMap["RoomTagMenu"](self.room)
 
         """
         if character and key in ("o",):

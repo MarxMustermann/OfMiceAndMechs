@@ -91,7 +91,7 @@ class Anvil(src.items.itemMap["WorkShop"]):
             del params["rawAmount"]
 
         if amount == None:
-            submenue = src.menuFolder.inputMenu.InputMenu("Type how many of the items produce",targetParamName="rawAmount")
+            submenue = src.menues.menuMap["InputMenu"]("Type how many of the items produce",targetParamName="rawAmount")
             submenue.tag = "anvilAmountInput"
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"produceItemLooped","params":params}

@@ -40,7 +40,7 @@ class DirectionMonolith(src.items.Item):
         """
 
         options = [("setName", "set name")]
-        self.submenue = src.menuFolder.selectionMenu.SelectionMenu(
+        self.submenue = src.menues.menuMap["SelectionMenu"](
             "what do you want to do?", options
         )
         character.macroState["submenue"] = self.submenue
@@ -54,7 +54,7 @@ class DirectionMonolith(src.items.Item):
         """
 
         if self.submenue.selection == "setName":
-            self.submenue = src.menuFolder.inputMenu.InputMenu("enter node name")
+            self.submenue = src.menues.menuMap["InputMenu"]("enter node name")
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.setName
 

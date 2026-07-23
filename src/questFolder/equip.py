@@ -180,7 +180,7 @@ Swords can range from 10 to 25 damage per hit.
         # handle menus
         submenue = character.macroState.get("submenue")
         if submenue:
-            if isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu):
+            if isinstance(submenue,src.menues.menuMap["InventoryMenu"]):
                 if bestSword in character.inventory:
                     return (None,(submenue.get_command_to_select_item(item_to_select=bestSword),"equip from inventory"))
                 if bestArmor in character.inventory:

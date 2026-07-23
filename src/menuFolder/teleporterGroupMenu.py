@@ -37,7 +37,7 @@ class TeleporterGroupMenu(src.menues.SubMenu):
             return True
 
         if key == "i":
-            character.macroState["submenue"] = src.menuFolder.inputMenu.InputMenu("enter frequency")
+            character.macroState["submenue"] = src.menues.menuMap["InputMenu"]("enter frequency")
             character.macroState["submenue"].followUp = {
                 "container": self,
                 "method": "setGroup",

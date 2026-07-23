@@ -37,7 +37,7 @@ Exanine the position {targetPosition}{big_position_string} {reasonString}.
         # handle menus
         submenue = character.macroState["submenue"]
         if submenue and not ignoreCommands:
-            if isinstance(submenue,src.menuFolder.examineMenu.ExamineMenu):
+            if isinstance(submenue,src.menues.menuMap["ExamineMenu"]):
                 if character.getBigPosition() != self.targetPositionBig:
                     return (None,(["esc"],"close menu"))
                 (show_characters,items,markers) = submenue.get_things_to_show()

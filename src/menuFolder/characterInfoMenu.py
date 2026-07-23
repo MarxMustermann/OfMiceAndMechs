@@ -201,7 +201,7 @@ class CharacterInfoMenu(src.menues.SubMenu):
             self.char.rememberedMenu2.append(self)
             return True
         if key == "e":
-            submenue = src.menuFolder.statusEffectMenu.StatusEffectMenu(char=character)
+            submenue = src.menues.menuMap["StatusEffectMenu"](char=character)
             character.macroState["submenue"] = submenue
             submenue.handleKey("~", noRender=noRender,character=character)
             return True

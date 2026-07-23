@@ -364,7 +364,7 @@ class Item:
         options = []
         for option in self.getApplyOptions():
             options.append(option)
-        submenu = src.menuFolder.selectionMenu.SelectionMenu(
+        submenu = src.menues.menuMap["SelectionMenu"](
             "what do you want to do?", options
         )
         submenu.extraInfo["item"] = self
@@ -678,7 +678,7 @@ class Item:
                 text += f"{key}: {value[0]}\n"
 
         # spawn menu
-        submenu = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
+        submenu = src.menues.menuMap["OneKeystrokeMenu"](text)
         submenu.tag = "configurationSelection"
         submenu.do_not_scale = True
         character.macroState["submenue"] = submenu
@@ -745,7 +745,7 @@ class Item:
         """
 
         options = self.commandOptions
-        submenu = src.menuFolder.selectionMenu.SelectionMenu(
+        submenu = src.menues.menuMap["SelectionMenu"](
             "what command do you want to set?", options
         )
         character.macroState["submenue"] = submenu
@@ -1170,7 +1170,7 @@ class Item:
             description = [params.get("description"),"\n"]
         text = [description,progressBar]
 
-        submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text, targetParamName="abortKey")
+        submenue = src.menues.menuMap["OneKeystrokeMenu"](text, targetParamName="abortKey")
         submenue.tag = "Wait"
         submenue.do_not_scale = True
         character.macroState["submenue"] = submenue

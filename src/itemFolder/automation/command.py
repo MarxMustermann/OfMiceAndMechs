@@ -37,7 +37,7 @@ class Command(src.items.Item):
         if isinstance(character, src.characters.characterMap["Monster"]):
                 return
 
-        character.macroState["submenue"] = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu("press j to confirm the activation of the commands",ignoreFirstKey=False)
+        character.macroState["submenue"] = src.menues.menuMap["OneKeystrokeMenu"]("press j to confirm the activation of the commands",ignoreFirstKey=False)
         character.macroState["submenue"].followUp = {"container":self,"method":"activate","params":{"character":character}}
 
     def activate(self,params):
@@ -58,7 +58,7 @@ class Command(src.items.Item):
             if self.level > 3:
                 options.append(("rememberCommand", "store command in memory"))
 
-            self.submenue = src.menuFolder.selectionMenu.SelectionMenu(
+            self.submenue = src.menues.menuMap["SelectionMenu"](
                 "Do you want to reconfigure the machine?", options
             )
             character.macroState["submenue"] = self.submenue
@@ -75,11 +75,11 @@ class Command(src.items.Item):
         if self.submenue.selection == "runCommand":
             self.runPayload(self.character)
         elif self.submenue.selection == "setName":
-            self.submenue = src.menuFolder.inputMenu.InputMenu("Enter the name")
+            self.submenue = src.menues.menuMap["InputMenu"]("Enter the name")
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.setName
         elif self.submenue.selection == "setDescription":
-            self.submenue = src.menuFolder.inputMenu.InputMenu("Enter the description")
+            self.submenue = src.menues.menuMap["InputMenu"]("Enter the description")
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.setDescription
         elif self.submenue.selection == "rememberCommand":

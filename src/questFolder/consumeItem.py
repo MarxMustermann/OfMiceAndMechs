@@ -54,7 +54,7 @@ Do this by opening your inventory by pressing i and then activating the item.
             return (None,None)
 
         if character.macroState["submenue"] and not ignoreCommands:
-            if not isinstance(character.macroState["submenue"],src.menuFolder.inventoryMenu.InventoryMenu):
+            if not isinstance(character.macroState["submenue"],src.menues.menuMap["InventoryMenu"]):
                 return (None,(["esc"],"close the menu"))
 
             counter = 0

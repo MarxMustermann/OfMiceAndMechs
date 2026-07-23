@@ -145,7 +145,7 @@ class Adventure(src.quests.MetaQuestSequence):
         # interact with most menus
         submenue = character.macroState.get("submenue")
         if submenue and not ignoreCommands:
-            if not isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu):
+            if not isinstance(submenue,src.menues.menuMap["InventoryMenu"]):
                 return (None,(["esc"],"close the menu"))
 
         # clear inventory from scrap

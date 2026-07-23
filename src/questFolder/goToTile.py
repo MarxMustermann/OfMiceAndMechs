@@ -248,7 +248,7 @@ There is a mini map shown on the top left of the screen showing a quest marker.
         if submenue and not ignoreCommands:
 
             # move using the room menu
-            if isinstance(submenue,src.menuFolder.mapMenu.MapMenu):
+            if isinstance(submenue,src.menues.menuMap["MapMenu"]):
                 if self.targetPosition == (7,7,0):
                     return (None,("c","auto move to tile"))
 

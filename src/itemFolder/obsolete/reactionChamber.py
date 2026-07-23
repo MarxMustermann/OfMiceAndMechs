@@ -16,7 +16,7 @@ class ReactionChamber(src.items.Item):
         options.append(("add", "add"))
         options.append(("boil", "boil"))
         options.append(("mix", "mix"))
-        self.submenue = src.menuFolder.selectionMenu.SelectionMenu(
+        self.submenue = src.menues.menuMap["SelectionMenu"](
             "select the item to produce", options
         )
         character.macroState["submenue"] = self.submenue

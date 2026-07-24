@@ -313,7 +313,7 @@ Press the l or L keys to drop items.
                         return (None,((inventoryCommand+"l")*numToDrop,"store an item"))
             else:
                 if foundDirectDrop[1] == (-1,0):
-                    command = "Ja"*10
+                    command = "Ja"
                     if submenue:
                         if submenue.tag == "advancedInteractionSelection":
                             command = command[1:]
@@ -321,7 +321,7 @@ Press the l or L keys to drop items.
                             return (None,(["esc"],"close menu"))
                     return (None,(command,"put scrap on scrap pile"))
                 if foundDirectDrop[1] == (1,0):
-                    command = "Jd"*10
+                    command = "Jd"
                     if submenue:
                         if submenue.tag == "advancedInteractionSelection":
                             command = command[1:]
@@ -329,7 +329,7 @@ Press the l or L keys to drop items.
                             return (None,(["esc"],"close menu"))
                     return (None,(command,"put scrap on scrap pile"))
                 if foundDirectDrop[1] == (0,-1):
-                    command = "Jw"*10
+                    command = "Jw"
                     if submenue:
                         if submenue.tag == "advancedInteractionSelection":
                             command = command[1:]
@@ -337,7 +337,7 @@ Press the l or L keys to drop items.
                             return (None,(["esc"],"close menu"))
                     return (None,(command,"put scrap on scrap pile"))
                 if foundDirectDrop[1] == (0,1):
-                    command = "Js"*10
+                    command = "Js"
                     if submenue:
                         if submenue.tag == "advancedInteractionSelection":
                             command = command[1:]

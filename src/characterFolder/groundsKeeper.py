@@ -34,7 +34,7 @@ class GroundsKeeper(src.characters.characterMap["Clone"]):
         if self.searchInventory("Painter"):
             hasPainter = True
         for room in self.getTerrain().rooms:
-            if room.tag != "the groundskeepers place":
+            if room.tag == "ruin":
                 continue
             if room.getItemByType("Painter"):
                 hasPainter = True

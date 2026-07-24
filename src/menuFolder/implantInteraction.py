@@ -8,21 +8,27 @@ class ImplantInteraction(src.menues.SubMenu):
     type = "ImplantInteraction"
 
     def __init__(self,character):
-        """
+        '''
         initialise internal state
 
         Parameters:
             text: the text to show
-        """
+        '''
 
         super().__init__()
         self.character = character
         self.submenu = None
 
     def getTitle(self):
+        '''
+        returns a title
+        '''
         return "IMPLANT INTERACTION"
     
     def _spawnSpawnTaskMenu(self,base_text,task_type):
+        '''
+        spawns a menu that allows to accept the task as quest
+        '''
         options = [("yes","yes"),("no","no")]
         extraDescriptions = {
                 "yes":"Assigns the quest to you. Press q to see quest details afterwards",
@@ -32,7 +38,7 @@ class ImplantInteraction(src.menues.SubMenu):
         self.submenu.extraInfo["task_type"] = task_type
 
     def handleKey(self, key, noRender=False, character = None):
-        """
+        '''
         show the text and ignore keypresses
 
         Parameters:
@@ -40,7 +46,7 @@ class ImplantInteraction(src.menues.SubMenu):
             noRender: flag to skip rendering
         Returns:
             returns True when done
-        """
+        '''
 
         if key == "esc":
             return True
@@ -344,6 +350,9 @@ It will start to rebuild its working area.
         1/0
 
     def render(self):
+        '''
+        show the text of the menu
+        '''
         if self.submenu:
             return self.submenu.render()
         else:

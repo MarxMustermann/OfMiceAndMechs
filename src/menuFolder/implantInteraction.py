@@ -104,6 +104,8 @@ You can see the quest description and general instructions in the quest menu.
                             quest = src.quests.questMap["HelpGroundskeeper"]()
                         elif task_type == "wait_explosion":
                             quest = src.quests.questMap["WatchLabBurn"]()
+                        elif task_type == "equip":
+                            quest = src.quests.questMap["Equip"]()
                         elif task_type == "kill_spiderling":
                             quest = src.quests.questMap["SecureTile"](toSecure=(7,5,0),endWhenCleared=True,reason="clear the path",simpleAttacksOnly=True,noHeal=True)
                         elif task_type == "explore":
@@ -315,6 +317,42 @@ Check if you can help out.
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to help to groundskeeper?"""),"""
 """]
                 self._spawnSpawnTaskMenu(base_text,"help_groundskeeper")
+                return False
+
+            # equip yourself
+            equipment_availabe = False
+            for room in terrain.rooms:
+                if room.tag == "ruin":
+                    continue
+                weapons = []
+                weapons.extend(room.getItemsByType("Rod"))
+                weapons.extend(room.getItemsByType("Sword"))
+                if weapons and character.weapon is None:
+                    equipment_availabe = True
+                    break
+                for weapon in weapons:
+                    if weapon.baseDamage > character.weapon.baseDamage:
+                        equipment_availabe = True
+                        break
+                armors = []
+                armors.extend(room.getItemsByType("Armor"))
+                if armors and character.armor is None:
+                    equipment_availabe = True
+                    break
+                for armor in armors:
+                    if armor.armorValue > character.armor.armorValue:
+                        equipment_availabe = True
+                        break
+
+            if equipment_availabe:
+                base_text = ["""
+""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""There is better equipment available."""),"""
+
+Equip yourself with that equipment.
+
+""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to help to groundskeeper?"""),"""
+"""]
+                self._spawnSpawnTaskMenu(base_text,"equip")
                 return False
 
             current_time = src.gamestate.gamestate.tick

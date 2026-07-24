@@ -1884,7 +1884,7 @@ I am working right now. I'll repriotize though.""")
                 quest = src.quests.questMap["SpawnClone"](fancyFetchFlask=False)
                 character.assignQuest(quest,active=True)
             elif quest_selection == "kill monster":
-                all_characters = terrain.getAllCharacters()
+                all_characters = terrain.characters
                 for check_char in all_characters:
                     if check_char.faction == character.faction:
                         continue
@@ -2130,7 +2130,7 @@ There are several things you can do to help me out:
         # check if there are enemies to kill
         has_enemies_to_kill = False
         shown_enenemy_kill_option = False
-        for check_char in terrain.getAllCharacters():
+        for check_char in terrain.characters:
             if check_char.faction == character.faction:
                 continue
             has_enemies_to_kill = True

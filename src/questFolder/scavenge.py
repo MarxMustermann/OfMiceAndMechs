@@ -144,15 +144,23 @@ This quest will end when your inventory is full."""
             offsets.append(self.lastMoveDirection)
         random.shuffle(offsets)
 
+        # collect candidates to visit
+        target_candidates = []
         pos = character.getBigPosition()
-
-        # check nearby tiles
         for offset in offsets:
+            target_candidates.append((pos[0]+offset[0],pos[1]+offset[1],pos[2]+offset[2]))
+        x_values = list(range(1,14))
+        random.shuffle(x_values)
+        y_values = list(range(1,14))
+        random.shuffle(y_values)
+        for x in x_values:
+            for y in y_values:
+                target_candidates.append((x,y,0))
 
-            # get target coordinate
-            target = (pos[0]+offset[0],pos[1]+offset[1],pos[2]+offset[2])
+        # visit unvisited tiles
+        for target in target_candidates:
 
-            # filter invalid target
+            # filter invalid targets
             if target in self.doneTiles:
                 continue
             if target[0] < 1 or target[0] > 13 or target[1] < 1 or target[1] > 13:
@@ -165,7 +173,7 @@ This quest will end when your inventory is full."""
             if centerItems and centerItems[0].type == "RoomBuilder":
                 continue
 
-            # ignore tiles with enemies
+            # avoid enemies
             foundEnemy = False
             for otherCharacter in terrain.charactersByTile.get(target,[]):
                 if otherCharacter.faction == character.faction:
@@ -182,53 +190,8 @@ This quest will end when your inventory is full."""
                     continue
 
                 self.lastMoveDirection = offset
-                quest = src.quests.questMap["GoToTile"](targetPosition=target,reason="move to a scavenging spot",paranoid=True)
+                quest = src.quests.questMap["GoToTile"](targetPosition=target,reason="move to the next scavenging spot",paranoid=True)
                 return ([quest],None)
-
-        # visit unvisited tiles
-        x_values = list(range(1,14))
-        random.shuffle(x_values)
-        y_values = list(range(1,14))
-        random.shuffle(y_values)
-
-        for x in x_values:
-            for y in y_values:
-
-                # set target coordinate
-                target = (x,y,0)
-
-                # filter invalid targets
-                if target in self.doneTiles:
-                    continue
-                if target[0] < 1 or target[0] > 13 or target[1] < 1 or target[1] > 13:
-                    continue
-                if not (target not in terrain.scrapFields and target not in terrain.forests and not terrain.getRoomByPosition(target)):
-                    continue
-                if terrain.getRoomByPosition(target):
-                    continue
-                centerItems = terrain.getItemByPosition((target[0]*15+7,target[1]*15+7,0))
-                if centerItems and centerItems[0].type == "RoomBuilder":
-                    continue
-
-                # avoid enemies
-                foundEnemy = False
-                for otherCharacter in terrain.charactersByTile.get(target,[]):
-                    if otherCharacter.faction == character.faction:
-                        continue
-                    foundEnemy = True
-                if foundEnemy:
-                    continue
-
-                # go to tile if valuable loot was found
-                for item in terrain.itemsByBigCoordinate.get(target,[]):
-                    if self.toCollect and item.type != self.toCollect:
-                        continue
-                    if item.bolted:
-                        continue
-
-                    self.lastMoveDirection = offset
-                    quest = src.quests.questMap["GoToTile"](targetPosition=target,reason="move to the next scavenging spot",paranoid=True)
-                    return ([quest],None)
 
         # fail because nothing is left to scavenge
         return self._solver_trigger_fail(dryRun,"nothing left to scavenge")

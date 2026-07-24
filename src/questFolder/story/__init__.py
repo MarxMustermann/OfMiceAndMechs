@@ -41,3 +41,4 @@ import src.questFolder.story.fixGroundskeeper
 import src.questFolder.story.helpGroundskeeper
 import src.questFolder.story.storyExploreHomeTerrain
 import src.questFolder.story.doGroundskeeping
+import src.questFolder.story.fetchPainter

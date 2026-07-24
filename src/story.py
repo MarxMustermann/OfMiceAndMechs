@@ -1797,7 +1797,7 @@ I am working right now. I'll repriotize though.""")
                     if room.getEnemiesOnTile(character):
                         continue
                     found_loot_room = True
-                    quest = src.quests.questMap["LootRoom"](targetPositionBig=room.getPosition())
+                    quest = src.quests.questMap["FetchPainter"](targetPositionBig=room.getPosition())
                     character.assignQuest(quest,active=True)
                     return
 

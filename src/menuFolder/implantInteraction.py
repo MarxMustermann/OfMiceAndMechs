@@ -110,6 +110,14 @@ You can see the quest description and general instructions in the quest menu.
                             quest = src.quests.questMap["SecureTile"](toSecure=(7,5,0),endWhenCleared=True,reason="clear the path",simpleAttacksOnly=True,noHeal=True)
                         elif task_type == "explore":
                             quest = src.quests.questMap["StoryExploreHomeTerrain"](lifetime=500)
+                        elif task_type.startswith("plan ") and len(task_type.split(" ")) > 1:
+                            room_type = task_type.split(" ")[1]
+                            empty_rooms = terrain.get_empty_rooms()
+                            if not empty_rooms:
+                                character.notify("no empty rooms")
+                                return
+                            room_pos = empty_rooms[0].getPosition()
+                            quest = src.quests.questMap["AssignFloorPlan"](floorPlanType=room_type,roomPosition=room_pos,reason="make use of the available rooms")
                         if quest:
                             character.assignQuest(quest)
                         else:
@@ -343,7 +351,6 @@ Check if you can help out.
                     if armor.armorValue > character.armor.armorValue:
                         equipment_availabe = True
                         break
-
             if equipment_availabe:
                 base_text = ["""
 """,(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""There is better equipment available."""),"""
@@ -354,6 +361,49 @@ Equip yourself with that equipment.
 """]
                 self._spawnSpawnTaskMenu(base_text,"equip")
                 return False
+
+            # set floorplans
+            hasEmptyRoom = False
+            hasCityPlaner = False
+            hasStorage = False
+            hasGooProcessing = False
+            hasTemple = False
+            for room in terrain.rooms:
+                if room.tag is None:
+                    hasEmptyRoom = True
+                    continue
+                if room.tag == "ruin":
+                    continue
+                if room.tag == "storage":
+                    hasStorage = True
+                    continue
+                if room.tag == "gooProcessing":
+                    hasGooProcessing = True
+                    continue
+                if room.tag == "temple":
+                    hasTemple = True
+                    continue
+                if room.getItemsByType("CityPlaner",needsBolted=True):
+                    hasCityPlaner = True
+            if hasEmptyRoom and hasCityPlaner:
+                base_text = ["""
+""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Your base has an empty room to fill."""),"""
+
+"""]
+                room_type = None
+                if not hasStorage:
+                    room_type = "storage"
+                elif not hasGooProcessing:
+                    room_type = "gooProcessing"
+                elif not hasTemple:
+                    room_type = "temple"
+                if room_type:
+                    base_text.append(f"add a {room_type} room\n")
+                    base_text.extend(["""
+""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to schedule building the room?"""),"""
+"""])
+                    self._spawnSpawnTaskMenu(base_text,f"plan {room_type}")
+                    return False
 
             current_time = src.gamestate.gamestate.tick
             if groundskeepers_place.floorPlan or src.gamestate.gamestate.stern.get("no_groundskeeper_quest",0) > current_time-200:

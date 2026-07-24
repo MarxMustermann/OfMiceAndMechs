@@ -97,6 +97,8 @@ This quest will end when your inventory is full."""
         # scavenge all item on the current tile
         terrain = character.getTerrain()
         for item in terrain.getNearbyItems(character):
+
+            # filter for appropriate items
             if self.toCollect and item.type != self.toCollect:
                 continue
             if self.ignoreScrap and item.type == "Scrap":
@@ -104,25 +106,25 @@ This quest will end when your inventory is full."""
             if item.bolted:
                 continue
 
+            # do not rescavange spots
             target = character.getBigPosition()
-
             if target in self.doneTiles:
                 continue
 
+            # do not scavange special spot
             centerItems = terrain.getItemByPosition((target[0]*15+7,target[1]*15+7,0))
             if centerItems and centerItems[0].type == "RoomBuilder":
                 continue
-
             if not (target not in terrain.scrapFields and target not in terrain.forests and not terrain.getRoomByPosition(target)):
                 continue
             if terrain.getRoomByPosition(target):
                 continue
 
+            # create the actual scavanging quest
             hasIdleSubordinate = False
             for subordinate in character.subordinates:
                 if len(subordinate.quests) < 2:
                     hasIdleSubordinate = True
-
             if hasIdleSubordinate:
                 return (None,("Hjsssssj","make subordinate scavenge"))
             else:
@@ -144,22 +146,26 @@ This quest will end when your inventory is full."""
 
         pos = character.getBigPosition()
 
-        # check nearby scavenging spots
+        # check nearby tiles
         for offset in offsets:
 
+            # get target coordinate
             target = (pos[0]+offset[0],pos[1]+offset[1],pos[2]+offset[2])
 
+            # filter invalid target
             if target in self.doneTiles:
                 continue
-
             if target[0] < 1 or target[0] > 13 or target[1] < 1 or target[1] > 13:
                 continue
-
             if not (target not in terrain.scrapFields and target not in terrain.forests and not terrain.getRoomByPosition(target)):
                 continue
             if terrain.getRoomByPosition(target):
                 continue
+            centerItems = terrain.getItemByPosition((target[0]*15+7,target[1]*15+7,0))
+            if centerItems and centerItems[0].type == "RoomBuilder":
+                continue
 
+            # ignore tiles with enemies
             foundEnemy = False
             for otherCharacter in terrain.charactersByTile.get(target,[]):
                 if otherCharacter.faction == character.faction:
@@ -168,10 +174,7 @@ This quest will end when your inventory is full."""
             if foundEnemy:
                 continue
 
-            centerItems = terrain.getItemByPosition((target[0]*15+7,target[1]*15+7,0))
-            if centerItems and centerItems[0].type == "RoomBuilder":
-                continue
-
+            # go to tile if valuable loot was found
             for item in terrain.itemsByBigCoordinate.get(target,[]):
                 if self.toCollect and item.type != self.toCollect:
                     continue

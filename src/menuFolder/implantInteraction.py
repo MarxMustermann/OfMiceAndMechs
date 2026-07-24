@@ -69,6 +69,23 @@ class ImplantInteraction(src.menues.SubMenu):
                 selection = self.submenu.selection
                 if selection == "abort quest":
                     character.clear_quests()
+            elif self.submenu.tag == "implant_room_planning_selection":
+                self.submenu.handleKey(key, noRender, character)
+                selection = self.submenu.selection
+                if selection:
+                    if selection not in ("continue",):
+                        room_type = selection
+                        empty_rooms = terrain.get_empty_rooms()
+                        if not empty_rooms:
+                            character.notify("no empty rooms")
+                            return
+                        room_pos = empty_rooms[0].getPosition()
+                        quest = src.quests.questMap["AssignFloorPlan"](floorPlanType=room_type,roomPosition=room_pos,reason="make use of the available rooms")
+                        character.assignQuest(quest)
+                    self.submenu = None
+                    self.done = True
+                    return True
+                return False
             else:
                 self.submenu.handleKey(key, noRender, character)
                 selection = self.submenu.selection
@@ -110,14 +127,6 @@ You can see the quest description and general instructions in the quest menu.
                             quest = src.quests.questMap["SecureTile"](toSecure=(7,5,0),endWhenCleared=True,reason="clear the path",simpleAttacksOnly=True,noHeal=True)
                         elif task_type == "explore":
                             quest = src.quests.questMap["StoryExploreHomeTerrain"](lifetime=500)
-                        elif task_type.startswith("plan ") and len(task_type.split(" ")) > 1:
-                            room_type = task_type.split(" ")[1]
-                            empty_rooms = terrain.get_empty_rooms()
-                            if not empty_rooms:
-                                character.notify("no empty rooms")
-                                return
-                            room_pos = empty_rooms[0].getPosition()
-                            quest = src.quests.questMap["AssignFloorPlan"](floorPlanType=room_type,roomPosition=room_pos,reason="make use of the available rooms")
                         if quest:
                             character.assignQuest(quest)
                         else:
@@ -386,23 +395,29 @@ Equip yourself with that equipment.
                 if room.getItemsByType("CityPlaner",needsBolted=True):
                     hasCityPlaner = True
             if hasEmptyRoom and hasCityPlaner:
-                base_text = ["""
+                available_roomTypes = []
+                if not hasStorage:
+                    available_roomTypes.append("storage")
+                if not hasGooProcessing:
+                    available_roomTypes.append("gooProcessing")
+                if not hasTemple:
+                    available_roomTypes.append("temple")
+                if available_roomTypes:
+                    base_text = ["""
 """,(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Your base has an empty room to fill."""),"""
 
+Use the CityPlaner to set room should be build there.
 """]
-                room_type = None
-                if not hasStorage:
-                    room_type = "storage"
-                elif not hasGooProcessing:
-                    room_type = "gooProcessing"
-                elif not hasTemple:
-                    room_type = "temple"
-                if room_type:
-                    base_text.append(f"add a {room_type} room\n")
+
                     base_text.extend(["""
-""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to schedule building the room?"""),"""
+""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to make use of the empty room?"""),"""
 """])
-                    self._spawnSpawnTaskMenu(base_text,f"plan {room_type}")
+                    options = []
+                    for room_type in available_roomTypes:
+                        options.append((room_type,f"plan a {room_type} room"))
+                    options.append(("continue","continue with quest"))
+                    self.submenu = src.menues.menuMap["SelectionMenu"](base_text,options=options)
+                    self.submenu.tag = "implant_room_planning_selection"
                     return False
 
             current_time = src.gamestate.gamestate.tick

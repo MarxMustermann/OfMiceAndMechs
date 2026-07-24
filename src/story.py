@@ -1888,7 +1888,7 @@ I am working right now. I'll repriotize though.""")
                 for check_char in all_characters:
                     if check_char.faction == character.faction:
                         continue
-                    quest = src.quests.questMap["SecureTile"](toSecure=check_char.getBigPosition())
+                    quest = src.quests.questMap["SecureTile"](toSecure=check_char.getBigPosition(),endWhenCleared=True)
                     character.assignQuest(quest,active=True)
                     break
             else:
@@ -2127,14 +2127,22 @@ There are several things you can do to help me out:
             tasks.append((name,name))
             extraDescriptions[name] = "the whole storage is filled and space is needed. Get rid of some of the things in storage"
 
-        # kill some enemies
+        # check if there are enemies to kill
+        has_enemies_to_kill = False
+        shown_enenemy_kill_option = False
         for check_char in terrain.getAllCharacters():
             if check_char.faction == character.faction:
                 continue
+            has_enemies_to_kill = True
+            break
+
+        # kill remaining enemies
+        if has_enemies_to_kill and random.random() < 0.5:
             name = "kill monster"
             tasks.append((name,name))
             extraDescriptions[name] = f"insects are swarming the area. Get rid of them."
-            break
+            shown_enenemy_kill_option = True
+            print("chose random option")
 
         # generate fetch quest from the base state
         if num_empty_storage > 0:
@@ -2238,6 +2246,12 @@ There are several things you can do to help me out:
                         name = "build room"
                         tasks.append((name,"build room"))
                         extraDescriptions[name] = "help me set up the next room"
+
+        # kill remaining enemies
+        if has_enemies_to_kill and not shown_enenemy_kill_option:
+            name = "kill monster"
+            tasks.append((name,name))
+            extraDescriptions[name] = f"insects are swarming the area. Get rid of them."
 
         # signal "no jobs"
         if not tasks:

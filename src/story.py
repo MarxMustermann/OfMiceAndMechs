@@ -2615,6 +2615,8 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         for pos in scrapPositions:
             scrap = src.items.itemMap["Scrap"](amount=random.randint(1,5))
             baseCoreRoom.addItem(scrap,pos)
+        for x in range(2,5,):
+            baseCoreRoom.addStorageSlot((x,5,0),"Scrap",{"desiredState":"filled"})
 
         # add entry chamber
         entryroom = architect.doAddRoom(
@@ -2658,8 +2660,6 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                 (5,4,0),(4,4,0),(3,4,0),(2,4,0),(1,4,0),(1,3,0),(1,2,0),
                 (2,2,0),(2,1,0),(3,1,0),(4,1,0),(4,2,0),(5,2,0),(5,3,0),
             ])
-        for x in range(2,5,):
-            baseCoreRoom.addStorageSlot((x,5,0),"Scrap",{"desiredState":"filled"})
         inputSlots.append(((2,3,0),"Scrap",{}))
         inputSlots.append(((4,3,0),"Scrap",{}))
         storageSlots.append(((3,2,0),"MetalBars",{}))

@@ -1995,6 +1995,8 @@ There are several things you can do to help me out:
             for big_y in range(1,14):
                 if terrain.getEnemiesOnTile(character,(big_x,big_y,0)):
                     continue
+                if not (target not in terrain.scrapFields and target not in terrain.forests and not terrain.getRoomByPosition(target)):
+                    continue
                 rooms = terrain.getRoomByPosition((big_x,big_y,0))
                 if rooms:
                     room = rooms[0]

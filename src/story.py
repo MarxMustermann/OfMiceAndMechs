@@ -1883,6 +1883,14 @@ I am working right now. I'll repriotize though.""")
             elif quest_selection == "spawn clone":
                 quest = src.quests.questMap["SpawnClone"](fancyFetchFlask=False)
                 character.assignQuest(quest,active=True)
+            elif quest_selection == "kill monster":
+                all_characters = terrain.getAllCharacters()
+                for check_char in all_characters:
+                    if check_char.faction == character.faction:
+                        continue
+                    quest = src.quests.questMap["SecureTile"](toSecure=check_char.getBigPosition())
+                    character.assignQuest(quest,active=True)
+                    break
             else:
                 character.addMessage("no quest set for this task")
 
@@ -2119,7 +2127,16 @@ There are several things you can do to help me out:
             tasks.append((name,name))
             extraDescriptions[name] = "the whole storage is filled and space is needed. Get rid of some of the things in storage"
 
-        # generate fetch from the base state
+        # kill some enemies
+        for check_char in terrain.getAllCharacters():
+            if check_char.faction == character.faction:
+                continue
+            name = "kill monster"
+            tasks.append((name,name))
+            extraDescriptions[name] = f"insects are swarming the area. Get rid of them."
+            break
+
+        # generate fetch quest from the base state
         if num_empty_storage > 0:
 
             # generate fetch quest for building item
@@ -2245,6 +2262,10 @@ I don't need anything right now.
         }
 
     def do_builder_task(self,extraParams):
+        '''
+        generate the response from the groundskeeper after selecting a task
+        '''
+
         task = extraParams.get("task")
         character = extraParams.get("character")
         partner = extraParams.get("partner")
@@ -2350,6 +2371,11 @@ Try to find some. They should be Doors scattered around everywhere.
 I need Scrap to produce MetalBars
 
 Fetch some. it is nearly everywhere.
+""")
+            offer_accept_options = True
+        elif task == "kill monster":
+            base_response_text.append("""
+Insect have swarmed the area. Kill some.
 """)
             offer_accept_options = True
         elif isinstance(task,str) and task.startswith("fetch ") and len(task.split(" ")) > 1:

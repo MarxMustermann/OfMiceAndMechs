@@ -2197,7 +2197,7 @@ There are several things you can do to help me out:
                 for room in terrain.rooms:
                     if room.tag == "temple":
                         hasTemple = True
-                    if room.tag == "goo processing":
+                    if room.tag == "gooProcessing":
                         hasGooProcessing = True
                 if not hasGooProcessing:
                     name = "plan gooProcessing"

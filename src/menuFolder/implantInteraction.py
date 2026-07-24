@@ -133,7 +133,7 @@ You can see the quest description and general instructions in the quest menu.
                         elif task_type == "fix_groundskeeper":
                             quest = src.quests.questMap["FixGroundskeeper"]()
                         elif task_type == "help_groundskeeper":
-                            quest = src.quests.questMap["HelpGroundskeeper"]()
+                            quest = src.quests.questMap["HelpGroundskeeper"](lifetime=500)
                         elif task_type == "wait_explosion":
                             quest = src.quests.questMap["WatchLabBurn"]()
                         elif task_type == "equip":

@@ -39,7 +39,7 @@ class ImplantInteraction(src.menues.SubMenu):
 
     def handleKey(self, key, noRender=False, character = None):
         '''
-        show the actaual with the implant
+        show the actual with the implant
 
         Parameters:
             key: the key pressed

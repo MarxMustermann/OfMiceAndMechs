@@ -1993,18 +1993,19 @@ There are several things you can do to help me out:
         itemsObtainable = []
         for big_x in range(1,14):
             for big_y in range(1,14):
-                if terrain.getEnemiesOnTile(character,(big_x,big_y,0)):
+                target = (big_x,big_y,0)
+                if terrain.getEnemiesOnTile(character,target):
                     continue
                 if not (target not in terrain.scrapFields and target not in terrain.forests and not terrain.getRoomByPosition(target)):
                     continue
-                rooms = terrain.getRoomByPosition((big_x,big_y,0))
+                rooms = terrain.getRoomByPosition(target)
                 if rooms:
                     room = rooms[0]
                     if room.tag != "ruin":
                         continue
                     itemList = room.getItems()
                 else:
-                    itemList = terrain.itemsByBigCoordinate.get((big_x,big_y,0),[])
+                    itemList = terrain.itemsByBigCoordinate.get(target,[])
                 for item in itemList:
                     item_type = item.type
                     if item_type in itemsObtainable:

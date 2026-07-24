@@ -185,70 +185,53 @@ This quest will end when your inventory is full."""
                 quest = src.quests.questMap["GoToTile"](targetPosition=target,reason="move to a scavenging spot",paranoid=True)
                 return ([quest],None)
 
-        # visit unvisited neighbours avoiding special areas
-        for offset in offsets:
+        # visit unvisited tiles
+        x_values = list(range(1,14))
+        random.shuffle(x_values)
+        y_values = list(range(1,14))
+        random.shuffle(y_values)
 
-            target = (pos[0]+offset[0],pos[1]+offset[1],pos[2]+offset[2])
+        for x in x_values:
+            for y in y_values:
 
-            if target in self.doneTiles:
-                continue
+                # set target coordinate
+                target = (x,y,0)
 
-            if target[0] < 1 or target[0] > 13 or target[1] < 1 or target[1] > 13:
-                continue
-
-            if not (target not in terrain.scrapFields and target not in terrain.forests and not terrain.getRoomByPosition(target)):
-                continue
-            if terrain.getRoomByPosition(target):
-                continue
-
-            foundEnemy = False
-            for otherCharacter in terrain.charactersByTile.get(target,[]):
-                if otherCharacter.faction == character.faction:
+                # filter invalid targets
+                if target in self.doneTiles:
                     continue
-                foundEnemy = True
-            if foundEnemy:
-                continue
-
-            centerItems = terrain.getItemByPosition((target[0]*15+7,target[1]*15+7,0))
-            if centerItems and centerItems[0].type == "RoomBuilder":
-                continue
-
-            self.lastMoveDirection = offset
-            quest = src.quests.questMap["GoToTile"](targetPosition=target,reason="move around to search for items",paranoid=True)
-            return ([quest],None)
-
-        # visit unvisited neighbours
-        for offset in offsets:
-            target = (pos[0]+offset[0],pos[1]+offset[1],pos[2]+offset[2])
-            if terrain.getRoomByPosition(target):
-                continue
-
-            if target in self.doneTiles:
-                continue
-
-            if target[0] < 1 or target[0] > 13 or target[1] < 1 or target[1] > 13:
-                continue
-
-            foundEnemy = False
-            for otherCharacter in terrain.charactersByTile.get(target,[]):
-                if otherCharacter.faction == character.faction:
+                if target[0] < 1 or target[0] > 13 or target[1] < 1 or target[1] > 13:
                     continue
-                foundEnemy = True
-            if foundEnemy:
-                continue
+                if not (target not in terrain.scrapFields and target not in terrain.forests and not terrain.getRoomByPosition(target)):
+                    continue
+                if terrain.getRoomByPosition(target):
+                    continue
+                centerItems = terrain.getItemByPosition((target[0]*15+7,target[1]*15+7,0))
+                if centerItems and centerItems[0].type == "RoomBuilder":
+                    continue
 
-            centerItems = terrain.getItemByPosition((target[0]*15+7,target[1]*15+7,0))
-            if centerItems and centerItems[0].type == "RoomBuilder":
-                continue
+                # avoid enemies
+                foundEnemy = False
+                for otherCharacter in terrain.charactersByTile.get(target,[]):
+                    if otherCharacter.faction == character.faction:
+                        continue
+                    foundEnemy = True
+                if foundEnemy:
+                    continue
 
-            self.lastMoveDirection = offset
-            quest = src.quests.questMap["GoToTile"](targetPosition=target,reason="move around to search for items",paranoid=True)
-            return ([quest],None)
+                # go to tile if valuable loot was found
+                for item in terrain.itemsByBigCoordinate.get(target,[]):
+                    if self.toCollect and item.type != self.toCollect:
+                        continue
+                    if item.bolted:
+                        continue
 
-        # visit random spot
-        bigPos = (random.randint(1,13),random.randint(1,13),0)
-        quest = src.quests.questMap["GoToTile"](targetPosition=bigPos,reason="move to a random point to search for items",paranoid=True)
-        return ([quest],None)
+                    self.lastMoveDirection = offset
+                    quest = src.quests.questMap["GoToTile"](targetPosition=target,reason="move to the next scavenging spot",paranoid=True)
+                    return ([quest],None)
+
+        # fail because nothing is left to scavenge
+        return self._solver_trigger_fail(dryRun,"nothing left to scavenge")
 
     def pickedUpItem(self,extraInfo):
         '''

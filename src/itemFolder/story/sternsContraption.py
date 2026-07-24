@@ -313,7 +313,7 @@ class MainContraption(src.items.Item):
                         room.addCharacter(crawler,pos[0],pos[1])
 
                 # fill initial maze rooms
-                for room_pos in ((7,5,0),(6,5,0),(6,3,0),(7,3,0),):
+                for room_pos in ((7,5,0),(6,5,0),(6,3,0),):
                     rooms = self.getTerrain().getRoomByPosition(room_pos)
                     if not rooms:
                         continue

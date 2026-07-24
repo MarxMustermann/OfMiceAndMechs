@@ -156,6 +156,10 @@ Press the l or L keys to drop items.
         super().assignToCharacter(character)
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
+        '''
+        generates the next step toward solving the quest
+        '''
+
         # handle edge cases
         if self.subQuests:
             return (None,None)
@@ -217,6 +221,7 @@ Press the l or L keys to drop items.
                 if inputSlots:
                     break
 
+        # prefer fully empty stockpiles
         fullyEmptyFirst_inputSlots = []
         for inputSlot in inputSlots[:]:
             if room.getItemByPosition(inputSlot[0]):
@@ -225,6 +230,7 @@ Press the l or L keys to drop items.
                 fullyEmptyFirst_inputSlots.insert(0,inputSlot)
         inputSlots = fullyEmptyFirst_inputSlots
 
+        # restrict dropping to a specific spot, if needed
         if self.targetPosition:
             for slot in inputSlots:
                 if self.targetPosition != slot[0]:
@@ -247,16 +253,21 @@ Press the l or L keys to drop items.
             if foundDirectDrop and not room.getItemByPosition(foundDirectDrop[2][0]):
                 break
 
+        # drop items nearby
         if character.inventory and foundDirectDrop:
-            dropContent = room.getItemByPosition(foundDirectDrop[0])
 
+            # find out what to drop
+            dropContent = room.getItemByPosition(foundDirectDrop[0])
             toRestock = self.toRestock
             if not toRestock:
                 toRestock = foundDirectDrop[2][1]
             if dropContent and not toRestock:
                 toRestock = dropContent[0].type
 
+            # do the actual dropping
             if not dropContent or toRestock != "Scrap" or dropContent[0].type != "Scrap":
+
+                # figure how much to drop
                 maxSpace = foundDirectDrop[2][2].get("maxAmount")
                 if not maxSpace:
                     if (dropContent and dropContent[0].walkable == False) or character.inventory[-1].walkable == False:
@@ -268,7 +279,11 @@ Press the l or L keys to drop items.
                 else:
                     spaceTaken = len(dropContent)
                 numToDrop = min(maxSpace-spaceTaken,self.getNumDrops(character))
+
+                # do the actual drop
                 if numToDrop > 0:
+
+                    # recalcute how to drop (dead code?)
                     item = character.inventory[-1]
                     counter = -1
                     while item.type != toRestock:
@@ -276,10 +291,8 @@ Press the l or L keys to drop items.
                         if counter >= len(character.inventory):
                             break
                         item = character.inventory[counter]
-
                     if not item.walkable:
                         numToDrop = 1
-
                     submenue = character.macroState["submenue"]
                     inventoryCommand = ""
                     if counter > -1:
@@ -291,16 +304,15 @@ Press the l or L keys to drop items.
                             else:
                                 inventoryCommand += "w"*(submenue.cursor-counter)
                         numToDrop = 1
-
                     numToDrop = 1
 
+                    # generate the drop command
                     interactionCommand = "L"
                     if inventoryCommand == "":
                         if "advancedDrop" in character.interactionState:
                             interactionCommand = ""
                         if isinstance(submenue,src.menues.menuMap["InventoryMenu"]) and submenue.subMenu and submenue.subMenu.tag == "dropDirection":
                             interactionCommand = ""
-
                     if foundDirectDrop[1] == (-1,0):
                         return (None,((interactionCommand+"A")*numToDrop,"store an item"))
                     if foundDirectDrop[1] == (1,0):
@@ -312,6 +324,8 @@ Press the l or L keys to drop items.
                     if foundDirectDrop[1] == (0,0):
                         return (None,((inventoryCommand+"l")*numToDrop,"store an item"))
             else:
+
+                # drop scrap on scrap
                 if foundDirectDrop[1] == (-1,0):
                     command = "Ja"
                     if submenue:
@@ -347,6 +361,7 @@ Press the l or L keys to drop items.
                 if foundDirectDrop[1] == (0,0):
                     return (None,("j"*self.getNumDrops(character),"put scrap on scrap pile"))
 
+        # find a spot to drop stuff from a walkingspace
         foundNeighbour = None
         for slot in inputSlots:
             if len(slot[0]) < 3:
@@ -363,6 +378,7 @@ Press the l or L keys to drop items.
             if foundNeighbour:
                 break
 
+        # find a spot to drop stuff from
         if not foundNeighbour:
             for slot in inputSlots:
                 if len(slot[0]) < 3:
@@ -377,9 +393,11 @@ Press the l or L keys to drop items.
                 if foundNeighbour:
                     break
 
+        # fail on edge case
         if not foundNeighbour:
             return self._solver_trigger_fail(dryRun,"no dropoff found")
 
+        # go to the drop spot
         quest = src.quests.questMap["GoToPosition"](reason="get to the stockpile and be able to fill it")
         quest.setParameters({"targetPosition":foundNeighbour[0]})
         return ([quest],None)

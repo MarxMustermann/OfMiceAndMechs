@@ -81,6 +81,7 @@ class ImplantInteraction(src.menues.SubMenu):
                             return
                         room_pos = empty_rooms[0].getPosition()
                         quest = src.quests.questMap["AssignFloorPlan"](floorPlanType=room_type,roomPosition=room_pos,reason="make use of the available rooms")
+                        character.clear_quests()
                         character.assignQuest(quest)
                     self.submenu = None
                     self.done = True

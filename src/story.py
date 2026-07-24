@@ -2142,7 +2142,6 @@ There are several things you can do to help me out:
             tasks.append((name,name))
             extraDescriptions[name] = f"insects are swarming the area. Get rid of them."
             shown_enenemy_kill_option = True
-            print("chose random option")
 
         # generate fetch quest from the base state
         if num_empty_storage > 0:

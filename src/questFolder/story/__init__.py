@@ -42,3 +42,5 @@ import src.questFolder.story.helpGroundskeeper
 import src.questFolder.story.storyExploreHomeTerrain
 import src.questFolder.story.doGroundskeeping
 import src.questFolder.story.fetchPainter
+import src.questFolder.story.fetchMetalWorkingBench
+import src.questFolder.story.fetchAnvil

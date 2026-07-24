@@ -1850,7 +1850,12 @@ I am working right now. I'll repriotize though.""")
                     if not room.getItemsByType(item_type):
                         continue
                     found_loot_room = True
-                    quest = src.quests.questMap["LootRoom"](targetPositionBig=room.getPosition(),collectBig=True)
+                    if item_type == "MetalWorkingBench":
+                        quest = src.quests.questMap["FetchMetalWorkingBench"](targetPositionBig=room.getPosition())
+                    elif item_type == "Anvil":
+                        quest = src.quests.questMap["FetchAnvil"](targetPositionBig=room.getPosition())
+                    else:
+                        quest = src.quests.questMap["LootRoom"](targetPositionBig=room.getPosition(),collectBig=True)
                     character.assignQuest(quest,active=True)
                     if room.getEnemiesOnTile(character):
                         quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())

@@ -2712,6 +2712,16 @@ class Terrain:
                     return item
         return None
 
+    def get_empty_rooms(self):
+        '''
+        returns empty rooms
+        '''
+        result = []
+        for room in self.rooms:
+            if room.tag:
+                continue
+            result.append(room)
+        return result
 
 class EmptyTerrain(Terrain):
     """

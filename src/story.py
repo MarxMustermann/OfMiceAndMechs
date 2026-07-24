@@ -2593,7 +2593,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         # add the actual room
         baseCoreRoom = architect.doAddRoom(
                 {
-                       "coordinate": (7,4,0),
+                       "coordinate": (7,3,0),
                        "roomType": "EmptyRoom",
                        "doors": "6,12 6,0 0,6 12,6",
                        "offset": [1,1],
@@ -2615,6 +2615,20 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         for pos in scrapPositions:
             scrap = src.items.itemMap["Scrap"](amount=random.randint(1,5))
             baseCoreRoom.addItem(scrap,pos)
+
+        # add entry chamber
+        entryroom = architect.doAddRoom(
+                {
+                       "coordinate": (7,4,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,12 6,0 0,6 12,6",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        entryroom.tag = "entryroom"
+        used_spots.append(entryroom.getPosition())
 
         floorPlan = {}
         walkingSpace = []

@@ -3035,7 +3035,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                 if big_x > 5 and big_x < 9 and big_y > 2 and big_y < 9:
                     continue
                 if random.random() < 0.2:
-                    pos = (big_x*15+random.randint(1,14),big_y*15+random.randint(1,14),0)
+                    pos = (big_x*15+random.randint(1,13),big_y*15+random.randint(1,13),0)
                     enemyType = random.choice(["Golem","ShieldBug","Spider","Spiderling"])
                     enemy = src.characters.characterMap[enemyType]()
                     currentTerrain.addCharacter(enemy,pos[0],pos[1])

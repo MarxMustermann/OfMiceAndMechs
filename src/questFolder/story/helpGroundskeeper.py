@@ -4,9 +4,9 @@ import src
 class HelpGroundskeeper(src.quests.MetaQuestSequence):
     type = "HelpGroundskeeper"
 
-    def __init__(self, description="help groundskeeper", creator=None):
+    def __init__(self, description="help groundskeeper", creator=None, lifetime=None):
         questList = []
-        super().__init__(questList, creator=creator)
+        super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = description
 
     def triggerCompletionCheck(self,character=None,dryRun=True):
@@ -78,6 +78,8 @@ class HelpGroundskeeper(src.quests.MetaQuestSequence):
 Talk to the groundskeeper and ask why it is not working.
 
 Press h to talk to nearby clones or left click on a clone to talk to it."""]
+        if self.lifetime:
+            text.append(f"\nDo this for {self.lifetime} ticks. {self.getRemainingLifetime()} ticks remaining.")
         return text
 
     def handleNoBuilderQuest(self,extraInfo=None):

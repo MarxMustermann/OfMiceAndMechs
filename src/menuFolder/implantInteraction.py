@@ -48,28 +48,35 @@ class ImplantInteraction(src.menues.SubMenu):
             returns True when done
         '''
 
+        # close the menu
         if key == "esc":
             return True
 
+        # open quest menu
         if key == "q":
             character.add_submenu(src.menues.menuMap["QuestMenu"](char=character))
             return True
 
         # set up helper variable
         terrain = character.getHomeTerrain()
-
         if src.gamestate.gamestate.stern.get("first_reachout_done") == None:
             src.gamestate.gamestate.stern["first_reachout_done"] = False
         else:
             src.gamestate.gamestate.stern["first_reachout_done"] = True
 
+        # handle submenu
         if self.submenu:
             if self.submenu.tag == "implant_meta_action_selection":
+
+                # handle interaction while a quest is runninig
                 self.submenu.handleKey(key, noRender, character)
                 selection = self.submenu.selection
                 if selection == "abort quest":
                     character.clear_quests()
+
             elif self.submenu.tag == "implant_room_planning_selection":
+
+                # handle interaction for planning rooms
                 self.submenu.handleKey(key, noRender, character)
                 selection = self.submenu.selection
                 if selection:
@@ -88,12 +95,17 @@ class ImplantInteraction(src.menues.SubMenu):
                     return True
                 return False
             else:
+
+                # handle the player having selected a new task
                 self.submenu.handleKey(key, noRender, character)
                 selection = self.submenu.selection
                 if selection:
                     task_type = self.submenu.extraInfo.get("task_type")
 
+                    # generate a quest for the player
                     if selection == "yes":
+
+                        # show notification to hint at quest menu
                         if src.gamestate.gamestate.stern.get("first_quest_assign") == None:
                             src.gamestate.gamestate.stern["first_quest_assign"] = True
                         if src.gamestate.gamestate.stern["first_quest_assign"]:
@@ -102,6 +114,7 @@ class ImplantInteraction(src.menues.SubMenu):
 You can see the quest description and general instructions in the quest menu.
 """)
 
+                        # set up helper variables
                         terrain = character.getHomeTerrain()
                         groundskeepers_place = None
                         for room in terrain.rooms:
@@ -109,6 +122,7 @@ You can see the quest description and general instructions in the quest menu.
                                 continue
                             groundskeepers_place = room
 
+                        # generate actual quest
                         quest = None
                         if task_type == "escape_lab":
                             quest = src.quests.questMap["EscapeLab"]()
@@ -128,23 +142,30 @@ You can see the quest description and general instructions in the quest menu.
                             quest = src.quests.questMap["SecureTile"](toSecure=(7,5,0),endWhenCleared=True,reason="clear the path",simpleAttacksOnly=True,noHeal=True)
                         elif task_type == "explore":
                             quest = src.quests.questMap["StoryExploreHomeTerrain"](lifetime=500)
+
+                        # assign the quest
                         if quest:
                             character.assignQuest(quest)
                         else:
                             character.notify("failed generating quest")
 
+                    # skip special sections
                     if selection == "skip":
                         if task_type == "wait_explosion":
                             src.gamestate.gamestate.stern["skipped_explosion"] = True
                         self.submenu = None
 
+                    # close the menu
                     if self.submenu:
                         character.changed("completed implant interaction")
                         self.done = True
                         return True
+
+                # wait for keystrokes
                 if self.submenu:
                     return False
 
+        # show special text for first reach out
         implant_intro_text = ""
         if not src.gamestate.gamestate.stern["first_reachout_done"]:
             implant_intro_text = """
@@ -154,6 +175,7 @@ I'm your implant and i'm here to help you.
 You can contact me any time by pressing tab.
 """
 
+        # handle interation while there are quests assigned
         if len(character.quests) > 0 and not character.quests[0].type == "ReachOutStory":
             base_text = ["""
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),"""
@@ -173,6 +195,7 @@ What do you want to do?
             self.submenu.tag = "implant_meta_action_selection"
             return False
 
+        # leave the inital room
         if character.container.tag == "the architects tomb":    
             base_text = ["""
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),"""
@@ -265,6 +288,7 @@ Go there.
                 self._spawnSpawnTaskMenu(base_text,"reach_shelter")
                 return False
 
+            # go to the groundskeepers place
             if not character.container.tag == "the groundskeepers place":
                 base_text = ["""
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),"""
@@ -279,6 +303,7 @@ There is a StasisTank in the groundskeepers place. Look there.
                 self._spawnSpawnTaskMenu(base_text,"reach_shelter")
                 return False
 
+            # free the groundskeeper
             base_text = ["""
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),"""
 
@@ -294,6 +319,7 @@ Free the survivor.
             self._spawnSpawnTaskMenu(base_text,"free_groundskeeper")
             return False
 
+        # find the groundskeeper
         groundsKeeper = None
         for check_character in terrain.getAllCharacters():
             if not check_character.faction == character.faction:
@@ -304,7 +330,10 @@ Free the survivor.
                 continue
             groundsKeeper = check_character
         
+        # interact with the groundskeeper
         if groundsKeeper:
+
+            # initiate groundskeeper
             if not groundsKeeper.registers.get("startedWorking"):
                 base_text = ["""
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),"""
@@ -320,9 +349,9 @@ Find out why.
                 self._spawnSpawnTaskMenu(base_text,"fix_groundskeeper")
                 return False
 
+            # ensure the groundskeeper has a painter
             hasPainter = groundsKeeper.hasPainter()
             if not groundsKeeper.registers.get("gotPainter") or not hasPainter:
-                # help groundskeeper set up
                 base_text = ["""
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),"""
 
@@ -421,6 +450,7 @@ Use the CityPlaner to set room should be build there.
                     self.submenu.tag = "implant_room_planning_selection"
                     return False
 
+            # pass time till groundskeeper is ready
             current_time = src.gamestate.gamestate.tick
             if groundskeepers_place.floorPlan or src.gamestate.gamestate.stern.get("no_groundskeeper_quest",0) > current_time-200:
                 base_text = ["""

@@ -29,7 +29,19 @@ class FixGroundskeeper(src.quests.MetaQuestSequence):
                 return (None,("j","continue conversation"))
             return (None,(["esc"],"to close menu"))
 
-        keeper_position = (7,4,0)
+        # find the groundskeeper
+        keeper_position = None
+        keeper = None
+        terrain = character.getHomeTerrain()
+        for candidate in terrain.getAllCharacters():
+            if not isinstance(candidate,src.characters.characterMap["GroundsKeeper"]):
+                continue
+            keeper_position = candidate.getBigPosition()
+            keeper = candidate
+        if not keeper_position:
+            return self._solver_trigger_fail(dryRun,"keeper not found")
+
+        # go to the groundskeeper
         if not character.getBigPosition() == keeper_position:
             quest = src.quests.questMap["GoToTile"](targetPosition=keeper_position)
             return ([quest],None)

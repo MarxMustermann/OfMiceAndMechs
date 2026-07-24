@@ -2280,16 +2280,22 @@ I don't need anything right now.
         generate the response from the groundskeeper after selecting a task
         '''
 
+        # set help variables
         task = extraParams.get("task")
         character = extraParams.get("character")
         partner = extraParams.get("partner")
         base_response_text = []
-
         offer_accept_options = False
 
+        # generate the response
         if task is None:
+
+            # abort on weird conditions
             return
+
         elif task == "fetch MetalWorkingBench":
+
+            # generate quest to fetch MetalWorkingBench
             metalWorkingBench = character.searchInventory("MetalWorkingBench")
             if not metalWorkingBench:
                 base_response_text.append("""
@@ -2308,7 +2314,10 @@ We will need a lot of MetalBars to produce a lot of things.
                 self.builder_reset(partner)
 
                 partner.registers["gotMetalWorkingBench"] = True
+
         elif task == "fetch Anvil":
+
+            # generate quest to fetch MetalWorkingBench
             anvil = character.searchInventory("Anvil")
             if not anvil:
                 base_response_text.append("""
@@ -2327,7 +2336,10 @@ MetalBars are needed to produce most things.
                 self.builder_reset(partner)
 
                 partner.registers["gotAnvil"] = True
+
         elif task == "fetch CityPlaner":
+
+            # generate quest to fetch the CityPlaner
             cityPlaner = character.searchInventory("CityPlaner")
             if not cityPlaner:
                 base_response_text.append("""
@@ -2345,6 +2357,8 @@ That will allow to coordinate how the base is getting expanded.
                 self.builder_reset(partner)
 
         elif task == "disable alarm":
+
+            # generate quest to disable the alarm
             if partner.getTerrain().alarm:
                 base_response_text.append("""
 Protocol forbids to leave the base while the outside alarm is runnung.
@@ -2359,40 +2373,58 @@ Thanks for disabling the alarm.
 I will collect resources now.
 """)
                 partner.registers["disabledAlarm"] = True
+
         elif task == "build room":
+
+            # generate quest to build a room
             base_response_text.append("""
 The base needs to be extended so i have more space to work with.
 
 Help me put together place the Walls and put together a new room.
 """)
             offer_accept_options = True
+
         elif task == "fetch Wall":
+
+            # generate quest to fetch Walls
             base_response_text.append("""
 I need Walls to build more rooms.
 
 Try to find some. They should be Walls scattered around everywhere.
 """)
             offer_accept_options = True
+
         elif task == "fetch Door":
+
+            # generate quest to fetch Doors
             base_response_text.append("""
 I need Doors to build more rooms.
 
 Try to find some. They should be Doors scattered around everywhere.
 """)
             offer_accept_options = True
+
         elif task == "fetch Scrap":
+
+            # generate quest to fetch Scrap
             base_response_text.append("""
 I need Scrap to produce MetalBars
 
 Fetch some. it is nearly everywhere.
 """)
             offer_accept_options = True
+
         elif task == "kill monster":
+
+            # generate quest to fetch kill monsters
             base_response_text.append("""
 Insect have swarmed the area. Kill some.
 """)
             offer_accept_options = True
+
         elif isinstance(task,str) and task.startswith("fetch ") and len(task.split(" ")) > 1:
+
+            # generate quest to fetch items in general
             item_type = task.split(" ")[1]
             base_response_text.append(f"""
 I need some {item_type}.
@@ -2400,7 +2432,10 @@ I need some {item_type}.
 Fetch some.
 """)
             offer_accept_options = True
+
         elif task == "free up storage":
+
+            # generate quest to free up storage
             base_response_text.append("""
 The whole storage is filled with stuff.
 Some free storage is needed to continue production.
@@ -2408,24 +2443,36 @@ Some free storage is needed to continue production.
 Get rid of some things, preferably Scrap.
 """)
             offer_accept_options = True
+
         elif task == "collect glass hearts":
+
+            # generate quest to free up storage
             base_response_text.append("""
 Collecting the glass hearts in you temple gives you power.
 
 With that power you can accomplish wonders.
 """)
             offer_accept_options = True
+
         elif task == "spawn clone":
+
+            # generate quest to spwan clone
             base_response_text.append("""
 Spawn a Clone. You can do this at the GrowthTank.
 """)
             offer_accept_options = True
+
         else:
+
+            # show dummy response
             base_response_text.append("""
 I ..... seems to have forgotten what i was about to say.
 """)
 
+        # show the actual response
         if offer_accept_options:
+
+            # offer to accept the task as quest
             options = []
             extraDescriptions = {}
             options.append(("add","add as quest"))
@@ -2445,7 +2492,10 @@ I ..... seems to have forgotten what i was about to say.
                 "method": "builder_accepted_quest",
                 "params": {"character":character,"partner":partner,"quest_selection":task}
             }
+
         else:
+
+            # show the actual response
             submenue = character.showTextMenu(base_response_text,title=partner.name.upper()+" SAYS")
             character.add_submenu(submenue)
 

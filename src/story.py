@@ -1877,13 +1877,13 @@ I am working right now. I'll repriotize though.""")
             elif quest_selection == "free up storage":
                 quest = src.quests.questMap["FreeUpStorage"](amount=5)
                 character.assignQuest(quest,active=True)
-            elif quest_selection == "plan temple":
+            elif quest_selection == "plan storage":
                 for room in terrain.rooms:
                     if room.tag:
                         continue
                     if room.getItems():
                         continue
-                    quest = src.quests.questMap["AssignFloorPlan"](roomPosition=room.getPosition(), floorPlanType="temple")
+                    quest = src.quests.questMap["AssignFloorPlan"](roomPosition=room.getPosition(), floorPlanType="storage")
                     character.assignQuest(quest,active=True)
             elif quest_selection == "plan gooProcessing":
                 for room in terrain.rooms:
@@ -1892,6 +1892,14 @@ I am working right now. I'll repriotize though.""")
                     if room.getItems():
                         continue
                     quest = src.quests.questMap["AssignFloorPlan"](roomPosition=room.getPosition(), floorPlanType="gooProcessing")
+                    character.assignQuest(quest,active=True)
+            elif quest_selection == "plan temple":
+                for room in terrain.rooms:
+                    if room.tag:
+                        continue
+                    if room.getItems():
+                        continue
+                    quest = src.quests.questMap["AssignFloorPlan"](roomPosition=room.getPosition(), floorPlanType="temple")
                     character.assignQuest(quest,active=True)
             elif quest_selection == "collect glass hearts":
                 quest = src.quests.questMap["CollectGlassHearts"]()
@@ -2192,13 +2200,20 @@ There are several things you can do to help me out:
 
             # ensure temple
             if hasCityPlaner:
+                hasStorage = False
                 hasGooProcessing = False
                 hasTemple = False
                 for room in terrain.rooms:
-                    if room.tag == "temple":
-                        hasTemple = True
+                    if room.tag == "storage":
+                        hasGooProcessing = True
                     if room.tag == "gooProcessing":
                         hasGooProcessing = True
+                    if room.tag == "temple":
+                        hasTemple = True
+                if not hasStorage:
+                    name = "plan storage"
+                    tasks.append((name,"schedule building a storage room"))
+                    extraDescriptions[name] = "The base needs more storage space"
                 if not hasGooProcessing:
                     name = "plan gooProcessing"
                     tasks.append((name,"schedule building a goo procceing room"))
@@ -2402,12 +2417,11 @@ Some free storage is needed to continue production.
 Get rid of some things, preferably Scrap.
 """)
             offer_accept_options = True
-        elif task == "plan temple":
+        elif task == "plan storage":
             base_response_text.append("""
-The gods need to be worthiped.
-At least it is very useful to do so.
+A base needs a lot of storage.
 
-Schedule building a temple.
+Schedule building a storage room.
 """)
             offer_accept_options = True
         elif task == "plan gooProcessing":
@@ -2415,6 +2429,14 @@ Schedule building a temple.
 Goo is life. The Goo Processing room produces goo.
 
 Schedule building a goo processing room.
+""")
+            offer_accept_options = True
+        elif task == "plan temple":
+            base_response_text.append("""
+The gods need to be worthiped.
+At least it is very useful to do so.
+
+Schedule building a temple.
 """)
             offer_accept_options = True
         elif task == "collect glass hearts":

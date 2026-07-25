@@ -155,7 +155,7 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
             if invalidStack:
                 continue
 
-            quest = src.quests.questMap["LootRoom"](targetPositionBig=character.getBigPosition(),endWhenFull=True,reason="gain useful items")
+            quest = src.quests.questMap["LootRoom"](targetPositionBig=character.getBigPosition(),endWhenFull=True,reason="gain useful items",lootEverything=True)
             return ([quest],None)
 
         # mark terrain as completed

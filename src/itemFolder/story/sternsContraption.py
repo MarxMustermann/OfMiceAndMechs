@@ -126,7 +126,7 @@ class MainContraption(src.items.Item):
                     character.addMessage("you hear a *BOOM* and *klink**klink**klink*")
 
                     damage = int(character.health/2)
-                    baseText = f"something explodes and sends shrapnel into the room.\n\nThe shrapnel hits you for {damage}HP\nYour health is shown above your character or on top of the screen."
+                    baseText = f"something explodes and sends shrapnel into the room.\n\nThe shrapnel hits you for {damage} HP\nYour health is shown above your character or on top of the screen."
                     character.showTextMenu([baseText,"\n\n\n","press ? to show help+keybindings\npress tab to reach out to implant\npress enter/esc/j/k to close this menu"])
                     character.addMessage(baseText)
 

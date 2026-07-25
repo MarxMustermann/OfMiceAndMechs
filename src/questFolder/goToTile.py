@@ -147,29 +147,29 @@ class GoToTile(src.quests.MetaQuestSequence):
         if self.story:
             storyString = f"{self.story}"
 
-        text = f"""{storyString}
+        text = [f"""{storyString}
 Go to tile {self.targetPosition}{reason}.
-"""
+"""]
 
         if self.character.getBigPosition() == self.targetPosition:
-            text += """
+            text.append("""
 
 You are on the target tile.
-"""
+""")
         else:
             character_position = self.character.getBigPosition()
             direction_string = self.character.getTerrain().getDistanceDescription(character_position,self.targetPosition)
 
             if len(direction_string) > 0:
-                text += f"""
+                text.append(f"""
 
 The target tile is {direction_string}.
 There is a mini map shown on the top left of the screen showing a quest marker.
-"""
+""")
         if self.paranoid:
-            text += "Be paranoid."
+            text.append("Be paranoid.")
         if self.abortOnDanger:
-            text += "\nabort on danger."
+            text.append("\nabort on danger.")
         return text
 
     def triggerCompletionCheck(self, character=None, dryRun=True):

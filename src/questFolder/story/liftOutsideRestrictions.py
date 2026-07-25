@@ -88,7 +88,7 @@ But all enemies left will only attack when somebody enters the tile they are on.
 So they can be easily avoided by you and your clone.
 
 This means that the restriction of the outside movement can be lifted now.
-Use the SiegeManager to lift the restriction of the outside movement.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Use the SiegeManager to lift the restriction of the outside movement."),"""
 Once you do that, your clone will start to gather scrap and to produce items.
 """]
         return text

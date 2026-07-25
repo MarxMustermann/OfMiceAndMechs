@@ -55,29 +55,29 @@ class PlaceItem(src.quests.MetaQuestSequence):
         itemString = ""
         if self.itemType:
             itemString = self.itemType+" "
-        text = f"""
-Place item {itemString}on position {self.targetPosition} on tile {self.targetPositionBig}{reason}."""
+        text = [f"""
+Place item {itemString}on position {self.targetPosition} on tile {self.targetPositionBig}{reason}."""]
         if self.boltDown:
-            text += """
+            text.append("""
 
-Bolt down the item after placing it."""
+Bolt down the item after placing it.""")
 
         if self.itemType:
             if not self.character.inventory or self.character.inventory[-1].type != self.itemType:
-                text += f"""
+                text.append(f"""
 
-You do not have a {self.itemType} in your inventory."""
+You do not have a {self.itemType} in your inventory.""")
             else:
-                text += f"""
+                text.append(f"""
 
 You have a {self.itemType} in your inventory.
-You can drop items by pressing l or L."""
+You can drop items by pressing l or L.""")
 
         if self.character.getBigPosition() == self.targetPositionBig:
-            text += """
+            text.append("""
 
 You are on the target tile.
-"""
+""")
         else:
             direction = ""
             diffXBig = self.targetPositionBig[0] - self.character.getBigPosition()[0]
@@ -90,17 +90,17 @@ You are on the target tile.
                 direction += f" and {-diffYBig} tiles to the north"
             if diffYBig > 0:
                 direction += f" and {diffYBig} tiles to the south"
-            text += f"""
+            text.append(f"""
 
 The target tile is {direction[5:]}
-"""
+""")
 
         if self.tryHard:
-            text += """
+            text.append("""
 
 Try as hard as you can to achieve this.
 If you don't find the items to place, produce them.
-"""
+""")
         return text
 
     def assignToCharacter(self, character):

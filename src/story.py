@@ -2960,8 +2960,9 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                 items = currentTerrain.getItemByPosition(pos)
                 currentTerrain.removeItems(items)
                 
-                scrap = src.items.itemMap["Scrap"](amount=1)
-                currentTerrain.addItem(scrap,pos)
+                item = src.items.itemMap["Paving"]()
+                item.bolted = True
+                currentTerrain.addItem(item,pos)
 
         # create vertical paths
         for big_pos in [(10,6,0),(10,8,0),(4,6,0),(4,8,0),(7,10,0)]:
@@ -2987,8 +2988,9 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                 items = currentTerrain.getItemByPosition(pos)
                 currentTerrain.removeItems(items)
                 
-                scrap = src.items.itemMap["Scrap"](amount=1)
-                currentTerrain.addItem(scrap,pos)
+                item = src.items.itemMap["Paving"]()
+                item.bolted = True
+                currentTerrain.addItem(item,pos)
 
         for room in currentTerrain.rooms:
             if room.tag != "ruin":

@@ -114,9 +114,9 @@ class ActivateItem(src.quests.MetaQuestSequence):
         if self.reason:
             reason_string = f", to {self.reason}"
         description = [f"""
-Activate the {type_string} on position {self.targetPosition}{tile_string}{reason_string}.
+""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"default"),f"Activate the {type_string}"),f""" on position {self.targetPosition}{tile_string}{reason_string}.
 
-""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"default"),"""You can activate items by using the j or J key."""),"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""You can activate items by using the j or J key."""),"""
 For more information consult the Help menu by pressing ?
 """]
         return description

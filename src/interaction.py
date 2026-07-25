@@ -5484,6 +5484,30 @@ def renderGameDisplay(renderChar=None,showSaving=False):
             printUrwidToSDL(output,uiElement["offset"])
 
     submenue = char.macroState.get("submenue")
+
+    # add special background for impland stuff
+    if submenue and isinstance(submenue,src.menues.menuMap["ImplantInteraction"]):
+        root_console = tcod.console.Console(window_charwidth, window_charheight, order="F")
+        output = ""
+        loopCounter = 0
+        while loopCounter*2 < window_charheight:
+            line = ""
+            while len(line) < window_charwidth+40:
+                line += "You will rule the world some day, but first follow your orders.    "
+            offset = 7+loopCounter*3
+            line = line[offset:]
+            line += "\n\n"
+            output += line
+            loopCounter += 1
+        output = [(src.pseudoUrwid.AttrSpec("#333","black"),output)]
+
+        printUrwidToTcod(output,(0,0),explecitConsole=root_console)
+
+        atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_map)
+        console_render = tcod.render.SDLConsoleRender(atlas)
+        renderedToTexture = console_render.render(root_console)
+        sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(0,0,renderedToTexture.width,renderedToTexture.height),)
+
     if specialRender or submenue:
         if submenue:
             text = submenue.render()

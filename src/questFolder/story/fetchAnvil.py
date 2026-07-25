@@ -27,8 +27,15 @@ class FetchAnvil(src.quests.MetaQuestSequence):
         if self.story:
             storyString = self.story
 
+        character_position = self.character.getBigPosition()
+        direction_string = self.character.getTerrain().getDistanceDescription(character_position,self.targetPositionBig)
+        direction_string = f"The room with the Anvil is {direction_string}.\n"
+        if character_position == self.targetPositionBig:
+            direction_string = "You are in the room with the Anvil"
+
         text = [f"""{storyString}
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Fetch a Anvil"""),""" from tile {self.targetPositionBig}{reasonString}.
+{direction_string}
 
 """,(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""Use the k or K keys to pick up items.""")]
         return text

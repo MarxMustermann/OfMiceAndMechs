@@ -14,6 +14,15 @@ class HelpGroundskeeper(src.quests.MetaQuestSequence):
             return False
         return False
 
+    def getGroundsKeeper(self):
+        keeper = None
+        terrain = self.character.getHomeTerrain()
+        for candidate in terrain.getAllCharacters():
+            if not isinstance(candidate,src.characters.characterMap["GroundsKeeper"]):
+                continue
+            keeper = candidate
+        return keeper
+
     def getNextStep(self,character,ignoreCommands=False,dryRun=True):
 
         # no actions with sub quests
@@ -21,16 +30,10 @@ class HelpGroundskeeper(src.quests.MetaQuestSequence):
             return (None,None)
 
         # find the groundskeeper
-        keeper_position = None
-        keeper = None
-        terrain = character.getHomeTerrain()
-        for candidate in terrain.getAllCharacters():
-            if not isinstance(candidate,src.characters.characterMap["GroundsKeeper"]):
-                continue
-            keeper_position = candidate.getBigPosition()
-            keeper = candidate
-        if not keeper_position:
+        keeper = self.getGroundsKeeper()
+        if not keeper:
             return self._solver_trigger_fail(dryRun,"keeper not found")
+        keeper_position = keeper.getBigPosition()
 
         # go near the groundskeeper
         if not character.getBigPosition() == keeper_position:

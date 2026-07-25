@@ -89,7 +89,7 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
 
         # go home
         if not character.isOnHomeTerrain():
-            quest = src.quests.questMap["GoHome"]()
+            quest = src.quests.questMap["GoHome"](reason="be able to explore the home terrain")
             return ([quest],None)
 
         # ensure inventory space
@@ -103,7 +103,7 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
                         continue
                     hasStorage = True
                 if hasStorage:
-                    quest = src.quests.questMap["ClearInventory"]()
+                    quest = src.quests.questMap["ClearInventory"](reason="be able pick up loot")
                     return ([quest],None)
 
 
@@ -164,7 +164,7 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
             if character.getFreeInventorySpace() <= 2:
                 quest = src.quests.questMap["ClearInventory"]()
                 return ([quest],None)
-            quest = src.quests.questMap["Scavenge"](ignoreAlarm=True,ignoreScrap=True)
+            quest = src.quests.questMap["Scavenge"](ignoreAlarm=True,ignoreScrap=True,reason="find useful items")
             return ([quest],None)
 
         # mark current tile as explored

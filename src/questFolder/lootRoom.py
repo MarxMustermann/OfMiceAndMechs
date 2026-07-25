@@ -25,9 +25,9 @@ class LootRoom(src.quests.MetaQuestSequence):
         self.targetPositionBig = targetPositionBig
 
     def generateTextDescription(self):
-        reasonString = ""
+        reasonString = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
-            reasonString = ", to "+self.reason
+            reasonString = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),",")," to "+self.reason]
         storyString = ""
         if self.story:
             storyString = self.story
@@ -37,13 +37,13 @@ class LootRoom(src.quests.MetaQuestSequence):
         else:
             collectBigString = "Do not pick up big items."
 
-        text = f"""{storyString}
-Loot the room on tile {self.targetPositionBig}{reasonString}.
+        text = [f"""{storyString}
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"Loot the room on tile {self.targetPositionBig}"),reasonString,f"""
 
 Remove all items that are not bolted down.
 {collectBigString}
 
-Use the k or K keys to pick up items."""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""Use the k or K keys to pick up items.""")]
         return text
 
     def changedTile(self, extraInfo=None):

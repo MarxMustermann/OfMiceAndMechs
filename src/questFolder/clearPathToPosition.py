@@ -21,15 +21,16 @@ class ClearPathToPosition(src.quests.MetaQuestSequence):
         reason = ""
         if self.reason:
             reason = f",\nto {self.reason}"
-        text = f"""
-Clear path to position {self.targetPosition}{reason}.
+        text = [f"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"Clear path to position {self.targetPosition}"),f"""{reason}.
 
 Pick up and unbolt items that are in the way.
 
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""
 Clear the path by picking item up by using the k and K keys.
 Drop items by using the l and L keys if your inventory has no space.
 Unbolt items by using a complex action, if needed.
-"""
+""")]
 
         return text
 

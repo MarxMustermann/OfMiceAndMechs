@@ -47,19 +47,19 @@ class RestockRoom(src.quests.MetaQuestSequence):
         allowAnyText = "Do not use generic stockpiles.\n"
         if self.allowAny:
             allowAnyText = "You can use generic stockpiles.\n"
-        text = f"""
+        text = [f"""
 Restock {roomString} with {typeString} from your inventory{reason}.
 {allowAnyText}
 Place the items in the correct input or storage stockpile.
 Press the l or L keys to drop items.
-"""
+"""]
         if self.targetPosition:
-            text += f"""Use the stocpile in position {self.targetPosition}"""
+            text.append(f"""Use the stocpile in position {self.targetPosition}""")
 
         if self.disallowLocations:
-            text += f"\ndisalowed locations:\n"
+            text.append(f"\ndisalowed locations:\n")
             for location in self.disallowLocations:
-                text += f"* {location}\n"
+                text.append(f"* {location}\n")
 
         return text
 

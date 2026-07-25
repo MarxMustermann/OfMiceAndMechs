@@ -360,6 +360,8 @@ class SiegeManager(src.items.Item):
 
         # unset the alarm
         terrain = self.getTerrain()
+        if terrain is None:
+            return
         terrain.alarm = False
 
         # handle effect on the actor

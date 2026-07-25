@@ -75,9 +75,10 @@ class HelpGroundskeeper(src.quests.MetaQuestSequence):
 
     def generateTextDescription(self):
         text = ["""
-Talk to the groundskeeper and ask why it is not working.
+Talk to the groundskeeper and see what it needs help with.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Help the groundskeeper with its work."""),"""
 
-Press h to talk to nearby clones or left click on a clone to talk to it."""]
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""Press h to talk to nearby clones or left click on a clone to talk to it.""")]
         if self.lifetime:
             text.append(f"\nDo this for {self.lifetime} ticks. {self.getRemainingLifetime()} ticks remaining.")
         return text

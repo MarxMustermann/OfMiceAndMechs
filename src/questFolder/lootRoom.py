@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 class LootRoom(src.quests.MetaQuestSequence):
     type = "LootRoom"
 
-    def __init__(self, description="loot room", creator=None, targetPositionBig=None, reason=None, story=None, endWhenFull=False, collectBig=False):
+    def __init__(self, description="loot room", creator=None, targetPositionBig=None, reason=None, story=None, endWhenFull=False, collectBig=False, lootEverything=False):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
@@ -19,6 +19,7 @@ class LootRoom(src.quests.MetaQuestSequence):
         self.story = story
         self.endWhenFull = endWhenFull
         self.collectBig = collectBig
+        self.lootEverything = lootEverything
 
         self.visited_target_tile = False
 
@@ -41,9 +42,16 @@ class LootRoom(src.quests.MetaQuestSequence):
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"Loot the room on tile {self.targetPositionBig}"),reasonString,f"""
 
 Remove all items that are not bolted down.
-{collectBigString}
+{collectBigString} """]
+        if self.lootEverything:
+            text.append("""
+Take everything.""")
+        else:
+            text.append("""
+Take everything except for Scrap, MetalBars and MoldFeed""")
+        text.extend(["""
 
-""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""Use the k or K keys to pick up items.""")]
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""Use the k or K keys to pick up items.""")])
         return text
 
     def changedTile(self, extraInfo=None):
@@ -163,7 +171,7 @@ Remove all items that are not bolted down.
 
             foundValuableItem = False
             for item in items:
-                if item.type in ("Scrap","MetalBars","MoldFeed",):
+                if not self.lootEverything and item.type in ("Scrap","MetalBars","MoldFeed",):
                     continue
                 if item.walkable == False and not self.collectBig:
                     continue
@@ -183,7 +191,7 @@ Remove all items that are not bolted down.
 
             foundItems = []
             for item in items:
-                if item.type in ("Scrap","MetalBars","MoldFeed",):
+                if not self.lootEverything and item.type in ("Scrap","MetalBars","MoldFeed",):
                     continue
                 if item.bolted:
                     break
@@ -207,7 +215,7 @@ Remove all items that are not bolted down.
                 if not item.walkable:
                     isValidDropSpot = False
                     break
-                if item.type in ("Scrap","MetalBars","MoldFeed",):
+                if not self.lootEverything and item.type in ("Scrap","MetalBars","MoldFeed",):
                     continue
                 if item.type in ["Bolt"]:
                     continue
@@ -269,7 +277,7 @@ Remove all items that are not bolted down.
             if len(items) > 1 and command[0] == "K":
                 hasAvoidItem = False 
                 for item in items:
-                    if not item.type in ("Scrap","MetalBars","MoldFeed",):
+                    if self.lootEverything or not item.type in ("Scrap","MetalBars","MoldFeed",):
                         continue
                     hasAvoidItem = True
                 if not hasAvoidItem:
@@ -288,7 +296,7 @@ Remove all items that are not bolted down.
         items = self.getLeftoverItems(character)
         random.shuffle(items)
         for item in items:
-            if item.type in ("Scrap","MetalBars"):
+            if not self.lootEverything and item.type in ("Scrap","MetalBars"):
                 continue
 
             item_pos = item.getSmallPosition()
@@ -333,6 +341,11 @@ Remove all items that are not bolted down.
         else:
             itemsOnFloor = character.container.getNearbyItems(character)
 
+        try:
+            self.lootEverything
+        except:
+            self.lootEverything = False
+
         foundItems = []
         for item in itemsOnFloor:
             if item.bolted:
@@ -349,7 +362,7 @@ Remove all items that are not bolted down.
                 continue
             if character.container.isRoom and (item_pos[0] > 11 or item_pos[1] > 11 or item_pos[0] < 1 or item_pos[1] < 1):
                 continue
-            if item.type in ("Scrap","MetalBars","MoldFeed",):
+            if not self.lootEverything and item.type in ("Scrap","MetalBars","MoldFeed",):
                 continue
             if item.type == "Bolt" and character.getFreeInventorySpace() <= 1:
                 continue

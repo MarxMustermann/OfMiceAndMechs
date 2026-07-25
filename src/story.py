@@ -1649,14 +1649,14 @@ but they are likely to explode when disturbed.
 
     def builder_asked_name(self,character,partner):
         base_response_text = []
-        base_response_text.append(f"""
+        base_response_text.extend([f"""
 I don't know.
 I have been mind wiped and hold no memory.
 
-Well, i know something: i'm a groundskeeper
+Well, i know something: """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"i'm a groundskeeper"),f"""
 and my nametag says "{partner.name}".
 
-Since i'm a groundskeeper my duty is to maintain the premises.""")
+Since i'm a groundskeeper my duty is to maintain the premises."""])
 
         if not partner.registers.get("askedForName"):
             partner.specialChatOptions.insert(0,({"method":self.builder_asked_nowork},"Why are you not working?"))
@@ -1730,8 +1730,8 @@ Everything would have to be build anew.
 """)
 
         if not partner.registers.get("startedWorking"):
-            base_response_text.append("""
-Well, i'll start by cleaning up this room.""")
+            base_response_text.extend(["""
+Well, """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""i'll start by cleaning up this room.""")])
         elif len(character.quests) < 2:
             base_response_text.append("""
 I'll check if there is something to do now.""")

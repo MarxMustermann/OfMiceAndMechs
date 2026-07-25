@@ -59,12 +59,12 @@ class Spiderling(src.monster.Monster):
         return "sp"
 
     def getLoreDescription(self):
-        return f"You see a Spiderling.\nIt balances on its many legs almost drowning in the mud.\n\nIt looks at you with its many eyes.\nSome show an expression of fear and some an expression of disgust."
+        return [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You see a Spiderling."),"\n\nIt balances on its many legs almost drowning in the mud.\n\nIts many eyes follow every of your movements.\nSome show an expression of fear and some an expression of disgust."]
 
     def getFunctionalDescription(self):
-        return f"Spiderlings are weak and not fast and have little HP."
+        return (src.interaction.urwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),f"Spiderlings are weak and not fast and have little HP.")
 
     def description(self):
-        return self.getLoreDescription()+"\n\n---- "+self.getFunctionalDescription()
+        return [self.getLoreDescription(),"\n\n---- ",self.getFunctionalDescription()]
 
 src.characters.add_character(Spiderling)

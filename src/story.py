@@ -1877,7 +1877,7 @@ I am working right now. I'll repriotize though.""")
             elif quest_selection == "disable alarm":
                 quest = src.quests.questMap["LiftOutsideRestrictions"]()
                 character.assignQuest(quest,active=True)
-                quest = src.quests.questMap["SecureTile"](toSecure=(4,5,0),endWhenCleared=True)
+                quest = src.quests.questMap["SecureTile"](toSecure=(7,11,0),endWhenCleared=True)
                 character.assignQuest(quest,active=True)
             elif quest_selection == "free up storage":
                 quest = src.quests.questMap["FreeUpStorage"](amount=5)

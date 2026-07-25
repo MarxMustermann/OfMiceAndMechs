@@ -108,6 +108,23 @@ class Terrain:
 
         self.alarm = False
 
+    def getDistanceDescription(self,start_coordinate,end_coordinate):
+        directions = []
+        if end_coordinate[0] < start_coordinate[0]:
+            amount_steps = start_coordinate[0]-end_coordinate[0]
+            directions.append(f"{amount_steps} tiles to the west")
+        if end_coordinate[0] > start_coordinate[0]:
+            amount_steps = end_coordinate[0]-start_coordinate[0]
+            directions.append(f"{amount_steps} tiles to the east")
+        if end_coordinate[1] < start_coordinate[1]:
+            amount_steps = start_coordinate[1]-end_coordinate[1]
+            directions.append(f"{amount_steps} tiles to the north")
+        if end_coordinate[1] > start_coordinate[1]:
+            amount_steps = end_coordinate[1]-start_coordinate[1]
+            directions.append(f"{amount_steps} tiles to the south")
+        direction_string = " and ".join(directions)
+        return "and".join(directions)
+
     def callIndirect(self, callback, extraParams=None):
         """
         call a callback that is stored in a savable format

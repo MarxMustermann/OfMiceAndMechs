@@ -66,37 +66,38 @@ class SecureTile(src.quests.MetaQuestSequence):
         characterPosition_type_string = "tile"
         if rooms:
             characterPosition_type_string = "room"
-        text = ""
+        text = []
         if character_position != self.targetPosition:
-            text += f"""{storyString}Secure the {target_type_string} on coordinate {self.targetPosition}{reasonString}.
+            text.append(f"""{storyString}Secure the {target_type_string} on coordinate {self.targetPosition}{reasonString}.
+
 You are in the {characterPosition_type_string} on coordinate {character_position}.
 Tiles are the 15x15 step sections divided by the blue lines.
-{direction_string}
-Go to the tile and kill all enemies you find."""
+{direction_string}\n""")
+            text.append((src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Go to the tile and kill all enemies you find."""))
         else:
-            text += f"""Kill all enemies you find on this tile."""
+            text.append((src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"""Kill all enemies you find on this tile."""))
         if not self.endWhenCleared:
-            text = "\n"+text+"\n\nStay there and kill all enemies arriving"
+            text.append("\n\nStay there and kill all enemies arriving")
             if self.wandering:
-                text += " and sweeping the area for any potential danger"
+                text.append(" and sweeping the area for any potential danger")
         else:
-            text = "\n"+text+"\n\nThis quest will end after you do this"
-        text += """
+            text.append("\n\nThis quest will end after you do this")
+        text.extend(["""
 
-You can attack enemies by walking into them.
-But you can use your environment to your advantage, too."""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""You can attack enemies by walking into them."""),"""
+But you can use your environment to your advantage, too."""])
 
         if self.simpleAttacksOnly:
-            text += """
+            text.append("""
 
 Use simple attacks only.
-"""
+""")
 
         if self.lifetime:
-            text += f"\n\nremaining lifetime: {self.getRemainingLifetime()}"
+            text.append(f"\n\nremaining lifetime: {self.getRemainingLifetime()}")
 
         if self.subQuests:
-            text += f"\n\npress d to see the subquest descriptions and press a to return to the parent quest."
+            text.append(f"\n\npress d to see the subquest descriptions and press a to return to the parent quest.")
 
         return text
 

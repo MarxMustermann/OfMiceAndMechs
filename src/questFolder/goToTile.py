@@ -462,7 +462,7 @@ There is a mini map shown on the top left of the screen showing a quest marker.
         if extraParam["reason"] and "no path found" in extraParam["reason"]:
             if extraParam["quest"].idleMovement:
                 return
-            quest = src.quests.questMap["ClearPathToPosition"](targetPosition=extraParam["quest"].targetPosition)
+            quest = src.quests.questMap["ClearPathToPosition"](targetPosition=extraParam["quest"].targetPosition, reason="be able to move there")
             self.addQuest(quest)
             self.startWatching(quest,self.handleQuestFailure,"failed")
             return

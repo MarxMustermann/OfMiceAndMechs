@@ -2802,6 +2802,13 @@ sure i'll produce equipment for you as long as you bring me the raw material.
             quest.assignToCharacter(enemy)
             quest.activate()
             enemy.quests.append(quest)
+        for y in range(1,12):
+            if y in (8,9,10,):
+                alarmRoom.addWalkingSpace((5,y,0))
+                alarmRoom.addWalkingSpace((7,y,0))
+            if y == 9:
+                continue
+            alarmRoom.addWalkingSpace((6,y,0))
 
         # add city planer room
         cityPlanerRoom = architect.doAddRoom(

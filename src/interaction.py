@@ -5311,6 +5311,17 @@ def renderGameDisplay(renderChar=None,showSaving=False):
 
             map_size = (uiElement["map_width"],uiElement["map_width"])
 
+            for click_zone in click_map[:]:
+                startsLeft = False
+                if click_zone[0][0] < offsetLeft:
+                    startsLeft = True
+                    if click_zone[0][0]+click_zone[1][0] < offsetLeft:
+                        continue
+                    new_click_zone = (click_zone[0],((offsetLeft-click_zone[0][0]),click_zone[1][1]),click_zone[2])
+                    click_map.remove(click_zone)
+                    click_map.append(new_click_zone)
+
+
             sdl_renderer2.draw_color = (255,0,0,255)
             sdl_renderer2.fill_rect((offsetLeft,offsetTop,500,500))
 

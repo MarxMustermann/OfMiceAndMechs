@@ -2628,7 +2628,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                 {
                        "coordinate": (7,4,0),
                        "roomType": "EmptyRoom",
-                       "doors": "6,12 6,0 0,6 12,6",
+                       "doors": "6,12 6,0",
                        "offset": [1,1],
                        "size": [13, 13],
                 },

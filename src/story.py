@@ -1943,16 +1943,16 @@ This helps a lot with keeping things organized.
                 }
             else:
                 base_response_text = []
-                base_response_text.append("""
+                base_response_text.extend(["""
 Thanks for the painter.
 
 That will be very help with organising the place.
 This will allow me to draw storage markers onto the floor.
 It is hard to do anything without a storage system.
 
-I'll busy and will not need your help for a bit.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"I'll busy and will not need your help for a bit."),"""
 But once i am done painting, help would be appreachiated.
-""")
+"""])
                 character.inventory.remove(painter[0])
                 partner.inventory.append(painter[0])
                 self.builder_reset(partner)
@@ -1972,11 +1972,13 @@ But once i am done painting, help would be appreachiated.
         # pain the floor markers
         if groundskeepers_place and groundskeepers_place.floorPlan:
             base_response_text = []
-            base_response_text.append("""
+            base_response_text.extend(["""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"I'm busy."),"""
+
 I need to focus on painting the floor markers.
 
 There will be more work to do once i'm done.
-""")
+"""])
             character.showTextMenu(base_response_text)
             character.changed("no_builder_quest")
             return

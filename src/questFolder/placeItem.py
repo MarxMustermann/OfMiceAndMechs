@@ -79,20 +79,11 @@ You have a {self.itemType} in your inventory.
 You are on the target tile.
 """)
         else:
-            direction = ""
-            diffXBig = self.targetPositionBig[0] - self.character.getBigPosition()[0]
-            if diffXBig < 0:
-                direction += f" and {-diffXBig} tiles to the west"
-            if diffXBig > 0:
-                direction += f" and {diffXBig} tiles to the east"
-            diffYBig = self.targetPositionBig[1] - self.character.getBigPosition()[1]
-            if diffYBig < 0:
-                direction += f" and {-diffYBig} tiles to the north"
-            if diffYBig > 0:
-                direction += f" and {diffYBig} tiles to the south"
+            character_position = self.character.getBigPosition()
+            direction_string = self.character.getTerrain().getDistanceDescription(character_position,self.targetPositionBig)
             text.append(f"""
 
-The target tile is {direction[5:]}
+The target tile is {direction_string}
 """)
 
         if self.tryHard:

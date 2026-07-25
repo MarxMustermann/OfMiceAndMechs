@@ -234,7 +234,7 @@ If you don't find the items to place, produce them.
                 return ([quest],None)
 
             if character.getBigPosition() != self.targetPositionBig:
-                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,description="go to buildsite",reason=f"be able to place the {self.itemType}")
+                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,description="go to placement tile",reason=f"be able to place the {self.itemType}")
                 return ([quest],None)
 
             if not itemFound.walkable:

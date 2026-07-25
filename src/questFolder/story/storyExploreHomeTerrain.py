@@ -183,11 +183,11 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
         return ([quest],None)
 
     def generateTextDescription(self):
-        reasonString = ""
+        reasonString = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
-            reasonString = ", to "+self.reason
+            reasonString = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f","),f" to {self.reason}."]
         text = [f"""
-Explore the terrain{reasonString}.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Explore the terrain"),reasonString,"""
 
 """]
         if self.lifetime:

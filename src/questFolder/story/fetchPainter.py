@@ -225,6 +225,5 @@ Use the k or K keys to pick up items."""]
             self.addQuest(newQuest)
             self.startWatching(newQuest,self.handleQuestFailure,"failed")
             return
-        self.fail(extraInfo["reason"])
 
 src.quests.addType(FetchPainter)

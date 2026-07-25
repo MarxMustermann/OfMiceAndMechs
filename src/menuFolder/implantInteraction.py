@@ -326,7 +326,7 @@ Go there. {directionString}
 
 Explore the rooms and try to find something useful.
 
-There is a StasisTank in the groundskeepers place.
+""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""There surely is something in the groundskeepers place."""),f"""
 Look there. {directionString}
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to go to the groundskeepers place?"""),"""

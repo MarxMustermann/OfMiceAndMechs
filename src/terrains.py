@@ -122,8 +122,7 @@ class Terrain:
         if end_coordinate[1] > start_coordinate[1]:
             amount_steps = end_coordinate[1]-start_coordinate[1]
             directions.append(f"{amount_steps} tiles to the south")
-        direction_string = " and ".join(directions)
-        return "and".join(directions)
+        return " and ".join(directions)
 
     def callIndirect(self, callback, extraParams=None):
         """

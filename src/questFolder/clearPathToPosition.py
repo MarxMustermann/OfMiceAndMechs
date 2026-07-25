@@ -18,11 +18,11 @@ class ClearPathToPosition(src.quests.MetaQuestSequence):
         self.startTime = None
 
     def generateTextDescription(self):
-        reason = ""
+        reason = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
-            reason = f",\nto {self.reason}"
+            reason = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f","),f"\nto {self.reason}."]
         text = [f"""
-""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"Clear path to position {self.targetPosition}"),f"""{reason}.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"Clear path to position {self.targetPosition}"),reason,f"""
 
 Pick up and unbolt items that are in the way.
 

@@ -28,6 +28,7 @@ class SelectionMenu(src.menues.SubMenu):
         self.extraDescriptions = extraDescriptions
 
         self.title = title
+        self.done
 
     def getTitle(self):
         return self.title
@@ -61,7 +62,12 @@ class SelectionMenu(src.menues.SubMenu):
             super().handleKey(key, noRender=noRender, character=character)
 
         # stop when done
-        return bool(self.getSelection())
+        if self.getSelection():
+            self.done = True
+            return True
+
+        # waitr for user input
+        return False
 
     def get_command_to_select_option(self,option_to_select,selectionCommand="j"):
         """

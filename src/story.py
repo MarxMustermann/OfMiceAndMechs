@@ -2835,6 +2835,13 @@ sure i'll produce equipment for you as long as you bring me the raw material.
             quest.assignToCharacter(enemy)
             quest.activate()
             enemy.quests.append(quest)
+        for y in range(1,12):
+            if y in (8,9,10,):
+                cityPlanerRoom.addWalkingSpace((5,y,0))
+                cityPlanerRoom.addWalkingSpace((7,y,0))
+            if y == 9:
+                continue
+            cityPlanerRoom.addWalkingSpace((6,y,0))
 
         # add painter room
         painterRoom = architect.doAddRoom(
@@ -2852,6 +2859,10 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         for _i in range(10):
             pos = (random.randint(3,10),random.randint(2,9),0)
             painterRoom.spawnItem("Painter",pos)
+        for y in range(6,12):
+            painterRoom.addWalkingSpace((6,y,0))
+        for x in range(1,6):
+            painterRoom.addWalkingSpace((x,6,0))
 
         # add rod room
         rodRoom = architect.doAddRoom(
@@ -2867,6 +2878,8 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         used_spots.append(rodRoom.getPosition())
         rodRoom.tag = "ruin"
         rodRoom.spawnItem("Rod",(6,6,0))
+        for y in range(1,11):
+            rodRoom.addWalkingSpace((6,y,0))
 
         # add loot room
         lootRoom = architect.doAddRoom(
@@ -2882,6 +2895,10 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         used_spots.append(lootRoom.getPosition())
         lootRoom.tag = "ruin"
         lootRoom.spawnItem("Armor",(6,6,0))
+        for x in range(6,12):
+            lootRoom.addWalkingSpace((x,6,0))
+        for y in range(1,6):
+            lootRoom.addWalkingSpace((6,y,0))
 
         # add loot room
         lootRoom = architect.doAddRoom(
@@ -2897,6 +2914,10 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         used_spots.append(lootRoom.getPosition())
         lootRoom.tag = "ruin"
         lootRoom.spawnItem("Painter",(3,5,0))
+        for x in range(6,12):
+            lootRoom.addWalkingSpace((x,6,0))
+        for y in range(7,12):
+            lootRoom.addWalkingSpace((6,y,0))
 
         # add loot room
         lootRoom = architect.doAddRoom(
@@ -2911,6 +2932,10 @@ sure i'll produce equipment for you as long as you bring me the raw material.
            )
         used_spots.append(lootRoom.getPosition())
         lootRoom.tag = "ruin"
+        for x in range(1,12):
+            lootRoom.addWalkingSpace((x,6,0))
+        for y in range(7,12):
+            lootRoom.addWalkingSpace((6,y,0))
 
         # add anvil room
         anvilRoom = architect.doAddRoom(
@@ -2931,6 +2956,15 @@ sure i'll produce equipment for you as long as you bring me the raw material.
             rodRoom.spawnItem(itemType,pos)
         anvilRoom.spawnItem("Anvil",(6,6,0))
         anvilRoom.bolted = True
+        for y in range(1,8):
+            if y in (5,6,7,):
+                anvilRoom.addWalkingSpace((5,y,0))
+                anvilRoom.addWalkingSpace((7,y,0))
+            if y == 6:
+                continue
+            anvilRoom.addWalkingSpace((6,y,0))
+        for x in range(1,5):
+            anvilRoom.addWalkingSpace((x,6,0))
 
         # add metalWorking room
         metalWorkingRoom = architect.doAddRoom(
@@ -2946,6 +2980,13 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         used_spots.append(metalWorkingRoom.getPosition())
         metalWorkingRoom.tag = "ruin"
         metalWorkingRoom.spawnItem("MetalWorkingBench",(6,6,0))
+        for y in range(1,12):
+            if y in (5,6,7,):
+                metalWorkingRoom.addWalkingSpace((5,y,0))
+                metalWorkingRoom.addWalkingSpace((7,y,0))
+            if y == 6:
+                continue
+            metalWorkingRoom.addWalkingSpace((6,y,0))
 
         # create horizontal paths
         for big_pos in [(5,5,0),(6,5,0),(8,5,0),(9,5,0),(9,9,0),(8,9,0),(6,9,0),(5,9,0)]:

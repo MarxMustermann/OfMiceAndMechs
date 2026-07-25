@@ -157,21 +157,13 @@ Go to tile {self.targetPosition}{reason}.
 You are on the target tile.
 """
         else:
-            direction = ""
-            diffXBig = self.targetPosition[0] - self.character.getBigPosition()[0]
-            if diffXBig < 0:
-                direction += f"and {-diffXBig} tiles to the west "
-            if diffXBig > 0:
-                direction += f"and {diffXBig} tiles to the east "
-            diffYBig = self.targetPosition[1] - self.character.getBigPosition()[1]
-            if diffYBig < 0:
-                direction += f"and {-diffYBig} tiles to the north "
-            if diffYBig > 0:
-                direction += f"and {diffYBig} tiles to the south "
-            if len(direction) > 5:
+            character_position = self.character.getBigPosition()
+            direction_string = self.character.getTerrain().getDistanceDescription(character_position,self.targetPosition)
+
+            if len(direction_string) > 0:
                 text += f"""
 
-The target tile is {direction[4:-1]}.
+The target tile is {direction_string}.
 There is a mini map shown on the top left of the screen showing a quest marker.
 """
         if self.paranoid:

@@ -20,6 +20,7 @@ class LootRoom(src.quests.MetaQuestSequence):
         self.endWhenFull = endWhenFull
         self.collectBig = collectBig
         self.lootEverything = lootEverything
+        self.blacklistedItems = ("Scrap","MetalBars","MoldFeed",)
 
         self.visited_target_tile = False
 
@@ -47,8 +48,9 @@ Remove all items that are not bolted down.
             text.append("""
 Take everything.""")
         else:
-            text.append("""
-Take everything except for Scrap, MetalBars and MoldFeed""")
+            itemString = " and ".join(self.blacklistedItems)
+            text.append(f"""
+Take everything except for {itemString}""")
         text.extend(["""
 
 """,(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""Use the k or K keys to pick up items.""")])
@@ -171,7 +173,7 @@ Take everything except for Scrap, MetalBars and MoldFeed""")
 
             foundValuableItem = False
             for item in items:
-                if not self.lootEverything and item.type in ("Scrap","MetalBars","MoldFeed",):
+                if not self.lootEverything and item.type in self.blacklistedItems:
                     continue
                 if item.walkable == False and not self.collectBig:
                     continue
@@ -191,7 +193,7 @@ Take everything except for Scrap, MetalBars and MoldFeed""")
 
             foundItems = []
             for item in items:
-                if not self.lootEverything and item.type in ("Scrap","MetalBars","MoldFeed",):
+                if not self.lootEverything and item.type in self.blacklistedItems:
                     continue
                 if item.bolted:
                     break
@@ -215,7 +217,7 @@ Take everything except for Scrap, MetalBars and MoldFeed""")
                 if not item.walkable:
                     isValidDropSpot = False
                     break
-                if not self.lootEverything and item.type in ("Scrap","MetalBars","MoldFeed",):
+                if not self.lootEverything and item.type in self.blacklistedItems:
                     continue
                 if item.type in ["Bolt"]:
                     continue
@@ -277,7 +279,7 @@ Take everything except for Scrap, MetalBars and MoldFeed""")
             if len(items) > 1 and command[0] == "K":
                 hasAvoidItem = False 
                 for item in items:
-                    if self.lootEverything or not item.type in ("Scrap","MetalBars","MoldFeed",):
+                    if self.lootEverything or not item.type in self.blacklistedItems:
                         continue
                     hasAvoidItem = True
                 if not hasAvoidItem:
@@ -296,7 +298,7 @@ Take everything except for Scrap, MetalBars and MoldFeed""")
         items = self.getLeftoverItems(character)
         random.shuffle(items)
         for item in items:
-            if not self.lootEverything and item.type in ("Scrap","MetalBars"):
+            if not self.lootEverything and item.type in self.blacklistedItems:
                 continue
 
             item_pos = item.getSmallPosition()
@@ -362,7 +364,7 @@ Take everything except for Scrap, MetalBars and MoldFeed""")
                 continue
             if character.container.isRoom and (item_pos[0] > 11 or item_pos[1] > 11 or item_pos[0] < 1 or item_pos[1] < 1):
                 continue
-            if not self.lootEverything and item.type in ("Scrap","MetalBars","MoldFeed",):
+            if not self.lootEverything and item.type in self.blacklistedItems:
                 continue
             if item.type == "Bolt" and character.getFreeInventorySpace() <= 1:
                 continue

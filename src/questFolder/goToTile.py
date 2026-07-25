@@ -148,7 +148,7 @@ class GoToTile(src.quests.MetaQuestSequence):
             storyString = f"{self.story}"
 
         text = [f"""{storyString}
-Go to tile {self.targetPosition}{reason}.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"Go to tile {self.targetPosition}"),f"""{reason}.
 """]
 
         if self.character.getBigPosition() == self.targetPosition:

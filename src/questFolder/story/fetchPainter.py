@@ -37,7 +37,7 @@ class FetchPainter(src.quests.MetaQuestSequence):
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Fetch a Painter"""),f""" from tile {self.targetPositionBig}{reasonString}.
 {direction_string}
 
-Use the k or K keys to pick up items."""]
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""Use the k or K keys to pick up items.""")]
         return text
 
     def assignToCharacter(self, character):

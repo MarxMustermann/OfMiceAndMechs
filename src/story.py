@@ -2307,17 +2307,17 @@ I don't need anything right now.
             # generate quest to fetch MetalWorkingBench
             metalWorkingBench = character.searchInventory("MetalWorkingBench")
             if not metalWorkingBench:
-                base_response_text.append("""
-Now i need a MetalWorkingBench.
+                base_response_text.extend("""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Now i need a MetalWorkingBench."),"""
 """)
                 offer_accept_options = True
             else:
-                base_response_text.append("""
-Thanks for the MetalWorkingBench.
+                base_response_text.extend(["""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Thanks for the MetalWorkingBench."),"""
 
 That will allow to produce items from MetalBars.
 We will need a lot of MetalBars to produce a lot of things.
-""")
+"""])
                 character.inventory.remove(metalWorkingBench[0])
                 partner.inventory.append(metalWorkingBench[0])
                 self.builder_reset(partner)
@@ -2329,17 +2329,17 @@ We will need a lot of MetalBars to produce a lot of things.
             # generate quest to fetch MetalWorkingBench
             anvil = character.searchInventory("Anvil")
             if not anvil:
-                base_response_text.append("""
-Now i need an anvil.
-""")
+                base_response_text.extend(["""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Now i need an anvil."),"""
+"""])
                 offer_accept_options = True
             else:
-                base_response_text.append("""
-Thanks for the anvil.
+                base_response_text.extend(["""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Thanks for the anvil."),"""
 
 That will allow to process scrap to metal bars.
 MetalBars are needed to produce most things.
-""")
+"""])
                 character.inventory.remove(anvil[0])
                 partner.inventory.append(anvil[0])
                 self.builder_reset(partner)

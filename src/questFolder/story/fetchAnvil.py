@@ -27,10 +27,10 @@ class FetchAnvil(src.quests.MetaQuestSequence):
         if self.story:
             storyString = self.story
 
-        text = f"""{storyString}
-Fetch a Anvil from tile {self.targetPositionBig}{reasonString}.
+        text = [f"""{storyString}
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Fetch a Anvil"""),""" from tile {self.targetPositionBig}{reasonString}.
 
-Use the k or K keys to pick up items."""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""Use the k or K keys to pick up items.""")]
         return text
 
     def assignToCharacter(self, character):

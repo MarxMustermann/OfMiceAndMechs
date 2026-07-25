@@ -82,6 +82,20 @@ Talk to the groundskeeper and see what it needs help with.
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Help the groundskeeper with its work.""")]
         if self.lifetime:
             text.append(f"\nDo this for {self.lifetime} ticks. {self.getRemainingLifetime()} ticks remaining.\n")
+
+        keeper = self.getGroundsKeeper()
+        if keeper:
+            keeper_position = keeper.getBigPosition()
+            character_position = self.character.getBigPosition()
+            direction_string = self.character.getTerrain().getDistanceDescription(character_position,keeper_position)
+            direction_string = f"The groundskeeper is {direction_string}.\n"
+            if character_position == keeper_position:
+                direction_string = "You are in the room with the groundskeeper"
+
+            text.append(f"""
+{direction_string}
+""")
+
         text.extend(["""
 """,(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""Press h to talk to nearby clones or left click on a clone to talk to it.""")])
         return text

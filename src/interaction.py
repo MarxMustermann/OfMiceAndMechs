@@ -49,7 +49,7 @@ click_map = []
 upper_case_letter_color = "#66f"
 disabled_ui_color = "#777"
 highlighted_ui_color = "#ff0"
-ui_hint_color = "#f0f"
+ui_hint_color = "#fa0"
 shadowed_ui_color = "#666"
 
 class EndGame(Exception):

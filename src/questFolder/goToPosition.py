@@ -78,6 +78,7 @@ So it is enough to go next to the target position to end this quest.
 
         text = f"""
 Go to position {self.targetPosition} in the same {containerString} you are in{reason}.
+
 Your current position is {character_position} your target position is {direction_string}.
 Use wasd or the arrow keys to move.
 

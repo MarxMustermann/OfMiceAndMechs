@@ -2634,6 +2634,8 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                 },
                 None,
            )
+        for y in range(1,12,):
+            entryroom.addWalkingSpace((6,y,0))
         entryroom.tag = "entryroom"
         used_spots.append(entryroom.getPosition())
 

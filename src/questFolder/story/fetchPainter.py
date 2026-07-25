@@ -110,7 +110,7 @@ Use the k or K keys to pick up items."""]
 
         # go the the location to be looted
         if character.getBigPosition() != (self.targetPositionBig[0], self.targetPositionBig[1], 0):
-            quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="reach the loot")
+            quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="reach the loot",allowMapMenu=False)
             return ([quest],None)
 
         # find lootable items in reach

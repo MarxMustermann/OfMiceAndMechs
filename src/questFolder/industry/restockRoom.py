@@ -57,7 +57,7 @@ Press the l or L keys to drop items.
             text.append(f"""Use the stocpile in position {self.targetPosition}""")
 
         if self.disallowLocations:
-            text.append(f"\ndisalowed locations:\n")
+            text.append(f"\ndisallowed locations:\n")
             for location in self.disallowLocations:
                 text.append(f"* {location}\n")
 

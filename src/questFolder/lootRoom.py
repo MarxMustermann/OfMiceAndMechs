@@ -385,8 +385,9 @@ Remove all items that are not bolted down.
         if not renderForTile:
             if isinstance(character.container,src.rooms.Room):
                 if not character.getNearbyEnemies():
-                    for item in self.getLeftoverItems(character):
-                        result.append((item.getPosition(),"target"))
+                    if character.getBigPosition() == self.targetPositionBig or self.targetPositionBig is None:
+                        for item in self.getLeftoverItems(character):
+                            result.append((item.getPosition(),"target"))
         return result
     
     def handleQuestFailure(self,extraInfo):

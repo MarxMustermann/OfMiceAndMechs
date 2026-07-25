@@ -1919,7 +1919,7 @@ The painter is an important tool.
 It is used to draw markings on the floor.
 This helps a lot with keeping things organized.
 
-""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Bring me a painter so i can work better."""),"""
+""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Bring me a painter"""),""", so i can work better.""","""
 """])
 
                 options = []

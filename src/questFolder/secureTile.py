@@ -44,20 +44,7 @@ class SecureTile(src.quests.MetaQuestSequence):
             target_type_string = "room"
 
         character_position = self.character.getBigPosition()
-        directions = []
-        if self.targetPosition[0] < character_position[0]:
-            amount_steps = character_position[0]-self.targetPosition[0]
-            directions.append(f"{amount_steps} tiles to the west")
-        if self.targetPosition[0] > character_position[0]:
-            amount_steps = self.targetPosition[0]-character_position[0]
-            directions.append(f"{amount_steps} tiles to the east")
-        if self.targetPosition[1] < character_position[1]:
-            amount_steps = character_position[1]-self.targetPosition[1]
-            directions.append(f"{amount_steps} tiles to the north")
-        if self.targetPosition[1] > character_position[1]:
-            amount_steps = self.targetPosition[1]-character_position[1]
-            directions.append(f"{amount_steps} tiles to the south")
-        direction_string = " and ".join(directions)
+        direction_string = self.character.getTerrain().getDistanceDescription(character_position,self.targetPosition)
         direction_string = f"The target tile is {direction_string}.\n"
         if character_position == self.targetPosition:
             direction_string = ""

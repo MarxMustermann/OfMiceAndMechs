@@ -109,7 +109,12 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
 
                 pos = random.choice(list(room.walkingSpace))
                 item = character.inventory[-1]
-                quest = src.quests.questMap["PlaceItem"](targetPositionBig=groundskeepers_place.getPosition(),targetPosition=pos,reason="clear your inventory")
+                quest = src.quests.questMap["PlaceItem"](
+                                                targetPositionBig=groundskeepers_place.getPosition(),
+                                                targetPosition=pos,
+                                                reason="clear your inventory",
+                                                description="drop item",
+                                            )
                 return ([quest],None)
 
         # loot current tile

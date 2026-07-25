@@ -275,10 +275,9 @@ This will trigger an attack.
             if not character.container.isRoom:
                 base_text = ["""
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),f"""
-
 {implant_intro_text}
-
 """,(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""You are outside and need to find shelter."""),"""
+
 The old groundskeepers place is nearby.
 Go there.
 

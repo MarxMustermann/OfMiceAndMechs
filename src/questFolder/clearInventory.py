@@ -24,27 +24,27 @@ class ClearInventory(src.quests.MetaQuestSequence):
         '''
         generates a textual description
         '''
-        reason = ""
+        reason = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
-            reason += f", to {self.reason}"
-        text = f"""
-Clear your inventory{reason}.
+            reason = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f",")," to {self.reason}."]
+        text = [f"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Clear your inventory"),reason,f"""
 
 The storage room is a good place to put your items.
 Put the items into the stockpiles to make then accessible to the base.
 
-To see your items open the your inventory by pressing i."""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""To see your items open the your inventory by pressing i.""")]
 
         if self.returnToTile:
             if not self.tileToReturnTo:
-                text += "\n\nReturn to your current position afterwards."
+                text.append("\n\nReturn to your current position afterwards.")
             else:
-                text += f"\n\nReturn to the tile {self.tileToReturnTo} afterwards."
+                text.append(f"\n\nReturn to the tile {self.tileToReturnTo} afterwards.")
 
         if self.disallowLocations:
-            text += f"\ndisalowed locations:\n"
+            text.append(f"\ndisalowed locations:\n")
             for location in self.disallowLocations:
-                text += f"* {location}\n"
+                text.append(f"* {location}\n")
             
         return text
 

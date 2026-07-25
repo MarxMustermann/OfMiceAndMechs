@@ -198,14 +198,13 @@ What do you want to do?
         # leave the inital room
         if character.container.tag == "the architects tomb":    
             base_text = ["""
-""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),"""
+""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),f"""
 
-
-""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Hello!"),f"""
+Hello!
 
 {implant_intro_text}
 
-The machinery around you is burning and exploding.
+The machinery around you is """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"burning and exploding"),f""".
 So i recommend leaving the room before you get hurt.
 
 The exit is on the north side, you can move by pressing the wasd keys.

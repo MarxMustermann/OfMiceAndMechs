@@ -76,13 +76,13 @@ So it is enough to go next to the target position to end this quest.
             directions.append(f"{amount_steps} steps to the south")
         direction_string = " and ".join(directions)
 
-        text = f"""
-Go to position {self.targetPosition} in the same {containerString} you are in{reason}.
+        text = [f"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"Go to position {self.targetPosition}"),f""" in the same {containerString} you are in{reason}.
 
 Your current position is {character_position} your target position is {direction_string}.
 Use wasd or the arrow keys to move.
 
-This quest ends after you do this.{extraText}"""
+This quest ends after you do this.{extraText}"""]
 
         return text
 

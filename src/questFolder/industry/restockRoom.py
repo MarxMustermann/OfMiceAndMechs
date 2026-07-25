@@ -48,10 +48,10 @@ class RestockRoom(src.quests.MetaQuestSequence):
         if self.allowAny:
             allowAnyText = "You can use generic stockpiles.\n"
         text = [f"""
-Restock {roomString} with {typeString} from your inventory{reason}.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"""Restock {roomString} with {typeString}"""),f""" from your inventory{reason}.
 {allowAnyText}
 Place the items in the correct input or storage stockpile.
-Press the l or L keys to drop items.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"Press the l or L keys to drop items."),"""
 """]
         if self.targetPosition:
             text.append(f"""Use the stocpile in position {self.targetPosition}""")

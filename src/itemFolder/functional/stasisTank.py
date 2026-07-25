@@ -55,23 +55,23 @@ The ejected character will be placed to the south of the stasis tank and will st
                     short_code = short_code.lower()
                 else:
                     short_code = short_code.upper()
-                text = """
-You break the glass of the StasisTank and a Clone falls out.\n\n"""
+                text = ["""
+You break the glass of the StasisTank and """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"a Clone falls out"),""".\n\n"""]
                 if (spwaned_character.burnedIn):
-                    text += """
+                    text.append("""
 The spark has left its eyes and is stares blankly,
-but after some seconds it starts to move."""
+but after some seconds it starts to move.""")
                     duty_string = f"{spwaned_character.duties[0]} duty"
                     if len(spwaned_character.duties) > 1:
                         duty_string = f'{" ".join(spwaned_character.duties)} duties'
-                    text += f"""
+                    text.append(f"""
 
 
 This Clone is burned in and will only do the {duty_string}.
-"""
-                text += f"""
+""")
+                text.append(f"""
 The Clones nametag reads "{spwaned_character.name} ({short_code})"
-"""
+""")
                 character.showTextMenu(text,do_not_scale=True)
                 character.changed("woke clone",{"character":character,"awoken":spwaned_character})
             self.destroy(generateScrap=False)

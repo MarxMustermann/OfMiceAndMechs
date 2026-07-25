@@ -5509,6 +5509,8 @@ def renderGameDisplay(renderChar=None,showSaving=False):
         sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(0,0,renderedToTexture.width,renderedToTexture.height),)
 
     if specialRender or submenue:
+        click_map = []
+
         if submenue:
             text = submenue.render()
         else:

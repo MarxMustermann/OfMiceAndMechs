@@ -273,13 +273,29 @@ This will trigger an attack.
 
             # go inside
             if not character.container.isRoom:
+                directions = []
+                char_position = character.getBigPosition()
+                room_position = groundskeepers_place.getPosition()
+                if char_position[0] > room_position[0]:
+                    amount = char_position[0]-room_position[0]
+                    directions.append(f"{amount} tiles to the west")
+                if char_position[0] < room_position[0]:
+                    amount = room_position[0]-char_position[0]
+                    directions.append(f"{amount} tiles to the east")
+                if char_position[1] < room_position[1]:
+                    amount = room_position[1]-char_position[1]
+                    directions.append(f"{amount} tiles to the south")
+                if char_position[1] > room_position[1]:
+                    amount = char_position[1]-room_position[1]
+                    directions.append(f"{amount} tiles to the north")
+                directionString = "It is "+" and ".join(directions)+"."
                 base_text = ["""
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),f"""
 {implant_intro_text}
-""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""You are outside and need to find shelter."""),"""
+""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""You are outside and need to find shelter."""),f"""
 
 The old groundskeepers place is nearby.
-Go there.
+Go there. {directionString}
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to find shelter?"""),"""
 """]
@@ -288,13 +304,30 @@ Go there.
 
             # go to the groundskeepers place
             if not character.container.tag == "the groundskeepers place":
+                directions = []
+                char_position = character.getBigPosition()
+                room_position = groundskeepers_place.getPosition()
+                if char_position[0] > room_position[0]:
+                    amount = char_position[0]-room_position[0]
+                    directions.append(f"{amount} tiles to the west")
+                if char_position[0] < room_position[0]:
+                    amount = room_position[0]-char_position[0]
+                    directions.append(f"{amount} tiles to the east")
+                if char_position[1] < room_position[1]:
+                    amount = room_position[1]-char_position[1]
+                    directions.append(f"{amount} tiles to the south")
+                if char_position[1] > room_position[1]:
+                    amount = char_position[1]-room_position[1]
+                    directions.append(f"{amount} tiles to the north")
+                directionString = "It is "+" and ".join(directions)+"."
                 base_text = ["""
-""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),"""
+""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),f"""
 
 
 Explore the rooms and try to find something useful.
 
-There is a StasisTank in the groundskeepers place. Look there.
+There is a StasisTank in the groundskeepers place.
+Look there. {directionString}
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to go to the groundskeepers place?"""),"""
 """]

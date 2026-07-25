@@ -34,7 +34,7 @@ class FetchAnvil(src.quests.MetaQuestSequence):
             direction_string = "You are in the room with the Anvil"
 
         text = [f"""{storyString}
-""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Fetch a Anvil"""),""" from tile {self.targetPositionBig}{reasonString}.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Fetch a Anvil"""),f""" from tile {self.targetPositionBig}{reasonString}.
 {direction_string}
 
 """,(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""Use the k or K keys to pick up items.""")]

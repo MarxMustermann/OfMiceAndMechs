@@ -360,6 +360,7 @@ class MainContraption(src.items.Item):
                 src.interaction.send_tracking_ping("explosion_start_room")
                 for character in self.container.characters[:]:
                     if not character.dead:
+                        src.interaction.showExplosionDeath()
                         character.addMessage("you feel the floor shake\nand the walls move\nand everything explodes")
                         character.addMessage("you die")
                         character.die(reason="you died from explosion")

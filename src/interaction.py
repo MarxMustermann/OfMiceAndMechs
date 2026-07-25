@@ -8275,6 +8275,81 @@ press esc to return to main menu
             src.gamestate.gamestate = None
             raise EndGame("the game was ended manually")
 
+def showExplosionDeath():
+
+    def fixRoomRender(render):
+        for row in render:
+            row.append("\n")
+        return render
+
+    numStruggled = 0
+    stage = 0
+    stageState = None
+    room = None
+    subStep = 0
+    subStep2 = 1
+    sleepAmountGrow = 0.125
+    painPositions = []
+    while 1:
+        tcodConsole.clear()
+
+        if stage == 0:
+            if stageState is None:
+                stageState = {"substep":1,"lastChange":time.time()}
+            text = """
+  |                                                                         |
+--+-------------------------------------------------------------------------+--
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+--+-------------------------------------------------------------------------+--
+  |                                                                         |
+
+"""
+            text = ["""
+The room explodes and you die.
+                                           """]
+            printUrwidToTcod(text,(45,17))
+
+            printUrwidToTcod("press enter to accept your fate",(45,27))
+            tcodPresent()
+            time.sleep(0.1)
+        else:
+            break
+
+        events = tcod.event.get()
+        for event in events:
+            if isinstance(event, tcod.event.Quit):
+                if src.interaction.tcodMixer:
+                    src.interaction.tcodMixer.close()
+                raise SystemExit()
+            if isinstance(event, tcod.event.WindowResized):
+                checkResetWindowSize(event.width,event.height)
+            if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
+                if src.interaction.tcodMixer:
+                    src.interaction.tcodMixer.close()
+                raise SystemExit()
+            if isinstance(event,tcod.event.KeyDown):
+                key = event.sym
+                if key == tcod.event.KeySym.F11:
+                    sdl_window.fullscreen = not sdl_window.fullscreen
+                if key == tcod.event.KeySym.ESCAPE:
+                    stage = 1
+
+                if key in (tcod.event.KeySym.RETURN, tcod.event.KeySym.KP_ENTER):
+                    stage += 1
+
 def showRunOutro(endingType="bad"):
 
     def fixRoomRender(render):

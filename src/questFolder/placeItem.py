@@ -56,7 +56,7 @@ class PlaceItem(src.quests.MetaQuestSequence):
         if self.itemType:
             itemString = self.itemType+" "
         text = [f"""
-Place item {itemString}on position {self.targetPosition} on tile {self.targetPositionBig}{reason}."""]
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"Place item {itemString}"),f"""on position {self.targetPosition} on tile {self.targetPositionBig}{reason}."""]
         if self.boltDown:
             text.append("""
 
@@ -68,10 +68,10 @@ Bolt down the item after placing it.""")
 
 You do not have a {self.itemType} in your inventory.""")
             else:
-                text.append(f"""
+                text.extend([f"""
 
 You have a {self.itemType} in your inventory.
-You can drop items by pressing l or L.""")
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"You can drop items by pressing l or L.")])
 
         if self.character.getBigPosition() == self.targetPositionBig:
             text.append("""

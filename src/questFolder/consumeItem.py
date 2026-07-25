@@ -20,11 +20,11 @@ class ConsumeItem(src.quests.MetaQuestSequence):
         reason = ""
         if self.reason:
             reason = f",\nto {self.reason}"
-        text = f"""
-{self.consumeVerb} an item of the type {self.itemType} from your inventory{reason}.
+        text = [f"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"{self.consumeVerb} an item of the type {self.itemType}"),f""" from your inventory{reason}.
 
-Do this by opening your inventory by pressing i and then activating the item.
-"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"Do this by opening your inventory by pressing i and then activating the item."),"""
+"""]
         return text
 
     def triggerCompletionCheck(self,character=None,dryRun=True):

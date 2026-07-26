@@ -1833,7 +1833,7 @@ I am working right now. I'll repriotize though.""")
                     quest = src.quests.questMap["BuildRoom"](targetPosition=targetPosition,lifetime=500)
                     character.assignQuest(quest,active=True)
             elif quest_selection == "fetch Scrap":
-                quest = src.quests.questMap["RestockRoom"](targetPositionBig=(7,4,0),allowAny=True)
+                quest = src.quests.questMap["RestockBase"]()
                 character.assignQuest(quest,active=True)
                 quest = src.quests.questMap["GatherScrap"]()
                 character.assignQuest(quest,active=True)
@@ -1866,7 +1866,7 @@ I am working right now. I'll repriotize though.""")
 
                 # loot item outside
                 if found_loot_room == False:
-                    quest = src.quests.questMap["RestockRoom"](targetPositionBig=(7,4,0),allowAny=True)
+                    quest = src.quests.questMap["RestockBase"]()
                     character.assignQuest(quest,active=True)
                     amountToCollect = 1
                     if item_type in ("Wall","Door",):

@@ -42,7 +42,7 @@ class StoryHeal(src.quests.MetaQuestSequence):
                 continue
             hasCoalburner = True
             for coalBurner in coalBurners:
-                if coalBurner.getMoldFeed(character):
+                if coalBurner.readyToUse(character):
                     quest = src.quests.questMap["ActivateItem"](targetPosition=coalBurner.getPosition(),targetPositionBig=coalBurner.getBigPosition(),reason="heal")
                     return ([quest],None)
 

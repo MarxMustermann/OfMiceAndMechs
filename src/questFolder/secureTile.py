@@ -162,6 +162,8 @@ Use simple attacks only.
                 else:
                     return (None,(["esc"],"close menu"))
             return (None,(interaction_command+"H","heal"))
+        if (not self.suicidal) and (character.health < character.maxHealth//5):
+            return self._solver_trigger_fail(dryRun,"low health")
 
         # initiate actual combat
         if not self.strict:

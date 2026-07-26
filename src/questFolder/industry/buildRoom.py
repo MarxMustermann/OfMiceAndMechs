@@ -49,7 +49,7 @@ class BuildRoom(src.quests.MetaQuestSequence):
             duration_string = f"Do this for {self.lifetime} ticks. {self.getRemainingLifetime()} ticks remaining."
 
         out = [f"""
-""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Build a room"),""" on the tile {self.targetPosition}{reason}.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Build a room"),f""" on the tile {self.targetPosition}{reason}.
 {duration_string}
 
 """]

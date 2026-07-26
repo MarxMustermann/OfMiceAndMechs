@@ -1875,9 +1875,7 @@ I am working right now. I'll repriotize though.""")
                         quest = src.quests.questMap["ClearInventory"]()
                         character.assignQuest(quest,active=True)
             elif quest_selection == "disable alarm":
-                quest = src.quests.questMap["LiftOutsideRestrictions"]()
-                character.assignQuest(quest,active=True)
-                quest = src.quests.questMap["SecureTile"](toSecure=(7,11,0),endWhenCleared=True)
+                quest = src.quests.questMap["DisableAlarm"]()
                 character.assignQuest(quest,active=True)
             elif quest_selection == "free up storage":
                 quest = src.quests.questMap["FreeUpStorage"](amount=5)
@@ -2054,9 +2052,10 @@ There are several things you can do to help me out:
 
         # turn off alarm
         if terrain.alarm:
-            name = "disable alarm"
-            tasks.append((name,"disable alarm"))
-            extraDescriptions[name] = "disabling the alarm will allow me to move more freely"
+            if character.health > character.maxHealth//4:
+                name = "disable alarm"
+                tasks.append((name,"disable alarm"))
+                extraDescriptions[name] = "disabling the alarm will allow me to move more freely"
 
         # spawn more workers
         growthTank = None

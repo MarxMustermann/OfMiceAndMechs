@@ -44,3 +44,4 @@ import src.questFolder.story.doGroundskeeping
 import src.questFolder.story.fetchPainter
 import src.questFolder.story.fetchMetalWorkingBench
 import src.questFolder.story.fetchAnvil
+import src.questFolder.story.disableAlarm

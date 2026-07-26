@@ -39,7 +39,14 @@ or use this item with MoldFeed in your inventory.
 """
         return text
 
-    def getMoldFeed(self,character):
+    def readyToUse(self, character=None):
+        if not self.bolted:
+            return False
+        if self.getMoldFeed(character)
+            return True
+        return False
+
+    def getMoldFeed(self, character=None):
         '''
         get input ressources
         '''
@@ -56,7 +63,7 @@ or use this item with MoldFeed in your inventory.
                 if item.type == "MoldFeed":
                     moldFeed.append(item)
 
-        if not moldFeed:
+        if not moldFeed and character:
             for item in character.inventory:
                 if item.type == "MoldFeed":
                     moldFeed.append(item)

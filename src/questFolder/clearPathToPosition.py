@@ -210,4 +210,32 @@ Unbolt items by using a complex action, if needed.
 
         super().assignToCharacter(character)
 
+    def getQuestMarkersSmall(self,character,renderForTile=False):
+        '''
+        return the quest markers for the normal map
+        Parameters:
+            character:      the character doing the quest
+            renderForTile:  whether or not to show the markers for a room or a tile
+        Returns:
+            the quest markers to show
+        '''
+
+        if isinstance(character.container,src.rooms.Room):
+            if renderForTile:
+                return []
+        else:
+            if not renderForTile:
+                return []
+
+        result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
+        if self.path:
+            for pos in self.path:
+                result.append((pos,"path"))
+
+                if not character.container.isRoom:
+                    result.append(((pos[0]+character.getBigPosition()[0]*15,pos[1]%15+character.getBigPosition()[1]*15,0),"path"))
+                else:
+                    result.append((pos,"path"))
+        return result
+
 src.quests.addType(ClearPathToPosition)

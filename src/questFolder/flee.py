@@ -95,57 +95,179 @@ class Flee(src.quests.MetaQuestSequence):
             if submenue:
                 return (None,(["esc"],"exit the menu"))
 
-        # weight escape directions
+        # start collecting possible movements
         commands = []
-        command = None
+        command_by_offset = {(-1,0,0):"a",(1,0,0):"d",(0,-1,0):"w",(0,1,0):"s"}
+
+        # get physially possible movement directions
+        offsets = [(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]
+        character_position = character.getPosition()
+        if character.container.isRoom:
+            area_size = 11
+        else:
+            area_size = 13
+
+        terrain = character.getTerrain()
+        offset = None
+        if character_position[0] < 2:
+            offset = (-1,0,0)
+        if character_position[0] > area_size-1:
+            offset = (1,0,0)
+        if character_position[1] < 2:
+            offset = (0,-1,0)
+        if character_position[1] > area_size-1:
+            offset = (0,1,0)
+        if offset:
+            is_exception = False
+            if character.container.isRoom:
+                for position in [
+                            (6,1,0),(6,0,0),(1,6,0),(0,6,0),
+                            (11,6,0),(12,6,0),(6,11,0),(6,12,0),
+                        ]:
+                    if character_position != position:
+                        continue
+                    if position in [(6,1,0),(6,0,0)]:
+                        rooms = terrain.getRoomByPosition(character.getBigPosition(offset=(0,-1,0)))
+                        if rooms:
+                            room = rooms[0]
+                            if not room.getPositionWalkable((6,12,0)):
+                                continue
+                    if position in [(6,11,0),(6,12,0)]:
+                        rooms = terrain.getRoomByPosition(character.getBigPosition(offset=(0,1,0)))
+                        if rooms:
+                            room = rooms[0]
+                            if not room.getPositionWalkable((6,0,0)):
+                                continue
+                    if position in [(1,6,0),(0,6,0)]:
+                        rooms = terrain.getRoomByPosition(character.getBigPosition(offset=(-1,0,0)))
+                        if rooms:
+                            room = rooms[0]
+                            if not room.getPositionWalkable((12,6,0)):
+                                continue
+                    if position in [(11,6,0),(12,6,0)]:
+                        rooms = terrain.getRoomByPosition(character.getBigPosition(offset=(1,0,0)))
+                        if rooms:
+                            room = rooms[0]
+                            if not room.getPositionWalkable((0,6,0)):
+                                continue
+                    is_exception = True
+            else:
+                for position in [(7,1,0),(1,7,0),(13,7,0),(7,13,0)]:
+                    if character_position != position:
+                        continue
+                    if position == (7,1,0):
+                        rooms = terrain.getRoomByPosition(character.getBigPosition(offset=(0,-1,0)))
+                        if rooms:
+                            room = rooms[0]
+                            if not room.getPositionWalkable((6,12,0)):
+                                continue
+                    if position == (7,13,0):
+                        rooms = terrain.getRoomByPosition(character.getBigPosition(offset=(0,1,0)))
+                        if rooms:
+                            room = rooms[0]
+                            if not room.getPositionWalkable((6,0,0)):
+                                continue
+                    if position == (1,7,0):
+                        rooms = terrain.getRoomByPosition(character.getBigPosition(offset=(-1,0,0)))
+                        if rooms:
+                            room = rooms[0]
+                            if not room.getPositionWalkable((12,6,0)):
+                                continue
+                    if position == (13,7,0):
+                        rooms = terrain.getRoomByPosition(character.getBigPosition(offset=(1,0,0)))
+                        if rooms:
+                            room = rooms[0]
+                            if not room.getPositionWalkable((0,6,0)):
+                                continue
+                    is_exception = True
+            if not is_exception:
+                if offset in offsets:
+                    offsets.remove(offset)
+            if is_exception:
+                commands.extend(command_by_offset[offset]*30)
+        basic_offsets = offsets[:]
+
+        # filter movement directions blocked by enemies
+        for offset in offsets[:]:
+            check_position = character.getPosition(offset=offset)
+            characters = character.container.getCharactersOnPosition(check_position,faction=character.faction,enemies=True)
+            if characters:
+                offsets.remove(offset)
+        no_enemy_offsets = offsets[:]
+
+        # filter movement directions blocked by big itens
+        for offset in offsets[:]:
+            check_position = character.getPosition(offset=offset)
+            if not character.container.getPositionWalkable(check_position,character):
+                offsets.remove(offset)
+        no_items_offsets = offsets[:]
+
+        # select offsets to use as candidate
+        if no_items_offsets:
+            offsets = no_items_offsets
+        elif no_enemy_offsets:
+            offsets = no_enemy_offsets
+        else:
+            offsets = basic_offsets
+
+        # calculate direction ratings
+        offset_rating = {(1,0,0):1,(-1,0,0):1,(0,1,0):1,(0,-1,0):1}
         for foundEnemy in character.getNearbyEnemies():
-            if character.getPosition() == foundEnemy.getPosition():
-                command = "m"
-                break
-            for offset in [((1,0,0),"a"),((-1,0,0),"d"),((0,1,0),"w"),((0,-1,0),"s")]:
-                if character.getPosition(offset=offset[0]) == foundEnemy.getPosition():
-                    if random.random() < 0.3:
-                        return (None,("m","fight"))
-                    command = offset[1]
-                    break
-            x = foundEnemy.xPosition
-            while x-character.xPosition > 0:
-                commands.append("a")
-                x -= 1
-            x = foundEnemy.xPosition
-            while x-character.xPosition < 0:
-                commands.append("d")
-                x += 1
-            y = foundEnemy.yPosition
-            while y-character.yPosition > 0:
-                commands.append("w")
-                y -= 1
-            y = foundEnemy.yPosition
-            while y-character.yPosition < 0:
-                commands.append("s")
-                y += 1
+            distance_x = foundEnemy.xPosition-character.xPosition
+            if distance_x > 0:
+                offset_rating[(-1,0,0)] += 15-abs(distance_x)
+            if distance_x < 0:
+                offset_rating[(1,0,0)] += 15-abs(distance_x)
+            distance_y = foundEnemy.yPosition-character.yPosition
+            if distance_y > 0:
+                offset_rating[(0,-1,0)] += 15-abs(distance_y)
+            if distance_y < 0:
+                offset_rating[(0,1,0)] += 15-abs(distance_y)
+
+        # weight escape directions
+        for offset in offsets:
+            desirability = offset_rating[offset]
+            command = command_by_offset[offset]
+            commands.extend([command]*desirability)
+            
+        # fight nearby enemies
+        for offset in [(1,0,0),(-1,0,0),(0,1,0),(0,-1,0),(0,0,0)]:
+            check_position = character.getPosition(offset=offset)
+            characters = character.container.getCharactersOnPosition(check_position,faction=character.faction,enemies=True)
+            if characters:
+                commands.extend(["m"])
+
+        # flee nearby enemies
+        for offset in offsets:
+            check_position = character.getPosition(offset=offset)
+            characters = character.container.getCharactersOnPosition(check_position,faction=character.faction,enemies=True)
+            if not characters:
+                continue
+            flee_offset = (-offset[0],-offset[1],-offset[2])
+            command = command_by_offset[flee_offset]
+            commands.extend([command]*10)
 
         # get random escape direction
-        if not command and commands:
-            command = random.choice(commands)
+        command = random.choice(commands)
 
         # add picking up items to the command
+        offset = None
         if command == "d":
-            pos = character.getPosition()
-            if not character.container.getPositionWalkable((pos[0]+1,pos[1],pos[2]),character=character):
-                command = "Kdl"
-        elif command == "a":
-            pos = character.getPosition()
-            if not character.container.getPositionWalkable((pos[0]-1,pos[1],pos[2]),character=character):
-                command = "Kal"
-        elif command == "s":
-            pos = character.getPosition()
-            if not character.container.getPositionWalkable((pos[0],pos[1]+1,pos[2]),character=character):
-                command = "Ksl"
-        elif command == "w":
-            pos = character.getPosition()
-            if not character.container.getPositionWalkable((pos[0],pos[1]-1,pos[2]),character=character):
-                command = "Kwl"
+            offset = (1,0,0)
+        if command == "a":
+            offset = (-1,0,0)
+        if command == "s":
+            offset = (0,1,0)
+        if command == "w":
+            offset = (0,-1,0)
+        if offset:
+            pos = character.getPosition(offset=offset)
+            if not character.container.getPositionWalkable(pos):
+                items = character.container.getItemByPosition(pos)
+                if items[0].bolted:
+                    command = "C"+command+"b"
+                else:
+                    command = "K"+command+"l"
 
         # hang up AI at invalid direction :-P
         if command is None:

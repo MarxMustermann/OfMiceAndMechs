@@ -13,19 +13,17 @@ class AssignFloorPlan(src.quests.MetaQuestSequence):
         self.reason = reason
 
     def generateTextDescription(self):
-        out = []
         reason = ""
         if self.reason:
             reason = f", to {self.reason}"
-        text = f"""
+        text = [f"""
 Assign a floor plan to room {self.roomPosition}{reason}.
 
-Set the floor plan: {self.floorPlanType}
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"Set the floor plan: {self.floorPlanType}"),"""
 
 (setting the wrong floor plan may break the tutorial, but is FUN)
-"""
-        out = [text]
-        return out
+"""]
+        return text
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
 

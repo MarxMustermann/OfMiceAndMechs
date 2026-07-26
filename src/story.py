@@ -2916,11 +2916,16 @@ sure i'll produce equipment for you as long as you bring me the raw material.
            )
         used_spots.append(lootRoom.getPosition())
         lootRoom.tag = "ruin"
-        lootRoom.spawnItem("Painter",(3,5,0))
-        for x in range(6,12):
+        for x in range(5,12):
+            if x in (5,6,7,):
+                lootRoom.addWalkingSpace((x,5,0))
+                lootRoom.addWalkingSpace((x,7,0))
+            if x == 6:
+                continue
             lootRoom.addWalkingSpace((x,6,0))
-        for y in range(7,12):
+        for y in range(8,12):
             lootRoom.addWalkingSpace((6,y,0))
+        lootRoom.spawnItem("CoalBurner",(6,6,0),bolted=True)
 
         # add loot room
         lootRoom = architect.doAddRoom(
@@ -2939,6 +2944,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
             lootRoom.addWalkingSpace((x,6,0))
         for y in range(7,12):
             lootRoom.addWalkingSpace((6,y,0))
+        lootRoom.spawnItem("Painter",(3,5,0))
 
         # add anvil room
         anvilRoom = architect.doAddRoom(

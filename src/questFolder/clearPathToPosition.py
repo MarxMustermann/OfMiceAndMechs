@@ -84,6 +84,7 @@ Unbolt items by using a complex action, if needed.
 
             if not dryRun:
                 self.path = path
+            return (None,("+","calculate path"))
 
         if not path:
             return self._solver_trigger_fail(dryRun,"no path")

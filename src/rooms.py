@@ -856,8 +856,11 @@ class Room:
         self.getEnemiesOnTile(character,self.getPosition())
 
     def getEnemiesOnTile(self,character,pos=None):
-        if not pos:
-            pos = character.getBigPosition()
+        if pos:
+            if not self.terrain:
+                return self.terrain.getEnemiesOnTile(character,pos)
+            else:
+                return []
 
         out = []
         otherChars = self.characters

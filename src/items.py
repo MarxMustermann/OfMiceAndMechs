@@ -472,6 +472,7 @@ class Item:
 
         # do the pick up
         character.addMessage("you pick up a %s" % self.type)
+        character.macroState["itemMarkedLast"] = None
         if not self.walkable:
             character.addMessage("it's heavy and slows you down")
             character.addListener(self.OnDropNonWalkable,"dropped")

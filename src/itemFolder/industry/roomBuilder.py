@@ -99,10 +99,23 @@ The room has to be a rectangle.
             text.append(map_view)
             text.append("\n")
 
-            # add list to text
+            # show the coordinates of the missing items
+            mapped_missing_items = {}
             for entry in missing_items:
-                text.append(f"{entry[0]}: ")
-                text.append(f"({entry[1][0]%15}, {entry[1][1]%15}, {entry[1][2]%15})")
+                item_type = entry[0]
+                item_list = mapped_missing_items.get(item_type,[])
+                item_list.append(entry[1])
+                mapped_missing_items[item_type] = item_list
+            for (item_type,item_list) in mapped_missing_items.items():
+                text.append(f"\nmissing {item_type}:\n")
+                counter = 0
+                for coordinate in item_list:
+                    text.append(f"({coordinate[0]%15}, {coordinate[1]%15}, {coordinate[2]%15}), ")
+                    counter += 1
+                    if counter >= 10:
+                        text.append(f"\n")
+                        counter = 0
+
                 text.append(f"\n")
 
             # show text to the user

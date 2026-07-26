@@ -33,56 +33,55 @@ class FetchItems(src.quests.MetaQuestSequence):
         self.shortCode = "f"
 
     def generateTextDescription(self):
-        reason = ""
+        reason = (src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),".")
         if self.reason:
-            reason = f", to {self.reason}"
+            reason = [(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),f","),f" to {self.reason}."]
 
         if not self.amount:
-            text = f"""
-Fetch an inventory full of {self.toCollect}s{reason}.
-"""
+            text = [f"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),f"Fetch an inventory full of {self.toCollect}s"),reason,f"""
+"""]
         else:
             extraS = "s"
             if self.amount == 1:
                 extraS = ""
-            text = f"""
-Fetch {self.amount} {self.toCollect}{extraS}{reason}.
-"""
+            text = [f"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),f"Fetch {self.amount} {self.toCollect}{extraS}"),reason,"""
+"""]
 
         if self.takeAnyUnbolted:
-            text += """
+            text.append("""
 Take any fitting unbolted item.
-"""
+""")
         else:
-            text += """
+            text.append("""
 Only take items from stockpiles.
-"""
+""")
 
         if self.returnToTile:
             tile = self.tileToReturnTo
             if not tile:
                 tile = "this tile"
-            text += f"""
+            text.append(f"""
 Return to {tile} after to complete this quest.
-"""
+""")
 
         if self.tryHard:
-            text += """
+            text.append("""
 Try as hard as you can to achieve this.
 If you don't find a source, produce new items.
-"""
+""")
 
-        out = [text]
         if not self.subQuests:
-            out.append((src.interaction.urwid.AttrSpec("#f00", "black"),"""
+            text.append((src.interaction.urwid.AttrSpec("#f00", "black"),"""
 This quest has no subquests. Press r to generate subquests for this quest."""))
         else:
-            out.append((src.interaction.urwid.AttrSpec("#080", "black"),"""
+            text.append((src.interaction.urwid.AttrSpec("#080", "black"),"""
 This quests has subquests.
 Press d to move the cursor and show the subquests description.
 """))
 
-        return out
+        return text
 
     def pickedUpItem(self,extraInfo):
         self.triggerCompletionCheck(extraInfo[0],dryRun=False)

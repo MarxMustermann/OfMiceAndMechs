@@ -52,6 +52,8 @@ class BuildRoom(src.quests.MetaQuestSequence):
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Build a room"),f""" on the tile {self.targetPosition}{reason}.
 {duration_string}
 
+Place a RoomBuilder in the middle of the target tile to start the buildsite.
+Use the RoomBuilder afterwards to build the room.
 """]
 
         if self.tryHard:

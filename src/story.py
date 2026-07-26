@@ -1837,6 +1837,8 @@ I am working right now. I'll repriotize though.""")
                 character.assignQuest(quest,active=True)
                 quest = src.quests.questMap["GatherScrap"]()
                 character.assignQuest(quest,active=True)
+                quest = src.quests.questMap["ClearInventory"]()
+                character.assignQuest(quest,active=True)
             elif quest_selection.startswith("fetch ") and len(quest_selection.split(" ")) > 1:
 
                 # get item type

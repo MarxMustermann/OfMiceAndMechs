@@ -3091,7 +3091,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
             for big_y in range(1,14):
                 if (big_x,big_y,0) in used_spots:
                     continue
-                scrap_amount = 100
+                scrap_amount = 80
                 if big_x > 5 and big_x < 9 and big_y > 1 and big_y < 5:
                     scrap_amount = 40
                 for _i in range(scrap_amount):

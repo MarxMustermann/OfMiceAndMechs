@@ -2372,11 +2372,11 @@ That will allow to coordinate how the base is getting expanded.
 
             # generate quest to disable the alarm
             if partner.getTerrain().alarm:
-                base_response_text.append("""
+                base_response_text.extend(["""
 Protocol forbids to leave the base while the outside alarm is runnung.
 
-Disable the alarm so i can go out and collect resources.
-""")
+""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Disable the alarm so i can go out"),""" and collect resources.
+"""])
                 offer_accept_options = True
             else:
                 base_response_text.append("""

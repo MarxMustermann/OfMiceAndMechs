@@ -53,10 +53,6 @@ Unbolt items by using a complex action, if needed.
         if not character:
             return (None,None)
 
-        try:
-            self.startTime
-        except:
-            self.startTime = None
         if not self.startTime:
             if not dryRun:
                 self.startTime = src.gamestate.gamestate.tick

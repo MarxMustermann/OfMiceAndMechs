@@ -45,11 +45,11 @@ class CleanSpace(src.quests.MetaQuestSequence):
         reason = ""
         if self.reason:
             reason = f",\nto {self.reason}"
-        text = f"""
-Remove all items from the space {self.targetPosition} on tile {self.targetPositionBig}{reason}.
+        text = [f"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"Remove all items from the space {self.targetPosition}"),f""" on tile {self.targetPositionBig}{reason}.
 
-You can pick up items by pressing the k or K key.
-"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"You can pick up items by pressing the k or K key."),"""
+"""]
         return text
 
     def unhandledSubQuestFail(self,extraParam):

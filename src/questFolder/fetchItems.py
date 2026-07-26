@@ -72,15 +72,6 @@ Try as hard as you can to achieve this.
 If you don't find a source, produce new items.
 """)
 
-        if not self.subQuests:
-            text.append((src.interaction.urwid.AttrSpec("#f00", "black"),"""
-This quest has no subquests. Press r to generate subquests for this quest."""))
-        else:
-            text.append((src.interaction.urwid.AttrSpec("#080", "black"),"""
-This quests has subquests.
-Press d to move the cursor and show the subquests description.
-"""))
-
         return text
 
     def pickedUpItem(self,extraInfo):

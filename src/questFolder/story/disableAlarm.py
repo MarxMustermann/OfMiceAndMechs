@@ -9,6 +9,13 @@ class DisableAlarm(src.quests.MetaQuestSequence):
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
 
+    def getTargetRoom(self):
+        terrain = self.character.getTerrain()
+        for room in terrain.rooms:
+            if room.getItemByType("SiegeManager"):
+                return room
+        return None
+
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
 
         if self.subQuests:
@@ -32,8 +39,13 @@ class DisableAlarm(src.quests.MetaQuestSequence):
         if character.health < character.maxHealth//5:
             return self._solver_trigger_fail(dryRun,"low health")
 
+        # get the target room
+        room = self.getTargetRoom()
+        if not room:
+            return self._solver_trigger_fail(dryRun,"no siege manager found")
+        targetposition = room.getPosition()
+
         # clear the target
-        targetposition = (7,11,0)
         if terrain.getEnemiesOnTile(character,targetposition):
             quest = src.quests.questMap["SecureTile"](toSecure=targetposition,endWhenCleared=True)
             return ([quest],None)
@@ -43,11 +55,16 @@ class DisableAlarm(src.quests.MetaQuestSequence):
         return ([quest],None)
 
     def generateTextDescription(self):
-        character_position = self.character.getBigPosition()
-        direction_string = self.character.getTerrain().getDistanceDescription(character_position,self.targetPositionBig)
-        direction_string = f"The room with the SiegeManager is {direction_string}.\n"
-        if character_position == self.targetPositionBig:
-            direction_string = "You are in the room with the SiegeManager"
+        room = self.getTargetRoom()
+        if room:
+            targetPosition = room.getPosition()
+            character_position = self.character.getBigPosition()
+            direction_string = self.character.getTerrain().getDistanceDescription(character_position,targetPosition)
+            direction_string = f"The room with the SiegeManager is {direction_string}.\n"
+            if character_position == targetPosition:
+                direction_string = "You are in the room with the SiegeManager"
+        else:
+            direction_string = "The target room is missing."
 
         text = ["""
 The groundskeeper is not willing to leave its room as long as the alarm is running.

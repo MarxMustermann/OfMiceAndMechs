@@ -474,6 +474,9 @@ class Item:
         character.addMessage("you pick up a %s" % self.type)
         if not self.walkable:
             character.addMessage("it's heavy and slows you down")
+            character.addListener(self.OnDropNonWalkable,"dropped")
+            self.NonWalkableItemDeBuff = src.statusEffects.statusEffectMap["Slowed"](slowDown=0.1, duration = None,inventoryItem = self)
+            character.addStatusEffect(self.NonWalkableItemDeBuff)
         if self.container:
             self.container.removeItem(self)
         character.addToInventory(self)
@@ -489,7 +492,7 @@ class Item:
             a list of functions
         """
 
-        return [self.__vanillaPickUp ,self.pickUpNonWalkable]
+        return [self.__vanillaPickUp]
 
     def degrade(self,multiplier=1,character=None):
         return
@@ -515,12 +518,6 @@ class Item:
             character.addMessage("no pickup action found")
 
         character.changed("itemPickedUp",(character,self,oldPos))
-
-    def pickUpNonWalkable(self, character):
-        if not self.walkable:
-            character.addListener(self.OnDropNonWalkable,"dropped")
-            self.NonWalkableItemDeBuff = src.statusEffects.statusEffectMap["Slowed"](slowDown=0.1, duration = None,inventoryItem = self)
-            character.addStatusEffect(self.NonWalkableItemDeBuff)
 
     def OnDropNonWalkable(self,params):
         (character,item) = params

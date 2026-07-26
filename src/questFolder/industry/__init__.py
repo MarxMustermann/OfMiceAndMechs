@@ -11,3 +11,4 @@ import src.questFolder.industry.machining
 import src.questFolder.industry.manufacture
 import src.questFolder.industry.restockRoom
 import src.questFolder.industry.configureManufacturingTable
+import src.questFolder.industry.restockBase

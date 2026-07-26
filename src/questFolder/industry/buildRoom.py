@@ -46,7 +46,7 @@ class BuildRoom(src.quests.MetaQuestSequence):
 
         duration_string = ""
         if self.lifetime:
-            duration_string = "Do this for {self.lifetime} ticks. {self.getRemainingLifetime()} ticks remaining."
+            duration_string = f"Do this for {self.lifetime} ticks. {self.getRemainingLifetime()} ticks remaining."
 
         out = [f"""
 Build a room on the tile {self.targetPosition}{reason}.

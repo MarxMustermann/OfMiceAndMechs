@@ -2147,10 +2147,11 @@ There are several things you can do to help me out:
 
         # kill remaining enemies
         if has_enemies_to_kill and random.random() < 0.5:
-            name = "kill monster"
-            tasks.append((name,name))
-            extraDescriptions[name] = f"insects are swarming the area. Get rid of them."
-            shown_enenemy_kill_option = True
+            if character.health > character.maxHealth//2:
+                name = "kill monster"
+                tasks.append((name,name))
+                extraDescriptions[name] = f"insects are swarming the area. Get rid of them."
+                shown_enenemy_kill_option = True
 
         # generate fetch quest from the base state
         if num_empty_storage > 0:
@@ -2257,9 +2258,10 @@ There are several things you can do to help me out:
 
         # kill remaining enemies
         if has_enemies_to_kill and not shown_enenemy_kill_option:
-            name = "kill monster"
-            tasks.append((name,name))
-            extraDescriptions[name] = f"insects are swarming the area. Get rid of them."
+            if character.health > character.maxHealth//4:
+                name = "kill monster"
+                tasks.append((name,name))
+                extraDescriptions[name] = f"insects are swarming the area. Get rid of them."
 
         # signal "no jobs"
         if not tasks:

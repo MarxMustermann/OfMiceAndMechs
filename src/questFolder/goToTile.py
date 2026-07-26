@@ -140,15 +140,15 @@ class GoToTile(src.quests.MetaQuestSequence):
         '''
         generate a description of this quest
         '''
-        reason = ""
+        reason = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
-            reason = f", to {self.reason}"
+            reason = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f","),f" to {self.reason}."]
         storyString = ""
         if self.story:
             storyString = f"{self.story}"
 
         text = [f"""{storyString}
-""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"Go to tile {self.targetPosition}"),f"""{reason}.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"Go to tile {self.targetPosition}"),reason,f"""
 """]
 
         if self.character.getBigPosition() == self.targetPosition:

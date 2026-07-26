@@ -20,8 +20,6 @@ class AssignFloorPlan(src.quests.MetaQuestSequence):
 Assign a floor plan to room {self.roomPosition}{reason}.
 
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"Set the floor plan: {self.floorPlanType}"),"""
-
-(setting the wrong floor plan may break the tutorial, but is FUN)
 """]
         return text
 

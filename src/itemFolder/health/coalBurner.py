@@ -42,7 +42,7 @@ or use this item with MoldFeed in your inventory.
     def readyToUse(self, character=None):
         if not self.bolted:
             return False
-        if self.getMoldFeed(character)
+        if self.getMoldFeed(character):
             return True
         return False
 

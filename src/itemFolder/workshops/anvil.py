@@ -226,11 +226,6 @@ class Anvil(src.items.itemMap["WorkShop"]):
         self.scheduledAmount += 1
 
     def _get_base_display_character(self):
-        try:
-            self.inUse
-        except:
-            self.inUse = False
-
         characters = "WA"
         if self.inUse and src.gamestate.gamestate.tick%2 == 0:
             characters = "aw"

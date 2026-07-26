@@ -364,7 +364,7 @@ If something disturbs you, destroy it.
             baseNeighbours = []
             offsets = ((0,1,0),(1,0,0),(0,-1,0),(-1,0,0))
             for room in terrain.rooms:
-                if room.tag in ("shelter","trapRoom","entryRoom","trapSupport","ruin",):
+                if room.tag.lower() in ("shelter","traproom","entryroom","trapsupport","ruin",):
                     continue
                 pos = room.getPosition()
                 for offset in offsets:

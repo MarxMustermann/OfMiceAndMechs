@@ -4,7 +4,7 @@ import src
 class Rebuild(src.quests.MetaQuestSequence):
     type = "Rebuild"
 
-    def __init__(self, description="secure base", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None):
+    def __init__(self, description="secure base", creator=None, lifetime=None):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description

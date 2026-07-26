@@ -94,6 +94,24 @@ class ImplantInteraction(src.menues.SubMenu):
                     self.done = True
                     return True
                 return False
+
+            elif self.submenu.tag == "implant_idle_selection":
+
+                # handle interaction for waiting for the groundskeeper to build stuff
+                self.submenu.handleKey(key, noRender, character)
+                selection = self.submenu.selection
+                if selection:
+                    quest = None
+                    if selection == "help":
+                        quest = src.quests.questMap["HelpGroundskeeper"](lifetime=500)
+                    if quest:
+                        character.clear_quests()
+                        character.assignQuest(quest)
+                    self.submenu = None
+                    self.done = True
+                    return True
+                return False
+
             else:
 
                 # handle the player having selected a new task
@@ -506,10 +524,17 @@ There are many useful items around.
 The groundskeeper is working now.
 It will start to rebuild its working area.
 
-""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Help it get set up."""),"""
+""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Help the groundskeeper or help yourself."""),"""
 
-""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to help to groundskeeper?"""),"""
+""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest?"""),"""
 """]
+            options = []
+            options.append(("help","help groundskeeper"))
+            options.append(("continue","continue without quest"))
+            self.submenu = src.menues.menuMap["SelectionMenu"](base_text,options=options)
+            self.submenu.tag = "implant_idle_selection"
+            return False
+
             self._spawnSpawnTaskMenu(base_text,"help_groundskeeper")
             return False
         1/0

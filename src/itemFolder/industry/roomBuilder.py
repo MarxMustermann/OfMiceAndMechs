@@ -99,6 +99,9 @@ The room has to be a rectangle.
             text.append(map_view)
             text.append("\n")
 
+            # show some instructions
+            text.extend(["\n",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"Place missing items")," on the given coordinates\nand use the RoomBuilder again to build a room.\n"])
+
             # show the coordinates of the missing items
             mapped_missing_items = {}
             for entry in missing_items:

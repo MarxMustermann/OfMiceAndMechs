@@ -235,4 +235,15 @@ Use simple attacks only.
         quest = src.quests.questMap["GoToTile"](targetPosition = self.targetPosition, reason="be able to secure the area")
         return ([quest], None)
 
+    def handleQuestFailure(self,extraParam):
+        reason = extraParam.get("reason")
+        if reason == "low health":
+            self.subQuests.remove(extraParam["quest"])
+
+            newQuest = src.quests.questMap["Flee"]()
+            self.addQuest(newQuest)
+            self.startWatching(newQuest,self.handleQuestFailure,"failed")
+            return
+        super().handleQuestFailure(extraParam)
+
 src.quests.addType(SecureTile)

@@ -70,9 +70,17 @@ class Flee(src.quests.MetaQuestSequence):
         if src.gamestate.gamestate.tick-self.startTick > 50:
             if not dryRun:
                 self.startTick = src.gamestate.gamestate.tick
-            pos = random.choice([(6,0,0),(0,6,0),(12,6,0),(6,12,0)])
-            quest = src.quests.questMap["GoToPosition"](targetPosition=pos,reason="reach escape spot")
-            return ([quest],None)
+            exits = []
+            if character.container.isRoom:
+                for candidate in [(6,0,0),(0,6,0),(12,6,0),(6,12,0)]:
+                    if character.container.getPositionWalkable(candidate):
+                        exits.append(candidate)
+            else:
+                exits.append([(7,1,0),(1,7,0),(13,7,0),(7,13,0)])
+            if exits:
+                pos = random.choice(exits)
+                quest = src.quests.questMap["GoToPosition"](targetPosition=pos,reason="reach escape spot")
+                return ([quest],None)
 
         # return home after initial esscape 
         if not character.getNearbyEnemies():

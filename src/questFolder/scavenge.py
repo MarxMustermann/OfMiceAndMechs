@@ -29,26 +29,24 @@ class Scavenge(src.quests.MetaQuestSequence):
         '''
         out = []
 
-        reason = ""
+        reason = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
-            reason = f", to {self.reason}"
-        text = """
-Scavenge the outside area"""
+            reason = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f",")," to {self.reason}."]
+        text = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""
+Scavenge the outside area""")]
         if self.toCollect:
-            text += f" for {self.toCollect}"
-        text += f"""{reason}."""
-        text += """
+            text.append((src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f" for {self.toCollect}"))
+        text.append(reason)
+        text.append("""
 
-This quest will end when your inventory is full."""
-        out.append(text)
+This quest will end when your inventory is full.""")
 
         if self.amountToCollect:
-            out.append(f"\nCollect {self.amountToCollect} more items")
-        text = ""
+            text.append(f"\nCollect {self.amountToCollect} more items")
 
         if self.doneTiles:
 
-            out.append(f"""\n\ncompleted spots:\n""")
+            text.append(f"""\n\ncompleted spots:\n""")
             rawMap = []
             for y in range(15):
                 rawMap.append([])
@@ -62,12 +60,11 @@ This quest will end when your inventory is full."""
                 rawMap[pos[1]][pos[0]] = "XX"
             if self.character:
                 rawMap[self.character.getBigPosition()[1]][self.character.getBigPosition()[0]] = "@@"
-            out.append("\n")
-            out.append(rawMap)
-            out.append("\n")
+            text.append("\n")
+            text.append(rawMap)
+            text.append("\n")
 
-        out.append(text)
-        return out
+        return text
 
     def triggerCompletionCheck(self,character=None,dryRun=True):
         '''

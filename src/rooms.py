@@ -841,9 +841,13 @@ class Room:
 
         self.engineStrength = 250 * self.steamGeneration
 
-    def getCharactersOnPosition(self,position):
+    def getCharactersOnPosition(self,position,faction=None,enemies=False):
         out = []
         for character in self.characters:
+            if enemies and character.faction == faction:
+                    continue
+            if not enemies and character.faction != faction:
+                continue
             if character.getPosition() == position:
                 out.append(character)
         return out

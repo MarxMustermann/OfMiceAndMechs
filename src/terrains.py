@@ -192,9 +192,14 @@ class Terrain:
             position = (position[0],position[1],0)
         return self.charactersByTile.get(position,[])
 
-    def getCharactersOnPosition(self,position):
+    def getCharactersOnPosition(self,position,faction=None,enemies=False):
         out = []
         for character in self.characters:
+            if faction:
+                if enemies and character.faction == faction:
+                    continue
+                if not enemies and character.faction != faction:
+                    continue
             if character.getPosition() == position:
                 out.append(character)
         return out

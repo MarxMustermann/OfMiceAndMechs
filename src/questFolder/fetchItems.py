@@ -33,20 +33,20 @@ class FetchItems(src.quests.MetaQuestSequence):
         self.shortCode = "f"
 
     def generateTextDescription(self):
-        reason = (src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),".")
+        reason = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
-            reason = [(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),f","),f" to {self.reason}."]
+            reason = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f","),f" to {self.reason}."]
 
         if not self.amount:
             text = [f"""
-""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),f"Fetch an inventory full of {self.toCollect}s"),reason,f"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"Fetch an inventory full of {self.toCollect}s"),reason,f"""
 """]
         else:
             extraS = "s"
             if self.amount == 1:
                 extraS = ""
             text = [f"""
-""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),f"Fetch {self.amount} {self.toCollect}{extraS}"),reason,"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"Fetch {self.amount} {self.toCollect}{extraS}"),reason,"""
 """]
 
         if self.takeAnyUnbolted:

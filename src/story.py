@@ -2588,7 +2588,6 @@ sure i'll produce equipment for you as long as you bring me the raw material.
             mold = src.items.itemMap["Mold"]()
             mold.startSpawn()
             currentTerrain.addItem(mold,pos)
-            currentTerrain.forests.append(big_pos)
 
         # add enemy
         enemy = src.characters.characterMap["Spiderling"]()

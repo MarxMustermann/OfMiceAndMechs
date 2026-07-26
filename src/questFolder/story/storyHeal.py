@@ -46,6 +46,17 @@ class StoryHeal(src.quests.MetaQuestSequence):
                     quest = src.quests.questMap["ActivateItem"](targetPosition=coalBurner.getPosition(),targetPositionBig=coalBurner.getBigPosition(),reason="heal")
                     return ([quest],None)
 
+        # collect mold feed to burn
+        if hasCoalburner:
+            for room in character.getTerrain().rooms:
+                if room.getEnemies(character):
+                    continue
+                if room.tag == "ruin":
+                    continue
+                if room.getNonEmptyOutputslots("MoldFeed"):
+                    quest = src.quests.questMap["FetchItems"](toCollect="MoldFeed")
+                    return ([quest],None)
+
         # abort
         return self._solver_trigger_fail(dryRun,"no way to heal")
 

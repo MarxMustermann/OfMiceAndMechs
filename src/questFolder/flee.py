@@ -76,7 +76,7 @@ class Flee(src.quests.MetaQuestSequence):
                     if character.container.getPositionWalkable(candidate):
                         exits.append(candidate)
             else:
-                exits.append([(7,1,0),(1,7,0),(13,7,0),(7,13,0)])
+                exits.extend([(7,1,0),(1,7,0),(13,7,0),(7,13,0)])
             if exits:
                 pos = random.choice(exits)
                 quest = src.quests.questMap["GoToPosition"](targetPosition=pos,reason="reach escape spot")

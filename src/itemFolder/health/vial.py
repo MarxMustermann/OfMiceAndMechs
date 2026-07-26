@@ -13,7 +13,7 @@ class Vial(src.items.Item):
         self.bolted = False
         self.usageInfo = "use the vial to heal yourself"
         self.maxUses = 10
-        self.uses = 0
+        self.uses = 10
         self.level = 1
 
     def apply(self, character):

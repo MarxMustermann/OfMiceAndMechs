@@ -104,6 +104,9 @@ class ImplantInteraction(src.menues.SubMenu):
                     quest = None
                     if selection == "help":
                         quest = src.quests.questMap["HelpGroundskeeper"](lifetime=500)
+                    if selection == "heal":
+                        src.gamestate.gamestate.stern["last_heal"] = src.gamestate.gamestate.tick
+                        quest = src.quests.questMap["StoryHeal"]()
                     if quest:
                         character.clear_quests()
                         character.assignQuest(quest)
@@ -529,7 +532,15 @@ It will start to rebuild its working area.
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest?"""),"""
 """]
             options = []
+            #options.append(("improve","improve your equipment"))
+            shown_heal = False
+            last_heal = src.gamestate.gamestate.stern.get("last_heal",0)
+            if character.health < character.adjustedMaxHealth//2 and last_heal < src.gamestate.gamestate.tick-500:
+                options.append(("heal","heal yourself"))
+                shown_heal = True
             options.append(("help","help groundskeeper"))
+            if not shown_heal and character.health < character.adjustedMaxHealth:
+                options.append(("heal","heal yourself"))
             options.append(("continue","continue without quest"))
             self.submenu = src.menues.menuMap["SelectionMenu"](base_text,options=options)
             self.submenu.tag = "implant_idle_selection"

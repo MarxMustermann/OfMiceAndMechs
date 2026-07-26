@@ -3079,6 +3079,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                     (0.2,1,"PressCake"),
                     (0.1,1,"Corpse"),
                     (0.01,5,"Corpse"),
+                    (0.1,1,"Vial"),
                 ]
         for big_x in range(1,14):
             for big_y in range(1,14):
@@ -3100,6 +3101,8 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                         for _i in range(spawn_item[1]):
                             item = src.items.itemMap[spawn_item[2]]()
                             item.bolted = False
+                            if spawn_item[2] == "Vial":
+                                item.uses = random.randint(1,3)
                             pos = (big_x*15+random.randint(1,14),big_y*15+random.randint(1,14),0)
                             if not currentTerrain.getItemByPosition(pos):
                                 currentTerrain.addItem(item,pos)

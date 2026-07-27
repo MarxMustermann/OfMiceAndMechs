@@ -1649,7 +1649,9 @@ but they are likely to explode when disturbed.
 
     def builder_asked_name(self,character,partner):
         base_response_text = []
-        base_response_text.extend([f"""
+        base_response_text.extend([(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"""
+> Who are you?
+"""),f"""
 I don't know.
 I have been mind wiped and hold no memory.
 
@@ -1722,12 +1724,14 @@ Since i'm a groundskeeper my duty is to maintain the premises."""])
     def builder_asked_nowork(self,character,partner):
 
         base_response_text = []
-        base_response_text.append("""
+        base_response_text.extend([(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"""
+> Why are you not working?
+"""),f"""
 The City that was once standing here has been destroyed.
 There is almost nothing left except for rusty scrap.
 Everything would have to be build anew.
 
-""")
+"""])
 
         if not partner.registers.get("startedWorking"):
             base_response_text.extend(["""

@@ -81,7 +81,7 @@ class Golem(src.monster.Monster):
         return [(None, 6),(src.items.itemMap["Grindstone"], 4)]
 
     def getLoreDescription(self):
-        return f"You see a Golem. It moves with mechanical force.\nSome of the Golems are rusting hulks, but some are finely tuned killing machines"
+        return f"You see a Golem. It moves with mechanical force.\nSome of the Golems are rusting hulks, but some are finely tuned killing machines."
 
     def getFunctionalDescription(self):
         return f"Some Golems are stronger than others, but are not special otherwise."

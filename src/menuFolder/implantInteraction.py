@@ -60,10 +60,6 @@ class ImplantInteraction(src.menues.SubMenu):
 
         # set up helper variable
         terrain = character.getHomeTerrain()
-        if src.gamestate.gamestate.stern.get("first_reachout_done") == None:
-            src.gamestate.gamestate.stern["first_reachout_done"] = False
-        else:
-            src.gamestate.gamestate.stern["first_reachout_done"] = True
 
         # handle submenu
         if self.submenu:
@@ -194,13 +190,16 @@ You can see the quest description and general instructions in the quest menu.
 
         # show special text for first reach out
         implant_intro_text = ""
+        if src.gamestate.gamestate.stern.get("first_reachout_done") is None:
+            src.gamestate.gamestate.stern["first_reachout_done"] = False
         if not src.gamestate.gamestate.stern["first_reachout_done"]:
-            implant_intro_text = """
+            implant_intro_text = [(src.interaction.urwid.AttrSpec("#fa0","black"),"""
 You must be confused.
 
 I'm your implant and i'm here to help you.
 You can contact me any time by pressing tab.
-"""
+""")]
+            src.gamestate.gamestate.stern["first_reachout_done"] = True
 
         # handle interation while there are quests assigned
         if len(character.quests) > 0 and not character.quests[0].type == "ReachOutStory":
@@ -229,7 +228,7 @@ What do you want to do?
 
 Hello!
 
-{implant_intro_text}
+""",implant_intro_text,"""
 
 The machinery around you is """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"burning and exploding"),f""".
 So i recommend leaving the room before you get hurt.
@@ -282,7 +281,7 @@ You can pass time by pressing the "." key.
             if character.getBigPosition() == (7,6,0) and terrain.getCharactersOnTile((7,5,0)):
                 base_text = ["""
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),f"""
-{implant_intro_text}
+""",implant_intro_text,f"""
 You are outside and need to find shelter.
 
 There is shelter to the north,
@@ -318,7 +317,7 @@ This will trigger an attack.
                 directionString = "It is "+" and ".join(directions)+"."
                 base_text = ["""
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),f"""
-{implant_intro_text}
+""",implant_intro_text,"""
 """,(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""You are outside and need to find shelter."""),f"""
 
 The old groundskeepers place is nearby.

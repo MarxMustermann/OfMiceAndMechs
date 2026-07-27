@@ -133,9 +133,12 @@ class ImplantInteraction(src.menues.SubMenu):
                             src.gamestate.gamestate.stern["first_quest_assign"] = True
                         if src.gamestate.gamestate.stern["first_quest_assign"]:
                             src.gamestate.gamestate.stern["first_quest_assign"] = False
-                            character.showTextMenu("""
-You can see the quest description and general instructions in the quest menu.
-""")
+                            character.showTextMenu(["""
+The quest description and general instructions are shown in the quest menu.
+
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""You can open the quest menu by pressing q"""),"""
+
+"""],allowQuests=True)
 
                         # set up helper variables
                         terrain = character.getHomeTerrain()

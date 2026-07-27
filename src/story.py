@@ -2639,6 +2639,18 @@ sure i'll produce equipment for you as long as you bring me the raw material.
             baseCoreRoom.addItem(scrap,pos)
         for x in range(2,5,):
             baseCoreRoom.addStorageSlot((x,5,0),"Scrap",{"desiredState":"filled"})
+        for _i in range(25):
+            position = baseCoreRoom.getRandomPosition()
+            if position[0] in (5,6,7,) and position[1] > 4:
+                continue
+            scrap = src.items.itemMap["Scrap"](amount=random.randint(1,5))
+            baseCoreRoom.addItem(scrap,position)
+        for _i in range(25):
+            position = baseCoreRoom.getRandomPosition()
+            if position[1] > 4:
+                continue
+            scrap = src.items.itemMap["Scrap"](amount=random.randint(4,9))
+            baseCoreRoom.addItem(scrap,position)
 
         floorPlan = {}
         walkingSpace = []

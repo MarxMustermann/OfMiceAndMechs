@@ -107,6 +107,9 @@ class ImplantInteraction(src.menues.SubMenu):
                     if selection == "heal":
                         src.gamestate.gamestate.stern["last_heal"] = src.gamestate.gamestate.tick
                         quest = src.quests.questMap["StoryHeal"]()
+                    if selection == "improve equipment":
+                        src.gamestate.gamestate.stern["last_improve_equipment"] = src.gamestate.gamestate.tick
+                        quest = src.quests.questMap["StoryImproveEquipment"]()
                     if quest:
                         character.clear_quests()
                         character.assignQuest(quest)
@@ -532,12 +535,19 @@ It will start to rebuild its working area.
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest?"""),"""
 """]
             options = []
+            shown_improve_equipment = False
+            last_improve_equipment = src.gamestate.gamestate.stern.get("last_improve_equipment",0)
+            if last_improve_equipment < src.gamestate.gamestate.tick-500:
+                options.append(("improve equipment","improve your equipment"))
+                shown_improve_equipment = True
             shown_heal = False
             last_heal = src.gamestate.gamestate.stern.get("last_heal",0)
             if character.health < character.adjustedMaxHealth//2 and last_heal < src.gamestate.gamestate.tick-500:
                 options.append(("heal","heal yourself"))
                 shown_heal = True
             options.append(("help","help groundskeeper"))
+            if not shown_improve_equipment:
+                options.append(("improve equipment","improve your equipment"))
             if not shown_heal and character.health < character.adjustedMaxHealth:
                 options.append(("heal","heal yourself"))
             options.append(("continue","continue without quest"))

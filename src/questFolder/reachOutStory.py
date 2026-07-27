@@ -22,9 +22,9 @@ class ReachOutStory(src.quests.MetaQuestSequence):
         if self.reason:
             reasonString = ", to "+self.reason
         text = [f"""
-Contact your implant for further advice.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Contact your implant for further advice."),"""
 
-""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"default"),"""You can contact the implant by pressing tab after closing this menu."""),"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""You can contact the implant by pressing tab after closing this menu."""),"""
 
 Right now you are looking at the quest menu.
 The quest menu shows you general instructions on how to do things.

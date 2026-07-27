@@ -170,7 +170,8 @@ There is a mini map shown on the top left of the screen showing a quest marker.
             text.append("Be paranoid.")
         if self.abortOnDanger:
             text.append("\nabort on danger.")
-        text.append((src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),f"press gm to open fast travel menu"))
+        if self.allowMapMenu:
+            text.append((src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),f"press gm to open fast travel menu"))
         return text
 
     def triggerCompletionCheck(self, character=None, dryRun=True):

@@ -56,7 +56,7 @@ The ejected character will be placed to the south of the stasis tank and will st
                 else:
                     short_code = short_code.upper()
                 text = ["""
-You break the glass of the StasisTank and """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"a Clone falls out"),""".\n\n"""]
+You break the glass of the StasisTank and """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"a Clone falls out."),"""\n\n"""]
                 if (spwaned_character.burnedIn):
                     text.append("""
 The spark has left its eyes and is stares blankly,

@@ -1930,7 +1930,7 @@ This helps a lot with keeping things organized.
                 extraDescriptions = {}
                 options.append(("add","add as quest"))
                 options.append(("replace","replace current quests"))
-                options.append(("continue","i'll see what i can do"))
+                options.append(("continue","i'll return later"))
                 extraDescriptions["add"] = "This will add the current task as quest"
                 extraDescriptions["replace"] = "This will add the current task as quest and remove the existing quests"
                 extraDescriptions["continue"] = "This will continue the conversation without changing your quests"

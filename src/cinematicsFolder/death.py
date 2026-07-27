@@ -41,6 +41,8 @@ def Death(extraParam):
                 continue
             if isinstance(candidate,src.characters.characterMap["Ghoul"]):
                 continue
+            if isinstance(candidate,src.characters.characterMap["GroundsKeeper"]):
+                continue
             candidate.runCommandString("~",clear=True)
             for quest in candidate.quests[:]:
                 quest.autoSolve = False

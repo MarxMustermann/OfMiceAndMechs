@@ -31,9 +31,13 @@ class OpenHelpMenu(src.quests.MetaQuestSequence):
         door.blocked = False
 
         text = []
+        text = []
         text.extend(["""
-Open the help menu by pressing ? after closing this menu.
-"""])
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Open the help menu."""),"""
+
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""
+Do this by pressing ? after closing this menu.
+""")])
         return text
 
     def assignToCharacter(self, character):

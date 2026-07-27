@@ -1921,6 +1921,8 @@ I am working right now. I'll repriotize though.""")
                 character_position = partner.getBigPosition()
                 direction_string = partner.getTerrain().getDistanceDescription(character_position,writers_room_coordinate)
                 base_response_text = []
+                base_response_text.extend([(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"""> you offered to help out.
+""")])
                 base_response_text.extend(["""
 I cannot work properly without a painter.
 The painter is an important tool.
@@ -1929,7 +1931,8 @@ This helps a lot with keeping things organized.
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Bring me a painter"""),""", so i can work better.""","""
 
-The Painter looks like: """,sample_painter.render(),f"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""The Painter looks like: """),sample_painter.render(),f"""
+
 You should be able to find Painter in the old writers room.
 It is on the tile {writers_room_coordinate}.
 That is {direction_string}.
@@ -1946,7 +1949,7 @@ That is {direction_string}.
 
                 base_response_text.append("\n\nHow do you react?")
                 submenue = src.menues.menuMap["SelectionMenu"](
-                    base_response_text, options, tag="builder_accept_quest", targetParamName="accept_type",extraDescriptions=extraDescriptions,title=partner.name.upper()+" ASKS"
+                    base_response_text, options, tag="builder_accept_quest", targetParamName="accept_type",extraDescriptions=extraDescriptions,title=partner.name.upper()+" ANSWERS"
                 )
                 character.add_submenu(submenue)
                 submenue.followUp = {

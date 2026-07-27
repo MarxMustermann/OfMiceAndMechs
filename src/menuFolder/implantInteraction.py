@@ -290,7 +290,8 @@ There is shelter to the north,
 but """,(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""there is an enemy blocking your path."""),"""
 kill the enemy. Enemy are shown with red edges.
 
-The simplest way to fight enemies is to walk against them.
+The simplest way to fight enemies is to bump into them.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""You can do this by walking against them."""),"""
 This will trigger an attack.
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to kill the enemy?"""),"""

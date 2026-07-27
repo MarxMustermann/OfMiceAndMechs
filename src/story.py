@@ -2640,22 +2640,6 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         for x in range(2,5,):
             baseCoreRoom.addStorageSlot((x,5,0),"Scrap",{"desiredState":"filled"})
 
-        # add entry chamber
-        entryroom = architect.doAddRoom(
-                {
-                       "coordinate": (7,4,0),
-                       "roomType": "EmptyRoom",
-                       "doors": "6,12 6,0",
-                       "offset": [1,1],
-                       "size": [13, 13],
-                },
-                None,
-           )
-        for y in range(1,12,):
-            entryroom.addWalkingSpace((6,y,0))
-        entryroom.tag = "entryRoom"
-        used_spots.append(entryroom.getPosition())
-
         floorPlan = {}
         walkingSpace = []
         storageSlots = []
@@ -2792,6 +2776,22 @@ sure i'll produce equipment for you as long as you bring me the raw material.
             item = src.items.itemMap["Contraption"]()
             item.display = "OT"
             startRoom.addItem(item,pos)
+
+        # add entry chamber
+        entryroom = architect.doAddRoom(
+                {
+                       "coordinate": (7,4,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,12 6,0",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        for y in range(1,12,):
+            entryroom.addWalkingSpace((6,y,0))
+        entryroom.tag = "entryRoom"
+        used_spots.append(entryroom.getPosition())
 
         # add alarm room
         alarmRoom = architect.doAddRoom(

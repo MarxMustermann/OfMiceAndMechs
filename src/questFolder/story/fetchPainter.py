@@ -144,12 +144,14 @@ class FetchPainter(src.quests.MetaQuestSequence):
             elif foundOffset == (0,-1,0):
                 command = "Kw"
 
-            if command[0] == "K":
-                if submenue:
-                    if submenue.tag == "advancedPickupSelection":
+            if submenue:
+                if submenue.tag == "advancedPickupSelection":
+                    if command[0] == "K":
                         command = command[1:]
                     else:
-                        return (None,(["esc"],"close menu"))
+                        command = "."
+                else:
+                    return (None,(["esc"],"close menu"))
 
             return (None,(command,"clear spot"))
 

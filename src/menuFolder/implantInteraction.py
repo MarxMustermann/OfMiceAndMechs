@@ -368,10 +368,10 @@ Look there. {directionString}
 
 
 There is a StasisTank in this room. 
-""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""It should contain a survivior."""),"""
+It should contain a survivior.
 That could be useful for us.
 
-Free the survivor.
+""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Free the survivor."""),"""
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to free the survivor?"""),"""
 """]

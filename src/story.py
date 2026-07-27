@@ -1963,7 +1963,7 @@ That will be very help with organising the place.
 This will allow me to draw storage markers onto the floor.
 It is hard to do anything without a storage system.
 
-""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"I'll busy and will not need your help for a bit."),"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"I'll be busy and will not need your help for a bit."),"""
 But once i am done painting, help would be appreachiated.
 """])
                 character.inventory.remove(painter[0])

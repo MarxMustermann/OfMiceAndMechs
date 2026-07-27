@@ -849,8 +849,6 @@ class Room:
         out = []
         for character in self.characters:
             if enemies and character.faction == faction:
-                    continue
-            if not enemies and character.faction != faction:
                 continue
             if character.getPosition() == position:
                 out.append(character)

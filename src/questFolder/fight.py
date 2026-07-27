@@ -24,21 +24,21 @@ class Fight(src.quests.MetaQuestSequence):
         '''
         generate a description text to show on the UI
         '''
-        reasonString = ""
+        reasonString = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
-            reasonString = ", to "+self.reason
-        return [f"""
-Fight the enemies{reasonString}.
+            reasonString = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),",")," to "+self.reason]
+        return [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"""
+Fight the enemies"""),reasonString,f"""
 
-For simple attacks just bump into the enemies.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"For simple attacks just bump into the enemies."),"""
 You will hit them and hopefully do some damage.
 
 Advanced attacks are used by bumping into enemies while holding shift.
-
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""
 So if an enemy is to directly east of you:
 * press d to do a normal attack
 * press D to do a special attack
-"""]
+""")]
 
     def triggerCompletionCheck(self,character=None,dryRun=True):
         '''

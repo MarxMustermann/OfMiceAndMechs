@@ -137,8 +137,7 @@ class ImplantInteraction(src.menues.SubMenu):
 The quest description and general instructions are shown in the quest menu.
 
 """,(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""You can open the quest menu by pressing q"""),"""
-
-"""],allowQuests=True)
+"""],allowQuests=True,do_not_scale=True)
 
                         # set up helper variables
                         terrain = character.getHomeTerrain()

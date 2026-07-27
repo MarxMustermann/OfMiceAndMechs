@@ -9167,96 +9167,7 @@ press enter to continue
 
             tcodPresent(noPresent=True)
 
-            c_offset -= 2
-            color = "#666"
-            if subStep == 0:
-                color = "#fff"
-            text = [(src.interaction.urwid.AttrSpec(color,"#000"),"""- You.""")]
-            if subStep > 0:
-                color = "#666"
-                if subStep == 1:
-                    color = "#fff"
-                line = """- You see walls made out of solid steel.\n"""
-                text.insert(0,(src.interaction.urwid.AttrSpec(color,"#000"),line))
-            if subStep > 1:
-                color = "#666"
-                if subStep == 2:
-                    color = "#fff"
-                line = """- You feel the touch of the cold hard floor.\n"""
-                text.insert(0,(src.interaction.urwid.AttrSpec(color,"#000"),line))
-            if subStep > 2:
-                color = "#666"
-                if subStep == 3:
-                    color = "#fff"
-                line = """- The room is filled with various items.\n"""
-                text.insert(0,(src.interaction.urwid.AttrSpec(color,"#000"),line))
-            if subStep > 3:
-                color = "#666"
-                if subStep == 4:
-                    color = "#fff"
-                line = """- You recognise your hostile suroundings and
-try to remember how you got here ...\n"""
-                text.insert(0,(src.interaction.urwid.AttrSpec(color,"#000"),line))
-
-            root_console = tcod.console.Console(60, 60, order="F")
-            printUrwidToTcod(text, (0,0), explecitConsole=root_console)
-
-            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
-            console_render = tcod.render.SDLConsoleRender(atlas)
-            renderedToTexture = console_render.render(root_console)
-
-            sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),((window_charwidth-45)*tileWidth,22*tileHeight,renderedToTexture.width,renderedToTexture.height),)
-
-            if subStep == 0:
-                if not stageState.get("send_tracking_ping_sub_0"):
-                    src.interaction.send_tracking_ping("run_intro_stage_3_0")
-                    stageState["send_tracking_ping_sub_0"] = True
-                text = """
-suggested action:
-press enter
-to open your eyes"""
-            elif subStep == 1:
-                if not stageState.get("send_tracking_ping_sub_1"):
-                    src.interaction.send_tracking_ping("run_intro_stage_3_1")
-                    stageState["send_tracking_ping_sub_1"] = True
-                text = """
-suggested action:
-press enter
-to feel around"""
-            elif subStep == 2:
-                if not stageState.get("send_tracking_ping_sub_2"):
-                    src.interaction.send_tracking_ping("run_intro_stage_3_2")
-                    stageState["send_tracking_ping_sub_2"] = True
-                text = """
-suggested action:
-press enter
-to look around"""
-            elif subStep == 3:
-                if not stageState.get("send_tracking_ping_sub_3"):
-                    src.interaction.send_tracking_ping("run_intro_stage_3_3")
-                    stageState["send_tracking_ping_sub_3"] = True
-                text = """
-suggested action:
-press enter
-to orient yourself"""
-
-            else:
-                if not stageState.get("send_tracking_ping_sub_4"):
-                    src.interaction.send_tracking_ping("run_intro_stage_3_4")
-                    stageState["send_tracking_ping_sub_4"] = True
-                text = """
-suggested action:
-press enter
-to remember"""
-
-            root_console = tcod.console.Console(width+1, height, order="F")
-            printUrwidToTcod(text, (0,0), explecitConsole=root_console)
-
-            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
-            console_render = tcod.render.SDLConsoleRender(atlas)
-            renderedToTexture = console_render.render(root_console)
-            sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(2*tileWidth,19*tileHeight,renderedToTexture.width,renderedToTexture.height),)
-
+            # draw map
             drawPos = (0,0)
             renderString = []
             mapSize = 1
@@ -9343,6 +9254,97 @@ to remember"""
             sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(drawPos[0]*tileWidth, drawPos[1]*tileHeight,renderedToTexture.width,renderedToTexture.height),)
 
             canvas.drawSdl(sdl_renderer2,drawPos[0]*tileWidth,drawPos[1]*tileHeight,warning=False)
+
+            c_offset -= 2
+            color = "#666"
+            if subStep == 0:
+                color = "#fff"
+            text = [(src.interaction.urwid.AttrSpec(color,"#000"),"""- You.""")]
+            if subStep > 0:
+                color = "#666"
+                if subStep == 1:
+                    color = "#fff"
+                line = """- You see walls made out of solid steel.\n"""
+                text.insert(0,(src.interaction.urwid.AttrSpec(color,"#000"),line))
+            if subStep > 1:
+                color = "#666"
+                if subStep == 2:
+                    color = "#fff"
+                line = """- You feel the touch of the cold hard floor.\n"""
+                text.insert(0,(src.interaction.urwid.AttrSpec(color,"#000"),line))
+            if subStep > 2:
+                color = "#666"
+                if subStep == 3:
+                    color = "#fff"
+                line = """- The room is filled with various items.\n"""
+                text.insert(0,(src.interaction.urwid.AttrSpec(color,"#000"),line))
+            if subStep > 3:
+                color = "#666"
+                if subStep == 4:
+                    color = "#fff"
+                line = """- You recognise your hostile suroundings and
+try to remember how you got here ...\n"""
+                text.insert(0,(src.interaction.urwid.AttrSpec(color,"#000"),line))
+
+            root_console = tcod.console.Console(60, 60, order="F")
+            printUrwidToTcod(text, (0,0), explecitConsole=root_console)
+
+            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
+            console_render = tcod.render.SDLConsoleRender(atlas)
+            renderedToTexture = console_render.render(root_console)
+
+            sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),((window_charwidth-45)*tileWidth,22*tileHeight,renderedToTexture.width,renderedToTexture.height),)
+
+            if subStep == 0:
+                if not stageState.get("send_tracking_ping_sub_0"):
+                    src.interaction.send_tracking_ping("run_intro_stage_3_0")
+                    stageState["send_tracking_ping_sub_0"] = True
+                text = """
+suggested action:
+press enter
+to open your eyes"""
+            elif subStep == 1:
+                if not stageState.get("send_tracking_ping_sub_1"):
+                    src.interaction.send_tracking_ping("run_intro_stage_3_1")
+                    stageState["send_tracking_ping_sub_1"] = True
+                text = """
+suggested action:
+press enter
+to feel around"""
+            elif subStep == 2:
+                if not stageState.get("send_tracking_ping_sub_2"):
+                    src.interaction.send_tracking_ping("run_intro_stage_3_2")
+                    stageState["send_tracking_ping_sub_2"] = True
+                text = """
+suggested action:
+press enter
+to look around"""
+            elif subStep == 3:
+                if not stageState.get("send_tracking_ping_sub_3"):
+                    src.interaction.send_tracking_ping("run_intro_stage_3_3")
+                    stageState["send_tracking_ping_sub_3"] = True
+                text = """
+suggested action:
+press enter
+to orient yourself"""
+
+            else:
+                if not stageState.get("send_tracking_ping_sub_4"):
+                    src.interaction.send_tracking_ping("run_intro_stage_3_4")
+                    stageState["send_tracking_ping_sub_4"] = True
+                text = """
+suggested action:
+press enter
+to remember"""
+
+            width = 18
+            root_console = tcod.console.Console(width+1, height, order="F")
+            printUrwidToTcod(text, (0,0), explecitConsole=root_console)
+
+            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
+            console_render = tcod.render.SDLConsoleRender(atlas)
+            renderedToTexture = console_render.render(root_console)
+            sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(2*tileWidth,19*tileHeight,renderedToTexture.width,renderedToTexture.height),)
 
             # draw character
             offset = src.gamestate.gamestate.mainChar.getPosition()

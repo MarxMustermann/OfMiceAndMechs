@@ -26,14 +26,17 @@ class ImplantInteraction(src.menues.SubMenu):
         '''
         return "IMPLANT INTERACTION"
     
-    def _spawnSpawnTaskMenu(self,base_text,task_type):
+    def _spawnSpawnTaskMenu(self,base_text,task_type,offerSkip=False):
         '''
         spawns a menu that allows to accept the task as quest
         '''
         options = [("yes","yes"),("no","no")]
+        if offerSkip:
+            options.append(("skip","skip"))
         extraDescriptions = {
                 "yes":"Assigns the quest to you. Press q to see quest details afterwards",
                 "no":"No quest will be assigned.",
+                "skip":"Skip the step altogether",
             }
         self.submenu = src.menues.menuMap["SelectionMenu"](base_text,options=options,extraDescriptions=extraDescriptions)
         self.submenu.extraInfo["task_type"] = task_type
@@ -182,6 +185,8 @@ The quest description and general instructions are shown in the quest menu.
                     if selection == "skip":
                         if task_type == "wait_explosion":
                             src.gamestate.gamestate.stern["skipped_explosion"] = True
+                        if task_type == "help":
+                            src.gamestate.gamestate.stern["opened_help"] = True
                         self.submenu = None
 
                     # close the menu
@@ -282,7 +287,7 @@ use the """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"blac
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to open the help menu?"""),"""
 """]
-            self._spawnSpawnTaskMenu(base_text,"help")
+            self._spawnSpawnTaskMenu(base_text,"help",offerSkip=True)
             return False
 
         # wake builder

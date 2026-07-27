@@ -29,6 +29,8 @@ class HelpMenu(src.menues.SubMenu):
         """
 
         character.changed("opened help menu",{})
+        if character == src.gamestate.gamestate.mainChar:
+            src.gamestate.gamestate.stern["opened_help"] = True
 
         if self.skipKeypress:
             self.skipKeypress = False

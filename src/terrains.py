@@ -1851,7 +1851,18 @@ class Terrain:
             self.hidden = mapHidden
 
             # select color for force field 
-            forceField = src.canvas.displayChars.forceField
+            if src.gamestate.gamestate.tick%6 == 0:
+                forceField = (src.interaction.urwid.AttrSpec("#556", "black"), "~~")
+            if src.gamestate.gamestate.tick%6 == 1:
+                forceField = (src.interaction.urwid.AttrSpec("#667", "black"), "~~")
+            if src.gamestate.gamestate.tick%6 == 2:
+                forceField = (src.interaction.urwid.AttrSpec("#778", "black"), "~~")
+            if src.gamestate.gamestate.tick%6 == 3:
+                forceField = (src.interaction.urwid.AttrSpec("#889", "black"), "~~")
+            if src.gamestate.gamestate.tick%6 == 4:
+                forceField = (src.interaction.urwid.AttrSpec("#778", "black"), "~~")
+            if src.gamestate.gamestate.tick%6 == 5:
+                forceField = (src.interaction.urwid.AttrSpec("#667", "black"), "~~")
 
             # paint floor
             chars = self.paintFloor(size=size,coordinateOffset=coordinateOffset)

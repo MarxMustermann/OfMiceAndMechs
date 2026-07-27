@@ -62,17 +62,17 @@ class EscapeLab(src.quests.MetaQuestSequence):
         door.blocked = False
 
         text = []
+        text.extend(["""
+This room is exploding! """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""We need to leave fast."""),"""
+"""])
+
+        text.append((src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""
+Use the wasd key to move or click on the map."""))
         text.append("""
-You reach out to your implant and it answers:
-
-This room is exploding! We need to leave fast.
-""")
-
-        text.append((src.interaction.urwid.AttrSpec("#ff2","#000"),"""
 
 Instructions to do that will be shown on the left of the screen as "suggested action"
 
-"""))
+""")
         return text
 
     def assignToCharacter(self, character):

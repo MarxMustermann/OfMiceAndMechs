@@ -167,6 +167,8 @@ The quest description and general instructions are shown in the quest menu.
                             quest = src.quests.questMap["SecureTile"](toSecure=(7,5,0),endWhenCleared=True,reason="clear the path",simpleAttacksOnly=True,noHeal=True)
                         elif task_type == "explore":
                             quest = src.quests.questMap["StoryExploreHomeTerrain"](lifetime=500)
+                        elif task_type == "observe":
+                            quest = src.quests.questMap["OpenObserveMenu"]()
 
                         # assign the quest
                         if quest:
@@ -361,6 +363,20 @@ Look there. {directionString}
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to go to the groundskeepers place?"""),"""
 """]
                 self._spawnSpawnTaskMenu(base_text,"reach_shelter")
+                return False
+
+            # teach how to observe
+            if not src.gamestate.gamestate.stern.get("opened_observe"):
+                base_text = ["""
+""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),f"""
+
+""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You are safe for now."),"""
+
+Look around to see if you can find something useful.
+
+""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to observe the environment?"""),"""
+"""]
+                self._spawnSpawnTaskMenu(base_text,"observe")
                 return False
 
             # free the groundskeeper

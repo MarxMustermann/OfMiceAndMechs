@@ -25,6 +25,8 @@ class ObserveMenu(src.menues.SubMenu):
 
     def handleKey(self, key, noRender=False, character = None):
         src.interaction.send_tracking_ping("created_observe_menu_key_pressed_"+str(key))
+        if character == src.gamestate.gamestate.mainChar:
+            src.gamestate.gamestate.stern["opened_observe"] = True
 
         character.changed("opened observe menu",{})
 

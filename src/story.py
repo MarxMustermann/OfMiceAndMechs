@@ -2310,9 +2310,9 @@ I don't need anything right now.
             # generate quest to fetch MetalWorkingBench
             metalWorkingBench = character.searchInventory("MetalWorkingBench")
             if not metalWorkingBench:
-                base_response_text.extend("""
+                base_response_text.extend(["""
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Now i need a MetalWorkingBench."),"""
-""")
+"""])
                 offer_accept_options = True
             else:
                 base_response_text.extend(["""

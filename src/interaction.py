@@ -934,6 +934,9 @@ def handleActivitySelection(key,char):
             else:
                 mapContent[room.yPosition][room.xPosition] = room.displayChar
 
+        charPos = char.getBigPosition()
+        mapContent[charPos[1]][charPos[0]] = "@@"
+
         for x in range(1,14):
             for y in range(1,14):
                 check_characters = terrain.getCharactersOnTile((x,y,0))[:]

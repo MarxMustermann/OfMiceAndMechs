@@ -56,7 +56,7 @@ class MapTable(src.items.Item):
 
         functionMap = {}
 
-        self.submenue = src.menues.menuMap["MapMenu"](mapContent=mapContent,functionMap=functionMap)
+        self.submenue = src.menues.menuMap["MapMenu"](mapContent=mapContent,functionMap=functionMap,title="TERRAIN INFORMATION")
         character.macroState["submenue"] = self.submenue
 
     def writeMap(self, character):

@@ -1474,7 +1474,7 @@ class CityPlaner(src.items.Item):
             extraText += "%s\n"%(task,)
         """
 
-        self.submenue = src.menues.menuMap["MapMenu"](mapContent=mapContent,functionMap=functionMap, extraText=extraText, cursor=cursor)
+        self.submenue = src.menues.menuMap["MapMenu"](mapContent=mapContent,functionMap=functionMap, extraText=extraText, cursor=cursor, title="ROOM PLANNING MAP")
         character.macroState["submenue"] = self.submenue
 
     def getFloorPlanFromDict(self,rawFloorplan):

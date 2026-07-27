@@ -16,6 +16,7 @@ class MapMenu(src.menues.SubMenu):
         applyKey="coordinate",
         gridSize=15,
         limits=(1, 13),
+        title=None
     ):
         """
         initialise internal state
@@ -35,6 +36,10 @@ class MapMenu(src.menues.SubMenu):
             self.cursor = (cursor[0],cursor[1],)
         else:
             self.cursor = (int(self.gridSize / 2), int(self.gridSize / 2))
+        self.title = title
+
+    def getTitle(self):
+        return self.title
 
     def handleKey(self, key, noRender=False, character = None):
         """

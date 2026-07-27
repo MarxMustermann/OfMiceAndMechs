@@ -27,8 +27,12 @@ class OpenObserveMenu(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         text = []
         text.extend(["""
-Open the help menu by pressing o after closing this menu.
-"""])
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Open the observation menu"""),""" and look around afterwards.
+
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""
+Do this by pressing o after closing this menu.
+You can move the cursor by pressing the wasd key.
+""")])
         return text
 
     def assignToCharacter(self, character):

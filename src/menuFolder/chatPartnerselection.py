@@ -98,7 +98,7 @@ class ChatPartnerselection(src.menues.SubMenu):
         # spawn the chat submenu
         if self.getSelection():
             self.subMenu = src.chats.ChatMenu(self.selection)
-            self.subMenu.handleKey(key, noRender=noRender, character=character)
+            self.subMenu.handleKey("~", noRender=noRender, character=character)
             return None
 
         # wait for input

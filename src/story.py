@@ -1916,6 +1916,10 @@ I am working right now. I'll repriotize though.""")
         if not partner.registers.get("gotPainter") or not hasPainter:
             painter = character.searchInventory("Painter")
             if not painter:
+                sample_painter = src.items.itemMap["Painter"]()
+                writers_room_coordinate = (10,5,0)
+                character_position = partner.getBigPosition()
+                direction_string = partner.getTerrain().getDistanceDescription(character_position,writers_room_coordinate)
                 base_response_text = []
                 base_response_text.extend(["""
 I cannot work properly without a painter.
@@ -1924,6 +1928,11 @@ It is used to draw markings on the floor.
 This helps a lot with keeping things organized.
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Bring me a painter"""),""", so i can work better.""","""
+
+The Painter looks like: """,sample_painter.render(),f"""
+You should be able to find Painter in the old writers room.
+It is on the tile {writers_room_coordinate}.
+That is {direction_string}.
 """])
 
                 options = []

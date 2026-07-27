@@ -1,4 +1,5 @@
 import src
+import random
 
 class ImplantInteraction(src.menues.SubMenu):
     """
@@ -110,6 +111,8 @@ class ImplantInteraction(src.menues.SubMenu):
                     if selection == "improve equipment":
                         src.gamestate.gamestate.stern["last_improve_equipment"] = src.gamestate.gamestate.tick
                         quest = src.quests.questMap["StoryImproveEquipment"]()
+                    if selection == "explore":
+                        quest = src.quests.questMap["StoryExploreHomeTerrain"](lifetime=500)
                     if quest:
                         character.clear_quests()
                         character.assignQuest(quest)
@@ -545,11 +548,17 @@ It will start to rebuild its working area.
             if character.health < character.adjustedMaxHealth//2 and last_heal < src.gamestate.gamestate.tick-500:
                 options.append(("heal","heal yourself"))
                 shown_heal = True
+            shown_explore = False
+            if random.random() < 0.5:
+                options.append(("explore","explore terrain"))
+                shown_explore = True
             options.append(("help","help groundskeeper"))
             if not shown_improve_equipment:
                 options.append(("improve equipment","improve your equipment"))
             if not shown_heal and character.health < character.adjustedMaxHealth:
                 options.append(("heal","heal yourself"))
+            if not shown_explore:
+                options.append(("explore","explore terrain"))
             options.append(("continue","continue without quest"))
             self.submenu = src.menues.menuMap["SelectionMenu"](base_text,options=options)
             self.submenu.tag = "implant_idle_selection"

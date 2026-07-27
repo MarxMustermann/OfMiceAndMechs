@@ -169,6 +169,8 @@ The quest description and general instructions are shown in the quest menu.
                             quest = src.quests.questMap["StoryExploreHomeTerrain"](lifetime=500)
                         elif task_type == "observe":
                             quest = src.quests.questMap["OpenObserveMenu"]()
+                        elif task_type == "help":
+                            quest = src.quests.questMap["OpenHelpMenu"]()
 
                         # assign the quest
                         if quest:
@@ -267,6 +269,21 @@ Watch the room burn down.
                 self.submenu.handleKey(key, noRender, character)
                 self.submenu.extraInfo["task_type"] = "wait_explosion"
                 return False
+
+        # indroduce help menu
+        if not src.gamestate.gamestate.stern.get("opened_help"):
+            base_text = ["""
+""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),f"""
+
+I am not sure how many of your memories survived.
+
+If you don't remember how to to interact with the world,
+use the """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"help menu"),""" to refresh your memories.
+
+""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to open the help menu?"""),"""
+"""]
+            self._spawnSpawnTaskMenu(base_text,"help")
+            return False
 
         # wake builder
         wakeable_builder = False

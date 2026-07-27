@@ -200,14 +200,6 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             character.changed("sharpened sword")
             return
 
-        # abort and show user feedback if no upgrade can be afforded
-        if amount_grindstone_needed_for_upgrade > len(grindstones) and improvementAmount == 0:
-            text = f"you can't improve your sword.\nYou need {amount_grindstone_needed_for_upgrade} Grindstone to upgrade your sword."
-            submenue = src.menues.menuMap["OneKeystrokeMenu"](text)
-            character.macroState["submenue"] = submenue
-            character.changed("sharpened sword")
-            return
-
         def amountNeededToLevel(level, allowed=None):
             '''
             callback returning the a text describing the cost to upgrade to a certain level

@@ -2962,6 +2962,79 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         lootRoom.spawnItem("SwordSharpener",(6,6,0),bolted=True)
         lootRoom.spawnItem("Painter",(3,5,0))
 
+        # add room building npc room
+        lootRoom = architect.doAddRoom(
+                {
+                       "coordinate": (3,11,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,12 0,6 12,6 6,0",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        used_spots.append(lootRoom.getPosition())
+        lootRoom.tag = "ruin"
+        stasisTank = src.items.itemMap["StasisTank"]()
+
+        room_building_npc = src.characters.characterMap["Clone"]()
+        room_building_npc.questsDone = [
+                "NaiveMoveQuest",
+                "MoveQuestMeta",
+                "NaiveActivateQuest",
+                "ActivateQuestMeta",
+                "NaivePickupQuest",
+                "PickupQuestMeta",
+                "DrinkQuest",
+                "CollectQuestMeta",
+                "FireFurnaceMeta",
+                "ExamineQuest",
+                "NaiveDropQuest",
+                "DropQuestMeta",
+                "LeaveRoomQuest",
+            ]
+        room_building_npc.solvers = [
+                "SurviveQuest",
+                "Serve",
+                "NaiveMoveQuest",
+                "MoveQuestMeta",
+                "NaiveActivateQuest",
+                "ActivateQuestMeta",
+                "NaivePickupQuest",
+                "PickupQuestMeta",
+                "DrinkQuest",
+                "ExamineQuest",
+                "FireFurnaceMeta",
+                "CollectQuestMeta",
+                "WaitQuest" "NaiveDropQuest",
+                "NaiveDropQuest",
+                "DropQuestMeta",
+            ]
+
+        room_building_npc.flask = src.items.itemMap["GooFlask"]()
+        room_building_npc.flask.uses = 100
+        room_building_npc.faction = faction
+        room_building_npc.burnedIn = True
+
+        room_building_npc.duties = ["room building"]
+        room_building_npc.registers["HOMEx"] = 7
+        room_building_npc.registers["HOMEy"] = 4
+        room_building_npc.registers["HOMETx"] = currentTerrain.xPosition
+        room_building_npc.registers["HOMETy"] = currentTerrain.yPosition
+
+        room_building_npc.personality["autoFlee"] = False
+        room_building_npc.personality["abortMacrosOnAttack"] = False
+        room_building_npc.personality["autoCounterAttack"] = False
+
+        quest = src.quests.questMap["BeUsefull"]()
+        quest.autoSolve = True
+        quest.assignToCharacter(room_building_npc)
+        quest.activate()
+        room_building_npc.assignQuest(quest,active=True)
+
+        stasisTank.character = room_building_npc
+        lootRoom.addItem(stasisTank,(6,6,0))
+
         # add anvil room
         anvilRoom = architect.doAddRoom(
                 {
@@ -3012,6 +3085,66 @@ sure i'll produce equipment for you as long as you bring me the raw material.
             if y == 6:
                 continue
             metalWorkingRoom.addWalkingSpace((6,y,0))
+
+        stasisTank = src.items.itemMap["StasisTank"]()
+
+        room_building_npc = src.characters.characterMap["Clone"]()
+        room_building_npc.questsDone = [
+                "NaiveMoveQuest",
+                "MoveQuestMeta",
+                "NaiveActivateQuest",
+                "ActivateQuestMeta",
+                "NaivePickupQuest",
+                "PickupQuestMeta",
+                "DrinkQuest",
+                "CollectQuestMeta",
+                "FireFurnaceMeta",
+                "ExamineQuest",
+                "NaiveDropQuest",
+                "DropQuestMeta",
+                "LeaveRoomQuest",
+            ]
+        room_building_npc.solvers = [
+                "SurviveQuest",
+                "Serve",
+                "NaiveMoveQuest",
+                "MoveQuestMeta",
+                "NaiveActivateQuest",
+                "ActivateQuestMeta",
+                "NaivePickupQuest",
+                "PickupQuestMeta",
+                "DrinkQuest",
+                "ExamineQuest",
+                "FireFurnaceMeta",
+                "CollectQuestMeta",
+                "WaitQuest" "NaiveDropQuest",
+                "NaiveDropQuest",
+                "DropQuestMeta",
+            ]
+
+        room_building_npc.flask = src.items.itemMap["GooFlask"]()
+        room_building_npc.flask.uses = 100
+        room_building_npc.faction = faction
+        room_building_npc.burnedIn = True
+
+        room_building_npc.duties = ["metal working"]
+        room_building_npc.registers["HOMEx"] = 7
+        room_building_npc.registers["HOMEy"] = 4
+        room_building_npc.registers["HOMETx"] = currentTerrain.xPosition
+        room_building_npc.registers["HOMETy"] = currentTerrain.yPosition
+
+        room_building_npc.personality["autoFlee"] = False
+        room_building_npc.personality["abortMacrosOnAttack"] = False
+        room_building_npc.personality["autoCounterAttack"] = False
+
+        quest = src.quests.questMap["BeUsefull"]()
+        quest.autoSolve = True
+        quest.assignToCharacter(room_building_npc)
+        quest.activate()
+        room_building_npc.assignQuest(quest,active=True)
+
+        stasisTank.character = room_building_npc
+        metalWorkingRoom.addItem(stasisTank,(2,6,0))
 
         # create horizontal paths
         for big_pos in [(5,5,0),(6,5,0),(8,5,0),(9,5,0),(9,9,0),(8,9,0),(6,9,0),(5,9,0)]:

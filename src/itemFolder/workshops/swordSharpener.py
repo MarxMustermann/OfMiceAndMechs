@@ -192,7 +192,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             improvementAmount += 15-sword.baseDamage
 
         # ensure upgrade cap was not reached
-        amount_grindstone_needed_for_upgrade = self.amountNeededForOneUpgrade(sword.baseDamage + improvementAmount + 1)
+        amount_grindstone_needed_for_upgrade = self.amountNeededForOneUpgrade(sword.baseDamage + improvementAmount)
         if amount_grindstone_needed_for_upgrade is None:
             text = "you can't improve your sword further."
             submenue = src.menues.menuMap["OneKeystrokeMenu"](text)
@@ -324,7 +324,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         sword = character.weapon
         if not isinstance(sword,src.items.itemMap["Sword"]):
             return False
-        amountNeeded = self.amountNeededForOneUpgrade(sword.baseDamage+1+extraIncrease)
+        amountNeeded = self.amountNeededForOneUpgrade(sword.baseDamage+extraIncrease)
 
         if amountNeeded <= len(self.getAvailableGrindStones(character)):
             return True

@@ -197,7 +197,7 @@ The quest description and general instructions are shown in the quest menu.
         if src.gamestate.gamestate.stern.get("first_reachout_done") is None:
             src.gamestate.gamestate.stern["first_reachout_done"] = False
         if not src.gamestate.gamestate.stern["first_reachout_done"]:
-            implant_intro_text = [(src.interaction.urwid.AttrSpec("#fa0","black"),"""
+            implant_intro_text = [(src.interaction.urwid.AttrSpec("#0af","black"),"""
 You must be confused.
 
 I'm your implant and i'm here to help you.

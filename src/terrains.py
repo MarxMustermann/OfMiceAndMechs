@@ -1852,17 +1852,17 @@ class Terrain:
 
             # select color for force field 
             if src.gamestate.gamestate.tick%6 == 0:
-                forceField = (src.interaction.urwid.AttrSpec("#556", "black"), "~~")
+                forceField = (src.interaction.urwid.AttrSpec((80,80,90), "black"), "~~")
             if src.gamestate.gamestate.tick%6 == 1:
-                forceField = (src.interaction.urwid.AttrSpec("#667", "black"), "~~")
+                forceField = (src.interaction.urwid.AttrSpec((90,90,110), "black"), "~~")
             if src.gamestate.gamestate.tick%6 == 2:
-                forceField = (src.interaction.urwid.AttrSpec("#778", "black"), "~~")
+                forceField = (src.interaction.urwid.AttrSpec((100,100,120), "black"), "~~")
             if src.gamestate.gamestate.tick%6 == 3:
-                forceField = (src.interaction.urwid.AttrSpec("#889", "black"), "~~")
+                forceField = (src.interaction.urwid.AttrSpec((110,110,130), "black"), "~~")
             if src.gamestate.gamestate.tick%6 == 4:
-                forceField = (src.interaction.urwid.AttrSpec("#778", "black"), "~~")
+                forceField = (src.interaction.urwid.AttrSpec((100,100,120), "black"), "~~")
             if src.gamestate.gamestate.tick%6 == 5:
-                forceField = (src.interaction.urwid.AttrSpec("#667", "black"), "~~")
+                forceField = (src.interaction.urwid.AttrSpec((90,90,110), "black"), "~~")
 
             # paint floor
             chars = self.paintFloor(size=size,coordinateOffset=coordinateOffset)

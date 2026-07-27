@@ -413,7 +413,8 @@ Find out why.
             # ensure the groundskeeper has a painter
             hasPainter = groundsKeeper.hasPainter()
             if not groundsKeeper.registers.get("gotPainter") or not hasPainter:
-                base_text = ["""
+                if not self.character.searchInventory("Painter"):
+                    base_text = ["""
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),"""
 
 The groundskeeper is working now,
@@ -421,6 +422,14 @@ but """,(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"bl
 This could be very useful.
 
 Check if you can help out.
+
+""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to help to groundskeeper?"""),"""
+"""]
+                else:
+                    base_text = ["""
+""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You obtained a Painter."),"""
+
+Bring it to the groundskeeper.
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to help to groundskeeper?"""),"""
 """]

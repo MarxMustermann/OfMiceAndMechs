@@ -200,6 +200,12 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
 Do this for {self.lifetime} ticks. {self.getRemainingLifetime()} ticks left.
 """)
 
+        text.append((src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),f"""
+
+Press the g m keys to open auto travel menu.
+
+"""))
+
         text.append(f"""points of interest:\n""")
         rawMap = []
         for y in range(15):

@@ -397,7 +397,9 @@ That could be useful for us.
                 base_text = ["""
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),"""
 
-""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""The groundskeeper lives."""),""" He looks like this: @@
+""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""The groundskeeper lives."""),"""
+He looks like this: @@
+
 This could be very useful.
 
 It doesn't work though.

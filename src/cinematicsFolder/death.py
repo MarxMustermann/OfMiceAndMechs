@@ -82,26 +82,30 @@ def Death(extraParam):
 
         src.gamestate.gamestate.mainChar = chosen_candidate
 
-        text = f"{reason}\n"
+        text = []
+        text.append((src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),reason+"\n"))
         if killer:
+            name_string = killer.charType
             if isinstance(killer,src.characters.characterMap["Clone"]):
-                text += f"by {killer.name}\n"
-            else:
-                text += f"by {killer.charType}\n"
-        text += "The last bit of your life force left your body and you died.\n"
-        text += "But something else left your body as well.\n"
-        text += "It took over another clone from your base.\n"
-        text += "\n- press enter to continue -"
-        splitted = text.splitlines()
+                name_string = killer.name
+            text.append((src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"by {name_string}\n"))
+        text.append("\n")
+        text.append("The last bit of your life force left your body and you died.\n")
+        text.append("But something else left your body as well.\n")
+        text.append("It took over another clone from your base.\n")
+        text.append("\n")
+        text.append((src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"- press enter to continue -"))
         longestLine = 0
-        for line in splitted:
+        for line in text:
+            line = src.urwidSpecials.flattenToPeseudoString(line)
             if len(line) <= longestLine:
                 continue
             longestLine = len(line)
 
-        newText = ""
-        for line in splitted:
-            newText += " "*((longestLine-len(line))//2) + line+"\n"
+        newText = []
+        for line in text:
+            newText.append(" "*((longestLine-len(src.urwidSpecials.flattenToPeseudoString(line)))//2))
+            newText.append(line)
 
         chosen_candidate.showTextMenu(newText)
 

@@ -81,13 +81,13 @@ class Golem(src.monster.Monster):
         return [(None, 6),(src.items.itemMap["Grindstone"], 4)]
 
     def getLoreDescription(self):
-        return f"You see a Golem. It moves with mechanical force.\nSome of the Golems are rusting hulks, but some are finely tuned killing machines."
+        return [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"You see a Golem.")," It moves with mechanical force.\nSome of the Golems are rusting hulks, but some are finely tuned killing machines."]
 
     def getFunctionalDescription(self):
-        return f"Some Golems are stronger than others, but are not special otherwise."
+        return (src.interaction.urwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),f"Some Golems are stronger than others, but are not special otherwise.")
 
     def description(self):
-        return self.getLoreDescription()+"\n\n---- "+self.getFunctionalDescription()
+        return [self.getLoreDescription(),"\n\n---- ",self.getFunctionalDescription()]
 
     def render(self):
         try:

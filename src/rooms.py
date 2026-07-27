@@ -519,6 +519,10 @@ class Room:
             lastStep = step
         return moves
 
+    def getRandomPosition(self):
+        position = (random.randint(1,11),random.randint(1,11),0)
+        return position
+
     def edgeCostCallback(self, startX, startY, endX, endY):
         endPos = (endX,endY,0)
         if self.pathfindingIgnoreEndBlocked and endPos == self.pathfindingTargetPos:

@@ -159,7 +159,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
                 return
 
             # abort and notify the user if no ugrade can be afforded
-            next_upgrade_level = D(armor.armorValue) + D("0.5")
+            next_upgrade_level = D(armor.armorValue)
             amount_ChitinPlates_needed_for_upgrade = self.amountNeededForOneUpgrade(next_upgrade_level)
             if amount_ChitinPlates_needed_for_upgrade > len(chitinPlates):
                 text = f"you can't improve your armor.\nYou need {amount_ChitinPlates_needed_for_upgrade} ChitinPlates to upgrade your armor."
@@ -314,7 +314,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         armor = character.armor
         if not isinstance(armor,src.items.itemMap["Armor"]):
             return False
-        target_value = armor.armorValue+0.5
+        target_value = armor.armorValue
         amountNeeded = self.amountNeededForOneUpgrade(target_value)
 
         if amountNeeded is None:

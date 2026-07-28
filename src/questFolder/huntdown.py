@@ -68,6 +68,18 @@ class Huntdown(src.quests.MetaQuestSequence):
         if character.xPosition%15 == 14:
             return (None,("a","move toward target"))
 
+        # heal
+        if character.health < character.maxHealth - 20 and character.canHeal():
+            interaction_command = "J"
+            if submenue:
+                if submenue.tag == "advancedInteractionSelection":
+                    interaction_command = ""
+                else:
+                    return (None,(["esc"],"close menu"))
+            return (None,(interaction_command+"H","heal"))
+        if (not self.suicidal) and (character.health < character.maxHealth//5):
+            return self._solver_trigger_fail(dryRun,"low health")
+
         # follow target
         if isinstance(character.container, src.rooms.Room):
             charPos = (character.container.xPosition,character.container.yPosition,0)

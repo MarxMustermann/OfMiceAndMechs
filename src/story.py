@@ -1961,7 +1961,9 @@ That is {direction_string}.
                 }
             else:
                 base_response_text = []
-                base_response_text.extend(["""
+                base_response_text.extend([(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"""
+> You give the groundskeeper a Painter."""),"""
+
 Thanks for the painter.
 
 That will be very help with organising the place.

@@ -2086,7 +2086,7 @@ class ChatMenu(Chat):
 
         return False
 
-    def render(self):
+    def render(self,size=None):
         if self.subMenu:
             return self.subMenu.render()
         return self.persistentText

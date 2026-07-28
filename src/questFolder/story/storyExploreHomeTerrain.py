@@ -93,7 +93,12 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
             return ([quest],None)
 
         # ensure inventory space
+        drop_items = False
         if character.getFreeInventorySpace() <= 2:
+            drop_items = True
+        if character.inventory and character.container.isRoom and character.container.tag == "the groundskeepers place":
+            drop_items = True
+        if drop_items:
             for room in character.getTerrain().rooms:
                 if room.tag == "ruin":
                     continue

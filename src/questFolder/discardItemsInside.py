@@ -6,12 +6,13 @@ class DiscardItemsInside(src.quests.MetaQuestSequence):
     type = "DiscardItemsInside"
     lowLevel = True
 
-    def __init__(self, description="discard items inside", creator=None, lifetime=None, reason=None):
+    def __init__(self, description="discard items inside", creator=None, lifetime=None, reason=None, amount=None):
         self.lastMoveDirection = None
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
         self.reason = reason
+        self.amount = amount
 
     def generateTextDescription(self):
         out = []
@@ -24,6 +25,11 @@ Clear your inventory inside{reasonText}."""
         text += """
 
 This quest will end when your inventory is empty."""
+
+        if self.amount:
+            text += f"""
+Drop {self.amount} more items.
+"""
 
         out.append(text)
         return out
@@ -66,13 +72,18 @@ This quest will end when your inventory is empty."""
         return self._solver_trigger_fail(dryRun,"no drop spot")
 
     def droppedItem(self,extraInfo):
+        if self.amount:
+            self.amount -= 1
+            if self.amount == 0:
+                self.postHandler()
+                return
         self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
     def assignToCharacter(self, character):
         if self.character:
             return None
 
-        self.startWatching(character,self.droppedItem, "itemDropped")
+        self.startWatching(character,self.droppedItem, "dropped")
         return super().assignToCharacter(character)
 
 src.quests.addType(DiscardItemsInside)

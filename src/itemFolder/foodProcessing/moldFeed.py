@@ -39,4 +39,4 @@ class MoldFeed(src.items.Item):
         #self.destroy()
         super().apply(character)
 
-src.items.addType(MoldFeed)
+src.items.addType(MoldFeed, nonManufactured=True)

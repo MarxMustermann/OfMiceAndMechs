@@ -53,6 +53,9 @@ Unbolt items by using a complex action, if needed.
         if not character:
             return (None,None)
 
+        if character.getNearbyEnemies():
+            return self._solver_trigger_fail(dryRun,"enemies nearby")
+
         if not self.startTime:
             if not dryRun:
                 self.startTime = src.gamestate.gamestate.tick

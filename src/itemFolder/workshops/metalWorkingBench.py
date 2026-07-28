@@ -123,7 +123,7 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
             if params.get("type"):
                 character.notify("Item type unknown.")
             return
-        if params.get("type") in ("Anvil","CityPlaner",):
+        if params.get("type") not in self.getProducableItemTypes():
             character.notify("This item type cannot be produced here.")
             return
         if params.get("type") in src.items.nonManufacturedTypes:
@@ -352,7 +352,7 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
             if params.get("type"):
                 character.notify("Item type unknown.")
             return
-        if params.get("type") in ("Anvil","CityPlaner",):
+        if params.get("type") not in self.getProducableItemTypes():
             character.notify("This item type cannot be produced here.")
             return
         if params.get("type") in src.items.nonManufacturedTypes:
@@ -419,6 +419,24 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
 
     def render(self):
         return self._get_base_display_character()
+
+    @staticmethod
+    def getProducableItemTypes():
+        producable = []
+        for item_type in src.items.itemMap.keys():
+            if item_type in ("Item",):
+                continue
+            if item_type in src.items.nonManufacturedTypes:
+                continue
+            if item_type in ("Anvil","CityPlaner",):
+                continue
+            if item_type in src.items.potionTypes:
+                continue
+            producable.append(item_type)
+        print(producable)
+        return producable
+
+
 
 # register item type
 src.items.addType(MetalWorkingBench)

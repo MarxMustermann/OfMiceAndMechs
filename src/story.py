@@ -2418,10 +2418,18 @@ That will allow to coordinate how the base is getting expanded.
 
             # generate quest to disable the alarm
             if partner.getTerrain().alarm:
+                sample_siegeManager = src.items.itemMap["SiegeManager"]()
+                guard_room_coordinate = (7,11,0)
+                character_position = partner.getBigPosition()
+                direction_string = partner.getTerrain().getDistanceDescription(character_position,guard_room_coordinate)
                 base_response_text.extend(["""
-Protocol forbids to leave the base while the outside alarm is runnung.
+Protocol forbids to leave the base while the alarm is running.
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Disable the alarm so i can go out"),""" and collect resources.
+
+Find the SiegeManger (""",sample_siegeManager.metaRender(),f""") and use it, to unrestrict the outside movement.
+The old guard room is {direction_string}.
+Look for the SiegeManager there, but be wary the Golems.
 """])
                 offer_accept_options = True
             else:

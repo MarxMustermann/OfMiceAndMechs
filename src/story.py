@@ -2422,6 +2422,35 @@ That will allow to coordinate how the base is getting expanded.
 
         elif task == "disable alarm":
 
+            # ensures character euipment
+            skip_warning = False
+            if extraParams.get("continue") == "yes":
+                skip_warning = True
+            if extraParams.get("continue") == "no":
+                return
+            if not character.weapon and not skip_warning:
+                base_response_text = []
+                base_response_text.extend(["""
+This is a dangerous task and """,(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""you wield no weapon."""),"""
+I don't recommend proceeding with this quest unarmed.
+
+""",(src.interaction.urwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"Are you sure you still want to continue?"),"""
+"""])
+
+                options = [("no","no"),("yes","ignore the warning and continue")]
+                extraDescriptions = {}
+                submenue = src.menues.menuMap["SelectionMenu"](
+                        base_response_text, options, tag="builder_task_confirm", targetParamName="continue",extraDescriptions=extraDescriptions,title=partner.name.upper()+" ASKS"
+                )
+                character.macroState["submenue"] = submenue
+                submenue.followUp = {
+                    "container": self,
+                    "method": "do_builder_task",
+                    "params": extraParams
+                }
+
+                return
+
             # generate quest to disable the alarm
             if partner.getTerrain().alarm:
                 sample_siegeManager = src.items.itemMap["SiegeManager"]()

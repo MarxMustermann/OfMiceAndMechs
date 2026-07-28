@@ -420,7 +420,7 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
     def getProducableItemTypes():
         producable = []
         for item_type in src.items.itemMap.keys():
-            if item_type in ("Item","Potion"):
+            if item_type in ("Item",):
                 continue
             if item_type in src.items.nonManufacturedTypes:
                 continue

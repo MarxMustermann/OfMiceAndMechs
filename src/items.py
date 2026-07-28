@@ -589,6 +589,12 @@ class Item:
             text += "\n"
         return text
 
+    def metaRender(self)():
+        '''
+        returns the item including the meta information object
+        '''
+        return src.interaction.ItemMeta(content=self.render(),item=self)
+
     def render(self):
         """
         returns the rendered item

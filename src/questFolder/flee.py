@@ -29,7 +29,7 @@ class Flee(src.quests.MetaQuestSequence):
         reasonString = ""
         if self.reason:
             reasonString = ", to "+self.reason
-        return [f"""Flee from your enemies{reasonString}."""]
+        return [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Flee"""),f""" from your enemies{reasonString}."""]
 
     def triggerCompletionCheck(self,character=None,dryRun=True):
         '''

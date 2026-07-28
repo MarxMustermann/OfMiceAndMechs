@@ -352,7 +352,7 @@ Try as hard as you can to achieve this.
             return (None,(["C", "i", "d", ".", "enter"],"remove the offset from the painter"))
 
         # draw the marker
-        return (None,("Ji","draw to stockpile"))
+        return (None,("Ji","draw the stockpile"))
 
     def getQuestMarkersTile(self,character):
         result = super().getQuestMarkersTile(character)

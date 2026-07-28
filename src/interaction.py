@@ -4798,6 +4798,8 @@ def draw_sdl():
     sdl_map = {}
 
 def stringifyUrwid(inData):
+    if isinstance(inData,int):
+        inData = src.canvas.displayChars.indexedMapping[inData]
     outData = ""
     for item in inData:
         if isinstance(item, tuple):
@@ -4809,6 +4811,8 @@ def stringifyUrwid(inData):
         if isinstance(item, ActionMeta):
             outData += stringifyUrwid(item.content)
         if isinstance(item, CharacterMeta):
+            outData += stringifyUrwid(item.content)
+        if isinstance(item, ItemMeta):
             outData += stringifyUrwid(item.content)
     return outData
 

@@ -51,7 +51,6 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         options.append(("Door","Door"))
         options.append(("RoomBuilder","RoomBuilder"))
         options.append(("Painter","Painter"))
-        options.append(("CityPlaner","CityPlaner"))
         options.append(("ScrapCompactor","ScrapCompactor"))
         options.append(("Sword","Sword"))
         options.append(("Armor","Armor"))

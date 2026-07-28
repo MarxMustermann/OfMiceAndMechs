@@ -146,16 +146,22 @@ Try as hard as you can to achieve this.
         '''
         get the next step towards solving the quest
         '''
+
+        # handle weird edge case
         if self.subQuests:
             return (None,None)
 
+        # handle configuration submenu
         if "advancedConfigure" in character.interactionState:
             if not character.inventory or character.inventory[-1].type != "Painter":
                 return (None,(".","clear interaction state"))
             return (None,("i","activate Painter"))
 
+        # handle menus
         submenue = character.macroState.get("submenue")
         if submenue:
+
+            # select what to configure
             if submenue.tag == "PainterActivitySelection":
                 item = submenue.extraInfo["item"]
                 if self.stockpileType == "i" and item.paintMode != "inputSlot":
@@ -180,6 +186,7 @@ Try as hard as you can to achieve this.
                 if item.offset != (0, 0, 0):
                     return (None,(["d", ".", "enter"],"remove the offset from the painter"))
 
+            # set painting mode
             if submenue.tag == "paintModeSelection":
                 if submenue.text == "":
                     if self.stockpileType == "i":
@@ -198,6 +205,7 @@ Try as hard as you can to achieve this.
                 else:
                     return (None,(["backspace"],"delete input"))
 
+            # set item type
             if submenue.tag == "paintTypeSelection":
                 itemType = self.itemType
                 if not itemType:
@@ -222,6 +230,7 @@ Try as hard as you can to achieve this.
 
                 return (None,(itemType[correctIndex:],"enter type"))
 
+            # configure the name part of the extra parameter
             if submenue.tag == "paintExtraParamName":
                 nameToSet = ""
                 for (key,value) in self.extraInfo.items():
@@ -242,6 +251,7 @@ Try as hard as you can to achieve this.
 
                 return (None,(nameToSet[correctIndex:],"enter name of the extra parameter"))
 
+            # configure the value part of the extra parameter
             if submenue.tag == "paintExtraParamValue":
                 #BUG: ordering is not actually checked
                 valueToSet = ""
@@ -263,17 +273,21 @@ Try as hard as you can to achieve this.
 
                 return (None,(valueToSet[correctIndex:],"enter value of the extra parameter"))
 
+            # configure the painting direction
             if submenue.tag == "paintDirectionSelection":
                 if submenue.text == ".":
                     return (None,(["enter"],"remove the offset from the painter"))
                 if submenue.text != "":
                     return (None,(["backspace"],"remove mistyped characters"))
                 return (None,([".", "enter"],"remove the offset from the painter"))
+
+        # set up helper variables
         rooms = character.getTerrain().getRoomByPosition(self.targetPositionBig)
         if not rooms:
             return self._solver_trigger_fail(dryRun,"target room missing")
         room = rooms[0]
 
+        # end quest, if completed
         if self.stockpileType == "i":
             for inputSlot in room.inputSlots:
                 if inputSlot[0] == self.targetPosition and inputSlot[1] == self.itemType:
@@ -293,12 +307,15 @@ Try as hard as you can to achieve this.
                         self.postHandler()
                     return (None,("+","end quest"))
 
+        # ensure a painter is available
         if not character.inventory or character.inventory[-1].type != "Painter":
             quest = src.quests.questMap["FetchItems"](toCollect="Painter",amount=1)
             return ([quest],None)
 
+        # get the painter object
         item = character.inventory[-1]
 
+        # go near the drawing spot
         if self.targetPositionBig != character.getBigPosition():
             quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="go to the tile the stockpile should be drawn on")
             return ([quest],None)
@@ -306,12 +323,14 @@ Try as hard as you can to achieve this.
             quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,reason="get to the drawing spot")
             return ([quest],None)
 
+        # check what direction to paint in
         offsets = ((0,0,0),(0,1,0),(1,0,0),(0,-1,0),(-1,0,0))
         foundOffset = None
         for offset in offsets:
             if character.getPosition(offset=offset) == self.targetPosition:
                 foundOffset = offset
 
+        # configure the Painter
         if self.stockpileType == "i" and item.paintMode != "inputSlot":
             return (None,(["C","i","m","i","enter"],"configure the painter to input stockpile"))
         if self.stockpileType == "o" and item.paintMode != "outputSlot":
@@ -323,18 +342,16 @@ Try as hard as you can to achieve this.
                 return (None,(["C", "i", "t", *list(self.itemType), "enter"],"configure the item type for the stockpile"))
             else:
                 return (None,(["C", "i", "t", "enter"],"remove the item type for the stockpile"))
-
         for (key,_value) in item.paintExtraInfo.items():
             if key not in self.extraInfo:
                 return (None,(["C","i","c"],"clear the painters extra info"))
-
         for (key,value) in self.extraInfo.items():
             if (key not in item.paintExtraInfo) or (value != item.paintExtraInfo[key]):
                 return (None,(["C","i","e",key,"enter",value,"enter"],"clear the painters extra info"))
-
         if item.offset != (0, 0, 0):
             return (None,(["C", "i", "d", ".", "enter"],"remove the offset from the painter"))
 
+        # draw the marker
         return (None,("Ji","draw to stockpile"))
 
     def getQuestMarkersTile(self,character):

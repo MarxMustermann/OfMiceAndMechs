@@ -9286,7 +9286,7 @@ press enter to continue
 try to remember how you got here ...\n"""
                 text.insert(0,(src.interaction.urwid.AttrSpec(color,"#000"),line))
 
-            root_console = tcod.console.Console(60, 60, order="F")
+            root_console = tcod.console.Console(60, 6, order="F")
             printUrwidToTcod(text, (0,0), explecitConsole=root_console)
 
             atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)

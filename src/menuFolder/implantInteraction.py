@@ -270,11 +270,7 @@ Watch the room burn down.
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Shall i assign you a quest to watch the room explode?"""),"""
 """]
-                extraDescriptions = {}
-                options = [("yes","yes"),("no","no"),("skip","skip")]
-                self.submenu = src.menues.menuMap["SelectionMenu"](base_text,options=options)
-                self.submenu.handleKey(key, noRender, character)
-                self.submenu.extraInfo["task_type"] = "wait_explosion"
+                self._spawnSpawnTaskMenu(base_text,"wait_explosion",offerSkip=True)
                 return False
 
         # indroduce help menu

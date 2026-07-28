@@ -27,6 +27,7 @@ class FetchPainter(src.quests.MetaQuestSequence):
         if self.story:
             storyString = self.story
 
+        sample_painter = src.items.itemMap["Painter"]()
         character_position = self.character.getBigPosition()
         direction_string = self.character.getTerrain().getDistanceDescription(character_position,self.targetPositionBig)
         direction_string = f"The room with the Painter is {direction_string}.\n"
@@ -37,7 +38,8 @@ class FetchPainter(src.quests.MetaQuestSequence):
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Fetch a Painter"""),f""" from tile {self.targetPositionBig}{reasonString}.
 {direction_string}
 
-""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""Use the k or K keys to pick up items.""")]
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""Use the k or K keys to pick up items."""),"""
+A Painter looks like this: """,sample_painter.metaRender()]
         return text
 
     def assignToCharacter(self, character):

@@ -124,6 +124,9 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
             if params.get("type"):
                 character.notify("Item type unknown.")
             return
+        if params.get("type") in ("Anvil","CityPlaner",):
+            character.notify("This item type cannot be produced here.")
+            return
         if params.get("type") in src.items.nonManufacturedTypes:
             ty = params.get("type")
             character.addMessage(f"cannot produce item type {ty}")
@@ -343,6 +346,11 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
             submenue = src.menues.menuMap["InputMenu"]("Type the name of the item to produce",targetParamName="type")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"scheduleProduction","params":params}
+            return
+
+        # filter invalid items
+        if params.get("type") in ("Anvil","CityPlaner",):
+            character.notify("This item type cannot be produced here.")
             return
 
         # show UI to set the amount that should be produced

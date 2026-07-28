@@ -384,7 +384,7 @@ Press d to move the cursor and show the subquests description.
         if freeStorage:
             for room in character.getTerrain().rooms:
                 for buildSite in room.buildSites:
-                    if buildSite[1] == "Machine":
+                    if buildSite[1] in ("Machine","Anvil","CityPlaner",):
                         continue
                     if buildSite[1] in itemsInStorage:
                         continue

@@ -257,7 +257,7 @@ Draw a floor plan assigned to a room{reason}.
             # clear floor
             for storageSlot in storageSlots:
                 if character.container.getItemByPosition(storageSlot[0]):
-                    quest = src.quests.questMap["CleanSpace"](tryHard=True,targetPositionBig=self.targetPosition,targetPosition=storageSlot[0],pickupBolted=True,abortOnfullInventory=False)
+                    quest = src.quests.questMap["CleanSpace"](tryHard=True,targetPositionBig=self.targetPosition,targetPosition=storageSlot[0],pickUpBolted=True,abortOnfullInventory=False)
                     return ([quest],None)
 
             # generate the quests to draw some storage slots

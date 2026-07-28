@@ -168,7 +168,7 @@ Put the items into the stockpiles to make then accessible to the base.
                     return ([quest2,quest1],None)
 
             # just get rid of items
-            quest = src.quests.questMap["DiscardItemsInside"](reason="get rid of the items safely")
+            quest = src.quests.questMap["DiscardItemsInside"](reason="get rid of the items safely",amount=1)
             return ([quest],None)
 
         # return back to original position

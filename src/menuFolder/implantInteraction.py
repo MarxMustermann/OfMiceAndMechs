@@ -586,28 +586,42 @@ It will start to rebuild its working area.
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest?"""),"""
 """]
+
+            # generate quests to choose from
             options = []
+
+            # improve equipment
             shown_improve_equipment = False
             last_improve_equipment = src.gamestate.gamestate.stern.get("last_improve_equipment",0)
             if last_improve_equipment < src.gamestate.gamestate.tick-500:
                 options.append(("improve equipment","improve your equipment"))
                 shown_improve_equipment = True
+
+            # heal
             shown_heal = False
             last_heal = src.gamestate.gamestate.stern.get("last_heal",0)
             if character.health < character.adjustedMaxHealth//2 and last_heal < src.gamestate.gamestate.tick-500:
                 options.append(("heal","heal yourself"))
                 shown_heal = True
+
+            # explore
             shown_explore = False
             if random.random() < 0.5:
                 options.append(("explore","explore terrain"))
                 shown_explore = True
+
+            # help groundskeeper
             options.append(("help","help groundskeeper"))
+
+            # show options not yet shown
             if not shown_improve_equipment:
                 options.append(("improve equipment","improve your equipment"))
             if not shown_heal and character.health < character.adjustedMaxHealth:
                 options.append(("heal","heal yourself"))
             if not shown_explore:
                 options.append(("explore","explore terrain"))
+
+            # show the options to the player
             options.append(("continue","continue without quest"))
             self.submenu = src.menues.menuMap["SelectionMenu"](base_text,options=options)
             self.submenu.tag = "implant_idle_selection"

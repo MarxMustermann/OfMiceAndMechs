@@ -1933,7 +1933,7 @@ This helps a lot with keeping things organized.
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Bring me a painter"""),""", so i can work better.""","""
 
-""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""The Painter looks like: """),sample_painter.render(),f"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""The Painter looks like: """),sample_painter.metaRender(),f"""
 
 You should be able to find Painter in the old writers room.
 It is on the tile {writers_room_coordinate}.
@@ -2344,7 +2344,7 @@ Let's start with metal working.
 There should be a MetalWorkingBench available in the old metal working hall.
 That room is {direction_string}.
 
-""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"A MetalWorkingBench looks like this: "),src.interaction.ItemMeta(content=sample_metalWorkingBench.render(),item=sample_metalWorkingBench),"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"A MetalWorkingBench looks like this: "),sample_metalWorkingBench.metaRender(),"""
 """])
                 offer_accept_options = True
             else:

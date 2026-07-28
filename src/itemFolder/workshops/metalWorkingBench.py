@@ -349,8 +349,16 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
             return
 
         # filter invalid items
+        if params.get("type") not in src.items.itemMap:
+            if params.get("type"):
+                character.notify("Item type unknown.")
+            return
         if params.get("type") in ("Anvil","CityPlaner",):
             character.notify("This item type cannot be produced here.")
+            return
+        if params.get("type") in src.items.nonManufacturedTypes:
+            ty = params.get("type")
+            character.addMessage(f"cannot produce item type {ty}")
             return
 
         # show UI to set the amount that should be produced

@@ -384,10 +384,6 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         '''
         check if the item is ready to use
         '''
-        try:
-            self.inUse
-        except:
-            self.inUse = False
 
         if self.inUse:
             return False

@@ -2635,13 +2635,6 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         for pos in [(6,11,0),(6,10,0),(6,9,0),(6,8,0),(6,7,0),(7,7,0),(7,6,0),(7,5,0),(6,5,0),(5,5,0),(5,6,0),(5,7,0)]:
             baseCoreRoom.addWalkingSpace(pos)
 
-        scrapPositions = []
-        scrapPositions.extend([(4,5,0),(3,5,0),(2,5,0),(3,4,0)])
-        for pos in scrapPositions:
-            scrap = src.items.itemMap["Scrap"](amount=random.randint(1,5))
-            baseCoreRoom.addItem(scrap,pos)
-        for x in range(2,5,):
-            baseCoreRoom.addStorageSlot((x,5,0),"Scrap",{"desiredState":"filled"})
         for _i in range(25):
             position = baseCoreRoom.getRandomPosition()
             if position[0] in (5,6,7,) and position[1] > 4:

@@ -66,10 +66,11 @@ class DisableAlarm(src.quests.MetaQuestSequence):
         else:
             direction_string = "The target room is missing."
 
+        sample_siegeManager = src.items.itemMap["SiegeManager"]()
         text = ["""
 The groundskeeper is not willing to leave its room as long as the alarm is running.
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Disable the alarm."),f"""
-Use the SiegeManager to unrestrict the outside movement.
+Use the SiegeManager (""",sample_siegeManager.metaRender(),f""") to unrestrict the outside movement.
 
 {direction_string}
 """]

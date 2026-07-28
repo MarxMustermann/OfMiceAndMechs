@@ -222,4 +222,4 @@ it holds the command:
         m+= " repeat"
         character.addMessage(m)
 
-src.items.addType(Command)
+src.items.addType(Command, nonManufactured=True)

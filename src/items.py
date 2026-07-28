@@ -589,7 +589,7 @@ class Item:
             text += "\n"
         return text
 
-    def metaRender(self)():
+    def metaRender(self):
         '''
         returns the item including the meta information object
         '''

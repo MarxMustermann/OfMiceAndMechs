@@ -35,6 +35,15 @@ class HelpGroundskeeper(src.quests.MetaQuestSequence):
             return self._solver_trigger_fail(dryRun,"keeper not found")
         keeper_position = keeper.getBigPosition()
 
+        # take care of enemies
+        character.getNearbyEnemies()
+        if character.health < character.adjustedMaxHealth//4:
+            quest = src.quests.questMap["Flee"]()
+            return ([quest],None)
+        else:
+            quest = src.quests.questMap["Fight"]()
+            return ([quest],None)
+
         # go near the groundskeeper
         if not character.getBigPosition() == keeper_position:
             quest = src.quests.questMap["GoToTile"](targetPosition=keeper_position)

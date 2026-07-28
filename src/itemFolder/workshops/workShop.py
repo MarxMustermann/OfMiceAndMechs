@@ -65,4 +65,4 @@ class WorkShop(src.items.Item):
         return True
 
 
-src.items.addType(WorkShop)
+src.items.addType(WorkShop, nonManufactured=True)

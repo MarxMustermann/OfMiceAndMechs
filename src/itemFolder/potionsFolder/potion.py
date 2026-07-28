@@ -27,4 +27,4 @@ class Potion(src.items.Item):
     @abstractmethod
     def ingredients(): ...
 
-src.items.addType(Potion)
+src.items.addType(Potion, nonManufactured=True)

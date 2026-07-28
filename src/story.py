@@ -2662,6 +2662,8 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                     continue
                 if y == 7 and x in (5,6,7):
                     continue
+                if (x,y,0) == (1,11,0):
+                    continue
                 storageSlots.append(((x,y,0),None,{}))
         for y in (8,10):
             for x in range(1,12):

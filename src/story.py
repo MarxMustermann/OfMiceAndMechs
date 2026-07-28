@@ -2365,8 +2365,21 @@ We will need a lot of MetalBars to produce a lot of things.
             # generate quest to fetch Anvil
             anvil = character.searchInventory("Anvil")
             if not anvil:
+                sample_anvil = src.items.itemMap["Anvil"]()
+                scrapHammering_room_coordinate = (10,9,0)
+                character_position = partner.getBigPosition()
+                direction_string = partner.getTerrain().getDistanceDescription(character_position,scrapHammering_room_coordinate)
                 base_response_text.extend(["""
-""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Now i need an anvil."),"""
+To get production running a lot of MetalBars will be needed.
+Those are the basic resource for most things.
+
+MetalBars are produced by hammering Scrap on an Anvil.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Fetch me an Anvil."),f"""
+
+There should be an Anvil available in the old scrap hammering hall.
+That room is {direction_string}.
+
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"A Anvil looks like this: "),sample_anvil.metaRender(),"""
 """])
                 offer_accept_options = True
             else:

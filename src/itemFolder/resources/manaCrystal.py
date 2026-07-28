@@ -26,4 +26,4 @@ class ManaCrystal(src.items.Item):
         self.destroy(generateScrap=False)
 
 # register item type
-src.items.addType(ManaCrystal)
+src.items.addType(ManaCrystal, nonManufactured=True)

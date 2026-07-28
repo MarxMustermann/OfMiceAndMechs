@@ -74,4 +74,4 @@ can be processed in a corpse shredder
             self.destroy(generateScrap=False)
     '''
 
-src.items.addType(Corpse)
+src.items.addType(Corpse, nonManufactured=True)

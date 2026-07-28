@@ -590,6 +590,12 @@ It will start to rebuild its working area.
             # generate quests to choose from
             options = []
 
+            # help groundskeeper
+            shown_help = False
+            if not groundskeepers_place.getItemByType("Anvil") or not groundskeepers_place.getItemByType("MetalWorkingBench"):
+                options.append(("help","help groundskeeper"))
+                shown_help = True
+
             # improve equipment
             shown_improve_equipment = False
             last_improve_equipment = src.gamestate.gamestate.stern.get("last_improve_equipment",0)
@@ -610,10 +616,9 @@ It will start to rebuild its working area.
                 options.append(("explore","explore terrain"))
                 shown_explore = True
 
-            # help groundskeeper
-            options.append(("help","help groundskeeper"))
-
             # show options not yet shown
+            if not shown_help:
+                options.append(("help","help groundskeeper"))
             if not shown_improve_equipment:
                 options.append(("improve equipment","improve your equipment"))
             if not shown_heal and character.health < character.adjustedMaxHealth:

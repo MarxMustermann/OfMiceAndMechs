@@ -16,4 +16,4 @@ class Grindstone(src.items.Item):
         super().__init__(display="^ ")
 
 
-src.items.addType(Grindstone)
+src.items.addType(Grindstone, nonManufactured=True)

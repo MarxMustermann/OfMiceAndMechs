@@ -205,12 +205,12 @@ def Death(extraParam):
 
             text = []
             text.append("")
-            text.append([f"{reason}"])
+            text.append((src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),reason))
             if killer:
+                killer_description = killer.charType
                 if isinstance(killer,src.characters.characterMap["Clone"]):
-                    text.append(f"by {killer.name}")
-                else:
-                    text.append(f"by {killer.charType}")
+                    killer_description = killer.name
+                text.append((src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"by {killer_description}"))
 
             text.append("")
             text.append("press s to see the characters stats")

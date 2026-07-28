@@ -190,20 +190,9 @@ if __name__ == '__main__':
 
                     interaction.tcodConsole.clear()
 
-                    text = "something happened and the game crashed. Do you consent to uploading the bug report?\n"
-                    text+= "press y to accept or press n to deny\n"
+                    text = "something happened and the game crashed. Do you consent to uploading the bug report?\n\n"
+                    text+= "press y to accept or press n to deny\n\n"
                     text+= "(the report doesn't include any personal data)\n"
-
-                    splitted = text.splitlines()
-                    width = len(max(splitted, key=len))
-                    height = len(splitted)
-                    x = int(src.interaction.tcodConsole.width / 2 - width / 2)
-                    y = int(src.interaction.tcodConsole.height / 2 - 3 - height)
-
-                    src.helpers.draw_frame_text(src.interaction.tcodConsole ,width, height, text, x, y)
-
-                    src.interaction.tcodPresent()
-
 
                     exceptionText = ''.join(traceback.format_exception(None, e, e.__traceback__))
 
@@ -217,8 +206,9 @@ if __name__ == '__main__':
                         y = int(src.interaction.tcodConsole.height / 2 - h / 2)
 
 
+                        src.interaction.tcodPresent(noPresent=True)
                         src.helpers.draw_frame_text(src.interaction.tcodConsole ,w, h, text, x, y)
-                        src.interaction.tcodPresent()
+                        src.interaction.sdl_renderer2.present()
 
                         while True:
                             events = tcod.event.get()
@@ -267,8 +257,9 @@ if __name__ == '__main__':
                                                 y = int(src.interaction.tcodConsole.height / 2 - h / 2)
 
 
+                                                src.interaction.tcodPresent(noPresent=True)
                                                 src.helpers.draw_frame_text(src.interaction.tcodConsole ,w, h, text, x, y)
-                                                src.interaction.tcodPresent()
+                                                src.interaction.sdl_renderer2.present()
                                                 if isinstance(event,tcod.event.TextInput):
                                                     info += event.text
 
@@ -320,8 +311,9 @@ if __name__ == '__main__':
                                     text+= "please wait until the data upload is done"
                                     w = len(max(text.splitlines(), key=len))
                                     x = int(src.interaction.tcodConsole.width / 2 - w / 2 )
+                                    src.interaction.tcodPresent(noPresent=True)
                                     src.helpers.draw_frame_text(src.interaction.tcodConsole ,w, 2, text, x, y)
-                                    src.interaction.tcodPresent()
+                                    src.interaction.sdl_renderer2.present()
                                     while t.is_alive():
                                         src.helpers.deal_with_window_events(e)
                                     askToOpenDiscordChannel()
@@ -332,22 +324,30 @@ if __name__ == '__main__':
                                     text = "okay then, here is the trace copied to your clipboard in case you feel better writing me an email"
                                     x = int(src.interaction.tcodConsole.width / 2 - len(text) / 2)
                                     tcod.sdl.sys._set_clipboard(exceptionText)
+                                    src.interaction.tcodPresent(noPresent=True)
                                     src.helpers.draw_frame_text(src.interaction.tcodConsole ,len(text), 1, text, x, y)
-                                    src.interaction.tcodPresent()
+                                    src.interaction.sdl_renderer2.present()
                                     t.start()
                                     while t.is_alive():
                                         src.helpers.deal_with_window_events(e)
                                     askToOpenDiscordChannel()
                                     raise e
-                                src.interaction.tcodPresent()
                             if isinstance(event, tcod.event.Quit):
                                 raise e
                             if isinstance(event, tcod.event.WindowEvent):
                                 match event.type:
                                     case "WINDOWCLOSE":
                                         raise e
-                                    case _:
-                                        src.interaction.tcodPresent()
+
+                        splitted = text.splitlines()
+                        width = len(max(splitted, key=len))
+                        height = len(splitted)
+                        x = int(src.interaction.tcodConsole.width / 2 - width / 2)
+                        y = int(src.interaction.tcodConsole.height / 2 - 3 - height)
+
+                        src.interaction.tcodPresent(noPresent=True)
+                        src.helpers.draw_frame_text(src.interaction.tcodConsole ,width, height, text, x, y)
+                        src.interaction.sdl_renderer2.present()
 
     except Exception as e:
         if src.interaction.tcodMixer:

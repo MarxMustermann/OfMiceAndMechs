@@ -163,25 +163,6 @@ def Death(extraParam):
         src.helpers.deal_with_window_events()
         time.sleep(0.014)
 
-    text = f"{reason}\n"
-    if killer:
-        if isinstance(killer,src.characters.characterMap["Clone"]):
-            text += f"by {killer.name}\n"
-        else:
-            text += f"by {killer.charType}\n"
-
-    text += "press s to see the characters stats\n"
-    text += "press enter to return to main menu"
-
-    splitted = text.splitlines()
-    width = len(max(splitted, key=len))
-    height = len(splitted)
-    x = int(playerpos[0]- width / 2)
-    y = int(src.interaction.tcodConsole.height / 2 - 3 - height)
-    original_window_content = src.interaction.tcodConsole.rgba.copy()
-    src.helpers.draw_frame_text(src.interaction.tcodConsole ,width, height, text, x, y)
-
-    src.interaction.tcodPresent()
     while 1:
         events = list(tcod.event.get())
         while events or runStar:
@@ -221,8 +202,43 @@ def Death(extraParam):
                 raise src.interaction.EndGame("character died")
 
             src.helpers.deal_with_window_events()
-            src.interaction.tcodPresent()
 
+            text = []
+            text.append("")
+            text.append([f"{reason}"])
+            if killer:
+                if isinstance(killer,src.characters.characterMap["Clone"]):
+                    text.append(f"by {killer.name}")
+                else:
+                    text.append(f"by {killer.charType}")
+
+            text.append("")
+            text.append("press s to see the characters stats")
+            text.append("press enter to return to main menu")
+
+            longestLine = 0
+            numLines = 0
+            for line in text:
+                numLines += 1
+                line = src.urwidSpecials.flattenToPeseudoString(line)
+                if len(line) <= longestLine:
+                    continue
+                longestLine = len(line)
+
+            newText = []
+            for line in text:
+                newText.append(" "*((longestLine-len(src.urwidSpecials.flattenToPeseudoString(line)))//2))
+                newText.append(line)
+                newText.append("\n")
+
+            width = longestLine
+            height = numLines
+            x = int(playerpos[0]- width / 2)
+            y = int(src.interaction.tcodConsole.height / 2 - 3 - height)
+            original_window_content = src.interaction.tcodConsole.rgba.copy()
+            src.interaction.tcodPresent(noPresent=True)
+            src.helpers.draw_frame_text(src.interaction.tcodConsole ,width, height, newText, x, y)
+            src.interaction.sdl_renderer2.present()
 
 def show_Stats(original_window_content, character):
     numpy.copyto(src.interaction.tcodConsole.rgba, original_window_content)
@@ -260,4 +276,30 @@ def show_Stats(original_window_content, character):
                 return
 
             src.helpers.deal_with_window_events()
-            src.interaction.tcodPresent()
+            src.interaction.tcodPresent(noPresent=True)
+
+            text = src.menues.menuMap["CharacterStatsMenu"](character).text(character)
+            text += "\npress enter to return"
+
+            splitted = text.splitlines()
+            width = len(max(splitted, key=len))
+            height = len(splitted)
+
+            if height > src.interaction.tcodConsole.height - 8:
+                splits = math.ceil(height / (src.interaction.tcodConsole.height - 8))
+                gap = (src.interaction.tcodConsole.width - splits * width) / (splits + 1)
+                for i in range(1, splits + 1):
+                    src.helpers.draw_frame_text(
+                        src.interaction.tcodConsole,
+                        width,
+                        src.interaction.tcodConsole.height - 8,
+                        "\n".join(splitted[int(((i - 1) / splits) * len(splitted)) : int((i / splits) * len(splitted))]),
+                        math.floor(gap * i + width * (i - 1)),
+                        4,
+                    )
+            else:
+                x = int(src.interaction.tcodConsole.width / 2 - width / 2)
+                y = int(src.interaction.tcodConsole.height / 2 - height / 2)
+                src.helpers.draw_frame_text(src.interaction.tcodConsole, width, height, text, x, y)
+
+            src.interaction.sdl_renderer2.present()

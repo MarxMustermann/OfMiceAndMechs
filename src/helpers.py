@@ -14,36 +14,34 @@ def clamp(n, min, max):
         return max
     return n
 
+def draw_frame_text(removeme, width, height, text, x, y, center=True):
 
-def draw_frame_text(con, width, height, t, x, y):
-    for cx in range(x - 2, x + width+1):
-        for cy in range(y - 2, y + height+1):
-            con.rgb[cx, cy] = ord(" "), (0, 0, 0), (0, 0, 0)
-    for cx in range(x - 2, x + width+1):
-        con.rgb[cx, y - 2] = ord("-"), (255, 255, 255), (0, 0, 0)
-        con.rgb[cx, y + height+1] = ord("-"), (255, 255, 255), (0, 0, 0)
-    for cy in range(y - 2, y + height+1):
-        con.rgb[x - 2, cy] = ord("|"), (255, 255, 255), (0, 0, 0)
-        con.rgb[x + width+1, cy] = ord("|"), (255, 255, 255), (0, 0, 0)
+    line_width = 5
+    padding = 15
 
-    con.rgb[x - 2, y - 2] = ord("+"), (255, 255, 255), (0, 0, 0)
-    con.rgb[x - 2, y - 3] = ord("|"), (255, 255, 255), (0, 0, 0)
-    con.rgb[x - 3, y - 2] = ord("-"), (255, 255, 255), (0, 0, 0)
+    sdl_renderer2 = src.interaction.sdl_renderer2
+    x_pixels = x*src.interaction.tileWidth
+    y_pixels = y*src.interaction.tileHeight
+    width_pixels = width*src.interaction.tileWidth
+    height_pixels = height*src.interaction.tileHeight
 
-    con.rgb[x + width+1, y - 2] = ord("+"), (255, 255, 255), (0, 0, 0)
-    con.rgb[x + width+1, y - 3] = ord("|"), (255, 255, 255), (0, 0, 0)
-    con.rgb[x + width+2, y - 2] = ord("-"), (255, 255, 255), (0, 0, 0)
+    root_console = tcod.console.Console(width, height, order="F")
+    src.interaction.printUrwidToTcod(text, (0,0), explecitConsole=root_console)
 
-    con.rgb[x - 2, y + height + 1] = ord("+"), (255, 255, 255), (0, 0, 0)
-    con.rgb[x - 2, y + height + 2] = ord("|"), (255, 255, 255), (0, 0, 0)
-    con.rgb[x - 3, y + height + 1] = ord("-"), (255, 255, 255), (0, 0, 0)
+    atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,src.interaction.tileset_ui)
+    console_render = tcod.render.SDLConsoleRender(atlas)
+    renderedToTexture = console_render.render(root_console)
+    sdl_renderer2.copy(
+                renderedToTexture,
+                (0,0,renderedToTexture.width,renderedToTexture.height),
+                (x_pixels+padding,y_pixels+padding,renderedToTexture.width,renderedToTexture.height),
+            )
 
-    con.rgb[x + width + 1, y + height + 1] = ord("+"), (255, 255, 255), (0, 0, 0)
-    con.rgb[x + width + 1, y + height + 2] = ord("|"), (255, 255, 255), (0, 0, 0)
-    con.rgb[x + width + 2, y + height+1] = ord("-"), (255, 255, 255), (0, 0, 0)
-
-    con.print_box(x, y, width, height, t, (255, 255, 255), (0, 0, 0), tcod.constants.BKGND_SET, tcod.constants.CENTER)
-
+    sdl_renderer2.draw_color = (150,150,150,255)
+    sdl_renderer2.fill_rect((x_pixels,y_pixels,width_pixels+padding*2,line_width))
+    sdl_renderer2.fill_rect((x_pixels,y_pixels,line_width,height_pixels+padding*2))
+    sdl_renderer2.fill_rect((x_pixels+width_pixels+2*padding-line_width,y_pixels,line_width,height_pixels+padding*2))
+    sdl_renderer2.fill_rect((x_pixels,y_pixels+height_pixels+2*padding-line_width,width_pixels+padding*2,line_width))
 
 def fade_between_consoles_rgb(current, target, t):
     transition_array = ["?", "/", "."]

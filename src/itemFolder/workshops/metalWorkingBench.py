@@ -118,18 +118,25 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
             character.macroState["submenue"].followUp = {"container":self,"method":"produceItem","params":params}
             return
 
-        # abort on weird states
-        if params.get("type") not in src.items.itemMap:
-            if params.get("type"):
+        # filter invalid items
+        item_type = params.get("type")
+        if item_type not in src.items.itemMap:
+            if item_type:
                 character.notify("Item type unknown.")
+            return
+        if item_type in src.items.nonManufacturedTypes:
+            character.notify(f"cannot produce item type {item_type}.")
+            return
+        if item_type in src.items.potionTypes:
+            character.notify(f"You cannot produce that item here.\nPotions can be produced at the alchemy table.")
+            return
+        if item_type in ("Anvil","CityPlaner",):
+            character.notify(f"You cannot produce that item here.")
             return
         if params.get("type") not in self.getProducableItemTypes():
             character.notify("This item type cannot be produced here.")
             return
-        if params.get("type") in src.items.nonManufacturedTypes:
-            ty = params.get("type")
-            character.notify(f"cannot produce item type {ty}")
-            return
+
 
         # get user input on how many items should be produced
         if "rawAmount" in params:
@@ -348,16 +355,21 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
             return
 
         # filter invalid items
-        if params.get("type") not in src.items.itemMap:
-            if params.get("type"):
+        if item_type not in src.items.itemMap:
+            if item_type:
                 character.notify("Item type unknown.")
+            return
+        if item_type in src.items.nonManufacturedTypes:
+            character.notify(f"cannot produce item type {item_type}.")
+            return
+        if item_type in src.items.potionTypes:
+            character.notify(f"You cannot produce that item here.\nPotions can be produced at the alchemy table.")
+            return
+        if item_type in ("Anvil","CityPlaner",):
+            character.notify(f"You cannot produce that item here.")
             return
         if params.get("type") not in self.getProducableItemTypes():
             character.notify("This item type cannot be produced here.")
-            return
-        if params.get("type") in src.items.nonManufacturedTypes:
-            ty = params.get("type")
-            character.notify(f"cannot produce item type {ty}")
             return
 
         # show UI to set the amount that should be produced

@@ -597,9 +597,12 @@ It will start to rebuild its working area.
                 shown_help = True
 
             # improve equipment
+            has_equipment = False
+            if character.armor or isinstance(character.weapon,src.items.itemMap["Sword"]):
+                has_equipment = True
             shown_improve_equipment = False
             last_improve_equipment = src.gamestate.gamestate.stern.get("last_improve_equipment",0)
-            if last_improve_equipment < src.gamestate.gamestate.tick-500 and (character.weapon or character.armor):
+            if has_equipment and last_improve_equipment < src.gamestate.gamestate.tick-500 and (character.weapon or character.armor):
                 options.append(("improve equipment","improve your equipment"))
                 shown_improve_equipment = True
 
@@ -619,7 +622,7 @@ It will start to rebuild its working area.
             # show options not yet shown
             if not shown_help:
                 options.append(("help","help groundskeeper"))
-            if not shown_improve_equipment:
+            if has_equipment and not shown_improve_equipment:
                 options.append(("improve equipment","improve your equipment"))
             if not shown_heal and character.health < character.adjustedMaxHealth:
                 options.append(("heal","heal yourself"))

@@ -36,13 +36,13 @@ class HelpGroundskeeper(src.quests.MetaQuestSequence):
         keeper_position = keeper.getBigPosition()
 
         # take care of enemies
-        character.getNearbyEnemies()
-        if character.health < character.adjustedMaxHealth//4:
-            quest = src.quests.questMap["Flee"]()
-            return ([quest],None)
-        else:
-            quest = src.quests.questMap["Fight"]()
-            return ([quest],None)
+        if character.getNearbyEnemies():
+            if character.health < character.adjustedMaxHealth//4:
+                quest = src.quests.questMap["Flee"]()
+                return ([quest],None)
+            else:
+                quest = src.quests.questMap["Fight"]()
+                return ([quest],None)
 
         # go near the groundskeeper
         if not character.getBigPosition() == keeper_position:

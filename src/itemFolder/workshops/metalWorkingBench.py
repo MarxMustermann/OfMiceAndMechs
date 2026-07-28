@@ -128,7 +128,7 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
             return
         if params.get("type") in src.items.nonManufacturedTypes:
             ty = params.get("type")
-            character.addMessage(f"cannot produce item type {ty}")
+            character.notify(f"cannot produce item type {ty}")
             return
 
         # get user input on how many items should be produced
@@ -357,7 +357,7 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
             return
         if params.get("type") in src.items.nonManufacturedTypes:
             ty = params.get("type")
-            character.addMessage(f"cannot produce item type {ty}")
+            character.notify(f"cannot produce item type {ty}")
             return
 
         # show UI to set the amount that should be produced

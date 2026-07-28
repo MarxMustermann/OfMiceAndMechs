@@ -3152,7 +3152,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
             if y == 6:
                 continue
             metalWorkingRoom.addWalkingSpace((6,y,0))
-        metalWorkingRoom.addWalkingSpace((4,5,0))
+        metalWorkingRoom.addWalkingSpace((3,6,0))
         metalWorkingRoom.addWalkingSpace((4,6,0))
 
         stasisTank = src.items.itemMap["StasisTank"]()

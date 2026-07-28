@@ -21,4 +21,4 @@ class SpiderEye(src.items.Item):
 
         super().__init__("~~")
 
-src.items.addType(SpiderEye)
+src.items.addType(SpiderEye, nonManufactured=True)

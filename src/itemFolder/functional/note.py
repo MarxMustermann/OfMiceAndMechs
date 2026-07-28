@@ -64,4 +64,4 @@ it holds the text:
 
         self.text = text
 
-src.items.addType(Note)
+src.items.addType(Note, nonManufactured=True)

@@ -593,7 +593,7 @@ It will start to rebuild its working area.
             # improve equipment
             shown_improve_equipment = False
             last_improve_equipment = src.gamestate.gamestate.stern.get("last_improve_equipment",0)
-            if last_improve_equipment < src.gamestate.gamestate.tick-500:
+            if last_improve_equipment < src.gamestate.gamestate.tick-500 and (character.weapon or character.armor):
                 options.append(("improve equipment","improve your equipment"))
                 shown_improve_equipment = True
 

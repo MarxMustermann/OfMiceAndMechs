@@ -135,7 +135,9 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
         else:
             itemsOnFloor = character.container.getNearbyItems(character)
         for item in itemsOnFloor:
-            if item.bolted or not item.walkable:
+            if item.bolted:
+                continue
+            if  not item.walkable:
                 continue
             if item.xPosition == None:
                 logger.error("found ghost item")

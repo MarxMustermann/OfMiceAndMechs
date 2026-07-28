@@ -678,7 +678,7 @@ class Character:
             the number of free inventory slots
         '''
         if not ignoreTypes:
-            return 10-len(self.inventory)
+            return max(10-len(self.inventory),0)
 
         num_items_in_inventory = 0
         for item in self.inventory:

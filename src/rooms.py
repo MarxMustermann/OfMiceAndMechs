@@ -142,12 +142,14 @@ class Room:
             result.append(item)
         return result
 
-    def getItems(self,floorItemsOnly=True,needsUnbolted=False):
+    def getItems(self,floorItemsOnly=True,needsUnbolted=False,ignoreBigItems=False):
         result = []
         for item in self.itemsOnFloor:
             if floorItemsOnly and (item.xPosition in (0,12,) or item.yPosition in (0,12,)):
                 continue
             if needsUnbolted and item.bolted:
+                continue
+            if ignoreBigItems and not item.walkable:
                 continue
             result.append(item)
         return result

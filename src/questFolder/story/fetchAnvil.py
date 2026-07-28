@@ -27,6 +27,7 @@ class FetchAnvil(src.quests.MetaQuestSequence):
         if self.story:
             storyString = self.story
 
+        sample_anvil = src.items.itemMap["Anvil"]()
         character_position = self.character.getBigPosition()
         direction_string = self.character.getTerrain().getDistanceDescription(character_position,self.targetPositionBig)
         direction_string = f"The room with the Anvil is {direction_string}.\n"
@@ -37,7 +38,9 @@ class FetchAnvil(src.quests.MetaQuestSequence):
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Fetch a Anvil"""),f""" from tile {self.targetPositionBig}{reasonString}.
 {direction_string}
 
-""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""Use the k or K keys to pick up items.""")]
+An Anvil looks like this: """,sample_anvil.metaRender(),"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""Use the k or K keys to pick up items."""),"""
+"""]
         return text
 
     def assignToCharacter(self, character):

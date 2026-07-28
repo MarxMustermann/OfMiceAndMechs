@@ -2350,7 +2350,9 @@ That room is {direction_string}.
 """])
                 offer_accept_options = True
             else:
-                base_response_text.extend(["""
+                base_response_text.extend([(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"""
+> You give the groundskeeper a MetalWorkingBench."""),"""
+
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Thanks for the MetalWorkingBench."),"""
 
 That will allow to produce items from MetalBars.
@@ -2385,7 +2387,9 @@ That room is {direction_string}.
 """])
                 offer_accept_options = True
             else:
-                base_response_text.extend(["""
+                base_response_text.extend([(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"""
+> You give the groundskeeper a Anvil."""),"""
+
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Thanks for the anvil."),"""
 
 That will allow to process scrap to metal bars.

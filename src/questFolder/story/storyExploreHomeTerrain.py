@@ -106,8 +106,13 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
                     quest = src.quests.questMap["ClearInventory"](reason="be able pick up loot")
                     return ([quest],None)
 
+                candidates = []
+                for walkingSpace in room.walkingSpace:
+                    if walkingSpace[0] in (0,12,) or walkingSpace[1] in (0,12,):
+                        continue
+                    candidates.append(walkingSpace)
 
-                pos = random.choice(list(room.walkingSpace))
+                pos = random.choice(candidates)
                 item = character.inventory[-1]
                 quest = src.quests.questMap["PlaceItem"](
                                                 targetPositionBig=groundskeepers_place.getPosition(),

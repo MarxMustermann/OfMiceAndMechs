@@ -685,7 +685,7 @@ class Character:
             if item.type in ignoreTypes:
                 continue
             num_items_in_inventory += 1
-        return 10-num_items_in_inventory
+        return max(10-num_items_in_inventory,0)
 
     def getItemWalkable(self,item):
         '''

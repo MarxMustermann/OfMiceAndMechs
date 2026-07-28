@@ -1260,7 +1260,7 @@ def addType(toRegister, potion=False, nonManufactured=False):
     itemMap[toRegister.type] = toRegister
 
     if potion:
-        potionTypes.append(toRegister)
+        potionTypes.append(toRegister.type)
 
     if nonManufactured:
         nonManufacturedTypes.add(toRegister.type)

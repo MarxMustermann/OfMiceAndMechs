@@ -2362,7 +2362,7 @@ We will need a lot of MetalBars to produce a lot of things.
 
         elif task == "fetch Anvil":
 
-            # generate quest to fetch MetalWorkingBench
+            # generate quest to fetch Anvil
             anvil = character.searchInventory("Anvil")
             if not anvil:
                 base_response_text.extend(["""

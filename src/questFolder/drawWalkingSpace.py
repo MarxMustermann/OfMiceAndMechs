@@ -134,7 +134,7 @@ Try as hard as you can to achieve this.
 
         # configure the Painter
         if item.paintMode != "walkingSpace":
-            return (None,(["C","m","w","enter"],"configure the painter to walking space"))
+            return (None,(["C","i","m","w","enter"],"configure the painter to walking space"))
         if item.offset != (0, 0, 0):
             return (None,(["C", "i", "d", ".", "enter"],"remove the offset from the painter"))
 

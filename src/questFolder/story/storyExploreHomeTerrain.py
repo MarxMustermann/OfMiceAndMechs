@@ -31,7 +31,7 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
             
             if enemies:
                 continue
-            if not room.getItems(needsUnbolted=True):
+            if not room.getItems(needsUnbolted=True,ignoreBigItems=True):
                 continue
 
             if room.getPosition() not in result and room.getPosition() not in self.donePointsOfInterest:

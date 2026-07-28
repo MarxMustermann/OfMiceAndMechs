@@ -51,7 +51,7 @@ class CharacterStatsMenu(src.menues.SubMenu):
         text += f"terrains known: {len(character.terrainInfo)}"
         return text
 
-    def render(self):
+    def render(self,size=None):
         return self.text(self.character)
 
     @staticmethod

@@ -55,7 +55,7 @@ class TerrainMenu(src.menues.SubMenu):
 
         return False
 
-    def render(self):
+    def render(self,size=None):
         mapText = self.renderZoneInfo(self.character)
         mapText[self.cursor[1]][self.cursor[0]] = "██"
         mapText.append(f"\n press wasd to move cursor {self.cursor}")

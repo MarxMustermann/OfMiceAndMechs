@@ -18,7 +18,7 @@ class CombatInfoMenu(src.menues.SubMenu):
     def getTitle(self):
         return "COMBAT INFORMATION"
 
-    def render(self):
+    def render(self,size=None):
         char = self.char
 
         if char.dead:

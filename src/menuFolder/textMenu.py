@@ -67,7 +67,7 @@ class TextMenu(src.menues.SubMenu):
 
         return False
 
-    def render(self):
+    def render(self,size=None):
         return self.text
 
 # register the menu type

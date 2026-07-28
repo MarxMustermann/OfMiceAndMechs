@@ -73,9 +73,9 @@ class IdleChatNPCMenu(src.menues.SubMenu):
             self.npc.timeTaken = 0
         return True
 
-    def render(self):
+    def render(self,size=None):
         if self.subMenu:
-            return self.subMenu.render()
+            return self.subMenu.render(size=size)
         return super().render()
 
 # register the menu type

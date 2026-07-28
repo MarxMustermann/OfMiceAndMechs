@@ -240,7 +240,7 @@ class SubMenu(object):
         self.select_option(key)
         src.gamestate.gamestate.mainChar.runCommandString("~")
 
-    def render(self):
+    def render(self,size=None):
         # show question
         out = []
         if self.query:

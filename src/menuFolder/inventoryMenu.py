@@ -185,7 +185,7 @@ class InventoryMenu(src.menues.SubMenu):
 
     # bad code: global function
     # bad code: should be abstracted
-    def render(self):
+    def render(self,size=None):
         """
         render the inventory of the player into a string
 
@@ -194,7 +194,7 @@ class InventoryMenu(src.menues.SubMenu):
         """
 
         if self.subMenu:
-            return self.subMenu.render()
+            return self.subMenu.render(size,size)
 
         char = self.char
         character = char

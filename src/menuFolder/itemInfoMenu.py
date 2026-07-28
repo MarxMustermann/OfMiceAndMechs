@@ -18,7 +18,7 @@ class ItemInfoMenu(src.menues.SubMenu):
     def getTitle(self):
         return "NEARBY ITEMS"
 
-    def render(self):
+    def render(self,size=None):
         char = self.char
 
         if char.dead:

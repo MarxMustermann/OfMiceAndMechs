@@ -84,9 +84,9 @@ class SelectionMenu(src.menues.SubMenu):
             return "s"*(target_index-self.selectionIndex)+"w"*(self.selectionIndex-target_index)+selectionCommand
         return None
 
-    def render(self):
+    def render(self,size=None):
         result = []
-        result.append(super().render())
+        result.append(super().render(size=size))
         result.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"\npress w/s/up/down to move cursor\npress j/k/enter to select option\npress esc to close menu\npress a/d/left/right to shift options"))
         return result
 

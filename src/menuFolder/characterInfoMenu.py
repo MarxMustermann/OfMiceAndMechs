@@ -30,7 +30,7 @@ class CharacterInfoMenu(src.menues.SubMenu):
             max_line = max(max_line,len(line))
         return (len(lines),max_line)
 
-    def render(self):
+    def render(self,size=None):
 
         char = self.char
 

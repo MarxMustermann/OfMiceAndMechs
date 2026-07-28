@@ -617,12 +617,12 @@ It will start to rebuild its working area.
             return False
         1/0
 
-    def render(self):
+    def render(self,size=None):
         '''
         show the text of the menu
         '''
         if self.submenu:
-            return self.submenu.render()
+            return self.submenu.render(size=size)
         else:
             return ["""something went wrong"""]
 

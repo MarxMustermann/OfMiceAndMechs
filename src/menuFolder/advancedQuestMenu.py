@@ -145,12 +145,12 @@ class AdvancedQuestMenu(src.menues.SubMenu):
             self.activeChar.macroState["submenue"] = src.menues.menuMap["CreateQuestMenu"](self.quest, [self.character], self.activeChar)
         return True
 
-    def render(self):
+    def render(self,size=None):
         '''
         show the text of the menu
         '''
         if self.submenu:
-            return self.submenu.render()
+            return self.submenu.render(size=size)
         else:
             return ["""something went wrong"""]
 

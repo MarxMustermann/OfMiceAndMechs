@@ -54,7 +54,7 @@ class OneKeystrokeMenu(src.menues.SubMenu):
         self.firstRun = False
         return False
 
-    def render(self):
+    def render(self,size=None):
         out = []
         out.append(self.text)
         out.append("\n")

@@ -18,7 +18,7 @@ class CharacterObserveMenu(src.menues.SubMenu):
     def getTitle(self):
         return "OBSERVE CHARACTERS"
 
-    def render(self):
+    def render(self,size=None):
 
         # set up helper variables
         char = self.char

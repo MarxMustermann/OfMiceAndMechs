@@ -42,7 +42,7 @@ class ImplantConnection(src.menues.SubMenu):
 
         return False
 
-    def render(self):
+    def render(self,size=None):
         return f"implant connection to {self.connectionTarget.type}"
 
 # register the menu type

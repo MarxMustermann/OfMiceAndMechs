@@ -124,7 +124,7 @@ class InputMenu(src.menues.SubMenu):
             index += 1
         return value[len(self.text):]
 
-    def render(self):
+    def render(self,size=None):
         out = ["\n"]
         out.extend([self.query, "\n\n", self.text])
 

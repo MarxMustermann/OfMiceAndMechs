@@ -105,9 +105,9 @@ class ChatPartnerselection(src.menues.SubMenu):
         else:
             return False
 
-    def render(self):
+    def render(self,size=None):
         if self.subMenu:
-            return self.subMenu.render()
+            return self.subMenu.render(size=size)
         return super().render()
 
 # register the menu type

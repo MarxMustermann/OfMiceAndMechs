@@ -2,7 +2,7 @@ import src
 
 class MessagesMenu(src.menues.SubMenu):
 
-    def render(self):
+    def render(self,size=None):
         char = self.char
         out = []
         try:
@@ -34,7 +34,27 @@ class MessagesMenu(src.menues.SubMenu):
                 color = "#777"
             else:
                 color = "#666"
-            out.append((src.interaction.urwid.AttrSpec(color, "default"),f"- {message[0]}\n"))
+
+            message_content = message[0]
+            adapted_message = ""
+            lines = message_content.splitlines()
+            for line in lines:
+                words = line.split(" ")
+                first_word = True
+                line_to_add = ""
+                for word in words:
+                    if first_word:
+                        first_word = False
+                    else:
+                        line_to_add += " "
+                    if size:
+                        if len(line_to_add)+len(word)+1 > size[0]-3:
+                            adapted_message += line_to_add+"\n"
+                            line_to_add = ""
+                    line_to_add += word
+                adapted_message += line_to_add+"\n"
+
+            out.append((src.interaction.urwid.AttrSpec(color, "default"),f"- {adapted_message}"))
         return out
 
     type = "MessagesMenu"

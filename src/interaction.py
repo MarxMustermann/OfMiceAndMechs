@@ -5210,7 +5210,7 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                             if not title:
                                 title = "-------------"
                             chars.extend([(src.pseudoUrwid.AttrSpec(disabled_ui_color,"black"),f"{title} "),ActionMeta(content="<",payload=(unSidebar,{"menu":menu,"character":char})),"\n\n"])
-                            chars.extend(menu.render())
+                            chars.extend(menu.render(size=uiElement["size"]))
                         size = uiElement["size"]
                         offset = uiElement["offset"]
                         printUrwidToTcod(chars,offset,size=size)

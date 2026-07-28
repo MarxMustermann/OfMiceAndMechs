@@ -64,7 +64,7 @@ class SettingMenu(src.menues.SubMenu):
 
         return False
 
-    def render(self):
+    def render(self,size=None):
         text = ""
         for i,setting in enumerate(self.setting_options):
             if self.index == i:

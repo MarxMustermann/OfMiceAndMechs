@@ -19,7 +19,7 @@ class StatusEffectMenu(src.menues.SubMenu):
     def getTitle(self):
         return "STATUS EFFECTS"
 
-    def render(self):
+    def render(self,size=None):
         
         char = self.char
 

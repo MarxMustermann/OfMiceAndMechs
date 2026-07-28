@@ -77,7 +77,7 @@ class ContextListMenu(src.menues.SubMenu):
         # signal menu is still active
         return False
 
-    def render(self):
+    def render(self,size=None):
 
         # getting some helper variables
         terrain = self.character.getTerrain()

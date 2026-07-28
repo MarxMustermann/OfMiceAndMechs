@@ -52,7 +52,7 @@ class QuestMenu(src.menues.SubMenu):
         if self.questCursor == []:
             self.questCursor.append(0)
 
-    def render(self):
+    def render(self,size=None):
 
         text = []
         text.append(self.renderQuests(char=self.char, asList=True, questCursor=self.questCursor,sidebared=self.sidebared))

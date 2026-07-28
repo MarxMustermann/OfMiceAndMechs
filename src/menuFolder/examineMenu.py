@@ -115,7 +115,7 @@ class ExamineMenu(src.menues.SubMenu):
             markers = self.character.container.getMarkersOnPosition(pos)
         return (show_characters,items,markers)
 
-    def render(self):
+    def render(self,size=None):
         pos = self.character.getPosition(offset=self.offset)
         direction_map = {(0,0,0):"downwards",(1,0,0):"east",(-1,0,0):"west",(0,1,0):"south",(0,-1,0):"north"}
         small_pos = self.character.getSpacePosition(offset=self.offset)

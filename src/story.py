@@ -2328,8 +2328,23 @@ I don't need anything right now.
             # generate quest to fetch MetalWorkingBench
             metalWorkingBench = character.searchInventory("MetalWorkingBench")
             if not metalWorkingBench:
+                sample_metalWorkingBench = src.items.itemMap["MetalWorkingBench"]()
+                metalworking_room_coordinate = (4,7,0)
+                character_position = partner.getBigPosition()
+                direction_string = partner.getTerrain().getDistanceDescription(character_position,metalworking_room_coordinate)
                 base_response_text.extend(["""
-""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Now i need a MetalWorkingBench."),"""
+It is time to start producing items.
+The basic planning is done and all the markers have been drawn.
+
+But to produduce items, i need workshops.
+Let's start with metal working.
+
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Fetch me a MetalWorkingBench."),f"""
+
+There should be a MetalWorkingBench available in the old metal working hall.
+That room is {direction_string}.
+
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"A MetalWorkingBench looks like this: "),src.interaction.ItemMeta(content=sample_metalWorkingBench.render(),item=sample_metalWorkingBench),"""
 """])
                 offer_accept_options = True
             else:

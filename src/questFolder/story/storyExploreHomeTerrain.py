@@ -151,12 +151,6 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
             if character.container.isRoom and (item_pos[0] > 11 or item_pos[1] > 11 or item_pos[0] < 1 or item_pos[1] < 1):
                 continue
 
-            if item.type in ("Scrap","MetalBars","MoldFeed"):
-                continue
-
-            if item.type in ("Bolt",) and character.getFreeInventorySpace() <= 1:
-                continue
-
             invalidStack = False
             for stackedItem in character.container.getItemByPosition(item.getPosition()):
                 if stackedItem == item:

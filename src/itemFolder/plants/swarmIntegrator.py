@@ -30,4 +30,4 @@ class SwarmIntegrator(src.items.Item):
         command = "aopR.$a*13.$w*13.$s*13.$d*13.$=aa$=ww$=ss$=dd"
         character.runCommandString(command)
 
-src.items.addType(SwarmIntegrator)
+src.items.addType(SwarmIntegrator, nonManufactured=True)

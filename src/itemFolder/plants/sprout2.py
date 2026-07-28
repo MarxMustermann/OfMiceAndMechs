@@ -83,4 +83,4 @@ you can eat it to gain 25 satiation.
         options["b"] = ("destroy", self.destroy)
         return options
 
-src.items.addType(Sprout2)
+src.items.addType(Sprout2, nonManufactured=True)

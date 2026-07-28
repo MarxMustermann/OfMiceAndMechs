@@ -153,4 +153,4 @@ You can use it to loose 100 satiation.
 
         super().destroy(generateScrap=False)
 
-src.items.addType(PoisonBush)
+src.items.addType(PoisonBush, nonManufactured=True)

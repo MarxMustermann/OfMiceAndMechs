@@ -104,4 +104,4 @@ class Cocoon(src.items.Item):
         """
         super().destroy(generateScrap=False)
 
-src.items.addType(Cocoon)
+src.items.addType(Cocoon, nonManufactured=True)

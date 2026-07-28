@@ -105,4 +105,4 @@ You can use it to loose 100 satiation.
 
         super().destroy(generateScrap=False)
 
-src.items.addType(EncrustedPoisonBush)
+src.items.addType(EncrustedPoisonBush, nonManufactured=True)

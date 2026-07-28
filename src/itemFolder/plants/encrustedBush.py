@@ -180,4 +180,4 @@ class EncrustedBush(src.items.Item):
         self.terrain.addRooms([room])
         room.reconfigure(sizeX, sizeY, keepItems)
 
-src.items.addType(EncrustedBush)
+src.items.addType(EncrustedBush, nonManufactured=True)

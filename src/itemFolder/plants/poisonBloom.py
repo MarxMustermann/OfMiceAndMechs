@@ -64,4 +64,4 @@ You can eat it to die.
 
         super().destroy(generateScrap=False)
 
-src.items.addType(PoisonBloom)
+src.items.addType(PoisonBloom, nonManufactured=True)

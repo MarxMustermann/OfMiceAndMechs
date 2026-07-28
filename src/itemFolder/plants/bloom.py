@@ -188,4 +188,4 @@ you can eat it to gain %s satiation.
         return options
 
 
-src.items.addType(Bloom)
+src.items.addType(Bloom, nonManufactured=True)

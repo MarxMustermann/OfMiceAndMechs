@@ -245,4 +245,4 @@ you can eat it to gain 2 satiation.
         options["b"] = ("destroy", self.destroy)
         return options
 
-src.items.addType(Mold)
+src.items.addType(Mold, nonManufactured=True)

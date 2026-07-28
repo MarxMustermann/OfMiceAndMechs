@@ -852,4 +852,4 @@ cluttered: {self.cluttered}
 faction: {self.faction}
 """
 
-src.items.addType(CommandBloom)
+src.items.addType(CommandBloom, nonManufactured=True)

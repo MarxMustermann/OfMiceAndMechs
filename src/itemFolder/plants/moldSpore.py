@@ -68,4 +68,4 @@ put it on the ground and activate it to plant it
             new.spawn(forceSpawn=forceSpawn)
         self.destroy(generateScrap=False)
 
-src.items.addType(MoldSpore)
+src.items.addType(MoldSpore, nonManufactured=True)

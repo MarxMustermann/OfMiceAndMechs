@@ -66,4 +66,4 @@ charges: %s""" % (self.charges)
         self.container.addItem(new,self.getPosition())
         super().destroy(generateScrap=False)
 
-src.items.addType(Bush)
+src.items.addType(Bush, nonManufactured=True)

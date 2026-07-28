@@ -110,4 +110,4 @@ Activate the tree to harvest a vat maggot.
         return (src.interaction.urwid.AttrSpec("#383", "black"), "&/")
 
 
-src.items.addType(Tree)
+src.items.addType(Tree, nonManufactured=True)

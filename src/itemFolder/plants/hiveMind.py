@@ -565,4 +565,4 @@ paths:
             text += f" * {path} - {value}\n"
         return text
 
-src.items.addType(HiveMind)
+src.items.addType(HiveMind, nonManufactured=True)

@@ -162,4 +162,4 @@ you can eat it to gain %s satiation.
 
         super().destroy(generateScrap=False)
 
-src.items.addType(SickBloom)
+src.items.addType(SickBloom, nonManufactured=True)

@@ -185,6 +185,8 @@ The quest description and general instructions are shown in the quest menu.
                     if selection == "skip":
                         if task_type == "wait_explosion":
                             src.gamestate.gamestate.stern["skipped_explosion"] = True
+                        if task_type == "observe":
+                            src.gamestate.gamestate.stern["opened_observe"] = True
                         if task_type == "help":
                             src.gamestate.gamestate.stern["opened_help"] = True
                         self.submenu = None
@@ -398,7 +400,7 @@ Look around to see if you can find something useful.
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to observe the environment?"""),"""
 """]
-                self._spawnSpawnTaskMenu(base_text,"observe")
+                self._spawnSpawnTaskMenu(base_text,"observe",offerSkip=True)
                 return False
 
             # free the groundskeeper

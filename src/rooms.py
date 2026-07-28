@@ -1068,14 +1068,14 @@ class Room:
 
             # draw items
             for item in self.itemsOnFloor:
-                display = item.render()
+                display = item.metaRender()
                 #chars[item.yPosition][item.xPosition] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": (item.xPosition,item.yPosition,0)}},content=display)
                 if item.yPosition == None:
                     self.itemsOnFloor.remove(item)
                     logger.error("drawing non positioned item")
                     continue
                 try:
-                    chars[item.yPosition][item.xPosition] = src.interaction.ItemMeta(content=display,item=item)
+                    chars[item.yPosition][item.xPosition] = display
                 except:
                     logger.error(f"item placed outside of room {item.yPosition}/{item.xPosition}")
                     continue

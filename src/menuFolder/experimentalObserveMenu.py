@@ -93,7 +93,7 @@ class ExperimentalObserveMenu(src.menues.SubMenu):
             text.append((src.pseudoUrwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"items:\n\n"))
         for item in items:
             text.append("- ")
-            text.append(src.interaction.ItemMeta(item,content=item.render()))
+            text.append(item.metaRender())
             text.append(" ")
             text.append(item.name)
             text.append(" => ")

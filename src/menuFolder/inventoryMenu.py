@@ -224,12 +224,12 @@ class InventoryMenu(src.menues.SubMenu):
                     line = [
                             str(counter),
                             cursor_indicator,
-                            src.interaction.ItemMeta(content=item.render(),item=item),
+                            item.metaRender(),
                             " - ",
                             item.name,
                         ]
                 else:
-                    line = [str(counter), cursor_indicator, src.interaction.ItemMeta(content=item.render(),item=item), " - ", item.name]
+                    line = [str(counter), cursor_indicator, item.metaRender(), " - ", item.name]
                 line = src.interaction.ActionMeta(payload=(self.trigger_itemActivate,{"item":item}),content=line)
                 txt.append(line)
                 txt.append("\n")

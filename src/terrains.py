@@ -2038,7 +2038,7 @@ class Terrain:
                     if item.zPosition != src.gamestate.gamestate.mainChar.zPosition:
                         continue
 
-                    chars[item.yPosition-coordinateOffset[0]][item.xPosition-coordinateOffset[1]] = src.interaction.ItemMeta(content=item.render(),item=item)
+                    chars[item.yPosition-coordinateOffset[0]][item.xPosition-coordinateOffset[1]] = item.metaRender()
 
             # render each room
             for room in self.rooms:

@@ -20,11 +20,11 @@ class GatherScrap(src.quests.MetaQuestSequence):
 
     def generateTextDescription(self):
         scrap1_item = src.items.itemMap["Scrap"](amount=1)
-        scrap1 = src.interaction.ItemMeta(scrap1_item,scrap1_item.render())
+        scrap1 = scrap1_item.metaRender()
         scrap2_item = src.items.itemMap["Scrap"](amount=6)
-        scrap2 = src.interaction.ItemMeta(scrap2_item,scrap2_item.render())
+        scrap2 = scrap2_item.metaRender()
         scrap3_item = src.items.itemMap["Scrap"](amount=20)
-        scrap3 = src.interaction.ItemMeta(scrap3_item,scrap3_item.render())
+        scrap3 = scrap3_item.metaRender()
         reason = ""
         if self.reason:
             reason = f", to {self.reason}"

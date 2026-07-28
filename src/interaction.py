@@ -5362,7 +5362,7 @@ def renderGameDisplay(renderChar=None,showSaving=False):
             for offset in [(0,0,0),(0,-1,0),(-1,0,0),(0,1,0),(1,0,0)]:
                 items.extend(char.container.getItemByPosition(char.getPosition(offset=offset)))
             for item in items:
-                output.append([ItemMeta(item,content=item.render())," ",(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),item.name)," ",(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),f"{item.getSmallPosition()}")," "])
+                output.append([item.metaRender()," ",(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),item.name)," ",(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),f"{item.getSmallPosition()}")," "])
 
             output.append([(src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "),(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),f" you {src.gamestate.gamestate.mainChar.getSpacePosition()} ")])
 
@@ -5449,7 +5449,7 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                     for other_character in other_characters:
                         output.append([other_character.render()," ",(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),[other_character.charType," ",str(other_character.getSpacePosition())," "])])
                     for item in items:
-                        output.append([ItemMeta(item,content=item.render())," ",(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),item.name)," ",(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),f"{item.getSmallPosition()}")," "])
+                        output.append([item.metaRender()," ",(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),item.name)," ",(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),f"{item.getSmallPosition()}")," "])
                     for marker in markers:
                         marker_render = "::"
                         marker_type = marker[0]

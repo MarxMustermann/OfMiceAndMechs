@@ -36,7 +36,7 @@ class DoGroundskeeping(src.quests.MetaQuestSequence):
         done_painting = False
         groundskeepers_room = None
         for room in character.getTerrain().rooms:
-            if room.tag != "the groundskeepers place":
+            if room.tag != src.story.groundskeeper_room_tag:
                 continue
             groundskeepers_room = room
             if not room.floorPlan:

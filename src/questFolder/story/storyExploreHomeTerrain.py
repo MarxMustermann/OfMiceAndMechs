@@ -69,7 +69,7 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
         currentTerrain = character.getTerrain()
         groundskeepers_place = None
         for room in currentTerrain.rooms:
-            if room.tag != "the groundskeepers place":
+            if room.tag != src.story.groundskeeper_room_tag:
                 continue
             groundskeepers_place = room
 
@@ -96,7 +96,7 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
         drop_items = False
         if character.getFreeInventorySpace() <= 2:
             drop_items = True
-        if character.inventory and character.container.isRoom and character.container.tag == "the groundskeepers place":
+        if character.inventory and character.container.isRoom and character.container.tag == src.story.groundskeeper_room_tag:
             drop_items = True
         if drop_items:
             for room in character.getTerrain().rooms:

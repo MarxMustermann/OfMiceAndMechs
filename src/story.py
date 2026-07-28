@@ -21,6 +21,8 @@ import src.magic
 logger = logging.getLogger(__name__)
 phasesByName = None
 
+groundskeeper_room_tag = "the groundskeepers place"
+
 #####################################
 #
 #    convenience functions
@@ -1981,7 +1983,7 @@ But once i am done painting, help would be appreachiated.
         # get the groundskeeper place
         groundskeepers_place = None
         for room in terrain.rooms:
-            if not room.tag == "the groundskeepers place":
+            if not room.tag == groundskeeper_room_tag:
                 continue
             groundskeepers_place = room
 
@@ -2631,7 +2633,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                 continue
             item.walkable = False
         used_spots.append(baseCoreRoom.getPosition())
-        baseCoreRoom.tag = "the groundskeepers place"
+        baseCoreRoom.tag = groundskeeper_room_tag
         for pos in [(6,11,0),(6,10,0),(6,9,0),(6,8,0),(6,7,0),(7,7,0),(7,6,0),(7,5,0),(6,5,0),(5,5,0),(5,6,0),(5,7,0)]:
             baseCoreRoom.addWalkingSpace(pos)
 

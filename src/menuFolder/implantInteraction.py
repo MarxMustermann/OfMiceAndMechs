@@ -146,7 +146,7 @@ The quest description and general instructions are shown in the quest menu.
                         terrain = character.getHomeTerrain()
                         groundskeepers_place = None
                         for room in terrain.rooms:
-                            if room.tag != "the groundskeepers place":
+                            if room.tag != src.story.groundskeeper_room_tag:
                                 continue
                             groundskeepers_place = room
 
@@ -292,7 +292,7 @@ use the """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"blac
         wakeable_builder = False
         groundskeepers_place = None
         for room in terrain.rooms:
-            if room.tag != "the groundskeepers place":
+            if room.tag != src.story.groundskeeper_room_tag:
                 continue
             groundskeepers_place = room
             items = room.getItemsByType("StasisTank")
@@ -354,7 +354,7 @@ Go there. {directionString}
                 return False
 
             # go to the groundskeepers place
-            if not character.container.tag == "the groundskeepers place":
+            if not character.container.tag == src.story.groundskeeper_room_tag:
                 directions = []
                 char_position = character.getBigPosition()
                 room_position = groundskeepers_place.getPosition()

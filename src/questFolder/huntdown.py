@@ -16,12 +16,12 @@ class Huntdown(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         out = []
 
-        reasonText = ""
+        reasonText = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
-            reasonText += f", to {self.reason}"
-        text = f"""
-Hunt down the enemy{reasonText}.
-"""
+            reasonText = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),","),f" to {self.reason}."]
+        text = [f"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Hunt down the enemy"),reasonText,"""
+"""]
 
         out.append(text)
         return out

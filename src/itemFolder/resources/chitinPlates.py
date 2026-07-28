@@ -16,4 +16,4 @@ class ChitinPlates(src.items.Item):
         super().__init__(display="> ")
 
 
-src.items.addType(ChitinPlates)
+src.items.addType(ChitinPlates, nonManufactured=True)

@@ -50,6 +50,10 @@ class CleanSpace(src.quests.MetaQuestSequence):
 
 """,(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"You can pick up items by pressing the k or K key."),"""
 """]
+        if self.abortOnfullInventory:
+            text.append("\nAbort the quest, if your inventory is full")
+        if self.pickUpBolted:
+            text.append("\nPick up bolted items.")
         return text
 
     def unhandledSubQuestFail(self,extraParam):

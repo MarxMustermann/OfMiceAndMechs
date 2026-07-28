@@ -22,4 +22,4 @@ class BuffPotion(src.items.itemMap["Potion"], ABC):
     def getBuffsToAdd(self): ...
 
 # register the item type (should it be really?)
-src.items.addType(BuffPotion)
+src.items.addType(BuffPotion,potion=True)

@@ -64,7 +64,7 @@ class Wall(src.items.Item):
         renderer.draw_line((basePos[0]+tileSize-border_width-1,basePos[1]+border_width), (basePos[0]+border_width,basePos[1]+tileSize-border_width-1))
         renderer.draw_line((basePos[0]+tileSize-border_width,basePos[1]+border_width+1), (basePos[0]+border_width+1,basePos[1]+tileSize-border_width))
 
-        if self.bolted:
+        if self.bolted and self.container:
             items = self.container.getItemByPosition(self.getPosition(offset=(0,-1,0)))
             if not (len(items) == 1 and items[0].type in ("Door","Wall",) and items[0].bolted):
                 renderer.fill_rect((basePos[0],basePos[1],tileSize,border_width))

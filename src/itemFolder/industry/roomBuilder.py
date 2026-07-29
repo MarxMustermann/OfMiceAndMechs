@@ -75,6 +75,9 @@ The room has to be a rectangle.
             text = ["Could not build room, there are items missing:\n\n"]
 
             # add graphical representation to text
+            sample_roomBuilder = src.items.itemMap["RoomBuilder"]()
+            sample_wall = src.items.itemMap["Wall"]()
+            sample_door = src.items.itemMap["Door"]()
             map_view = []
             base_position = (self.xPosition//15*15,self.yPosition//15*15,0)
             for y in range(1,14):
@@ -88,12 +91,12 @@ The room has to be a rectangle.
                             if (not len(items) == 1) or (not items[0].type == "Door"):
                                 color = "#e22"
                         else:
-                            display = "XX"
+                            display = sample_wall.metaRender()
                             items = self.container.getItemByPosition((x+base_position[0],y+base_position[1],0))
                             if (not len(items) == 1) or (not items[0].type == "Wall"):
                                 color = "#e22"
                     elif (x,y) == (7,7):
-                        display = "RB"
+                        display = sample_roomBuilder.metaRender()
                     map_view.append((src.interaction.urwid.AttrSpec(color,"#000"), display))
                 map_view.append("\n")
             text.append(map_view)

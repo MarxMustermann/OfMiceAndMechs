@@ -4804,6 +4804,8 @@ def draw_sdl():
 def stringifyUrwid(inData):
     if isinstance(inData,int):
         inData = src.canvas.displayChars.indexedMapping[inData]
+    if not isinstance(inData,list):
+        inData = [inData]
     outData = ""
     for item in inData:
         if isinstance(item, tuple):

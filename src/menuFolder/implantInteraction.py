@@ -116,6 +116,30 @@ class ImplantInteraction(src.menues.SubMenu):
                         quests.append(src.quests.questMap["ClearInventory"]())
                         quests.append(src.quests.questMap["Scavenge"](toCollect="Rod",amountToCollect=1,ignoreAlarm=True))
                         quests.append(src.quests.questMap["Equip"]())
+                    if selection.startswith("fetch ") and len(selection.split(" ")) > 1:
+
+                        # get item type
+                        item_type = selection.split(" ")[1]
+
+                        # loot rooms containing the item
+                        found_loot_room = False
+                        for room in terrain.rooms:
+                            if room.tag != "ruin":
+                                continue
+                            if not room.getItemsByType(item_type):
+                                continue
+                            found_loot_room = True
+
+                            if room.getEnemiesOnTile(character):
+                                quests.append(src.quests.questMap["SecureTile"](toSecure=room.getPosition(),endWhenCleared=True))
+
+                            if item_type == "MetalWorkingBench":
+                                quests.append(src.quests.questMap["FetchMetalWorkingBench"](targetPositionBig=room.getPosition()))
+                            elif item_type == "Anvil":
+                                quests.append(src.quests.questMap["FetchAnvil"](targetPositionBig=room.getPosition()))
+                            else:
+                                quests.append(src.quests.questMap["LootRoom"](targetPositionBig=room.getPosition(),collectBig=True))
+                            break
 
                     character.clear_quests()
                     for quest in quests:
@@ -622,7 +646,7 @@ They will complete tasks on the base.
 
             # obtain weapon
             shown_obtain_weapon = False
-            if not character.weapon and src.gamestate.gamestate.stern.get("no_weapon_quest_abort"):
+            if not character.weapon and (src.gamestate.gamestate.stern.get("no_weapon_quest_abort") or groundsKeeper):
                 options.append(("getweapon","obtain weapon"))
                 shown_obtain_weapon = True
 
@@ -631,6 +655,26 @@ They will complete tasks on the base.
             if groundsKeeper and not groundskeepers_place.getItemByType("Anvil") or not groundskeepers_place.getItemByType("MetalWorkingBench"):
                 options.append(("help","help groundskeeper"))
                 shown_help = True
+
+            # work around dead groundskeeper
+            if not groundsKeeper:
+                missing_anvil = False
+                missing_metalWorkingBench = False
+                missing_cityPlaner = False
+                for buildSite in groundskeepers_place.buildSites:
+                    if buildSite[1] == "Anvil":
+                        missing_anvil = True
+                    if buildSite[1] == "MetalWorkingBench":
+                        missing_metalWorkingBench = True
+                    if buildSite[1] == "CityPlaner":
+                        missing_cityPlaner = True
+
+                if missing_anvil:
+                    options.append(("fetch Anvil","fetch Anvil"))
+                if missing_metalWorkingBench:
+                    options.append(("fetch MetalWorkingBench","fetch MetalWorkingBench"))
+                if missing_cityPlaner:
+                    options.append(("fetch CityPlaner","fetch CityPlaner"))
 
             # improve equipment
             has_equipment = False

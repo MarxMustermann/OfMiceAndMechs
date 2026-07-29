@@ -161,6 +161,8 @@ class ImplantInteraction(src.menues.SubMenu):
                             if buildSite[1] == item_type:
                                 quests.append(src.quests.questMap["PlaceItem"](itemType=item_type,targetPositionBig=groundskeepers_place.getPosition(),targetPosition=buildSite[0],boltDown=True, clearPath=True, clearSpace=True, tryHard=True))
                                 break
+                    if selection == "spawn_clone":
+                        quests.append(src.quests.questMap["SpawnClone"]())
 
                     character.clear_quests()
                     for quest in quests:
@@ -724,6 +726,26 @@ They will complete tasks on the base.
                         options.append(("fetch CityPlaner","fetch CityPlaner"))
                     else:
                         options.append(("place CityPlaner","place CityPlaner"))
+
+            # spawn workers
+            num_workers = 0
+            for check_char in character.getTerrain().getAllCharacters():
+                if check_char.faction != character.faction:
+                    continue
+                if check_char == character:
+                    continue
+                if not isinstance(check_char,src.characters.characterMap["Clone"]):
+                    continue
+                if check_char.burnedIn:
+                    continue
+                num_workers += 1
+            num_base_rooms = 0
+            for room in character.getTerrain().rooms:
+                if room.tag == "ruin":
+                    continue
+                num_base_rooms += 1
+            if num_base_rooms-2 > num_workers:
+                options.append(("spawn_clone","spawn worker"))
 
             # improve equipment
             has_equipment = False

@@ -182,7 +182,7 @@ The quest description and general instructions are shown in the quest menu.
                         # assign the quest
                         if not quests:
                             character.notify("failed generating quest")
-                        for quest in reversed(quests):
+                        for quest in quests:
                             character.assignQuest(quest)
 
                     # skip special sections

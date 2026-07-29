@@ -842,7 +842,7 @@ They will complete tasks on the base.
                 options.append(("explore","explore terrain"))
             if not shown_spawn_worker:
                 options.append(("spawn_clone","spawn worker"))
-            if not found_outside_enemies:
+            if found_outside_enemies:
                 options.append(("kill_outside","kill insects"))
 
             # show the options to the player

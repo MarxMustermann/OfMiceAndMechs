@@ -728,6 +728,7 @@ They will complete tasks on the base.
                         options.append(("place CityPlaner","place CityPlaner"))
 
             # spawn workers
+            shown_spawn_worker = False
             num_workers = 0
             for check_char in character.getTerrain().getAllCharacters():
                 if check_char.faction != character.faction:
@@ -746,6 +747,7 @@ They will complete tasks on the base.
                 num_base_rooms += 1
             if num_base_rooms-2 > num_workers:
                 options.append(("spawn_clone","spawn worker"))
+                shown_spawn_worker = True
 
             # improve equipment
             has_equipment = False
@@ -781,6 +783,8 @@ They will complete tasks on the base.
                 options.append(("heal","heal yourself"))
             if not shown_explore:
                 options.append(("explore","explore terrain"))
+            if not shown_spawn_worker:
+                options.append(("spawn_clone","spawn worker"))
 
             # show the options to the player
             options.append(("continue","continue without quest"))

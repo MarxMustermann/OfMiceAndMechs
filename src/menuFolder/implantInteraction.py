@@ -101,19 +101,23 @@ class ImplantInteraction(src.menues.SubMenu):
                 self.submenu.handleKey(key, noRender, character)
                 selection = self.submenu.selection
                 if selection:
-                    quest = None
+                    quests = []
                     if selection == "help":
-                        quest = src.quests.questMap["HelpGroundskeeper"](lifetime=500)
+                        quests.append(src.quests.questMap["HelpGroundskeeper"](lifetime=500))
                     if selection == "heal":
                         src.gamestate.gamestate.stern["last_heal"] = src.gamestate.gamestate.tick
-                        quest = src.quests.questMap["StoryHeal"]()
+                        quests.append(src.quests.questMap["StoryHeal"]())
                     if selection == "improve equipment":
                         src.gamestate.gamestate.stern["last_improve_equipment"] = src.gamestate.gamestate.tick
-                        quest = src.quests.questMap["StoryImproveEquipment"]()
+                        quests.append(src.quests.questMap["StoryImproveEquipment"]())
                     if selection == "explore":
-                        quest = src.quests.questMap["StoryExploreHomeTerrain"](lifetime=500)
-                    if quest:
-                        character.clear_quests()
+                        quests.append(src.quests.questMap["StoryExploreHomeTerrain"](lifetime=500))
+                    if selection == "getweapon":
+                        quests.append(src.quests.questMap["Scavenge"](toCollect="Rod",amountToCollect=1,ignoreAlarm=True))
+                        quests.append(src.quests.questMap["Equip"]())
+
+                    character.clear_quests()
+                    for quest in quests:
                         character.assignQuest(quest)
                     self.submenu = None
                     self.done = True

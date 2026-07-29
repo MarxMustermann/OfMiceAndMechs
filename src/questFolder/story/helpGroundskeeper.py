@@ -78,6 +78,10 @@ class HelpGroundskeeper(src.quests.MetaQuestSequence):
                 return (None,("j","continue conversation"))
             if submenue.tag == "builder_accept_quest":
                 return (None,("j","accept quest"))
+            if submenue.tag == "builder_task_confirm":
+                if submenue.selectionIndex > 1:
+                    return (None,("w","move cursor"))
+                return (None,("j","answer"))
             return (None,(["esc"],"to close menu"))
 
         # open chat menu
@@ -112,11 +116,15 @@ Talk to the groundskeeper and see what it needs help with.
     def handleNoBuilderQuest(self,extraInfo=None):
         self.postHandler()
 
+    def handleNoConfirm(self,extraInfo=None):
+        self.postHandler()
+
     def assignToCharacter(self,character):
         if self.character:
             return None
 
         self.startWatching(character,self.handleNoBuilderQuest,"no_builder_quest")
+        self.startWatching(character,self.handleNoConfirm,"builder_task_noconfirm")
         return super().assignToCharacter(character)
 
 src.quests.addType(HelpGroundskeeper)

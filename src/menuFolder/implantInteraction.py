@@ -151,35 +151,35 @@ The quest description and general instructions are shown in the quest menu.
                             groundskeepers_place = room
 
                         # generate actual quest
-                        quest = None
+                        quests = []
                         if task_type == "escape_lab":
-                            quest = src.quests.questMap["EscapeLab"]()
+                            quests.append(src.quests.questMap["EscapeLab"]())
                         elif task_type == "reach_shelter":
-                            quest = src.quests.questMap["GoToTile"](targetPosition=groundskeepers_place.getPosition())
+                            quests.append(src.quests.questMap["GoToTile"](targetPosition=groundskeepers_place.getPosition()))
                         elif task_type == "free_groundskeeper":
-                            quest = src.quests.questMap["ActivateItem"](targetPosition=(6,6,0),targetPositionBig=groundskeepers_place.getPosition())
+                            quests.append(src.quests.questMap["ActivateItem"](targetPosition=(6,6,0),targetPositionBig=groundskeepers_place.getPosition()))
                         elif task_type == "fix_groundskeeper":
-                            quest = src.quests.questMap["FixGroundskeeper"]()
+                            quests.append(src.quests.questMap["FixGroundskeeper"]())
                         elif task_type == "help_groundskeeper":
-                            quest = src.quests.questMap["HelpGroundskeeper"](lifetime=500)
+                            quests.append(src.quests.questMap["HelpGroundskeeper"](lifetime=500))
                         elif task_type == "wait_explosion":
-                            quest = src.quests.questMap["WatchLabBurn"]()
+                            quests.append(src.quests.questMap["WatchLabBurn"]())
                         elif task_type == "equip":
-                            quest = src.quests.questMap["Equip"]()
+                            quests.append(src.quests.questMap["Equip"]())
                         elif task_type == "kill_spiderling":
-                            quest = src.quests.questMap["SecureTile"](toSecure=(7,5,0),endWhenCleared=True,reason="clear the path",simpleAttacksOnly=True,noHeal=True)
+                            quests.append(src.quests.questMap["SecureTile"](toSecure=(7,5,0),endWhenCleared=True,reason="clear the path",simpleAttacksOnly=True,noHeal=True))
                         elif task_type == "explore":
-                            quest = src.quests.questMap["StoryExploreHomeTerrain"](lifetime=500)
+                            quests.append(src.quests.questMap["StoryExploreHomeTerrain"](lifetime=500))
                         elif task_type == "observe":
-                            quest = src.quests.questMap["OpenObserveMenu"]()
+                            quests.append(src.quests.questMap["OpenObserveMenu"]())
                         elif task_type == "help":
-                            quest = src.quests.questMap["OpenHelpMenu"]()
+                            quests.append(src.quests.questMap["OpenHelpMenu"]())
 
                         # assign the quest
-                        if quest:
-                            character.assignQuest(quest)
-                        else:
+                        if not quests:
                             character.notify("failed generating quest")
+                        for quest in reversed(quests):
+                            character.assignQuest(quest)
 
                     # skip special sections
                     if selection == "skip":
@@ -622,6 +622,7 @@ It will start to rebuild its working area.
             # show options not yet shown
             if not shown_help:
                 options.append(("help","help groundskeeper"))
+            options.append(("getweapon","obtain weapon"))
             if has_equipment and not shown_improve_equipment:
                 options.append(("improve equipment","improve your equipment"))
             if not shown_heal and character.health < character.adjustedMaxHealth:

@@ -2427,6 +2427,7 @@ That will allow to coordinate how the base is getting expanded.
             if extraParams.get("continue") == "yes":
                 skip_warning = True
             if extraParams.get("continue") == "no":
+                character.changed("builder_task_noconfirm")
                 return
             if not character.weapon and not skip_warning:
                 base_response_text = []

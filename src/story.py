@@ -2539,12 +2539,12 @@ Fetch some.
         elif task == "free up storage":
 
             # generate quest to free up storage
-            base_response_text.append("""
+            base_response_text.extend(["""
 The whole storage is filled with stuff.
 Some free storage is needed to continue production.
 
-Get rid of some things, preferably Scrap.
-""")
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Get rid of some things"),""", preferably Scrap.
+"""])
             offer_accept_options = True
 
         elif task == "collect glass hearts":

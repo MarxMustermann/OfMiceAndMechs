@@ -46,13 +46,10 @@ Currently {num_free_storage} storage slots are free.""")
         num_empty_storage = 0
         for room in self.character.getTerrain().rooms:
             for storageSlot in room.storageSlots:
-                print(storageSlot)
                 if storageSlot[1]:
                     continue
-                print("1")
                 if room.getItemByPosition(storageSlot[0]):
                     continue
-                print("2")
                 num_empty_storage += 1
         return num_empty_storage
 

@@ -17,18 +17,18 @@ class FreeUpStorage(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         out = []
 
-        reasonText = ""
+        reasonText = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
-            reasonText += f", to {self.reason}"
+            reasonText = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),","),f" to {self.reason}."]
 
         num_free_storage = self.getNumFreeStorageSlots()
-        text = f"""
-Free up general storage slots{reasonText}.
-"""
-        text += f"""
+        text = [f"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Free up general storage slots"""),reasonText,"""
+"""]
+        text.append(f"""
 
 This quest will end when {self.amount} general storage slots are free.
-Currently {num_free_storage} storage slots are free."""
+Currently {num_free_storage} storage slots are free.""")
 
         out.append(text)
         return out

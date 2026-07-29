@@ -53,7 +53,7 @@ class BuildRoom(src.quests.MetaQuestSequence):
 {duration_string}
 
 Place a RoomBuilder in the middle of the target tile to start the buildsite.
-Use the RoomBuilder afterwards to build the room.
+Use it afterwards to build the room.
 """]
 
         if self.tryHard:

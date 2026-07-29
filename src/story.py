@@ -3060,6 +3060,21 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         lootRoom.spawnItem("SwordSharpener",(6,6,0),bolted=True)
         lootRoom.spawnItem("Painter",(3,5,0))
 
+        # add growth tank room
+        growth_room = architect.doAddRoom(
+                {
+                       "coordinate": (9,12,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,12 0,6 12,6",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        used_spots.append(growth_room.getPosition())
+        growth_room.tag = "ruin"
+        lootRoom.spawnItem("GrowthTank",(6,6,0),bolted=True)
+
         # add room building npc room
         lootRoom = architect.doAddRoom(
                 {

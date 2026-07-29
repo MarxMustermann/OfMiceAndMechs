@@ -89,7 +89,10 @@ Swords can range from 10 to 25 damage per hit.
                 if bestArmor.armorValue > item.armorValue:
                     continue
                 bestArmor = item
-            for item in room.getItemsByType("Sword"):
+            items = room.getItemsByType("Sword")
+            if not self.weaponOnly:
+                items.extend(room.getItemsByType("Rod"))
+            for item in items:
                 if item != room.getItemByPosition(item.getPosition())[0]:
                     continue
                 if not bestSword:
@@ -106,7 +109,10 @@ Swords can range from 10 to 25 damage per hit.
             if bestArmor.armorValue > item.armorValue:
                 continue
             bestArmor = item
-        for item in character.searchInventory("Sword"):
+        items = character.searchInventory("Sword")
+        if not self.weaponOnly:
+            items.extend(character.searchInventory("Rod"))
+        for item in items:
             if not bestSword:
                 bestSword = item
                 continue
@@ -200,6 +206,7 @@ Swords can range from 10 to 25 damage per hit.
             if pos == (7,0,0):
                 return (None,("s","enter room"))
 
+        # equip items from inventory
         if bestSword in character.inventory:
             command = "i"
             for item in character.inventory:

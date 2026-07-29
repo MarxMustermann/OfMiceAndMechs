@@ -2744,6 +2744,12 @@ class Terrain:
                     return item
         return None
 
+    def get_all_item(self):
+        items = []
+        for item_list in self.itemsByCoordinate.values():
+            items.extend(item_list)
+        return items
+
     def get_empty_rooms(self):
         '''
         returns empty rooms

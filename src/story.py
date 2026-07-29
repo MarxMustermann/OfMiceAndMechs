@@ -3073,7 +3073,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
            )
         used_spots.append(growth_room.getPosition())
         growth_room.tag = "ruin"
-        lootRoom.spawnItem("GrowthTank",(6,6,0),bolted=True)
+        growth_room.spawnItem("GrowthTank",(6,6,0),bolted=True)
 
         # add room building npc room
         lootRoom = architect.doAddRoom(

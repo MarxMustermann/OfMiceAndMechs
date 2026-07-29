@@ -86,14 +86,16 @@ The room has to be a rectangle.
                     color = "#666"
                     if y in (1,13) or x in (1,13):
                         if y == 7 or x == 7:
-                            display = "[]"
+                            display = sample_door.metaRender()
                             items = self.container.getItemByPosition((x+base_position[0],y+base_position[1],0))
                             if (not len(items) == 1) or (not items[0].type == "Door"):
+                                display = "[]"
                                 color = "#e22"
                         else:
                             display = sample_wall.metaRender()
                             items = self.container.getItemByPosition((x+base_position[0],y+base_position[1],0))
                             if (not len(items) == 1) or (not items[0].type == "Wall"):
+                                display = "XX"
                                 color = "#e22"
                     elif (x,y) == (7,7):
                         display = sample_roomBuilder.metaRender()

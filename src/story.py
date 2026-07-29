@@ -3366,7 +3366,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                                     enemy = src.characters.characterMap[enemyType]()
                                     currentTerrain.addCharacter(enemy,pos[0],pos[1])
 
-                                    quest = src.quests.questMap["SecureTile"](toSecure=(big_x,big_y,0))
+                                    quest = src.quests.questMap["SecureTile"](toSecure=(big_x,big_y,0), wandering=True)
                                     quest.autoSolve = True
                                     quest.assignToCharacter(enemy)
                                     quest.activate()
@@ -3390,7 +3390,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                     enemy = src.characters.characterMap[enemyType]()
                     currentTerrain.addCharacter(enemy,pos[0],pos[1])
 
-                    quest = src.quests.questMap["SecureTile"](toSecure=(big_x,big_y,0))
+                    quest = src.quests.questMap["SecureTile"](toSecure=(big_x,big_y,0), wandering=True)
                     quest.autoSolve = True
                     quest.assignToCharacter(enemy)
                     quest.activate()

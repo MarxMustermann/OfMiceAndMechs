@@ -3375,7 +3375,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                             item = src.items.itemMap[spawn_item[2]]()
                             item.bolted = False
                             if spawn_item[2] == "Wall":
-                                if random.random > 0.75:
+                                if random.random() > 0.75:
                                     pos = (big_x*15+random.randint(1,13),big_y*15+random.randint(1,13),0)
                                     enemyType = random.choice(["Golem","ShieldBug","Spider","Spiderling"])
                                     enemy = src.characters.characterMap[enemyType]()

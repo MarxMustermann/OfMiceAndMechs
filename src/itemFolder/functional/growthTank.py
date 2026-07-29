@@ -171,7 +171,7 @@ After getting spawned the Clone will activate the item to the east of the Growth
 
         new_character = src.characters.characterMap["Clone"]()
 
-        character.showTextMenu(f"\nyou use the GrowthTank to spawn a clone.\n\nIt is named {new_character.name} ({new_character.name.split(" ")[0][0]}{new_character.name.split(" ")[1][0]})\n")
+        character.showTextMenu([f"\nYou use the GrowthTank to spawn a clone.\n\nIt is named ",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),new_character.name),f" ({new_character.name.split(" ")[0][0]}{new_character.name.split(" ")[1][0]})\n"])
 
         new_character.solvers = [
             "SurviveQuest",

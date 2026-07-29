@@ -56,13 +56,20 @@ class StoryHeal(src.quests.MetaQuestSequence):
                 if room.getNonEmptyOutputslots("MoldFeed"):
                     quest = src.quests.questMap["FetchItems"](toCollect="MoldFeed")
                     return ([quest],None)
+            return self._solver_trigger_fail(dryRun,"no MoldFeed")
 
         # abort
         return self._solver_trigger_fail(dryRun,"no way to heal")
 
     def generateTextDescription(self):
+        sample_vial = src.items.itemMap["Vial"]()
+        sample_coalburner = src.items.itemMap["CoalBurner"]()
+        sample_moldfeed = src.items.itemMap["MoldFeed"]()
         text = ["""
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Heal yourself."),f"""
+
+You can heal using a Vial (""",sample_vial.metaRender(),""") or using a CoalBurner (""",sample_coalburner.metaRender(),""").
+The CoalBurner needs MoldFeed (""",sample_moldfeed.metaRender(),""") to work.
 """]
         return text
 

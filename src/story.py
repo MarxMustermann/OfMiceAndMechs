@@ -2893,7 +2893,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         alarmRoom.tag = "ruin"
         siegeManager = src.items.itemMap["SiegeManager"]()
         alarmRoom.addItem(siegeManager,(6,9,0))
-        for pos in [(5,5,0),(5,8,0),(9,8,0),(9,5,0)]:
+        for pos in [(5,3,0),(5,6,0),(9,6,0),(9,3,0)]:
             enemy = src.characters.characterMap["Golem"]()
             alarmRoom.addCharacter(enemy,pos[0],pos[1])
 
@@ -2926,7 +2926,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         cityPlaner = src.items.itemMap["CityPlaner"]()
         cityPlaner.bolted = False
         cityPlanerRoom.addItem(cityPlaner,(6,9,0))
-        for pos in [(5,5,0),(5,8,0),(9,8,0),(9,5,0)]:
+        for pos in [(5,3,0),(5,5,0),(9,5,0),(9,3,0)]:
             enemy = src.characters.characterMap["Golem"]()
             cityPlanerRoom.addCharacter(enemy,pos[0],pos[1])
 

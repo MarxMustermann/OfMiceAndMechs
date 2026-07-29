@@ -63,6 +63,17 @@ class ImplantInteraction(src.menues.SubMenu):
 
         # set up helper variable
         terrain = character.getHomeTerrain()
+        # wake builder
+        wakeable_builder = False
+        groundskeepers_place = None
+        for room in terrain.rooms:
+            if room.tag != src.story.groundskeeper_room_tag:
+                continue
+            groundskeepers_place = room
+            items = room.getItemsByType("StasisTank")
+            if not items:
+                continue
+            wakeable_builder = True
 
         # handle submenu
         if self.submenu:
@@ -140,6 +151,16 @@ class ImplantInteraction(src.menues.SubMenu):
                             else:
                                 quests.append(src.quests.questMap["LootRoom"](targetPositionBig=room.getPosition(),collectBig=True))
                             break
+                    if selection.startswith("place ") and len(selection.split(" ")) > 1:
+
+                        # get item type
+                        item_type = selection.split(" ")[1]
+
+                        # create quest
+                        for buildSite in groundskeepers_place.buildSites:
+                            if buildSite[1] == item_type:
+                                quests.append(src.quests.questMap["PlaceItem"](itemType=item_type,targetPositionBig=groundskeepers_place.getPosition(),targetPosition=buildSite[0],boltDown=True, clearPath=True, clearSpace=True, tryHard=True))
+                                break
 
                     character.clear_quests()
                     for quest in quests:
@@ -669,12 +690,40 @@ They will complete tasks on the base.
                     if buildSite[1] == "CityPlaner":
                         missing_cityPlaner = True
 
+                has_anvil = False
+                has_metalWorkingBench = False
+                has_cityPlaner = False
+                if character.searchInventory("Anvil"):
+                    has_anvil = True
+                if character.searchInventory("MetalWorkingBench"):
+                    has_metalWorkingBench = True
+                if character.searchInventory("CityPlaner"):
+                    has_cityPlaner = True
+                for room in terrain.rooms:
+                    if room.tag == "ruin":
+                        continue
+                    if room.getNonEmptyOutputslots("Anvil"):
+                        has_anvil = True
+                    if room.getNonEmptyOutputslots("MetalWorkingBench"):
+                        has_metalWorkingBench = True
+                    if room.getNonEmptyOutputslots("CityPlaner"):
+                        has_cityPlaner = True
+
                 if missing_anvil:
-                    options.append(("fetch Anvil","fetch Anvil"))
+                    if not has_anvil:
+                        options.append(("fetch Anvil","fetch Anvil"))
+                    else:
+                        options.append(("place Anvil","place Anvil"))
                 if missing_metalWorkingBench:
-                    options.append(("fetch MetalWorkingBench","fetch MetalWorkingBench"))
+                    if not has_metalWorkingBench:
+                        options.append(("fetch MetalWorkingBench","fetch MetalWorkingBench"))
+                    else:
+                        options.append(("place MetalWorkingBench","place MetalWorkingBench"))
                 if missing_cityPlaner:
-                    options.append(("fetch CityPlaner","fetch CityPlaner"))
+                    if not has_cityPlaner:
+                        options.append(("fetch CityPlaner","fetch CityPlaner"))
+                    else:
+                        options.append(("place CityPlaner","place CityPlaner"))
 
             # improve equipment
             has_equipment = False

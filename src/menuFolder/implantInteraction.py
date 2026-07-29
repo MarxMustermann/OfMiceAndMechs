@@ -163,6 +163,24 @@ class ImplantInteraction(src.menues.SubMenu):
                                 break
                     if selection == "spawn_clone":
                         quests.append(src.quests.questMap["SpawnClone"]())
+                    if selection == "kill_outside":
+                        characters = terrain.characters[:]
+                        random.choice(characters)
+                        for check_character in characters:
+                            if check_character.faction == character.faction:
+                                continue
+                            quests.append(src.quests.questMap["Huntdown"](target=check_character,alwaysfollow=True,lifetime=2000))
+                            break
+                    if selection == "break_stasisTank":
+                        has_stasisTank = False
+                        for room in terrain.rooms:
+                            if room.tag != "ruin":
+                                continue
+                            stasisTank = room.getItemByType("StasisTank")
+                            if not stasisTank:
+                                continue
+                            quests.append(src.quests.questMap["ActivateItem"](targetPositionBig=stasisTank.getBigPosition(),targetPosition=stasisTank.getPosition()))
+                            break
 
                     character.clear_quests()
                     for quest in quests:
@@ -745,9 +763,14 @@ They will complete tasks on the base.
                 if room.tag == "ruin":
                     continue
                 num_base_rooms += 1
-            if num_base_rooms-2 > num_workers:
-                options.append(("spawn_clone","spawn worker"))
-                shown_spawn_worker = True
+            if groundsKeeper:
+                if num_base_rooms-2 > num_workers:
+                    options.append(("spawn_clone","spawn worker"))
+                    shown_spawn_worker = True
+            else:
+                if num_base_rooms > num_workers:
+                    options.append(("spawn_clone","spawn worker"))
+                    shown_spawn_worker = True
 
             # improve equipment
             has_equipment = False
@@ -772,6 +795,28 @@ They will complete tasks on the base.
                 options.append(("explore","explore terrain"))
                 shown_explore = True
 
+            # kill things
+            found_outside_enemies = False
+            shown_kill_outside = False
+            for check_character in terrain.characters:
+                if check_character.faction == character.faction:
+                    continue
+                found_outside_enemies = True
+            if random.random() < 0.5:
+                if found_outside_enemies and character.health > character.adjustedMaxHealth*2//3:
+                    options.append(("kill_outside","kill insects"))
+                    shown_kill_outside = True
+
+            # wake left over workers
+            has_stasisTank = False
+            for room in terrain.rooms:
+                if room.tag != "ruin":
+                    continue
+                if room.getItemsByType("StasisTank"):
+                    has_stasisTank = True
+            if has_stasisTank:
+                options.append(("break_stasisTank","break StasisTank"))
+
             # show options not yet shown
             if groundsKeeper and not shown_help:
                 options.append(("help","help groundskeeper"))
@@ -785,6 +830,8 @@ They will complete tasks on the base.
                 options.append(("explore","explore terrain"))
             if not shown_spawn_worker:
                 options.append(("spawn_clone","spawn worker"))
+            if not found_outside_enemies:
+                options.append(("kill_outside","kill insects"))
 
             # show the options to the player
             options.append(("continue","continue without quest"))

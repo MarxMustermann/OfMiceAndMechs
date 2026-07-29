@@ -684,20 +684,26 @@ They will complete tasks on the base.
 
             # generate quests to choose from
             options = []
+            extraDescriptions = {}
 
             # obtain weapon
             shown_obtain_weapon = False
+            extraDescriptions["getweapon"] = "Find a weapon to be able to defend yourself"
             if not character.weapon and (src.gamestate.gamestate.stern.get("no_weapon_quest_abort") or groundsKeeper):
                 options.append(("getweapon","obtain weapon"))
                 shown_obtain_weapon = True
 
             # help groundskeeper
             shown_help = False
+            extraDescriptions["help"] = "Helping the groundskeeper will make it complete its work faster."
             if groundsKeeper and not groundskeepers_place.getItemByType("Anvil") or not groundskeepers_place.getItemByType("MetalWorkingBench"):
                 options.append(("help","help groundskeeper"))
                 shown_help = True
 
             # work around dead groundskeeper
+            extraDescriptions["fetch Anvil"] = "The base needs an Anvil to produce MetalBars."
+            extraDescriptions["fetch MetalWorkingBench"] = "The base needs an MetalWorkingBench to start production."
+            extraDescriptions["fetch CityPlaner"] = "The base needs a CityPlaner to expand."
             if not groundsKeeper:
                 missing_anvil = False
                 missing_metalWorkingBench = False
@@ -746,6 +752,7 @@ They will complete tasks on the base.
                         options.append(("place CityPlaner","place CityPlaner"))
 
             # spawn workers
+            extraDescriptions["spawn_clone"] = "More workers means more work getting done"
             shown_spawn_worker = False
             num_workers = 0
             for check_char in character.getTerrain().getAllCharacters():
@@ -773,6 +780,7 @@ They will complete tasks on the base.
                     shown_spawn_worker = True
 
             # improve equipment
+            extraDescriptions["improve equipment"] = "Much of you combat power is based on your equipment. Upgrade it regulary"
             has_equipment = False
             if character.armor or isinstance(character.weapon,src.items.itemMap["Sword"]):
                 has_equipment = True
@@ -784,18 +792,21 @@ They will complete tasks on the base.
 
             # heal
             shown_heal = False
+            extraDescriptions["heal"] = "Staying in good health is essential to staying alive"
             last_heal = src.gamestate.gamestate.stern.get("last_heal",0)
             if character.health < character.adjustedMaxHealth//2 and last_heal < src.gamestate.gamestate.tick-500:
                 options.append(("heal","heal yourself"))
                 shown_heal = True
 
             # explore
+            extraDescriptions["explore"] = "See if you can find anything useful"
             shown_explore = False
             if random.random() < 0.5:
                 options.append(("explore","explore terrain"))
                 shown_explore = True
 
             # kill things
+            extraDescriptions["kill_outside"] = "The insects outside are a constant threat. Remove the threat"
             found_outside_enemies = False
             shown_kill_outside = False
             for check_character in terrain.characters:
@@ -808,6 +819,7 @@ They will complete tasks on the base.
                     shown_kill_outside = True
 
             # wake left over workers
+            extraDescriptions["break_stasisTank"] = "Maybe more survivors can be found in the remaining StasisTanks. Break them and find out"
             has_stasisTank = False
             for room in terrain.rooms:
                 if room.tag != "ruin":
@@ -835,7 +847,7 @@ They will complete tasks on the base.
 
             # show the options to the player
             options.append(("continue","continue without quest"))
-            self.submenu = src.menues.menuMap["SelectionMenu"](base_text,options=options)
+            self.submenu = src.menues.menuMap["SelectionMenu"](base_text,options=options,extraDescriptions=extraDescriptions)
             self.submenu.tag = "implant_idle_selection"
             return False
 

@@ -2,12 +2,12 @@ import src
 
 # bad code: should be abstracted
 # bad code: uses global function to render
-class ItemInfoMenu(src.menues.SubMenu):
+class ItemByTileInfoMenu(src.menues.SubMenu):
     """
     menu to show the players attributes
     """
 
-    type = "ItemInfoMenu"
+    type = "ItemByTileInfoMenu"
 
     def __init__(self, char=None):
         self.char = char
@@ -94,4 +94,4 @@ class ItemInfoMenu(src.menues.SubMenu):
         return None
 
 # register the menu type
-src.menues.add_menu(ItemInfoMenu)
+src.menues.add_menu(ItemByTileInfoMenu)

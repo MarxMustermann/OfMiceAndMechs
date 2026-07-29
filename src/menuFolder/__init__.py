@@ -37,7 +37,8 @@ import src.menuFolder.directionMenu
 import src.menuFolder.terrainMenu
 import src.menuFolder.shoutMenu
 import src.menuFolder.characterStatsMenu
-import src.menuFolder.itemInfoMenu
+import src.menuFolder.itemByTileInfoMenu
+import src.menuFolder.itemByTerrainInfoMenu
 import src.menuFolder.observeMenu
 import src.menuFolder.examineMenu
 import src.menuFolder.experimentalObserveMenu

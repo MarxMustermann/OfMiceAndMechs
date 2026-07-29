@@ -3384,6 +3384,9 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                     quest.activate()
                     enemy.quests.append(quest)
 
+        # remove workaround
+        currentTerrain.removeItem(architect)
+
     def setUpArchitectsLab(self,pos):
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
         currentTerrain.tag = "the architects mausoleum"

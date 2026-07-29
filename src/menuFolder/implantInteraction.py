@@ -113,6 +113,7 @@ class ImplantInteraction(src.menues.SubMenu):
                     if selection == "explore":
                         quests.append(src.quests.questMap["StoryExploreHomeTerrain"](lifetime=500))
                     if selection == "getweapon":
+                        quests.append(src.quests.questMap["ClearInventory"]())
                         quests.append(src.quests.questMap["Scavenge"](toCollect="Rod",amountToCollect=1,ignoreAlarm=True))
                         quests.append(src.quests.questMap["Equip"]())
 

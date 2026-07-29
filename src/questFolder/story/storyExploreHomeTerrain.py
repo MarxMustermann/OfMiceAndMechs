@@ -199,8 +199,7 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
             reasonString = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f","),f" to {self.reason}."]
         text = [f"""
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Explore the terrain"),reasonString,"""
-
-"""]
+Loot the items from the rooms or collect items outside."""]
         if self.lifetime:
             text.append(f"""
 Do this for {self.lifetime} ticks. {self.getRemainingLifetime()} ticks left.

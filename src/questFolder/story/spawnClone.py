@@ -224,14 +224,17 @@ class SpawnClone(src.quests.MetaQuestSequence):
         '''
         generate a textual description to show on the UI
         '''
+        reasonString = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
+        if self.reason:
+            reasonString = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),","),f" to {self.reason}."]
         return ["""
-You reach out to your implant and it answers:
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Spawn a new Clone"),reasonString,"""
 
-The base is a safe place to be now.
-But every base as small as it may be should have a crew of at least two.
-That way the base can recover in case a fatalaty.
+Clones are the lifeblood of every base.
+They work on many tasks and fight intruders.
+Every base should have a crew of at least two.
 
-Spawn a clone to have a backup in case of emergencies.
+This will allow the base to recover, if a Clone dies.
 """]
 
     def assignToCharacter(self, character):

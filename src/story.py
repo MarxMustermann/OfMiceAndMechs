@@ -1866,7 +1866,7 @@ I am working right now. I'll repriotize though.""")
                         quest = src.quests.questMap["LootRoom"](targetPositionBig=room.getPosition(),collectBig=True)
                     character.assignQuest(quest,active=True)
                     if room.getEnemiesOnTile(character):
-                        quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
+                        quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition(),endWhenCleared=True)
                         character.assignQuest(quest,active=True)
                     break
 

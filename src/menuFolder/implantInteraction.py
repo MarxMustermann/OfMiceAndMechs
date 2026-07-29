@@ -594,6 +594,12 @@ It will start to rebuild its working area.
             # generate quests to choose from
             options = []
 
+            # obtain weapon
+            shown_obtain_weapon = False
+            if not character.weapon and src.gamestate.gamestate.stern.get("no_weapon_quest_abort"):
+                options.append(("getweapon","obtain weapon"))
+                shown_obtain_weapon = True
+
             # help groundskeeper
             shown_help = False
             if not groundskeepers_place.getItemByType("Anvil") or not groundskeepers_place.getItemByType("MetalWorkingBench"):
@@ -626,7 +632,8 @@ It will start to rebuild its working area.
             # show options not yet shown
             if not shown_help:
                 options.append(("help","help groundskeeper"))
-            options.append(("getweapon","obtain weapon"))
+            if not shown_obtain_weapon and not character.weapon:
+                options.append(("getweapon","obtain weapon"))
             if has_equipment and not shown_improve_equipment:
                 options.append(("improve equipment","improve your equipment"))
             if not shown_heal and character.health < character.adjustedMaxHealth:

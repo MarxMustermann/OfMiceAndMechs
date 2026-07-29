@@ -2428,6 +2428,7 @@ That will allow to coordinate how the base is getting expanded.
                 skip_warning = True
             if extraParams.get("continue") == "no":
                 character.changed("builder_task_noconfirm")
+                src.gamestate.gamestate.stern["no_weapon_quest_abort"] = True
                 return
             if not character.weapon and not skip_warning:
                 base_response_text = []

@@ -194,7 +194,7 @@ class InventoryMenu(src.menues.SubMenu):
         """
 
         if self.subMenu:
-            return self.subMenu.render(size,size)
+            return self.subMenu.render(size=size)
 
         char = self.char
         character = char

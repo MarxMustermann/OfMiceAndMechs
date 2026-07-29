@@ -3359,6 +3359,18 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                         for _i in range(spawn_item[1]):
                             item = src.items.itemMap[spawn_item[2]]()
                             item.bolted = False
+                            if spawn_item[2] == "Wall":
+                                if random.random > 0.75:
+                                    pos = (big_x*15+random.randint(1,13),big_y*15+random.randint(1,13),0)
+                                    enemyType = random.choice(["Golem","ShieldBug","Spider","Spiderling"])
+                                    enemy = src.characters.characterMap[enemyType]()
+                                    currentTerrain.addCharacter(enemy,pos[0],pos[1])
+
+                                    quest = src.quests.questMap["SecureTile"](toSecure=(big_x,big_y,0))
+                                    quest.autoSolve = True
+                                    quest.assignToCharacter(enemy)
+                                    quest.activate()
+                                    enemy.quests.append(quest)
                             if spawn_item[2] == "Vial":
                                 item.uses = random.randint(1,3)
                             pos = (big_x*15+random.randint(1,14),big_y*15+random.randint(1,14),0)

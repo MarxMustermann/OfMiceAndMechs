@@ -179,6 +179,8 @@ The quest description and general instructions are shown in the quest menu.
                             quests.append(src.quests.questMap["OpenObserveMenu"]())
                         elif task_type == "help":
                             quests.append(src.quests.questMap["OpenHelpMenu"]())
+                        elif task_type == "spawn_clone":
+                            quests.append(src.quests.questMap["SpawnClone"]())
 
                         # assign the quest
                         if not quests:
@@ -430,12 +432,23 @@ That could be useful for us.
             if not isinstance(check_character,src.characters.characterMap["GroundsKeeper"]):
                 continue
             groundsKeeper = check_character
+
+        # check for workers
+        workers = []
+        for check_character in terrain.getAllCharacters():
+            if not check_character.faction == character.faction:
+                continue
+            if check_character == character:
+                continue
+            if check_character.burnedIn:
+                continue
+            workers.append(check_character)
         
         # interact with the groundskeeper
-        if groundsKeeper:
+        if groundsKeeper or workers:
 
             # initiate groundskeeper
-            if not groundsKeeper.registers.get("startedWorking"):
+            if groundsKeeper and not groundsKeeper.registers.get("startedWorking"):
                 base_text = ["""
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),"""
 
@@ -453,10 +466,11 @@ Find out why.
                 return False
 
             # ensure the groundskeeper has a painter
-            hasPainter = groundsKeeper.hasPainter()
-            if not groundsKeeper.registers.get("gotPainter") or not hasPainter:
-                if not self.character.searchInventory("Painter"):
-                    base_text = ["""
+            if groundsKeeper:
+                hasPainter = groundsKeeper.hasPainter()
+                if not groundsKeeper.registers.get("gotPainter") or not hasPainter:
+                    if not self.character.searchInventory("Painter"):
+                        base_text = ["""
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),"""
 
 The groundskeeper is working now,
@@ -467,16 +481,16 @@ Check if you can help out.
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to help to groundskeeper?"""),"""
 """]
-                else:
-                    base_text = ["""
+                    else:
+                        base_text = ["""
 """,(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You obtained a Painter."),"""
 
 Bring it to the groundskeeper.
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to help to groundskeeper?"""),"""
 """]
-                self._spawnSpawnTaskMenu(base_text,"help_groundskeeper")
-                return False
+                    self._spawnSpawnTaskMenu(base_text,"help_groundskeeper")
+                    return False
 
             # equip yourself
             equipment_availabe = False
@@ -564,7 +578,7 @@ Use the CityPlaner to set room should be build there.
 
             # pass time till groundskeeper is ready
             current_time = src.gamestate.gamestate.tick
-            if groundskeepers_place.floorPlan or src.gamestate.gamestate.stern.get("no_groundskeeper_quest",0) > current_time-200:
+            if groundsKeeper and groundskeepers_place.floorPlan or src.gamestate.gamestate.stern.get("no_groundskeeper_quest",0) > current_time-200:
                 base_text = ["""
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),"""
 
@@ -582,15 +596,26 @@ There are many useful items around.
 
             # help groundskeeper set up
             base_text = ["""
-""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),"""
+""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),f"""
 
 The groundskeeper is working now.
 It will start to rebuild its working area.
 
-""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Help the groundskeeper or help yourself."""),"""
+""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Help the groundskeeper or help yourself.""")]
 
-""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest?"""),"""
-"""]
+            if not groundsKeeper:
+                base_text = ["""
+""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),f"""
+
+The workers are working now.
+They will complete tasks on the base.
+
+""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Help the workers or help yourself.""")]
+
+            base_text.extend(["""
+
+""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""What quest shall i assign?"""),"""
+"""])
 
             # generate quests to choose from
             options = []
@@ -603,7 +628,7 @@ It will start to rebuild its working area.
 
             # help groundskeeper
             shown_help = False
-            if not groundskeepers_place.getItemByType("Anvil") or not groundskeepers_place.getItemByType("MetalWorkingBench"):
+            if groundsKeeper and not groundskeepers_place.getItemByType("Anvil") or not groundskeepers_place.getItemByType("MetalWorkingBench"):
                 options.append(("help","help groundskeeper"))
                 shown_help = True
 
@@ -631,7 +656,7 @@ It will start to rebuild its working area.
                 shown_explore = True
 
             # show options not yet shown
-            if not shown_help:
+            if groundsKeeper and not shown_help:
                 options.append(("help","help groundskeeper"))
             if not shown_obtain_weapon and not character.weapon:
                 options.append(("getweapon","obtain weapon"))
@@ -648,9 +673,20 @@ It will start to rebuild its working area.
             self.submenu.tag = "implant_idle_selection"
             return False
 
-            self._spawnSpawnTaskMenu(base_text,"help_groundskeeper")
-            return False
-        1/0
+        # help groundskeeper set up
+        base_text = ["""
+""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),"""
+
+Everyone around you is dead and gone.
+This will complicate things.
+
+""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Spawn a new Clone"),""" to replace groundskeeper.
+
+""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you the quest to spawn a Clone?"""),"""
+"""]
+
+        self._spawnSpawnTaskMenu(base_text,"spawn_clone")
+        return False
 
     def render(self,size=None):
         '''

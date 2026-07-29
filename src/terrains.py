@@ -1851,18 +1851,36 @@ class Terrain:
             self.hidden = mapHidden
 
             # select color for force field 
-            if src.gamestate.gamestate.tick%6 == 0:
+            if src.gamestate.gamestate.tick%15 == 0:
                 forceField = (src.interaction.urwid.AttrSpec((80,80,90), "black"), "~~")
-            if src.gamestate.gamestate.tick%6 == 1:
+            if src.gamestate.gamestate.tick%15 == 1:
+                forceField = (src.interaction.urwid.AttrSpec((85,85,100), "black"), "~~")
+            if src.gamestate.gamestate.tick%15 == 2:
                 forceField = (src.interaction.urwid.AttrSpec((90,90,110), "black"), "~~")
-            if src.gamestate.gamestate.tick%6 == 2:
+            if src.gamestate.gamestate.tick%15 == 3:
+                forceField = (src.interaction.urwid.AttrSpec((95,95,115), "black"), "~~")
+            if src.gamestate.gamestate.tick%15 == 4:
                 forceField = (src.interaction.urwid.AttrSpec((100,100,120), "black"), "~~")
-            if src.gamestate.gamestate.tick%6 == 3:
+            if src.gamestate.gamestate.tick%15 == 5:
+                forceField = (src.interaction.urwid.AttrSpec((103,103,123), "black"), "~~")
+            if src.gamestate.gamestate.tick%15 == 6:
+                forceField = (src.interaction.urwid.AttrSpec((107,107,127), "black"), "~~")
+            if src.gamestate.gamestate.tick%15 == 7:
                 forceField = (src.interaction.urwid.AttrSpec((110,110,130), "black"), "~~")
-            if src.gamestate.gamestate.tick%6 == 4:
+            if src.gamestate.gamestate.tick%15 == 8:
+                forceField = (src.interaction.urwid.AttrSpec((107,107,127), "black"), "~~")
+            if src.gamestate.gamestate.tick%15 == 9:
+                forceField = (src.interaction.urwid.AttrSpec((103,103,123), "black"), "~~")
+            if src.gamestate.gamestate.tick%15 == 10:
                 forceField = (src.interaction.urwid.AttrSpec((100,100,120), "black"), "~~")
-            if src.gamestate.gamestate.tick%6 == 5:
+            if src.gamestate.gamestate.tick%15 == 11:
+                forceField = (src.interaction.urwid.AttrSpec((97,97,117), "black"), "~~")
+            if src.gamestate.gamestate.tick%15 == 12:
+                forceField = (src.interaction.urwid.AttrSpec((92,92,112), "black"), "~~")
+            if src.gamestate.gamestate.tick%15 == 13:
                 forceField = (src.interaction.urwid.AttrSpec((90,90,110), "black"), "~~")
+            if src.gamestate.gamestate.tick%15 == 14:
+                forceField = (src.interaction.urwid.AttrSpec((85,85,105), "black"), "~~")
 
             # paint floor
             chars = self.paintFloor(size=size,coordinateOffset=coordinateOffset)

@@ -56,7 +56,7 @@ class Door(src.items.Item):
 
         renderer.draw_color = fg_color
 
-        if self.bolted and not self.walkable:
+        if self.bolted and not self.walkable and self.container:
             items = self.container.getItemByPosition(self.getPosition(offset=(0,-1,0)))
             if not (len(items) == 1 and items[0].type == "Wall" and items[0].bolted):
                 renderer.fill_rect((basePos[0],basePos[1],tileSize,border_width))

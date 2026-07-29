@@ -2480,18 +2480,18 @@ I will collect resources now.
         elif task == "build room":
 
             # generate quest to build a room
-            base_response_text.append("""
-The base needs to be extended so i have more space to work with.
+            base_response_text.extend(["""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"The base needs to be extended"),""" so i have more space to work with.
 
 Help me put together place the Walls and put together a new room.
-""")
+"""])
             offer_accept_options = True
 
         elif task == "fetch Wall":
 
             # generate quest to fetch Walls
             base_response_text.append("""
-I need Walls to build more rooms.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"I need Walls"),""" to build more rooms.
 
 Try to find some. They should be Walls scattered around everywhere.
 """)
@@ -2500,29 +2500,29 @@ Try to find some. They should be Walls scattered around everywhere.
         elif task == "fetch Door":
 
             # generate quest to fetch Doors
-            base_response_text.append("""
-I need Doors to build more rooms.
+            base_response_text.extend(["""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"I need Doors"),""" to build more rooms.
 
 Try to find some. They should be Doors scattered around everywhere.
-""")
+"""])
             offer_accept_options = True
 
         elif task == "fetch Scrap":
 
             # generate quest to fetch Scrap
-            base_response_text.append("""
-I need Scrap to produce MetalBars
+            base_response_text.extend(["""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"I need Scrap"),""" to produce MetalBars
 
 Fetch some. it is nearly everywhere.
-""")
+"""])
             offer_accept_options = True
 
         elif task == "kill monster":
 
             # generate quest to fetch kill monsters
-            base_response_text.append("""
-Insect have swarmed the area. Kill some.
-""")
+            base_response_text.extend(["""
+Insect have swarmed the area. """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Kill some."),"""
+"""])
             offer_accept_options = True
 
         elif isinstance(task,str) and task.startswith("fetch ") and len(task.split(" ")) > 1:

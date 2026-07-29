@@ -259,7 +259,7 @@ This suggested action is shown on the left side of the screen.
 
 What do you want to do?
 """]
-            options = [("abort quest","abort active quest"),("continue","continue")]
+            options = [("abort quest","abort active quests"),("continue","continue")]
             self.submenu = src.menues.menuMap["SelectionMenu"](base_text,options=options)
             self.submenu.handleKey(key, noRender, character)
             self.submenu.tag = "implant_meta_action_selection"

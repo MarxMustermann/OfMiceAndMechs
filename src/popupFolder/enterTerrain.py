@@ -21,39 +21,39 @@ class EnterTerrain(src.popups.Popup):
 terrain_message = [
     (
         "ruin",
-        """Everything you see is in ruins. You can't tell what once was here.\n\nYou can clearly see movement between the rouble though.\n\n-- usefull items can be looted from the ruins""",
+        ["Everything you see ",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"is in ruins.")," You can't tell what once was here.\n\nYou can clearly see movement between the rouble, though.\n\n-- ",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"usefull items can be looted from the ruins")],
     ),
     (
         "shrine",
-        """A small shrine inviting you to pray.\nIt reminds you of home.\n\n-- you can use shrines to teleport home""",
+        ["A small shrine inviting you to pray.\nIt reminds you of ",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"home."),"\n\n-- ",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"you can use shrines to teleport home""")],
     ),
     (
         "lab",
-        """it looks like there is an old lab guarded by a lot of monsters.\n\nYou can feel something horrible happened here and that the place holds dark secrets. Better not to find out what dark secrets lie here.\n\n-- leave this place immediatly and stay away""",
+        ["It looks like there is an old lab guarded by a lot of monsters.\n\nYou can feel ",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"statue"),"something horrible happened here")," and that the place holds dark secrets. Better not to find out what dark secrets lie here.\n\n-- ",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"leave this place immediatly and stay away")],
     ),
     (
         "statue room",
-        """A ceremonial statue in a small dedicated it looks like there is an old lab guarded by a lot of monsters.\n\nYou can feel something horrible happened here and that the place holds dark secrets. Better not to find out what dark secrets lie here.\n\n-- leave this place immediatly and stay away""",
+        ["A ceremonial ",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"statue")," in a small temple like structure.\n\n-- ",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"this place may lead you to a dungeon")],
     ),
     (
         "nothingness",
-        """There is nothing here than swamp and maybe a bit of scrap here or there.\n\n-- nothing interesting to be found here""",
+        ["There is ",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"nothing here")," other than swamp and maybe a bit of Scrap here or there.\n\n-- ",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"nothing interesting to be found here"],
     ),
     (
         "cloning lab",
-        """The implant and cloning technology was developed in those labs. Many interessting things should still be left here.\n\n-- best to leave those alone""",
+        ["The implant and cloning technology was developed in those labs. Many ",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"interesting"," things should still be left here.\n\n-- ",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"best to leave those alone")],
     ),
     (
         "spider pit",
-        """This terrain is overrun with spiders, mostly concerned with themselves\n\n-- best to stay away if you are not looking for a fight""",
+        ["This terrain is overrun with ",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"spiders,")," mostly concerned with themselves\n\n-- ",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"best to stay away if you are not looking for a fight")],
     ),
     (
         "dungeon",
-        """This dungeon protects the heart of a god. It is well protected by a series of defences.\n\n-- best to stay away if you are not looking for a fight""",
+        ["This dungeon protects the ",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"heart of a god.")," It is well protected by a series of defences.\n\n-- ",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"best to stay away if you are not looking for a fight")],
     ),
     (
         "remote base",
-        """You see a base similar to what your base looks like.\n\n-- You may be able to find some useful resorces here""",
+        [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You see a base."),"It is similar to what your base looks like.\n\n-- ",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"You may be able to find some useful resorces here"],
     ),
 ]
 

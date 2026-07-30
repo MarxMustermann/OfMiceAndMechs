@@ -22,34 +22,35 @@ class DelveDungeon(src.quests.MetaQuestSequence):
         if self.reason:
             reason_string = f", to {self.reason}"
 
-        text = ""
+        text = []
 
         godname = src.gamestate.gamestate.gods[self.itemID]["name"]
 
         if self.storyText:
-            text += f"""
+            text.append(f"""
 {self.storyText}
-"""
-        text += f"Delve the dungeon on tile {self.targetTerrain} and retieve a GlassHeart.\n"
+""")
+        text.extend([f"Delve the dungeon on tile {self.targetTerrain} and ",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"retrieve a GlassHeart."),"\n"])
 
         if self.itemID:
-            text += f"""
-This dungeon is home of the god {godname} and holds its heart.
+            text.append(f"""
+This dungeon is the home of the god {godname} and holds its heart.
 Remove the heart from the GlassStatue holding it{reason_string}.
-"""
+""")
         else:
-            text += f"""
+            text.append(f"""
 Fetch any glass heart{reason_string}.
-"""
-        text += """
-After fetching the glass heart return the glass heart to your base and set it into the glass statue.
-"""
+""")
+        text.append("""
+Return to your base with the stolen glass heart
+and set it into a GlassStatue there to keep it.
+""")
         if self.directSendback:
-            text += """
-directSendback"""
+            text.append("""
+directSendback""")
         if self.suicidal:
-            text += """
-suicidal"""
+            text.append("""
+suicidal""")
         return text
 
     def handleDelivery(self, extraInfo):

@@ -355,6 +355,7 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
             return
 
         # filter invalid items
+        item_type = params.get("type")
         if item_type not in src.items.itemMap:
             if item_type:
                 character.notify("Item type unknown.")

@@ -4070,6 +4070,7 @@ def getTcodEvents():
         events = tcod.event.get()
         ignoreNext = False
         for event in events:
+
             foundEvent = True
             if isinstance(event, tcod.event.MouseButtonUp):
                 mouseCombatMove = False
@@ -4311,6 +4312,8 @@ def getTcodEvents():
                     renderGameDisplay()
 
             if isinstance(event,tcod.event.KeyDown):
+                if not (event.mod & tcod.event.Modifier.CTRL):
+                    freeze_game = False
                 if inputBlock and inputBlock > time.time():
                     continue
                 key = event.sym
@@ -4519,6 +4522,8 @@ def getTcodEvents():
                 ignoreNext = True
 
             if isinstance(event,tcod.event.KeyUp):
+                if not (event.mod & tcod.event.Modifier.CTRL):
+                    freeze_game = False
                 key = event.sym
                 if key in (tcod.event.KeySym.LCTRL,tcod.event.KeySym.RCTRL,):
                     freeze_game = False

@@ -4049,6 +4049,7 @@ def moveCharacterTowardsCursor():
         mainChar.runCommandString(direction)
 
 freeze_game = False
+freeze_num_quests = 0
 lastcheck = time.time()
 def getTcodEvents():
     src.gamestate.gamestate.waitedForInputThisTurn = True
@@ -4325,6 +4326,7 @@ def getTcodEvents():
                     translatedKey = "backspace"
                 if key in (tcod.event.KeySym.LCTRL,tcod.event.KeySym.RCTRL,):
                     freeze_game = True
+                    freeze_num_quests = len(src.gamestate.gamestate.mainChar.quests)
                 """
                 if key == tcod.event.KeySym.SPACE:
                     translatedKey = " "

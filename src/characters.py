@@ -2217,7 +2217,13 @@ press any other key to attack normally"""
             active: a flag indication if the quest should be added as active
         '''
         if active:
-            self.quests.insert(0, quest)
+            if not src.interaction.freeze_game or self != src.gamestate.gamestate.mainChar:
+                self.quests.insert(0, quest)
+            else:
+                pos = len(self.quests)-src.interaction.freeze_num_quests-1
+                if pos < 0 and pos >= len(self.quests):
+                    pos = 0
+                self.quests.insert(pos, quest)
         else:
             self.quests.append(quest)
         quest.assignToCharacter(self)

@@ -23,26 +23,19 @@ class GoHome(src.quests.MetaQuestSequence):
         '''
         generate a textual description of this quest
         '''
-        reason = ""
+        reason = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
-            reason = f", to {self.reason}"
+            reason = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),","),f" to {self.reason}."]
 
-        text = f"""
-Go home{reason}.
-
-You consider the command centre of the base your home.
-That command centre holds the assimilator and
-other important artworks like the quest artwork.
-
-Many activities can be started from the command centre.
-Go there and be ready for action.
-"""
+        text = [f"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Go home"),reason,"""
+"""]
         try:
             self.endOnHomeTerrain
         except:
             self.endOnHomeTerrain = False
         if self.endOnHomeTerrain:
-            text += "\nThis quest will end once you reach the home terrain."
+            text.append("\nThis quest will end once you reach the home terrain.")
         return text
 
     def triggerCompletionCheck(self, character=None, dryRun=True):

@@ -29,7 +29,7 @@ terrain_message = [
     ),
     (
         "lab",
-        ["It looks like there is an old lab guarded by a lot of monsters.\n\nYou can feel ",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"statue"),"something horrible happened here")," and that the place holds dark secrets. Better not to find out what dark secrets lie here.\n\n-- ",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"leave this place immediatly and stay away")],
+        ["It looks like there is an old lab guarded by a lot of monsters.\n\nYou can feel ",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"something horrible happened here")," and that the place holds dark secrets. Better not to find out what dark secrets lie here.\n\n-- ",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"leave this place immediatly and stay away")],
     ),
     (
         "statue room",
@@ -37,11 +37,11 @@ terrain_message = [
     ),
     (
         "nothingness",
-        ["There is ",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"nothing here")," other than swamp and maybe a bit of Scrap here or there.\n\n-- ",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"nothing interesting to be found here"],
+        ["There is ",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"nothing here")," other than swamp and maybe a bit of Scrap here or there.\n\n-- ",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"nothing interesting to be found here")],
     ),
     (
         "cloning lab",
-        ["The implant and cloning technology was developed in those labs. Many ",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"interesting"," things should still be left here.\n\n-- ",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"best to leave those alone")],
+        ["The implant and cloning technology was developed in those labs. Many ",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"interesting")," things should still be left here.\n\n-- ",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"best to leave those alone")],
     ),
     (
         "spider pit",
@@ -53,7 +53,7 @@ terrain_message = [
     ),
     (
         "remote base",
-        [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You see a base."),"It is similar to what your base looks like.\n\n-- ",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"You may be able to find some useful resorces here"],
+        [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You see a base."),"It is similar to what your base looks like.\n\n-- ",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"You may be able to find some useful resorces here")],
     ),
 ]
 

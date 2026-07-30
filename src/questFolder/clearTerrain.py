@@ -15,11 +15,11 @@ class ClearTerrain(src.quests.MetaQuestSequence):
         self.reason = reason
 
     def generateTextDescription(self):
-        reason_string = ""
+        reason_string = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
-            reason_string = f", to {self.reason}"
+            reason_string = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),","),f" to {self.reason}"]
         text = [f"""
-Clear the whole terrain from enemies{reason_string}.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Clear the whole terrain from enemies"),reason_string,"""
 
 Just clear the whole terrain tile for tile.
 """]

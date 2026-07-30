@@ -5114,8 +5114,23 @@ This memorial contains:
                 sacrificeRequirement = ("Sword",5)
 
         # create the god
+        name = f"god{itemID}"
+        if itemID == 1:
+            name = f"Iakhül"
+        if itemID == 2:
+            name = f"Ooulkha"
+        if itemID == 3:
+            name = f"Jahbada"
+        if itemID == 4:
+            name = f"Ghulüp"
+        if itemID == 5:
+            name = f"Zahul"
+        if itemID == 6:
+            name = f"Palki"
+        if itemID == 7:
+            name = f"Qualku"
         src.gamestate.gamestate.gods[itemID] = {
-                "name":f"god{itemID}","mana":200,"home":pos,"lastHeartPos":pos,"sacrifice":sacrificeRequirement
+                "name":name,"mana":200,"home":pos,"lastHeartPos":pos,"sacrifice":sacrificeRequirement
             }
 
 

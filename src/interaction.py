@@ -4048,6 +4048,7 @@ def moveCharacterTowardsCursor():
 
         mainChar.runCommandString(direction)
 
+freeze_game = False
 lastcheck = time.time()
 def getTcodEvents():
     src.gamestate.gamestate.waitedForInputThisTurn = True
@@ -4057,6 +4058,7 @@ def getTcodEvents():
     global mouseCombatMove
     global mouseCombatLastMove
     global mouseCombatMap
+    global freeze_game
 
     foundEvent = False
 
@@ -4321,6 +4323,8 @@ def getTcodEvents():
                         translatedKey = "tab"
                 if key == tcod.event.KeySym.BACKSPACE:
                     translatedKey = "backspace"
+                if key in (tcod.event.KeySym.LCTRL,tcod.event.KeySym.RCTRL,):
+                    freeze_game = True
                 """
                 if key == tcod.event.KeySym.SPACE:
                     translatedKey = " "
@@ -4511,6 +4515,11 @@ def getTcodEvents():
 
                 keyboardListener(translatedKey)
                 ignoreNext = True
+
+            if isinstance(event,tcod.event.KeyUp):
+                key = event.sym
+                if key in (tcod.event.KeySym.LCTRL,tcod.event.KeySym.RCTRL,):
+                    freeze_game = False
 
             if isinstance(event,tcod.event.TextInput):
                 if ignoreNext:
@@ -9689,6 +9698,9 @@ def advanceChar(char,render=True, pull_events = True, singleStep=False):
             rerender = True
             skipNextRender = False
         elif state["commandKeyQueue"]:
+            if src.interaction.freeze_game:
+                renderGameDisplay()
+                break
             key = state["commandKeyQueue"].pop()
             if (char == src.gamestate.gamestate.mainChar):
                 submenu = state["submenue"]

@@ -121,12 +121,12 @@ class Guardian(src.monster.Monster):
         return (src.interaction.urwid.AttrSpec(color,"#000"), "&&")
 
     def getLoreDescription(self):
-        return f"You see a Guardian. A huge humanoid figure, that doesn't look quite correct when looking closer"
+        return [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You see a Guardian."),f" It is a huge humanoid figure, that doesn't look quite correct when looking closer"]
 
     def getFunctionalDescription(self):
-        return f"Guardians are pretty dangerous, some more than others"
+        return (src.interaction.urwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),f"Guardians are pretty dangerous, some more than others")
 
     def description(self):
-        return self.getLoreDescription()+"\n\n---- "+self.getFunctionalDescription()
+        return [self.getLoreDescription(),"\n\n---- ",self.getFunctionalDescription()]
 
 src.characters.add_character(Guardian)

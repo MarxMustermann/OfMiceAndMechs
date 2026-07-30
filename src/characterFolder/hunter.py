@@ -17,12 +17,12 @@ class Hunter(src.monster.Monster):
         self.charType = "Hunter"
 
     def getLoreDescription(self):
-        return f"The Hunters needle like teeth stand in contrast to its thick four legs.\nEach step taken sends waves rippling over his reflective smooth white skin.";
+        return [f"The Hunters ",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"needle like teeth")," stand in contrast to its thick four legs.\nEach step taken sends waves rippling over his reflective smooth white skin."]
 
     def getFunctionalDescription(self):
-        return f"Hunters are slow, but can be a danger to weaker Clones."
+        return (src.interaction.urwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),f"Hunters are slow, but can be a danger to weaker Clones.")
 
     def description(self):
-        return self.getLoreDescription()+"\n\n---- "+self.getFunctionalDescription()
+        return [self.getLoreDescription(),"\n\n---- ",self.getFunctionalDescription()]
 
 src.characters.add_character(Hunter)

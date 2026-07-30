@@ -55,12 +55,12 @@ class Snatcher(src.monster.Monster):
         super().applyNativeMeleeAttackEffects(target)
 
     def getLoreDescription(self):
-        return f"The Snatchers greedy eyes track everything in the swamp.\nIt also looks pretty hungry."
+        return [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"The Snatchers")," greedy eyes track everything in the swamp.\nIt also looks pretty hungry."]
 
     def getFunctionalDescription(self):
-        return f"The Snatchers will attack anything outside of the base,\nbut usually do not chase into rooms"
+        return (src.interaction.urwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),f"The Snatchers will attack anything outside of the base,\nbut usually do not chase into rooms")
 
     def description(self):
-        return self.getLoreDescription()+"\n\n---- "+self.getFunctionalDescription()
+        return [self.getLoreDescription(),"\n\n---- ",self.getFunctionalDescription()]
 
 src.characters.add_character(Snatcher)

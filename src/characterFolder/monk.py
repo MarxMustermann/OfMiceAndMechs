@@ -59,12 +59,12 @@ class Monk(src.monster.Monster):
             self.movementSpeed = 0.8
 
     def getLoreDescription(self):
-        return f"From far away you only see a tattered blue robe. If you look closer you see nothing under the robe."
+        return [f"From far away you only see a tattered blue robe. If you look closer you see ",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"nothing under the robe.")]
 
     def getFunctionalDescription(self):
-        return f"The Monks are pretty dangerous enemies"
+        return (src.interaction.urwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),f"The Monks are pretty dangerous enemies")
 
     def description(self):
-        return self.getLoreDescription()+"\n\n---- "+self.getFunctionalDescription()
+        return [self.getLoreDescription(),"\n\n---- ",self.getFunctionalDescription()]
 
 src.characters.add_character(Monk)

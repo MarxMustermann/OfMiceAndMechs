@@ -97,12 +97,12 @@ class Spider(src.monster.Monster):
         return [(None, 9),(src.items.itemMap["SpiderEye"], 1)]
 
     def getLoreDescription(self):
-        return f"You see a Spider. Poision is dripping from its fangs.\nIt seems to be as persistent as it is patient."
+        return [f"You see a Spider.",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black")," Poision is dripping "),"from its fangs.\nIt seems to be as persistent as it is patient."]
 
     def getFunctionalDescription(self):
-        return f"Spiders are somewhat dangerous in a fight and are about as fast as a Clone.\nThe main risk fighting them is that they can slow you down, preventing an escape.\nSpiders will always chase after you, you can abuse that behaviour."
+        return (src.interaction.urwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),f"Spiders are somewhat dangerous in a fight and are about as fast as a Clone.\nThe main risk fighting them is that they can slow you down, preventing an escape.\nSpiders will always chase after you, you can abuse that behaviour.")
 
     def description(self):
-        return self.getLoreDescription()+"\n\n---- "+self.getFunctionalDescription()
+        return [self.getLoreDescription(),"\n\n---- ",self.getFunctionalDescription()]
 
 src.characters.add_character(Spider)

@@ -47,13 +47,13 @@ class Clone(src.characters.Character):
         super().die(reason=reason, addCorpse=addCorpse, killer=killer)
 
     def getLoreDescription(self):
-        return f"You see a Clone. A humanoid figure, all Clones look slightly different but look kind of the same"
+        return [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You see a Clone")," a humanoid figure. all Clones look slightly different but look kind of the same"]
 
     def getFunctionalDescription(self):
-        return f"Clones are the normal player and NPC characters.\nClone vary widly in skills, behaviour, equipment and stats."
+        return (src.interaction.urwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),f"Clones are the normal player and NPC characters.\nClone vary widly in skills, behaviour, equipment and stats.")
 
     def description(self):
-        return self.getLoreDescription()+"\n\n---- "+self.getFunctionalDescription()
+        return [self.getLoreDescription(),"\n\n---- ",self.getFunctionalDescription()]
 
     def getSpecialChatOptions(self):
         return self.specialChatOptions

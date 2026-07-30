@@ -58,12 +58,12 @@ class Ghoul(src.characters.Character):
         return super().die(reason=reason,killer=killer,addCorpse=addCorpse,corpseType=corpseType)
 
     def getLoreDescription(self):
-        return f"You see an Ghul. They have the form of a Clone, but you can see no humanity in their eyes.\nTheir food habits also make every room they are in smell like Corpse."
+        return [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You see a Ghul.")," They have the form of a Clone, but they are clearly dead.\nThey can follow simple instructions, but make every room they are in smell like Corpse."]
 
     def getFunctionalDescription(self):
-        return f"Ghuls are great workforce when their automation system has been set up properly"
+        return (src.interaction.urwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),f"Ghuls are great workforce when their automation system has been set up properly")
 
     def description(self):
-        return self.getLoreDescription()+"\n\n---- "+self.getFunctionalDescription()
+        return [self.getLoreDescription(),"\n\n---- ",self.getFunctionalDescription()]
 
 src.characters.add_character(Ghoul)

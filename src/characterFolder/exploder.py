@@ -61,13 +61,13 @@ class Exploder(src.monster.Monster):
         super().die(reason=reason, addCorpse=False, killer=killer)
 
     def getLoreDescription(self):
-        return f"You see an Exploder. It looks anxious and weak.\nIt swollen organs and full of explosive gas indicate it is not a victim, though."
+        return [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"You see an Exploder.")," It looks anxious and weak.\nIt swollen organs full of explosive gas indicate it is dangerous, though."]
 
     def getFunctionalDescription(self):
-        return f"Exploders explode when killed, so be careful with that"
+        return (src.interaction.urwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),f"Exploders explode when killed, so be careful with that")
 
     def description(self):
-        return self.getLoreDescription()+"\n\n---- "+self.getFunctionalDescription()
+        return [self.getLoreDescription(),"\n\n---- ",self.getFunctionalDescription()]
 
 
 src.characters.add_character(Exploder)

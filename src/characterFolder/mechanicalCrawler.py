@@ -73,12 +73,12 @@ class Mechanical_Crawler(src.monster.Monster):
         return (src.interaction.urwid.AttrSpec((255,shade,shade),"#000"), "st")
 
     def getLoreDescription(self):
-        return f"It skitters aroung unpleasantly many tiny legs.\nThe sound of the legs hitting the floor produces a fast rythm."
+        return [f"It skitters around unpleasantly ",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"many tiny legs."),"\nThe sound of the legs hitting the floor produces a fast rythm."]
 
     def getFunctionalDescription(self):
-        return f"The Crawlers are mostly harmles, but they can be a danger if they swarm you"
+        return (src.interaction.urwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),f"The Crawlers are mostly harmles, but they can be a danger if they swarm you")
 
     def description(self):
-        return self.getLoreDescription()+"\n\n---- "+self.getFunctionalDescription()
+        return [self.getLoreDescription(),"\n\n---- ",self.getFunctionalDescription()]
 
 src.characters.add_character(Mechanical_Crawler)

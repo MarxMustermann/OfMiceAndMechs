@@ -67,12 +67,12 @@ class Mouse(src.characters.Character):
         self.vanished = True
 
     def getLoreDescription(self):
-        return f"Just a mice, its fur is stiff enough to cut your skin"
+        return [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Just a mouse,")," its fur is stiff enough to cut your skin"]
 
     def getFunctionalDescription(self):
-        return f"You never know how Mice act."
+        return (src.interaction.urwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),f"You never know how mice act.")
 
     def description(self):
-        return self.getLoreDescription()+"\n\n---- "+self.getFunctionalDescription()
+        return [self.getLoreDescription(),"\n\n---- ",self.getFunctionalDescription()]
 
 src.characters.add_character(Mouse)

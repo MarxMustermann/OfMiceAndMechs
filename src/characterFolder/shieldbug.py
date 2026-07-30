@@ -57,12 +57,12 @@ class ShieldBug(src.characters.characterMap["Insect"]):
         return [(None, 1), (src.items.itemMap["ChitinPlates"], 1)]
 
     def getLoreDescription(self):
-        return f"You see a ShieldBug. It slowly moves dragging its enourmous weight through the mud.\nThe oldest ShieldBugs have ChitinPlates almost unpenetrable by a normal blade."
+        return [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You see a ShieldBug.")," It slowly moves dragging its enourmous weight through the mud.\nThe oldest ShieldBugs have ChitinPlates almost unpenetrable by a normal blade."]
 
     def getFunctionalDescription(self):
-        return f"Shieldbugs have a lot of HP and are slow. Some are stronger than others."
+        return (src.interaction.urwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),f"Shieldbugs have a lot of HP and are slow. Some are stronger than others.")
 
     def description(self):
-        return self.getLoreDescription()+"\n\n---- "+self.getFunctionalDescription()
+        return [self.getLoreDescription(),"\n\n---- ",self.getFunctionalDescription()]
 
 src.characters.add_character(ShieldBug)

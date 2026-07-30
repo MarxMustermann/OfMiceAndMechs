@@ -134,6 +134,7 @@ class ImplantInteraction(src.menues.SubMenu):
 
                         # loot rooms containing the item
                         found_loot_room = False
+                        assignedQuest = False
                         for room in terrain.rooms:
                             if room.tag != "ruin":
                                 continue
@@ -150,7 +151,13 @@ class ImplantInteraction(src.menues.SubMenu):
                                 quests.append(src.quests.questMap["FetchAnvil"](targetPositionBig=room.getPosition()))
                             else:
                                 quests.append(src.quests.questMap["LootRoom"](targetPositionBig=room.getPosition(),collectBig=True))
+                            assignedQuest = True
                             break
+
+                        # loot outside spots for the item
+                        if not assignedQuest:
+                            if terrain.search_item_by_type(item_type):
+                                quests.append(src.quests.questMap["Scavenge"](toCollect=item_type))
                     if selection.startswith("place ") and len(selection.split(" ")) > 1:
 
                         # get item type
@@ -181,6 +188,10 @@ class ImplantInteraction(src.menues.SubMenu):
                                 continue
                             quests.append(src.quests.questMap["ActivateItem"](targetPositionBig=stasisTank.getBigPosition(),targetPosition=stasisTank.getPosition()))
                             break
+                    if selection == "collect glass hearts":
+                        quests.append(src.quests.questMap["CollectGlassHearts"]())
+                    if selection == "ascend":
+                        quests.append(src.quests.questMap["Ascend"]())
 
                     character.clear_quests()
                     for quest in quests:
@@ -802,6 +813,34 @@ They will complete tasks on the base.
                 options.append(("heal","heal yourself"))
                 shown_heal = True
 
+            # check temple state
+            numGlassHearts = 0
+            numGlassStatues = 0
+            hasTemple = False
+            for room in terrain.rooms:
+                if room.tag != "temple":
+                    continue
+                if room.floorPlan:
+                    continue
+                hasTemple = True
+                glassStatues = room.getItemsByType("GlassStatue")
+                for glassStatue in glassStatues:
+                    numGlassStatues += 1
+                    if not glassStatue.hasItem:
+                        continue
+                    numGlassHearts += 1
+
+            # use temple
+            if hasTemple and numGlassStatues > numGlassHearts:
+                if numGlassHearts < 7:
+                    name = "collect glass hearts"
+                    options.append((name,name))
+                    extraDescriptions[name] = "put society back together by collecting all the glass hearts"
+                else:
+                    name = "ascend"
+                    options.append((name,name))
+                    extraDescriptions[name] = "put society back together by replacing the dead leader"
+
             # explore
             extraDescriptions["explore"] = "See if you can find anything useful"
             shown_explore = False
@@ -832,6 +871,22 @@ They will complete tasks on the base.
                     has_stasisTank = True
             if has_stasisTank:
                 options.append(("break_stasisTank","break StasisTank"))
+
+
+            # fetch room building material
+            found_wall = False
+            found_door = False
+            for room in terrain.rooms:
+                if room.tag == "ruins":
+                    continue
+                if room.getNonEmptyOutputslots("Wall"):
+                    found_wall = True
+                if room.getNonEmptyOutputslots("Door"):
+                    found_door = True
+            if not found_wall:
+                options.append(("fetch Wall","fetch Walls"))
+            if not found_door:
+                options.append(("fetch Door","fetch Doors"))
 
             # show options not yet shown
             if groundsKeeper and not shown_help:

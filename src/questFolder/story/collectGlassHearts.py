@@ -476,15 +476,12 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
             self.reason
         except:
             self.reason = None
-        reason_string = ""
+        reason_string = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
-            reason_string = f", {self.reason}"
+            reason_string = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),","),f" {self.reason}."]
         text = [f"""
-You reach out to your implant and it answers:
-
-You were not accepted by the Throne as the supreme leader.
-As long as you don't control all Glasshearts you can't ascend.
-Fetch all GlassHearts{reason_string}.
+As long as you don't control all Glasshearts, you can't ascend.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Collect all GlassHearts"),reason_string,"""
 
 The GlassHearts can be found in dungeons and are guarded.
 Those dungeons can be accessed using the GlassStatues in the Temple.

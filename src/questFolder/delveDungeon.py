@@ -287,9 +287,16 @@ suicidal""")
                             if item.charges < 5:
                                 continue
 
-                            quest1 = src.quests.questMap["ClearInventory"]()
-                            quest2 = src.quests.questMap["ActivateGlassStatue"](targetPositionBig=room.getPosition(),targetPosition=item.getPosition(),reason="get to the dungeon")
-                            return ([quest2,quest1],None)
+                            quests = []
+                            should_clear_inventory = False
+                            for check_item in character.inventory:
+                                if check_item.type in ("Vial","Bolt",):
+                                    continue
+                                should_clear_inventory = True
+                            if should_clear_inventory:
+                                quests.append(src.quests.questMap["ClearInventory"]())
+                            quests.append(src.quests.questMap["ActivateGlassStatue"](targetPositionBig=room.getPosition(),targetPosition=item.getPosition(),reason="get to the dungeon"))
+                            return (reversed(quests),None)
 
                 # try to go to the dungeon using other means
                 if not self.walkToTarget:

@@ -359,13 +359,13 @@ class GlassStatue(src.items.Item):
         src.gamestate.gamestate.gods[self.itemID]["lastHeartPos"] = (character.getTerrain().xPosition,character.getTerrain().yPosition)
         character.changed("deliveredSpecialItem",{"itemID":self.itemID})
 
-        submenue = src.menues.menuMap["TextMenu"]("""
+        submenue = src.menues.menuMap["TextMenu"](["""
 You insert the GlassHeart into the GlassStatue and make it whole.
 
 The GlassHeart scream and its agony takes physical form.
 
-A wave of enemies is approaching to steal the GlassHeart.
-""")
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"A wave of enemies is approaching"),""" to steal the GlassHeart.
+"""])
         submenue.do_not_scale = True
         character.macroState["submenue"] = submenue
 

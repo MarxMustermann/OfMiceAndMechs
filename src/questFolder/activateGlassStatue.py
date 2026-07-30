@@ -98,11 +98,16 @@ class ActivateGlassStatue(src.quests.MetaQuestSequence):
         return (None,(interactionCommand+direction,"activate the GlassStatue"))
 
     def generateTextDescription(self):
-        reason_string = ""
+        reason_string = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
-            reason_string = f", to {self.reason}"
+            reason_string = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),","),f"\nto {self.reason}."]
+        activate_text = "Activate a GlassStatue"
+        if self.targetPosition:
+            activate_text = f"Activate the GlassStatue on position {self.targetPosition}"
+        if self.targetPositionBig:
+            activate_text += f" on tile {self.targetPositionBig}"
         text = [f"""
-Activate a GlassStatue{reason_string}.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),activate_text),reason_string,f"""
 
 The GlassStatues are connected to the heart of their god.
 Use the GlassStatue to be teleported to the dungeon the heart is in.

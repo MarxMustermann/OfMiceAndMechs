@@ -617,6 +617,10 @@ Equip yourself with that equipment.
                     hasCityPlaner = True
             if hasEmptyRoom and hasCityPlaner:
                 available_roomTypes = []
+                extraDescriptions = {}
+                extraDescriptions["storage"] = "Allow to more stuff"
+                extraDescriptions["gooProcessing"] = "Allows to produce goo and to spawn Clones"
+                extraDescriptions["temple"] = "Allows to pray and wish for miracles"
                 if not hasStorage:
                     available_roomTypes.append("storage")
                 if not hasGooProcessing:
@@ -637,7 +641,7 @@ Use the CityPlaner to set room should be build there.
                     for room_type in available_roomTypes:
                         options.append((room_type,f"plan a {room_type} room"))
                     options.append(("continue","continue with quest"))
-                    self.submenu = src.menues.menuMap["SelectionMenu"](base_text,options=options)
+                    self.submenu = src.menues.menuMap["SelectionMenu"](base_text,options=options,extraDescriptions=extraDescriptions)
                     self.submenu.tag = "implant_room_planning_selection"
                     return False
 

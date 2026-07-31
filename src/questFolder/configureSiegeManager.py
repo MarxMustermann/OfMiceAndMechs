@@ -202,12 +202,12 @@ class ConfigureSiegeManager(src.quests.MetaQuestSequence):
         '''
         generate text description
         '''
-        reason_string = ""
+        reason_string = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
-            reason_string = f", to {self.reason}"
+            reason_string = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),","),f" to {self.reason}."]
 
-        text = ["""
-Configure the SiegeManager{reason_string}.
+        text = [f"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Configure the SiegeManager"),"""{reason_string}
 Waves of enemies appear at the start of each epoch.
 Handling those repeating waves can be automated.
 
@@ -218,7 +218,7 @@ That should ensure all Clones are safe when the waves comes ate the end of the e
 The alarms can automatically turned off 1000 ticks into the epoch.
 At that point the wave should be dead and the NPC are safe to go outside.
 
-Configure the siege manager to defend against the waves.
+Configure the SiegeManager to defend against the waves.
 You can set any trigger times for the actions as long the actions scheduled.
 """]
         return text

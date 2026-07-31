@@ -57,10 +57,6 @@ Press JH to auto heal.
                 return (None,("w","enter room"))
 
         # heal using vials
-        try:
-            self.noVialHeal
-        except:
-            self.noVialHeal = False
         if not self.noVialHeal:
             foundVial = None
             for item in character.inventory:

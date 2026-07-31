@@ -34,6 +34,9 @@ class BeUsefull(src.quests.MetaQuestSequence):
         self.dutySkipps = {}
         self.reason = reason
 
+        self.num_activations_this_tick = 0
+        self.num_activations_tick = None
+
     def generateTextDescription(self):
         '''
         generate a textual description of the quest
@@ -335,6 +338,19 @@ Press d to move the cursor and show the subquests description.
         return source
 
     def getNextStep(self, character=None, ignoreCommands=False, dryRun = True):
+        if not dryRun:
+            try:
+                self.num_activations_tick
+            except:
+                self.num_activations_tick = None
+            if not self.num_activations_tick or self.num_activations_tick < src.gamestate.gamestate.tick:
+                self.num_activations_tick = src.gamestate.gamestate.tick
+                self.num_activations_this_tick = 0
+            else:
+                self.num_activations_this_tick += 1
+                if self.num_activations_this_tick > 10:
+                    character.takeTime(1,"overthinking")
+
         if self.subQuests:
             return (None,None)
 

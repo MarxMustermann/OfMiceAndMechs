@@ -109,14 +109,20 @@ Just clear the whole terrain tile for tile.
                         continue
                     if otherChar.yPosition//15 in (0,14):
                         continue
-                    quest = src.quests.questMap["SecureTile"](toSecure=(otherChar.xPosition//15,otherChar.yPosition//15),endWhenCleared=True,reason="kill the remaining enemies")
+                    if random.random() < 0.5:
+                        quest = src.quests.questMap["SecureTile"](toSecure=(otherChar.xPosition//15,otherChar.yPosition//15),endWhenCleared=True,reason="kill the remaining enemies")
+                    else:
+                        quest = src.quests.questMap["Huntdown"](target=otherChar,reason="kill the remaining enemies",alwaysfollow=True)
                     return ([quest],None)
             if step == "clearRooms":
                 for room in terrain.rooms:
                     for otherChar in room.characters:
                         if otherChar.faction == character.faction:
                             continue
-                        quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition(),endWhenCleared=True,reason="secure the base")
+                        if random.random() < 0.5:
+                            quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition(),endWhenCleared=True,reason="secure the base")
+                        else:
+                            quest = src.quests.questMap["Huntdown"](target=otherChar,reason="secure the base",alwaysfollow=True)
                         return ([quest],None)
 
         return (None,(".","stand around confused"))

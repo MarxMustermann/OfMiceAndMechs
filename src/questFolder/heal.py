@@ -5,8 +5,8 @@ class Heal(src.quests.MetaQuestSequence):
     type = "Heal"
     lowLevel = True
 
-    def __init__(self, description="heal",noWaitHeal=False,noVialHeal=False,reason=None):
-        super().__init__()
+    def __init__(self, description="heal",noWaitHeal=False,noVialHeal=False,reason=None,lifetime=None):
+        super().__init__(lifetime=lifetime)
         self.metaDescription = description
         self.noWaitHeal = noWaitHeal
         self.noVialHeal = noVialHeal
@@ -25,6 +25,8 @@ Use Vials to heal yourself.
 """,(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"Press JH to use all healing items from you inventory."),"""
 
 """]
+        if self.lifetime:
+            text.append(f"Do this for {self.lifetime} ticks. {self.getRemainingLifetime()} ticks remainging")
         return text
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):

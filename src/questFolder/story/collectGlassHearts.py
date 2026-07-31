@@ -58,7 +58,32 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                 num_enemies += 1
         if num_enemies:
             if src.gamestate.gamestate.tick%(15*15*15) < 1000:
-                quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,lifetime=100,description="defend the arena",reason="ensure no attackers get into the base")
+                any_room = None
+                entry_room = None
+                trap_room = None
+                arena_room = None
+                groundskepers_room = None
+                for room in terrain.rooms:
+                    any_room = room
+                    if room.tag.lower() == "EntryRoom".lower():
+                        entry_room = room
+                    if room.tag.lower() == "TrapRoom".lower():
+                        trap_room = room
+                    if room.tag.lower() == src.story.groundskeeper_room_tag.lower():
+                        groundskepers_room = room
+                    if room.tag.lower() == "Arena".lower():
+                        arena_room = room
+                targetRoom = None
+                targetRoom = any_room
+                if groundskepers_room:
+                    targetRoom = groundskepers_room
+                if not trap_room:
+                    if entry_room:
+                        targetRoom = entry_room
+                if arena_room:
+                    targetRoom = arena_room
+
+                quest = src.quests.questMap["SecureTile"](toSecure=targetRoom.getPosition(),endWhenCleared=False,lifetime=100,description="defend the arena",reason="ensure no attackers get into the base")
                 return ([quest],None)
             else:
                 quest = src.quests.questMap["ClearTerrain"](reason="eliminate remaining enemies")

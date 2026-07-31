@@ -43,8 +43,12 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
 
         # defend yourself directly
         if character.getNearbyEnemies():
-            quest = src.quests.questMap["Fight"](reason="defend yourself")
-            return ([quest],None)
+            if character.is_low_heath():
+                quest = src.quests.questMap["Flee"](reason="preserve health")
+                return ([quest],None)
+            else:
+                quest = src.quests.questMap["Fight"](reason="defend yourself")
+                return ([quest],None)
 
         # ensure the character is at home
         if not character.isOnHomeTerrain():

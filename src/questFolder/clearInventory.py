@@ -226,10 +226,11 @@ Put the items into the stockpiles to make then accessible to the base.
             if not hasattr(homeRoom,"storageRooms") or not homeRoom.storageRooms:
                 return (None,None)
 
-            quest = src.quests.questMap["GoToTile"](targetPosition=(homeRoom.storageRooms[0].xPosition,homeRoom.storageRooms[0].yPosition,0))
-            if not dryRun:
-                beUsefull.idleCounter = 0
-            return ([quest],None)
+            if character.getBigPosition() == homeRoom.getPosition():
+                quest = src.quests.questMap["GoToTile"](targetPosition=(homeRoom.storageRooms[0].xPosition,homeRoom.storageRooms[0].yPosition,0),reason="go the storage room")
+                if not dryRun:
+                    beUsefull.idleCounter = 0
+                return ([quest],None)
         if len(character.inventory) > 9:
             quest = src.quests.questMap["ClearInventory"]()
             if not dryRun:

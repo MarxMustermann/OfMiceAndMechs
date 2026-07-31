@@ -81,12 +81,16 @@ class SearchForRuins(src.quests.MetaQuestSequence):
         '''
         generate a textual description to be shown on the UI
         '''
-        reason = ""
+        reason = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
-            reason = f", to {self.reason}"
+            reason = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f","),f" to {self.reason}"]
         
         text = [f"""
-Find an unexplored ruin{reason}.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Find an unexplored ruin"),reason,f""".
+Search terrains until one.
+
+There more to find in the outside world than just ruins.
+Try not to get killed on the way.
 """]
         return text
 

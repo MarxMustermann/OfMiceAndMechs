@@ -58,12 +58,35 @@ class GoToTerrain(src.quests.MetaQuestSequence):
         '''
         generate a description of this quest
         '''
-        reason = ""
+        reason = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
-            reason = f", to {self.reason}"
+            reason = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f",",f" to {self.reason}")
+
+        directionString = ""
+        current_position = self.character.getTerrainPosition()
+        directions = []
+        if current_position[0] < self.targetTerrain[0]:
+            amount = self.targetTerrain[0]-current_position[0]
+            directions.append(f"{amount} terrains to the east")
+        if current_position[0] > self.targetTerrain[0]:
+            amount = current_position[0]-self.targetTerrain[0]
+            directions.append(f"{amount} terrains to the west")
+        if current_position[1] < self.targetTerrain[1]:
+            amount = self.targetTerrain[1]-current_position[1]
+            directions.append(f"{amount} terrains to the south")
+        if current_position[1] > self.targetTerrain[1]:
+            amount = current_position[1]-self.targetTerrain[1]
+            directions.append(f"{amount} terrains to the north")
+        directionString = " and ".join(directions)
 
         text = []
-        text.append(f"Go to terrain {self.targetTerrain}{reason}.")
+        text.extend([(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"Go to terrain {self.targetTerrain}"),reason,f"""
+
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"You can change terrains by simply moving through the blue stuff at the edge of the map."),f"""
+
+The target terrain is {directionString}.
+
+"""])
 
         return text
 

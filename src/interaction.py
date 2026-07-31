@@ -105,6 +105,8 @@ def advanceGame():
             print(time.time())
             if profiler and profiler_start == src.gamestate.gamestate.tick - 1:
                 profiler.disable()
+                if not os.path.exists("perfDebug"):
+                    os.makedirs("perfDebug")
                 profiler.dump_stats("perfDebug/tick%s"%(profiler_start,))
                 print("time_taken stats:")
                 for (char,time_taken) in timeTaken_by_character.items():

@@ -223,12 +223,15 @@ class Adventure(src.quests.MetaQuestSequence):
         '''
         generate a textual description to be shown on the UI
         '''
-        reason = ""
+        reason = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
-            reason = f", to {self.reason}"
+            reason = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),","),f" to {self.reason}."]
         
         text = [f"""
-Go out and adventure{reason}.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Go out and adventure"),reason,"""
+
+Leave home terrain and visit other terrains. 
+Bring back loot, if you find valuables and try to avoid danger.
 
 track:
 

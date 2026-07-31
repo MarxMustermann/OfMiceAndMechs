@@ -20,6 +20,7 @@ if __name__ == '__main__':
         parser.add_argument("-p", "--phase", type=str, help="the phase to start in")
         parser.add_argument("--unicode", action="store_true", help="force fallback encoding")
         parser.add_argument("-d", "--debug", action="store_true", help="enable debug mode")
+        parser.add_argument("-D", "--perf_debug", action="store_true", help="enable performance debug mode")
         parser.add_argument(
             "-t",
             "--tiles",
@@ -64,6 +65,9 @@ if __name__ == '__main__':
 
         if args.noDemo:
             interaction.noDemo = True
+
+        if args.perf_debug:
+            interaction.performance_debug = True
 
         if args.seed:
             seed = int(args.seed)

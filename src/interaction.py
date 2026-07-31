@@ -10,6 +10,7 @@ import random
 import time
 import gzip
 import inspect
+import cProfile
 
 import src.canvas
 import src.characters
@@ -44,6 +45,7 @@ speed = None
 libtcodpy = None
 noFlicker = False
 noDemo = False
+performance_debug = False
 click_map = []
 
 upper_case_letter_color = "#66f"
@@ -55,10 +57,18 @@ shadowed_ui_color = "#666"
 class EndGame(Exception):
     pass
 
+profiler = None
+profiler_start = None
+timeTaken_by_character = {}
 def advanceGame():
     """
     advance the game
     """
+
+    if src.interaction.performance_debug:
+        global profiler
+        global profiler_start
+        global timeTaken_by_character
 
     # initialize new turn
     if not src.gamestate.gamestate.savedThisTurn:
@@ -87,6 +97,24 @@ def advanceGame():
         src.gamestate.gamestate.multi_chars = multi_chars
         src.gamestate.gamestate.tick += 1
         logger.info("Tick %d", src.gamestate.gamestate.tick)
+
+        # profile the games performance
+        if src.interaction.performance_debug:
+            print("new tick")
+            print(src.gamestate.gamestate.tick)
+            print(time.time())
+            if profiler and profiler_start == src.gamestate.gamestate.tick - 1:
+                profiler.disable()
+                profiler.dump_stats("perfDebug/tick%s"%(profiler_start,))
+                print("time_taken stats:")
+                for (char,time_taken) in timeTaken_by_character.items():
+                    print(time_taken, char.name, char.faction, char.getTerrain().getPosition(), char)
+                    print(char.quests)
+                print("---------")
+            profiler = cProfile.Profile()
+            profiler.enable()
+            profiler_start = src.gamestate.gamestate.tick
+            timeTaken_by_character = {}
 
         # give every character time to act this round
         for character in multi_chars:
@@ -3973,6 +4001,12 @@ def keyboardListener(key, targetCharacter=None):
 
         if foundChar:
             src.gamestate.gamestate.mainChar = foundChar
+
+            for quest in src.gamestate.gamestate.mainChar.getActiveQuests():
+                if not quest.autoSolve:
+                    continue
+                quest.autoSolve = False
+
     elif src.gamestate.gamestate.gameHalted:
         if key == "M":
             # 1000 moves and then stop
@@ -9632,6 +9666,11 @@ def advanceChar(char,render=True, pull_events = True, singleStep=False):
     global mouseCombatLastMove
     global skipNextRender
 
+    if src.interaction.performance_debug:
+        start_time = time.time()
+        print(char)
+        print(char.name)
+
     state = char.macroState
 
     rerender = True
@@ -9749,6 +9788,13 @@ def advanceChar(char,render=True, pull_events = True, singleStep=False):
                     skipNextRender = False
             else:
                 char.timeTaken = 1
+    if src.interaction.performance_debug:
+        total_time = time.time()-start_time
+        print(total_time)
+        print("method completed")
+        if char not in timeTaken_by_character:
+            timeTaken_by_character[char] = 0
+        timeTaken_by_character[char] += total_time
 
 def advanceChar_disabled(char):
     if char.stasis:

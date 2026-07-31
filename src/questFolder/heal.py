@@ -24,6 +24,8 @@ CoalBurners and MeditationPlates can help you heal as well.
 Use Vials to heal yourself.
 """,(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"Press JH to use all healing items from you inventory."),"""
 
+If you have no healing items, then you can just wait over time.
+
 """]
         if self.lifetime:
             text.append(f"Do this for {self.lifetime} ticks. {self.getRemainingLifetime()} ticks remainging")
@@ -58,21 +60,6 @@ Use Vials to heal yourself.
                 return (None,("s","enter room"))
             if character.yPosition%15 == 14:
                 return (None,("w","enter room"))
-
-        # heal using vials
-        if not self.noVialHeal:
-            foundVial = None
-            for item in character.inventory:
-                if item.type == "Vial" and item.uses > 0:
-                    foundVial = item
-            if foundVial:
-                interactionCommand = "J"
-                if submenue:
-                    if submenue.tag == "advancedInteractionSelection":
-                        interactionCommand = ""
-                    else:
-                        return (None,(["esc"],"close menu"))
-                return (None,(interactionCommand+"H","drink from vial"))
 
         # activate correct item when marked
         action = self.generate_confirm_interaction_command(allowedItems=("Regenerator","CoalBurner"))
@@ -121,6 +108,28 @@ Use Vials to heal yourself.
 
             quest = src.quests.questMap["GoToPosition"](targetPosition=random.choice(foundBurners).getPosition(),ignoreEndBlocked=True,reason="be able to use the CoalBurner")
             return ([quest],None)
+
+        # heal using vials
+        if not self.noVialHeal:
+            foundVial = None
+            for item in character.inventory:
+                if item.type == "Vial" and item.uses > 0:
+                    foundVial = item
+            if foundVial:
+                interactionCommand = "J"
+                if submenue:
+                    if submenue.tag == "advancedInteractionSelection":
+                        interactionCommand = ""
+                    else:
+                        return (None,(["esc"],"close menu"))
+                return (None,(interactionCommand+"H","drink from vial"))
+
+            for room in terrain.rooms:
+                if room.alarm:
+                    continue
+                if room.getNonEmptyOutputslots("Vial"):
+                    quest = src.quests.questMap["FetchItems"](toCollect="Vial",amount=1)
+                    return ([quest],None)
 
         # heal by passing time
         if not self.noWaitHeal:

@@ -438,6 +438,11 @@ class Character:
     def add_submenu(self,submenu):
         self.macroState["submenue"] = submenu
 
+    def is_low_heath(self):
+        if self.health < self.adjustedMaxHealth//5:
+            return True
+        return False
+
     def callIndirect(self, callback, extraParams=None):
         '''
         call a callback that is stored in a savable format

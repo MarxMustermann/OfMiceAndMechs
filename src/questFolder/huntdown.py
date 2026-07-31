@@ -80,6 +80,11 @@ class Huntdown(src.quests.MetaQuestSequence):
         if (not self.suicidal) and (character.health < character.maxHealth//5):
             return self._solver_trigger_fail(dryRun,"low health")
 
+        if character.getNearbyEnemies():
+            # do actual combat
+            quest = src.quests.questMap["Fight"](reason="free up the path",suicidal=self.suicidal)
+            return ([quest],None)
+
         # follow target
         if isinstance(character.container, src.rooms.Room):
             charPos = (character.container.xPosition,character.container.yPosition,0)
@@ -100,7 +105,7 @@ class Huntdown(src.quests.MetaQuestSequence):
                     self.fail(abort_reason)
                 return (None,("+",f"abort quest\n({abort_reason})"))
 
-            quest = src.quests.questMap["GoToTile"](paranoid=True,targetPosition=newPos,reason="reach victim")
+            quest = src.quests.questMap["GoToTile"](paranoid=True,targetPosition=newPos,reason="reach victim",abortOnDanger=True)
             return ([quest],None)
 
         # do actual combat

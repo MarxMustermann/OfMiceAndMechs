@@ -3061,6 +3061,30 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         lootRoom.spawnItem("SwordSharpener",(6,6,0),bolted=True)
         lootRoom.spawnItem("Painter",(3,5,0))
 
+        # add promotion room
+        promotion_room = architect.doAddRoom(
+                {
+                       "coordinate": (12,12,0),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,12 0,6 12,6",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        used_spots.append(promotion_room.getPosition())
+        promotion_room.tag = "ruin"
+        for x in range(1,12):
+            if x in (5,6,7,):
+                promotion_room.addWalkingSpace((x,5,0))
+                promotion_room.addWalkingSpace((x,7,0))
+            if x == 6:
+                continue
+            promotion_room.addWalkingSpace((x,6,0))
+        for y in range(8,12):
+            promotion_room.addWalkingSpace((6,y,0))
+        promotion_room.spawnItem("Promoter",(6,6,0),bolted=True)
+
         # add growth tank room
         growth_room = architect.doAddRoom(
                 {

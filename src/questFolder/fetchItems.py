@@ -283,7 +283,6 @@ If you don't find a source, produce new items.
                         for item in room.itemsOnFloor:
                             if item.bolted is False and item.type == self.toCollect and not item.is_bolted_over():
                                 candidates.append(item)
-                                print(room)
 
                 if candidates:
                     foundItem = True
@@ -377,6 +376,7 @@ If you don't find a source, produce new items.
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
 
+        # fills stockpiles
         for trueInput in (True,False):
             for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
                 if room.alarm:
@@ -507,6 +507,7 @@ If you don't find a source, produce new items.
                             beUsefull.idleCounter = 0
                         return (quests,None)
 
+        # fill stockpiles desired filled attribute
         for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
             if room.alarm:
                 continue
@@ -542,6 +543,8 @@ If you don't find a source, produce new items.
                             if not dryRun:
                                 beUsefull.idleCounter = 0
                             return (quests,None)
+
+        # do nothing if no task is available
         return (None,None)
 
     def handleQuestFailure(self,extraParam):

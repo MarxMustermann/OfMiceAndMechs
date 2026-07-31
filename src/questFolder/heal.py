@@ -13,17 +13,18 @@ class Heal(src.quests.MetaQuestSequence):
         self.reason = reason
 
     def generateTextDescription(self):
-        reasonString = ""
+        reasonString = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
-            reasonString = ", to "+self.reason
-        text = f"""
-You are hurt. Heal yourself{reasonString}.
+            reasonString = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),",")," to "+self.reason+"."]
+        text = [f"""
+You are hurt. """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Heal yourself"),reasonString,"""
 
-You can heal yourself using vials.
-Use vials to heal yourself.
-Press JH to auto heal.
+You can heal yourself using Vials.
+CoalBurners and MeditationPlates can help you heal as well.
+Use Vials to heal yourself.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"Press JH to use all healing items from you inventory."),"""
 
-"""
+"""]
         return text
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):

@@ -89,11 +89,17 @@ class ContextListMenu(src.menues.SubMenu):
         # set the besaic text
         text = []
 
+        # calculate click position
+        click_position = self.index
+        if not rooms:
+            click_position = (self.index_big[0]*15+self.index[0],self.index_big[1]*15+self.index[1],0)
+
         # show the interaction options
         text.append(src.interaction.ActionMeta(payload=(self.open_main_menu,{}),content="open main menu"))
         text.append("\n")
-        text.append(src.interaction.ActionMeta(payload=(self.trigger_clearSpot,{}),content="clear spot"))
-        text.append("\n")
+        if container.getItemByPosition(click_position):
+            text.append(src.interaction.ActionMeta(payload=(self.trigger_clearSpot,{}),content="clear spot"))
+            text.append("\n")
         text.append(src.interaction.ActionMeta(payload=(self.trigger_goToPosition,{}),content="go to position"))
         text.append("\n")
         text.append(src.interaction.ActionMeta(payload=(self.trigger_restock,{}),content="restock stockpile"))

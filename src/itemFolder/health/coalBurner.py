@@ -108,8 +108,13 @@ or use this item with MoldFeed in your inventory.
     def doHealing(self,params):
         amount_to_burn = params["amount_to_burn"]
         character = params["character"]
-        character.addMessage("you burn the MoldFeeds and inhale the smoke")
-        character.heal(5 * amount_to_burn,reason="inhaling the smoke of " + str(amount_to_burn) + " MoldFeeds")
+        heal_amount = 5 * amount_to_burn
+        character.showTextMenu([f"""
+You burn {amount_to_burn} MoldFeeds and """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"inhale the smoke"),f""".
+
+This will heal you for up to {heal_amount} HP.
+"""])
+        character.heal(heal_amount,reason="inhaling the smoke of " + str(amount_to_burn) + " MoldFeeds")
         character.runCommandString(".",nativeKey=False)
 
     def getConfigurationOptions(self, character):

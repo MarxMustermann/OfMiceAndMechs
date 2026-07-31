@@ -167,12 +167,18 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
         '''
         generate a text description
         '''
-        reason_string = ""
+        reason_string = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
-            reason_string = f", to {self.reason}"
+            reason_string = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f","),f" to {self.reason}."]
 
         text = [f"""
-Strengthen the base defences{reason_string}.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Strengthen the base defences"),reason_string,"""
+
+A base is usually defended by a series of trap rooms.
+Invaders have to pass those, to get into the base.
+
+Have your workers construct trap rooms.
+Do this by using the CityPlaner.
 """]
         if self.lifetimeEvent:
             text.append(f"""\nlifetime: {self.lifetimeEvent.tick - src.gamestate.gamestate.tick} / {self.lifetime}\n""")

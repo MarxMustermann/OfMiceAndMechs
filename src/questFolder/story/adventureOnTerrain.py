@@ -160,11 +160,13 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
         return ([quest],None)
 
     def generateTextDescription(self):
-        reasonString = ""
+        reasonString = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
-            reasonString = ", to "+self.reason
+            reasonString = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),",")," to "+self.reason+"."]
         text = [f"""
-Go out and adventure on tile {self.targetTerrain}{reasonString}.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"Go out and adventure on tile {self.targetTerrain}"),reasonString,f"""
+
+Loot rooms with valuables, but try to not get youself killed.
 
 """]
 

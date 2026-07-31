@@ -15,71 +15,69 @@ class GetEpochReward(src.quests.MetaQuestSequence):
         '''
         generate a textual description to show on the UI
         '''
-        out = []
         reason = ""
         if self.reason:
             reason = f",\nto {self.reason}"
-        text = f"""
-Claim a reward for the work you have done{reason}.
+        text = [f"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Claim a reward"),f""" for the work you have done{reason}.
 
 You accumulated some mana.
-Spend them to claim the actual reward.
-"""
+Spend it to claim a magical effect.
+"""]
 
         match self.rewardType:
             case "spawn room building NPC":
-                text += """
+                text.append("""
 Spawn a room builder. A room building clone will build rooms.
 This will allow you to focus on getting more building materials.
-"""
+""")
             case "spawn scavenging NPC":
-                text += """
+                text.append("""
 Spawn a scavenger. A scavenging clone will collect items from outside.
 This will allow you to focus on producing walls.
-"""
+""")
             case "spawn machine operating NPC":
-                text += """
+                text.append("""
 Spawn a machine operator. A machine operating clone will operate machines and produce items.
 This will allow you to focus on supplying materials for producing walls.
-"""
+""")
 
             case "spawn resource fetching NPC":
-                text += """
+                text.append("""
 Spawn a resource fetcher. A resource fetching clone will carry items from room to room.
 This will allow you to focus on other tasks.
-"""
+""")
 
             case "spawn resource gathering NPC":
-                text += """
+                text.append("""
 Spawn a resource gatherer. A resource gathering clone will collect scrap from scrap field.
 This will allow you to focus on other tasks.
-"""
+""")
 
             case "spawn painting NPC":
-                text += """
+                text.append("""
 Spawn a painter. A painting clone will draw stock piles and build sites.
 This will allow you to focus on other tasks.
-"""
+""")
 
             case "spawn machine placing NPC":
-                text += """
+                text.append("""
 Spawn a machine placer. A machine placing clone will produce and place machines.
 This will allow you to focus on other tasks.
-"""
+""")
 
             case "spawn hauling NPC":
-                text += """
+                text.append("""
 Spawn a hauler. A hauling clone will carry items withins rooms.
 This will allow you to focus on other tasks.
-"""
+""")
             case _:
-                text += f"""
-{self.rewardType}
-"""
+                text.append(f"""
+Claim the reward: {self.rewardType}
+""")
 
 
-        out.append(text)
-        return out
+        return text
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
         '''

@@ -84,11 +84,6 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
             character.notify("The item can only be used when it is bolted down")
             return
 
-        try:
-            self.inUse
-        except:
-            self.inUse = False
-
         if character.getPosition() == self.getPosition():
             character.notify("you slip")
             character.runCommandString(["esc","a"])

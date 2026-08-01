@@ -3109,20 +3109,27 @@ press key for the configuration interaction
             return None
 
         if key in ("g",):
-            text = """
+            text = ["""
 
 press key to select action
 
-* w/s/a/d = move one tile north/south/west/east
-* m = move to tile
-* M = move to terrain
-* g = run guard mode for 10 ticks
-* h = get emergency heatlh
-* c = mark terrain as explored
-* t = wait till end of epoch
-* x = hurt yourself
+* """,src.interaction.ActionMeta(content="w",payload="w"),"/",
+      src.interaction.ActionMeta(content="s",payload="s"),"/",
+      src.interaction.ActionMeta(content="a",payload="a"),"/",
+      src.interaction.ActionMeta(content="d",payload="d"),""" = move one tile """,
+      src.interaction.ActionMeta(content="north",payload="w"),"/",
+      src.interaction.ActionMeta(content="south",payload="s"),"/",
+      src.interaction.ActionMeta(content="west",payload="a"),"/",
+      src.interaction.ActionMeta(content="east",payload="d"),"""
+""",src.interaction.ActionMeta(content="* m = move to tile",payload="m"),"""
+""",src.interaction.ActionMeta(content="* M = move to terrain",payload="M"),"""
+""",src.interaction.ActionMeta(content="* g = run guard mode for 10 ticks",payload="g"),"""
+""",src.interaction.ActionMeta(content="* h = get emergency heatlh",payload="h"),"""
+""",src.interaction.ActionMeta(content="* c = mark terrain as explored",payload="c"),"""
+""",src.interaction.ActionMeta(content="* t = wait till end of epoch",payload="t"),"""
+""",src.interaction.ActionMeta(content="* x = hurt yourself",payload="x"),"""
 
-"""
+"""]
 
             submenue = src.menues.menuMap["OneKeystrokeMenu"](text,ignoreFirstKey=False)
             submenue.followUp = {"method":doActivity,"params":{"character":char}}

@@ -7883,7 +7883,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
                 # draw map
                 mapSize = 45
-                terrainRender = terrain.render(coordinateOffset=(15*6,15*6),size=(mapSize,mapSize))
+                terrainRender = terrain.render(coordinateOffset=(15*6,15*6),size=(mapSize,mapSize),preventBackgroundBlink=True)
                 terrainRender = fixRoomRender(terrainRender)
                 terrainRender[22][22] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
 

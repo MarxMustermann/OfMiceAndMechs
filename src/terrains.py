@@ -1829,7 +1829,7 @@ class Terrain:
 
         return out
 
-    def render(self,size=None,coordinateOffset=(0,0)):
+    def render(self,size=None,coordinateOffset=(0,0),preventBackgroundBlink=False):
         """
         render the terrain and its contents
 
@@ -1881,6 +1881,8 @@ class Terrain:
                 forceField = (src.interaction.urwid.AttrSpec((90,90,110), "black"), "~~")
             if src.gamestate.gamestate.tick%15 == 14:
                 forceField = (src.interaction.urwid.AttrSpec((85,85,105), "black"), "~~")
+            if preventBackgroundBlink:
+                forceField = (src.interaction.urwid.AttrSpec((80,80,90), "black"), "~~")
 
             # paint floor
             chars = self.paintFloor(size=size,coordinateOffset=coordinateOffset)

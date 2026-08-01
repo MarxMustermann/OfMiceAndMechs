@@ -20,11 +20,15 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
         Returns:
             the textual description
         '''
-        reasonString = ""
+        reasonString = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
-            reasonString = ", to "+self.reason
-        text = f"Sharpen your personal Sword{reasonString}."
-        return [text]
+            reasonString = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),",")," to "+self.reason+"."]
+        text = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"Sharpen your personal Sword"),reasonString,"""
+
+Use the SwordSharpener to do this.
+To upgrade you sword beyond a certain quality you will need spent GrindStones.
+"""]
+        return text
 
     def handleSwordSharpened(self,extraInfo=None):
         '''

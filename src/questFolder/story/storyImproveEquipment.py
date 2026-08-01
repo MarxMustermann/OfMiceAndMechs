@@ -110,7 +110,13 @@ class StoryImproveEquipment(src.quests.MetaQuestSequence):
 
     def generateTextDescription(self):
         text = ["""
-""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Heal yourself."),f"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Improve your equipment."),f"""
+
+Swords can be upgraded a SwordSharpener.
+This may need GrindStones.
+
+Armor can be upgraded a ArmorReinforcer.
+This may need ChitinPlates.
 """]
         return text
 

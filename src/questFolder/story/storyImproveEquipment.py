@@ -109,14 +109,18 @@ class StoryImproveEquipment(src.quests.MetaQuestSequence):
         return self._solver_trigger_fail(dryRun,"no way to improve equipment")
 
     def generateTextDescription(self):
+        sample_swordSharpener = src.items.itemMap["SwordSharpener"]()
+        sample_armorReinforcer = src.items.itemMap["ArmorReinforcer"]()
+        sample_grindStone = src.items.itemMap["Grindstone"]()
+        sample_chitinPlates = src.items.itemMap["ChitinPlates"]()
         text = ["""
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Improve your equipment."),f"""
 
-Swords can be upgraded a SwordSharpener.
-This may need GrindStones.
+Swords can be upgraded a SwordSharpener (""",sample_swordSharpener.metaRender(),""").
+This may need GrindStones (""",sample_grindStone.metaRender(),""").
 
-Armor can be upgraded a ArmorReinforcer.
-This may need ChitinPlates.
+Armor can be upgraded a ArmorReinforcer (""",sample_armorReinforcer.metaRender(),""").
+This may need ChitinPlates (""",sample_chitinPlates.metaRender(),""").
 """]
         return text
 

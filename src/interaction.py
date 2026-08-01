@@ -793,211 +793,6 @@ def handleCollision(char,charState):
     if charState.get("itemMarkedLast"):
         char.container.addAnimation(charState["itemMarkedLast"].getPosition(),"showchar",4,{"char":(urwid.AttrSpec("#fff", "#000"), "XX")})
 
-
-def handleActivityKeypress(char, header, main, footer, flags):
-    if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-        text = """
-
-press key to select action
-
-* w/s/a/d = move one tile north/south/west/east
-* m = move to tile
-* M = move to terrain
-* g = run guard mode for 10 ticks
-* h = get emergency heatlh
-* c = mark terrain as explored
-* t = wait till end of epoch
-* x = hurt yourself
-"""
-        header.set_text(
-            (urwid.AttrSpec("default", "default"), "action menu")
-        )
-        main.set_text((urwid.AttrSpec("default", "default"), text))
-        footer.set_text((urwid.AttrSpec("default", "default"), ""))
-        char.specialRender = True
-
-    char.interactionState["runaction"] = {}
-
-def handleActivitySelection(key,char):
-    if key in ("w","a","s","d"):
-        if isinstance(char.container,src.rooms.Room):
-            charPos = char.container.getPosition()
-        else:
-            charPos = (char.xPosition//15,char.yPosition//15,0)
-
-        if key in ("w",):
-            newPos = (charPos[0],charPos[1]-1,charPos[2])
-        if key in ("s",):
-            newPos = (charPos[0],charPos[1]+1,charPos[2])
-        if key in ("a",):
-            newPos = (charPos[0]-1,charPos[1],charPos[2])
-        if key in ("d",):
-            newPos = (charPos[0]+1,charPos[1],charPos[2])
-
-        if newPos[0] in (0,14) or newPos[1] in (0,14):
-            char.addMessage("you cannot auto move into the terrain border")
-        else:
-            quest = src.quests.questMap["GoToTile"](targetPosition=newPos,paranoid=True)
-            quest.autoSolve = True
-            quest.assignToCharacter(char)
-            quest.activate()
-
-            char.quests.insert(0,quest)
-
-    if key == "g":
-        char.startGuarding(1)
-    if key == "h":
-        char.getEmergencyHealth()
-    if key == "c":
-        char.terrainInfo[char.getTerrain().getPosition()]["looted"] = True
-    if key == "M":
-        terrain = char.getTerrain()
-
-        # render empty map
-        mapContent = src.menues.menuMap["TerrainMenu"].renderZoneInfo(char)
-        functionMap = {}
-        extraText = "test"
-
-        submenue = src.menues.menuMap["MapMenu"](mapContent=mapContent,functionMap=functionMap, extraText=extraText, cursor=char.getTerrain().getPosition(),title="AUTO MOVEMENT (TERRAIN)")
-        submenue.tag = "terrainMovementmenu"
-        char.macroState["submenue"] = submenue
-        char.runCommandString("~",nativeKey=True)
-
-        for x in range(1,14):
-            for y in range(1,14):
-                functionMap[(x,y)] = {}
-                functionMap[(x,y)]["j"] = {
-                    "function": {
-                        "container":char,
-                        "method":"triggerAutoMoveToTerrain",
-                        "params":{},
-                    },
-                    "description":"move to tile",
-                }
-
-    if key == "m":
-        terrain = char.getTerrain()
-
-        # render empty map
-        mapContent = []
-        for x in range(15):
-            mapContent.append([])
-            for y in range(15):
-                if x not in (0, 14) and y not in (0, 14):
-                    displayChar = "  "
-                elif x != 7 and y != 7:
-                    displayChar = "##"
-                else:
-                    displayChar = "  "
-                mapContent[x].append(displayChar)
-
-        functionMap = {}
-
-        for x in range(1,14):
-            for y in range(1,14):
-                functionMap[(x,y)] = {}
-                functionMap[(x,y)]["j"] = {
-                    "function": {
-                        "container":char,
-                        "method":"triggerAutoMoveToTile",
-                        "params":{},
-                    },
-                    "description":"move to tile",
-                }
-                functionMap[(x,y)]["c"] = {
-                    "function": {
-                        "container":char,
-                        "method":"triggerAutoMoveFixedTileTarget",
-                        "params":{"targetCoordinate":(7,7,0)},
-                    },
-                    "description":"move to center",
-                }
-                functionMap[(x,y)]["W"] = {
-                    "function": {
-                        "container":char,
-                        "method":"triggerAutoMoveFixedTileTarget",
-                        "params":{"targetCoordinate":(7,1,0)},
-                    },
-                    "description":"move to north crossing",
-                }
-                functionMap[(x,y)]["A"] = {
-                    "function": {
-                        "container":char,
-                        "method":"triggerAutoMoveFixedTileTarget",
-                        "params":{"targetCoordinate":(1,7,0)},
-                    },
-                    "description":"move to west crossing",
-                }
-                functionMap[(x,y)]["S"] = {
-                    "function": {
-                        "container":char,
-                        "method":"triggerAutoMoveFixedTileTarget",
-                        "params":{"targetCoordinate":(7,13,0)},
-                    },
-                    "description":"move to south crossing",
-                }
-                functionMap[(x,y)]["D"] = {
-                    "function": {
-                        "container":char,
-                        "method":"triggerAutoMoveFixedTileTarget",
-                        "params":{"targetCoordinate":(13,7,0)},
-                    },
-                    "description":"move to east crossing",
-                }
-                functionMap[(x,y)]["q"] = {
-                    "function": {
-                        "container":char,
-                        "method":"triggerAutoMoveQuestTarget",
-                    },
-                    "description":"move to a quest target"
-                }
-
-        for scrapField in terrain.scrapFields:
-            mapContent[scrapField[1]][scrapField[0]] = "ss"
-
-        for forest in terrain.forests:
-            mapContent[forest[1]][forest[0]] = "ff"
-
-        for room in terrain.rooms:
-            if not (len(room.itemsOnFloor) > 13+13+11+11 or room.floorPlan or room.storageSlots or len(room.walkingSpace) > 4 or room.inputSlots):
-                mapContent[room.yPosition][room.xPosition] = "EE"
-            else:
-                mapContent[room.yPosition][room.xPosition] = room.displayChar
-
-        charPos = char.getBigPosition()
-        mapContent[charPos[1]][charPos[0]] = "@@"
-
-        for x in range(1,14):
-            for y in range(1,14):
-                check_characters = terrain.getCharactersOnTile((x,y,0))[:]
-                rooms = terrain.getRoomByPosition((x,y,0))
-                if rooms:
-                    check_characters.extend(rooms[0].characters)
-                for check_character in check_characters:
-                    if check_character.faction == char.faction:
-                        continue
-                    front_color = "#fff"
-                    content = mapContent[y][x]
-                    if not isinstance(content,str):
-                        front_color = content[0].fg
-                        content = content[1]
-                    mapContent[y][x] = (src.interaction.urwid.AttrSpec(front_color,"#722"),content)
-                    break
-
-        extraText = "\n\n"
-
-        submenue = src.menues.menuMap["MapMenu"](mapContent=mapContent,functionMap=functionMap, extraText=extraText, cursor=char.getBigPosition(),title="AUTO MOVEMENT (TILE)")
-        submenue.tag = "tileMovementmenu"
-        char.macroState["submenue"] = submenue
-        char.runCommandString("~",nativeKey=True)
-
-    if key == "t":
-        char.startWaitForEnemy(15*15*15-(src.gamestate.gamestate.tick%(15*15*15)))
-    if key == "x":
-        char.hurt(20,reason="you hurt yourself on purpose")
-
-    del char.interactionState["runaction"]
-
 def handleStartMacroReplayChar(key,char,charState,main,header,footer,urwid,flags):
     if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
         text = """
@@ -1244,6 +1039,187 @@ def doAdvancedExamine(params):
     elif key == ".":
         submenu = src.menues.menuMap["ExamineMenu"](char,offset=(0,0,0))
         char.add_submenu(submenu)
+
+def doActivity(params):
+    char = params["character"]
+    key = params["keyPressed"]
+
+    if key in ("w","a","s","d"):
+        if isinstance(char.container,src.rooms.Room):
+            charPos = char.container.getPosition()
+        else:
+            charPos = (char.xPosition//15,char.yPosition//15,0)
+
+        if key in ("w",):
+            newPos = (charPos[0],charPos[1]-1,charPos[2])
+        if key in ("s",):
+            newPos = (charPos[0],charPos[1]+1,charPos[2])
+        if key in ("a",):
+            newPos = (charPos[0]-1,charPos[1],charPos[2])
+        if key in ("d",):
+            newPos = (charPos[0]+1,charPos[1],charPos[2])
+
+        if newPos[0] in (0,14) or newPos[1] in (0,14):
+            char.addMessage("you cannot auto move into the terrain border")
+        else:
+            quest = src.quests.questMap["GoToTile"](targetPosition=newPos,paranoid=True)
+            quest.autoSolve = True
+            quest.assignToCharacter(char)
+            quest.activate()
+
+            char.quests.insert(0,quest)
+
+    if key == "g":
+        char.startGuarding(1)
+    if key == "h":
+        char.getEmergencyHealth()
+    if key == "c":
+        char.terrainInfo[char.getTerrain().getPosition()]["looted"] = True
+    if key == "M":
+        terrain = char.getTerrain()
+
+        # render empty map
+        mapContent = src.menues.menuMap["TerrainMenu"].renderZoneInfo(char)
+        functionMap = {}
+        extraText = "test"
+
+        submenue = src.menues.menuMap["MapMenu"](mapContent=mapContent,functionMap=functionMap, extraText=extraText, cursor=char.getTerrain().getPosition(),title="AUTO MOVEMENT (TERRAIN)")
+        submenue.tag = "terrainMovementmenu"
+        char.macroState["submenue"] = submenue
+        char.runCommandString("~",nativeKey=True)
+
+        for x in range(1,14):
+            for y in range(1,14):
+                functionMap[(x,y)] = {}
+                functionMap[(x,y)]["j"] = {
+                    "function": {
+                        "container":char,
+                        "method":"triggerAutoMoveToTerrain",
+                        "params":{},
+                    },
+                    "description":"move to tile",
+                }
+
+    if key == "m":
+        terrain = char.getTerrain()
+
+        # render empty map
+        mapContent = []
+        for x in range(15):
+            mapContent.append([])
+            for y in range(15):
+                if x not in (0, 14) and y not in (0, 14):
+                    displayChar = "  "
+                elif x != 7 and y != 7:
+                    displayChar = "##"
+                else:
+                    displayChar = "  "
+                mapContent[x].append(displayChar)
+
+        functionMap = {}
+
+        for x in range(1,14):
+            for y in range(1,14):
+                functionMap[(x,y)] = {}
+                functionMap[(x,y)]["j"] = {
+                    "function": {
+                        "container":char,
+                        "method":"triggerAutoMoveToTile",
+                        "params":{},
+                    },
+                    "description":"move to tile",
+                }
+                functionMap[(x,y)]["c"] = {
+                    "function": {
+                        "container":char,
+                        "method":"triggerAutoMoveFixedTileTarget",
+                        "params":{"targetCoordinate":(7,7,0)},
+                    },
+                    "description":"move to center",
+                }
+                functionMap[(x,y)]["W"] = {
+                    "function": {
+                        "container":char,
+                        "method":"triggerAutoMoveFixedTileTarget",
+                        "params":{"targetCoordinate":(7,1,0)},
+                    },
+                    "description":"move to north crossing",
+                }
+                functionMap[(x,y)]["A"] = {
+                    "function": {
+                        "container":char,
+                        "method":"triggerAutoMoveFixedTileTarget",
+                        "params":{"targetCoordinate":(1,7,0)},
+                    },
+                    "description":"move to west crossing",
+                }
+                functionMap[(x,y)]["S"] = {
+                    "function": {
+                        "container":char,
+                        "method":"triggerAutoMoveFixedTileTarget",
+                        "params":{"targetCoordinate":(7,13,0)},
+                    },
+                    "description":"move to south crossing",
+                }
+                functionMap[(x,y)]["D"] = {
+                    "function": {
+                        "container":char,
+                        "method":"triggerAutoMoveFixedTileTarget",
+                        "params":{"targetCoordinate":(13,7,0)},
+                    },
+                    "description":"move to east crossing",
+                }
+                functionMap[(x,y)]["q"] = {
+                    "function": {
+                        "container":char,
+                        "method":"triggerAutoMoveQuestTarget",
+                    },
+                    "description":"move to a quest target"
+                }
+
+        for scrapField in terrain.scrapFields:
+            mapContent[scrapField[1]][scrapField[0]] = "ss"
+
+        for forest in terrain.forests:
+            mapContent[forest[1]][forest[0]] = "ff"
+
+        for room in terrain.rooms:
+            if not (len(room.itemsOnFloor) > 13+13+11+11 or room.floorPlan or room.storageSlots or len(room.walkingSpace) > 4 or room.inputSlots):
+                mapContent[room.yPosition][room.xPosition] = "EE"
+            else:
+                mapContent[room.yPosition][room.xPosition] = room.displayChar
+
+        charPos = char.getBigPosition()
+        mapContent[charPos[1]][charPos[0]] = "@@"
+
+        for x in range(1,14):
+            for y in range(1,14):
+                check_characters = terrain.getCharactersOnTile((x,y,0))[:]
+                rooms = terrain.getRoomByPosition((x,y,0))
+                if rooms:
+                    check_characters.extend(rooms[0].characters)
+                for check_character in check_characters:
+                    if check_character.faction == char.faction:
+                        continue
+                    front_color = "#fff"
+                    content = mapContent[y][x]
+                    if not isinstance(content,str):
+                        front_color = content[0].fg
+                        content = content[1]
+                    mapContent[y][x] = (src.interaction.urwid.AttrSpec(front_color,"#722"),content)
+                    break
+
+        extraText = "\n\n"
+
+        submenue = src.menues.menuMap["MapMenu"](mapContent=mapContent,functionMap=functionMap, extraText=extraText, cursor=char.getBigPosition(),title="AUTO MOVEMENT (TILE)")
+        submenue.tag = "tileMovementmenu"
+        char.macroState["submenue"] = submenue
+        char.runCommandString("~",nativeKey=True)
+
+    if key == "t":
+        char.startWaitForEnemy(15*15*15-(src.gamestate.gamestate.tick%(15*15*15)))
+    if key == "x":
+        char.hurt(20,reason="you hurt yourself on purpose")
 
 def doAdvancedInteraction(params):
     char = params["character"]
@@ -3133,7 +3109,28 @@ press key for the configuration interaction
             return None
 
         if key in ("g",):
-            handleActivityKeypress(char, header, main, footer, flags)
+            text = """
+
+press key to select action
+
+* w/s/a/d = move one tile north/south/west/east
+* m = move to tile
+* M = move to terrain
+* g = run guard mode for 10 ticks
+* h = get emergency heatlh
+* c = mark terrain as explored
+* t = wait till end of epoch
+* x = hurt yourself
+
+"""
+
+            submenue = src.menues.menuMap["OneKeystrokeMenu"](text,ignoreFirstKey=False)
+            submenue.followUp = {"method":doActivity,"params":{"character":char}}
+            submenue.tag = "activitySelection"
+            char.macroState["submenue"] = submenue
+
+            if charState.get("itemMarkedLast"):
+                del charState["itemMarkedLast"]
             return None
 
         if key in ("p",):

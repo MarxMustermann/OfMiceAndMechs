@@ -228,11 +228,11 @@ Swords can range from 10 to 25 damage per hit.
 
         if bestSword and (not character.weapon or bestSword.baseDamage > character.weapon.baseDamage):
             if character.container != bestSword.container:
-                quest = src.quests.questMap["GoToTile"](targetPosition=bestSword.container.getPosition())
+                quest = src.quests.questMap["GoToTile"](targetPosition=bestSword.container.getPosition(),reason="get near a weapon")
                 return ([quest],None)
 
             if character.getDistance(bestSword.getPosition()) > 1:
-                quest = src.quests.questMap["GoToPosition"](targetPosition=bestSword.getPosition(),ignoreEndBlocked=True)
+                quest = src.quests.questMap["GoToPosition"](targetPosition=bestSword.getPosition(),ignoreEndBlocked=True,reason="be able pick up the weapon")
                 return ([quest],None)
 
             offsets = [((1,0,0),"d"),((-1,0,0),"a"),((0,1,0),"s"),((0,-1,0),"w"),((0,0,0),".")]
@@ -265,11 +265,11 @@ Swords can range from 10 to 25 damage per hit.
 
         if bestArmor and (not character.armor or bestArmor.armorValue > character.armor.armorValue):
             if character.container != bestArmor.container:
-                quest = src.quests.questMap["GoToTile"](targetPosition=bestArmor.container.getPosition())
+                quest = src.quests.questMap["GoToTile"](targetPosition=bestArmor.container.getPosition(),reason="get near armor")
                 return ([quest],None)
 
             if character.getDistance(bestArmor.getPosition()) > 1:
-                quest = src.quests.questMap["GoToPosition"](targetPosition=bestArmor.getPosition(),ignoreEndBlocked=True)
+                quest = src.quests.questMap["GoToPosition"](targetPosition=bestArmor.getPosition(),ignoreEndBlocked=True,reason="be able to pick up armor")
                 return ([quest],None)
 
             offsets = [((1,0,0),"d"),((-1,0,0),"a"),((0,1,0),"s"),((0,-1,0),"w"),((0,0,0),".")]
@@ -303,17 +303,17 @@ Swords can range from 10 to 25 damage per hit.
         if "metal working" in character.duties or self.tryHard:
             if not character.weapon:
                 quests = []
-                quest = src.quests.questMap["ClearInventory"](returnToTile=False)
+                quest = src.quests.questMap["ClearInventory"](returnToTile=False,reason="have space to store a weapon")
                 quests.append(quest)
-                quest = src.quests.questMap["MetalWorking"](amount=1,toProduce="Sword",produceToInventory=False,tryHard=True)
+                quest = src.quests.questMap["MetalWorking"](amount=1,toProduce="Sword",produceToInventory=False,tryHard=True,reason="have a Sword to equip")
                 quests.append(quest)
                 return (quests,None)
 
             if not character.armor:
                 quests = []
-                quest = src.quests.questMap["ClearInventory"](returnToTile=False)
+                quest = src.quests.questMap["ClearInventory"](returnToTile=False,reason="have space to store an armor")
                 quests.append(quest)
-                quest = src.quests.questMap["MetalWorking"](amount=1,toProduce="Armor",produceToInventory=False,tryHard=True)
+                quest = src.quests.questMap["MetalWorking"](amount=1,toProduce="Armor",produceToInventory=False,tryHard=True,reason="have an armor to equip")
                 quests.append(quest)
                 return (quests,None)
 

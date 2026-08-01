@@ -302,11 +302,6 @@ There is a mini map shown on the top left of the screen showing a quest marker.
                 menuCommand = ""
             return (None,(menuCommand+"m","open fast travel menu"))
 
-        try:
-            self.ignoreEnemies
-        except:
-            self.ignoreEnemies = False
-
         # handle the actual movement
         if isinstance(character.container,src.rooms.Room):
             # TODO: reenable random

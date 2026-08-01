@@ -16,11 +16,15 @@ class ReinforcePersonalArmor(src.quests.MetaQuestSequence):
         '''
         generate a textual description to show on the UI
         '''
-        reasonString = ""
+        reasonString = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
-            reasonString = ", to "+self.reason
-        text = f"Reinforce your personal Armor{reasonString}."
-        return [text]
+            reasonString = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),",")," to "+self.reason,"."]
+        text = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"Reinforce your personal Armor"),reasonString,"""
+
+Use a ArmorReinforcer to do that.
+Improving your Armor beyond a certain quality will require ChitinPlates.
+"""]
+        return text
 
     def handleArmorImproved(self,extraInfo=None):
         self.postHandler()

@@ -4225,6 +4225,8 @@ def getTcodEvents():
                         click_coordinate = (character_position[0]+offset[0],character_position[1]+offset[1],0)
 
                         bigCoordinate = (click_coordinate[0]//15,click_coordinate[1]//15,0)
+                        if bigCoordinate[0] <= 0 or bigCoordinate[0] >= 14 or bigCoordinate[1] <= 0 or bigCoordinate[1] >= 14:
+                            break
                         smallCoordinate = (click_coordinate[0]%15,click_coordinate[1]%15,0)
                         terrain = mainChar.getTerrain()
                         rooms = terrain.getRoomByPosition(bigCoordinate)

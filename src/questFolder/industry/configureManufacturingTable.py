@@ -38,10 +38,14 @@ class ConfigureManufacturingTable(src.quests.MetaQuestSequence):
         if self.reason:
             reason = f",\nto {self.reason}"
 
+        sample_manufacturingTable = src.items.itemMap["ManufacturingTable"]()
         text = [f"""
 Configure the manufacturing table on {self.targetPosition}{reason}.
 
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"""Configure it to produce the item "{self.itemType}" from now on."""),"""
+
+ManufacturingTables (""",sample_manufacturingTable.metaRender(),""") will by used by workers on the base.
+They will place the raw Materials next to it and produce the desired item.
 
 """]
         return text

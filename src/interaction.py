@@ -4142,7 +4142,11 @@ def getTcodEvents():
 
                 if not handled_click:
                     if src.gamestate.gamestate.mainChar.macroState.get("submenue"):
-                        src.gamestate.gamestate.mainChar.macroState["submenue"] = None
+                        if (    raw_click_pos[0] < last_menu_position[0] or 
+                                raw_click_pos[0] > last_menu_position[0]+last_menu_dimension[0]*tileWidth or 
+                                raw_click_pos[1] < last_menu_position[1] or 
+                                raw_click_pos[1] > last_menu_position[1]+last_menu_dimension[1]*tileHeight):
+                            src.gamestate.gamestate.mainChar.macroState["submenue"] = None
                         continue
 
                     tile_pos = (raw_click_pos[0]//tileHeight,raw_click_pos[1]//tileHeight,0)
@@ -4962,8 +4966,10 @@ def unSidebar(extraParams):
     character.macroState["submenue"] = menu
 
 last_menu_dimension = None
+last_menu_position = None
 def renderGameDisplay(renderChar=None,showSaving=False):
     global last_menu_dimension
+    global last_menu_position
     global click_map
 
     click_map = []
@@ -5647,6 +5653,7 @@ def renderGameDisplay(renderChar=None,showSaving=False):
             if submenue:
                 pos = submenue.get_map_position()
 
+            # draw submenues positioned on the gamemap
             if pos:
                 for ui_element in uiElements:
                     if ui_element["type"] != "gameMap":
@@ -5698,6 +5705,8 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                     offsetLeft = distance_left*tileWidth
                     offsetTop = distance_top*tileHeight
 
+                    last_menu_position = (offsetLeft,offsetTop)
+
                     # draw submenu content
                     sdl_renderer2.draw_color = (0,0,0,255)
                     sdl_renderer2.fill_rect((offsetLeft,offsetTop,display_width+padding*2,display_height+padding*2))
@@ -5722,11 +5731,15 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                     #sdl_renderer2.fill_rect((offsetLeft-line_width,offsetTop-line_width,line_width,tileHeight+line_width*2))
                     #sdl_renderer2.fill_rect((offsetLeft+tileHeight,offsetTop-line_width,line_width,tileHeight+line_width*2))
                     #sdl_renderer2.fill_rect((offsetLeft-line_width,offsetTop+tileHeight,tileHeight+line_width*2,line_width))
-            else:
+
+            # draw submenues positioned on the gamemap
+            if not pos:
                 distance_left = max(src.interaction.tcodConsole.width//2-width//2,1)
                 distance_top = max(min(src.interaction.tcodConsole.height//2-height//2,17),1)
                 offsetLeft = distance_left*tileWidth
                 offsetTop = distance_top*tileHeight
+
+                last_menu_position = (offsetLeft,offsetTop)
 
                 positions = []
                 for x in range(-1,width//2+3):

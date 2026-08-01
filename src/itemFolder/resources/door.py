@@ -98,15 +98,16 @@ class Door(src.items.Item):
         if not self.bolted:
             self.walkable = False
 
-
-    def blockDoor(self,character):
-        character.addMessage("You block the Door")
-        character.changed("blockedDoor",{"character":character,"item":self})
+    def blockDoor(self,character=None):
+        if character:
+            character.addMessage("You block the Door")
+            character.changed("blockedDoor",{"character":character,"item":self})
         self.walkable = False
 
-    def unblockDoor(self,character):
-        character.addMessage("You unblock the Door")
-        character.changed("unblockedDoor",{"character":character,"item":self})
+    def unblockDoor(self,character=None):
+        if character:
+            character.addMessage("You unblock the Door")
+            character.changed("unblockedDoor",{"character":character,"item":self})
         self.walkable = True
 
     def apply(self,character):

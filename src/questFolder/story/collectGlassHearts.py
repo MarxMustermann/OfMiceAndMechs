@@ -501,13 +501,13 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
         return ([quest],None)
 
     def generateTextDescription(self):
-        try:
-            self.reason
-        except:
-            self.reason = None
+
+        # generate the reason description
         reason_string = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
             reason_string = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),","),f" {self.reason}."]
+
+        # generate core description
         text = [f"""
 As long as you don't control all Glasshearts, you can't ascend.
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Collect all GlassHearts"),reason_string,"""
@@ -519,7 +519,11 @@ Once you apeased the god of a GlassStatue, it will allow you to teleport to its 
 So apease the gods and obtain their GlassHearts.
 """]
 
-        text.append(self.room_building_streak_length)
+        # show how long the quest has been building rooms in a row
+        text.append((src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),f"""
+You did {self.room_building_streak_length} room building tasks in a row."""))
+
+        # return the description
         return text
 
     def assignToCharacter(self, character):

@@ -4,10 +4,11 @@ import src
 class StoryImproveEquipment(src.quests.MetaQuestSequence):
     type = "StoryImproveEquipment"
 
-    def __init__(self, description="improve equipment", creator=None, lifetime=None):
+    def __init__(self, description="improve equipment", creator=None, lifetime=None, reason=None):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
+        self.reason = reason
 
     def getTargetRoom(self):
         terrain = self.character.getTerrain()
@@ -109,12 +110,16 @@ class StoryImproveEquipment(src.quests.MetaQuestSequence):
         return self._solver_trigger_fail(dryRun,"no way to improve equipment")
 
     def generateTextDescription(self):
+        reasonString = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
+        if self.reason:
+            reasonString = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),","),f" to {self.reason}."]
+
         sample_swordSharpener = src.items.itemMap["SwordSharpener"]()
         sample_armorReinforcer = src.items.itemMap["ArmorReinforcer"]()
         sample_grindStone = src.items.itemMap["Grindstone"]()
         sample_chitinPlates = src.items.itemMap["ChitinPlates"]()
         text = ["""
-""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Improve your equipment."),f"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Improve your equipment"),reasonString,f"""
 
 Swords can be upgraded a SwordSharpener (""",sample_swordSharpener.metaRender(),""").
 This may need GrindStones (""",sample_grindStone.metaRender(),""").

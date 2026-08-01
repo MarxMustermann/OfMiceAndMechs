@@ -21,7 +21,7 @@ class ConsumeItem(src.quests.MetaQuestSequence):
         if self.reason:
             reason = f",\nto {self.reason}"
         text = [f"""
-""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"{self.consumeVerb} an item of the type {self.itemType}"),f""" from your inventory{reason}.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"{self.consumeVerb} an item of the type {self.itemType}".capitalize()),f""" from your inventory{reason}.
 
 """,(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"Do this by opening your inventory by pressing i and then activating the item."),"""
 """]

@@ -144,7 +144,7 @@ class ContextListMenu(src.menues.SubMenu):
         self._trigger_quest(quest)
 
     def trigger_restock(self,extraParams=None):
-        quest = src.quests.questMap["RestockRoom"](targetPositionBig=self.index_big, targetPosition=self.index)
+        quest = src.quests.questMap["RestockRoom"](targetPositionBig=self.index_big, targetPosition=self.index, allowAny=True)
         self._trigger_quest(quest)
 
 # register the menu type

@@ -241,6 +241,10 @@ There is a mini map shown on the top left of the screen showing a quest marker.
         submenue = character.macroState.get("submenue")
         if submenue and not ignoreCommands:
 
+            # open fast travel menu
+            if submenue.tag == "activitySelection":
+                return (None,("m","open auto movement menu"))
+
             # move using the room menu
             if isinstance(submenue,src.menues.menuMap["MapMenu"]):
                 if self.targetPosition == (7,7,0):
@@ -297,10 +301,7 @@ There is a mini map shown on the top left of the screen showing a quest marker.
 
         # open map menu
         if not character.getNearbyEnemies() and self.allowMapMenu and len(self.path) > 3:
-            menuCommand = "g"
-            if "runaction" in character.interactionState:
-                menuCommand = ""
-            return (None,(menuCommand+"m","open fast travel menu"))
+            return (None,("gm","open fast travel menu"))
 
         # handle the actual movement
         if isinstance(character.container,src.rooms.Room):

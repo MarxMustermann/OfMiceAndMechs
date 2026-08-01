@@ -101,7 +101,7 @@ So if an enemy is to directly east of you:
                 else:
                     return (None,(["esc"],"close menu"))
             return (None,(interaction_command+"h","heal"))
-        if (not self.suicidal) and (character.is_low_heath()):
+        if (not self.suicidal) and (character.is_low_health()):
             return self._solver_trigger_fail(dryRun,"low health")
 
         # make character drop tools to fight

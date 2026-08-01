@@ -43,7 +43,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
 
         # defend yourself directly
         if character.getNearbyEnemies():
-            if character.is_low_heath():
+            if character.is_low_health():
                 quest = src.quests.questMap["Flee"](reason="preserve health")
                 return ([quest],None)
             else:
@@ -578,6 +578,9 @@ You did {self.room_building_streak_length} room building tasks in a row."""))
             if not character.is_low_health():
                 newQuest = src.quests.questMap["Adventure"]()
                 self.addQuest(newQuest)
+                if not character.getFreeInventorySpace():
+                    newQuest = src.quests.questMap["ClearInventory"](returnToTile=False)
+                    self.addQuest(newQuest)
                 return
             else:
                 self.subQuests.remove(extraParam["quest"])

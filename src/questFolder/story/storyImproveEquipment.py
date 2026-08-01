@@ -48,7 +48,8 @@ class StoryImproveEquipment(src.quests.MetaQuestSequence):
             # collect Grindstones
             if found_swordSharpener:
                 upgrade_cost = found_swordSharpener.amountNeededForOneUpgrade(character.weapon.baseDamage)
-                upgrade_cost -= len(found_swordSharpener.getAvailableGrindStones(character))
+                num_inventory_grindstones = len(found_swordSharpener.getAvailableGrindStones(character))
+                upgrade_cost -= num_inventory_grindstones
 
                 num_grindstones_available = 0
                 for room in character.getTerrain().rooms:
@@ -64,7 +65,7 @@ class StoryImproveEquipment(src.quests.MetaQuestSequence):
                                 num_grindstones_available += 1
                 
                 if num_grindstones_available >= upgrade_cost:
-                    quest = src.quests.questMap["FetchItems"](toCollect="Grindstone",amount=upgrade_cost)
+                    quest = src.quests.questMap["FetchItems"](toCollect="Grindstone",amount=upgrade_cost+num_inventory_grindstones)
                     return ([quest],None)
 
         # upgrade the armor
@@ -87,7 +88,8 @@ class StoryImproveEquipment(src.quests.MetaQuestSequence):
             # collect ChitinPlates
             if found_armorReinforcer:
                 upgrade_cost = found_armorReinforcer.amountNeededForOneUpgrade(character.armor.armorValue)
-                upgrade_cost -= len(found_armorReinforcer.getAvailableChitinPlates(character))
+                num_inventory_chitinPlates = len(found_armorReinforcer.getAvailableChitinPlates(character))
+                upgrade_cost -= num_inventory_chitinPlates
 
                 num_chitinPlates_available = 0
                 for room in character.getTerrain().rooms:
@@ -103,7 +105,7 @@ class StoryImproveEquipment(src.quests.MetaQuestSequence):
                                 num_chitinPlates_available += 1
                 
                 if num_chitinPlates_available >= upgrade_cost:
-                    quest = src.quests.questMap["FetchItems"](toCollect="ChitinPlates",amount=upgrade_cost)
+                    quest = src.quests.questMap["FetchItems"](toCollect="ChitinPlates",amount=upgrade_cost+num_inventory_chitinPlates)
                     return ([quest],None)
 
         # abort

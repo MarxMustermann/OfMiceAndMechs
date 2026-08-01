@@ -111,6 +111,8 @@ class ContextListMenu(src.menues.SubMenu):
             if has_stockpile:
                 text.append(src.interaction.ActionMeta(payload=(self.trigger_restock,{}),content="restock stockpile"))
                 text.append("\n")
+        text.append(src.interaction.ActionMeta(payload=(self.trigger_dropItem,{}),content="drop item"))
+        text.append("\n")
 
         # return rendered text
         return text
@@ -118,20 +120,29 @@ class ContextListMenu(src.menues.SubMenu):
     def open_main_menu(self,extraParams=None):
         self.character.runCommandString(["esc","esc"])
 
+    def trigger_dropItem(self,extraParams=None):
+        quest = src.quests.questMap["PlaceItem"](targetPositionBig=self.index_big, targetPosition=self.index)
+        quest.autoSolve = True
+        self.character.assignQuest(quest,active=True)
+        self.character.macroState["submenue"] = None
+
     def trigger_goToPosition(self,extraParams=None):
         quest = src.quests.questMap["GoToPosition"](targetPositionBig=self.index_big, targetPosition=self.index)
         quest.autoSolve = True
         self.character.assignQuest(quest,active=True)
+        self.character.macroState["submenue"] = None
 
     def trigger_clearSpot(self,extraParams=None):
         quest = src.quests.questMap["CleanSpace"](targetPositionBig=self.index_big, targetPosition=self.index)
         quest.autoSolve = True
         self.character.assignQuest(quest,active=True)
+        self.character.macroState["submenue"] = None
 
     def trigger_restock(self,extraParams=None):
         quest = src.quests.questMap["RestockRoom"](targetPositionBig=self.index_big, targetPosition=self.index)
         quest.autoSolve = True
         self.character.assignQuest(quest,active=True)
+        self.character.macroState["submenue"] = None
 
 # register the menu type
 src.menues.add_menu(ContextListMenu)

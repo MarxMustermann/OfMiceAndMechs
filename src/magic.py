@@ -1094,7 +1094,7 @@ def setUpRuin(pos):
                     room.addCharacter(enemy, pos[0], pos[1])
             else:
                 # add functional room
-                item_type = random.choice(["SwordSharpener","ArmorReinforcer","MetalWorkingBench","CoalBurner"])
+                item_type = random.choice(["SwordSharpener","ArmorReinforcer","MetalWorkingBench","CoalBurner","CorpseShredder"])
                 room.spawnItem(item_type,(6,6,0),bolted=True)
         else:
             # add enemies

@@ -5494,8 +5494,7 @@ This memorial contains:
         counter = 0
         for room in rooms+extraRooms:
             if counter == endIndex:
-                item = src.items.itemMap["CoalBurner"]()
-                room.addItem(item,(6,6,0))
+                room.spawnItem("CoalBurner",(6,6,0),bolted=True)
 
             if counter == endIndex+1:
                 room.tag = f"entry chamber"

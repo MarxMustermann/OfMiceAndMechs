@@ -44,78 +44,51 @@ class BeUsefull(src.quests.MetaQuestSequence):
         reason = ""
         if self.reason:
             reason = f", to {self.reason}"
-        out = """
-Be useful{}.
+        text = [f"""
+Be useful{reason}.
 
-Try fulfill your duties on this base with the skills you have.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Try to fulfill your duties on this base."),"""
 
 Your duties are:
 
 {}
-
-
-""".format(reason,"\n".join(self.character.duties),)
+""".format("\n".join(self.character.duties),)]
         if not self.character.duties:
-            out += "You have no duties, something has gone wrong."
+            text.append("You have no duties, something has gone wrong.")
 
         if not len(self.character.duties) > 2:
             for duty in self.character.duties:
                 if duty == "Questing":
-                    out += duty+""":
+                    text.append(duty+""":
 Get quests from the quest artwork and complete them.
 The quest artwork is in the command centre.
-Kill more enemies for additional reputation.\n\n"""
+Kill more enemies for additional reputation.\n\n""")
                 elif duty == "resource gathering":
-                    out += duty+""":
+                    text.append(duty+""":
 Search for rooms with empty scrap input stockpiles.
 Gather scrap and fill up those stockpiles.
-Reputation is rewarded for filling up stockpiles.\n\n"""
+Reputation is rewarded for filling up stockpiles.\n\n""")
                 elif duty == "trap setting":
-                    out += duty+""":
+                    text.append(duty+""":
 Search for trap rooms without full charge.
 Recharge them with lightning rods.
-Reputation is rewarded for recharging trap rooms.\n\n"""
+Reputation is rewarded for recharging trap rooms.\n\n""")
                 elif duty == "cleaning":
-                    out += duty+""":
+                    text.append(duty+""":
 Search for rooms with items cluttering the floor.
 Remove those items.
-Reputation is rewarded for picking up items from walkways.\n\n"""
+Reputation is rewarded for picking up items from walkways.\n\n""")
                 else:
-                    out += f"{duty}\n\n"
+                    text.append(f"{duty}\n\n")
 
-        if self.character.rank != 3:
-            reputationForPromotion = "???"
-            if self.character.rank == 6:
-                reputationForPromotion = 300
-            if self.character.rank == 5:
-                reputationForPromotion = 500
-            if self.character.rank == 4:
-                reputationForPromotion = 750
+        if self.idleCounter:
+            text.append(f"\nYou found no task to do {self.idleCounter} times in a row.\n")
+        if self.dutySkipps:
+            text.append(f"""\nBecause of issues with tasks lately, avoid doing the following duties for some time:\n""")
+            for (duty,num_to_skip) in self.dutySkipps.items():
+                text.append(f" * {duty}: skip {num_to_skip}\n")
 
-            out += f"{self.idleCounter}"
-
-            out += f"""
-
-You need {reputationForPromotion} reputation for a promotion.
-You currently have {self.character.reputation} reputation.
-Do your duty to gain more reputation.
-Try to avoid losing reputation due to being careless.
-
-"""
-        out += f"""dutySkipps: {str(self.dutySkipps)}
-"""
-
-        out = [out]
-        if not self.subQuests:
-            out.append((src.interaction.urwid.AttrSpec("#f00", "black"),"""
-This quest has no subquests. Press r to generate subquests for this quest."""))
-        else:
-            out.append((src.interaction.urwid.AttrSpec("#080", "black"),"""
-This quests has subquests.
-Press d to move the cursor and show the subquests description.
-"""))
-        return out
-
+        return text
 
     def awardnearbyKillReputation(self,extraInfo):
         '''

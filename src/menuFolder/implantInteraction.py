@@ -192,6 +192,8 @@ class ImplantInteraction(src.menues.SubMenu):
                         quests.append(src.quests.questMap["CollectGlassHearts"]())
                     if selection == "ascend":
                         quests.append(src.quests.questMap["Ascend"]())
+                    if selection == "get promotion":
+                        quests.append(src.quests.questMap["GetPromotion"](2))
 
                     character.clear_quests()
                     for quest in quests:
@@ -828,6 +830,12 @@ They will complete tasks on the base.
                     if not glassStatue.hasItem:
                         continue
                     numGlassHearts += 1
+
+            # get promotion
+            if character.rank > 2:
+                name = "get promotion"
+                options.append((name,name))
+                extraDescriptions[name] = "Holding a higher rank will make you stronger"
 
             # use temple
             if hasTemple and numGlassStatues > numGlassHearts:

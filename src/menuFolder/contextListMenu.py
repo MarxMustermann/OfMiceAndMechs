@@ -100,6 +100,8 @@ class ContextListMenu(src.menues.SubMenu):
         if container.getItemByPosition(click_position):
             text.append(src.interaction.ActionMeta(payload=(self.trigger_clearSpot,{}),content="clear spot"))
             text.append("\n")
+            text.append(src.interaction.ActionMeta(payload=(self.trigger_activateItem,{}),content="activate item"))
+            text.append("\n")
         text.append(src.interaction.ActionMeta(payload=(self.trigger_goToPosition,{}),content="go to position"))
         text.append("\n")
         if rooms:
@@ -119,6 +121,12 @@ class ContextListMenu(src.menues.SubMenu):
 
     def open_main_menu(self,extraParams=None):
         self.character.runCommandString(["esc","esc"])
+
+    def trigger_activateItem(self,extraParams=None):
+        quest = src.quests.questMap["ActivateItem"](targetPositionBig=self.index_big, targetPosition=self.index)
+        quest.autoSolve = True
+        self.character.assignQuest(quest,active=True)
+        self.character.macroState["submenue"] = None
 
     def trigger_dropItem(self,extraParams=None):
         quest = src.quests.questMap["PlaceItem"](targetPositionBig=self.index_big, targetPosition=self.index)

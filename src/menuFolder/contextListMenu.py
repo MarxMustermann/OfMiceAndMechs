@@ -102,7 +102,15 @@ class ContextListMenu(src.menues.SubMenu):
             text.append("\n")
         text.append(src.interaction.ActionMeta(payload=(self.trigger_goToPosition,{}),content="go to position"))
         text.append("\n")
-        text.append(src.interaction.ActionMeta(payload=(self.trigger_restock,{}),content="restock stockpile"))
+        if rooms:
+            markers = container.getMarkersOnPosition(click_position)
+            has_stockpile = False
+            for marker in markers:
+                if marker[0] == "storageSlot":
+                    has_stockpile = True
+            if has_stockpile:
+                text.append(src.interaction.ActionMeta(payload=(self.trigger_restock,{}),content="restock stockpile"))
+                text.append("\n")
 
         # return rendered text
         return text

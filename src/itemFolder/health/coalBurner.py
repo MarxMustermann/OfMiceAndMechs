@@ -78,15 +78,19 @@ or use this item with MoldFeed in your inventory.
             character: the character trying to use this item
         '''
 
+        if not self.bolted:
+            character.notify("This items needs to be bolted down to be used.")
+            return
+
         moldFeed = self.getMoldFeed(character)
         if len(moldFeed) == 0:
-            character.addMessage("you need to have a MoldFeed in your inventory or in the coal burners input stockpile")
+            character.notify("you need to have a MoldFeed in your inventory or in the coal burners input stockpile")
             return
 
         amount_to_burn = min(len(moldFeed), math.ceil((character.adjustedMaxHealth - character.health) / 5))
         
         if not amount_to_burn:
-            character.addMessage("you need no healing and burn no MoldFeeds")
+            character.notify("you need no healing and burn no MoldFeeds")
             return
 
         for i in range(amount_to_burn):

@@ -2575,7 +2575,6 @@ current registers
 
     char.doStackPush = True
 
-runactionStr = "runaction"
 advancedInteractionStr = "advancedInteraction"
 advancedConfigureStr = "advancedConfigure"
 advancedPickupStr = "advancedPickup"
@@ -2615,14 +2614,6 @@ def handlePriorityActions(params):
     ):
         doHandleMenu(key,char,charState,main,header,footer,urwid,flags)
         key = commandChars.ignore
-
-    if runactionStr in char.interactionState:
-        handleActivitySelection(key,char)
-        return None
-
-    if runactionStr in char.interactionState:
-        handleActivitySelection(key,char)
-        return None
 
     if advancedConfigureStr in char.interactionState:
         doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags)

@@ -1281,7 +1281,7 @@ class CityPlaner(src.items.Item):
                     continue
                 if not item.walkable:
                     continue
-                item.walkable = False
+                item.blockDoor()
 
         room.destroy()
         self.showMap(params["character"], cursor = params["coordinate"])

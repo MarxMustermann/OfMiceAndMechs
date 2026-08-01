@@ -438,6 +438,8 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                     pos = room.getPosition()
                     for offset in offsets:
                         checkPos = (pos[0]+offset[0],pos[1]+offset[1],0)
+                        if checkPos[0] < 2 or checkPos[1] < 2 or checkPos[0] > 12 or checkPos[1] > 12:
+                            continue
                         if checkPos in terrain.forests:
                             continue
                         if checkPos in terrain.scrapFields:

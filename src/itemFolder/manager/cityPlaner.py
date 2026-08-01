@@ -1304,8 +1304,8 @@ class CityPlaner(src.items.Item):
 
         functionMap = {}
 
-        for x in range(1,14):
-            for y in range(1,14):
+        for x in range(2,13):
+            for y in range(2,13):
                 functionMap[(x,y)] = {}
                 functionMap[(x,y)]["r"] = {
                     "function": {

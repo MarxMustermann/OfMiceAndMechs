@@ -153,13 +153,21 @@ You can do metal working at the MetalWorkingBench (""",sample_metalWorkingBench.
         # find local metal benches
         benches = []
         if character.container.isRoom:
-            benches.extend(character.container.getItemsByType("MetalWorkingBench"))
+            candidates = character.container.getItemsByType("MetalWorkingBench")
+            for candidate in candidates:
+                if not candidate.bolted:
+                    continue
+                if candidate.inUse:
+                    continue
+                benches.append(candidate)
 
         # go to room with benches
         if not benches:
             for room in character.getTerrain().rooms:
                 for item in room.getItemsByType("MetalWorkingBench"):
                     if not item.bolted:
+                        continue
+                    if item.inUse:
                         continue
                     quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),reason="go to a room with a MetalWorkingBench")
                     return ([quest],None)

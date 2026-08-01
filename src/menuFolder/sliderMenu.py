@@ -35,10 +35,11 @@ class SliderMenu(src.menues.SubMenu):
         self.stepValue = D(stepValue)
         self.bigStepValue = D(bigStepValue)
         super().__init__()
-        self.footerText = (
-            "press enter or j to confirm\npress a and d to change the value\npressing A and D will modify the value by "
-            + str(self.bigStepValue)
-        )
+        self.footerText = [
+            "press",src.interaction.ActionMeta(content=" enter or j ",payload="j"),"to confirm\n",
+            "press",src.interaction.ActionMeta(content=" a ",payload="a"),"and",src.interaction.ActionMeta(content=" d ",payload="d"),"to change the value\n",
+            "pressing",src.interaction.ActionMeta(content=" A ",payload="A"),"and",src.interaction.ActionMeta(content=" D ",payload="D"),"will modify the value by ",str(self.bigStepValue)
+        ]
         self.targetParamName = targetParamName
         self.done = False
         self.additionalInfoCallBack = additionalInfoCallBack

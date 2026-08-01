@@ -174,7 +174,7 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
             self.addQuest(newQuest)
             self.startWatching(newQuest,self.handleQuestFailure,"failed")
             return
-        super().handleQuestFailure(extraParam)
+        self.fail(reason)
 
     def generateTextDescription(self):
         '''

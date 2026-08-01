@@ -24,17 +24,19 @@ class Equip(src.quests.MetaQuestSequence):
         '''
         generate a textual description to show on the UI
         '''
-        reasonString = ""
+        reasonString = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
-            reasonString = ", to "+self.reason
+            reasonString = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),",")," to "+self.reason+"."]
         storyString = ""
         if self.story:
             storyString = f"{self.story}"
         sword = src.items.itemMap["Sword"]()
         armor = src.items.itemMap["Armor"]()
+        rod = src.items.itemMap["Rod"]()
         return [f"""{storyString}
-Equip yourself{reasonString}.
-A Aword (""",sword.render(),""") and Armor (""",armor.render(),""") are good equipment.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Equip yourself"),reasonString,"""
+A Sword (""",sword.metaRender(),""") and Armor (""",armor.metaRender(),""") are good equipment.
+A Rod (""",rod.metaRender(),""")will work as an improvised weapon as well.
 
 You can try to find equipment in storage.
 Alternatively fetch your equipment directly from the production line.

@@ -37,11 +37,14 @@ class ConfigureManufacturingTable(src.quests.MetaQuestSequence):
         reason = ""
         if self.reason:
             reason = f",\nto {self.reason}"
-        return f"""
-Configure the manufacturing table on {self.targetPosition}{reason} to produce {self.itemType}.
 
+        text = [f"""
+Configure the manufacturing table on {self.targetPosition}{reason}.
 
-"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"""Configure it to produce the item "{self.itemType}" from now on."""),"""
+
+"""]
+        return text
 
     def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:

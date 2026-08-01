@@ -1257,6 +1257,35 @@ class CityPlaner(src.items.Item):
 
         self.showMap(params["character"], cursor = params["coordinate"])
 
+    def destroyRoomFromMap(self,params):
+        terrain = self.getTerrain()
+        room = terrain.getRoomByPosition(params["coordinate"])[0]
+        room_position = room.getPosition()
+        for offset in [(0,1,0),(1,0,0),(0,-1,0),(-1,0,0)]:
+            check_position = (room_position[0]+offset[0],room_position[1]+offset[1],0)
+            rooms = terrain.getRoomByPosition(check_position)
+            if not rooms:
+                continue
+            other_room = rooms[0]
+            if offset == (0,1,0):
+                door_position = (6,0,0)
+            if offset == (0,-1,0):
+                door_position = (6,12,0)
+            if offset == (1,0,0):
+                door_position = (0,6,0)
+            if offset == (-1,0,0):
+                door_position = (12,6,0)
+
+            for item in other_room.getItemByPosition(door_position):
+                if item.type != "Door":
+                    continue
+                if not item.walkable:
+                    continue
+                item.walkable = False
+
+        room.destroy()
+        self.showMap(params["character"], cursor = params["coordinate"])
+
     def clearRoomDesignation(self,params):
         pos = (params["coordinate"][0],params["coordinate"][1],0)
         if pos in self.specialPurposeRooms:
@@ -1337,6 +1366,14 @@ class CityPlaner(src.items.Item):
                     "params":{"character":character},
                 },
                 "description":"clear room",
+            }
+            functionMap[(room.xPosition,room.yPosition)]["d"] = {
+                "function": {
+                    "container":self,
+                    "method":"destroyRoomFromMap",
+                    "params":{"character":character},
+                },
+                "description":"destroy room",
             }
             if room.tag == "entryRoom":
                 functionMap[(room.xPosition,room.yPosition)]["t"] = {

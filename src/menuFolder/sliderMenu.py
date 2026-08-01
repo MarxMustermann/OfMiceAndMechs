@@ -95,37 +95,31 @@ class SliderMenu(src.menues.SubMenu):
             self.value = max(self.minValue, self.value - self.bigStepValue)
         elif key == "D":
             self.value = min(self.maxValue, self.value + self.bigStepValue)
+        return False
 
+
+    def render(self,size=None):
         percentage = (self.value - self.minValue) / (self.maxValue - self.minValue)
         number_of_bars = 35
-
         center_len = int(len(self.query) / 2)
 
         svalue = str(self.value)
-        text = (center_len - int(len(svalue) / 2)) * " " + svalue + "\n"
+        base_text = (center_len - int(len(svalue) / 2)) * " " + svalue + "\n"
         filled = int(percentage * number_of_bars)
-        text += (center_len - int(number_of_bars / 2)) * " " + filled * "║"
-        text += (number_of_bars - filled) * "|"
-        if not noRender:
-            src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\nvalue input\n\n"))
-            src.interaction.footer.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\nvalue input\n\n"))
+        base_text += (center_len - int(number_of_bars / 2)) * " " + filled * "║"
+        base_text += (number_of_bars - filled) * "|"
 
-            additional = (
-                self.additionalInfoCallBack(
-                    float(self.value) if not (self.stepValue % 1).is_zero() else int(self.value)
-                )
-                if self.additionalInfoCallBack
-                else ""
+        additional = (
+            self.additionalInfoCallBack(
+                float(self.value) if not (self.stepValue % 1).is_zero() else int(self.value)
             )
-            self.persistentText = (
-                src.interaction.urwid.AttrSpec("default", "default"),
-                "\n" + self.query + "\n\n" + text + "\n\n" + additional + "\n\n" + self.footerText,
-            )
+            if self.additionalInfoCallBack
+            else ""
+        )
 
-            # show the render
-            src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.persistentText))
+        text = ["\n",self.query,"\n\n",base_text,"\n\n",additional,"\n\n",self.footerText]
 
-        return False
+        return text
 
 # register the menu type
 src.menues.add_menu(SliderMenu)

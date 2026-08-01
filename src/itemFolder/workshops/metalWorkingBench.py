@@ -79,6 +79,11 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         # unpack parameters
         character = params["character"]
 
+        # ensure the item is bolted down
+        if not self.bolted:
+            character.notify("The item can only be used when it is bolted down")
+            return
+
         try:
             self.inUse
         except:
@@ -290,6 +295,12 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         '''
         calls the actual function with modified parameters
         '''
+
+        # ensure the item is bolted down
+        if not self.bolted:
+            character.notify("The item can only be used when it is bolted down")
+            return
+
         character.addMessage(self.scheduledItems)
 
     def scheduleProductionHook(self,character):
@@ -320,6 +331,12 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         '''
         repeat the last production
         '''
+
+        # ensure the item is bolted down
+        if not self.bolted:
+            character.notify("The item can only be used when it is bolted down")
+            return
+
         if not self.lastProduction:
             character.addMessage("no last produced item found")
             return
@@ -333,6 +350,11 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
 
         # unpack parameters
         character = params["character"]
+
+        # ensure the item is bolted down
+        if not self.bolted:
+            character.notify("The item can only be used when it is bolted down")
+            return
 
         # show UI to select thy type of item to schedule
         if "type" not in params:

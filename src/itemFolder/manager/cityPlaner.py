@@ -1227,6 +1227,24 @@ class CityPlaner(src.items.Item):
         self.showMap(params["character"], cursor = params["coordinate"])
 
     def clearRoomFromMap(self,params):
+
+        # set up helper variables
+        character = params["character"]
+
+        # show confirm menu
+        if "confirmation" not in params:
+            options = []
+            options.append(("no","no"))
+            options.append(("yes","yes"))
+            submenue = src.menues.menuMap["SelectionMenu"]("Do you really want to clear the room?",options,targetParamName="confirmation")
+            character.macroState["submenue"] = submenue
+            character.macroState["submenue"].followUp = {"container":self,"method":"clearRoomFromMap","params":params}
+            return
+
+        # abort if not confirmed
+        if params.get("confirmation") != "yes":
+            return
+
         terrain = self.getTerrain()
         room = terrain.getRoomByPosition(params["coordinate"])[0]
         old_tag = room.tag

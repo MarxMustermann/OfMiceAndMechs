@@ -84,11 +84,13 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
             character.notify("The item can only be used when it is bolted down")
             return
 
+        # prevents characters to use the item while sitting on it
         if character.getPosition() == self.getPosition():
             character.notify("you slip")
             character.runCommandString(["esc","a"])
             return
 
+        # prevents the item to be used by multiple characters at once
         if self.inUse:
             if self.lastInteraction+10 <= src.gamestate.gamestate.tick:
                 character.notify("This item is in use. It con only used by one clone.")
@@ -136,7 +138,6 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         if params.get("type") not in self.getProducableItemTypes():
             character.notify("This item type cannot be produced here.")
             return
-
 
         # get user input on how many items should be produced
         if "rawAmount" in params:
@@ -195,6 +196,7 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         params["description"] = f"you produce a {params['type']}\n"
         self.delayedAction(params)
 
+        # mark the item as in use
         self.inUse = True
         self.lastInteraction = src.gamestate.gamestate.tick
         character.working = True

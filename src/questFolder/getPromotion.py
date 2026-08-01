@@ -19,10 +19,12 @@ class GetPromotion(src.quests.MetaQuestSequence):
         reasonString = ""
         if self.reason:
             reasonString = ", to "+self.reason
-        text = f"""
-Rise in the hierarchy and get a Promotion{reasonString}.
-Use the Promotor to do this.
-"""
+        text = [f"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Rise in the hierarchy"),f""" and get a Promotion{reasonString}.
+Use the Promoter to do this.
+
+Every promotion you will make you stronger by access to a perk.
+"""]
         return text
 
     def handleGotPromotion(self, extraInfo):

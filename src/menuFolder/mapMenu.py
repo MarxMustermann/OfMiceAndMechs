@@ -132,7 +132,8 @@ class MapMenu(src.menues.SubMenu):
 
         mappedFunctions = self.functionMap.get(self.cursor, {})
         for (key,item) in mappedFunctions.items():
-            mapText.append("\n press {} to {}".format(key,item["description"],))
+            description = item["description"]
+            mapText.extend(["\n ",src.interaction.ActionMeta(content=f"press {key} to {description}",payload=key)])
 
         mapText.append(self.extraText)
 

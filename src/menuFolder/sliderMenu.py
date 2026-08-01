@@ -98,7 +98,6 @@ class SliderMenu(src.menues.SubMenu):
             self.value = min(self.maxValue, self.value + self.bigStepValue)
         return False
 
-
     def render(self,size=None):
         percentage = (self.value - self.minValue) / (self.maxValue - self.minValue)
         number_of_bars = 35

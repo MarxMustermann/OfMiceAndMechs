@@ -4142,7 +4142,7 @@ def getTcodEvents():
 
                 if not handled_click:
                     if src.gamestate.gamestate.mainChar.macroState.get("submenue"):
-                        src.gamestate.gamestate.mainChar.runCommandString(["esc"])
+                        src.gamestate.gamestate.mainChar.macroState["submenue"] = None
                         continue
 
                     tile_pos = (raw_click_pos[0]//tileHeight,raw_click_pos[1]//tileHeight,0)

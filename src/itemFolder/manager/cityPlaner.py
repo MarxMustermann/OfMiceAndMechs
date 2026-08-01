@@ -1258,8 +1258,29 @@ class CityPlaner(src.items.Item):
         self.showMap(params["character"], cursor = params["coordinate"])
 
     def destroyRoomFromMap(self,params):
+
+        # set up helper variables
+        character = params["character"]
+
+        # show confirm menu
+        if "confirmation" not in params:
+            options = []
+            options.append(("no","no"))
+            options.append(("yes","yes"))
+            submenue = src.menues.menuMap["SelectionMenu"]("Do you really want to destroy the room?",options,targetParamName="confirmation")
+            character.macroState["submenue"] = submenue
+            character.macroState["submenue"].followUp = {"container":self,"method":"destroyRoomFromMap","params":params}
+            return
+
+        # abort if not confirmed
+        if params.get("confirmation") != "yes":
+            return
+
+        # set up helper variables
         terrain = self.getTerrain()
         room = terrain.getRoomByPosition(params["coordinate"])[0]
+
+        # closing the doors of the neighbouring rooms
         room_position = room.getPosition()
         for offset in [(0,1,0),(1,0,0),(0,-1,0),(-1,0,0)]:
             check_position = (room_position[0]+offset[0],room_position[1]+offset[1],0)
@@ -1283,7 +1304,10 @@ class CityPlaner(src.items.Item):
                     continue
                 item.blockDoor()
 
+        # actually destroy the room
         room.destroy()
+
+        # reopen the map menu
         self.showMap(params["character"], cursor = params["coordinate"])
 
     def clearRoomDesignation(self,params):

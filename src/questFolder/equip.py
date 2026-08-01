@@ -75,58 +75,45 @@ Swords can range from 10 to 25 damage per hit.
         self.startWatching(character,self.handleMoved, "moved")
         super().assignToCharacter(character)
 
-    def findBestEquipment(self,character):
+    def findEquipment(self,character):
         '''
-        get the best equipment available for the character
+        get the equipment available for the character
         '''
-        bestArmor = None
-        bestSword = None
+
+        # set up helper variables
+        armor = None
+        weapon = None
+
+        # check for equipment within rooms
         for room in self.character.getTerrain().rooms:
             for item in room.getItemsByType("Armor"):
-                if item != room.getItemByPosition(item.getPosition())[0]:
-                    continue
-                if not bestArmor:
-                    bestArmor = item
-                    continue
-                if bestArmor.armorValue > item.armorValue:
-                    continue
-                bestArmor = item
+                if not armor:
+                    armor = item
+                    break
             items = room.getItemsByType("Sword")
             if not self.weaponOnly:
                 items.extend(room.getItemsByType("Rod"))
             for item in items:
-                if item != room.getItemByPosition(item.getPosition())[0]:
-                    continue
-                if not bestSword:
-                    bestSword = item
-                    continue
-                if bestSword.baseDamage > item.baseDamage:
-                    continue
-                bestSword = item
+                if not weapon:
+                    weapon = item
+                    break
 
+        # check in inventory
         for item in character.searchInventory("Armor"):
-            if not bestArmor:
-                bestArmor = item
-                continue
-            if bestArmor.armorValue > item.armorValue:
-                continue
-            bestArmor = item
+            if not sword:
+                sword = item
+                break
         items = character.searchInventory("Sword")
         if not self.weaponOnly:
             items.extend(character.searchInventory("Rod"))
         for item in items:
-            if not bestSword:
-                bestSword = item
-                continue
-            if bestSword.baseDamage > item.baseDamage:
-                continue
-            bestSword = item
+            weapon = item
 
-        if bestArmor and character.armor and bestArmor.armorValue <= character.armor.armorValue:
-            bestArmor = None
-        if bestSword and character.weapon and bestSword.baseDamage <= character.weapon.baseDamage:
-            bestSword = None
-        return (bestSword,bestArmor)
+        if character.armor:
+            armor = None
+        if character.weapon:
+            weapon = None
+        return (weapon,armor)
 
     def triggerCompletionCheck(self,character=None,dryRun=True):
         '''
@@ -135,18 +122,9 @@ Swords can range from 10 to 25 damage per hit.
         if not character:
             return False
 
-        (bestSword,bestArmor) = self.findBestEquipment(character)
+        (weapon,armor) = self.findEquipment(character)
 
-        if bestSword and not character.weapon:
-            return False
-
-        if bestArmor and not character.armor:
-            return False
-
-        if bestSword and character.weapon and bestSword.baseDamage > character.weapon.baseDamage:
-            return False
-
-        if bestArmor and character.armor and bestArmor.armorValue > character.armor.armorValue:
+        if weapon or weapon:
             return False
 
         if ("metal working" in character.duties or self.tryHard) and (not character.weapon or not character.armor):
@@ -183,16 +161,16 @@ Swords can range from 10 to 25 damage per hit.
             return (None,None)
 
         # find what to equip
-        (bestSword,bestArmor) = self.findBestEquipment(character)
+        (weapon,armor) = self.findEquipment(character)
 
         # handle menus
         submenue = character.macroState.get("submenue")
         if submenue:
             if isinstance(submenue,src.menues.menuMap["InventoryMenu"]):
-                if bestSword in character.inventory:
-                    return (None,(submenue.get_command_to_select_item(item_to_select=bestSword),"equip from inventory"))
-                if bestArmor in character.inventory:
-                    return (None,(submenue.get_command_to_select_item(item_to_select=bestArmor),"equip from inventory"))
+                if weapon in character.inventory:
+                    return (None,(submenue.get_command_to_select_item(item_to_select=weapon),"equip from inventory"))
+                if armor in character.inventory:
+                    return (None,(submenue.get_command_to_select_item(item_to_select=armor),"equip from inventory"))
             if submenue.tag not in ("advancedInteractionSelection","advancedPickupSelection",):
                 return (None,(["esc"],"close menu"))
 
@@ -209,37 +187,45 @@ Swords can range from 10 to 25 damage per hit.
                 return (None,("s","enter room"))
 
         # equip items from inventory
-        if bestSword in character.inventory:
+        if weapon in character.inventory:
             command = "i"
             for item in character.inventory:
-                if item == bestSword:
+                if item == weapon:
                     break
                 command += "s"
             command += "j"
             return (None,(command,"equip from inventory"))
-        if bestArmor in character.inventory:
+        if armor in character.inventory:
             command = "i"
             for item in character.inventory:
-                if item == bestArmor:
+                if item == armor:
                     break
                 command += "s"
             command += "j"
             return (None,(command,"equip from inventory"))
 
-        if bestSword and (not character.weapon or bestSword.baseDamage > character.weapon.baseDamage):
-            if character.container != bestSword.container:
+        # ensure there is inventory space to pick up a new weapon
+        if not character.getFreeInventorySpace() and character.isOnHomeTerrain():
+            quest = src.quests.questMap["ClearInventory"](reason="ensure you can pich up new equipment")
+            return ([quest],None)
+
+        # pick up weapon
+        if weapon:
+
+            # go to weapon
+            if character.container != weapon.container:
                 quest = src.quests.questMap["GoToTile"](targetPosition=bestSword.container.getPosition(),reason="get near a weapon")
                 return ([quest],None)
-
-            if character.getDistance(bestSword.getPosition()) > 1:
-                quest = src.quests.questMap["GoToPosition"](targetPosition=bestSword.getPosition(),ignoreEndBlocked=True,reason="be able pick up the weapon")
+            if character.getDistance(weapon.getPosition()) > 1:
+                quest = src.quests.questMap["GoToPosition"](targetPosition=weapon.getPosition(),ignoreEndBlocked=True,reason="be able pick up the weapon")
                 return ([quest],None)
 
+            # pick up weapon
             offsets = [((1,0,0),"d"),((-1,0,0),"a"),((0,1,0),"s"),((0,-1,0),"w"),((0,0,0),".")]
             for offset in offsets:
-                if character.getPosition(offset=offset[0]) == bestSword.getPosition():
-                    items = bestSword.container.getItemByPosition(bestSword.getPosition())
-                    if items[-1] == bestSword:
+                if character.getPosition(offset=offset[0]) == weapon.getPosition():
+                    items = weapon.container.getItemByPosition(weapon.getPosition())
+                    if items[-1] == weapon:
                         interactionCommand = "J"
                         if submenue:
                             if submenue.tag == "advancedInteractionSelection":
@@ -263,20 +249,23 @@ Swords can range from 10 to 25 damage per hit.
                     return (None,(command,"equip the item"))
             1/0
 
-        if bestArmor and (not character.armor or bestArmor.armorValue > character.armor.armorValue):
-            if character.container != bestArmor.container:
-                quest = src.quests.questMap["GoToTile"](targetPosition=bestArmor.container.getPosition(),reason="get near armor")
+        # pick up armor
+        if armor:
+
+            # go to armor
+            if character.container != armor.container:
+                quest = src.quests.questMap["GoToTile"](targetPosition=armor.container.getPosition(),reason="get near armor")
+                return ([quest],None)
+            if character.getDistance(armor.getPosition()) > 1:
+                quest = src.quests.questMap["GoToPosition"](targetPosition=armor.getPosition(),ignoreEndBlocked=True,reason="be able to pick up armor")
                 return ([quest],None)
 
-            if character.getDistance(bestArmor.getPosition()) > 1:
-                quest = src.quests.questMap["GoToPosition"](targetPosition=bestArmor.getPosition(),ignoreEndBlocked=True,reason="be able to pick up armor")
-                return ([quest],None)
-
+            # pick up armor
             offsets = [((1,0,0),"d"),((-1,0,0),"a"),((0,1,0),"s"),((0,-1,0),"w"),((0,0,0),".")]
             for offset in offsets:
-                if character.getPosition(offset=offset[0]) == bestArmor.getPosition():
-                    items = bestArmor.container.getItemByPosition(bestArmor.getPosition())
-                    if items[-1] == bestArmor:
+                if character.getPosition(offset=offset[0]) == armor.getPosition():
+                    items = armor.container.getItemByPosition(armor.getPosition())
+                    if items[-1] == armor:
                         interactionCommand = "J"
                         if submenue:
                             if submenue.tag == "advancedInteractionSelection":
@@ -300,6 +289,7 @@ Swords can range from 10 to 25 damage per hit.
                     return (None,(command,"equip the item"))
             2/0
 
+        # produce new equipment
         if "metal working" in character.duties or self.tryHard:
             if not character.weapon:
                 quests = []
@@ -317,6 +307,7 @@ Swords can range from 10 to 25 damage per hit.
                 quests.append(quest)
                 return (quests,None)
 
+        # do nothing
         return (None,(".","stand around confused"))
 
     def handleQuestFailure(self,extraParam):

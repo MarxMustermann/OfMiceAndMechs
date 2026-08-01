@@ -579,19 +579,11 @@ Bring it to the groundskeeper.
                 if weapons and character.weapon is None:
                     equipment_availabe = True
                     break
-                for weapon in weapons:
-                    if weapon.baseDamage > character.weapon.baseDamage:
-                        equipment_availabe = True
-                        break
                 armors = []
                 armors.extend(room.getItemsByType("Armor"))
                 if armors and character.armor is None:
                     equipment_availabe = True
                     break
-                for armor in armors:
-                    if armor.armorValue > character.armor.armorValue:
-                        equipment_availabe = True
-                        break
             if equipment_availabe:
                 base_text = ["""
 """,(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""There is better equipment available."""),"""

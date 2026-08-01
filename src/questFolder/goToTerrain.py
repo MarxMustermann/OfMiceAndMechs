@@ -131,6 +131,8 @@ The target terrain is {directionString}.
 
         submenue = character.macroState.get("submenue")
         if submenue:
+            if submenue.tag == "activitySelection":
+                return (None,("M","open the auto movement menu"))
             if submenue.tag == "terrainMovementmenu":
                 command = submenue.get_command_to_select_position(targetTerrain)
                 return (None,(command,"start the auto movement"))
@@ -153,11 +155,9 @@ The target terrain is {directionString}.
             quest = src.quests.questMap["Fight"]()
             return ([quest],None)
 
+        # open the terrain fast movement code
         if self.allowTerrainMenu:
-            menuCommand = "g"
-            if "runaction" in character.interactionState:
-                menuCommand = ""
-            return (None,(menuCommand+"M","open terrain fast travel menu"))
+            return (None,("gM","open terrain fast travel menu"))
 
         menu_command = "g"
         if "runaction" in character.interactionState:

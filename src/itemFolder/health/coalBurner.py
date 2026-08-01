@@ -78,21 +78,24 @@ or use this item with MoldFeed in your inventory.
             character: the character trying to use this item
         '''
 
+        # ensure the item is bolted down
         if not self.bolted:
             character.notify("This items needs to be bolted down to be used.")
             return
 
+        # ensure there is mold feed to burn
         moldFeed = self.getMoldFeed(character)
         if len(moldFeed) == 0:
             character.notify("you need to have a MoldFeed in your inventory or in the coal burners input stockpile")
             return
 
+        # eastimate how much mold feed to burn
         amount_to_burn = min(len(moldFeed), math.ceil((character.adjustedMaxHealth - character.health) / 5))
-        
         if not amount_to_burn:
             character.notify("you need no healing and burn no MoldFeeds")
             return
 
+        # remove the mold feed to burn from the world
         for i in range(amount_to_burn):
             current_moldFeed = moldFeed[i]
             if current_moldFeed in character.inventory:
@@ -100,25 +103,31 @@ or use this item with MoldFeed in your inventory.
             else:
                 self.container.removeItem(current_moldFeed)
 
+        # show burning animation
         character.container.addAnimation(character.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#f00", "#fff"), "++")]})
         for _i in range(1,10):
             self.container.addAnimation(self.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#faa", "#f00"), "%%")]})
             self.container.addAnimation(self.getPosition(),"smoke",8,{})
 
+        # call the remaining logic as delayed
         params = {"character":character,"amount_to_burn":amount_to_burn,"delayTime":30,"action":"doHealing"}
         params["description"] = "You burn some MoldFeed\n"
         self.delayedAction(params)
 
     def doHealing(self,params):
+
+        # heal the character using this item
         amount_to_burn = params["amount_to_burn"]
         character = params["character"]
         heal_amount = 5 * amount_to_burn
+        character.heal(heal_amount,reason="inhaling the smoke of " + str(amount_to_burn) + " MoldFeeds")
+
+        # show a success message to the player
         character.showTextMenu([f"""
 You burn {amount_to_burn} MoldFeeds and """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"inhale the smoke"),f""".
 
 This will heal you for up to {heal_amount} HP.
 """])
-        character.heal(heal_amount,reason="inhaling the smoke of " + str(amount_to_burn) + " MoldFeeds")
         character.runCommandString(".",nativeKey=False)
 
     def getConfigurationOptions(self, character):

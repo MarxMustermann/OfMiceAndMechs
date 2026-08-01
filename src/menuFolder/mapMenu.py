@@ -16,7 +16,8 @@ class MapMenu(src.menues.SubMenu):
         applyKey="coordinate",
         gridSize=15,
         limits=(1, 13),
-        title=None
+        title=None,
+        character=None
     ):
         """
         initialise internal state
@@ -37,6 +38,7 @@ class MapMenu(src.menues.SubMenu):
         else:
             self.cursor = (int(self.gridSize / 2), int(self.gridSize / 2))
         self.title = title
+        self.character = character
 
     def getTitle(self):
         return self.title
@@ -51,6 +53,9 @@ class MapMenu(src.menues.SubMenu):
         Returns:
             returns True when done
         """
+
+        if character:
+            self.character = character
 
         closeMenu = False
         mappedFunctions = self.functionMap.get(self.cursor, {})
@@ -78,6 +83,8 @@ class MapMenu(src.menues.SubMenu):
                 self.followUp()
             return True
 
+    def render(self,size=None):
+        character = self.character
         quest = character.getActiveQuest()
         if quest:
             for marker in quest.getQuestMarkersTile(character):
@@ -116,7 +123,12 @@ class MapMenu(src.menues.SubMenu):
                     mapText[-1].append(self.mapContent[y][x])
             mapText[-1].append("\n")
 
-        mapText.append(f"\n press wasd to move cursor {self.cursor}")
+        mapText.extend([f"\n press ",
+                            src.interaction.ActionMeta(content="w",payload="w"),"/",
+                            src.interaction.ActionMeta(content="a",payload="a"),"/",
+                            src.interaction.ActionMeta(content="s",payload="s"),"/",
+                            src.interaction.ActionMeta(content="d",payload="d"),
+                        f" to move cursor {self.cursor}"])
 
         mappedFunctions = self.functionMap.get(self.cursor, {})
         for (key,item) in mappedFunctions.items():
@@ -124,14 +136,7 @@ class MapMenu(src.menues.SubMenu):
 
         mapText.append(self.extraText)
 
-        if not noRender:
-
-            # show info
-            src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), ""))
-            self.persistentText = mapText
-            src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.persistentText))
-
-        return False
+        return mapText
 
     def get_command_to_select_position(self,coordinate,selectionCommand="j"):
         """
@@ -153,6 +158,8 @@ class MapMenu(src.menues.SubMenu):
         if cursor[1] < coordinate[1]:
             command += "s"*(coordinate[1]-cursor[1])
         return command+selectionCommand
+
+
 
 # register the menu type
 src.menues.add_menu(MapMenu)

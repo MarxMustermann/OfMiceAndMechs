@@ -122,35 +122,30 @@ class ContextListMenu(src.menues.SubMenu):
     def open_main_menu(self,extraParams=None):
         self.character.runCommandString(["esc","esc"])
 
-    def trigger_activateItem(self,extraParams=None):
-        quest = src.quests.questMap["ActivateItem"](targetPositionBig=self.index_big, targetPosition=self.index)
+    def _trigger_quest(self,quest):
         quest.autoSolve = True
         self.character.assignQuest(quest,active=True)
         self.character.macroState["submenue"] = None
+
+    def trigger_activateItem(self,extraParams=None):
+        quest = src.quests.questMap["ActivateItem"](targetPositionBig=self.index_big, targetPosition=self.index)
+        self._trigger_quest(quest)
 
     def trigger_dropItem(self,extraParams=None):
         quest = src.quests.questMap["PlaceItem"](targetPositionBig=self.index_big, targetPosition=self.index)
-        quest.autoSolve = True
-        self.character.assignQuest(quest,active=True)
-        self.character.macroState["submenue"] = None
+        self._trigger_quest(quest)
 
     def trigger_goToPosition(self,extraParams=None):
         quest = src.quests.questMap["GoToPosition"](targetPositionBig=self.index_big, targetPosition=self.index)
-        quest.autoSolve = True
-        self.character.assignQuest(quest,active=True)
-        self.character.macroState["submenue"] = None
+        self._trigger_quest(quest)
 
     def trigger_clearSpot(self,extraParams=None):
         quest = src.quests.questMap["CleanSpace"](targetPositionBig=self.index_big, targetPosition=self.index)
-        quest.autoSolve = True
-        self.character.assignQuest(quest,active=True)
-        self.character.macroState["submenue"] = None
+        self._trigger_quest(quest)
 
     def trigger_restock(self,extraParams=None):
         quest = src.quests.questMap["RestockRoom"](targetPositionBig=self.index_big, targetPosition=self.index)
-        quest.autoSolve = True
-        self.character.assignQuest(quest,active=True)
-        self.character.macroState["submenue"] = None
+        self._trigger_quest(quest)
 
 # register the menu type
 src.menues.add_menu(ContextListMenu)

@@ -34,31 +34,22 @@ class MetalWorking(src.quests.MetaQuestSequence):
         '''
 
         # generate the reason string
-        reason = ""
+        reason = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
-            reason = f", to {self.reason}"
+            reason = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),","),f" to {self.reason}."]
 
         # generate the basic description
-        out = f"""
-Do some metal working{reason}.
+        sample_metalWorkingBench = src.items.itemMap["MetalWorkingBench"]()
+        text = [f"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Do some metal working"),reason,f"""
 
-Produce {self.amount} {self.toProduce}. {self.amountDone} done.
+Produce {self.amount} {self.toProduce}. You already produced {self.amountDone}.
 
-"""
-
-        # generate extra usage instructions
-        out = [out]
-        if not self.subQuests:
-            out.append((src.interaction.urwid.AttrSpec("#f00", "black"),"""
-This quest has no subquests. Press r to generate subquests for this quest."""))
-        else:
-            out.append((src.interaction.urwid.AttrSpec("#080", "black"),"""
-This quests has subquests.
-Press d to move the cursor and show the subquests description.
-"""))
+You can do metal working at the MetalWorkingBench (""",sample_metalWorkingBench.metaRender(),""").
+"""]
 
         # return generated text
-        return out
+        return text
 
     def triggerCompletionCheck(self,character=None, dryRun=True):
         '''

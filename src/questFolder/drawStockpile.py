@@ -309,6 +309,9 @@ Try as hard as you can to achieve this.
 
         # ensure a painter is available
         if not character.inventory or character.inventory[-1].type != "Painter":
+            if character.searchInventory("Painter"):
+                quest = src.quests.questMap["ClearInventory"]()
+                return ([quest],None)
             quest = src.quests.questMap["FetchItems"](toCollect="Painter",amount=1)
             return ([quest],None)
 

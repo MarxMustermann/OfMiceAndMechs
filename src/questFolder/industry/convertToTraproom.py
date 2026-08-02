@@ -23,17 +23,16 @@ class ConvertToTrapRoom(src.quests.MetaQuestSequence):
         generate a description of the quest
         '''
         out = []
-        reason = ""
+        reason = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
-            reason = f",\nto {self.reason}"
-        text = f"""
-convert an entryRoom to a trapRoom{reason}.
+            reason = ((src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),","),"\nto {self.reason}.")
+        text = [f"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Convert an entryRoom to a trapRoom"),reason,"""
 
 Use a CityPlaner to do this.
 
-"""
-        out.append(text)
-        return out
+"""]
+        return text
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
         '''

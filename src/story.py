@@ -1800,9 +1800,13 @@ I am working right now. I'll repriotize though.""")
                         continue
                     if not room.getItemsByType("Painter"):
                         continue
-                    if room.getEnemiesOnTile(character):
+                    found_serious_enemy = False
+                    for enemy in room.getEnemiesOnTile(character):
+                        if isinstance(enemy,src.characters.characterMap["Spiderling"]):
+                            continue
+                        found_serious_enemy = True
+                    if found_serious_enemy:
                         continue
-                    found_loot_room = True
                     quest = src.quests.questMap["FetchPainter"](targetPositionBig=room.getPosition())
                     character.assignQuest(quest,active=True)
                     return

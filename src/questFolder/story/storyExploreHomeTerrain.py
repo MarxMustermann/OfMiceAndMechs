@@ -27,6 +27,10 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
             for check_character in room.characters:
                 if check_character == self.character:
                     continue
+                if check_character.faction == self.character.faction:
+                    continue
+                if isinstance(check_character,src.characters.charMap["Spiderling"]):
+                    continue
                 enemies.append(check_character)
             
             if enemies:

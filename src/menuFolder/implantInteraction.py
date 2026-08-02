@@ -595,7 +595,6 @@ Find out why.
 
 The groundskeeper is working now,
 but """,(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""it seems to missing something very essential."""),"""
-This could be very useful.
 
 Check if you can help out.
 

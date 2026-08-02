@@ -125,6 +125,7 @@ class ImplantInteraction(src.menues.SubMenu):
                         quests.append(src.quests.questMap["StoryExploreHomeTerrain"](lifetime=500))
                     if selection == "getweapon":
                         quests.append(src.quests.questMap["ClearInventory"]())
+                        quests.append(src.quests.questMap["GoToTile"](targetPosition=(7,5,0)))
                         quests.append(src.quests.questMap["Scavenge"](toCollect="Rod",amountToCollect=1,ignoreAlarm=True))
                         quests.append(src.quests.questMap["Equip"]())
                     if selection.startswith("fetch ") and len(selection.split(" ")) > 1:

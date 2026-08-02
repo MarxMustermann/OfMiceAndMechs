@@ -1395,6 +1395,8 @@ class Character:
         '''
         for quest in self.quests[:]:
             quest.abort()
+        if self.quests:
+            self.quests = []
 
     def addJobOrder(self, jobOrder):
         '''

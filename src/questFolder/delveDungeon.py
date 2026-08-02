@@ -402,7 +402,7 @@ suicidal""")
 
         # prepare to defend base
         if not terrain.alarm:
-            quest = src.quests.questMap["ReadyBaseDefences"](reason="be prepared to the wave")
+            quest = src.quests.questMap["ReadyBaseDefences"](reason="be prepared for the wave of enemies")
             return ([quest],None)
 
         # go to GlassStatue

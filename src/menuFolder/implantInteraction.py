@@ -628,6 +628,7 @@ Equip yourself with that equipment.
             hasCityPlaner = False
             hasStorage = False
             hasManufacturingHall = False
+            hasWallManufacturing = False
             hasGooProcessing = False
             hasTemple = False
             for room in terrain.rooms:
@@ -642,6 +643,9 @@ Equip yourself with that equipment.
                 if room.tag == "manufacturingHall":
                     hasManufacturingHall = True
                     continue
+                if room.tag == "wallManufacturing":
+                    hasWallManufacturing = True
+                    continue
                 if room.tag == "gooProcessing":
                     hasGooProcessing = True
                     continue
@@ -655,12 +659,15 @@ Equip yourself with that equipment.
                 extraDescriptions = {}
                 extraDescriptions["storage"] = "Allow to more stuff"
                 extraDescriptions["manufacturingHall"] = "Allows to produce many items"
+                extraDescriptions["wallManufacturing"] = "A dedicated production facility for Walls"
                 extraDescriptions["gooProcessing"] = "Allows to produce goo and to spawn Clones"
                 extraDescriptions["temple"] = "Allows to pray and wish for miracles"
                 if not hasStorage:
                     available_roomTypes.append("storage")
                 if not hasManufacturingHall:
                     available_roomTypes.append("manufacturingHall")
+                if not hasWallManufacturing:
+                    available_roomTypes.append("wallManufacturing")
                 if not hasGooProcessing:
                     available_roomTypes.append("gooProcessing")
                 if not hasTemple:

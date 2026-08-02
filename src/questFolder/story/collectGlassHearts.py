@@ -7,12 +7,14 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
     quest to collect glass hearts
     '''
     type = "CollectGlassHearts"
-    def __init__(self, description="collect glass hearts", creator=None, lifetime=None, reason=None):
+    def __init__(self, description="collect glass hearts", creator=None, lifetime=None, reason=None, softLifetime=None):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
         self.room_building_streak_length = 0
         self.reason = reason
+        self.startTime = None
+        self.softLifetime = softLifetime
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
 
@@ -21,6 +23,16 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
             return (None,None)
         if not character:
             return (None,None)
+
+        try:
+            self.startTime
+        except:
+            self.startTime = None
+
+        if not self.startTime:
+            if not dryRun:
+                self.startTime = src.gamestate.gamestate.tick
+            return (None,("+","remember the quest start time"))
 
         # close menues
         if character.macroState["submenue"] and not ignoreCommands:
@@ -54,6 +66,14 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
         if not character.isOnHomeTerrain():
             quest = src.quests.questMap["GoHome"](reason="get back to base",endOnHomeTerrain=True)
             return ([quest],None)
+
+        try:
+            self.softLifetime
+        except:
+            self.softLifetime = None
+        # stop after some time
+        if self.softLifetime and src.gamestate.gamestate.tick-self.startTime > self.softLifetime:
+           return self._solver_trigger_fail(dryRun,f"soft lifetime reached") 
 
         # defend the base
         num_enemies = 0
@@ -524,6 +544,24 @@ So apease the gods and obtain their GlassHearts.
         # show how long the quest has been building rooms in a row
         text.append((src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),f"""
 You did {self.room_building_streak_length} room building tasks in a row."""))
+
+        try:
+            self.startTime
+        except:
+            self.startTime = None
+
+        if self.startTime:
+            quest_age = src.gamestate.gamestate.tick-self.startTime
+            text.append((src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),f"""
+
+The quest has been running for {quest_age} ticks."""))
+        try:
+            self.softLifetime
+        except:
+            self.softLifetime = None
+        if self.softLifetime:
+            text.append("""
+Try to complete the quest for at least {self.softLifetime} ticks.""")
 
         # return the description
         return text

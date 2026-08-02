@@ -189,7 +189,7 @@ class ImplantInteraction(src.menues.SubMenu):
                             quests.append(src.quests.questMap["ActivateItem"](targetPositionBig=stasisTank.getBigPosition(),targetPosition=stasisTank.getPosition()))
                             break
                     if selection == "collect glass hearts":
-                        quests.append(src.quests.questMap["CollectGlassHearts"]())
+                        quests.append(src.quests.questMap["CollectGlassHearts"](softLifetime=1000))
                     if selection == "ascend":
                         quests.append(src.quests.questMap["Ascend"]())
                     if selection == "get promotion":

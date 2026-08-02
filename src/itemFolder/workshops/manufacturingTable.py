@@ -188,7 +188,7 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
             return
 
         if self.inUse:
-            if self.lastInteraction+10 <= src.gamestate.gamestate.tick:
+            if self.lastInteraction > src.gamestate.gamestate.tick-10:
                 character.notify("This item is in use")
                 character.changed("failed manufacturing",{})
                 return
@@ -239,11 +239,16 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
             params["delayTime"] = params["delayTime"]//10
         params["action"]= "output_produced_item"
         params["description"] = f"you produce a {self.toProduce}\n"
+        params["callback"] = self.trackAction
         self.delayedAction(params)
         self.numUsed += 1
         self.inUse = True
         self.lastInteraction = src.gamestate.gamestate.tick
         character.working = True
+        self.handleTick()
+
+    def trackAction(self):
+        self.lastInteraction = src.gamestate.gamestate.tick
 
     def output_produced_item(self,params):
         character = params["character"]
@@ -446,6 +451,28 @@ numUsed: {self.numUsed}
 """
 
         return text
+
+    def handleTick(self):
+        '''
+        a loop to check for and trigger actions each tick
+        '''
+
+        # enforce conditions
+        if not self.bolted:
+            return
+
+        if not self.inUse:
+            return
+
+        # get action for that tick
+        if self.lastInteraction <= src.gamestate.gamestate.tick-10:
+            self.inUse = False
+
+        # retrigger next tick to form a loop
+        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick+1)
+        event.setCallback({"container": self, "method": "handleTick"})
+        currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
+        currentTerrain.addEvent(event)
 
     def _get_base_display_character(self):
         characters = "Mt"

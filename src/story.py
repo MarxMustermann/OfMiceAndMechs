@@ -2004,9 +2004,9 @@ But once i am done painting, help will be appreachiated.
 I need to focus on painting the floor markers.
 There will be more work to do once i'm done.
 
-If find useful resources bring them.
-Just place the items on the walking space until done Painting.
-I will move the item into storage later.
+If you find useful resources, bring them here.
+Just place the items on the walking space for now.
+I will move them into storage later.
 """])
             character.showTextMenu(base_response_text)
             character.changed("no_builder_quest")

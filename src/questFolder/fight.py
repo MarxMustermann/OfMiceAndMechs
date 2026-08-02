@@ -27,8 +27,11 @@ class Fight(src.quests.MetaQuestSequence):
         reasonString = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
             reasonString = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),",")," to "+self.reason]
-        return [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"""
-Fight the enemies"""),reasonString,f"""
+        text = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"""
+Fight the enemies"""),reasonString,]
+        if self.suicidal:
+            text.append(" Fight to the death!\n")
+        text.extend([f"""
 
 """,(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"For simple attacks just bump into the enemies."),"""
 You will hit them and hopefully do some damage.
@@ -38,7 +41,8 @@ Advanced attacks are used by bumping into enemies while holding shift.
 So if an enemy is to directly east of you:
 * press d to do a normal attack
 * press D to do a special attack
-""")]
+""")])
+        return text
 
     def triggerCompletionCheck(self,character=None,dryRun=True):
         '''

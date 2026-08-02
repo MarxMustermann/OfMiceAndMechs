@@ -456,11 +456,6 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
             return False
 
     def _get_base_display_character(self):
-        try:
-            self.inUse
-        except:
-            self.inUse = False
-
         characters = "WM"
         if self.inUse and src.gamestate.gamestate.tick%2 == 0:
             characters = "mw"

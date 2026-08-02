@@ -287,7 +287,15 @@ The quest description and general instructions are shown in the quest menu.
                         elif task_type == "spawn_clone":
                             quests.append(src.quests.questMap["SpawnClone"]())
                         elif task_type == "fight":
-                            quests.append(src.quests.questMap["Fight"]())
+                            found_serious_enemies = False
+                            for enemy in character.getNearbyEnemies():
+                                if isinstance(enemy,src.characters.characterMap["Spiderling"]):
+                                    continue
+                                found_serious_enemies = True
+                            suicidal = False
+                            if not found_serious_enemies:
+                                suicidal = True
+                            quests.append(src.quests.questMap["Fight"](suicidal=suicidal))
 
                         # assign the quest
                         if not quests:

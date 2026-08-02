@@ -68,11 +68,6 @@ class Anvil(src.items.itemMap["WorkShop"]):
         character = params.get("character")
         preferInventoryOut = params.get("preferInventoryOut")
 
-        try:
-            self.inUse
-        except:
-            self.inUse = False
-            
         if self.inUse:
             if self.lastInteraction+10 <= src.gamestate.gamestate.tick:
                 character.addMessage("This item is in use")

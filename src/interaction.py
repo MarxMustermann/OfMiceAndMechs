@@ -5416,10 +5416,6 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                     click_map.remove(click_zone)
                     click_map.append(new_click_zone)
 
-
-            sdl_renderer2.draw_color = (255,0,0,255)
-            sdl_renderer2.fill_rect((offsetLeft,offsetTop,500,500))
-
             root_console = tcod.console.Console(map_size[0]*2, map_size[1], order="F")
             canvas = render(char,uiElement["map_width"])
             canvas.printTcod(root_console,0,0,warning=warning)

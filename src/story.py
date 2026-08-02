@@ -2005,7 +2005,7 @@ I need to focus on painting the floor markers.
 There will be more work to do once i'm done.
 
 If find useful resources bring them.
-Just place them on the walking space until done Painting.
+Just place the items on the walking space until done Painting.
 I will move the item into storage later.
 """])
             character.showTextMenu(base_response_text)

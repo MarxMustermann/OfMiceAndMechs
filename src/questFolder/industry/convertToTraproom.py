@@ -26,6 +26,9 @@ class ConvertToTrapRoom(src.quests.MetaQuestSequence):
         reason = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
             reason = ((src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),","),"\nto {self.reason}.")
+        position_string = "an entryRoom"
+        if self.roomPosition:
+            position_string = f"the entryRoom on postion {self.roomPosition}"
         text = [f"""
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Convert an entryRoom to a trapRoom"),reason,"""
 

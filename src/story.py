@@ -2665,6 +2665,9 @@ sure i'll produce equipment for you as long as you bring me the raw material.
             currentTerrain.addItem(paving,pos)
             if x not in (6,8,) and random.random() < 0.7:
                 paving.destroy()
+        pos = (big_pos[0]*15+3,big_pos[1]*15+3,0)
+        rod = src.items.itemMap["Rod"]()
+        currentTerrain.addItem(rod,pos)
         for _i in range(10):
             amount = random.randint(1,3)
             pos = (big_pos[0]*15+random.randint(1,14),big_pos[1]*15+random.randint(1,14),0)
@@ -2679,6 +2682,13 @@ sure i'll produce equipment for you as long as you bring me the raw material.
             mold = src.items.itemMap["Mold"]()
             mold.startSpawn()
             currentTerrain.addItem(mold,pos)
+
+        for _i in range(3):
+            pos = (big_pos[0]*15+random.randint(1,14),big_pos[1]*15+random.randint(1,14),0)
+            if currentTerrain.getItemByPosition(pos):
+                continue
+            rod = src.items.itemMap["Rod"]()
+            currentTerrain.addItem(rod,pos)
 
         # add enemy
         enemy = src.characters.characterMap["Spiderling"]()

@@ -29,17 +29,16 @@ class FurnishRoom(src.quests.MetaQuestSequence):
         '''
         generate a text description
         '''
-        out = []
         reason = ""
         if self.reason:
             reason = f",\nto {self.reason}"
-        text = f"""
-Build the items needed in room {self.targetPositionBig}{reason}.
+        text = [f"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Place the items"),f""" needed in room {self.targetPositionBig}""",reason,""".
 
-the buildsites indicate what needs to be built.
+The buildsites indicate what needs to be built.
 
-"""
-        return out
+"""]
+        return text
 
     def triggerCompletionCheck(self,character=None,dryRun=True):
         '''

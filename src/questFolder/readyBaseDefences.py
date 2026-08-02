@@ -101,11 +101,13 @@ class ReadyBaseDefences(src.quests.MetaQuestSequence):
         return (None,(interactionCommand+direction,"activate the siege manager"))
 
     def generateTextDescription(self):
-        reasonString = ""
+        reasonString = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
-            reasonString = ", to "+self.reason
+            reasonString = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),",")," to "+self.reason+"."]
         text = [f"""
-Prepare the base for an attack{reasonString}.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Prepare the base for an attack"),reasonString,"""
+
+Do this by sounding the alarms using the SiegeManager.
 """]
         return text
 

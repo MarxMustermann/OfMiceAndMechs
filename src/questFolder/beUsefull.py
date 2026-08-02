@@ -361,6 +361,11 @@ Reputation is rewarded for picking up items from walkways.\n\n""")
                     if room:
                         character.registers["HOMEx"] = room.getPosition()[0]
                         character.registers["HOMEy"] = room.getPosition()[1]
+                for room in terrain.rooms:
+                    if room.tag != "temple":
+                        continue
+                    character.registers["HOMEx"] = room.getPosition()[0]
+                    character.registers["HOMEy"] = room.getPosition()[1]
             return (None,("+","set home"))
         if not character.duties:
             if not dryRun:

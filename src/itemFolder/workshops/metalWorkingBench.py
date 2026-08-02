@@ -71,6 +71,28 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         options.append(("byName","produce by name"))
         return options
 
+    def handleTick(self):
+        '''
+        a loop to check for and trigger actions each tick
+        '''
+
+        # enforce conditions
+        if not self.bolted:
+            return
+
+        if not self.inUse:
+            return
+
+        # get action for that tick
+        if self.lastInteraction <= src.gamestate.gamestate.tick-10:
+            self.inUse = False
+
+        # retrigger next tick to form a loop
+        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick+1)
+        event.setCallback({"container": self, "method": "handleTick"})
+        currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
+        currentTerrain.addEvent(event)
+
     def produceItem(self,params):
         '''
         show the UI to actually start producing an item
@@ -92,7 +114,7 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
 
         # prevents the item to be used by multiple characters at once
         if self.inUse:
-            if self.lastInteraction+10 <= src.gamestate.gamestate.tick:
+            if self.lastInteraction > src.gamestate.gamestate.tick-10:
                 character.notify("This item is in use. It con only used by one clone.")
                 character.changed("failed manufacturing",{})
                 return
@@ -200,6 +222,7 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         self.inUse = True
         self.lastInteraction = src.gamestate.gamestate.tick
         character.working = True
+        self.handleTick()
 
     def output_produced_item(self,params):
         '''

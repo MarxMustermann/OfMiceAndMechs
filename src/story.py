@@ -2490,11 +2490,11 @@ Help me put together place the Walls and put together a new room.
         elif task == "fetch Wall":
 
             # generate quest to fetch Walls
-            base_response_text.append("""
+            base_response_text.extend(["""
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"I need Walls"),""" to build more rooms.
 
 Try to find some. They should be Walls scattered around everywhere.
-""")
+"""])
             offer_accept_options = True
 
         elif task == "fetch Door":

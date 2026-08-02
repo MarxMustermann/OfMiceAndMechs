@@ -1142,6 +1142,9 @@ class Item:
     def delayedAction(self, params):
         character = params["character"]
 
+        if "callback" in params:
+            params["callback"]()
+
         if not "doneTime" in params:
             params["doneTime"] = 0
 

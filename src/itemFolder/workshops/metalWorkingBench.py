@@ -216,6 +216,7 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         params["delayTime"] = 100*timeModifier
         params["action"]= "output_produced_item"
         params["description"] = f"you produce a {params['type']}\n"
+        params["callback"] = self.trackAction
         amount = params.get("amount")
         if amount > 1:
             params["description"] += f"{amount} remaining\n"
@@ -226,6 +227,9 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         self.lastInteraction = src.gamestate.gamestate.tick
         character.working = True
         self.handleTick()
+
+    def trackAction(self):
+        self.lastInteraction = src.gamestate.gamestate.tick
 
     def output_produced_item(self,params):
         '''

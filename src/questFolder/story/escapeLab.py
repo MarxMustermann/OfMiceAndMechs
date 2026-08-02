@@ -70,7 +70,8 @@ This room is exploding! """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighte
 Use the wasd key to move or click on the map."""))
         text.append("""
 
-Instructions to do that will be shown on the left of the screen as "suggested action"
+You will be given instructions on how to complete your quests.
+Those will be shown on the left side of the screen as "suggested action".
 
 """)
         return text

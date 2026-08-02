@@ -45,6 +45,7 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
         self.priority = 0
         self.onlyProduceOne = False
         self.lastInteraction = None
+        self.lastHandleTick = None
 
     def boltAction(self, character):
         self.numUsed = 0
@@ -463,6 +464,15 @@ numUsed: {self.numUsed}
 
         if not self.inUse:
             return
+
+        # prevent event flooding
+        try:
+            self.lastHandleTick
+        except:
+            self.lastHandleTick = None
+        if self.lastHandleTick == src.gamestate.gamestate.tick:
+            return
+        self.lastHandleTick = src.gamestate.gamestate.tick
 
         # get action for that tick
         if self.lastInteraction <= src.gamestate.gamestate.tick-10:

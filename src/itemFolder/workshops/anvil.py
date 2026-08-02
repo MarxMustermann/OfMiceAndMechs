@@ -24,6 +24,7 @@ class Anvil(src.items.itemMap["WorkShop"]):
         self.scheduledAmount = 0
         self.inUse = False
         self.lastInteraction = None
+        self.lastHandleTick = None
 
         self.applyOptions.extend(
                         [
@@ -236,6 +237,15 @@ class Anvil(src.items.itemMap["WorkShop"]):
 
         if not self.inUse:
             return
+
+        # prevent event flooding
+        try:
+            self.lastHandleTick
+        except:
+            self.lastHandleTick = None
+        if self.lastHandleTick == src.gamestate.gamestate.tick:
+            return
+        self.lastHandleTick = src.gamestate.gamestate.tick
 
         # get action for that tick
         if self.lastInteraction <= src.gamestate.gamestate.tick-10:

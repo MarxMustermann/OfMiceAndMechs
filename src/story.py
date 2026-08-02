@@ -2777,6 +2777,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         outputSlots.append(((9,4,0),None,{}))
         inputSlots.append(((10,3,0),"MetalBars",{}))
         buildSites.append(((9,3,0),"MetalWorkingBench",{}))
+        buildSites.append(((1,1,0),"MapTable",{}))
 
         # add city planner
         buildSites.append(((5,1,0),"CityPlaner",{}))

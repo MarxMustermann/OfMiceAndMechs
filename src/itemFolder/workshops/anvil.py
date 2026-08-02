@@ -69,7 +69,7 @@ class Anvil(src.items.itemMap["WorkShop"]):
         preferInventoryOut = params.get("preferInventoryOut")
 
         if self.inUse:
-            if self.lastInteraction+10 <= src.gamestate.gamestate.tick:
+            if self.lastInteraction > src.gamestate.gamestate.tick-10:
                 character.addMessage("This item is in use")
                 character.changed("failed scrap hammering",{})
                 return
@@ -125,11 +125,16 @@ class Anvil(src.items.itemMap["WorkShop"]):
         params["extraAmount"] = amount-1
         params["delayTime"] = 10
         params["action"]= "output_produced_item"
+        params["callback"] = self.trackAction
         self.delayedAction(params)
 
         self.inUse = True
         self.lastInteraction = src.gamestate.gamestate.tick
         character.working = True
+        self.handleTick()
+
+    def trackAction(self):
+        self.lastInteraction = src.gamestate.gamestate.tick
 
     def output_produced_item(self,params):
         character = params["character"]
@@ -219,6 +224,28 @@ class Anvil(src.items.itemMap["WorkShop"]):
 
     def scheduleProductionHook(self,character):
         self.scheduledAmount += 1
+
+    def handleTick(self):
+        '''
+        a loop to check for and trigger actions each tick
+        '''
+
+        # enforce conditions
+        if not self.bolted:
+            return
+
+        if not self.inUse:
+            return
+
+        # get action for that tick
+        if self.lastInteraction <= src.gamestate.gamestate.tick-10:
+            self.inUse = False
+
+        # retrigger next tick to form a loop
+        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick+1)
+        event.setCallback({"container": self, "method": "handleTick"})
+        currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
+        currentTerrain.addEvent(event)
 
     def _get_base_display_character(self):
         characters = "WA"

@@ -659,7 +659,7 @@ Equip yourself with that equipment.
                 extraDescriptions["temple"] = "Allows to pray and wish for miracles"
                 if not hasStorage:
                     available_roomTypes.append("storage")
-                if not hasGooProcessing:
+                if not hasManufacturingHall:
                     available_roomTypes.append("manufacturingHall")
                 if not hasGooProcessing:
                     available_roomTypes.append("gooProcessing")

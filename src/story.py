@@ -1966,12 +1966,12 @@ That is {direction_string}.
 
 Thanks for the painter.
 
-That will be very help with organising the place.
-This will allow me to draw storage markers onto the floor.
+That will help a lot with organising the place,
+by allowing me to draw storage markers onto the floor.
 It is hard to do anything without a storage system.
 
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"I'll be busy and will not need your help for a bit."),"""
-But once i am done painting, help would be appreachiated.
+But once i am done painting, help will be appreachiated.
 """])
                 character.inventory.remove(painter[0])
                 partner.inventory.append(painter[0])
@@ -3449,6 +3449,20 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                     quest.assignToCharacter(enemy)
                     quest.activate()
                     enemy.quests.append(quest)
+
+        for room in currentTerrain.getRoomsByTag("ruin"):
+            if room.characters:
+                continue
+            pos = room.getRandomPosition()
+            enemyType = random.choice(["Spiderling"])
+            enemy = src.characters.characterMap[enemyType]()
+            room.addCharacter(enemy,pos[0],pos[1])
+
+            quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition(), wandering=True)
+            quest.autoSolve = True
+            quest.assignToCharacter(enemy)
+            quest.activate()
+            enemy.quests.append(quest)
 
         # remove workaround
         currentTerrain.removeItem(architect)

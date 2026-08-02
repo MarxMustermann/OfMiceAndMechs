@@ -216,6 +216,11 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         params["delayTime"] = 100*timeModifier
         params["action"]= "output_produced_item"
         params["description"] = f"you produce a {params['type']}\n"
+        amount = params.get("amount")
+        print("amount")
+        print(amount)
+        if amount > 1:
+            params["description"] += f"{amount} remaining\n"
         self.delayedAction(params)
 
         # mark the item as in use

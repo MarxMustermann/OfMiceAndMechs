@@ -1930,16 +1930,16 @@ I am working right now. I'll repriotize though.""")
                 base_response_text.extend([(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"""> you offered to help out.
 """)])
                 base_response_text.extend(["""
-I cannot work properly without a painter.
-The painter is an important tool.
+I cannot work properly without a Painter.
+The Painter is an important tool.
 It is used to draw markings on the floor.
 This helps a lot with keeping things organized.
 
-""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Bring me a painter"""),""", so i can work better.""","""
+""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Bring me a Painter"""),""", so i can work better.""","""
 
 """,(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""The Painter looks like: """),sample_painter.metaRender(),f"""
 
-You should be able to find Painter in the old writers room.
+You should be able to find a Painter in the old writers room.
 It is on the tile {writers_room_coordinate}.
 That is {direction_string}.
 """])
@@ -1968,7 +1968,7 @@ That is {direction_string}.
                 base_response_text.extend([(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"""
 > You give the groundskeeper a Painter."""),"""
 
-Thanks for the painter.
+Thanks for the Painter.
 
 That will help a lot with organising the place,
 by allowing me to draw storage markers onto the floor.

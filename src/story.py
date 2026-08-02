@@ -1996,7 +1996,9 @@ But once i am done painting, help will be appreachiated.
         # pain the floor markers
         if groundskeepers_place and groundskeepers_place.floorPlan:
             base_response_text = []
-            base_response_text.extend(["""
+            base_response_text.extend([(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"""
+> you offered to help out.
+"""),f"""
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"I'm busy."),"""
 
 I need to focus on painting the floor markers.

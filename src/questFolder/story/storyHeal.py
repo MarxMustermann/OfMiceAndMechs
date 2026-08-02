@@ -29,7 +29,7 @@ class StoryHeal(src.quests.MetaQuestSequence):
 
         # heal conventionally
         if self.character.canHeal():
-            quest = src.quests.questMap["Heal"](toSecure=targetposition,endWhenCleared=True)
+            quest = src.quests.questMap["Heal"]()
             return ([quest],None)
 
         # try to use a Coalburner

@@ -65,8 +65,17 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
             return (None, (["esc"], "exit menu"))
 
         # defend yourself
-        if character.getNearbyEnemies():
-            quest = src.quests.questMap["Fight"](reason="eliminate threats")
+        nearby_enemies = character.getNearbyEnemies()
+        if nearby_enemies:
+            found_serious_enemy = False
+            for enemy in nearby_enemies:
+                if isinstance(enemy,src.characters.characterMap["Spiderling"]):
+                    continue
+                found_serious_enemy = True
+            suicidal = False
+            if not found_serious_enemy:
+                suicidal = True
+            quest = src.quests.questMap["Fight"](reason="eliminate threats", suicidal=suicidal)
             return ([quest],None)
 
         # set up helper variables

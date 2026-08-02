@@ -89,9 +89,18 @@ A Painter looks like this: """,sample_painter.metaRender()]
             if not submenue.tag in ("advancedPickupSelection",):
                 return (None,(["esc"],"exit the menu"))
 
-        # handle direct threats
-        if character.getNearbyEnemies():
-            quest = src.quests.questMap["Fight"](reason="get rid of threats")
+        # defend yourself
+        nearby_enemies = character.getNearbyEnemies()
+        if nearby_enemies:
+            found_serious_enemy = False
+            for enemy in nearby_enemies:
+                if isinstance(enemy,src.characters.characterMap["Spiderling"]):
+                    continue
+                found_serious_enemy = True
+            suicidal = False
+            if not found_serious_enemy:
+                suicidal = True
+            quest = src.quests.questMap["Fight"](reason="eliminate threats", suicidal=suicidal)
             return ([quest],None)
 
         # ensure there is inventory space

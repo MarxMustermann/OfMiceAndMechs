@@ -194,6 +194,32 @@ class ImplantInteraction(src.menues.SubMenu):
                         quests.append(src.quests.questMap["Ascend"]())
                     if selection == "get promotion":
                         quests.append(src.quests.questMap["GetPromotion"](2))
+                    if selection == "convert_entryRoom":
+                        for room in terrain.rooms:
+                            if room.tag != "entryRoom":
+                                continue
+                            offsets = [(0,1,0),(1,0,0),(0,-1,0),(-1,0,0)]
+                            room_pos = room.getPosition()
+                            has_outside_connection = False
+                            for offset in offsets:
+                                check_pos = (room_pos[0]+offset[0],room_pos[1]+offset[1],0)
+                                if terrain.getRoomByPosition(check_pos):
+                                    continue
+                                item_position = None
+                                if offset == (0,1,0):
+                                    item_position = (6,12,0)
+                                if offset == (0,-1,0):
+                                    item_position = (6,0,0)
+                                if offset == (1,0,0):
+                                    item_position = (12,6,0)
+                                if offset == (-1,0,0):
+                                    item_position = (0,6,0)
+                                if not room.getPositionWalkable(item_position):
+                                    continue
+                                has_outside_connection = True
+                            if not has_outside_connection:
+                                quests.append(src.quests.questMap["ConvertToTrapRoom"](roomPosition=room_pos))
+                                break
 
                     character.clear_quests()
                     for quest in quests:
@@ -836,6 +862,37 @@ They will complete tasks on the base.
                 name = "get promotion"
                 options.append((name,name))
                 extraDescriptions[name] = "Holding a higher rank will make you stronger"
+
+            # convert entry rooms to trap rooms
+            has_convertable_room = False
+            for room in terrain.rooms:
+                if room.tag != "entryRoom":
+                    continue
+                offsets = [(0,1,0),(1,0,0),(0,-1,0),(-1,0,0)]
+                room_pos = room.getPosition()
+                has_outside_connection = False
+                for offset in offsets:
+                    check_pos = (room_pos[0]+offset[0],room_pos[1]+offset[1],0)
+                    if terrain.getRoomByPosition(check_pos):
+                        continue
+                    item_position = None
+                    if offset == (0,1,0):
+                        item_position = (6,12,0)
+                    if offset == (0,-1,0):
+                        item_position = (6,0,0)
+                    if offset == (1,0,0):
+                        item_position = (12,6,0)
+                    if offset == (-1,0,0):
+                        item_position = (0,6,0)
+                    if not room.getPositionWalkable(item_position):
+                        continue
+                    has_outside_connection = True
+                if not has_outside_connection:
+                    has_convertable_room = True
+            if has_convertable_room:
+                name = "convert_entryRoom"
+                options.append((name,"convert entraRoom to trap room"))
+                extraDescriptions[name] = "A room is ready to hold more traps"
 
             # use temple
             if hasTemple and numGlassStatues > numGlassHearts:

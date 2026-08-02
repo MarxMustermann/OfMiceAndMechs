@@ -286,6 +286,8 @@ The quest description and general instructions are shown in the quest menu.
                             quests.append(src.quests.questMap["OpenHelpMenu"]())
                         elif task_type == "spawn_clone":
                             quests.append(src.quests.questMap["SpawnClone"]())
+                        elif task_type == "fight":
+                            quests.append(src.quests.questMap["Fight"]())
 
                         # assign the quest
                         if not quests:
@@ -398,6 +400,19 @@ use the """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"blac
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to open the help menu?"""),"""
 """]
             self._spawnSpawnTaskMenu(base_text,"help",offerSkip=True)
+            return False
+
+        # kill nearby enemies
+        if character.getNearbyEnemies():
+            base_text = ["""
+""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"There is an enemy nearby."),"""
+
+It likely is agressive and will try to hurt you.
+
+
+""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to kill the enemy?"""),"""
+"""]
+            self._spawnSpawnTaskMenu(base_text,"fight")
             return False
 
         # wake builder
@@ -562,7 +577,7 @@ He looks like this: @@
 
 This could be very useful.
 
-It doesn't work though.
+He doesn't work though.
 Find out why.
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to talk to the survivor?"""),"""
@@ -714,7 +729,7 @@ There are many useful items around.
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),f"""
 
 The groundskeeper is working now.
-It will start to rebuild its working area.
+He will start to rebuild its working area.
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Help the groundskeeper or help yourself.""")]
 

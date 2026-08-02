@@ -29,7 +29,7 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
                     continue
                 if check_character.faction == self.character.faction:
                     continue
-                if isinstance(check_character,src.characters.charMap["Spiderling"]):
+                if isinstance(check_character,src.characters.characterMap["Spiderling"]):
                     continue
                 enemies.append(check_character)
             
@@ -85,6 +85,30 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
             if room.tag != src.story.groundskeeper_room_tag:
                 continue
             groundskeepers_place = room
+
+        # heal
+        if character.health < 100:
+            coalBurner_found = None
+            for room in currentTerrain.rooms:
+                if room.getEnemies(character):
+                    continue
+                coalBurner = room.getItemByType("CoalBurner",needsBolted=True)
+                if coalBurner:
+                    coalBurner_found = coalBurner
+            if coalBurner_found:
+                if coalBurner_found.getMoldFeed(character):
+                    quest = src.quests.questMap["Heal"](reason="be able to fight better",noWaitHeal=True)
+                    return ([quest],None)
+                for room in currentTerrain.rooms:
+                    if room.getEnemies(character):
+                        continue
+                    moldfeed = room.getItemByType("MoldFeed")
+                    if moldfeed:
+                        quest = src.quests.questMap["CleanSpace"](reason="pick up the mold feed",targetPositionBig=moldfeed.getBigPosition(),targetPosition=moldfeed.getPosition())
+                        return ([quest],None)
+            if character.health < 50:
+                quest = src.quests.questMap["Heal"](reason="be able to survive")
+                return ([quest],None)
 
         # equip weapon
         if not character.weapon:
@@ -212,10 +236,11 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
             reasonString = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f","),f" to {self.reason}."]
         text = [f"""
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Explore the terrain"),reasonString,"""
+
 Loot the items from the rooms or collect items outside."""]
         if self.lifetime:
             text.append(f"""
-Do this for {self.lifetime} ticks. {self.getRemainingLifetime()} ticks left.
+Do this for {self.lifetime} ticks. {self.getRemainingLifetime()} ticks are left.
 """)
 
         text.append((src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),f"""

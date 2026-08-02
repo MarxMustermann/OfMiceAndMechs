@@ -108,7 +108,7 @@ class HelpMenu(src.menues.SubMenu):
             txt.append("The implants instructions will try to adpapt as good as it can.\n")
             txt.extend(["""
 
-The instructions on how to do this will be shown on the left side on the screen.
+Instructions on how to complete your quests will be shown on the left side on the screen.
 Keep in mind that capital letters have to be pressed as shift+letter.
 Capital letters will be shown in blueish tint.
 

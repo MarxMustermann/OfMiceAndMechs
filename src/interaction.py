@@ -7551,7 +7551,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                     offsetLeft = (51 - 2 * mapStep + +c_offset)*tileWidth
                     offsetTop = (21 - mapStep)*tileHeight
 
-                    terrainRender = terrain.render(coordinateOffset=(15*7+1-mapStep,15*7+1-mapStep),size=(mapSize,mapSize))
+                    terrainRender = terrain.render(coordinateOffset=(15*7+1-mapStep,15*7+1-mapStep),size=(mapSize,mapSize),preventBackgroundBlink=True)
                     terrainRender = fixRoomRender(terrainRender)
                     terrainRender[6+mapStep][6+mapStep] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
 

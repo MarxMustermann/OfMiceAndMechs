@@ -112,6 +112,7 @@ class CharacterInfoMenu(src.menues.SubMenu):
             text.append("\n")
             text.append(f"skills:      {char.skills}\n")
             text.append(f"grievances:  {char.grievances}\n")
+            text.append(f"registers:   {char.registers}\n")
         
         if self.page == 3:
             if hasattr(char,"superior"):

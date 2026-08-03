@@ -67,7 +67,7 @@ This room is exploding! """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighte
 """])
 
         text.append((src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""
-Use the wasd key to move or click on the map."""))
+Use the wasd keys to move or click on the map to move."""))
         text.append("""
 
 You will be given instructions on how to complete your quests.

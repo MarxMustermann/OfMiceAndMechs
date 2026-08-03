@@ -47,7 +47,7 @@ The room is burning.
 
 Get some distance and """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"watch it explode."),"""
 
-""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""Use the "." key to wait and the wasd keys to move."""),"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""Use the "." (period) key to wait and the wasd keys to move."""),"""
 """])
         return text
 

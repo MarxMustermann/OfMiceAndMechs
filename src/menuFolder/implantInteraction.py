@@ -369,7 +369,8 @@ Hello!
 The machinery around you is """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"burning and exploding"),f""".
 So i recommend leaving the room before you get hurt.
 
-""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"The exit is on the north side, you can move by pressing the wasd keys."),"""
+The exit is on the north side of the room,
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"You can move by pressing the wasd keys."),"""
 You can move my clicking on the map as well.
 
 Big items like the machinery will block your movement.
@@ -389,7 +390,7 @@ You made it out of the burning room.
 We are safe for a second, but the room will explode soon.
 
 Watch the room burn down.
-""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""You can pass time by pressing the "." key."""),"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""You can pass time by pressing the "." (period) key."""),"""
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Shall i assign you a quest to watch the room explode?"""),"""
 """]

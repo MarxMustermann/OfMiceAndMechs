@@ -156,9 +156,7 @@ Use the CityPlaner to designate the room.
             cityPlaner = cityPlaners[0]
 
         if not cityPlaner:
-            if not dryRun:
-                self.fail("no planer")
-            return True
+            return self._solver_trigger_fail(dryRun,"no planer")
 
         if cityPlaner.container != character.container:
             quest = src.quests.questMap["GoToTile"](targetPosition=cityPlaner.getBigPosition())

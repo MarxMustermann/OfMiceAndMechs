@@ -24,16 +24,12 @@ class ResetFaction(src.quests.MetaQuestSequence):
         # find the spawning room
         rooms = character.getTerrain().getRoomByPosition((7,8,0))
         if not rooms:
-            if not dryRun:
-                self.fail("spawning room found")
-            return True
+            return self._solver_trigger_fail(dryRun,"spawning room found")
 
         # find the faction setter
         items = rooms[0].getItemsByType("FactionSetter")
         if not items or items[0].type not in ("FactionSetter",):
-            if not dryRun:
-                self.fail("no faction setter found")
-            return True
+            return self._solver_trigger_fail(dryRun,"no faction setter found")
 
         # use the faction setter
         item = items[0]

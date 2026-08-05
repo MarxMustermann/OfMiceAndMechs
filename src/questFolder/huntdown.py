@@ -94,16 +94,10 @@ class Huntdown(src.quests.MetaQuestSequence):
             if self.alwaysfollow or abs(charPos[0]-targetPos[0])+abs(charPos[1]-targetPos[1]) == 1:
                 newPos = targetPos
             else:
-                abort_reason = "target escaped"
-                if not dryRun:
-                    self.fail(abort_reason)                     
-                return (None,("+",f"abort quest\n({abort_reason})"))
+                return self._solver_trigger_fail(dryRun,"target escaped")
 
             if newPos[0] in (0,14,) or newPos[1] in (0,14):
-                abort_reason = "target left terrain"
-                if not dryRun:
-                    self.fail(abort_reason)
-                return (None,("+",f"abort quest\n({abort_reason})"))
+                return self._solver_trigger_fail(dryRun,"target left terrain")
 
             quest = src.quests.questMap["GoToTile"](paranoid=True,targetPosition=newPos,reason="reach victim",abortOnDanger=True)
             return ([quest],None)

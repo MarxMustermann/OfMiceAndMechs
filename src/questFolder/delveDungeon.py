@@ -139,9 +139,7 @@ suicidal""")
                 #    return (None,("..............","wait to heal"))
 
                 # abort
-                #if not dryRun:
-                #    self.fail("too hurt")
-                #return (None,None)
+                #return self._solver_trigger_fail(dryRun,"too hurt")
 
             # kill direct threats
             if character.getNearbyEnemies():

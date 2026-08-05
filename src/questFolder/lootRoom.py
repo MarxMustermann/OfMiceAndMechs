@@ -257,10 +257,7 @@ Take everything except for {itemString}""")
                     break
                 index += 1
             else:
-                abort_reason = "no item type to drop"
-                if not dryRun:
-                    self.fail(abort_reason)
-                return (None,("+","abort quest\n("+abort_reason+")"))
+                return self._solver_trigger_fail(dryRun,"no item type to drop")
             return (None,("i"+"s"*index+dropCommand,"drop item"))
 
         # pick up loot

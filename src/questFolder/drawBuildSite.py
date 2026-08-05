@@ -179,9 +179,7 @@ Try as hard as you can to achieve this.
         # get target room
         rooms = character.getTerrain().getRoomByPosition(self.targetPositionBig)
         if not rooms:
-            if not dryRun:
-                self.fail("target room missing")
-            return (None,("+","abort the quest"))
+            return self._solver_trigger_fail(dryRun,"target room missing")
         room = rooms[0]
 
         # do extra check for completion, lol

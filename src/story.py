@@ -1983,6 +1983,7 @@ But once i am done painting, help will be appreachiated.
 
                 partner.registers["gotPainter"] = True
                 character.showTextMenu(base_response_text)
+                character.changed("no_builder_quest")
 
             return
 

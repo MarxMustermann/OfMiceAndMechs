@@ -15,24 +15,23 @@ class DiscardItemsInside(src.quests.MetaQuestSequence):
         self.amount = amount
 
     def generateTextDescription(self):
-        out = []
 
-        reasonText = ""
+        reasonText = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
-            reasonText += f", to {self.reason}"
-        text = f"""
-Clear your inventory inside{reasonText}."""
-        text += """
+            reasonText = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),","),f" to {self.reason}."]
+        text = [f"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Clear your inventory inside"),reasonText]
+        text.append("""
+Drop your items onto a doorstep and they will disappear.
 
-This quest will end when your inventory is empty."""
+This quest will end when your inventory is empty.""")
 
         if self.amount:
-            text += f"""
+            text.append(f"""
 Drop {self.amount} more items.
-"""
+""")
 
-        out.append(text)
-        return out
+        return text
 
     def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:

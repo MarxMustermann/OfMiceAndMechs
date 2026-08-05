@@ -1371,7 +1371,8 @@ def doAdvancedPickup(params):
         if key == "a":
             char.container.addAnimation(char.getPosition(offset=(-1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
         char.container.addAnimation(char.getPosition(offset=(0,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"[]")})
-        char.addMessage("you cannot carry more items")
+        char.notify("you cannot carry more items")
+        return None
     elif not char.container:
         pass
     else:
@@ -3240,7 +3241,8 @@ press key for advanced drop
             char.takeTime(char.movementSpeed,"pick up item")
             if len(char.inventory) >= 10:
                 char.container.addAnimation(char.getPosition(offset=(0,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
-                char.addMessage("you cannot carry more items")
+                char.notify("you cannot carry more items")
+                return None
             else:
                 item = charState.get("itemMarkedLast")
 

@@ -450,7 +450,7 @@ class Item:
             for action in actions:
                 action(character)
         else:
-            character.addMessage("i can not do anything useful with this")
+            character.notify("i can not do anything useful with this")
 
     def __vanillaPickUp(self, character):
         """

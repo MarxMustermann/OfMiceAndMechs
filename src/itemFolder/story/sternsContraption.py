@@ -156,21 +156,6 @@ class MainContraption(src.items.Item):
                 for character in self.container.characters[:]:
                     character.addMessage("something big explodes and\nit sounds like something even bigger broke")
                     character.hurt(10,reason="hit by shrapnel")
-                    text = []
-                    text.append("\n"*5)
-                    text.append(" "*5)
-                    text.append("You need to leave the room NOW.")
-                    text.append(" "*5)
-                    text.append("\n"*3)
-                    text.append(" "*5)
-                    text.append("This room will explode and you will die.")
-                    text.append(" "*5)
-                    text.append("\n"*3)
-                    text.append(" "*5)
-                    text.append((src.interaction.urwid.AttrSpec("#f00", "#000"),"Follow the instruction on the left side of the screen."))
-                    text.append(" "*5)
-                    text.append("\n"*5)
-                    character.showTextMenu(text,do_not_scale=True)
                     if character == src.gamestate.gamestate.mainChar:
                         src.interaction.send_tracking_ping("shrapnel_4")
                 for i in range(1,5):

@@ -1121,7 +1121,7 @@ def doActivity(params):
         for x in range(1,14):
             for y in range(1,14):
                 functionMap[(x,y)] = {}
-                functionMap[(x,y)]["j"] = {
+                functionMap[(x,y)][("j","enter",)] = {
                     "function": {
                         "container":char,
                         "method":"triggerAutoMoveToTile",

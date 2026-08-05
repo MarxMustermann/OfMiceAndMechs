@@ -6110,6 +6110,8 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
         if startGame:
             global new_chars
             new_chars = set()
+            tcodConsole.clear()
+            tcodPresent()
 
             loadingControl = {}
             loadingControl["done"] = False

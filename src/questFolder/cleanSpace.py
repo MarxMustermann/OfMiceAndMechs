@@ -105,9 +105,7 @@ class CleanSpace(src.quests.MetaQuestSequence):
         rooms = terrain.getRoomByPosition(self.targetPositionBig)
         if not character.getFreeInventorySpace():
             if self.abortOnfullInventory:
-                if not dryRun:
-                    self.fail("full inventory")
-                return (None,("+","abort quest"))
+                return self._solver_trigger_fail(dryRun, reason="full inventory")
             quest = src.quests.questMap["ClearInventory"](reason="be able to pick up more items",returnToTile=False,disallowLocations=[(self.targetPositionBig, self.targetPosition)])
             return ([quest],None)
 
@@ -116,9 +114,7 @@ class CleanSpace(src.quests.MetaQuestSequence):
             return ([quest], None)
 
         if not self.targetPosition or self.targetPosition[0] is None:
-            if not dryRun:
-                self.fail("invalid target postion")
-            return (None,("+","abort quest"))
+            return self._solver_trigger_fail(dryRun, reason="invalid target postion")
 
         if rooms:
             room = rooms[0]

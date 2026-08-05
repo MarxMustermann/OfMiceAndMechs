@@ -414,6 +414,13 @@ class Character:
         self.showTextMenu(text,do_not_scale=True)
         self.addMessage(text)
 
+    def has_alternate_attack(self):
+        if self.hasSpecialAttacks:
+            return True
+        if self.hasSwapAttack:
+            return True
+        return False
+
     def showTextMenu(self,text,do_not_scale=False,allowQuests=False,allowHelp=True,allowObserve=False,tag=None,title=None):
         '''
         show a popup to the character

@@ -58,10 +58,15 @@ class MapMenu(src.menues.SubMenu):
             self.character = character
 
         closeMenu = False
-        mappedFunctions = self.functionMap.get(self.cursor, {})
-        if key in mappedFunctions:
-            closeMenu = True
-            self.callIndirect(mappedFunctions[key]["function"], {self.applyKey: self.cursor})
+        mappedFunctions = []
+        for (map_keys,payload) in self.functionMap.get(self.cursor, {}).items():
+            if not isinstance(map_keys,tuple):
+                map_keys = (map_keys,)
+            for map_key in map_keys:
+                if map_key != key:
+                    continue
+                closeMenu = True
+                self.callIndirect(payload["function"], {self.applyKey: self.cursor})
 
         # exit the submenu
         if key in ("w", "up") and self.cursor[1] > self.limits[0]:
@@ -132,6 +137,8 @@ class MapMenu(src.menues.SubMenu):
 
         mappedFunctions = self.functionMap.get(self.cursor, {})
         for (key,item) in mappedFunctions.items():
+            if isinstance(key,tuple):
+                key = "/".join(key)
             description = item["description"]
             mapText.extend(["\n ",src.interaction.ActionMeta(content=f"press {key} to {description}",payload=key)])
 

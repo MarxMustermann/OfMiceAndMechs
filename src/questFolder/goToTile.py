@@ -251,6 +251,10 @@ There is a mini map shown on the top left of the screen showing a quest marker.
                 if self.targetPosition == (7,7,0):
                     return (None,("c","auto move to tile"))
 
+                try:
+                    self.disallowQ
+                except:
+                    self.disallowQ = False
                 if abs(self.targetPosition[0]-submenue.cursor[0])+abs(self.targetPosition[1]-submenue.cursor[1]) > 4 and self.getQuestMarkersTile(character) and not self.disallowQ:
                     return (None,("q","use fast travel to current questmarker"))
 

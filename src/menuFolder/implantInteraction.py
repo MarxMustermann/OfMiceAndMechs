@@ -570,7 +570,7 @@ Look there. {directionString}
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You are safe for now."),"""
 
-Look around to see if you can find something useful.
+Look around to see, if you can find something useful.
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to observe the environment?"""),"""
 """]

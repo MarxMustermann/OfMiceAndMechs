@@ -98,7 +98,7 @@ To heal faster you can use the Regenerator directly.
                 break
 
             # only try healing wounded characters
-            if not character.maxHealth-character.health > 1:
+            if not character.adjustedMaxHealth-character.health > 1:
                 continue
 
             # do the actual healing

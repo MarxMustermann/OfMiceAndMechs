@@ -114,7 +114,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                 return ([quest],None)
 
         # ensure a good amount of health
-        if character.health < character.maxHealth*0.75:
+        if character.health < character.adjustedMaxHealth*0.75:
             if not (terrain.xPosition == character.registers["HOMETx"] and
                     terrain.yPosition == character.registers["HOMETy"]):
                 quest = src.quests.questMap["GoHome"](reason="heal in safety")

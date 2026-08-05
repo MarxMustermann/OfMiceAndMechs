@@ -50,7 +50,7 @@ class TreatWounds(src.quests.MetaQuestSequence):
             if submenue.tag not in ("advancedInteractionSelection",):
                 return (None,(["esc",],"to close the menu"))
 
-        if character.health < (character.maxHealth-10):
+        if character.health < (character.adjustedMaxHealth-10):
             message = "heal using a Vial"
 
             # make completion smooth
@@ -149,7 +149,7 @@ So you need to
         if not character:
             return False
 
-        if character.health < (character.maxHealth-10):
+        if character.health < (character.adjustedMaxHealth-10):
             hasInventoryVial = self.characterHasVial(character)
             if hasInventoryVial:
                 return False
@@ -158,7 +158,7 @@ So you need to
                 self.postHandler()
             return True
 
-        if character.health > (character.maxHealth//2):
+        if character.health > (character.adjustedMaxHealth//2):
             if not dryRun:
                 self.postHandler()
             return True

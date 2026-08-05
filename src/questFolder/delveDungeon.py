@@ -123,8 +123,8 @@ suicidal""")
         # get the glass heart
         if not hasSpecialItem:
             # handle beeing hurt
-            #if not self.suicidal and character.health < character.maxHealth*0.75:
-            if character.health < character.maxHealth*0.75:
+            #if not self.suicidal and character.health < character.adjustedMaxHealth*0.75:
+            if character.health < character.adjustedMaxHealth*0.75:
                 # kill direct threats
                 if character.getNearbyEnemies():
                     quest = src.quests.questMap["Fight"](suicidal=True,reason="protect yourself")
@@ -135,7 +135,7 @@ suicidal""")
                     return ([quest],None)
 
                 # wait to heal
-                #if character.health < character.maxHealth*0.75:
+                #if character.health < character.adjustedMaxHealth*0.75:
                 #    return (None,("..............","wait to heal"))
 
                 # abort

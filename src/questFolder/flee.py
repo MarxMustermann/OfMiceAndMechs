@@ -92,7 +92,7 @@ class Flee(src.quests.MetaQuestSequence):
             return self._solver_trigger_success(dryRun)
 
         # heal
-        if character.health < character.maxHealth//5 and character.canHeal():
+        if character.health < character.adjustedMaxHealth//5 and character.canHeal():
             return (None,("JH","heal"))
 
         # close other menus

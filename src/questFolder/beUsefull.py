@@ -97,7 +97,7 @@ Reputation is rewarded for picking up items from walkways.\n\n""")
         if extraInfo["deadChar"].faction != self.character.faction:
             if "Questing" in self.character.duties:
                 amount = 5*self.character.rank
-                amount += extraInfo["deadChar"].maxHealth//3
+                amount += extraInfo["deadChar"].adjustedMaxHealth//3
                 self.character.awardReputation(amount,reason="an enemy dying nearby")
         else:
             amount = 30
@@ -339,7 +339,7 @@ Reputation is rewarded for picking up items from walkways.\n\n""")
                 if character.container.tag in ["entryRoom","trapRoom"]:
                     quest = src.quests.questMap["GoHome"]()
                     return ([quest],None)
-        if character.health > character.maxHealth//5:
+        if character.health > character.adjustedMaxHealth//5:
             if (not len(self.subQuests) or not isinstance(self.subQuests[0],src.quests.questMap["Fight"])) and character.getNearbyEnemies():
                 quest = src.quests.questMap["Fight"]()
                 return ([quest],None)
@@ -419,7 +419,7 @@ Reputation is rewarded for picking up items from walkways.\n\n""")
             
         room = character.container
 
-        if character.health < character.maxHealth//2:
+        if character.health < character.adjustedMaxHealth//2:
             foundItem = None
             for item in character.inventory:
                 if item.type != "Vial":

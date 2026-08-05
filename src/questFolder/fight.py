@@ -97,7 +97,7 @@ So if an enemy is to directly east of you:
                 return (None,(["esc"],"exit the menu"))
 
         # heal
-        if character.health < character.maxHealth//2 and character.canHeal():
+        if character.health < character.adjustedMaxHealth//2 and character.canHeal():
             interaction_command = "J"
             if submenue:
                 if submenue.tag == "advancedInteractionSelection":

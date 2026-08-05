@@ -1199,7 +1199,7 @@ class Room:
                             else:
                                 char = "@x"
                         elif viewChar == "health":
-                            health = str(character.health//(character.maxHealth//10))
+                            health = str(character.health//(character.adjustedMaxHealth//10))
                             if health == "10":
                                 health = "|"
                             char = "@"+health
@@ -1275,7 +1275,7 @@ class Room:
                                 color = "#f62"
                         if viewColour == "health":
                             color = "#fff"
-                            health = character.health//(character.maxHealth//14)
+                            health = character.health//(character.adjustedMaxHealth//14)
                             if health == 0:
                                 color = "#f00"
                             if health == 1:

@@ -1497,7 +1497,7 @@ class Character:
             self.changed("hurt")
             self.stats["damage taken"]["pain felt"] = self.stats["damage taken"].get("pain felt", 0) + damage
             """
-            if self.health < self.maxHealth//10 or (self.health < 50 and self.health < self.maxHealth):
+            if self.health < self.adjustedMaxHealth//10 or (self.health < 50 and self.health < self.adjustedMaxHealth):
                 self.addMessage("you are hurt you should heal")
                 for item in self.inventory:
                     if not item.type == "Vial":
@@ -1829,7 +1829,7 @@ press any other key to attack normally"""
         message = f"you attack the enemy for {damage} damage {bonus}"
         self.stats["damage dealt"] = self.stats.get("damage dealt", 0) + damage
         if not target.dead:
-            message += f"\nthe enemy has {target.health}/{target.maxHealth} health left"
+            message += f"\nthe enemy has {target.health}/{target.adjustedMaxHealth} health left"
         else:
             overkill = damage-enemyHP
             message += f"\nthe enemy is dead. You overkilled by {overkill}"
@@ -2379,7 +2379,7 @@ press any other key to attack normally"""
         self.changed("woke up", self)
 
     def is_low_health(self):
-        if self.health > self.maxHealth//2:
+        if self.health > self.adjustedMaxHealth//2:
             return False
         if self.health > 100:
             return False

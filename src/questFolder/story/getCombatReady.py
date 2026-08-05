@@ -52,7 +52,7 @@ class GetCombatReady(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["GoToPosition"](targetPosition=armor.getPosition(),reason="be able to equip the armor",description="go to a armor")
                 return ([quest],None)
 
-        if character.health < character.maxHealth - 10:
+        if character.health < character.adjustedMaxHealth - 10:
             if character.container.isRoom:
                 items = character.container.getItemsByType("CoalBurner")
                 validCoalBurners = []
@@ -132,7 +132,7 @@ Get yourself a Sword and a piece of Armor.
         if not character.armor and character.container.getItemsByType("Armor"):
             return False
 
-        if character.health < character.maxHealth-10:
+        if character.health < character.adjustedMaxHealth-10:
             if character.container.isRoom:
                 items = character.container.getItemsByType("CoalBurner")
                 for item in items:

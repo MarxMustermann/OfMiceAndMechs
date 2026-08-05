@@ -26,7 +26,7 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
             return (None,None)
 
         # retreat when hurt
-        if character.health < character.maxHealth/1.5:
+        if character.health < character.adjustedMaxHealth/1.5:
             if not character.getNearbyEnemies():
                 quest = src.quests.questMap["Heal"]()
                 return ([quest],None)

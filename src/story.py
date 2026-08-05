@@ -2084,7 +2084,7 @@ There are several things you can do to help me out:
 
         # turn off alarm
         if terrain.alarm:
-            if character.health > character.maxHealth//4:
+            if character.health > character.adjustedMaxHealth//4:
                 name = "disable alarm"
                 tasks.append((name,"disable alarm"))
                 extraDescriptions[name] = "disabling the alarm will allow me to move more freely"
@@ -2179,7 +2179,7 @@ There are several things you can do to help me out:
 
         # kill remaining enemies
         if has_enemies_to_kill and random.random() < 0.5:
-            if character.health > character.maxHealth//2:
+            if character.health > character.adjustedMaxHealth//2:
                 name = "kill monster"
                 tasks.append((name,name))
                 extraDescriptions[name] = f"insects are swarming the area. Get rid of them."
@@ -2290,7 +2290,7 @@ There are several things you can do to help me out:
 
         # kill remaining enemies
         if has_enemies_to_kill and not shown_enenemy_kill_option:
-            if character.health > character.maxHealth//4:
+            if character.health > character.adjustedMaxHealth//4:
                 name = "kill monster"
                 tasks.append((name,name))
                 extraDescriptions[name] = f"insects are swarming the area. Get rid of them."
@@ -6295,7 +6295,7 @@ You are hurt badly. Meditate to recover some health.
 Pick up the Vial nearby. You can use it to heal.
 """]
 
-            if mainChar.health < mainChar.maxHealth // 2 and mainChar.searchInventory("Vial"):
+            if mainChar.health < mainChar.adjustedMaxHealth // 2 and mainChar.searchInventory("Vial"):
                 name = "heal"
                 description = self._add_cooldown_color("help me heal")
                 options.append((name, description))
@@ -6545,7 +6545,7 @@ This will show you how to access the help menu.
 The help menu will show you the keybindings.
 """
                 shown_help_option = True
-            if mainChar.health < mainChar.maxHealth // 2 and mainChar.searchInventory("Vial"):
+            if mainChar.health < mainChar.adjustedMaxHealth // 2 and mainChar.searchInventory("Vial"):
                 name = "heal"
                 options.append((name, "help me heal"))
                 extraDescriptions[name] = """
@@ -6572,7 +6572,7 @@ This will lead you into the base.
 The spiderlings are easy victims and do not deserve to live
 """
 
-            if mainChar.health >= mainChar.maxHealth // 2 and mainChar.health < mainChar.maxHealth:
+            if mainChar.health >= mainChar.adjustedMaxHealth // 2 and mainChar.health < mainChar.adjustedMaxHealth:
                 name = "heal"
                 options.append((name, "help me heal"))
                 extraDescriptions[name] = """

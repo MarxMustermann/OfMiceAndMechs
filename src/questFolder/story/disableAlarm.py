@@ -28,7 +28,7 @@ class DisableAlarm(src.quests.MetaQuestSequence):
         terrain = character.getTerrain()
 
         # heal
-        if character.health < character.maxHealth - 20 and character.canHeal():
+        if character.health < character.adjustedMaxHealth - 20 and character.canHeal():
             interaction_command = "J"
             if submenue:
                 if submenue.tag == "advancedInteractionSelection":
@@ -36,7 +36,7 @@ class DisableAlarm(src.quests.MetaQuestSequence):
                 else:
                     return (None,(["esc"],"close menu"))
             return (None,(interaction_command+"H","heal"))
-        if character.health < character.maxHealth//5:
+        if character.health < character.adjustedMaxHealth//5:
             return self._solver_trigger_fail(dryRun,"low health")
 
         # get the target room

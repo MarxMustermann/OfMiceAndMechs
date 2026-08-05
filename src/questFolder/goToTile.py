@@ -274,7 +274,7 @@ There is a mini map shown on the top left of the screen showing a quest marker.
             return (None,(["esc"],"exit submenu"))
 
         # abort quest when too hurt
-        if character.health < character.maxHealth*self.abortHealthPercentage:
+        if character.health < character.adjustedMaxHealth*self.abortHealthPercentage:
             return self._solver_trigger_fail(dryRun,"low health")
 
         # enter terrains properly
@@ -319,7 +319,7 @@ There is a mini map shown on the top left of the screen showing a quest marker.
                         quest = src.quests.questMap["Flee"](returnHome=True,lifetime=100)
                         return ([quest],None)
             if not self.ignoreEnemies and character.getNearbyEnemies() and isinstance(character,src.characters.characterMap["Clone"]):
-                if (character.health < character.maxHealth//5 or self.paranoid) and not self.suicidal:
+                if (character.health < character.adjustedMaxHealth//5 or self.paranoid) and not self.suicidal:
                     quest = src.quests.questMap["Flee"]()
                     return ([quest],None)
                 else:
@@ -378,7 +378,7 @@ There is a mini map shown on the top left of the screen showing a quest marker.
             # fight nearby enemies
             # TODO: reenable random
             if not self.ignoreEnemies and character.getNearbyEnemies() and isinstance(character,src.characters.characterMap["Clone"]):
-                if (character.health < character.maxHealth//5 or self.paranoid) and not self.suicidal:
+                if (character.health < character.adjustedMaxHealth//5 or self.paranoid) and not self.suicidal:
                     quest = src.quests.questMap["Flee"]()
                     return ([quest],None)
                 else:

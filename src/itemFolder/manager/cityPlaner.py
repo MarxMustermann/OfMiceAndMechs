@@ -1409,7 +1409,7 @@ class CityPlaner(src.items.Item):
                 },
                 "description":"clear room",
             }
-            functionMap[(room.xPosition,room.yPosition)]["d"] = {
+            functionMap[(room.xPosition,room.yPosition)]["m"] = {
                 "function": {
                     "container":self,
                     "method":"destroyRoomFromMap",
@@ -1465,6 +1465,14 @@ class CityPlaner(src.items.Item):
                         },
                         "description":"to designate room as special purpose room",
                     }
+                functionMap[(room.xPosition,room.yPosition)]["m"] = {
+                    "function": {
+                        "container":self,
+                        "method":"destroyRoomFromMap",
+                        "params":{"character":character},
+                    },
+                    "description":"destroy room",
+                }
             else:
                 mapContent[room.yPosition][room.xPosition] = room.displayChar
 

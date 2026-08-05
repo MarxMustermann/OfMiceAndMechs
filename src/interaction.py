@@ -9229,7 +9229,7 @@ For a moment you hear terrible silence,"""+" "*8+"""
 but slowly you hear that familiar voice again."""
                 #text += " ".join(baseText.split(" ")[:(subStep-15)])
                 text.append("".join(list(baseText)[:(subStep*2-15*2)]))
-            if subStep > 100:
+            if subStep > 80:
                 text.append("""
 
 

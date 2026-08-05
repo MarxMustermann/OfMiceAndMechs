@@ -1729,7 +1729,7 @@ Since i'm a groundskeeper my duty is to maintain the premises."""])
         base_response_text.extend([(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"""
 > Why are you not working?
 """),f"""
-The City that was once standing here has been destroyed.
+The City that was once standing here has fallen into ruins.
 There is almost nothing left except for rusty scrap.
 Everything would have to be build anew.
 

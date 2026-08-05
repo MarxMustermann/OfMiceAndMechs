@@ -39,9 +39,11 @@ You will hit them and hopefully do some damage.
 Advanced attacks are used by bumping into enemies while holding shift.
 """,(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""
 So if an enemy is to directly east of you:
-* press d to do a normal attack
-* press D to do a alternate attack
-""")])
+* press d to do a normal attack""")])
+        if self.character.has_alternate_attack():
+            text.append((src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""
+* press D to do a alternate attack"""))
+        text.append("\n")
         return text
 
     def triggerCompletionCheck(self,character=None,dryRun=True):

@@ -8,7 +8,7 @@ class Golem(src.monster.Monster):
 
     def __init__(
         self,
-        display="@@",
+        display="QK",
         xPosition=0,
         yPosition=0,
         quests=None,

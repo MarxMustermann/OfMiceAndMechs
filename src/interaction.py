@@ -4237,7 +4237,7 @@ def getTcodEvents():
                                 click_coordinate = (click_coordinate[0]+1,click_coordinate[1]+1,0)
                                 smallCoordinate = (smallCoordinate[0]+1,smallCoordinate[1]+1,0)
 
-                        if event.button == tcod.event.MouseButton.LEFT:
+                        if event.button == tcod.event.MouseButton.MIDDLE:
                             if not terrain.getEnemiesOnTile(mainChar,bigCoordinate) and not terrain.getEnemiesOnTile(mainChar):
                                 if rooms:
                                     items = rooms[0].getItemByPosition(smallCoordinate)
@@ -4345,7 +4345,7 @@ def getTcodEvents():
 
                                         mainChar.runCommandString(direction)
 
-                        elif event.button == tcod.event.MouseButton.MIDDLE:
+                        elif event.button == tcod.event.MouseButton.LEFT:
                             if rooms:
                                 if not mainChar.container.isRoom:
                                     smallCoordinate = (smallCoordinate[0]+1,smallCoordinate[1]+1,0)

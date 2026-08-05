@@ -434,7 +434,6 @@ You made it out of the burning room.
 We are safe for a second, but the room will explode soon.
 
 Watch the room burn down.
-""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""You can pass time by pressing the "." (period) key."""),"""
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"""Shall i assign you a quest to watch the room explode?"""),"""
 """]

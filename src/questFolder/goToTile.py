@@ -22,7 +22,7 @@ class GoToTile(src.quests.MetaQuestSequence):
     type = "GoToTile"
     lowLevel = True
 
-    def __init__(self, description="go to tile", creator=None, targetPosition=None, lifetime=None, paranoid=False, showCoordinates=True,reason=None,abortHealthPercentage=0, story=None, allowMapMenu=True, abortOnDanger=False, ignoreEnemies=False, suicidal=False):
+    def __init__(self, description="go to tile", creator=None, targetPosition=None, lifetime=None, paranoid=False, showCoordinates=True,reason=None,abortHealthPercentage=0, story=None, allowMapMenu=True, abortOnDanger=False, ignoreEnemies=False, suicidal=False, disallowQ=False):
         if targetPosition[0] is None:
             raise ValueError(f"invalid target position")
         if targetPosition:
@@ -48,6 +48,7 @@ class GoToTile(src.quests.MetaQuestSequence):
         self.abortOnDanger = abortOnDanger
         self.ignoreEnemies = ignoreEnemies
         self.suicidal = suicidal
+        self.disallowQ = disallowQ
 
     def handleEnteredRoom(self,extraInfo):
         character = extraInfo[0]
@@ -250,7 +251,7 @@ There is a mini map shown on the top left of the screen showing a quest marker.
                 if self.targetPosition == (7,7,0):
                     return (None,("c","auto move to tile"))
 
-                if abs(self.targetPosition[0]-submenue.cursor[0])+abs(self.targetPosition[1]-submenue.cursor[1]) > 4 and self.getQuestMarkersTile(character):
+                if abs(self.targetPosition[0]-submenue.cursor[0])+abs(self.targetPosition[1]-submenue.cursor[1]) > 4 and self.getQuestMarkersTile(character) and not self.disallowQ:
                     return (None,("q","use fast travel to current questmarker"))
 
                 command = ""

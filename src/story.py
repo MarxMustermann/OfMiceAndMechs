@@ -2702,11 +2702,6 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         # add enemy
         enemy = src.characters.characterMap["Spiderling"]()
         enemy.faction = "insects"
-        quest = src.quests.questMap["SecureTile"](toSecure=big_pos,alwaysHuntDown=True,wandering = True)
-        quest.autoSolve = True
-        quest.assignToCharacter(enemy)
-        quest.activate()
-        enemy.quests.append(quest)
         currentTerrain.addCharacter(enemy,big_pos[0]*15+random.randint(3,12),big_pos[1]*15+random.randint(3,12))
 
         # add the actual room
@@ -3434,12 +3429,6 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                     enemy = src.characters.characterMap[enemyType]()
                     currentTerrain.addCharacter(enemy,pos[0],pos[1])
 
-                    quest = src.quests.questMap["SecureTile"](toSecure=(big_x,big_y,0), wandering=True)
-                    quest.autoSolve = True
-                    quest.assignToCharacter(enemy)
-                    quest.activate()
-                    enemy.quests.append(quest)
-
         # add enemies
         for big_x in range(1,14):
             for big_y in range(1,14):
@@ -3453,12 +3442,6 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                     enemy = src.characters.characterMap[enemyType]()
                     currentTerrain.addCharacter(enemy,pos[0],pos[1])
 
-                    quest = src.quests.questMap["SecureTile"](toSecure=(big_x,big_y,0), wandering=True)
-                    quest.autoSolve = True
-                    quest.assignToCharacter(enemy)
-                    quest.activate()
-                    enemy.quests.append(quest)
-
         for room in currentTerrain.getRoomsByTag("ruin"):
             if room.characters:
                 continue
@@ -3466,12 +3449,6 @@ sure i'll produce equipment for you as long as you bring me the raw material.
             enemyType = random.choice(["Spiderling"])
             enemy = src.characters.characterMap[enemyType]()
             room.addCharacter(enemy,pos[0],pos[1])
-
-            quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition(), wandering=True)
-            quest.autoSolve = True
-            quest.assignToCharacter(enemy)
-            quest.activate()
-            enemy.quests.append(quest)
 
         # remove workaround
         currentTerrain.removeItem(architect)

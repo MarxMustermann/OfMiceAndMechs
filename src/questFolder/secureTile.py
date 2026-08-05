@@ -6,7 +6,7 @@ import src
 class SecureTile(src.quests.MetaQuestSequence):
     type = "SecureTile"
 
-    def __init__(self, description="secure tile", creator=None, toSecure=None, endWhenCleared=False, reputationReward=0,rewardText=None,strict=False,alwaysHuntDown=False,reason=None,story=None, wandering = False, lifetime=None, simpleAttacksOnly=False, noHeal=False, suicidal=False):
+    def __init__(self, description="secure tile", creator=None, toSecure=None, endWhenCleared=False, reputationReward=0,rewardText=None,strict=False,alwaysHuntDown=False,neverHuntDown=False,reason=None,story=None, wandering = False, lifetime=None, simpleAttacksOnly=False, noHeal=False, suicidal=False):
         questList = []
         super().__init__(questList,creator=creator,lifetime=lifetime)
         self.metaDescription = description
@@ -18,6 +18,7 @@ class SecureTile(src.quests.MetaQuestSequence):
         self.huntdownCooldown = 0
         self.strict = strict
         self.alwaysHuntDown = alwaysHuntDown
+        self.neverHuntDown = neverHuntDown
         self.reason = reason
         self.story = story
         self.noHeal = noHeal
@@ -82,6 +83,9 @@ Use simple attacks only.
 
         if self.lifetime:
             text.append(f"\n\nremaining lifetime: {self.getRemainingLifetime()}")
+
+        if self.neverHuntDown:
+            text.append(f"\n\nNever chase enemies")
 
         if self.subQuests:
             text.append(f"\n\npress d to see the subquest descriptions and press a to return to the parent quest.")
@@ -182,7 +186,7 @@ Use simple attacks only.
                         return ([quest],None)
                     if not dryRun:
                         self.huntdownCooldown = 100
-                    if random.random() < 0.3:
+                    if random.random() < 0.3 and not self.neverHuntDown:
                         quest = src.quests.questMap["Huntdown"](target=random.choice(enemies),reason="ensure victory",suicidal=self.suicidal)
                         return ([quest],None)
                     else:

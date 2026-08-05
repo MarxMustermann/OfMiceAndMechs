@@ -85,9 +85,7 @@ Draw a floor plan assigned to a room{reason}.
 
         if self.onlyDrawOneBatch:
             if self.drewOneBatch:
-                if not dryRun:
-                    self.postHandler()
-                return (None,("+","end quest"))
+                return self._solver_trigger_success(dryRun)
             if not dryRun:
                 self.drewOneBatch = True
 
@@ -349,9 +347,7 @@ Draw a floor plan assigned to a room{reason}.
             character.container.floorPlan = None
 
         # complete the quest. (should be somewhere else)
-        if not dryRun:
-            self.postHandler()
-        return (None,("+","end quest"))
+        return self._solver_trigger_success(dryRun)
 
     def handleQuestFailure(self,extraParam):
         '''

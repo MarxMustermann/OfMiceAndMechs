@@ -80,9 +80,7 @@ Exanine the position {targetPosition}{big_position_string} {reasonString}.
                         if not item.type == self.itemType:
                             continue
                         if target_index == index:
-                            if not dryRun:
-                                self.postHandler()
-                            return (None,("+","end quest"))
+                            return self._solver_trigger_success(dryRun)
                         if target_index > index:
                             command = "s"
                         if target_index < index:
@@ -92,9 +90,7 @@ Exanine the position {targetPosition}{big_position_string} {reasonString}.
                     if command:
                         return (None,(command,"select item"))
                     return self._solver_trigger_fail(dryRun,"item not found")
-                if not dryRun:
-                    self.postHandler()
-                return (None,("+","end quest"))
+                return self._solver_trigger_success(dryRun)
             return (None,(["esc"],"close menu"))
 
         if character.getBigPosition() != self.targetPositionBig:

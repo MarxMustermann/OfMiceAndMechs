@@ -465,9 +465,7 @@ Reputation is rewarded for picking up items from walkways.\n\n""")
                 return ([quest],None)
 
         if self.numTasksToDo and self.numTasksDone > self.numTasksToDo:
-            if not dryRun:
-                self.postHandler()
-            return (None,("+","end quest"))
+            return self._solver_trigger_success(dryRun)
 
         room = character.container
         for duty in character.getRandomProtisedDuties():
@@ -545,9 +543,7 @@ Reputation is rewarded for picking up items from walkways.\n\n""")
                 return step
 
         if self.endOnIdle:
-            if not dryRun:
-                self.postHandler()
-            return (None,("+","end quest"))
+            return self._solver_trigger_success(dryRun)
         if self.failOnIdle:
             return self._solver_trigger_fail(dryRun,"no job")
 

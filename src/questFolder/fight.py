@@ -88,9 +88,7 @@ So if an enemy is to directly east of you:
             return (None,None)
 
         if not character.getNearbyEnemies():
-            if not dryRun:
-                self.postHandler()
-            return (None,("+","end quest"))
+            return self._solver_trigger_success(dryRun)
 
         # navigate most menues
         submenue = character.macroState.get("submenue")

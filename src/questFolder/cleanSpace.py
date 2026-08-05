@@ -120,15 +120,11 @@ class CleanSpace(src.quests.MetaQuestSequence):
             room = rooms[0]
             items = room.getItemByPosition(self.targetPosition)
             if not items or ((not self.pickUpBolted) and items[0].bolted):
-                if not dryRun:
-                    self.postHandler()
-                return (None,("+","end quest"))
+                return self._solver_trigger_success(dryRun)
         else:
             items = terrain.getItemByPosition((self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0))
             if not items or ((not self.pickUpBolted) and items[0].bolted):
-                if not dryRun:
-                    self.postHandler()
-                return (None,("+","end quest"))
+                return self._solver_trigger_success(dryRun)
 
         if character.container.isRoom:
             if character.getDistance(self.targetPosition) > 1:

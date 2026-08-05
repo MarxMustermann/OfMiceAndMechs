@@ -185,9 +185,7 @@ Try as hard as you can to achieve this.
         # do extra check for completion, lol
         for buildSite in room.buildSites:
             if buildSite[0] == self.targetPosition:
-                if not dryRun:
-                    self.postHandler()
-                return (None,("+","end quest"))
+                return self._solver_trigger_success(dryRun)
 
         # check for painters next to the target
         offsets = ((0,0,0),(0,1,0),(1,0,0),(0,-1,0),(-1,0,0))

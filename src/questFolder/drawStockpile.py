@@ -291,21 +291,15 @@ Try as hard as you can to achieve this.
         if self.stockpileType == "i":
             for inputSlot in room.inputSlots:
                 if inputSlot[0] == self.targetPosition and inputSlot[1] == self.itemType:
-                    if not dryRun:
-                        self.postHandler()
-                    return (None,("+","end quest"))
+                    return self._solver_trigger_success(dryRun)
         if self.stockpileType == "o":
             for outputSlot in room.outputSlots:
                 if outputSlot[0] == self.targetPosition and outputSlot[1] == self.itemType:
-                    if not dryRun:
-                        self.postHandler()
-                    return (None,("+","end quest"))
+                    return self._solver_trigger_success(dryRun)
         if self.stockpileType == "s":
             for storageSlot in room.storageSlots:
                 if storageSlot[0] == self.targetPosition and storageSlot[1] == self.itemType:
-                    if not dryRun:
-                        self.postHandler()
-                    return (None,("+","end quest"))
+                    return self._solver_trigger_success(dryRun)
 
         # ensure a painter is available
         if not character.inventory or character.inventory[-1].type != "Painter":

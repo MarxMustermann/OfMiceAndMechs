@@ -48,9 +48,7 @@ class BaitSpiders(src.quests.MetaQuestSequence):
 
         if phase == "wait":
             if not self.character.getNearbyEnemies():
-                if not dryRun:
-                    self.postHandler()
-                return (None,("+","end quest"))
+                return self._solver_trigger_success(dryRun)
 
             if not character.container.isRoom:
                 if character.xPosition%15 == 0:

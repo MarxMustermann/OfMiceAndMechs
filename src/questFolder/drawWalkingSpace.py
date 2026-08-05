@@ -105,9 +105,7 @@ Try as hard as you can to achieve this.
 
         # end quest, if completed
         if self.targetPosition in room.walkingSpace:
-            if not dryRun:
-                self.postHandler()
-            return (None,("+","end quest"))
+            return self._solver_trigger_success(dryRun)
 
         # ensure a painter is available
         if not character.inventory or character.inventory[-1].type != "Painter":

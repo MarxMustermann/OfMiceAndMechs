@@ -200,9 +200,7 @@ Remove all items from the walkways that are not bolted down."""
             return ([quest],None)
 
         # complete when done
-        if dryRun:
-            self.postHandler()
-        return (None,("+","end quest"))
+        return self._solver_trigger_success(dryRun)
 
     def getLeftoverItems(self,character):
         '''

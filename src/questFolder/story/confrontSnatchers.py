@@ -134,9 +134,7 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
                 else:
                     return (None,(";","wait for Snatchers"))
 
-            if not dryRun:
-                self.postHandler()
-            return (None,("+","end quest"))
+            return self._solver_trigger_success(dryRun)
 
         # retreat when too many enemies 
         numDirectNeighbours = 0

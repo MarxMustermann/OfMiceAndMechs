@@ -20,9 +20,7 @@ class RestockBase(src.quests.MetaQuestSequence):
         rooms = self.findRestockableRooms()
 
         if not rooms:
-            if not dryRun:
-                self.postHandler()
-            return (None,("+","end quest"))
+            return self._solver_trigger_success(dryRun)
 
         room = random.choice(rooms)
         quest = src.quests.questMap["RestockRoom"](targetPositionBig=room.getPosition(),allowAny=True)

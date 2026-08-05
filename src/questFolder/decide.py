@@ -31,9 +31,7 @@ Decide{reasonString}.
         # handle menus
         submenue = character.macroState["submenue"]
         if not submenue or submenue.tag not in ("player_quest_selection","decision_confirm"):
-            if not dryRun:
-                self.postHandler()
-            return (None,("+","end quest"))
+            return self._solver_trigger_success(dryRun)
 
         if submenue.tag == "decision_confirm":
             return (None,("j","select current option"))

@@ -66,7 +66,7 @@ Flask can be refilled at a GooDispenser."""
 
         # make quest end when done
         if self.triggerCompletionCheck(character,dryRun=dryRun):
-            return (None,("+","end quest"))
+            return self._solver_trigger_success(dryRun)
 
         # handle menues
         submenue = character.macroState.get("submenue")

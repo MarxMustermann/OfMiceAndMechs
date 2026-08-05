@@ -88,9 +88,7 @@ class StoryReachTeleporterRoom(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["GoToTile"](targetPosition=(7,8,0),reason="go to the teleporter room",description="go to teleporter room")
             return ([quest],None)
 
-        if not dryRun:
-            self.postHandler()
-        return (None,("+","complete quest"))
+        return self._solver_trigger_success(dryRun)
 
     def generateTextDescription(self):
         return ["""

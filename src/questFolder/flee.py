@@ -89,9 +89,7 @@ class Flee(src.quests.MetaQuestSequence):
             if self.returnHome and bigPos != homePos:
                 quest = src.quests.questMap["GoHome"](reason="get back to safety")
                 return ([quest],None)
-            if not dryRun:
-                self.postHandler()
-            return (None,("+","end quest"))
+            return self._solver_trigger_success(dryRun)
 
         # heal
         if character.health < character.maxHealth//5 and character.canHeal():

@@ -101,9 +101,7 @@ The buildsites indicate what needs to be built.
             
         # end if no more buildsites left
         if not targetRoom.buildSites:
-            if not dryRun:
-                self.postHandler()
-            return (None,("+","end quest"))
+            return self._solver_trigger_success(dryRun)
 
         # place items on buildsites
         checkedMaterial = set()

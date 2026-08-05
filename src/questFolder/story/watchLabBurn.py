@@ -26,9 +26,7 @@ class WatchLabBurn(src.quests.MetaQuestSequence):
             if not self.explosion_tick:
                 self.explosion_tick = src.gamestate.gamestate.tick
             if src.gamestate.gamestate.tick > self.explosion_tick:
-                if not dryRun:
-                    self.postHandler()
-                return (None,("+","end quest"))
+                return self._solver_trigger_success(dryRun)
             return (None,(".","stop watching the explosion"))
 
         if character.getSpacePosition()[1] > 8:

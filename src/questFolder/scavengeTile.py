@@ -88,9 +88,7 @@ This quest will end when the target tile has no items left."""
         # ensure free inventory space
         if not character.getFreeInventorySpace() > 0:
             if self.endOnFullInventory:
-                if not dryRun:
-                    self.postHandler()
-                return (None,("+","end quest"))
+                return self._solver_trigger_success(dryRun)
             quest = src.quests.questMap["ClearInventory"](reason="be able to pick up more items")
             return ([quest],None)
 

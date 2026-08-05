@@ -101,10 +101,8 @@ class MachinePlacing(src.quests.MetaQuestSequence):
                 if buildSites is not None:
                     del character.container.floorPlan["buildSites"]
 
-            self.postHandler()
-            return (None,None)
-        return (None,None)
-
+            return self._solver_trigger_success(dryRun)
+        return (None,(".","stand around confused"))
 
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):

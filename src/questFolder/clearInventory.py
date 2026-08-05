@@ -184,9 +184,7 @@ Put the items into the stockpiles to make then accessible to the base.
             return ([quest],None)
 
         # end quest
-        if not dryRun:
-            self.postHandler()
-        return (None,("+","end quest"))
+        return self._solver_trigger_success(dryRun)
 
     def setParameters(self,parameters):
         '''

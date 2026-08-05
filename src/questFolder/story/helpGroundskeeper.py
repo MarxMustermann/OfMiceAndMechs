@@ -73,9 +73,14 @@ class HelpGroundskeeper(src.quests.MetaQuestSequence):
                 else:
                     return (None,(["esc"],"close menu"))
             if isinstance(submenue,src.chats.Chat):
+                try:
+                    if submenue.subMenu.selectionIndex > 1:
+                        return (None,("w"*(submenue.subMenu.selectionIndex-1),"move cursor"))
+                except:
+                    pass
                 return (None,("j","continue conversation"))
             if submenue.tag == "builder_task_selection":
-                return (None,("j","continue conversation"))
+                return (None,("j","select task"))
             if submenue.tag == "builder_accept_quest":
                 return (None,("j","accept quest"))
             if submenue.tag == "builder_task_confirm":

@@ -46,7 +46,7 @@ class HelpGroundskeeper(src.quests.MetaQuestSequence):
 
         # go near the groundskeeper
         if not character.getBigPosition() == keeper_position:
-            quest = src.quests.questMap["GoToTile"](targetPosition=keeper_position)
+            quest = src.quests.questMap["GoToTile"](targetPosition=keeper_position,disallowQ=True)
             return ([quest],None)
         
         # handle open menues

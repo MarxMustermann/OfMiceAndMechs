@@ -135,6 +135,7 @@ def Death(extraParam):
 
         chosen_candidate.addListener(src.gamestate.gamestate.story.enteredRoom,"entered room")
         chosen_candidate.addListener(src.gamestate.gamestate.story.itemPickedUp,"itemPickedUp")
+        chosen_candidate.addListener(src.gamestate.gamestate.story.changedTile,"changedTile")
         chosen_candidate.addListener(src.gamestate.gamestate.story.changedTerrain,"changedTerrain")
         chosen_candidate.addListener(src.gamestate.gamestate.story.deliveredSpecialItem,"deliveredSpecialItem")
         chosen_candidate.addListener(src.gamestate.gamestate.story.gotEpochReward,"got epoch reward")

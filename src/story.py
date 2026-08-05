@@ -5809,6 +5809,7 @@ This memorial contains:
         mainChar.personality["autoCounterAttack"] = False
         mainChar.addListener(src.cinematicsFolder.death.Death,"died_pre")
         mainChar.addListener(self.spawnExtraInvasion,"set faction")
+        mainChar.addListener(self.changedTile,"changedTile")
 
         storyStartInfo = {}
         storyStartInfo["terrain"] = homeTerrain
@@ -5832,6 +5833,20 @@ This memorial contains:
         """
 
         return storyStartInfo
+
+    def changedTile(self,extraParameters):
+        mainChar = src.gamestate.gamestate.mainChar
+        if extraParameters["old_pos"] == (7,7,0):
+            if mainChar.getTerrain().getRoomsByTag(groundskeeper_room_tag):
+                base_text = ["""
+""",(src.interaction.urwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"You implant interrupts:"),"""
+
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You managed to leave the burning room."),"""
+
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"Press tab to get more instructions from the implant."),"""
+"""]
+                mainChar.showTextMenu(base_text)
+        return
 
     def openedQuests(self):
         if self.activeStory["type"] == "dungeon crawl":

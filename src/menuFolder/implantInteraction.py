@@ -97,6 +97,20 @@ class ImplantInteraction(src.menues.SubMenu):
                         return True
                 else:
                     return False
+
+            elif self.submenu.tag == "implant_basic_explainer_interaction":
+                self.submenu.handleKey(key, noRender, character)
+                if self.submenu.done:
+                    selection = self.submenu.selection
+                    self.submenu = None
+                    if selection == "confirm":
+                        src.gamestate.gamestate.stern["implant_basic_explainer_confirmed"] = True
+                    else:
+                        self.done = True
+                        return True
+                else:
+                    return False
+
             elif self.submenu.tag == "implant_room_planning_selection":
 
                 # handle interaction for planning rooms
@@ -353,7 +367,7 @@ You must be confused.
 """,(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"You can contact me any time by pressing tab."),"""
 
 
-""",(src.interaction.urwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"""What to you want to do?"""),"""
+""",(src.interaction.urwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"""Do you confirm?"""),"""
 """]
             src.gamestate.gamestate.stern["first_reachout_done"] = True
 
@@ -361,6 +375,28 @@ You must be confused.
             self.submenu = src.menues.menuMap["SelectionMenu"](base_text,options=options)
             self.submenu.handleKey(key, noRender, character)
             self.submenu.tag = "first_implant_interaction"
+            return False
+
+        # show special text for explaining the very basics
+        if src.gamestate.gamestate.stern.get("implant_basic_explainer_confirmed") is None:
+            src.gamestate.gamestate.stern["implant_basic_explainer_confirmed"] = False
+        if not src.gamestate.gamestate.stern["implant_basic_explainer_confirmed"]:
+            base_text = ["""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"I will generate quests"),""" for you in order to achieve our goals.
+
+Those quests will be shown on the left side of the screen.
+
+Additionally a "suggested action" is generated, which shows what keys can be pressed to complete the quest.
+A more high level description on how to complete the quest is given in the quest description.
+
+""",(src.interaction.urwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"""Do you confirm?"""),"""
+"""]
+            src.gamestate.gamestate.stern["first_reachout_done"] = True
+
+            options = [("confirm","confirm"),("ignore","ignore")]
+            self.submenu = src.menues.menuMap["SelectionMenu"](base_text,options=options)
+            self.submenu.handleKey(key, noRender, character)
+            self.submenu.tag = "implant_basic_explainer_interaction"
             return False
 
         # handle interation while there are quests assigned
@@ -391,14 +427,11 @@ What do you want to do?
 The machinery around you is """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"burning and exploding"),f""".
 So i recommend leaving the room before you get hurt.
 
-The exit is on the north side of the room,
-""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"You can move by pressing the wasd keys."),"""
-You can move my clicking on the map as well.
-
+The exit is on the north side of the room.
 Big items like the machinery will block your movement.
 
 
-""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Shall i assign you a quest to leave the room to avoid the explosion?"""),"""
+""",(src.interaction.urwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"""Shall i assign you a quest to leave the room to avoid the explosion?"""),"""
 """]
             self._spawnSpawnTaskMenu(base_text,"escape_lab")
             return False
@@ -414,7 +447,7 @@ We are safe for a second, but the room will explode soon.
 Watch the room burn down.
 """,(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""You can pass time by pressing the "." (period) key."""),"""
 
-""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Shall i assign you a quest to watch the room explode?"""),"""
+""",(src.interaction.urwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"""Shall i assign you a quest to watch the room explode?"""),"""
 """]
                 self._spawnSpawnTaskMenu(base_text,"wait_explosion",offerSkip=True)
                 return False

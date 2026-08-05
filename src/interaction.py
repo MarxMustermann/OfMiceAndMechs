@@ -8930,7 +8930,7 @@ d.d..ddd.dd..d.d.d...ddd.d..d.dd.dd.d..d....d....d.....d.....dd.....d...
             printUrwidToTcod(text, (0,0), explecitConsole=root_console)
 
             if subStep2 > 170:
-                printUrwidToTcod("press enter to stop struggling", (0, 12),explecitConsole=root_console)
+                printUrwidToTcod("press tab to stop struggling", (0, 12),explecitConsole=root_console)
             if subStep2 >= 425:
                 gameEnded = True
                 continue
@@ -9236,7 +9236,7 @@ but slowly you hear that familiar voice again."""
 
 
 suggested action:
-press enter to continue
+press tab to continue
 """)
             root_console = tcod.console.Console(width+1, height, order="F")
             printUrwidToTcod(text, (0,0), explecitConsole=root_console)
@@ -9395,7 +9395,7 @@ try to remember how you got here ...\n"""
                     stageState["send_tracking_ping_sub_0"] = True
                 text = """
 suggested action:
-press enter
+press tab
 to open your eyes"""
             elif subStep == 1:
                 if not stageState.get("send_tracking_ping_sub_1"):
@@ -9403,7 +9403,7 @@ to open your eyes"""
                     stageState["send_tracking_ping_sub_1"] = True
                 text = """
 suggested action:
-press enter
+press tab
 to feel around"""
             elif subStep == 2:
                 if not stageState.get("send_tracking_ping_sub_2"):
@@ -9411,7 +9411,7 @@ to feel around"""
                     stageState["send_tracking_ping_sub_2"] = True
                 text = """
 suggested action:
-press enter
+press tab
 to look around"""
             elif subStep == 3:
                 if not stageState.get("send_tracking_ping_sub_3"):
@@ -9419,7 +9419,7 @@ to look around"""
                     stageState["send_tracking_ping_sub_3"] = True
                 text = """
 suggested action:
-press enter
+press tab
 to orient yourself"""
 
             else:
@@ -9428,7 +9428,7 @@ to orient yourself"""
                     stageState["send_tracking_ping_sub_4"] = True
                 text = """
 suggested action:
-press enter
+press tab
 to remember"""
 
             width = 18
@@ -9481,7 +9481,7 @@ to remember"""
                 if key == tcod.event.KeySym.ESCAPE:
                     src.interaction.send_tracking_ping("skipped_run_intro")
                     stage = 7
-                if key in (tcod.event.KeySym.RETURN, tcod.event.KeySym.KP_ENTER):
+                if key in (tcod.event.KeySym.RETURN, tcod.event.KeySym.KP_ENTER, tcod.event.KeySym.TAB,):
                     src.interaction.send_tracking_ping("moved_run_intro")
                     if stage != 3:
                         # move to next stage

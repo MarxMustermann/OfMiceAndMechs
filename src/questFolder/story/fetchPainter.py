@@ -105,7 +105,7 @@ A Painter looks like this: """,sample_painter.metaRender()]
 
         # ensure there is inventory space
         if not character.getFreeInventorySpace() > 0:
-            quest = src.quests.questMap["ClearInventory"](reason="have inventory space to pick up more items",returnToTile=False)
+            quest = src.quests.questMap["DiscardItemsInside"](reason="have inventory space to pick up more items",amount=1)
             return ([quest],None)
 
         # actually enter rooms

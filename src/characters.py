@@ -408,7 +408,7 @@ class Character:
         self.macroState["submenue"] = src.menues.menuMap["ObserveMenu"](self)
 
     def openImplantMenu(self, extraInfo = None):
-        self.macroState["submenue"] = src.menuFolder.implantMenu.ImplantMenu(self)
+        self.macroState["submenue"] = src.menues.menuMap["ImplantInteraction"](self)
 
     def notify(self,text,do_not_scale=False):
         self.showTextMenu(text,do_not_scale=True)

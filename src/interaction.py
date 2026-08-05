@@ -4003,6 +4003,10 @@ def keyboardListener(key, targetCharacter=None):
                 if not quest.autoSolve:
                     continue
                 quest.autoSolve = False
+            global freeze_game
+            global freeze_num_quests
+            freeze_game = False
+            freeze_num_quests = 0
 
     elif src.gamestate.gamestate.gameHalted:
         if key == "M":

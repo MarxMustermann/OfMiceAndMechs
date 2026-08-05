@@ -51,6 +51,7 @@ class Spiderling(src.monster.Monster):
         ]
 
         self.defending = None
+        self.autoAdvance = True
 
     def render(self):
         """
@@ -66,5 +67,15 @@ class Spiderling(src.monster.Monster):
 
     def description(self):
         return [self.getLoreDescription(),"\n\n---- ",self.getFunctionalDescription()]
+
+    def generateQuests(self):
+
+        quest = src.quests.questMap["SecureTile"](toSecure=self.getBigPosition(),wandering=True, endWhenCleared=False,neverHuntDown=True)
+        quest.autoSolve = True
+        quest.assignToCharacter(self)
+        quest.activate()
+        self.quests.append(quest)
+
+        return super().generateQuests()
 
 src.characters.add_character(Spiderling)

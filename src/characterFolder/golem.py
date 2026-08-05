@@ -61,6 +61,7 @@ class Golem(src.monster.Monster):
         self.baseDamage = round(baseRawDamage+(baseRawDamage*0.5*self.level),2)
         self.maxHealth = int(basehealth+basehealth*0.25*self.level)
         self.health = self.maxHealth
+        self.autoAdvance = True
 
     def changed(self, tag="default", info=None):
         if tag == "pickup bolted fail":
@@ -98,5 +99,15 @@ class Golem(src.monster.Monster):
             self.level = 1
         shade = int(255-((255/7)*self.level))
         return (src.interaction.urwid.AttrSpec((255,shade,shade),"#000"), "@@")
+
+    def generateQuests(self):
+
+        quest = src.quests.questMap["SecureTile"](toSecure=self.getBigPosition(),wandering=True, endWhenCleared=False,neverHuntDown=True)
+        quest.autoSolve = True
+        quest.assignToCharacter(self)
+        quest.activate()
+        self.quests.append(quest)
+
+        return super().generateQuests()
 
 src.characters.add_character(Golem)

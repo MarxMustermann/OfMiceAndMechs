@@ -47,6 +47,8 @@ class ShieldBug(src.characters.characterMap["Insect"]):
         self.godMode = True
         self.movementSpeed = 2.2
 
+        self.autoAdvance = True
+
     def changed(self, tag="default", info=None):
         if tag == "pickup bolted fail":
             info["item"].destroy()
@@ -64,5 +66,15 @@ class ShieldBug(src.characters.characterMap["Insect"]):
 
     def description(self):
         return [self.getLoreDescription(),"\n\n---- ",self.getFunctionalDescription()]
+
+    def generateQuests(self):
+
+        quest = src.quests.questMap["SecureTile"](toSecure=self.getBigPosition(),wandering=True, endWhenCleared=False,neverHuntDown=True)
+        quest.autoSolve = True
+        quest.assignToCharacter(self)
+        quest.activate()
+        self.quests.append(quest)
+
+        return super().generateQuests()
 
 src.characters.add_character(ShieldBug)

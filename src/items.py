@@ -426,6 +426,11 @@ class Item:
             character: the character using the item
         """
         character.changed("raw applied",{"character":character,"item":self})
+
+        # remove interaction markings
+        if "itemMarkedLast" in character.macroState:
+            del character.macroState["itemMarkedLast"]
+
         return self.apply(character)
 
     def apply(self, character):
@@ -436,10 +441,6 @@ class Item:
         Parameters:
             character: the character using the item
         """
-
-        # remove interaction markings
-        if "itemMarkedLast" in character.macroState:
-            del character.macroState["itemMarkedLast"]
 
         # gather actions
         actions = self.gatherApplyActions(character)

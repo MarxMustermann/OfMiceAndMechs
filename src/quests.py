@@ -336,6 +336,15 @@ class Quest:
         return (None,("+",f"abort quest\n({reason})"))
 
     """
+    helperfunction to trigger a quest fail from within a solver
+    """
+    def _solver_trigger_success(self,dryRun):
+        if not dryRun:
+            self.postHandler()
+            return (None,None)
+        return (None,("+",f"complete quest"))
+
+    """
     handle a failure to resolve te quest
     """
     def fail(self,reason=None):

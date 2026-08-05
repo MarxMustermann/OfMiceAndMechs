@@ -85,6 +85,18 @@ class ImplantInteraction(src.menues.SubMenu):
                 if selection == "abort quest":
                     character.clear_quests()
 
+            elif self.submenu.tag == "first_implant_interaction":
+                self.submenu.handleKey(key, noRender, character)
+                if self.submenu.done:
+                    selection = self.submenu.selection
+                    self.submenu = None
+                    if selection == "confirm":
+                        src.gamestate.gamestate.stern["first_implant_interaction_confirmed"] = True
+                    else:
+                        self.done = True
+                        return True
+                else:
+                    return False
             elif self.submenu.tag == "implant_room_planning_selection":
 
                 # handle interaction for planning rooms
@@ -325,17 +337,31 @@ The quest description and general instructions are shown in the quest menu.
                     return False
 
         # show special text for first reach out
-        implant_intro_text = ""
-        if src.gamestate.gamestate.stern.get("first_reachout_done") is None:
-            src.gamestate.gamestate.stern["first_reachout_done"] = False
-        if not src.gamestate.gamestate.stern["first_reachout_done"]:
-            implant_intro_text = [(src.interaction.urwid.AttrSpec("#0af","black"),"""
+        if src.gamestate.gamestate.stern.get("first_implant_interaction_confirmed") is None:
+            src.gamestate.gamestate.stern["first_implant_interaction_confirmed"] = False
+        if not src.gamestate.gamestate.stern["first_implant_interaction_confirmed"]:
+            base_text = ["""
+""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),f"""
+
+
 You must be confused.
 
-I'm your implant and i'm here to help you.
-You can contact me any time by pressing tab.
-""")]
+
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"I'm your implant and i'm here to help you."),"""
+
+
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"You can contact me any time by pressing tab."),"""
+
+
+""",(src.interaction.urwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"""What to you want to do?"""),"""
+"""]
             src.gamestate.gamestate.stern["first_reachout_done"] = True
+
+            options = [("confirm","confirm"),("ignore","ignore")]
+            self.submenu = src.menues.menuMap["SelectionMenu"](base_text,options=options)
+            self.submenu.handleKey(key, noRender, character)
+            self.submenu.tag = "first_implant_interaction"
+            return False
 
         # handle interation while there are quests assigned
         if len(character.quests) > 0 and not character.quests[0].type == "ReachOutStory":
@@ -361,10 +387,6 @@ What do you want to do?
         if character.container.tag == "the architects tomb":    
             base_text = ["""
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),f"""
-
-Hello!
-
-""",implant_intro_text,"""
 
 The machinery around you is """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"burning and exploding"),f""".
 So i recommend leaving the room before you get hurt.
@@ -442,7 +464,6 @@ It likely is agressive and will try to hurt you.
             if character.getBigPosition() == (7,6,0) and terrain.getCharactersOnTile((7,5,0)):
                 base_text = ["""
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),f"""
-""",implant_intro_text,f"""
 You are outside and need to find shelter.
 
 There is shelter to the north,
@@ -479,7 +500,6 @@ This will trigger an attack.
                 directionString = "It is "+" and ".join(directions)+"."
                 base_text = ["""
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),f"""
-""",implant_intro_text,"""
 """,(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""You are outside and need to find shelter."""),f"""
 
 The old groundskeepers place is nearby.

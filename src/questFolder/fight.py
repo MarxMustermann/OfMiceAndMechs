@@ -40,7 +40,7 @@ Advanced attacks are used by bumping into enemies while holding shift.
 """,(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""
 So if an enemy is to directly east of you:
 * press d to do a normal attack
-* press D to do a special attack
+* press D to do a alternate attack
 """)])
         return text
 

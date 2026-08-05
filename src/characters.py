@@ -2663,7 +2663,7 @@ press any other key to attack normally"""
         '''
 
         if not self.inventory:
-            self.addMessage("no item to drop")
+            self.notify("no item to drop")
             self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
             if position:
                 self.container.addAnimation(position,"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
@@ -2680,14 +2680,14 @@ press any other key to attack normally"""
         itemList = self.container.getItemByPosition(position)
 
         if item.walkable is False and len(itemList) and not (self.container.isRoom and (self.xPosition in (0,12) or self.yPosition in (0,12))):
-            self.addMessage("you need a clear space to drop big items")
+            self.notify("you need a clear space to drop big items")
             self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
             if position:
                 self.container.addAnimation(position,"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"[]")})
             return
 
         if len(itemList) > 25:
-            self.addMessage("you can not put more items there")
+            self.notify("you can not put more items there")
             self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
             if position:
                 self.container.addAnimation(position,"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"[]")})
@@ -2705,7 +2705,7 @@ press any other key to attack normally"""
                 break
 
         if foundBig:
-            self.addMessage("there is no space to drop the item")
+            self.notify("there is no space to drop the item")
             self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
             if position:
                 self.container.addAnimation(position,"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"[]")})

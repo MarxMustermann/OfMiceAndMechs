@@ -268,17 +268,6 @@ class ImplantInteraction(src.menues.SubMenu):
                     # generate a quest for the player
                     if selection == "yes":
 
-                        # show notification to hint at quest menu
-                        if src.gamestate.gamestate.stern.get("first_quest_assign") == None:
-                            src.gamestate.gamestate.stern["first_quest_assign"] = True
-                        if src.gamestate.gamestate.stern["first_quest_assign"]:
-                            src.gamestate.gamestate.stern["first_quest_assign"] = False
-                            character.showTextMenu(["""
-The quest description and general instructions are shown in the quest menu.
-
-""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""You can open the quest menu by pressing q"""),"""
-"""],allowQuests=True,do_not_scale=True)
-
                         # set up helper variables
                         terrain = character.getHomeTerrain()
                         groundskeepers_place = None

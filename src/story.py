@@ -5843,7 +5843,7 @@ This memorial contains:
 
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You managed to leave the burning room."),"""
 
-""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"Press tab to get more instructions from the implant."),"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"Press tab to get more instructions from the implant.\nOnce you got a quest press q to see high level instructions\nor press the keys given in the \"suggested action\" shown on the left side of the screen."),"""
 """]
                 mainChar.showTextMenu(base_text)
         return

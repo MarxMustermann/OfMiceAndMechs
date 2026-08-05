@@ -91,6 +91,7 @@ class Contraption(src.items.Item):
 
         if self.container.isRoom:
             for i in range(1,self.meltdownLevel):
+                self.container.addAnimation(self.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#faa", "#f00"), "%%")]})
                 self.container.addAnimation(self.getPosition(),"smoke",i,{})
                 self.container.addAnimation(self.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#faa", "#f00"), "%%")]})
 

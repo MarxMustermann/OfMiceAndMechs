@@ -79,6 +79,12 @@ Try as hard as you can to achieve this.
         submenue = character.macroState.get("submenue")
         if submenue:
 
+            # use painter from inventory
+            if submenue.tag == "advancedInteractionSelection":
+                if not character.inventory or character.inventory[-1].type != "Painter":
+                    return (None,(["esc"],"clear menu"))
+                return (None,("i","activate Painter"))
+
             # select what to configure
             if submenue.tag == "PainterActivitySelection":
                 item = submenue.extraInfo["item"]

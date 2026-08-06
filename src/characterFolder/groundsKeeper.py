@@ -36,7 +36,7 @@ class GroundsKeeper(src.characters.characterMap["Clone"]):
         for room in self.getTerrain().rooms:
             if room.tag == "ruin":
                 continue
-            if room.getItemByType("Painter"):
+            if room.getNonEmptyOutputslots("Painter"):
                 hasPainter = True
         return hasPainter
 

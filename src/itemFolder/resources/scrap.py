@@ -234,12 +234,14 @@ There is {self.amount} in this pile
             character.notify("You need to place the scrap to be able to add to it.")
             return
 
+        # gather scrap to add
         scrapFound = []
         for item in character.inventory:
             if item.type == "Scrap":
                 scrapFound.append(item)
                 break
 
+        # add scrap to pile
         for item in scrapFound:
             if self.amount < 20:
                 self.amount += item.amount
@@ -248,10 +250,8 @@ There is {self.amount} in this pile
                 )
                 character.removeItemFromInventory(item)
                 character.changed("dropped",(character,self))
-
         if self.container:
             self.container.addAnimation(self.getPosition(),"scrapChange",1,{})
-
         self.setWalkable()
 
     def configure(self, character):

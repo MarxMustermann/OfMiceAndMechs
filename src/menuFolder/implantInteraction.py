@@ -312,6 +312,8 @@ class ImplantInteraction(src.menues.SubMenu):
                             if not found_serious_enemies:
                                 suicidal = True
                             quests.append(src.quests.questMap["Fight"](suicidal=suicidal))
+                        elif task_type == "restore_groundskeepers_place":
+                            quests.append(src.quests.questMap["DoGroundskeeping"](onlyDoBasicSetup=True))
 
                         # assign the quest
                         if not quests:
@@ -758,9 +760,10 @@ Use the CityPlaner to set room should be build there.
 
             # pass time till groundskeeper is ready
             current_time = src.gamestate.gamestate.tick
-            if groundsKeeper and groundskeepers_place.floorPlan or src.gamestate.gamestate.stern.get("no_groundskeeper_quest",0) > current_time-200:
-                base_text = ["""
-""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),"""
+            if groundskeepers_place.floorPlan:
+                if groundsKeeper:
+                    base_text = ["""
+""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),f"""
 
 The groundskeeper seems to be busy.
 We cannot help right now.
@@ -771,8 +774,22 @@ There are many useful items around.
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to explore the environment?"""),"""
 """]
-                self._spawnSpawnTaskMenu(base_text,"explore")
-                return False
+                    self._spawnSpawnTaskMenu(base_text,"explore")
+                    return False
+                else:
+                    base_text = ["""
+""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),f"""
+
+""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"The groundskeeper is dead."),"""
+
+We need restore groundskeepers place on our own now.
+
+Fetch a painter and draw required floor markings.
+
+""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to restore the groundskeepers place?"""),"""
+"""]
+                    self._spawnSpawnTaskMenu(base_text,"restore_groundskeepers_place")
+                    return False
 
             # help groundskeeper set up
             base_text = ["""

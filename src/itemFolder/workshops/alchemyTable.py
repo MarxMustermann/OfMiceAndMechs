@@ -44,7 +44,7 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
         if "type" not in params:
             options = []
             for potionType in src.items.potionTypes:
-                options.append((potionType.type,potionType.name))
+                options.append((potionType,potionType))
             options.append(("byName","produce by name"))
             submenue = src.menues.menuMap["SelectionMenu"]("what item to produce?",options,targetParamName="type")
             submenue.tag = "alchemyTableProductSelection"

@@ -5593,7 +5593,7 @@ def renderGameDisplay(renderChar=None,showSaving=False):
 
     submenue = char.macroState.get("submenue")
 
-    # add special background for impland stuff
+    # add special background for implant stuff
     if submenue and isinstance(submenue,src.menues.menuMap["ImplantInteraction"]):
         root_console = tcod.console.Console(window_charwidth, window_charheight, order="F")
         output = ""

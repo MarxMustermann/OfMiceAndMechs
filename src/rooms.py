@@ -2061,6 +2061,8 @@ class Room:
         self.addItem(item,pos)
         item.bolted = bolted
 
+        return item
+
     def moveCharacter(self, character, newPosition):
         """
         move a character to a new position within room

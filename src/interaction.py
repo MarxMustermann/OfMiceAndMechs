@@ -5449,26 +5449,34 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                     sdl_renderer2.fill_rect((offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height))
 
         if uiElement["type"] == "legend":
+
+            # calculate where to draw the legend
             offsetLeft = uiElement["offset"][0]*tileWidth*2
             offsetTop = uiElement["offset"][1]*tileHeight
 
+            # get a console to render the legend with
             root_console = tcod.console.Console(uiElement["width"], uiElement["height"], order="F")
 
+            # set up the variable to hold the legend info
             output = []
 
+            # show enemies
             for other_character in char.getTerrain().getEnemiesOnTile(char):
                 if other_character == char:
                     continue
                 output.append([other_character.render()," ",(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),[other_character.charType," ",str(other_character.getSpacePosition())," "])])
 
+            # show nearby items
             items = []
             for offset in [(0,0,0),(0,-1,0),(-1,0,0),(0,1,0),(1,0,0)]:
                 items.extend(char.container.getItemByPosition(char.getPosition(offset=offset)))
             for item in items:
                 output.append([item.metaRender()," ",(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),item.name)," ",(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),f"{item.getSmallPosition()}")," "])
 
+            # show main character
             output.append([(src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "),(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),f" you {src.gamestate.gamestate.mainChar.getSpacePosition()} ")])
 
+            # show nearby stockpiles
             if src.gamestate.gamestate.mainChar.container and src.gamestate.gamestate.mainChar.container.isRoom:
                 pos = src.gamestate.gamestate.mainChar.getPosition()
                 for offset in [(0,0,0),(0,-1,0),(-1,0,0),(0,1,0),(1,0,0)]:
@@ -5506,11 +5514,16 @@ def renderGameDisplay(renderChar=None,showSaving=False):
 
                         output.append([marker_render,(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),[" ",marker[0]," ",extra_info,str(check_pos)," "])])
 
+            # show legend for hovered over position
             if mousePos:
+
+                # show legend for hovered over ui element
                 raw_click_pos = mousePos
                 tile_pos = (raw_click_pos[0]//tileHeight,raw_click_pos[1]//tileHeight,0)
                 uiElements = calculate_UI_layout(src.gamestate.gamestate.mainChar)
                 for check_uiElement in uiElements:
+
+                    # only show the legend when hovering over the gamemap
                     if check_uiElement["type"] != "gameMap":
                         continue
                     if check_uiElement["offset"][0] > tile_pos[0]:
@@ -5521,6 +5534,8 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                         continue
                     if check_uiElement["offset"][1]+check_uiElement["map_width"] < tile_pos[1]:
                         continue
+
+                    # get hover position
                     offset_x = tile_pos[0]-(check_uiElement["offset"][0]+check_uiElement["map_width"]//2)
                     offset_y = tile_pos[1]-(check_uiElement["offset"][1]+check_uiElement["map_width"]//2)
                     offset = (offset_x,offset_y)
@@ -5529,10 +5544,10 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                         big_pos = src.gamestate.gamestate.mainChar.getBigPosition()
                         character_position = (big_pos[0]*15+character_position[0],big_pos[1]*15+character_position[1],0)
                     click_coordinate = (character_position[0]+offset[0],character_position[1]+offset[1],0)
-
                     bigCoordinate = (click_coordinate[0]//15,click_coordinate[1]//15,0)
                     smallCoordinate = (click_coordinate[0]%15,click_coordinate[1]%15,0)
 
+                    # get content to show in legend
                     terrain = src.gamestate.gamestate.mainChar.getTerrain()
                     rooms = terrain.getRoomByPosition(bigCoordinate)
                     if rooms:
@@ -5548,6 +5563,7 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                         other_characters = terrain.getCharactersOnPosition(click_coordinate)
                         markers = []
 
+                    # generate the content for the legend
                     output = []
                     for other_character in other_characters:
                         output.append([other_character.render()," ",(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),[other_character.charType," ",str(other_character.getSpacePosition())," "])])
@@ -5575,8 +5591,6 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                                 marker_render = (src.interaction.urwid.AttrSpec("#292", "black"), "::")
                             else:
                                 marker_render = (src.interaction.urwid.AttrSpec("#0f0", "black"), "::")
-
-
                         extra_info = ""
                         if marker_type != "walkingSpace":
                             extra_info = ""
@@ -5584,20 +5598,17 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                                 extra_info += str(marker[1][1])+" "
                             if marker[1][2]:
                                 extra_info += str(marker[1][2])+" "
-
                         output.append([marker_render,(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),[" ",marker[0]," ",extra_info,str(smallCoordinate)," "])])
 
+            # draw thw legend onto the screen
             output_width = len(stringifyUrwid(output))
             output.insert(0," "*((root_console.width-output_width)//2))
             output.insert(0,"\n")
-
             printUrwidToTcod(output,(0,0),explecitConsole=root_console)
-
             atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_map)
             console_render = tcod.render.SDLConsoleRender(atlas)
             renderedToTexture = console_render.render(root_console)
             sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
-
             printUrwidToSDL(output,uiElement["offset"])
 
     submenue = char.macroState.get("submenue")

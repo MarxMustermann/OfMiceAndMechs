@@ -241,6 +241,11 @@ There is {self.amount} in this pile
                 scrapFound.append(item)
                 break
 
+        # notify user if there is no scrap to add
+        if not scrapFound:
+            character.notify("You have no Scrap to add to the pile")
+            return
+
         # add scrap to pile
         for item in scrapFound:
             if self.amount < 20:

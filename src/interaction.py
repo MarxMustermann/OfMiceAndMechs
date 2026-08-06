@@ -493,12 +493,20 @@ def setUpTcod():
     sounds["itemPickedUp"] = sound_clip
     sound_clip, samplerate = src.interaction.soundloader.read('sounds/machineUsed.ogg',dtype='float32')
     sounds["machineUsed"] = sound_clip
-    sound_clip, samplerate = src.interaction.soundloader.read('sounds/ASCIIGAME_v1_FULL_loop.wav',dtype='float32')
-    sounds["loop1"] = sound_clip
-    sound_clip, samplerate = src.interaction.soundloader.read('sounds/ASCIIGAME_v1_FULL_loop.wav',dtype='float32')
-    sounds["loop2"] = sound_clip
-    sound_clip, samplerate = src.interaction.soundloader.read("sounds/ASCIIGAME_v1_FULL_start.wav", dtype="float32")
-    sounds["loop1_start"] = sound_clip
+    try:
+        sound_clip, samplerate = src.interaction.soundloader.read('sounds/ASCIIGAME_v1_FULL_loop.wav',dtype='float32')
+        sounds["loop1"] = sound_clip
+        sound_clip, samplerate = src.interaction.soundloader.read('sounds/ASCIIGAME_v1_FULL_loop.wav',dtype='float32')
+        sounds["loop2"] = sound_clip
+        sound_clip, samplerate = src.interaction.soundloader.read("sounds/ASCIIGAME_v1_FULL_start.wav", dtype="float32")
+        sounds["loop1_start"] = sound_clip
+    except:
+        sound_clip, samplerate = src.interaction.soundloader.read('sounds/loop1.wav',dtype='float32')
+        sounds["loop1"] = sound_clip
+        sound_clip, samplerate = src.interaction.soundloader.read('sounds/loop2.wav',dtype='float32')
+        sounds["loop2"] = sound_clip
+        sound_clip, samplerate = src.interaction.soundloader.read("sounds/loop1_start.wav", dtype="float32")
+        sounds["loop1_start"] = sound_clip
     global tcodAudio
     tcodAudio = audio
 

@@ -5326,6 +5326,11 @@ def renderGameDisplay(renderChar=None,showSaving=False):
 
     tcodPresent(noPresent=True)
 
+    # hide the special render on automated moves
+    hide_specialRender = False
+    if char.macroState["commandKeyQueue"] or (char.getActiveQuest() and char.getActiveQuest().autoSolve):
+        hide_specialRender = True
+
     uiElements = src.gamestate.gamestate.uiElements
     uiElements = calculate_UI_layout(char)
 
@@ -5433,11 +5438,12 @@ def renderGameDisplay(renderChar=None,showSaving=False):
 
             canvas.drawSdl(sdl_renderer2,offsetLeft,offsetTop,warning=warning)
 
-            submenue = char.macroState.get("submenue")
-            if specialRender or (submenue and submenue.tag != "Wait" and not submenue.get_map_position()):
-                sdl_renderer2.draw_blend_mode = tcod.sdl.render.BlendMode(1)
-                sdl_renderer2.draw_color = (0,0,0,100)
-                sdl_renderer2.fill_rect((offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height))
+            if not hide_specialRender:
+                submenue = char.macroState.get("submenue")
+                if specialRender or (submenue and submenue.tag != "Wait" and not submenue.get_map_position()):
+                    sdl_renderer2.draw_blend_mode = tcod.sdl.render.BlendMode(1)
+                    sdl_renderer2.draw_color = (0,0,0,100)
+                    sdl_renderer2.fill_rect((offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height))
 
         if uiElement["type"] == "legend":
             offsetLeft = uiElement["offset"][0]*tileWidth*2
@@ -5592,9 +5598,9 @@ def renderGameDisplay(renderChar=None,showSaving=False):
             printUrwidToSDL(output,uiElement["offset"])
 
     submenue = char.macroState.get("submenue")
-
+    
     # add special background for implant stuff
-    if submenue and isinstance(submenue,src.menues.menuMap["ImplantInteraction"]):
+    if submenue and isinstance(submenue,src.menues.menuMap["ImplantInteraction"]) and not hide_specialRender:
         root_console = tcod.console.Console(window_charwidth, window_charheight, order="F")
         output = ""
         loopCounter = 0
@@ -5616,7 +5622,7 @@ def renderGameDisplay(renderChar=None,showSaving=False):
         renderedToTexture = console_render.render(root_console)
         sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(0,0,renderedToTexture.width,renderedToTexture.height),)
 
-    if specialRender or submenue:
+    if (specialRender or submenue) and not hide_specialRender:
         click_map = []
 
         if submenue:

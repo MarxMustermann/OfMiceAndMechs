@@ -5,10 +5,11 @@ import random
 class DoGroundskeeping(src.quests.MetaQuestSequence):
     type = "DoGroundskeeping"
 
-    def __init__(self, description="do groundskeeping", creator=None):
+    def __init__(self, description="do groundskeeping", creator=None, onlyDoBasicSetup=False):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
+        self.onlyDoBasicSetup = onlyDoBasicSetup
 
     def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:
@@ -41,7 +42,33 @@ class DoGroundskeeping(src.quests.MetaQuestSequence):
             groundskeepers_room = room
             if not room.floorPlan:
                 done_painting = True
-        if not character.hasPainter() and not done_painting:
+        if isinstance(character,src.characters.characterMap["GroundsKeeper"]):
+            has_painter = character.hasPainter()
+        else:
+            has_painter = False
+            if character.searchInventory("Painter"):
+                has_painter = True
+            for room in character.getTerrain().rooms:
+                if room.tag == "ruin":
+                    continue
+                if room.getNonEmptyOutputslots("Painter"):
+                    has_painter = True
+
+        # fetch Painter
+        if not has_painter and not isinstance(character,src.characters.characterMap["GroundsKeeper"]):
+            for room in character.getTerrain().rooms:
+                painter = room.getItemByType("Painter")
+                if painter:
+                    quest = src.quests.questMap["CleanSpace"](reason="fetch Painter",targetPositionBig=painter.getBigPosition(),targetPosition=painter.getPosition())
+                    return ([quest],None)
+            if character.getTerrain().search_item_by_type("Painter"):
+                quest = src.quests.questMap["Scavenge"](toCollect="Painter",amountToCollect=1,ignoreAlarm=True)
+                return ([quest],None)
+            else:
+                quest = src.quests.questMap["Adventure"]()
+                return ([quest],None)
+
+        if not has_painter and not done_painting:
             if not character.getFreeInventorySpace():
                 dropSpot = random.choice(storageSpaces)
                 quests = []
@@ -73,6 +100,17 @@ class DoGroundskeeping(src.quests.MetaQuestSequence):
                 return ([quest],None)
             quest = src.quests.questMap["DrawStockpile"](itemType="Painter",stockpileType="s",targetPositionBig=character.getBigPosition(),targetPosition=(1,11,0))
             return ([quest],None)
+
+        # draw initial floorplan for the groundskeepers place
+        rooms = character.getTerrain().getRoomsByTag(src.story.groundskeeper_room_tag)
+        if rooms:
+            room = rooms[0]
+            if room.floorPlan:
+                quest = src.quests.questMap["DrawFloorPlan"](targetPosition=room.getPosition())
+                return ([quest],None)
+
+        if self.onlyDoBasicSetup:
+            return self._solver_trigger_success(dryRun)
 
         # be useful
         quest1 = src.quests.questMap["BeUsefull"](strict=True,endOnIdle=True)

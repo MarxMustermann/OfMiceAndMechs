@@ -946,6 +946,15 @@ class Character:
             command = "."
         return command
 
+    def getNearbyAllies(self):
+        '''
+        gets allies near the character
+
+        returns:
+            a list of nearby allies
+        '''
+        return self.getNearbyCharacters(alliesOnly=True)
+
     def getNearbyEnemies(self):
         '''
         gets enemies near the character
@@ -953,7 +962,16 @@ class Character:
         returns:
             a list of nearby enemies
         '''
-        return self.container.getEnemiesOnTile(self)
+        return self.getNearbyCharacters(enemiesOnly=True)
+
+    def getNearbyCharacters(self,enemiesOnly=False,alliesOnly=False):
+        '''
+        gets characters near the character
+
+        returns:
+            a list of nearby characters
+        '''
+        return self.getTerrain().getCharactersOnTile(self.getBigPosition(),character=self,enemiesOnly=enemiesOnly,alliesOnly=alliesOnly)
 
     def getBigPosition_test1(self,offset=None):
         '''

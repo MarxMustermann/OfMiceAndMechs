@@ -187,11 +187,6 @@ class Terrain:
             result.append(room)
         return result
 
-    def getCharactersOnTile(self,position):
-        if len(position) < 3:
-            position = (position[0],position[1],0)
-        return self.charactersByTile.get(position,[])
-
     def getCharactersOnPosition(self,position,faction=None,enemies=False):
         out = []
         for character in self.characters:
@@ -1799,6 +1794,9 @@ class Terrain:
         if not pos:
             pos = character.getBigPosition()
 
+        return self.getCharactersOnTile(pos,character=character,enemiesOnly=True)
+
+    def getCharactersOnTile(self,pos,character=None,enemiesOnly=False,alliesOnly=False):
         if pos == (0,0,0):
             return []
 
@@ -1807,7 +1805,9 @@ class Terrain:
         for otherChar in otherChars:
             if character == otherChar:
                continue
-            if character.faction == otherChar.faction:
+            if enemiesOnly and character.faction == otherChar.faction:
+               continue
+            if alliesOnly and character.faction != otherChar.faction:
                continue
             if otherChar.dead:
                continue
@@ -1819,7 +1819,9 @@ class Terrain:
             for otherChar in room.characters:
                 if character == otherChar:
                    continue
-                if character.faction == otherChar.faction:
+                if enemiesOnly and character.faction == otherChar.faction:
+                   continue
+                if alliesOnly and character.faction != otherChar.faction:
                    continue
                 if otherChar.dead:
                    continue

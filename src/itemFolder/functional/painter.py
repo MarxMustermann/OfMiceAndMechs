@@ -237,7 +237,6 @@ This should be used in cases where you can not place the Painter on the position
         Parameters:
             character: the character activating the marker bean
         '''
-        super().apply(character)
         if isinstance(character.container,src.rooms.Room):
 
             room = character.container

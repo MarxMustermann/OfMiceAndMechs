@@ -4138,8 +4138,11 @@ def getTcodEvents():
                     break
 
                 if not handled_click:
+
+                    # allow to click away submenus
                     if src.gamestate.gamestate.mainChar.macroState.get("submenue"):
-                        if (    raw_click_pos[0] < last_menu_position[0] or 
+                        if not last_menu_position or (
+                                raw_click_pos[0] < last_menu_position[0] or
                                 raw_click_pos[0] > last_menu_position[0]+last_menu_dimension[0]*tileWidth or 
                                 raw_click_pos[1] < last_menu_position[1] or 
                                 raw_click_pos[1] > last_menu_position[1]+last_menu_dimension[1]*tileHeight):

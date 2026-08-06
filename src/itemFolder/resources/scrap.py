@@ -229,6 +229,11 @@ There is {self.amount} in this pile
             character: the character trying to add more scrap to the stack
         """
 
+        # only allow the item to be used when placed somewhere
+        if not (isinstance(self.container,src.rooms.Room) or isinstance(self.container,src.terrains.Terrain)):
+            character.notify("You need to place the scrap to be able to add to it.")
+            return
+
         scrapFound = []
         for item in character.inventory:
             if item.type == "Scrap":

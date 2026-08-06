@@ -4088,6 +4088,7 @@ def moveCharacterTowardsCursor():
 freeze_game = False
 freeze_num_quests = 0
 lastcheck = time.time()
+lastInteractionType = None
 def getTcodEvents():
     src.gamestate.gamestate.waitedForInputThisTurn = True
     global lastcheck
@@ -4097,6 +4098,7 @@ def getTcodEvents():
     global mouseCombatLastMove
     global mouseCombatMap
     global freeze_game
+    global lastInteractionType
 
     foundEvent = False
 
@@ -4110,12 +4112,15 @@ def getTcodEvents():
 
             foundEvent = True
             if isinstance(event, tcod.event.MouseButtonUp):
+                lastInteractionType = "mouse"
                 mouseCombatMove = False
                 mouseCombatLastMove = None
                 mouseCombatMap = None
             if isinstance(event, tcod.event.MouseMotion):
+                lastInteractionType = "mouse"
                 mousePos = event.position
             if isinstance(event, tcod.event.MouseButtonDown):
+                lastInteractionType = "mouse"
                 handled_click = False
 
                 raw_click_pos = event.position
@@ -4385,6 +4390,7 @@ def getTcodEvents():
                     renderGameDisplay()
 
             if isinstance(event,tcod.event.KeyDown):
+                lastInteractionType = "keyboard"
                 if not (event.mod & tcod.event.Modifier.CTRL):
                     freeze_game = False
                 if inputBlock and inputBlock > time.time():
@@ -4595,6 +4601,7 @@ def getTcodEvents():
                 ignoreNext = True
 
             if isinstance(event,tcod.event.KeyUp):
+                lastInteractionType = "keyboard"
                 if not (event.mod & tcod.event.Modifier.CTRL):
                     freeze_game = False
                 key = event.sym
@@ -4602,6 +4609,7 @@ def getTcodEvents():
                     freeze_game = False
 
             if isinstance(event,tcod.event.TextInput):
+                lastInteractionType = "keyboard"
                 if ignoreNext:
                     ignoreNext = False
                     continue
@@ -5515,7 +5523,7 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                         output.append([marker_render,(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),[" ",marker[0]," ",extra_info,str(check_pos)," "])])
 
             # show legend for hovered over position
-            if mousePos:
+            if lastInteractionType == "mouse" and mousePos:
 
                 # show legend for hovered over ui element
                 raw_click_pos = mousePos

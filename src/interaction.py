@@ -4940,6 +4940,7 @@ def calculate_UI_layout(char):
     uiElements.append({"type":"healthInfo","offset":[(assumedScreenWidth-mapWidth)//2,1],"width":mapWidth})
     uiElements.append({"type":"indicators","offset":[(assumedScreenWidth-mapWidth)//2,2],"width":mapWidth})
     uiElements.append({"type":"legend","offset":[0,tcodConsole.height-2],"width":assumedScreenWidth,"height":3})
+    uiElements.append({"type":"key_help","offset":[0,tcodConsole.height-3],"width":assumedScreenWidth,"height":2})
 
     if not char.hasMagic:
         displayString = "press ? for help"
@@ -5618,6 +5619,87 @@ def renderGameDisplay(renderChar=None,showSaving=False):
             renderedToTexture = console_render.render(root_console)
             sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
             printUrwidToSDL(output,uiElement["offset"])
+
+        if uiElement["type"] == "key_help":
+
+            # calculate where to draw the key help
+            offsetLeft = uiElement["offset"][0]*tileWidth*2
+            offsetTop = uiElement["offset"][1]*tileHeight
+
+            # get a console to render the key help with
+            root_console = tcod.console.Console(uiElement["width"], uiElement["height"], order="F")
+
+            # collet the information bits
+            information = []
+
+            # show the key to talk to allies
+            foundAlly = False
+            for ally in char.getNearbyAllies():
+                if ally.container != char.container:
+                    continue
+                foundAlly = True
+            if foundAlly:
+                information.append("h to chat")
+
+            # show the key to attack enemies
+            enemy_directions = []
+            for enemy in char.getNearbyEnemies():
+                if enemy.container != char.container:
+                    continue
+                if enemy.getPosition() == char.getPosition(offset=(1,0,0)):
+                    enemy_directions.append("d")
+                if enemy.getPosition() == char.getPosition(offset=(-1,0,0)):
+                    enemy_directions.append("a")
+                if enemy.getPosition() == char.getPosition(offset=(0,1,0)):
+                    enemy_directions.append("s")
+                if enemy.getPosition() == char.getPosition(offset=(0,-1,0)):
+                    enemy_directions.append("w")
+            for direction in enemy_directions:
+                information.append(f"{direction} to attack")
+
+            # show pick keys
+            items = char.container.getItemByPosition(char.getPosition(offset=(0,-1,0)))
+            if items and not items[0].bolted:
+                information.append("Kw to pick up item north")
+            items = char.container.getItemByPosition(char.getPosition(offset=(0,1,0)))
+            if items and not items[0].bolted:
+                information.append("Ks to pick up item south")
+            items = char.container.getItemByPosition(char.getPosition(offset=(-1,0,0)))
+            if items and not items[0].bolted:
+                information.append("Ka to pick up item west")
+            items = char.container.getItemByPosition(char.getPosition(offset=(1,0,0)))
+            if items and not items[0].bolted:
+                information.append("Kd to pick up item east")
+
+            # show movement keys
+            if len(information) < 4:
+                if char.container.getPositionWalkable(char.getPosition(offset=(-1,0,0))) and "a" not in enemy_directions:
+                    information.append("a to move west")
+                if char.container.getPositionWalkable(char.getPosition(offset=(1,0,0))) and "d" not in enemy_directions:
+                    information.append("d to move east")
+                if char.container.getPositionWalkable(char.getPosition(offset=(0,-1,0))) and "w" not in enemy_directions:
+                    information.append("w to move north")
+                if char.container.getPositionWalkable(char.getPosition(offset=(0,1,0))) and "s" not in enemy_directions:
+                    information.append("s to move south")
+
+            # show no key for submenues
+            if char.macroState.get("submenue"):
+                information = []
+
+            # draw the key help onto the screen
+            output = []
+            output.append(" - ".join(information))
+            output = [(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),output)]
+            output_width = len(stringifyUrwid(output))
+            output.insert(0," "*((root_console.width-output_width)//2))
+            output.insert(0,"\n")
+            printUrwidToTcod(output,(0,0),explecitConsole=root_console)
+            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_map)
+            console_render = tcod.render.SDLConsoleRender(atlas)
+            renderedToTexture = console_render.render(root_console)
+            sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
+            printUrwidToSDL(output,uiElement["offset"])
+
 
     submenue = char.macroState.get("submenue")
     

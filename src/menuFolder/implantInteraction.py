@@ -828,7 +828,7 @@ They will complete tasks on the base.
             # help groundskeeper
             shown_help = False
             extraDescriptions["help"] = "Helping the groundskeeper will make it complete its work faster."
-            if groundsKeeper and not groundskeepers_place.getItemByType("Anvil") or not groundskeepers_place.getItemByType("MetalWorkingBench"):
+            if groundsKeeper and (not groundskeepers_place.getItemByType("Anvil") or not groundskeepers_place.getItemByType("MetalWorkingBench")):
                 options.append(("help","help groundskeeper"))
                 shown_help = True
 

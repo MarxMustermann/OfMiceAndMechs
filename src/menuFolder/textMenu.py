@@ -59,12 +59,6 @@ class TextMenu(src.menues.SubMenu):
             self.callIndirect(self.specialKeys[key])
             return True
 
-        if not noRender:
-            # show info
-            src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), ""))
-            self.persistentText = self.render()
-            src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.persistentText))
-
         return False
 
     def render(self,size=None):

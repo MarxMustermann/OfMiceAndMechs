@@ -354,10 +354,16 @@ if __name__ == '__main__':
                         src.interaction.sdl_renderer2.present()
 
     except Exception as e:
-        if src.interaction.tcodMixer:
-            src.interaction.tcodMixer.close()
+        try:
+            if src.interaction.tcodMixer:
+                src.interaction.tcodMixer.close()
+        except:
+            pass
 
-        if src.interaction.sdl_window.fullscreen:
-            src.interaction.sdl_window.fullscreen = False
+        try:
+            if src.interaction.sdl_window.fullscreen:
+                src.interaction.sdl_window.fullscreen = False
+        except:
+            pass
 
         raise e

@@ -9,7 +9,7 @@ class Equip(src.quests.MetaQuestSequence):
     type = "Equip"
     lowLevel = True
 
-    def __init__(self, description="equip", creator=None, command=None, lifetime=None, noRods=False, reason=None, story=None, tryHard=False):
+    def __init__(self, description="equip", creator=None, command=None, lifetime=None, noRods=False, reason=None, story=None, tryHard=False, weaponOnly=False):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = description
@@ -19,6 +19,7 @@ class Equip(src.quests.MetaQuestSequence):
         self.reason = reason
         self.story = story
         self.tryHard = tryHard
+        self.weaponOnly = weaponOnly
 
     def generateTextDescription(self):
         '''
@@ -33,11 +34,24 @@ class Equip(src.quests.MetaQuestSequence):
         sword = src.items.itemMap["Sword"]()
         armor = src.items.itemMap["Armor"]()
         rod = src.items.itemMap["Rod"]()
-        return [f"""{storyString}
+        text = []
+        text.extend([f"""{storyString}
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Equip yourself"),reasonString,"""
-A Sword (""",sword.metaRender(),""") and Armor (""",armor.metaRender(),""") are good equipment.
-A Rod (""",rod.metaRender(),""")will work as an improvised weapon as well.
+A Sword (""",sword.metaRender(),""") and Armor (""",armor.metaRender(),""") are good equipment."""])
+        if self.weaponOnly:
+            text.extend(["""
+You only need to equip a weapon."""])
 
+        try:
+            self.noRods
+        except:
+            self.noRods = False
+        if not self.noRods:
+            text.extend(["""
+A Rod (""",rod.metaRender(),""")will work as an improvised weapon as well.
+"""])
+
+        text.extend(["""
 You can try to find equipment in storage.
 Alternatively fetch your equipment directly from the production line.
 If you find some other source for equipment, that is fine, too.
@@ -47,7 +61,9 @@ The differences are significant.
 
 Armor can absorb 1 to 5 damage depending on quality.
 Swords can range from 10 to 25 damage per hit.
-"""]
+"""])
+
+        return text
 
     def wrapedTriggerCompletionCheck(self, extraInfo):
         '''
@@ -103,6 +119,8 @@ Swords can range from 10 to 25 damage per hit.
             weapon = item
 
         if character.armor:
+            armor = None
+        if self.weaponOnly:
             armor = None
         if character.weapon:
             weapon = None

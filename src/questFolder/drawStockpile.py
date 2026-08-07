@@ -183,8 +183,28 @@ Try as hard as you can to achieve this.
                     if (key not in item.paintExtraInfo) or (value != item.paintExtraInfo[key]):
                         return (None,(["e",key,"enter",value,"enter"],"clear the painters extra info"))
 
-                if item.offset != (0, 0, 0):
-                    return (None,(["d", ".", "enter"],"remove the offset from the painter"))
+                # check what direction to paint in
+                offsets = ((0,0,0),(0,1,0),(1,0,0),(0,-1,0),(-1,0,0))
+                foundOffset = None
+                for offset in offsets:
+                    if character.getPosition(offset=offset) == self.targetPosition:
+                        foundOffset = offset
+
+                if foundOffset == (0,0,0):
+                    if item.offset != (0, 0, 0):
+                        return (None,(["d", ".", "enter"],"remove offset for the painter"))
+                if foundOffset == (1,0,0):
+                    if item.offset != (1, 0, 0):
+                        return (None,(["d", "d", "enter"],"set offset for the painter"))
+                if foundOffset == (-1,0,0):
+                    if item.offset != (-1, 0, 0):
+                        return (None,(["d", "a", "enter"],"set offset for the painter"))
+                if foundOffset == (0,1,0):
+                    if item.offset != (0, 1, 0):
+                        return (None,(["d", "s", "enter"],"set offset for the painter"))
+                if foundOffset == (0,-1,0):
+                    if item.offset != (0, -1, 0):
+                        return (None,(["d", "w", "enter"],"set offset for the painter"))
 
             # set painting mode
             if submenue.tag == "paintModeSelection":
@@ -275,11 +295,31 @@ Try as hard as you can to achieve this.
 
             # configure the painting direction
             if submenue.tag == "paintDirectionSelection":
-                if submenue.text == ".":
-                    return (None,(["enter"],"remove the offset from the painter"))
+
+                # check what direction to paint in
+                offsets = ((0,0,0),(0,1,0),(1,0,0),(0,-1,0),(-1,0,0))
+                foundOffset = None
+                for offset in offsets:
+                    if character.getPosition(offset=offset) == self.targetPosition:
+                        foundOffset = offset
+
+                direction = "."
+                if foundOffset == (0,0,0):
+                    direction = "."
+                if foundOffset == (0,1,0):
+                    direction = "s"
+                if foundOffset == (1,0,0):
+                    direction = "d"
+                if foundOffset == (0,-1,0):
+                    direction = "w"
+                if foundOffset == (-1,0,0):
+                    direction = "a"
+
+                if submenue.text == direction:
+                    return (None,(["enter"],"set the offset from the painter"))
                 if submenue.text != "":
                     return (None,(["backspace"],"remove mistyped characters"))
-                return (None,([".", "enter"],"remove the offset from the painter"))
+                return (None,([direction, "enter"],"remove the offset from the painter"))
 
         # set up helper variables
         rooms = character.getTerrain().getRoomByPosition(self.targetPositionBig)
@@ -316,8 +356,8 @@ Try as hard as you can to achieve this.
         if self.targetPositionBig != character.getBigPosition():
             quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="go to the tile the stockpile should be drawn on")
             return ([quest],None)
-        if character.getDistance(self.targetPosition) > 0:
-            quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,reason="get to the drawing spot")
+        if character.getDistance(self.targetPosition) > 1:
+            quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,reason="get to the drawing spot",ignoreEndBlocked=True)
             return ([quest],None)
 
         # check what direction to paint in
@@ -345,8 +385,22 @@ Try as hard as you can to achieve this.
         for (key,value) in self.extraInfo.items():
             if (key not in item.paintExtraInfo) or (value != item.paintExtraInfo[key]):
                 return (None,(["C","i","e",key,"enter",value,"enter"],"clear the painters extra info"))
-        if item.offset != (0, 0, 0):
-            return (None,(["C", "i", "d", ".", "enter"],"remove the offset from the painter"))
+
+        if foundOffset == (0,0,0):
+            if item.offset != (0, 0, 0):
+                return (None,(["C", "i", "d", ".", "enter"],"remove the offset from the painter"))
+        if foundOffset == (1,0,0):
+            if item.offset != (1, 0, 0):
+                return (None,(["C", "i", "d", "d", "enter"],"set the offset for the painter"))
+        if foundOffset == (-1,0,0):
+            if item.offset != (-1, 0, 0):
+                return (None,(["C", "i", "a", "d", "enter"],"set the offset for the painter"))
+        if foundOffset == (0,1,0):
+            if item.offset != (0, 1, 0):
+                return (None,(["C", "i", "s", "d", "enter"],"set the offset for the painter"))
+        if foundOffset == (0,-1,0):
+            if item.offset != (0, -1, 0):
+                return (None,(["C", "i", "w", "d", "enter"],"set the offset for the painter"))
 
         # draw the marker
         return (None,("Ji","draw the stockpile"))

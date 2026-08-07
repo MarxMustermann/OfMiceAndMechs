@@ -98,7 +98,7 @@ class Golem(src.monster.Monster):
         if not self.level:
             self.level = 1
         shade = int(255-((255/7)*self.level))
-        return (src.interaction.urwid.AttrSpec((255,shade,shade),"#000"), "@@")
+        return (src.interaction.urwid.AttrSpec((255,shade,shade),"#000"), "GK")
 
     def generateQuests(self):
 

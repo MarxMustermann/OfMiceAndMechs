@@ -359,8 +359,6 @@ Try as hard as you can to achieve this.
             quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,reason="get to the drawing spot",ignoreEndBlocked=True)
             return ([quest],None)
 
-        foundOffset = self._get_target_offset()
-
         # configure the Painter
         if self.stockpileType == "i" and item.paintMode != "inputSlot":
             return (None,(["C","i","m","i","enter"],"configure the painter to input stockpile"))
@@ -380,6 +378,8 @@ Try as hard as you can to achieve this.
             if (key not in item.paintExtraInfo) or (value != item.paintExtraInfo[key]):
                 return (None,(["C","i","e",key,"enter",value,"enter"],"clear the painters extra info"))
 
+        # set the painter offset
+        foundOffset = self._get_target_offset()
         if item.offset != foundOffset:
             direction_map = {(1,0,0):"d",(-1,0,0):"a",(0,1,0):"s",(0,-1,0):"w",(0,0,0):"."}
             direction = direction_map.get(foundOffset,".")

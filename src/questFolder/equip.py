@@ -124,7 +124,7 @@ Swords can range from 10 to 25 damage per hit.
 
         (weapon,armor) = self.findEquipment(character)
 
-        if weapon or weapon:
+        if weapon or armor:
             return False
 
         if ("metal working" in character.duties or self.tryHard) and (not character.weapon or not character.armor):

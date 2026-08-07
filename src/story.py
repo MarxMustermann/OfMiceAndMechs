@@ -2680,13 +2680,13 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         currentTerrain.addItem(rod,pos)
         for _i in range(10):
             amount = random.randint(1,3)
-            pos = (big_pos[0]*15+random.randint(1,14),big_pos[1]*15+random.randint(1,14),0)
+            pos = (big_pos[0]*15+random.randint(1,13),big_pos[1]*15+random.randint(1,13),0)
             if currentTerrain.getItemByPosition(pos):
                 continue
             scrap = src.items.itemMap["Scrap"](amount=amount)
             currentTerrain.addItem(scrap,pos)
         for _i in range(10):
-            pos = (big_pos[0]*15+random.randint(1,14),big_pos[1]*15+random.randint(1,14),0)
+            pos = (big_pos[0]*15+random.randint(1,13),big_pos[1]*15+random.randint(1,13),0)
             if currentTerrain.getItemByPosition(pos):
                 continue
             mold = src.items.itemMap["Mold"]()
@@ -2694,7 +2694,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
             currentTerrain.addItem(mold,pos)
 
         for _i in range(3):
-            pos = (big_pos[0]*15+random.randint(1,14),big_pos[1]*15+random.randint(1,14),0)
+            pos = (big_pos[0]*15+random.randint(1,13),big_pos[1]*15+random.randint(1,13),0)
             if currentTerrain.getItemByPosition(pos):
                 continue
             rod = src.items.itemMap["Rod"]()
@@ -3309,7 +3309,9 @@ sure i'll produce equipment for you as long as you bring me the raw material.
             used_spots.append(big_pos)
             for _i in range(100):
                 amount = random.randint(1,15)
-                pos = (big_pos[0]*15+random.randint(1,14),big_pos[1]*15+random.randint(1,14),0)
+                pos = (big_pos[0]*15+random.randint(1,13),big_pos[1]*15+random.randint(1,13),0)
+                if (pos[0]%15,pos[1]%15,0) in [(1,7,0),(7,1,0),(13,7,0),(7,13,0)]:
+                    continue
                 if currentTerrain.getItemByPosition(pos):
                     continue
                 scrap = src.items.itemMap["Scrap"](amount=amount)
@@ -3319,7 +3321,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                 for _i in range(1,10):
                     wall = src.items.itemMap["Wall"]()
                     wall.bolted = False
-                    pos = (big_pos[0]*15+random.randint(1,14),big_pos[1]*15+random.randint(1,14),0)
+                    pos = (big_pos[0]*15+random.randint(1,13),big_pos[1]*15+random.randint(1,13),0)
                     if not currentTerrain.getItemByPosition(pos):
                         currentTerrain.addItem(wall,pos)
 
@@ -3337,7 +3339,9 @@ sure i'll produce equipment for you as long as you bring me the raw material.
             used_spots.append(big_pos)
             for _i in range(100):
                 amount = random.randint(1,15)
-                pos = (big_pos[0]*15+random.randint(1,14),big_pos[1]*15+random.randint(1,14),0)
+                pos = (big_pos[0]*15+random.randint(1,13),big_pos[1]*15+random.randint(1,13),0)
+                if (pos[0]%15,pos[1]%15,0) in [(1,7,0),(7,1,0),(13,7,0),(7,13,0)]:
+                    continue
                 if currentTerrain.getItemByPosition(pos):
                     continue
                 scrap = src.items.itemMap["Scrap"](amount=amount)
@@ -3403,7 +3407,9 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                     scrap_amount = 40
                 for _i in range(scrap_amount):
                     amount = random.randint(1,15)
-                    pos = (big_x*15+random.randint(1,14),big_y*15+random.randint(1,14),0)
+                    pos = (big_x*15+random.randint(1,13),big_y*15+random.randint(1,13),0)
+                    if (pos[0]%15,pos[1]%15,0) in [(1,7,0),(7,1,0),(13,7,0),(7,13,0)]:
+                        continue
                     if currentTerrain.getItemByPosition(pos):
                         continue
                     scrap = src.items.itemMap["Scrap"](amount=amount)

@@ -2842,6 +2842,8 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         main_npc.flask.uses = 100
         main_npc.faction = faction
 
+        main_npc.weapon = src.items.itemMap["Sword"](baseDamage=23)
+
         main_npc.duties = []
         main_npc.registers["HOMEx"] = 7
         main_npc.registers["HOMEy"] = 4

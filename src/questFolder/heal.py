@@ -163,6 +163,7 @@ If you have no healing items, then you can just wait over time.
                 if room.tag == "temple":
                     quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),reason="get to the Regenerator")
                     return ([quest],None)
+            return (None,("..........","wait to heal"))
 
         # fail
         return self._solver_trigger_fail(dryRun,"no way to heal")

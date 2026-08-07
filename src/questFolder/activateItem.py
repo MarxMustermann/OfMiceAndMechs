@@ -25,11 +25,13 @@ class ActivateItem(src.quests.MetaQuestSequence):
         generate the next step toward solving the quest
         '''
 
+        # handle weird edge cases
         if self.subQuests:
             return (None,None)
-
         if not character:
             return (None,None)
+        if character.getNearbyEnemies():
+            return self._solver_trigger_fail(dryRun,"enemies nearby")
 
         # enter rooms properly
         if not character.container.isRoom:

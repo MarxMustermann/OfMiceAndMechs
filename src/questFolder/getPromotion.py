@@ -62,11 +62,14 @@ Every promotion you will make you stronger by access to a perk.
         '''
         calculate the next step towards solving the quest
         '''
+
+        # handle weird edge cases
         if self.subQuests:
             return (None,None)
-
         if not character:
             return (None,None)
+        if character.getNearbyEnemies():
+            return self._solver_trigger_fail(dryRun,"enemies nearby")
 
         submenue = character.macroState.get("submenue")
         if submenue and not ignoreCommands:

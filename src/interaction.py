@@ -5348,7 +5348,7 @@ def renderGameDisplay(renderChar=None,showSaving=False):
 
     # hide the special render on automated moves
     hide_specialRender = False
-    if char.macroState["commandKeyQueue"] or (char.getActiveQuest() and char.getActiveQuest().autoSolve):
+    if len(char.macroState["commandKeyQueue"]) > 1 or (char.getActiveQuest() and char.getActiveQuest().autoSolve):
         hide_specialRender = True
 
     uiElements = src.gamestate.gamestate.uiElements

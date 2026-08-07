@@ -571,14 +571,12 @@ def send_tracking_ping(eventType):
     def send_d():
         t = time.time()
         res = requests.post(
-            "http://ofmiceandmechs.com/userTracking.php",
+            "https://ofmiceandmechs.com/userTracking.php",
             {
                 "userId": src.interaction.settings.get("trackingId",""),
                 "eventType": eventType,
             },
         )
-        print(res)
-        print(res.text)
         diff = time.time() - t
         if diff < 2:
             time.sleep(diff)
@@ -6976,7 +6974,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                                 change_game_settings = True
                             case "open feedback form":
                                 import webbrowser
-                                webbrowser.open("http://ofmiceandmechs.com/playtest_questionaire.php", new=1)
+                                webbrowser.open("https://ofmiceandmechs.com/playtest_questionaire.php", new=1)
                             case _:
                                 pass
 
@@ -7024,7 +7022,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                     webbrowser.open("https://discord.gg/z5QfwfzWCn", new=1)
                 if key == tcod.event.KeySym.o:
                     import webbrowser
-                    webbrowser.open("http://ofmiceandmechs.com/", new=1)
+                    webbrowser.open("https://ofmiceandmechs.com/", new=1)
                 if key == tcod.event.KeySym.c:
                     import webbrowser
                     webbrowser.open("https://github.com/MarxMustermann/OfMiceAndMechs", new=1)
@@ -7287,13 +7285,13 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                         key = event.sym
                         if key == tcod.event.KeySym.f:
                             import webbrowser
-                            webbrowser.open_new_tab("http://ofmiceandmechs.com/playtest_questionaire.php")
+                            webbrowser.open_new_tab("https://ofmiceandmechs.com/playtest_questionaire.php")
                         if key == tcod.event.KeySym.z:
                             import webbrowser
                             webbrowser.open_new_tab("https://discord.gg/z5QfwfzWCn")
                         if key == tcod.event.KeySym.x:
                             import webbrowser
-                            webbrowser.open_new_tab("http://ofmiceandmechs.com/")
+                            webbrowser.open_new_tab("https://ofmiceandmechs.com/")
                         if key == tcod.event.KeySym.c:
                             import webbrowser
                             webbrowser.open_new_tab("https://github.com/MarxMustermann/OfMiceAndMechs")
@@ -8521,7 +8519,7 @@ press esc to return to main menu
                     continue_game = True
                 if key in (tcod.event.KeySym.RETURN, tcod.event.KeySym.KP_ENTER):
                     import webbrowser
-                    webbrowser.open_new_tab("http://ofmiceandmechs.com/playtest_questionaire.php")
+                    webbrowser.open_new_tab("https://ofmiceandmechs.com/playtest_questionaire.php")
                 if key == tcod.event.KeySym.c:
                     return
 

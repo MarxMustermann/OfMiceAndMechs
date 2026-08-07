@@ -262,7 +262,7 @@ the floorplan is available in basebuilder mode and main game now""")
             return
         if extraParams["upload"] == "yes":
             converted = self.convertFloorPlanToDict(self.floorPlan)
-            requests.post("http://ofmiceandmechs.com/floorPlanDump.php",{"floorPlan":json.dumps(converted)})
+            requests.post("https://ofmiceandmechs.com/floorPlanDump.php",{"floorPlan":json.dumps(converted)})
 
     def generateFloorPlan(self):
         import copy

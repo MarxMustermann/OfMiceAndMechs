@@ -58,12 +58,6 @@ Swords can range from 10 to 25 damage per hit.
 
         self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
-    def handleMoved(self,extraInfo=None):
-        '''
-        try to fix the quests states with every move
-        '''
-        self.subQuestCompleted()
-
     def assignToCharacter(self, character):
         '''
         listen for the character to move or equip stuff
@@ -72,7 +66,6 @@ Swords can range from 10 to 25 damage per hit.
             return
 
         self.startWatching(character,self.wrapedTriggerCompletionCheck, "equipedItem")
-        self.startWatching(character,self.handleMoved, "moved")
         super().assignToCharacter(character)
 
     def findEquipment(self,character):
@@ -133,21 +126,6 @@ Swords can range from 10 to 25 damage per hit.
         if dryRun:
             self.postHandler()
         return True
-
-    def clearCompletedSubquest(self):
-        '''
-        remove completed subquests (hack)
-        '''
-        while self.subQuests and self.subQuests[0].completed:
-            self.subQuests.remove(self.subQuests[0])
-
-    def subQuestCompleted(self,extraInfo=None):
-        '''
-        hande a subquest beeing completed
-        '''
-        self.clearCompletedSubquest()
-        if not self.subQuests:
-            self.generateSubquests(self.character)
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
         '''

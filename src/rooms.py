@@ -862,7 +862,7 @@ class Room:
     def getEnemiesOnTile(self,character,pos=None):
         if not pos:
             pos = character.getBigPosition()
-        self.getEnemiesOnTile(pos,character=character,enemiesOnly=True)
+        return self.getCharactersOnTile(pos,character=character,enemiesOnly=True)
 
     def getCharactersOnTile(self,pos,character=None,enemiesOnly=False,alliesOnly=False):
         if pos:

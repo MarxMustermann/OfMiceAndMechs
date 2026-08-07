@@ -312,6 +312,9 @@ class ImplantInteraction(src.menues.SubMenu):
                             if not found_serious_enemies:
                                 suicidal = True
                             quests.append(src.quests.questMap["Fight"](suicidal=suicidal))
+                        elif task_type == "flee":
+                            quests.append(src.quests.questMap["Flee"]())
+                            quests.append(src.quests.questMap["GoToTile"](targetPosition=groundskeepers_place.getPosition()))
                         elif task_type == "restore_groundskeepers_place":
                             quests.append(src.quests.questMap["DoGroundskeeping"](onlyDoBasicSetup=True))
 
@@ -459,7 +462,8 @@ use the """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"blac
 
         # kill nearby enemies
         if character.getNearbyEnemies():
-            base_text = ["""
+            if not character.is_low_health():
+                base_text = ["""
 """,(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"There is an enemy nearby."),"""
 
 It likely is agressive and will try to hurt you.
@@ -467,7 +471,15 @@ It likely is agressive and will try to hurt you.
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to kill the enemy?"""),"""
 """]
-            self._spawnSpawnTaskMenu(base_text,"fight")
+                self._spawnSpawnTaskMenu(base_text,"fight")
+                return False
+            base_text = ["""
+""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You are hurt and flee."),"""
+
+
+""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"""Shall i assign you a quest to flee?"""),"""
+"""]
+            self._spawnSpawnTaskMenu(base_text,"flee")
             return False
 
         # wake builder

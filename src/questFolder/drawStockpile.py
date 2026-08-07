@@ -142,6 +142,16 @@ Try as hard as you can to achieve this.
         super().handleQuestFailure(extraParam)
         self.fail(extraParam["reason"])
 
+    def _get_target_offset(self):
+
+        # check what direction to paint in
+        offsets = ((0,0,0),(0,1,0),(1,0,0),(0,-1,0),(-1,0,0))
+        foundOffset = None
+        for offset in offsets:
+            if character.getPosition(offset=offset) == self.targetPosition:
+                foundOffset = offset
+        return foundOffset
+
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
         '''
         get the next step towards solving the quest
@@ -183,13 +193,7 @@ Try as hard as you can to achieve this.
                     if (key not in item.paintExtraInfo) or (value != item.paintExtraInfo[key]):
                         return (None,(["e",key,"enter",value,"enter"],"clear the painters extra info"))
 
-                # check what direction to paint in
-                offsets = ((0,0,0),(0,1,0),(1,0,0),(0,-1,0),(-1,0,0))
-                foundOffset = None
-                for offset in offsets:
-                    if character.getPosition(offset=offset) == self.targetPosition:
-                        foundOffset = offset
-
+                foundOffset = self._get_target_offset()
                 if foundOffset == (0,0,0):
                     if item.offset != (0, 0, 0):
                         return (None,(["d", ".", "enter"],"remove offset for the painter"))
@@ -296,12 +300,7 @@ Try as hard as you can to achieve this.
             # configure the painting direction
             if submenue.tag == "paintDirectionSelection":
 
-                # check what direction to paint in
-                offsets = ((0,0,0),(0,1,0),(1,0,0),(0,-1,0),(-1,0,0))
-                foundOffset = None
-                for offset in offsets:
-                    if character.getPosition(offset=offset) == self.targetPosition:
-                        foundOffset = offset
+                foundOffset = self._get_target_offset()
 
                 direction = "."
                 if foundOffset == (0,0,0):
@@ -360,12 +359,7 @@ Try as hard as you can to achieve this.
             quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,reason="get to the drawing spot",ignoreEndBlocked=True)
             return ([quest],None)
 
-        # check what direction to paint in
-        offsets = ((0,0,0),(0,1,0),(1,0,0),(0,-1,0),(-1,0,0))
-        foundOffset = None
-        for offset in offsets:
-            if character.getPosition(offset=offset) == self.targetPosition:
-                foundOffset = offset
+        foundOffset = self._get_target_offset()
 
         # configure the Painter
         if self.stockpileType == "i" and item.paintMode != "inputSlot":

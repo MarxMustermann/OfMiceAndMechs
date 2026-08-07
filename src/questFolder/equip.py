@@ -9,11 +9,11 @@ class Equip(src.quests.MetaQuestSequence):
     type = "Equip"
     lowLevel = True
 
-    def __init__(self, description="equip", creator=None, command=None, lifetime=None, weaponOnly=False, reason=None, story=None, tryHard=False):
+    def __init__(self, description="equip", creator=None, command=None, lifetime=None, noRods=False, reason=None, story=None, tryHard=False):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = description
-        self.weaponOnly = weaponOnly
+        self.noRods = noRods
 
         self.shortCode = "e"
         self.reason = reason
@@ -84,7 +84,7 @@ Swords can range from 10 to 25 damage per hit.
                     armor = item
                     break
             items = room.getItemsByType("Sword")
-            if not self.weaponOnly:
+            if not self.noRods:
                 items.extend(room.getItemsByType("Rod"))
             for item in items:
                 if not weapon:
@@ -97,7 +97,7 @@ Swords can range from 10 to 25 damage per hit.
                 sword = item
                 break
         items = character.searchInventory("Sword")
-        if not self.weaponOnly:
+        if not self.noRods:
             items.extend(character.searchInventory("Rod"))
         for item in items:
             weapon = item

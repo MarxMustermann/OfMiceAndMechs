@@ -154,7 +154,7 @@ class ImplantInteraction(src.menues.SubMenu):
                             quests.append(src.quests.questMap["ClearInventory"](returnToTile=False))
                         quests.append(src.quests.questMap["GoToTile"](targetPosition=(7,5,0)))
                         quests.append(src.quests.questMap["Scavenge"](toCollect="Rod",amountToCollect=1,ignoreAlarm=True))
-                        quests.append(src.quests.questMap["Equip"]())
+                        quests.append(src.quests.questMap["Equip"](weaponOnly=True))
                     if selection.startswith("fetch ") and len(selection.split(" ")) > 1:
 
                         # get item type

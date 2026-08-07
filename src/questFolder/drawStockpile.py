@@ -290,18 +290,8 @@ Try as hard as you can to achieve this.
             if submenue.tag == "paintDirectionSelection":
 
                 foundOffset = self._get_target_offset()
-
-                direction = "."
-                if foundOffset == (0,0,0):
-                    direction = "."
-                if foundOffset == (0,1,0):
-                    direction = "s"
-                if foundOffset == (1,0,0):
-                    direction = "d"
-                if foundOffset == (0,-1,0):
-                    direction = "w"
-                if foundOffset == (-1,0,0):
-                    direction = "a"
+                direction_map = {(1,0,0):"d",(-1,0,0):"a",(0,1,0):"s",(0,-1,0):"w",(0,0,0):"."}
+                direction = direction_map.get(foundOffset,".")
 
                 if submenue.text == direction:
                     return (None,(["enter"],"set the offset from the painter"))

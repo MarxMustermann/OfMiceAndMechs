@@ -381,17 +381,8 @@ Try as hard as you can to achieve this.
                 return (None,(["C","i","e",key,"enter",value,"enter"],"clear the painters extra info"))
 
         if item.offset != foundOffset:
-            direction = "."
-            if foundOffset == (1,0,0):
-                direction = "d"
-            if foundOffset == (-1,0,0):
-                direction = "a"
-            if foundOffset == (0,1,0):
-                direction = "s"
-            if foundOffset == (0,-1,0):
-                direction = "w"
-            if foundOffset == (0,0,0):
-                direction = "."
+            direction_map = {(1,0,0):"d",(-1,0,0):"a",(0,1,0):"s",(0,-1,0):"w",(0,0,0):"."}
+            direction = direction_map.get(foundOffset,".")
             return (None,(["C", "i", "d", direction, "enter"],"set the offset for the painter"))
 
         # draw the marker

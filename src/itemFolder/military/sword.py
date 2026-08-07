@@ -16,14 +16,16 @@ class Sword(src.items.Item):
     bolted = False
     walkable = True
 
-    def __init__(self,generateFrom=None,badQuality=False):
+    def __init__(self,generateFrom=None,badQuality=False,baseDamage=None):
         """
         set initial state
         """
 
         super().__init__(display="wt")
 
-        if badQuality:
+        if baseDamage:
+            self.baseDamage = baseDamage
+        elif badQuality:
             self.baseDamage = 11
         else:
             self.baseDamage = int(random.triangular(10,25,15))

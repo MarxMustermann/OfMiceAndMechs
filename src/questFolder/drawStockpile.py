@@ -195,8 +195,7 @@ Try as hard as you can to achieve this.
 
                 foundOffset = self._get_target_offset()
                 if item.offset != foundOffset:
-                    direction_map = {(1,0,0):"d",(-1,0,0):"a",(0,1,0):"s",(0,-1,0):"w",(0,0,0):"."}
-                    direction = direction_map.get(foundOffset,".")
+                    direction = self._get_direction_command()
                     return (None,(["d", direction, "enter"],"set offset for the painter"))
 
             # set painting mode
@@ -289,9 +288,7 @@ Try as hard as you can to achieve this.
             # configure the painting direction
             if submenue.tag == "paintDirectionSelection":
 
-                foundOffset = self._get_target_offset()
-                direction_map = {(1,0,0):"d",(-1,0,0):"a",(0,1,0):"s",(0,-1,0):"w",(0,0,0):"."}
-                direction = direction_map.get(foundOffset,".")
+                direction = self._get_direction_command()
 
                 if submenue.text == direction:
                     return (None,(["enter"],"set the offset from the painter"))
@@ -360,12 +357,16 @@ Try as hard as you can to achieve this.
         # set the painter offset
         foundOffset = self._get_target_offset()
         if item.offset != foundOffset:
-            direction_map = {(1,0,0):"d",(-1,0,0):"a",(0,1,0):"s",(0,-1,0):"w",(0,0,0):"."}
-            direction = direction_map.get(foundOffset,".")
+            direction = self._get_direction_command()
             return (None,(["C", "i", "d", direction, "enter"],"set the offset for the painter"))
 
         # draw the marker
         return (None,("Ji","draw the stockpile"))
+
+    def _get_direction_command(self):
+        direction_map = {(1,0,0):"d",(-1,0,0):"a",(0,1,0):"s",(0,-1,0):"w",(0,0,0):"."}
+        direction = direction_map.get(foundOffset,".")
+        return direction
 
     def getQuestMarkersTile(self,character):
         result = super().getQuestMarkersTile(character)

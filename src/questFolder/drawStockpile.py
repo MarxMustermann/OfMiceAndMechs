@@ -380,21 +380,19 @@ Try as hard as you can to achieve this.
             if (key not in item.paintExtraInfo) or (value != item.paintExtraInfo[key]):
                 return (None,(["C","i","e",key,"enter",value,"enter"],"clear the painters extra info"))
 
-        if foundOffset == (0,0,0):
-            if item.offset != (0, 0, 0):
-                return (None,(["C", "i", "d", ".", "enter"],"remove the offset from the painter"))
-        if foundOffset == (1,0,0):
-            if item.offset != (1, 0, 0):
-                return (None,(["C", "i", "d", "d", "enter"],"set the offset for the painter"))
-        if foundOffset == (-1,0,0):
-            if item.offset != (-1, 0, 0):
-                return (None,(["C", "i", "a", "d", "enter"],"set the offset for the painter"))
-        if foundOffset == (0,1,0):
-            if item.offset != (0, 1, 0):
-                return (None,(["C", "i", "s", "d", "enter"],"set the offset for the painter"))
-        if foundOffset == (0,-1,0):
-            if item.offset != (0, -1, 0):
-                return (None,(["C", "i", "w", "d", "enter"],"set the offset for the painter"))
+        if item.offset != foundOffset:
+            direction = "."
+            if foundOffset == (1,0,0):
+                direction = "d"
+            if foundOffset == (-1,0,0):
+                direction = "a"
+            if foundOffset == (0,1,0):
+                direction = "s"
+            if foundOffset == (0,-1,0):
+                direction = "w"
+            if foundOffset == (0,0,0):
+                direction = "."
+            return (None,(["C", "i", "d", direction, "enter"],"set the offset for the painter"))
 
         # draw the marker
         return (None,("Ji","draw the stockpile"))

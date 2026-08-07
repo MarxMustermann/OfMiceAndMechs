@@ -137,6 +137,8 @@ Swords can range from 10 to 25 damage per hit.
             return (None,None)
         if not character:
             return (None,None)
+        if character.getNearbyEnemies():
+            return self._solver_trigger_fail(dryRun,"enemies nearby")
 
         # find what to equip
         (weapon,armor) = self.findEquipment(character)

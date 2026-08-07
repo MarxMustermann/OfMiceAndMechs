@@ -24,8 +24,6 @@ class DoGroundskeeping(src.quests.MetaQuestSequence):
 
         # set up helper variable
         painter_stockpile_pos = (1,11,0)
-
-        # stock scrap
         storageSpaces = []
         for x in range(1,12):
             if x == 6:
@@ -54,7 +52,7 @@ class DoGroundskeeping(src.quests.MetaQuestSequence):
                 if room.getNonEmptyOutputslots("Painter"):
                     has_painter = True
 
-        # fetch Painter
+        # fetch Painter if not the actual groundskeeper
         if not has_painter and not isinstance(character,src.characters.characterMap["GroundsKeeper"]):
             for room in character.getTerrain().rooms:
                 painter = room.getItemByType("Painter")
@@ -68,6 +66,7 @@ class DoGroundskeeping(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["Adventure"]()
                 return ([quest],None)
 
+        # stack the scrap
         if not has_painter and not done_painting:
             if not character.getFreeInventorySpace():
                 dropSpot = random.choice(storageSpaces)
@@ -100,6 +99,17 @@ class DoGroundskeeping(src.quests.MetaQuestSequence):
                 return ([quest],None)
             quest = src.quests.questMap["DrawStockpile"](itemType="Painter",stockpileType="s",targetPositionBig=character.getBigPosition(),targetPosition=(1,11,0))
             return ([quest],None)
+
+        # draw the general purpose stockpiles first
+        rooms = character.getTerrain().getRoomsByTag(src.story.groundskeeper_room_tag)
+        if rooms:
+            room = rooms[0]
+            if room.floorPlan:
+                for storageSlot in room.floorPlan.get("storageSlots",[]):
+                    if storageSlot[1]:
+                        continue
+                    quest = src.quests.questMap["DrawStockpile"](stockpileType="s",targetPositionBig=room.getPosition(),targetPosition=storageSlot[0])
+                    return ([quest],None)
 
         # draw initial floorplan for the groundskeepers place
         rooms = character.getTerrain().getRoomsByTag(src.story.groundskeeper_room_tag)

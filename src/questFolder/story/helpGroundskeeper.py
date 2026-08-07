@@ -37,8 +37,16 @@ class HelpGroundskeeper(src.quests.MetaQuestSequence):
 
         # take care of enemies
         if character.getNearbyEnemies():
+            found_serious_enemy = False
+            for enemy in character.getNearbyEnemies():
+                if isinstance(enemy,src.characters.characterMap["Spiderling"]):
+                    continue
+                found_serious_enemy = True
             if character.is_low_health():
-                quest = src.quests.questMap["Flee"]()
+                if found_serious_enemy or character.health < 20:
+                    quest = src.quests.questMap["Flee"]()
+                    return ([quest],None)
+                quest = src.quests.questMap["Fight"](suicidal=True)
                 return ([quest],None)
             else:
                 quest = src.quests.questMap["Fight"]()

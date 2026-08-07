@@ -63,7 +63,7 @@ or use this item with MoldFeed in your inventory.
                 if item.type == "MoldFeed":
                     moldFeed.append(item)
 
-        if not moldFeed and character:
+        if character:
             for item in character.inventory:
                 if item.type == "MoldFeed":
                     moldFeed.append(item)

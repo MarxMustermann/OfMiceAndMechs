@@ -87,6 +87,7 @@ class Character:
         self.showThinking = False
         self.showGotCommand = False
         self.showGaveCommand = False
+        self.hasMaxHealthBoost = False
 
         self.rememberedMenu = []
         self.rememberedMenu2 = []
@@ -3194,10 +3195,6 @@ press any other key to attack normally"""
         for statusEffect in self.statusEffects:
             if issubclass(type(statusEffect), src.statusEffects.HealthBuff):
                 maxHealth = statusEffect.modHealth(maxHealth)
-        try:
-            self.hasMaxHealthBoost
-        except:
-            self.hasMaxHealthBoost = False
         if self.hasMaxHealthBoost:
             maxHealth *= 2
         return maxHealth

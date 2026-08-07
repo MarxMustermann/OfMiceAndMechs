@@ -194,21 +194,10 @@ Try as hard as you can to achieve this.
                         return (None,(["e",key,"enter",value,"enter"],"clear the painters extra info"))
 
                 foundOffset = self._get_target_offset()
-                if foundOffset == (0,0,0):
-                    if item.offset != (0, 0, 0):
-                        return (None,(["d", ".", "enter"],"remove offset for the painter"))
-                if foundOffset == (1,0,0):
-                    if item.offset != (1, 0, 0):
-                        return (None,(["d", "d", "enter"],"set offset for the painter"))
-                if foundOffset == (-1,0,0):
-                    if item.offset != (-1, 0, 0):
-                        return (None,(["d", "a", "enter"],"set offset for the painter"))
-                if foundOffset == (0,1,0):
-                    if item.offset != (0, 1, 0):
-                        return (None,(["d", "s", "enter"],"set offset for the painter"))
-                if foundOffset == (0,-1,0):
-                    if item.offset != (0, -1, 0):
-                        return (None,(["d", "w", "enter"],"set offset for the painter"))
+                if item.offset != foundOffset:
+                    direction_map = {(1,0,0):"d",(-1,0,0):"a",(0,1,0):"s",(0,-1,0):"w",(0,0,0):"."}
+                    direction = direction_map.get(foundOffset,".")
+                    return (None,(["d", direction, "enter"],"set offset for the painter"))
 
             # set painting mode
             if submenue.tag == "paintModeSelection":

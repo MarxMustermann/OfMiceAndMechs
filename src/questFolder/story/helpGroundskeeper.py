@@ -37,7 +37,7 @@ class HelpGroundskeeper(src.quests.MetaQuestSequence):
 
         # take care of enemies
         if character.getNearbyEnemies():
-            if character.health < character.adjustedMaxHealth//4:
+            if character.is_low_health():
                 quest = src.quests.questMap["Flee"]()
                 return ([quest],None)
             else:

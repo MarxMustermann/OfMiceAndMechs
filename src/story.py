@@ -5846,7 +5846,7 @@ This memorial contains:
     def changedTile(self,extraParameters):
         mainChar = src.gamestate.gamestate.mainChar
         if extraParameters["old_pos"] == (7,7,0):
-            if mainChar.getTerrain().getRoomsByTag(groundskeeper_room_tag):
+            if mainChar.getTerrain().getRoomsByTag("the architects tomb"):
                 base_text = ["""
 """,(src.interaction.urwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"You implant interrupts:"),"""
 

@@ -112,7 +112,31 @@ def advanceGame():
                 for (char,time_taken) in timeTaken_by_character.items():
                     print(time_taken, char.name, char.faction, char.getTerrain().getPosition(), char)
                     print(char.quests)
+                print(".........")
+                for (char,time_taken) in timeTaken_by_character.items():
+                    if time_taken < 0.0001:
+                        continue
+                    print(time_taken, char.name, char.faction, char.getTerrain().getPosition(), char)
+                    print(char.quests)
+                print(",,,,,,,,,")
+                for (char,time_taken) in timeTaken_by_character.items():
+                    if time_taken < 0.001:
+                        continue
+                    print(time_taken, char.name, char.faction, char.getTerrain().getPosition(), char)
+                    print(char.quests)
                 print("---------")
+                for (char,time_taken) in timeTaken_by_character.items():
+                    if time_taken < 0.01:
+                        continue
+                    print(time_taken, char.name, char.faction, char.getTerrain().getPosition(), char)
+                    print(char.quests)
+                print("+++++++++")
+                for (char,time_taken) in timeTaken_by_character.items():
+                    if time_taken < 0.1:
+                        continue
+                    print(time_taken, char.name, char.faction, char.getTerrain().getPosition(), char)
+                    print(char.quests)
+                print("=========")
             profiler = cProfile.Profile()
             profiler.enable()
             profiler_start = src.gamestate.gamestate.tick
@@ -5705,7 +5729,6 @@ def renderGameDisplay(renderChar=None,showSaving=False):
             renderedToTexture = console_render.render(root_console)
             sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
             printUrwidToSDL(output,uiElement["offset"])
-
 
     submenue = char.macroState.get("submenue")
     

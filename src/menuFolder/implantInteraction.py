@@ -281,7 +281,7 @@ class ImplantInteraction(src.menues.SubMenu):
                         if task_type == "escape_lab":
                             quests.append(src.quests.questMap["EscapeLab"]())
                         elif task_type == "reach_shelter":
-                            quests.append(src.quests.questMap["GoToTile"](targetPosition=groundskeepers_place.getPosition()))
+                            quests.append(src.quests.questMap["GoToTile"](targetPosition=groundskeepers_place.getPosition(),suicidal=True))
                         elif task_type == "free_groundskeeper":
                             quests.append(src.quests.questMap["ActivateItem"](targetPosition=(6,6,0),targetPositionBig=groundskeepers_place.getPosition()))
                         elif task_type == "fix_groundskeeper":
@@ -293,7 +293,7 @@ class ImplantInteraction(src.menues.SubMenu):
                         elif task_type == "equip":
                             quests.append(src.quests.questMap["Equip"]())
                         elif task_type == "kill_spiderling":
-                            quests.append(src.quests.questMap["SecureTile"](toSecure=(7,5,0),endWhenCleared=True,reason="clear the path",simpleAttacksOnly=True,noHeal=True))
+                            quests.append(src.quests.questMap["SecureTile"](toSecure=(7,5,0),endWhenCleared=True,reason="clear the path",simpleAttacksOnly=True,noHeal=True,suicidal=True))
                         elif task_type == "explore":
                             quests.append(src.quests.questMap["StoryExploreHomeTerrain"](lifetime=500))
                         elif task_type == "observe":

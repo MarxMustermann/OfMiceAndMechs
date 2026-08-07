@@ -10,11 +10,10 @@ class Flee(src.quests.MetaQuestSequence):
     type = "Flee"
     lowLevel = True
 
-    def __init__(self, description="Flee", creator=None, command=None, lifetime=None, weaponOnly=False, returnHome=False, reason=None):
+    def __init__(self, description="Flee", creator=None, command=None, lifetime=None, returnHome=False, reason=None):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = description
-        self.weaponOnly = weaponOnly
 
         self.shortCode = "f"
         self.returnHome = returnHome

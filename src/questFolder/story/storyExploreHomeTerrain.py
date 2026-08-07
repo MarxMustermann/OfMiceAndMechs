@@ -104,9 +104,12 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
                         continue
                     moldfeed = room.getItemByType("MoldFeed")
                     if moldfeed:
-                        quest = src.quests.questMap["CleanSpace"](reason="pick up the mold feed",targetPositionBig=moldfeed.getBigPosition(),targetPosition=moldfeed.getPosition())
-                        return ([quest],None)
-            if character.health < 50:
+                        quests = []
+                        if not character.getFreeInventorySpace():
+                            quests.append(src.quests.questMap["ClearInventory"](reason="have space to be able to pick up mold feed",returnToTile=False))
+                        quests.append(src.quests.questMap["CleanSpace"](reason="pick up the mold feed",targetPositionBig=moldfeed.getBigPosition(),targetPosition=moldfeed.getPosition()))
+                        return (list(reversed(quests)),None)
+            if character.health < 10:
                 quest = src.quests.questMap["Heal"](reason="be able to survive")
                 return ([quest],None)
 

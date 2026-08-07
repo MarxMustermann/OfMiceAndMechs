@@ -836,18 +836,20 @@ They will complete tasks on the base.
             extraDescriptions["fetch Anvil"] = "The base needs an Anvil to produce MetalBars."
             extraDescriptions["fetch MetalWorkingBench"] = "The base needs an MetalWorkingBench to start production."
             extraDescriptions["fetch CityPlaner"] = "The base needs a CityPlaner to expand."
-            if not groundsKeeper:
-                missing_anvil = False
-                missing_metalWorkingBench = False
-                missing_cityPlaner = False
-                for buildSite in groundskeepers_place.buildSites:
-                    if buildSite[1] == "Anvil":
-                        missing_anvil = True
-                    if buildSite[1] == "MetalWorkingBench":
-                        missing_metalWorkingBench = True
-                    if buildSite[1] == "CityPlaner":
-                        missing_cityPlaner = True
 
+            # check if key items are missing
+            missing_anvil = False
+            missing_metalWorkingBench = False
+            missing_cityPlaner = False
+            for buildSite in groundskeepers_place.buildSites:
+                if buildSite[1] == "Anvil":
+                    missing_anvil = True
+                if buildSite[1] == "MetalWorkingBench":
+                    missing_metalWorkingBench = True
+                if buildSite[1] == "CityPlaner":
+                    missing_cityPlaner = True
+
+            if not groundsKeeper:
                 has_anvil = False
                 has_metalWorkingBench = False
                 has_cityPlaner = False
@@ -948,10 +950,11 @@ They will complete tasks on the base.
                     numGlassHearts += 1
 
             # get promotion
-            if character.rank > 2:
-                name = "get promotion"
-                options.append((name,name))
-                extraDescriptions[name] = "Holding a higher rank will make you stronger"
+            if not (missing_anvil or missing_metalWorkingBench or missing_cityPlaner):
+                if character.rank > 2:
+                    name = "get promotion"
+                    options.append((name,name))
+                    extraDescriptions[name] = "Holding a higher rank will make you stronger"
 
             # convert entry rooms to trap rooms
             has_convertable_room = False

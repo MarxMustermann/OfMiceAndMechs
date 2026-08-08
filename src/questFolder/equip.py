@@ -212,7 +212,7 @@ Swords can range from 10 to 25 damage per hit.
 
             # go to weapon
             if character.container != weapon.container:
-                quest = src.quests.questMap["GoToTile"](targetPosition=bestSword.container.getPosition(),reason="get near a weapon")
+                quest = src.quests.questMap["GoToTile"](targetPosition=weapon.container.getPosition(),reason="get near a weapon")
                 return ([quest],None)
             if character.getDistance(weapon.getPosition()) > 1:
                 quest = src.quests.questMap["GoToPosition"](targetPosition=weapon.getPosition(),ignoreEndBlocked=True,reason="be able pick up the weapon")

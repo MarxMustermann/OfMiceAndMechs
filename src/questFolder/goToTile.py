@@ -274,7 +274,7 @@ There is a mini map shown on the top left of the screen showing a quest marker.
             return (None,(["esc"],"exit submenu"))
 
         # abort quest when too hurt
-        if character.is_low_health():
+        if character.getNearbyEnemies() and character.is_low_health():
             return self._solver_trigger_fail(dryRun,"low health")
 
         # enter terrains properly

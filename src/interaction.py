@@ -4277,7 +4277,7 @@ def getTcodEvents():
                                 click_coordinate = (click_coordinate[0]+1,click_coordinate[1]+1,0)
                                 smallCoordinate = (smallCoordinate[0]+1,smallCoordinate[1]+1,0)
 
-                        if event.button == tcod.event.MouseButton.MIDDLE:
+                        if event.button == tcod.event.MouseButton.RIGHT:
                             if not terrain.getEnemiesOnTile(mainChar,bigCoordinate) and not terrain.getEnemiesOnTile(mainChar):
                                 if rooms:
                                     items = rooms[0].getItemByPosition(smallCoordinate)
@@ -4396,7 +4396,7 @@ def getTcodEvents():
                             submenu.index = smallCoordinate
                             submenu.index_big = bigCoordinate
                             mainChar.macroState["submenue"] = submenu
-                        elif event.button == tcod.event.MouseButton.RIGHT:
+                        elif event.button == tcod.event.MouseButton.MIDDLE:
                             submenu = src.menues.menuMap["ContextListMenu"](mainChar)
                             submenu.index = smallCoordinate
                             submenu.index_big = bigCoordinate

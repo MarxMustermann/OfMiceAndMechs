@@ -120,13 +120,13 @@ After getting spawned the Clone will activate the item to the east of the Growth
         flasks = self.getFlasks(character)
         if not flasks:
             character.changed("no flask", {})
-            character.addMessage("you need to have 2 full goo flasks to refill the growth tank")
+            character.notify("you need to have 2 full goo flasks to refill the growth tank")
             return
 
         while self.gooCharges <= 100:
             for flask in flasks[:]:
                 self.gooCharges += flask.uses
-                character.addMessage(f"you fill the GrowthTank with {flask.uses} now it has {self.gooCharges}")
+                character.notify(f"you fill the GrowthTank with {flask.uses} now it has {self.gooCharges}.\n\nThe GrowthTank needs more than 100 charges to produce a Clone")
 
                 if flask in character.inventory:
                     character.removeItemFromInventory(flask)
@@ -143,7 +143,7 @@ After getting spawned the Clone will activate the item to the east of the Growth
         if self.gooCharges > 100:
             self.gooCharges -= 100
             self.filled = True
-            character.addMessage("the growthtank is filled now")
+            character.notify("the growthtank is filled now\n\nYou can use it again to spawn a Clone now.")
 
     def eject(self, character=None):
         """

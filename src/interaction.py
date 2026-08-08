@@ -5375,6 +5375,8 @@ def renderGameDisplay(renderChar=None,showSaving=False):
         submenue = char.macroState.get("submenue")
         if submenue and submenue.tag == "Wait":
             hide_specialRender = False
+        if src.interaction.freeze_game:
+            hide_specialRender = False
 
     uiElements = src.gamestate.gamestate.uiElements
     uiElements = calculate_UI_layout(char)

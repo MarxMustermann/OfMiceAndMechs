@@ -1968,7 +1968,7 @@ That is {direction_string}.
                 base_response_text.extend([(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"""
 > You give the groundskeeper a Painter."""),"""
 
-Thanks for the Painter.
+Thank you for bringing me a Painter.
 
 That will help a lot with organising the place,
 by allowing me to draw storage markers onto the floor.

@@ -207,8 +207,6 @@ Kill all enemies on this terrain, to unlock the promotions to rank 2.
         if not character.rank:
             character.rank = 6
 
-        upgrade_question = "\nWhat do you choose as your reward?"
-
         while character.rank > highestAllowed:
             options = []
             extraDescriptions = {}
@@ -224,8 +222,6 @@ Only 4 ranks are left before reaching rank 1.
 
 As a reward you may select a close combat perk.
 You can only have one close combat perk
-
-""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),upgrade_question),"""
 """]
             if character.rank == 5:
                 options.append(("endurance run","endurance run"))
@@ -238,8 +234,6 @@ Only 3 ranks are left before reaching rank 1.
 
 As a a reward you may select a special movement perk.
 You can only have one special movement perk 
-
-""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),upgrade_question),"""
 """]
             if character.rank == 4:
                 options = []
@@ -254,8 +248,6 @@ Only 2 ranks are left before reaching rank 1.
 
 As a reward you may select a ranged attack perk.
 You can only have one ranged attack perk 
-
-""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),upgrade_question),"""
 """]
             if character.rank == 3:
                 options.append(("max health boost","max health boost"))
@@ -268,11 +260,14 @@ Only 1 ranks are left before reaching rank 1.
 
 As a a reward for getting promoted from rank 3 to rank 2 you can select a attribute perk.
 You can only have one attribute perk 
-
-""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),upgrade_question),"""
 """]
 
             if options:
+
+                text.extend(["""
+
+""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"What do you choose as your reward?"),"""
+"""])
                 submenu = src.menues.menuMap["SelectionMenu"](
                     text = text,
                     options=options,

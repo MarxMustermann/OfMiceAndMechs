@@ -364,9 +364,8 @@ class Item:
         options = []
         for option in self.getApplyOptions():
             options.append(option)
-        submenu = src.menues.menuMap["SelectionMenu"](
-            "what do you want to do?", options
-        )
+        text = [(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"what do you want to do?\n")]
+        submenu = src.menues.menuMap["SelectionMenu"]( text, options )
         submenu.extraInfo["item"] = self
         submenu.tag = "applyOptionSelection"
         submenu.do_not_scale = True

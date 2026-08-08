@@ -339,7 +339,7 @@ Reputation is rewarded for picking up items from walkways.\n\n""")
                 if character.container.tag in ["entryRoom","trapRoom"]:
                     quest = src.quests.questMap["GoHome"]()
                     return ([quest],None)
-        if character.health > character.adjustedMaxHealth//5:
+        if character.is_low_health():
             if (not len(self.subQuests) or not isinstance(self.subQuests[0],src.quests.questMap["Fight"])) and character.getNearbyEnemies():
                 quest = src.quests.questMap["Fight"]()
                 return ([quest],None)

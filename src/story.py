@@ -2085,7 +2085,7 @@ There are several things you can do to help me out:
 
         # turn off alarm
         if terrain.alarm:
-            if character.health > character.adjustedMaxHealth//4:
+            if not character.is_low_health():
                 name = "disable alarm"
                 tasks.append((name,"disable alarm"))
                 extraDescriptions[name] = "disabling the alarm will allow me to move more freely"
@@ -2291,7 +2291,7 @@ There are several things you can do to help me out:
 
         # kill remaining enemies
         if has_enemies_to_kill and not shown_enenemy_kill_option:
-            if character.health > character.adjustedMaxHealth//4:
+            if not character.is_low_health():
                 name = "kill monster"
                 tasks.append((name,name))
                 extraDescriptions[name] = f"insects are swarming the area. Get rid of them."

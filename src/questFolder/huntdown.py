@@ -69,7 +69,7 @@ class Huntdown(src.quests.MetaQuestSequence):
             return (None,("a","move toward target"))
 
         # heal
-        if character.health < character.adjustedMaxHealth - 20 and character.canHeal():
+        if character.is_low_health() and character.canHeal():
             interaction_command = "J"
             if submenue:
                 if submenue.tag == "advancedInteractionSelection":
@@ -77,7 +77,7 @@ class Huntdown(src.quests.MetaQuestSequence):
                 else:
                     return (None,(["esc"],"close menu"))
             return (None,(interaction_command+"H","heal"))
-        if (not self.suicidal) and (character.health < character.adjustedMaxHealth//5):
+        if (not self.suicidal) and character.is_low_health():
             return self._solver_trigger_fail(dryRun,"low health")
 
         if character.getNearbyEnemies():

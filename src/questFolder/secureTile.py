@@ -158,7 +158,7 @@ Use simple attacks only.
                 return (None,(["esc"],"exit the menu")) 
 
         # heal
-        if not self.noHeal and character.health < character.adjustedMaxHealth - 20 and character.canHeal():
+        if not self.noHeal and character.is_low_health() and character.canHeal():
             interaction_command = "J"
             if submenue:
                 if submenue.tag == "advancedInteractionSelection":
@@ -166,7 +166,7 @@ Use simple attacks only.
                 else:
                     return (None,(["esc"],"close menu"))
             return (None,(interaction_command+"H","heal"))
-        if (not self.suicidal) and (character.health < character.adjustedMaxHealth//5):
+        if (not self.suicidal) and character.is_low_health():
             return self._solver_trigger_fail(dryRun,"low health")
 
         # initiate actual combat

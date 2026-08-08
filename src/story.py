@@ -1708,12 +1708,13 @@ Since i'm a groundskeeper my duty is to maintain the premises."""])
         for duty in builder.duties:
             builder.dutyPriorities[duty] = 3
 
-        builder.dutyPriorities["storage management"] = 15
-        builder.dutyPriorities["cleaning"] = 14
-        builder.dutyPriorities["painting"] = 13
-        builder.dutyPriorities["machine placing"] = 12
-        builder.dutyPriorities["praying"] = 11
-        builder.dutyPriorities["hauling"] = 10
+        builder.dutyPriorities["storage management"] = 16
+        builder.dutyPriorities["cleaning"] = 15
+        builder.dutyPriorities["painting"] = 14
+        builder.dutyPriorities["machine placing"] = 13
+        builder.dutyPriorities["praying"] = 12
+        builder.dutyPriorities["hauling"] = 11
+        builder.dutyPriorities["scrap hammering"] = 10
         builder.dutyPriorities["resource fetching"] = 9
         builder.dutyPriorities["room building"] = 8
         builder.dutyPriorities["manufacturing"] = 6
@@ -1968,10 +1969,10 @@ That is {direction_string}.
                 base_response_text.extend([(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"""
 > You give the groundskeeper a Painter."""),"""
 
-Thank you for bringing me a Painter.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Thank you."),"""
 
-That will help a lot with organising the place,
-by allowing me to draw storage markers onto the floor.
+The Painter you brought me will help a lot with organising the place.
+It allows me to draw storage markers onto the floor.
 It is hard to do anything without a storage system.
 
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"I'll be busy and will not need your help for a bit."),"""
@@ -2015,10 +2016,10 @@ I will move them into storage later.
 
         # start collecting tasks
         base_response_text = []
-        base_response_text.append("""
+        base_response_text.append((src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"""
 There are several things you can do to help me out:
 
-""")
+"""))
 
         # set up helper variables
         tasks = []
@@ -2400,7 +2401,7 @@ That room is {direction_string}.
                 base_response_text.extend([(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"""
 > You give the groundskeeper a Anvil."""),"""
 
-""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Thanks for the anvil."),"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Thank you for the Anvil."),"""
 
 That will allow to process scrap to metal bars.
 MetalBars are needed to produce most things.
@@ -2421,8 +2422,8 @@ Now i need a CityPlaner.
 """)
                 offer_accept_options = True
             else:
-                base_response_text.append("""
-Thanks for the CityPlaner.
+                base_response_text.extend("""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Thanks for the CityPlaner."),"""
 
 That will allow to coordinate how the base is getting expanded.
 """)
@@ -2481,7 +2482,7 @@ Look for the SiegeManager there, but be wary the Golems.
                 offer_accept_options = True
             else:
                 base_response_text.append("""
-Thanks for disabling the alarm.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Thank you for disabling the alarm."),"""
 
 I will collect resources now.
 """)

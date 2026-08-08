@@ -54,7 +54,7 @@ Place the items in the correct input or storage stockpile.
 """,(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"Press the l or L keys to drop items."),"""
 """]
         if self.targetPosition:
-            text.append(f"""Use the stocpile in position {self.targetPosition}""")
+            text.append(f"""Use the stockpile in position {self.targetPosition}""")
 
         if self.disallowLocations:
             text.append(f"\ndisallowed locations:\n")

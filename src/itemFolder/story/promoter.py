@@ -19,11 +19,12 @@ class Promoter(src.items.Item):
         handle activation by trying to promote the user
         '''
 
-        submenue = src.menues.menuMap["TextMenu"](f"""
-You put your head into the machine.
+        text = [f"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You put your head into the machine."),"""
 
 Its tendrils reach out and touch your implant.
-""")
+"""]
+        submenue = src.menues.menuMap["TextMenu"](text)
         character.macroState["submenue"] = submenue
         submenue.do_not_scale = True
         submenue.tag = "promotionIntro"
@@ -206,6 +207,8 @@ Kill all enemies on this terrain, to unlock the promotions to rank 2.
         if not character.rank:
             character.rank = 6
 
+        upgrade_question = "\nWhat do you choose as your reward?"
+
         while character.rank > highestAllowed:
             if character.rank == 6:
                 options = []
@@ -214,11 +217,15 @@ Kill all enemies on this terrain, to unlock the promotions to rank 2.
                 extraDescriptions["special attacks"] = "your alternate attack is a selection of special attacks"
                 options.append(("swap attacks","swap attack"))
                 extraDescriptions["swap attacks"] = "your alternate attack allows you to switch places the character that was attacked"
-                text = """
-As a a reward for getting promoted from rank 6 to rank 5 you can select a close combat perk.
+                text = ["""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You are getting promoted for rank 6 to rank 5."),"""
+Only 4 ranks are left before reaching rank 1.
 
+As a reward you may select a close combat perk.
 You can only have one close combat perk
-"""
+
+""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),upgrade_question),"""
+"""]
                 submenu = src.menues.menuMap["SelectionMenu"](
                     text = text,
                     options=options,
@@ -244,11 +251,15 @@ You can only have one close combat perk
                 extraDescriptions["endurance run"] = "your alternate movement only costs 80% time, but costs 1 exhaustion"
                 options.append(("jump","jump"))
                 extraDescriptions["jump"] = "your alternate movement only costs 50% time, but costs 5 exhaustion"
-                text = """
-As a a reward for getting promoted from rank 5 to rank 4 you can select a special movement perk.
+                text = ["""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You are getting promoted for rank 5 to rank 4."),"""
+Only 3 ranks are left before reaching rank 1.
 
+As a a reward you may select a special movement perk.
 You can only have one special movement perk 
-"""
+
+""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),upgrade_question),"""
+"""]
                 submenu = src.menues.menuMap["SelectionMenu"](
                     text = text,
                     options=options,
@@ -274,11 +285,15 @@ You can only have one special movement perk
                 extraDescriptions["line shot"] = "your ranged attach is shooting in a straight line north south west or east"
                 options.append(("ramdom target shot","ramdom target shot"))
                 extraDescriptions["ramdom target shot"] = "your ranged attach is shooting in random target in the roon"
-                text = """
-As a a reward for getting promoted from rank 4 to rank 3 you can select a ranged attack perk.
+                text = ["""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You are getting promoted for rank 4 to rank 3."),"""
+Only 2 ranks are left before reaching rank 1.
 
+As a reward you may select a ranged attack perk.
 You can only have one ranged attack perk 
-"""
+
+""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),upgrade_question),"""
+"""]
                 submenu = src.menues.menuMap["SelectionMenu"](
                     text = text,
                     options=options,
@@ -304,11 +319,16 @@ You can only have one ranged attack perk
                 extraDescriptions["max health boost"] = "2 times the maxHP"
                 options.append(("movement speed boost","movement speed boost"))
                 extraDescriptions["movement speed boost"] = "movement and attacks only costs 50% time"
-                text = """
-As a a reward for getting promoted from rank 3 to rank 2 you can select a attribute perk.
+                text = ["""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You are getting promoted for rank 3 to rank 2."),"""
+Only 1 ranks are left before reaching rank 1.
 
+As a a reward for getting promoted from rank 3 to rank 2 you can select a attribute perk.
 You can only have one attribute perk 
-"""
+
+""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"What should the reward for your promotion be?"),"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"What should the reward for your promotion be?"),"""
+"""]
                 submenu = src.menues.menuMap["SelectionMenu"](
                     text = text,
                     options=options,
@@ -329,11 +349,13 @@ You can only have one attribute perk
                 return
             self.do_promotion(extraInfo)
 
-        submenu = src.menues.menuMap["TextMenu"](f"""
+
+        text = [f"""
 The tendrils retreat.
 
-You are rank {character.rank} now.
-""")
+""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),f"You are rank {character.rank} now."),"""
+"""]
+        submenu = src.menues.menuMap["TextMenu"](text)
         submenu.do_not_scale = True
         character.macroState["submenue"] = submenu
         character.runCommandString("~",nativeKey=True)
@@ -383,114 +405,116 @@ You are rank {character.rank} now.
         del extraInfo["rewardType"]
 
         rewardText = None
-        specialAttackText = """
-You got an attack perk.
+        specialAttackText = ["""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You got an attack perk."),"""
 
 You can do an alternative attack by pressing shift when attacking.
 
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""
 For example d will attack an enemy to the east normally and 
-pressing D will do an alternative attack to an enemy to the east.
+pressing D will do an alternative attack to an enemy to the east."""),"""
 
 The alternative attacks usually cost exhaustion.
 If you have more than 10 exhaustion you will do much less damage.
 So try not to exeed 10 exhaustion.
 
 
-"""
+"""]
         if rewardType == "special attacks":
-            rewardText = specialAttackText + """
-You chose special attacks as alternate attack.
+            rewardText = [specialAttackText,"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You chose \"special attacks\" as alternate attack."),"""
 
 You will be able to choose from a variety of attacks.
 Each attack has a different costs and advantages.
 You will figure it out.
-"""
+"""]
         if rewardType == "swap attacks":
-            rewardText = specialAttackText + """
-You chose a swap attack as alternate attack.
+            rewardText = [specialAttackText,"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You chose a \"swap attack\" as alternate attack."),"""
 
 This allows you to swap places with an enemy.
 This should allow you to get out of tricky situations
-"""
+"""]
 
-        specialMomenemtText = """
-You got a special movement perk. 
+        specialMomenemtText = ["""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You got a special movement perk."),"""
 
 You can do special movements by pressing shift when walking.
 Bumping into enemies will not do a special movement!
 
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""
 For example d will move you to the east normally and 
-pressing D will do a special movement towards the east.
+pressing D will do a special movement towards the east."""),"""
 
-"""
+"""]
         if rewardType == "jump":
-            rewardText = specialMomenemtText + """
-You chose jump as special movement.
+            rewardText = [specialMomenemtText,"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You chose \"jump\" as special movement."),"""
 
 This means you can move a fast a few times.
 
 You will move 50% faster, but each jump will cost you 5 exhaustion.
 You cannot jump, if you have 10 or more exhaustion.
-"""
+"""]
         if rewardType == "endurance run":
-            rewardText = specialMomenemtText + """
-You chose endurance run as special movement.
+            rewardText = [specialMomenemtText,"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You chose \"endurance run\" as special movement."),"""
 
 This means you can move a bit faster but for a relatively long time.
 
 Each step you take will be 20% faster, but will cost you 1 exhaustion.
 You cannot run, if you have 10 or more exhaustion.
-"""
+"""]
 
-        rangedCombatText = """
-You got a ranged combat perk. 
+        rangedCombatText = ["""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You got a ranged combat perk."),"""
 
-You can do a ranged combat attack by pressing f.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"You can do a ranged combat attack by pressing f."),"""
 
-"""
+"""]
         if rewardType == "line shot":
-            rewardText = rangedCombatText + """
-You chose "line shot" as your ranged combat perk.
+            rewardText = [rangedCombatText,"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You chose \"line shot\" as your ranged combat perk."),"""
 
 This means you can shoot in a straight line from your character.
 This means you can target your shot, but only target a few spots.
 
-After pressing f you will be promteod for what direction you want to fire in,
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"After pressing f you will be promted for what direction you want to fire in."),"""
 Each shot will cost you 1 Bolt.
-"""
+"""]
         if rewardType == "ramdom target shot":
-            rewardText = rangedCombatText + """
-You chose "random target shot" as your ranged combat perk.
+            rewardText = [rangedCombatText,"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You chose \"random target shot\" as your ranged combat perk."),"""
 Simple, but not ineffective.
 
-You press f and somebody gets shot.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"You press f and somebody gets shot."),"""
 A random enemy is targeted.
 Each shot will cost you 1 Bolt.
-"""
+"""]
 
-        attributeBonusText = """
+        attributeBonusText = ["""
 You got an attribute bonus perk. 
 
 This is an improvement on one of your stats.
 You don't need to activate this perk.
 
-"""
+"""]
 
         if rewardType == "max health boost":
-            rewardText = attributeBonusText + """
+            rewardText = [attributeBonusText,"""
 You have twice as much max HP now!
-"""
+"""]
         if rewardType == "movement speed boost":
-            rewardText = attributeBonusText + """
+            rewardText = [attributeBonusText,"""
 You move twice as fast now.
-"""
+"""]
 
         if rewardText:
             submenu = src.menues.menuMap["TextMenu"](rewardText)
 
             character.macroState["submenue"] = submenu
             submenu.followUp = {
-                "container": self,
+                    "container": self,
                 "method": "do_promotions",
                 "params": extraInfo,
             }

@@ -4128,6 +4128,7 @@ def getTcodEvents():
     global mouseCombatLastMove
     global mouseCombatMap
     global freeze_game
+    global freeze_num_quests
     global lastInteractionType
 
     foundEvent = False

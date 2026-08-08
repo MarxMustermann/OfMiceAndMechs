@@ -541,7 +541,7 @@ class Terrain:
 
         char.working = False
 
-        if char.xPosition > 207:
+        if char.xPosition > 208:
             if self.xPosition >= 13:
                 char.xPosition -= 1
                 return None
@@ -549,7 +549,7 @@ class Terrain:
             if self.xPosition <= 1:
                 char.xPosition += 1
                 return None
-        if char.yPosition > 207:
+        if char.yPosition > 208:
             if self.yPosition >= 13:
                 char.yPosition -= 1
                 return None
@@ -575,7 +575,8 @@ class Terrain:
                     direction = "north"
                     char.container.addAnimation(char.getPosition(offset=(-1,-1,0)),"charsequence",1,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##"),None]})
                 else:
-                    if char.xPosition == 16 and 1==0:
+                    if char.xPosition <= 16 and self.xPosition <= 1:
+                        char.container.addAnimation(char.getPosition(offset=(-1,0,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
                         return None
                     else:
                         # char.stasis = True
@@ -614,7 +615,8 @@ class Terrain:
                     direction = "north"
                     char.container.addAnimation(char.getPosition(offset=(1,-1,0)),"charsequence",1,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##"),None]})
                 else:
-                    if char.xPosition == 15 * 14 - 2 and 1==0:
+                    if char.xPosition >= 15 * 14 - 2 and self.xPosition >= 13:
+                        char.container.addAnimation(char.getPosition(offset=(1,0,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
                         return None
                     else:
                         # char.stasis = True
@@ -647,7 +649,7 @@ class Terrain:
         elif direction == "north":
             if char.xPosition % 15 == 0 or char.xPosition % 15 == 14:
                 return None
-            if char.yPosition % 15 == 1:
+            if char.yPosition % 15 == 1 and self.yPosition <= 1:
                 if char.xPosition % 15 < 7:
                     direction = "east"
                     char.container.addAnimation(char.getPosition(offset=(1,-1,0)),"charsequence",1,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##"),None]})
@@ -655,7 +657,8 @@ class Terrain:
                     direction = "west"
                     char.container.addAnimation(char.getPosition(offset=(-1,-1,0)),"charsequence",1,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##"),None]})
                 else:
-                    if char.yPosition == 16 and 1==0:
+                    if char.yPosition <= 16:
+                        char.container.addAnimation(char.getPosition(offset=(0,-1,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
                         return None
                     else:
                         # char.stasis = True
@@ -694,7 +697,8 @@ class Terrain:
                     direction = "west"
                     char.container.addAnimation(char.getPosition(offset=(-1,1,0)),"charsequence",1,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##"),None]})
                 else:
-                    if char.yPosition == 15 * 14 - 2 and 1 == 0:
+                    if char.yPosition >= 15 * 14 - 2 and self.yPosition >= 13:
+                        char.container.addAnimation(char.getPosition(offset=(0,1,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
                         return None
                     else:
                         # char.stasis = True

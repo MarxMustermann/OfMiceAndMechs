@@ -73,12 +73,16 @@ Place the items in the correct input or storage stockpile.
         return super().setParameters(parameters)
 
     def triggerCompletionCheck(self,character=None,dryRun=True):
+
+        # handle weird edge cases
         if not character:
             return False
 
+        # only comple character is in the target room
         if self.targetPositionBig and character.getBigPosition() != self.targetPositionBig:
             return False
 
+        # find stockpiles to fill
         if isinstance(character.container,src.rooms.Room):
             room = character.container
 
@@ -130,6 +134,9 @@ Place the items in the correct input or storage stockpile.
         return False
 
     def getNumDrops(self,character):
+        '''
+        calculate how many items the character has to drop
+        '''
         if not self.toRestock:
             return len(character.inventory)
         numDrops = 0

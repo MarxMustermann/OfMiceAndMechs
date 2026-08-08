@@ -4387,23 +4387,11 @@ def getTcodEvents():
                                         mainChar.runCommandString(direction)
 
                         elif event.button == tcod.event.MouseButton.LEFT:
-                            if rooms:
-                                if not mainChar.container.isRoom:
-                                    smallCoordinate = (smallCoordinate[0]+1,smallCoordinate[1]+1,0)
-                            else:
-                                if mainChar.container.isRoom:
-                                    smallCoordinate = (smallCoordinate[0]-1,smallCoordinate[1]-1,0)
                             submenu = src.menues.menuMap["ExperimentalObserveMenu"](mainChar)
                             submenu.index = smallCoordinate
                             submenu.index_big = bigCoordinate
                             mainChar.macroState["submenue"] = submenu
                         elif event.button == tcod.event.MouseButton.MIDDLE:
-                            if rooms:
-                                if not mainChar.container.isRoom:
-                                    smallCoordinate = (smallCoordinate[0]+1,smallCoordinate[1]+1,0)
-                            else:
-                                if mainChar.container.isRoom:
-                                    smallCoordinate = (smallCoordinate[0]-1,smallCoordinate[1]-1,0)
                             submenu = src.menues.menuMap["ContextListMenu"](mainChar)
                             submenu.index = smallCoordinate
                             submenu.index_big = bigCoordinate
@@ -5828,6 +5816,14 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                         char_pos = (big_position[0]*15+small_position[0], big_position[1]*15+small_position[1], big_position[2]*15+small_position[2])
                     else:
                         char_pos = char.getPosition()
+
+                    # adjust ingame position
+                    terrain = char.getTerrain()
+                    rooms = terrain.getRoomByPosition((pos[0]//15,pos[1]//15,0))
+                    if not rooms:
+                        pos = (pos[0]-1,pos[1]-1,0)
+                    if not char.container.isRoom:
+                        pos = (pos[0]+1,pos[1]+1,0)
 
                     # convert menues ingame position to a screen position
                     distance_left += pos[0]-char_pos[0]

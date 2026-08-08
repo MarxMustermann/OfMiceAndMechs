@@ -89,12 +89,9 @@ class ContextListMenu(src.menues.SubMenu):
         # set the besaic text
         text = []
 
-        # get actual postion
         click_position = self.index
         if not rooms:
-            click_position = (self.index_big[0]*15+self.index[0]+1, self.index_big[1]*15+self.index[1]+1, 0)
-        if not self.character.container.isRoom:
-            click_position = (pos[0]-1,pos[1]-1,pos[2])
+            click_position = (self.index_big[0]*15+self.index[0],self.index_big[1]*15+self.index[1],0)
 
         # show the interaction options
         text.append(src.interaction.ActionMeta(payload=(self.open_main_menu,{}),content="open main menu"))

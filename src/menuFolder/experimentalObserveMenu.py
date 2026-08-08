@@ -57,16 +57,13 @@ class ExperimentalObserveMenu(src.menues.SubMenu):
         coordinate_line += " "*(68-len(coordinate_line))+"\n"
         text.append(coordinate_line)
 
-        # get actual postion
-        pos = self.index
+        click_position = self.index
         if not rooms:
-            pos = (self.index_big[0]*15+self.index[0]+1, self.index_big[1]*15+self.index[1]+1, 0)
-        if not self.character.container.isRoom:
-            pos = (pos[0]-1,pos[1]-1,pos[2])
+            click_position = (self.index_big[0]*15+self.index[0],self.index_big[1]*15+self.index[1],0)
 
         # list characters on postion
         text.append("\n")
-        show_characters = container.getCharactersOnPosition(pos)
+        show_characters = container.getCharactersOnPosition(click_position)
         if not show_characters:
             text.append((src.pseudoUrwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"no characters found\n"))
         else:
@@ -86,7 +83,7 @@ class ExperimentalObserveMenu(src.menues.SubMenu):
 
         # list found items
         text.append("\n")
-        items = container.getItemByPosition(pos)
+        items = container.getItemByPosition(click_position)
         if not items:
             text.append((src.pseudoUrwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"no items found\n"))
         else:
@@ -104,7 +101,7 @@ class ExperimentalObserveMenu(src.menues.SubMenu):
         text.append("\n")
         markers = []
         if rooms:
-            markers = container.getMarkersOnPosition(pos)
+            markers = container.getMarkersOnPosition(click_position)
         if not markers:
             text.append((src.pseudoUrwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"no markings found\n"))
         else:

@@ -364,6 +364,7 @@ Try as hard as you can to achieve this.
         return (None,("Ji","draw the stockpile"))
 
     def _get_direction_command(self):
+        foundOffset = self._get_target_offset()
         direction_map = {(1,0,0):"d",(-1,0,0):"a",(0,1,0):"s",(0,-1,0):"w",(0,0,0):"."}
         direction = direction_map.get(foundOffset,".")
         return direction

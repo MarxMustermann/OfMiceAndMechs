@@ -818,10 +818,10 @@ He will start to rebuild its working area.
                 base_text = ["""
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),f"""
 
-The workers are working now.
+The Clones are working now.
 They will complete tasks on the base.
 
-""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Help the workers or help yourself.""")]
+""",(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Help the Clones or help yourself.""")]
 
             base_text.extend(["""
 
@@ -901,7 +901,7 @@ They will complete tasks on the base.
                         options.append(("place CityPlaner","place CityPlaner"))
 
             # spawn workers
-            extraDescriptions["spawn_clone"] = "More workers means more work getting done"
+            extraDescriptions["spawn_clone"] = "More Clones means more work getting done"
             shown_spawn_worker = False
             num_workers = 0
             for check_char in character.getTerrain().getAllCharacters():
@@ -921,11 +921,11 @@ They will complete tasks on the base.
                 num_base_rooms += 1
             if groundsKeeper:
                 if num_base_rooms-2 > num_workers:
-                    options.append(("spawn_clone","spawn worker"))
+                    options.append(("spawn_clone","spawn Clone"))
                     shown_spawn_worker = True
             else:
                 if num_base_rooms > num_workers:
-                    options.append(("spawn_clone","spawn worker"))
+                    options.append(("spawn_clone","spawn Clone"))
                     shown_spawn_worker = True
 
             # improve equipment
@@ -1034,7 +1034,7 @@ They will complete tasks on the base.
                     shown_kill_outside = True
 
             # wake left over workers
-            extraDescriptions["break_stasisTank"] = "Maybe more survivors can be found in the remaining StasisTanks. Break them and find out"
+            extraDescriptions["break_stasisTank"] = "Maybe more surviving Clones can be found in the remaining StasisTanks. Break them and find out"
             has_stasisTank = False
             for room in terrain.rooms:
                 if room.tag != "ruin":
@@ -1072,7 +1072,7 @@ They will complete tasks on the base.
             if not shown_explore:
                 options.append(("explore","explore terrain"))
             if not shown_spawn_worker:
-                options.append(("spawn_clone","spawn worker"))
+                options.append(("spawn_clone","spawn Clone"))
             if found_outside_enemies:
                 options.append(("kill_outside","kill insects"))
 

@@ -3005,7 +3005,7 @@ press any other key to attack normally"""
             return
 
         # call each listener
-        for listenFunction in self.listeners[tag]:
+        for listenFunction in self.listeners[tag][:]:
             if info is None:
                 listenFunction()
             else:

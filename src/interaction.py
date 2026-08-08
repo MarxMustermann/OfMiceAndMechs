@@ -9417,9 +9417,10 @@ press tab to continue
                 room.hidden = False
                 items = room.getItemByPosition((6,0,0))
                 rendered_room = fixRoomRender(room.render())
-                for y in range(1,12):
-                    for x in range(1,12):
-                        rendered_room[y][x] = "  "
+                for y in range(0,13):
+                    for x in range(0,13):
+                        if x in (0,12) or y in (0,12):
+                            rendered_room[y][x] = "  "
                 rendered_room[0][6] = "  "
 
                 mapSize = 13
@@ -9502,13 +9503,13 @@ press tab to continue
                 color = "#666"
                 if subStep == 1:
                     color = "#fff"
-                line = """- You see walls made out of solid steel.\n"""
+                line = """- You feel the touch of the cold hard floor.\n"""
                 text.insert(0,(src.interaction.urwid.AttrSpec(color,"#000"),line))
             if subStep > 1:
                 color = "#666"
                 if subStep == 2:
                     color = "#fff"
-                line = """- You feel the touch of the cold hard floor.\n"""
+                line = """- You see walls made out of solid steel.\n"""
                 text.insert(0,(src.interaction.urwid.AttrSpec(color,"#000"),line))
             if subStep > 2:
                 color = "#666"
@@ -9540,7 +9541,7 @@ try to remember how you got here ...\n"""
                 text = """
 suggested action:
 press tab
-to open your eyes"""
+to feel around"""
             elif subStep == 1:
                 if not stageState.get("send_tracking_ping_sub_1"):
                     src.interaction.send_tracking_ping("run_intro_stage_3_1")
@@ -9548,7 +9549,7 @@ to open your eyes"""
                 text = """
 suggested action:
 press tab
-to feel around"""
+to open your eyes"""
             elif subStep == 2:
                 if not stageState.get("send_tracking_ping_sub_2"):
                     src.interaction.send_tracking_ping("run_intro_stage_3_2")
@@ -9564,7 +9565,7 @@ to look around"""
                 text = """
 suggested action:
 press tab
-to orient yourself"""
+to look outside"""
 
             else:
                 if not stageState.get("send_tracking_ping_sub_4"):

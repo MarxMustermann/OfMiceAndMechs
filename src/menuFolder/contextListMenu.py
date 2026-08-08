@@ -110,6 +110,8 @@ class ContextListMenu(src.menues.SubMenu):
             for marker in markers:
                 if marker[0] == "storageSlot":
                     has_stockpile = True
+                if marker[0] == "inputSlot":
+                    has_stockpile = True
             if has_stockpile:
                 text.append(src.interaction.ActionMeta(payload=(self.trigger_restock,{}),content="restock stockpile"))
                 text.append("\n")

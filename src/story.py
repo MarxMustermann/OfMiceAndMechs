@@ -2479,7 +2479,7 @@ Protocol forbids to leave the base while the alarm is running.
 
 Find the SiegeManger (""",sample_siegeManager.metaRender(),f""") and use it, to unrestrict the outside movement.
 The old guard room is {direction_string}.
-Look for the SiegeManager there, but be wary the Golems.
+Look for the SiegeManager there, but be wary of the Golems.
 """])
                 offer_accept_options = True
             else:

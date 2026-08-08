@@ -210,9 +210,10 @@ Kill all enemies on this terrain, to unlock the promotions to rank 2.
         upgrade_question = "\nWhat do you choose as your reward?"
 
         while character.rank > highestAllowed:
+            options = []
+            extraDescriptions = {}
+            text = None
             if character.rank == 6:
-                options = []
-                extraDescriptions = {}
                 options.append(("special attacks","special attacks"))
                 extraDescriptions["special attacks"] = "your alternate attack is a selection of special attacks"
                 options.append(("swap attacks","swap attack"))
@@ -226,27 +227,7 @@ You can only have one close combat perk
 
 """,(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),upgrade_question),"""
 """]
-                submenu = src.menues.menuMap["SelectionMenu"](
-                    text = text,
-                    options=options,
-                    targetParamName="rewardType",
-                    extraDescriptions=extraDescriptions,
-                    tag="promotionRewardSelection",
-                )
-                submenu.do_not_scale = True
-
-                character.add_submenu(submenu)
-                submenu.followUp = {
-                    "container": self,
-                    "method": "get_rank_reward",
-                    "params": extraInfo,
-                }
-                character.runCommandString("~",nativeKey=True)
-                src.interaction.send_tracking_ping("got rank 5 promotion")
-                return
             if character.rank == 5:
-                options = []
-                extraDescriptions = {}
                 options.append(("endurance run","endurance run"))
                 extraDescriptions["endurance run"] = "your alternate movement only costs 80% time, but costs 1 exhaustion"
                 options.append(("jump","jump"))
@@ -260,24 +241,6 @@ You can only have one special movement perk
 
 """,(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),upgrade_question),"""
 """]
-                submenu = src.menues.menuMap["SelectionMenu"](
-                    text = text,
-                    options=options,
-                    targetParamName="rewardType",
-                    extraDescriptions=extraDescriptions,
-                    tag="promotionRewardSelection",
-                )
-                submenu.do_not_scale = True
-
-                character.add_submenu(submenu)
-                submenu.followUp = {
-                    "container": self,
-                    "method": "get_rank_reward",
-                    "params": extraInfo,
-                }
-                character.runCommandString("~",nativeKey=True)
-                src.interaction.send_tracking_ping("got rank 4 promotion")
-                return
             if character.rank == 4:
                 options = []
                 extraDescriptions = {}
@@ -294,27 +257,7 @@ You can only have one ranged attack perk
 
 """,(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),upgrade_question),"""
 """]
-                submenu = src.menues.menuMap["SelectionMenu"](
-                    text = text,
-                    options=options,
-                    targetParamName="rewardType",
-                    extraDescriptions=extraDescriptions,
-                    tag="promotionRewardSelection",
-                )
-                submenu.do_not_scale = True
-
-                character.add_submenu(submenu)
-                submenu.followUp = {
-                    "container": self,
-                    "method": "get_rank_reward",
-                    "params": extraInfo,
-                }
-                character.runCommandString("~",nativeKey=True)
-                src.interaction.send_tracking_ping("got rank 3 promotion")
-                return
             if character.rank == 3:
-                options = []
-                extraDescriptions = {}
                 options.append(("max health boost","max health boost"))
                 extraDescriptions["max health boost"] = "2 times the maxHP"
                 options.append(("movement speed boost","movement speed boost"))
@@ -326,9 +269,10 @@ Only 1 ranks are left before reaching rank 1.
 As a a reward for getting promoted from rank 3 to rank 2 you can select a attribute perk.
 You can only have one attribute perk 
 
-""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"What should the reward for your promotion be?"),"""
-""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"What should the reward for your promotion be?"),"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),upgrade_question),"""
 """]
+
+            if options:
                 submenu = src.menues.menuMap["SelectionMenu"](
                     text = text,
                     options=options,
@@ -345,10 +289,10 @@ You can only have one attribute perk
                     "params": extraInfo,
                 }
                 character.runCommandString("~",nativeKey=True)
-                src.interaction.send_tracking_ping("got rank 2 promotion")
+                src.interaction.send_tracking_ping(f"got rank {character.rank-1} promotion")
                 return
-            self.do_promotion(extraInfo)
 
+            self.do_promotion(extraInfo)
 
         text = [f"""
 The tendrils retreat.

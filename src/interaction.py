@@ -5372,6 +5372,9 @@ def renderGameDisplay(renderChar=None,showSaving=False):
     hide_specialRender = False
     if len(char.macroState["commandKeyQueue"]) > 1 or (char.getActiveQuest() and char.getActiveQuest().autoSolve):
         hide_specialRender = True
+        submenue = char.macroState.get("submenue")
+        if submenue and submenue.tag == "Wait":
+            hide_specialRender = False
 
     uiElements = src.gamestate.gamestate.uiElements
     uiElements = calculate_UI_layout(char)

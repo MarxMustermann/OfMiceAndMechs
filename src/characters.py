@@ -2248,7 +2248,7 @@ press any other key to attack normally"""
             if not src.interaction.freeze_game or self != src.gamestate.gamestate.mainChar:
                 self.quests.insert(0, quest)
             else:
-                pos = len(self.quests)-src.interaction.freeze_num_quests-1
+                pos = len(self.quests)-src.interaction.freeze_num_quests
                 if pos < 0 and pos >= len(self.quests):
                     pos = 0
                 self.quests.insert(pos, quest)

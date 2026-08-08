@@ -5797,19 +5797,25 @@ def renderGameDisplay(renderChar=None,showSaving=False):
             # draw submenues positioned on the gamemap
             if pos:
                 for ui_element in uiElements:
+
+                    # draw menues only onto the gamemap
                     if ui_element["type"] != "gameMap":
                         continue
 
+                    # set up some helper variables
                     map_width = ui_element["map_width"]
                     line_width = 5
                     padding = 15
 
+                    # gets the screen position of the map
                     distance_left = ui_element["offset"][0]
                     distance_top = ui_element["offset"][1]
 
+                    # gets the screen position of the map center
                     distance_left = map_width//2+distance_left
                     distance_top = map_width//2+distance_top
 
+                    # gets the ingame position of the main character
                     if char.container.isRoom:
                         big_position = char.getBigPosition()
                         small_position = char.getSpacePosition()
@@ -5817,14 +5823,16 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                     else:
                         char_pos = char.getPosition()
 
+                    # convert menues ingame position to a screen position
                     distance_left += pos[0]-char_pos[0]
                     distance_top += pos[1]-char_pos[1]
 
+                    # convert screen position to pixels
                     distance_left = distance_left*2
-
                     offsetLeft = distance_left*tileWidth
                     offsetTop = distance_top*tileHeight
 
+                    # caculate the menues dimensions
                     display_height = tileHeight*height
                     display_width = tileWidth*width
 
@@ -5835,6 +5843,7 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                     sdl_renderer2.fill_rect((offsetLeft+tileHeight,offsetTop-line_width,line_width,tileHeight+line_width*2))
                     sdl_renderer2.fill_rect((offsetLeft-line_width,offsetTop+tileHeight,tileHeight+line_width*2,line_width))
 
+                    # calculate position of the actual submenu
                     distance_left = ui_element["offset"][0]
                     distance_top = ui_element["offset"][1]
                     distance_left = map_width//2+distance_left
@@ -5842,24 +5851,23 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                     distance_left += pos[0]-char_pos[0]+1
                     distance_top += pos[1]-char_pos[1]
                     distance_left = distance_left*2
-
                     offsetLeft = distance_left*tileWidth
                     offsetTop = distance_top*tileHeight
 
+                    # store submenu position
                     last_menu_position = (offsetLeft,offsetTop)
 
                     # draw submenu content
                     sdl_renderer2.draw_color = (0,0,0,255)
                     sdl_renderer2.fill_rect((offsetLeft,offsetTop,display_width+padding*2,display_height+padding*2))
 
+                    # draw content to screen
                     root_console = tcod.console.Console(width, height, order="F")
                     printUrwidToTcod(text,(0,0),explecitConsole=root_console,console_offset=(offsetLeft+padding,offsetTop+padding))
-
                     atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
                     console_render = tcod.render.SDLConsoleRender(atlas)
                     renderedToTexture = console_render.render(root_console)
                     sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft+padding,offsetTop+padding,renderedToTexture.width,renderedToTexture.height),)
-
                     printUrwidToSDL(text,(distance_left,distance_top),fineOffset=(padding,padding))
 
                     # draw submenu border
@@ -5873,7 +5881,7 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                     #sdl_renderer2.fill_rect((offsetLeft+tileHeight,offsetTop-line_width,line_width,tileHeight+line_width*2))
                     #sdl_renderer2.fill_rect((offsetLeft-line_width,offsetTop+tileHeight,tileHeight+line_width*2,line_width))
 
-            # draw submenues positioned on the gamemap
+            # draw submenues 
             if not pos:
                 distance_left = max(src.interaction.tcodConsole.width//2-width//2,1)
                 distance_top = max(min(src.interaction.tcodConsole.height//2-height//2,17),1)

@@ -89,7 +89,7 @@ class ChatPartnerselection(src.menues.SubMenu):
             for char in src.gamestate.gamestate.mainChar.subordinates:
                 options.insert(0,(char, char.name))
 
-            self.setOptions("talk with whom?", options)
+            self.setOptions([(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"Select who you want to talk to:\n")], options)
 
         # delegate the actual selection to the super class
         if not self.getSelection():

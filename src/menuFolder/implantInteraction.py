@@ -252,6 +252,7 @@ class ImplantInteraction(src.menues.SubMenu):
                     character.clear_quests()
                     for quest in quests:
                         character.assignQuest(quest)
+                        quest.endTrigger = {"container": character, "method": "respawn_reach_implant"}
                     self.submenu = None
                     self.done = True
                     return True
@@ -323,6 +324,7 @@ class ImplantInteraction(src.menues.SubMenu):
                             character.notify("failed generating quest")
                         for quest in quests:
                             character.assignQuest(quest)
+                            quest.endTrigger = {"container": character, "method": "respawn_reach_implant"}
 
                     # skip special sections
                     if selection == "skip":

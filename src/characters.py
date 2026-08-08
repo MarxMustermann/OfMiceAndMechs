@@ -2404,6 +2404,13 @@ press any other key to attack normally"""
             return False
         return True
 
+    def respawn_reach_implant(self):
+        if self.quests:
+            return
+        quest = src.quests.questMap["ReachOutStory"]()
+        self.assignQuest(quest)
+        quest.endTrigger = {"container": self, "method": "respawn_reach_implant"}
+
     def die(self, reason=None, killer = None, addCorpse=True, corpseType="Corpse"):
         '''
         kill the character and do a bit of extra stuff like placing corpses

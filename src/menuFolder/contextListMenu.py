@@ -146,7 +146,26 @@ class ContextListMenu(src.menues.SubMenu):
         self._trigger_quest(quest)
 
     def trigger_restock(self,extraParams=None):
-        quest = src.quests.questMap["RestockRoom"](targetPositionBig=self.index_big, targetPosition=self.index, allowAny=True)
+        terrain = self.character.getTerrain()
+        rooms = terrain.getRoomByPosition(self.index_big)
+        item_type = None
+        if rooms:
+            room = rooms[0]
+
+            markers = room.getMarkersOnPosition(self.index)
+            for marker in markers:
+                if marker[0] not in ("storageSlot","inputSlot",):
+                    continue
+                if marker[1][1] is None:
+                    continue
+                item_type = marker[1][1]
+
+            if not item_type:
+                items = room.getItemByPosition(self.index)
+                for item in items:
+                    item_type = item.type
+                    break
+        quest = src.quests.questMap["RestockRoom"](targetPositionBig=self.index_big, targetPosition=self.index, allowAny=True, toRestock=item_type)
         self._trigger_quest(quest)
 
 # register the menu type

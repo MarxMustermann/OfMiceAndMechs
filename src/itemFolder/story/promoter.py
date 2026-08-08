@@ -235,7 +235,7 @@ You can only have one close combat perk
                 )
                 submenu.do_not_scale = True
 
-                character.macroState["submenue"] = submenu
+                character.add_submenu(submenu)
                 submenu.followUp = {
                     "container": self,
                     "method": "get_rank_reward",
@@ -269,7 +269,7 @@ You can only have one special movement perk
                 )
                 submenu.do_not_scale = True
 
-                character.macroState["submenue"] = submenu
+                character.add_submenu(submenu)
                 submenu.followUp = {
                     "container": self,
                     "method": "get_rank_reward",
@@ -303,7 +303,7 @@ You can only have one ranged attack perk
                 )
                 submenu.do_not_scale = True
 
-                character.macroState["submenue"] = submenu
+                character.add_submenu(submenu)
                 submenu.followUp = {
                     "container": self,
                     "method": "get_rank_reward",
@@ -338,7 +338,7 @@ You can only have one attribute perk
                 )
                 submenu.do_not_scale = True
 
-                character.macroState["submenue"] = submenu
+                character.add_submenu(submenu)
                 submenu.followUp = {
                     "container": self,
                     "method": "get_rank_reward",

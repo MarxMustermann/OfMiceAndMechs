@@ -24,7 +24,7 @@ class Promoter(src.items.Item):
 
 Its tendrils reach out and touch your implant.
 """]
-        submenue = character.addTextMenu(text, do_not_scale=True, tag="promotionIntro")
+        submenue = character.showTextMenu(text, do_not_scale=True, tag="promotionIntro")
         submenue.followUp = {
             "container": self,
             "method": "promotion_loop",
@@ -64,14 +64,13 @@ Its tendrils reach out and touch your implant.
 
                     src.gamestate.gamestate.stern["rank5promotionfailed"] = True
 
-                    submenue = src.menues.menuMap["TextMenu"]("""
+                    text = ["""
+
 Promotions from rank 6 to rank 5 are blocked.
 
 There need to be at least 1 clone besides you on the base to allow any promptions.
-""")
-                    submenue.do_not_scale = True
-                    character.macroState["submenue"] = submenue
-                    character.runCommandString("~",nativeKey=True)
+"""]
+                    character.showTextMenu(text, do_not_scale=True)
 
                     character.changed("promotion blocked",{"reason":"needs 2 clones on base"})
                     return
@@ -88,16 +87,13 @@ There need to be at least 1 clone besides you on the base to allow any promption
 
                     src.gamestate.gamestate.stern["rank4promotionfailed"] = True
 
-                    submenue = src.menues.menuMap["TextMenu"]("""
+                    text = ["""
 Promotions from rank 5 to rank 4 are blocked.
 
 The base needs to consist out of at least 6 rooms.
 Build more rooms.
-""")
-                    submenue.do_not_scale = True
-                    character.macroState["submenue"] = submenue
-                    character.runCommandString("~",nativeKey=True)
-
+"""]
+                    character.showTextMenu(text, do_not_scale=True)
                     character.changed("promotion blocked",{"reason":"needs base with at least 6 rooms"})
                     return
             elif highestAllowed == 5 or character.rank == 5:
@@ -132,16 +128,13 @@ Build more rooms.
 
                     src.gamestate.gamestate.stern["rank3promotionfailed"] = True
 
-                    submenue = src.menues.menuMap["TextMenu"]("""
+                    text = ["""
 Promotions from rank 4 to rank 3 are blocked.
 Enemies are nearby.
 
 There need to be at least 3 clones besides you on the base to allow any promptions.
-""")
-                    submenue.do_not_scale = True
-                    character.macroState["submenue"] = submenue
-                    character.runCommandString("~",nativeKey=True)
-
+"""]
+                    character.showTextMenu(text, do_not_scale=True)
                     character.changed("promotion blocked",{"reason":"terrain needs cleared from enemies"})
                     return
             elif highestAllowed == 4 or character.rank == 4:
@@ -169,14 +162,12 @@ There need to be at least 3 clones besides you on the base to allow any promptio
 
                     src.gamestate.gamestate.stern["rank2promotionfailed"] = True
 
-                    submenue = src.menues.menuMap["TextMenu"]("""
+                    text = ["""
 Promotions from rank 3 to rank 2 are blocked.
 
 Kill all enemies on this terrain, to unlock the promotions to rank 2.
-""")
-                    submenue.do_not_scale = True
-                    character.macroState["submenue"] = submenue
-                    character.runCommandString("~",nativeKey=True)
+"""]
+                    character.showTextMenu(text, do_not_scale=True)
 
                     character.changed("promotion blocked",{"reason":"needs 4 clones on base"})
                     return
@@ -288,12 +279,9 @@ You can only have one attribute perk
         text = [f"""
 The tendrils retreat.
 
-""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),f"You are rank {character.rank} now."),"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"You are rank {character.rank} now."),"""
 """]
-        submenu = src.menues.menuMap["TextMenu"](text)
-        submenu.do_not_scale = True
-        character.macroState["submenue"] = submenu
-        character.runCommandString("~",nativeKey=True)
+        character.showTextMenu(text, do_not_scale=True)
 
     def get_rank_reward(self, extraInfo):
         '''

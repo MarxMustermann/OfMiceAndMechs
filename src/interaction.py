@@ -5611,7 +5611,10 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                     # generate the content for the legend
                     output = []
                     for other_character in other_characters:
-                        output.append([other_character.render()," ",(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),[other_character.charType," ",str(other_character.getSpacePosition())," "])])
+                        description = other_character.charType
+                        if other_character.charType == "Clone":
+                            description = other_character.name
+                        output.append([other_character.render()," ",(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),[description," ",str(other_character.getSpacePosition())," "])])
                     for item in items:
                         output.append([item.metaRender()," ",(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),item.name)," ",(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),f"{item.getSmallPosition()}")," "])
                     for marker in markers:

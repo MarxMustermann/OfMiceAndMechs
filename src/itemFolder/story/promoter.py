@@ -24,16 +24,12 @@ class Promoter(src.items.Item):
 
 Its tendrils reach out and touch your implant.
 """]
-        submenue = src.menues.menuMap["TextMenu"](text)
-        character.macroState["submenue"] = submenue
-        submenue.do_not_scale = True
-        submenue.tag = "promotionIntro"
+        submenue = character.addTextMenu(text, do_not_scale=True, tag="promotionIntro")
         submenue.followUp = {
             "container": self,
             "method": "promotion_loop",
             "params": {"character":character},
         }
-        character.runCommandString("~",nativeKey=True)
 
     def promotion_loop(self,extraInfo):
         '''

@@ -125,7 +125,7 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         # prevents the item to be used by multiple characters at once
         if self.inUse:
             if self.lastInteraction > src.gamestate.gamestate.tick-10:
-                character.notify("This item is in use. It con only used by one clone.")
+                character.notify("This item is in use by another Clone.\n\nIt can only used by one Clone at the same time.")
                 character.changed("failed manufacturing",{})
                 return
             else:

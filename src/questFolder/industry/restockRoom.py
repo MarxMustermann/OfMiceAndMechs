@@ -79,11 +79,6 @@ Place the items in the correct input or storage stockpile.
         if self.targetPositionBig and character.getBigPosition() != self.targetPositionBig:
             return False
 
-        try:
-            self.disallowLocations
-        except:
-            self.disallowLocations = None
-
         if isinstance(character.container,src.rooms.Room):
             room = character.container
 

@@ -4398,6 +4398,12 @@ def getTcodEvents():
                             submenu.index_big = bigCoordinate
                             mainChar.macroState["submenue"] = submenu
                         elif event.button == tcod.event.MouseButton.MIDDLE:
+                            if rooms:
+                                if not mainChar.container.isRoom:
+                                    smallCoordinate = (smallCoordinate[0]+1,smallCoordinate[1]+1,0)
+                            else:
+                                if mainChar.container.isRoom:
+                                    smallCoordinate = (smallCoordinate[0]-1,smallCoordinate[1]-1,0)
                             submenu = src.menues.menuMap["ContextListMenu"](mainChar)
                             submenu.index = smallCoordinate
                             submenu.index_big = bigCoordinate

@@ -545,7 +545,7 @@ class Terrain:
             if self.xPosition >= 13:
                 char.xPosition -= 1
                 return None
-        if char.xPosition < 17:
+        if char.xPosition < 16:
             if self.xPosition <= 1:
                 char.xPosition += 1
                 return None
@@ -553,7 +553,7 @@ class Terrain:
             if self.yPosition >= 13:
                 char.yPosition -= 1
                 return None
-        if char.yPosition < 17:
+        if char.yPosition < 16:
             if self.yPosition <= 1:
                 char.yPosition += 1
                 return None

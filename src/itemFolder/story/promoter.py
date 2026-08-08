@@ -449,15 +449,12 @@ You move twice as fast now.
 """]
 
         if rewardText:
-            submenu = src.menues.menuMap["TextMenu"](rewardText)
-
-            character.macroState["submenue"] = submenu
+            submenu = character.showTextMenu(rewardText)
             submenu.followUp = {
-                    "container": self,
+                "container": self,
                 "method": "do_promotions",
                 "params": extraInfo,
             }
-            character.runCommandString("~",nativeKey=True)
             return
     
         self.do_promotions(extraInfo)

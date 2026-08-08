@@ -1855,7 +1855,11 @@ class ChatMenu(Chat):
                 #options.append(("exit", "let us proceed, " + self.partner.name))
 
                 # set the options
-                submenu = src.menues.menuMap["SelectionMenu"](options=options, text=f"You are about to start a conversation with {self.partner.name}.\n\nWhat kind of conversation do you want to start?\n")
+                submenu = src.menues.menuMap["SelectionMenu"](options=options, text=[f"""
+You are about to """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"start a conversation"),f""" with {self.partner.name}.
+
+""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"What kind of conversation do you want to start?"),"""
+"""])
                 self.subMenu = submenu
 
             if self.subMenu:

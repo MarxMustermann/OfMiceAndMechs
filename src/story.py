@@ -1953,7 +1953,7 @@ That is {direction_string}.
                 extraDescriptions["replace"] = "This will add the current task as quest and remove the existing quests"
                 extraDescriptions["continue"] = "This will continue the conversation without changing your quests"
 
-                base_response_text.append("\n\nHow do you react?")
+                base_response_text.append([(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"\n\nHow do you react?\n")])
                 submenue = src.menues.menuMap["SelectionMenu"](
                     base_response_text, options, tag="builder_accept_quest", targetParamName="accept_type",extraDescriptions=extraDescriptions,title=partner.name.upper()+" ANSWERS"
                 )
@@ -2595,7 +2595,7 @@ I ..... seems to have forgotten what i was about to say.
             extraDescriptions["replace"] = "This will add the current task as quest and remove the existing quests"
             extraDescriptions["continue"] = "This will continue the conversation without changing your quests"
 
-            base_response_text.append("\n\nHow do you react?")
+            base_response_text.append([(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"\n\nHow do you react?\n")])
             submenue = src.menues.menuMap["SelectionMenu"](
                 base_response_text, options, tag="builder_accept_quest", targetParamName="accept_type",extraDescriptions=extraDescriptions,title=partner.name.upper()+" ASKS"
             )

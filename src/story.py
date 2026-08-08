@@ -2639,7 +2639,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                 {
                        "coordinate": (7,7,0),
                        "roomType": "EmptyRoom",
-                       "doors": "6,0 6,12",
+                       "doors": "6,0",
                        "offset": [1,1],
                        "size": [13, 13],
                 },
@@ -2647,7 +2647,6 @@ sure i'll produce equipment for you as long as you bring me the raw material.
            )
         used_spots.append(startRoom.getPosition())
         startRoom.tag = "the architects tomb"
-        startRoom.getItemByPosition((6,12,0))[0].walkable = False
 
         # add the first tile the npc steps on
         big_pos = (7,6,0)

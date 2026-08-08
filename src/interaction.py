@@ -9413,7 +9413,6 @@ press tab to continue
                 room.reconfigure(13, 13, doorPos=[(6,0)])
                 room.hidden = False
                 items = room.getItemByPosition((6,0,0))
-                items[0].walkable = False
                 rendered_room = fixRoomRender(room.render())
                 for y in range(1,12):
                     for x in range(1,12):
@@ -9428,7 +9427,6 @@ press tab to continue
                 room.reconfigure(13, 13, doorPos=[(6,0)])
                 room.hidden = False
                 items = room.getItemByPosition((6,0,0))
-                items[0].walkable = False
                 rendered_room = fixRoomRender(room.render())
 
                 mapSize = 13

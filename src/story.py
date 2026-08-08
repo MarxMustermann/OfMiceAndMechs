@@ -1299,9 +1299,11 @@ class MainGame(BasicPhase):
                 text = "The room is filled with various items."
                 self.activeStory["mainChar"].addMessage(text)
                 text = """You recognise your hostile suroundings and
-try to remember how you got here ..."""
+try to remember how you got here ...
+until the explosions fully wake you."""
                 self.activeStory["mainChar"].addMessage(text)
-            self.activeStory["mainChar"].messages.append(("""until the explosions fully wake you.""",0))
+            else:
+                self.activeStory["mainChar"].messages.append(("""until the explosions fully wake you.""",0))
             self.activeStory["sternsContraption"].startMeltdown()
 
     def gotEpochReward(self,extraParam):

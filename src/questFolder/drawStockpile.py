@@ -148,7 +148,7 @@ Try as hard as you can to achieve this.
         offsets = ((0,0,0),(0,1,0),(1,0,0),(0,-1,0),(-1,0,0))
         foundOffset = None
         for offset in offsets:
-            if character.getPosition(offset=offset) == self.targetPosition:
+            if self.character.getPosition(offset=offset) == self.targetPosition:
                 foundOffset = offset
         return foundOffset
 

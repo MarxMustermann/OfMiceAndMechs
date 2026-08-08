@@ -435,7 +435,7 @@ Big items like the machinery will block your movement.
             tombCandidates = terrain.getRoomByPosition((7,7,0))
             if tombCandidates and tombCandidates[0].tag == "the architects tomb":
                 base_text = ["""
-You made it out of the burning room.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You made it out of the burning room."),"""
 We are safe for a second, but the room will explode soon.
 
 Watch the room burn down.

@@ -39,7 +39,7 @@ class RestockRoom(src.quests.MetaQuestSequence):
             reason = f",\nto {self.reason}"
         roomString = "a room"
         if self.targetPositionBig:
-            roomString += f"the room on tile {self.targetPositionBig}"
+            roomString = f"the room on tile {self.targetPositionBig}"
         typeString = "any items"
         if self.toRestock:
             typeString = self.toRestock

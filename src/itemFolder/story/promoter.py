@@ -130,7 +130,6 @@ Build more rooms.
 
                     text = ["""
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Promotions from rank 4 to rank 3 are blocked."),"""
-Enemies are nearby.
 
 There need to be at least 3 clones besides you on the base to allow any promptions.
 """]

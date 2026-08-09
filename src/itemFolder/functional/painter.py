@@ -100,7 +100,7 @@ This should be used in cases where you can not place the Painter on the position
         if keyPressed == "d":
            submenue = src.menues.menuMap["InputMenu"](
                "type in the direction to set\n\n"+
-               "(w,a,s,d)"
+               "(w,a,s,d,.)"
                )
            submenue.tag = "paintDirectionSelection"
            character.macroState["submenue"] = submenue

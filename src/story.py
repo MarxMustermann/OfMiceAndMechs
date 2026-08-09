@@ -3020,7 +3020,6 @@ sure i'll produce equipment for you as long as you bring me the raw material.
            )
         used_spots.append(lootRoom.getPosition())
         lootRoom.tag = "ruin"
-        lootRoom.spawnItem("Armor",(6,6,0))
         for x in range(8,12):
             lootRoom.addWalkingSpace((x,6,0))
         for y in range(1,8):

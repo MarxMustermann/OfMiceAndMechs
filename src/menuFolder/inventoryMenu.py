@@ -252,7 +252,7 @@ class InventoryMenu(src.menues.SubMenu):
                     extra_rows = (self.min_lines-5)-num_rows
                     txt.append("\n"*(extra_rows))
                     num_rows += extra_rows
-                txt.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"#000"),[
+                txt.append((src.interaction.urwid.AttrSpec(src.interaction.shadowed_ui_color,"#000"),[
                                    src.interaction.ActionMeta(payload="w",content="press w"),"/",src.interaction.ActionMeta(payload="s",content="s to move cursor"),"\n",
                                    src.interaction.ActionMeta(payload="L",content=["press ",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"L")," to drop item nearby"]),"\n",
                                    src.interaction.ActionMeta(payload="l",content="press l to drop item"),"\n",

@@ -1828,13 +1828,15 @@ I am working right now. I'll repriotize though.""")
 
         # generate information text
         text = []
-        text.append("""
-You ask the groundskeeper to change its working priorities.
-The following list, list the groundskeepers duties and its priorities.
+        text.extend(["""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You ask the groundskeeper to change its working priorities."),"""
+
+The groundskeepers duties and its priorities are listed bellow.
 High priority task will done before low priority tasks.
+A high number indicates a high priority.
 
 
-""")
+"""])
         for duty in duties:
             if duty == selected_duty:
                 text.append(f"=> ")

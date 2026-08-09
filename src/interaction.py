@@ -6038,9 +6038,6 @@ def showMainMenu(args=None):
         with open("config/customDifficultyMap.json", "r") as file:
             custom_difficultyMap = json.load(file)
 
-    difficulty = "easy"
-    difficultyMap = global_difficultyMap[difficulty]
-
     def fixRoomRender(render):
         for row in render:
             row.append("\n")
@@ -6265,7 +6262,71 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
         saves = rawState["worlds"]
 
-        if startGame:
+        difficulty = saves[gameIndex].get("difficulty")
+        if startGame and not difficulty:
+
+            # show the difficulty selection
+            tcodConsole.clear()
+            text = [ "+------------------------------------------------+","\n",
+                     "|                                                |","\n",
+                     "| Choose the games difficulty                    |","\n",
+                     "| press e/m/d to select difficulty               |","\n",
+                     "|                                                |","\n",
+                     "|                                                |","\n",
+                     "| (e)asy                                         |","\n",
+                     "| easy is easy. Recommended to start with.       |","\n",
+                     "| This mode should teach you how the game works. |","\n",
+                     "|                                                |","\n",
+                     "| (m)edium                                       |","\n",
+                     "| medium is pretty hard.                         |","\n",
+                     "| Recommended after winning an easy run.         |","\n",
+                     "| Balanced to be challenging after               |","\n",
+                     "| mastering one game mechanic.                   |","\n",
+                     "|                                                |","\n",
+                     "| (d)ifficult                                    |","\n",
+                     "| difficult is really hard. not recomended       |","\n",
+                     "|                                                |","\n",
+                     "+------------------------------------------------+","\n",
+                  ]
+
+            offsetX = window_charwidth//2-25
+            offsetY = window_charheight//2-10
+
+            printUrwidToTcod(text,(offsetX,offsetY))
+            tcodPresent()
+
+            # handle keys
+            events = tcod.event.get()
+            for event in events:
+                if isinstance(event, tcod.event.KeyDown):
+                    key = event.sym
+                    print(tcod.event.get_modifier_state())
+                    if key in (tcod.event.KeySym.e,):
+                        difficulty = "easy"
+                    if key in (tcod.event.KeySym.m,):
+                        difficulty = "medium"
+                    if key in (tcod.event.KeySym.d,):
+                        difficulty = "difficult"
+                    saves[gameIndex]["difficulty"] = difficulty
+                    with open("gamestate/globalInfo.json", "w") as globalInfoFile:
+                        json.dump(rawState, globalInfoFile)
+                if isinstance(event, tcod.event.Quit):
+                    if src.interaction.tcodMixer:
+                        src.interaction.tcodMixer.close()
+                    raise SystemExit()
+                if isinstance(event, tcod.event.WindowResized):
+                    checkResetWindowSize(event.width, event.height)
+                if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
+                    if src.interaction.tcodMixer:
+                        src.interaction.tcodMixer.close()
+                    raise SystemExit()
+            
+            if not difficulty:
+                time.sleep(0.02)
+                continue
+        if startGame and difficulty:
+            difficultyMap = global_difficultyMap[difficulty]
+
             global new_chars
             new_chars = set()
             tcodConsole.clear()
@@ -6275,6 +6336,9 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
             loadingControl["done"] = False
             loadingControl["needsStart"] = False
             def showLoading():
+                '''
+                show a loading screen
+                '''
                 tcodConsole.clear()
                 printUrwidToTcod("+--------------+",(offsetX+3+16,offsetY+13))
                 printUrwidToTcod("| loading game |",(offsetX+3+16,offsetY+14))
@@ -6282,6 +6346,9 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 tcodPresent()
 
             def doLoad():
+                '''
+                sets up a basic world
+                '''
                 if gameIndex < len(saves) and saves[gameIndex]["hasSave"]:
                     src.gamestate.gamestate = src.gamestate.gamestate.loadP(gameIndex)
                     setUpNoUrwid()
@@ -6405,9 +6472,13 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 )
             asyncio.run(asyncTask())
             """
+
+            # set up basic world
             doLoad()
 
+            # start story
             if loadingControl["needsStart"] is True:
+
                 src.gamestate.gamestate.currentPhase.start(
                     seed=None, difficulty=difficulty, difficultyMap=difficultyMap
                 )
@@ -6521,7 +6592,8 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
         if manage_worlds:
             counter = 0
             for save_entry in saves:
-                menu_entry = f"world {save_entry['savestateId']}"
+                difficulty = save_entry.get("difficulty","no difficulty set")
+                menu_entry = f"world {save_entry['savestateId']} ({difficulty})"
                 indicator = ""
                 if counter == index:
                     indicator = "=> "
@@ -6984,11 +7056,11 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                             rawState["lastGameIndex"] = gameIndex
                             with open("gamestate/globalInfo.json", "w") as globalInfoFile:
                                 json.dump(rawState, globalInfoFile)
-                        else:
 
+                        else:
                             # create a new world
                             rawState["wordCounter"] += 1
-                            rawState["worlds"].append({"savestateId":rawState["wordCounter"],"hasSave":False,})
+                            rawState["worlds"].append({"savestateId":rawState["wordCounter"],"hasSave":False})
                             with open("gamestate/globalInfo.json", "w") as globalInfoFile:
                                 json.dump(rawState, globalInfoFile)
                             saves = rawState["worlds"]

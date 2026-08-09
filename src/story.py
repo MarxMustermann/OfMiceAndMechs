@@ -3040,7 +3040,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         cityPlaner.bolted = False
         cityPlanerRoom.addItem(cityPlaner,(6,9,0))
         for pos in [(5,3,0),(5,5,0),(9,5,0),(9,3,0)]:
-            enemy = src.characters.characterMap["Golem"]()
+            enemy = src.characters.characterMap["Golem"](level=3)
             cityPlanerRoom.addCharacter(enemy,pos[0],pos[1])
 
             quest = src.quests.questMap["SecureTile"](toSecure=cityPlanerRoom.getPosition())

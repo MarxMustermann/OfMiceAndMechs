@@ -3492,6 +3492,8 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                     (0.1,1,"Corpse"),
                     (0.01,5,"Corpse"),
                     (0.1,1,"Vial"),
+                    (0.01,1,"MetalWorkingBenches"),
+                    (0.01,1,"Anvils"),
                 ]
         for big_x in range(1,14):
             for big_y in range(1,14):

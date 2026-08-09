@@ -2891,8 +2891,10 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
                 if enemy.getPosition(offset=offset) == charPos:
                     if char.hasSpecialAttacks:
                         char.selectSpecialAttack(enemy)
+                        return None
                     elif char.hasSwapAttack:
                         char.attack(enemy,swap=True)
+                        return None
                     else:
                         char.showTextMenu("you have no alternate attack")
                         return None

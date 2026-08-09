@@ -1727,7 +1727,11 @@ Since i'm a groundskeeper my duty is to maintain the premises."""])
 
 
     def builder_asked_nowork(self,character,partner):
+        '''
+        handle the player asking why eddi is not working
+        '''
 
+        # generate an information text
         base_response_text = []
         base_response_text.extend([(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"""
 > Why are you not working?
@@ -1738,6 +1742,7 @@ Everything would have to be build anew.
 
 """])
 
+        # reflect the current state in the information
         if not partner.registers.get("startedWorking"):
             base_response_text.extend(["""
 Well, """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""i'll start by cleaning up this room.""")])
@@ -1748,10 +1753,13 @@ I'll check if there is something to do now.""")
             base_response_text.append("""
 I am working right now. I'll repriotize though.""")
 
+        # show the information text to the player
         submenue = character.showTextMenu(base_response_text,title=partner.name.upper()+" SAYS")
 
+        # add the advanced interaction options
         if not partner.registers.get("startedWorking"):
             partner.specialChatOptions.insert(0,("chat","chat idly"))
+            partner.specialChatOptions.insert(0,({"method":self.builder_set_priority_trigger,"params":{"character":character,"partner":partner}},"set priorities"))
             partner.specialChatOptions.insert(0,({"method":self.builder_asked_help,"params":{"character":character,"partner":partner}},"ask for help"))
             partner.specialChatOptions.insert(0,({"method":self.builder_offered_help,"params":{"character":character,"partner":partner}},"offer help"))
             partner.registers["startedWorking"] = True
@@ -1761,7 +1769,89 @@ I am working right now. I'll repriotize though.""")
         else:
             character.runCommandString("."*3)
 
+        # reset eddis AI state
         self.builder_reset(partner)
+
+    def builder_set_priority_trigger(self,character,partner):
+        '''
+        start to configure the groundskeepers duty priorities
+        '''
+        self.builder_set_priority({"character":character,"partner":partner})
+
+    def builder_set_priority(self,extraParam):
+        '''
+        configure the groundskeepers duty priorities
+        '''
+
+        # unwrap the parameters
+        partner = extraParam["partner"]
+        character = extraParam["character"]
+        key = extraParam.get("keyPressed")
+        selected_duty = extraParam.get("selected_duty")
+
+        # get sorted duties
+        duties = partner.duties[:]
+        duties.sort()
+        duties.sort(key=lambda duty: partner.dutyPriorities.get(duty,1), reverse=True)
+        if not selected_duty:
+            selected_duty = duties[0]
+
+        # handle keypresses
+        if key in ("esc",):
+            return
+        if key in ("w",):
+            index = duties.index(selected_duty)
+            index -= 1
+            if index < 0:
+                index = len(duties)-1
+            selected_duty = duties[index]
+        if key in ("s",):
+            index = duties.index(selected_duty)
+            index += 1
+            if index >= len(duties):
+                index = 0
+            selected_duty = duties[index]
+        if key in ("a",):
+            priority = partner.dutyPriorities.get(selected_duty,1)
+            priority -= 1
+            if priority < 1:
+                priority = 1
+            partner.dutyPriorities[selected_duty] = priority
+        if key in ("d",):
+            priority = partner.dutyPriorities.get(selected_duty,1)
+            priority += 1
+            partner.dutyPriorities[selected_duty] = priority
+
+        # ensure duties are still sorted
+        duties.sort()
+        duties.sort(key=lambda duty: partner.dutyPriorities.get(duty,1), reverse=True)
+
+        # generate information text
+        text = []
+        text.append("""
+You ask the groundskeeper to change its working priorities.
+The following list, list the groundskeepers duties and its priorities.
+High priority task will done before low priority tasks.
+
+
+""")
+        for duty in duties:
+            if duty == selected_duty:
+                text.append(f"=> ")
+            else:
+                text.append(f"*  ")
+            text.append(f"{duty}: {partner.dutyPriorities[duty]}\n")
+        text.append((src.interaction.urwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),["""
+press """,src.interaction.ActionMeta(payload="w",content="w"),"/",src.interaction.ActionMeta(payload="s",content="s"),""" to move cursor
+""",src.interaction.ActionMeta(payload="a",content="press a to decrease priority"),"""
+""",src.interaction.ActionMeta(payload="d",content="press a to increase priority"),"""
+"""]))
+
+        # show text to the player
+        submenu = src.menues.menuMap["OneKeystrokeMenu"](text)
+        character.add_submenu(submenu)
+        extraParam["selected_duty"] = selected_duty
+        submenu.followUp = {"method":self.builder_set_priority,"params":extraParam}
 
     def builder_asked_nowork_post(self, extraParam):
         character = extraParam["character"]

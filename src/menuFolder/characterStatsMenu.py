@@ -12,9 +12,6 @@ class CharacterStatsMenu(src.menues.SubMenu):
         super().__init__()
 
     def handleKey(self, key, noRender=False, character=None):
-        src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\n\nStats\n\n"))
-        text = self.text(character)
-        src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), text))
 
         # exit submenu
         return key == "esc"

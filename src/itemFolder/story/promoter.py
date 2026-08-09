@@ -226,8 +226,8 @@ You can only have one special movement perk
                 extraDescriptions = {}
                 options.append(("line shot","line shot"))
                 extraDescriptions["line shot"] = "your ranged attach is shooting in a straight line north south west or east"
-                options.append(("ramdom target shot","ramdom target shot"))
-                extraDescriptions["ramdom target shot"] = "your ranged attach is shooting in random target in the roon"
+                options.append(("random target shot","random target shot"))
+                extraDescriptions["random target shot"] = "your ranged attach is shooting in random target in the roon"
                 text = ["""
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You are getting promoted for rank 4 to rank 3."),"""
 Only 2 ranks are left before reaching rank 1.
@@ -304,7 +304,7 @@ The tendrils retreat.
             character.hasJump = True
         if rewardType == "line shot":
             character.hasLineShot = True
-        if rewardType == "ramdom target shot":
+        if rewardType == "random target shot":
             character.hasRandomShot = True
         if rewardType == "max health boost":
             character.hasMaxHealthBoost = True
@@ -404,7 +404,7 @@ This means you can target your shot, but only target a few spots.
 """,(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"After pressing f you will be promted for what direction you want to fire in."),"""
 Each shot will cost you 1 Bolt.
 """]
-        if rewardType == "ramdom target shot":
+        if rewardType == "random target shot":
             rewardText = [rangedCombatText,"""
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You chose \"random target shot\" as your ranged combat perk."),"""
 Simple, but not ineffective.

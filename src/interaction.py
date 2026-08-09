@@ -6959,10 +6959,15 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 if key in (tcod.event.KeySym.RETURN, tcod.event.KeySym.KP_ENTER, tcod.event.KeySym.d, tcod.event.KeySym.j, tcod.event.KeySym.RIGHT, tcod.event.KeySym.a, tcod.event.KeySym.LEFT ):
                     if manage_worlds:
                         if index < len(saves):
+
+                            # sets up helper variable
                             gameIndex = index
+
+                            # reset the state of the UI statemachine
                             manage_worlds = False
                             index = 0
 
+                            # load the gmae settings
                             try:
                                 # register the save
                                 with open("gamestate/globalInfo.json") as globalInfoFile:
@@ -6975,16 +6980,22 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                                     "wordCounter":0,
                                 }
 
+                            # saving the section of the world
                             rawState["lastGameIndex"] = gameIndex
                             with open("gamestate/globalInfo.json", "w") as globalInfoFile:
                                 json.dump(rawState, globalInfoFile)
                         else:
+
+                            # create a new world
                             rawState["wordCounter"] += 1
                             rawState["worlds"].append({"savestateId":rawState["wordCounter"],"hasSave":False,})
                             with open("gamestate/globalInfo.json", "w") as globalInfoFile:
                                 json.dump(rawState, globalInfoFile)
                             saves = rawState["worlds"]
+
                     elif change_game_settings:
+
+                        # toggle SDL
                         src.interaction.settings["SDL"] = not src.interaction.settings["SDL"]
                     else:
                         selected_entry = main_menu_entries[index]

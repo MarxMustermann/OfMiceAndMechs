@@ -66,7 +66,7 @@ Its tendrils reach out and touch your implant.
 
                     text = ["""
 
-Promotions from rank 6 to rank 5 are blocked.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Promotions from rank 6 to rank 5 are blocked."),"""
 
 There need to be at least 1 clone besides you on the base to allow any promptions.
 """]
@@ -88,7 +88,7 @@ There need to be at least 1 clone besides you on the base to allow any promption
                     src.gamestate.gamestate.stern["rank4promotionfailed"] = True
 
                     text = ["""
-Promotions from rank 5 to rank 4 are blocked.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Promotions from rank 5 to rank 4 are blocked."),"""
 
 The base needs to consist out of at least 6 rooms.
 Build more rooms.
@@ -129,7 +129,7 @@ Build more rooms.
                     src.gamestate.gamestate.stern["rank3promotionfailed"] = True
 
                     text = ["""
-Promotions from rank 4 to rank 3 are blocked.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Promotions from rank 4 to rank 3 are blocked."),"""
 Enemies are nearby.
 
 There need to be at least 3 clones besides you on the base to allow any promptions.
@@ -163,7 +163,7 @@ There need to be at least 3 clones besides you on the base to allow any promptio
                     src.gamestate.gamestate.stern["rank2promotionfailed"] = True
 
                     text = ["""
-Promotions from rank 3 to rank 2 are blocked.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Promotions from rank 3 to rank 2 are blocked."),"""
 
 Kill all enemies on this terrain, to unlock the promotions to rank 2.
 """]

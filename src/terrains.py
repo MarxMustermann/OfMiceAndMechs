@@ -649,7 +649,7 @@ class Terrain:
         elif direction == "north":
             if char.xPosition % 15 == 0 or char.xPosition % 15 == 14:
                 return None
-            if char.yPosition % 15 == 1 and self.yPosition <= 1:
+            if char.yPosition % 15 == 1:
                 if char.xPosition % 15 < 7:
                     direction = "east"
                     char.container.addAnimation(char.getPosition(offset=(1,-1,0)),"charsequence",1,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##"),None]})
@@ -657,7 +657,7 @@ class Terrain:
                     direction = "west"
                     char.container.addAnimation(char.getPosition(offset=(-1,-1,0)),"charsequence",1,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##"),None]})
                 else:
-                    if char.yPosition <= 16:
+                    if char.yPosition <= 16 and self.yPosition <= 1:
                         char.container.addAnimation(char.getPosition(offset=(0,-1,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
                         return None
                     else:

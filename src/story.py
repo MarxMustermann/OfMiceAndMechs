@@ -3265,6 +3265,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
             anvilRoom.addWalkingSpace((6,y,0))
         for x in range(1,5):
             anvilRoom.addWalkingSpace((x,6,0))
+        stasisTank = src.items.itemMap["StasisTank"]()
         scrap_hammering_npc = src.magic.createBurnedInClone("scrap hammering",homeTerrain=currentTerrain,homePosition=(7,4,0),faction=faction)
         stasisTank.character = scrap_hammering_npc
         anvilRoom.addItem(stasisTank,(9,9,0))

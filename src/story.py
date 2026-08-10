@@ -2571,7 +2571,8 @@ Protocol forbids to leave the base while the alarm is running.
 
 Find the SiegeManger (""",sample_siegeManager.metaRender(),f""") and use it, to unrestrict the outside movement.
 The old guard room is {direction_string}.
-Look for the SiegeManager there, but be wary of the Golems.
+Look for the SiegeManager there, but be wary of the MechanicalGuards.
+The seem to have gotten aggressive after al time.
 """])
                 offer_accept_options = True
             else:
@@ -3007,7 +3008,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         siegeManager.handleTick()
         alarmRoom.addItem(siegeManager,(6,9,0))
         for pos in [(5,3,0),(5,6,0),(9,6,0),(9,3,0)]:
-            enemy = src.characters.characterMap["Golem"]()
+            enemy = src.characters.characterMap["MechanicalGuard"]()
             alarmRoom.addCharacter(enemy,pos[0],pos[1])
 
             quest = src.quests.questMap["SecureTile"](toSecure=alarmRoom.getPosition())
@@ -3040,7 +3041,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         cityPlaner.bolted = False
         cityPlanerRoom.addItem(cityPlaner,(6,9,0))
         for pos in [(5,3,0),(5,5,0),(9,5,0),(9,3,0)]:
-            enemy = src.characters.characterMap["Golem"](level=3)
+            enemy = src.characters.characterMap["MechanicalGuard"](level=3)
             cityPlanerRoom.addCharacter(enemy,pos[0],pos[1])
 
             quest = src.quests.questMap["SecureTile"](toSecure=cityPlanerRoom.getPosition())

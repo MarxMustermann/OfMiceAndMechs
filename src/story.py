@@ -3146,6 +3146,13 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         for y in range(8,12):
             lootRoom.addWalkingSpace((6,y,0))
         lootRoom.spawnItem("CoalBurner",(6,6,0),bolted=True)
+        for pos in [(5,4,0),(5,3,0),(4,3,0),(3,4,0),(3,5,0),(4,5,0)]:
+            lootRoom.addWalkingSpace(pos)
+        stasisTank = src.items.itemMap["StasisTank"]()
+        scavenging_npc = src.magic.createBurnedInClone("scavenging",homeTerrain=currentTerrain,homePosition=(7,4,0),faction=faction)
+        stasisTank.character = scavenging_npc
+        lootRoom.addItem(stasisTank,(3,3,0))
+
 
         # add loot room
         lootRoom = architect.doAddRoom(

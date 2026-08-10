@@ -378,6 +378,11 @@ You can do metal working at the MetalWorkingBench (""",sample_metalWorkingBench.
                 items = room.getItemByPosition(outputSlot[0])
                 for item in items:
                     itemsInStorage[item.type] = itemsInStorage.get(item.type,0)+1
+            metalWorkingBenches = room.getItemsByType("MetalWorkingBench")
+            for metalWorkingBench in metalWorkingBenches:
+                if metalWorkingBench.inUse:
+                    item_type = metalWorkingBench.lastProduction
+                    itemsInStorage[item_type] = itemsInStorage.get(item_type,0)+1
         
         # produce for build sites
         if freeStorage:

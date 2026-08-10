@@ -1218,3 +1218,63 @@ def setUpStatueRoom(pos,itemID=None):
     statue.charges = 5
     room.addItem(statue,(6,6,0))
 
+def createBurnedInClone(duty, homeTerrain=None, homePosition=None, faction=None):
+    npc = src.characters.characterMap["Clone"]()
+    npc.questsDone = [
+                "NaiveMoveQuest",
+                "MoveQuestMeta",
+                "NaiveActivateQuest",
+                "ActivateQuestMeta",
+                "NaivePickupQuest",
+                "PickupQuestMeta",
+                "DrinkQuest",
+                "CollectQuestMeta",
+                "FireFurnaceMeta",
+                "ExamineQuest",
+                "NaiveDropQuest",
+                "DropQuestMeta",
+                "LeaveRoomQuest",
+            ]
+    npc.solvers = [
+                "SurviveQuest",
+                "Serve",
+                "NaiveMoveQuest",
+                "MoveQuestMeta",
+                "NaiveActivateQuest",
+                "ActivateQuestMeta",
+                "NaivePickupQuest",
+                "PickupQuestMeta",
+                "DrinkQuest",
+                "ExamineQuest",
+                "FireFurnaceMeta",
+                "CollectQuestMeta",
+                "WaitQuest" "NaiveDropQuest",
+                "NaiveDropQuest",
+                "DropQuestMeta",
+            ]
+
+    npc.flask = src.items.itemMap["GooFlask"]()
+    npc.flask.uses = 100
+    if faction:
+        npc.faction = faction
+    npc.burnedIn = True
+
+    npc.duties = [duty]
+    if homePosition:
+        npc.registers["HOMEx"] = homePosition[0]
+        npc.registers["HOMEy"] = homePosition[1]
+    if homeTerrain:
+        npc.registers["HOMETx"] = homeTerrain.xPosition
+        npc.registers["HOMETy"] = homeTerrain.yPosition
+
+    npc.personality["autoFlee"] = False
+    npc.personality["abortMacrosOnAttack"] = False
+    npc.personality["autoCounterAttack"] = False
+
+    quest = src.quests.questMap["BeUsefull"]()
+    quest.autoSolve = True
+    quest.assignToCharacter(npc)
+    quest.activate()
+    npc.assignQuest(quest,active=True)
+
+    return npc

@@ -1600,10 +1600,18 @@ def doAdvancedDrop(params):
         if doDrop:
             if not dropType:
                 for item in char.inventory[:]:
+                    if not item.walkable and char.container.getItemByPosition(pos):
+                        continue
+                    if len(char.container.getItemByPosition(pos)) > 25:
+                        continue
                     char.drop(item,pos)
             else:
                 for item in char.inventory[:]:
                     if not item.type == dropType:
+                        continue
+                    if not item.walkable and char.container.getItemByPosition(pos):
+                        continue
+                    if len(char.container.getItemByPosition(pos)) > 25:
                         continue
                     char.drop(item,pos)
 

@@ -415,7 +415,7 @@ Each shot will cost you 1 Bolt.
 """]
 
         attributeBonusText = ["""
-You got an attribute bonus perk. 
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You got an attribute bonus perk."),"""
 
 This is an improvement on one of your stats.
 You don't need to activate this perk.
@@ -424,11 +424,11 @@ You don't need to activate this perk.
 
         if rewardType == "max health boost":
             rewardText = [attributeBonusText,"""
-You have twice as much max HP now!
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You have twice as much max HP now!"),"""
 """]
         if rewardType == "movement speed boost":
             rewardText = [attributeBonusText,"""
-You move twice as fast now.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You move twice as fast now."),"""
 """]
 
         if rewardText:

@@ -3010,12 +3010,6 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         for pos in [(5,3,0),(5,6,0),(9,6,0),(9,3,0)]:
             enemy = src.characters.characterMap["MechanicalGuard"]()
             alarmRoom.addCharacter(enemy,pos[0],pos[1])
-
-            quest = src.quests.questMap["SecureTile"](toSecure=alarmRoom.getPosition())
-            quest.autoSolve = True
-            quest.assignToCharacter(enemy)
-            quest.activate()
-            enemy.quests.append(quest)
         for y in range(1,12):
             if y in (8,9,10,):
                 alarmRoom.addWalkingSpace((5,y,0))
@@ -3043,12 +3037,6 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         for pos in [(5,3,0),(5,5,0),(9,5,0),(9,3,0)]:
             enemy = src.characters.characterMap["MechanicalGuard"](level=3)
             cityPlanerRoom.addCharacter(enemy,pos[0],pos[1])
-
-            quest = src.quests.questMap["SecureTile"](toSecure=cityPlanerRoom.getPosition())
-            quest.autoSolve = True
-            quest.assignToCharacter(enemy)
-            quest.activate()
-            enemy.quests.append(quest)
         for y in range(1,12):
             if y in (8,9,10,):
                 cityPlanerRoom.addWalkingSpace((5,y,0))

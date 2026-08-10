@@ -102,7 +102,7 @@ class Golem(src.monster.Monster):
 
     def generateQuests(self):
 
-        quest = src.quests.questMap["SecureTile"](toSecure=self.getBigPosition(),wandering=True, endWhenCleared=False,neverHuntDown=True)
+        quest = src.quests.questMap["SecureTile"](toSecure=self.getBigPosition(),wandering=True, endWhenCleared=False)
         quest.autoSolve = True
         quest.assignToCharacter(self)
         quest.activate()

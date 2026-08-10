@@ -3297,63 +3297,8 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         metalWorkingRoom.addWalkingSpace((4,6,0))
 
         stasisTank = src.items.itemMap["StasisTank"]()
-
-        room_building_npc = src.characters.characterMap["Clone"]()
-        room_building_npc.questsDone = [
-                "NaiveMoveQuest",
-                "MoveQuestMeta",
-                "NaiveActivateQuest",
-                "ActivateQuestMeta",
-                "NaivePickupQuest",
-                "PickupQuestMeta",
-                "DrinkQuest",
-                "CollectQuestMeta",
-                "FireFurnaceMeta",
-                "ExamineQuest",
-                "NaiveDropQuest",
-                "DropQuestMeta",
-                "LeaveRoomQuest",
-            ]
-        room_building_npc.solvers = [
-                "SurviveQuest",
-                "Serve",
-                "NaiveMoveQuest",
-                "MoveQuestMeta",
-                "NaiveActivateQuest",
-                "ActivateQuestMeta",
-                "NaivePickupQuest",
-                "PickupQuestMeta",
-                "DrinkQuest",
-                "ExamineQuest",
-                "FireFurnaceMeta",
-                "CollectQuestMeta",
-                "WaitQuest" "NaiveDropQuest",
-                "NaiveDropQuest",
-                "DropQuestMeta",
-            ]
-
-        room_building_npc.flask = src.items.itemMap["GooFlask"]()
-        room_building_npc.flask.uses = 100
-        room_building_npc.faction = faction
-        room_building_npc.burnedIn = True
-
-        room_building_npc.duties = ["metal working"]
-        room_building_npc.registers["HOMEx"] = 7
-        room_building_npc.registers["HOMEy"] = 4
-        room_building_npc.registers["HOMETx"] = currentTerrain.xPosition
-        room_building_npc.registers["HOMETy"] = currentTerrain.yPosition
-
-        room_building_npc.personality["autoFlee"] = False
-        room_building_npc.personality["abortMacrosOnAttack"] = False
-        room_building_npc.personality["autoCounterAttack"] = False
-
-        quest = src.quests.questMap["BeUsefull"]()
-        quest.autoSolve = True
-        quest.assignToCharacter(room_building_npc)
-        quest.activate()
-        room_building_npc.assignQuest(quest,active=True)
-
-        stasisTank.character = room_building_npc
+        metal_working_npc = src.magic.createBurnedInClone("metal working",homeTerrain=currentTerrain,homePosition=(7,4,0),faction=faction)
+        stasisTank.character = metal_working_npc
         metalWorkingRoom.addItem(stasisTank,(2,6,0))
 
         # create horizontal paths

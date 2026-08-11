@@ -111,7 +111,6 @@ class ChatPartnerselection(src.menues.SubMenu):
         """
         command = ""
         target_index = self.optionsByIdentifier.get(option_to_select)
-        print(self.optionsByIdentifier)
 
         counter = 0
         for option in self.options.values():

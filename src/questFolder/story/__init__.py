@@ -47,3 +47,4 @@ import src.questFolder.story.fetchAnvil
 import src.questFolder.story.disableAlarm
 import src.questFolder.story.storyHeal
 import src.questFolder.story.storyImproveEquipment
+import src.questFolder.story.storyConfigureGroundskeeperPriorites

@@ -248,7 +248,8 @@ class ImplantInteraction(src.menues.SubMenu):
                             if not has_outside_connection:
                                 quests.append(src.quests.questMap["ConvertToTrapRoom"](roomPosition=room_pos))
                                 break
-
+                    if selection == "configure groundskeeper priorities":
+                        quests.append(src.quests.questMap["StoryConfigureGroundskeeperPriorites"]())
                     character.clear_quests()
                     for quest in quests:
                         character.assignQuest(quest)
@@ -939,6 +940,11 @@ They will complete tasks on the base.
                 if num_base_rooms > num_workers:
                     options.append(("spawn_clone","spawn Clone"))
                     shown_spawn_worker = True
+
+            # set eddies work priorities
+            extraDescriptions["configure groundskeeper priorities"] = "Times have changed.\nMake sure the groundskeeper is doing the important work"
+            if groundsKeeper and groundsKeeper.dutyPriorities.get("scrap hammering",0) == 10:
+                options.append(("configure groundskeeper priorities","configure groundskeeper priorities"))
 
             # improve equipment
             extraDescriptions["improve equipment"] = "Much of you combat power is based on your equipment. Upgrade it regulary"

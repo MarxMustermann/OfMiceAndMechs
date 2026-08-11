@@ -464,7 +464,12 @@ use the """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"blac
 
         # kill nearby enemies
         if character.getNearbyEnemies():
-            if not character.is_low_health():
+            found_serious_enemy = False
+            for enemy in character.getNearbyEnemies():
+                if enemy.charType == "Spiderling":
+                    continue
+                found_serious_enemy = True
+            if (not character.is_low_health()) or (not found_serious_enemy and character.health > 20):
                 base_text = ["""
 """,(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"There is an enemy nearby."),"""
 

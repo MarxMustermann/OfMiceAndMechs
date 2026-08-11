@@ -130,7 +130,6 @@ class SubMenu(object):
                 self.optionsByIdentifier[identifier] = int(index)
             except:
                 pass
-        print(self.optionsByIdentifier)
 
     def getSelection(self):
         """

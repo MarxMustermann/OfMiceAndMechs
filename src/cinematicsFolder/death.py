@@ -12,15 +12,17 @@ def in_dest(source, target, radius):
 
 
 def Death(extraParam):
-    character = extraParam["character"]
 
+    # unpack parameter
+    character = extraParam["character"]
     runStar = False
     for key in character.macroState["commandKeyQueue"]:
         if key[0] == "*":
             runStar = True
-    
     reason = extraParam["reason"]
     killer = extraParam["killer"]
+
+    # chose the successor of the dead player
     pre = False
     chosen_candidate = None
     if "pre" in extraParam:
@@ -49,23 +51,24 @@ def Death(extraParam):
             pre = True
             break
 
+    # make sure the old character is shown dead
     character.dead = True
     character.macroState["submenue"] = None
     src.interaction.advanceGame()
     src.interaction.renderGameDisplay()
 
-
+    # get position of things to draw to
     assumedScreenWidth = src.interaction.tcodConsole.width
     mapWidth = (src.interaction.window_charheight-5)*2
     mapHeight = src.interaction.tcodConsole.height - 1-5
     mapStart  = ((assumedScreenWidth-mapWidth)//2,6)
-
-
     playerpos = (mapStart[0] + mapWidth//2 + 1, mapStart[1]+ mapHeight//2 + 1)
 
+    # ensure the character is rendered properly
     src.interaction.tcodConsole.rgb[playerpos[0], playerpos[1]] = ord("@"),(255, 255, 255),(0, 0, 0)
     src.interaction.tcodConsole.rgb[playerpos[0]+1, playerpos[1]]= ord(" "),(0, 0, 0),(0,0,0)
 
+    # show the interaction for respawning a character
     if pre:
         if src.gamestate.gamestate.difficulty == "difficult":
             chosen_candidate.health = int(chosen_candidate.health/2)
@@ -143,38 +146,53 @@ def Death(extraParam):
         src.gamestate.gamestate.saveAtTheTurnEnd = True
         return
 
-    p = {}
+    # draw a darkening cricle around the player
+    position_map = {}
     max_dist = -99999
     for width in range(src.interaction.tcodConsole.width):
         for height in range(src.interaction.tcodConsole.height):
             dist = int(math.sqrt(pow(width - playerpos[0], 2) + pow(height - playerpos[1], 2)))
             if dist == 0:
                 continue
-            if p.get(dist) is None:
-                p[dist] = []
-            p[dist].append((width,height))
+            if position_map.get(dist) is None:
+                position_map[dist] = []
+            position_map[dist].append((width,height))
             max_dist = max(dist, max_dist)
-    for i,d in enumerate(reversed(sorted(p.items()))):
-        for po in d[1]:
-            (width,height) = po
-            src.interaction.tcodConsole.rgb[width, height]["fg"] = src.pseudoUrwid.AttrSpec.interpolate(src.interaction.tcodConsole.rgb[width, height]["fg"],(0,0,0), 1 - i / len(p) - 0.01)
-            src.interaction.tcodConsole.rgb[width, height]["bg"] = src.pseudoUrwid.AttrSpec.interpolate(src.interaction.tcodConsole.rgb[width, height]["bg"],(0,0,0), 1 - i / len(p) - 0.01)
+    for (index,position_mapping) in enumerate(reversed(sorted(position_map.items()))):
+        for position in position_mapping[1]:
+            (width,height) = position
+            src.interaction.tcodConsole.rgb[width, height]["fg"] = src.pseudoUrwid.AttrSpec.interpolate(src.interaction.tcodConsole.rgb[width, height]["fg"],(0,0,0), 1 - index / len(position_map) - 0.01)
+            src.interaction.tcodConsole.rgb[width, height]["bg"] = src.pseudoUrwid.AttrSpec.interpolate(src.interaction.tcodConsole.rgb[width, height]["bg"],(0,0,0), 1 - index / len(position_map) - 0.01)
         src.interaction.tcodPresent()
         src.helpers.deal_with_window_events()
         time.sleep(0.014)
 
+    # do post death interaction
     while 1:
+
+        # hande incomming events
         events = list(tcod.event.get())
         while events or runStar:
+
+            # get individual event
             if events:
                 event = events.pop(0)
             else:
                 event = None
+
+            # ensure there is always something to print
+            text = []
+
+            # show stats menu
             if not pre and isinstance(event, tcod.event.KeyDown) and event.sym == tcod.event.KeySym.s:
                 current_content = src.interaction.tcodConsole.rgba.copy()
                 show_Stats(original_window_content, character)
                 numpy.copyto(src.interaction.tcodConsole.rgba, current_content)
+
+            # end death interaction
             if (isinstance(event, tcod.event.KeyDown) and event.sym == tcod.event.KeySym.RETURN) or runStar:
+
+                # darken screen
                 new_console = tcod.console.Console(src.interaction.tcodConsole.width,src.interaction.tcodConsole.height,src.interaction.tcodConsole._order)
                 src.interaction.render(src.gamestate.gamestate.mainChar,mapWidth).printTcod(new_console, (assumedScreenWidth-mapWidth)//4, 6, False)
                 src.helpers.draw_frame_text(new_console, width, height, text, x, y)
@@ -199,11 +217,14 @@ def Death(extraParam):
                     time.sleep(0.01)
                     src.helpers.deal_with_window_events()
                 time.sleep(1.0)
+
+                # actually the run
                 raise src.interaction.EndGame("character died")
 
+            # handle window events again (bug?)
             src.helpers.deal_with_window_events()
 
-            text = []
+            # create the text to show to the player
             text.append("")
             text.append((src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),reason))
             if killer:
@@ -216,6 +237,7 @@ def Death(extraParam):
             text.append("press s to see the characters stats")
             text.append("press enter to return to main menu")
 
+            # calculate text width
             longestLine = 0
             numLines = 0
             for line in text:
@@ -225,12 +247,14 @@ def Death(extraParam):
                     continue
                 longestLine = len(line)
 
+            # center text
             newText = []
             for line in text:
                 newText.append(" "*((longestLine-len(src.urwidSpecials.flattenToPeseudoString(line)))//2))
                 newText.append(line)
                 newText.append("\n")
 
+            # show text
             width = longestLine
             height = numLines
             x = int(playerpos[0]- width / 2)

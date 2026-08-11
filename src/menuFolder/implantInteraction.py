@@ -292,7 +292,10 @@ class ImplantInteraction(src.menues.SubMenu):
                         elif task_type == "wait_explosion":
                             quests.append(src.quests.questMap["WatchLabBurn"]())
                         elif task_type == "equip":
-                            quests.append(src.quests.questMap["Equip"]())
+                            noRods = False
+                            if character.weapon and character.weapon.type == "Rod":
+                                noRods = True
+                            quests.append(src.quests.questMap["Equip"](noRods=noRods))
                         elif task_type == "kill_spiderling":
                             quests.append(src.quests.questMap["SecureTile"](toSecure=(7,5,0),endWhenCleared=True,reason="clear the path",simpleAttacksOnly=True,noHeal=True,suicidal=True))
                         elif task_type == "explore":
@@ -694,6 +697,10 @@ Bring it to the groundskeeper.
                 if weapons and character.weapon is None:
                     equipment_availabe = True
                     break
+                weapons = []
+                weapons.extend(room.getItemsByType("Sword"))
+                if weapons and (character.weapon is None or character.weapon.type == "Rod"):
+                    equipment_availabe = True
                 armors = []
                 armors.extend(room.getItemsByType("Armor"))
                 if armors and character.armor is None:

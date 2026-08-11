@@ -7,7 +7,6 @@ import tcod
 class ItemExchangeMenu(src.menues.SubMenu):
     def __init__(self,character,partner):
         self.type = "ItemExchangeMenu"
-        self.index = 0
         self.character = character
         self.partner = partner
         self.index = [0,0]

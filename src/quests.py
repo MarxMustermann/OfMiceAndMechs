@@ -350,7 +350,7 @@ class Quest:
     def fail(self,reason=None):
         self.changed("failed",{"reason":reason,"quest":self})
         if reason and self.character and not reason in ("abort","canceled",):
-            self.character.notify(f"failed quest {self.description},\nbecause of {reason}")
+            self.character.addMessage(f"failed quest {self.description},\nbecause of {reason}")
         if self.failTrigger:
             self.failTrigger()
         if self.reputationReward:

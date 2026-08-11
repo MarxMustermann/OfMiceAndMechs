@@ -63,19 +63,7 @@ class HelpGroundskeeper(src.quests.MetaQuestSequence):
             if isinstance(submenue,src.menues.menuMap["ChatPartnerselection"]):
                 if submenue.options is None:
                     return (None,("j","start conversation"))
-                groundskeeper_index = None
-                counter = 1
-                for option in submenue.options.values():
-                    if isinstance(option,src.characters.characterMap["GroundsKeeper"]):
-                        groundskeeper_index = counter
-                    counter += 1
-
-                command = None
-                if groundskeeper_index is not None:
-                    command = ""
-                    command += "s"*(submenue.selectionIndex-groundskeeper_index)
-                    command += "w"*(groundskeeper_index-submenue.selectionIndex)
-                    command += "j"
+                command = submenue.get_command_to_select_option(keeper)
                 if command:
                     return (None,(command,"start conversation"))
                 else:

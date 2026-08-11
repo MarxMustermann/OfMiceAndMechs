@@ -14,6 +14,13 @@ class ItemExchangeMenu(src.menues.SubMenu):
 
     def handleKey(self, key, noRender=False, character=None):
 
+        # exit menu
+        if key in ("esc",):
+            if self.followUp:
+                self.callIndirect(self.followUp)
+            self.done = True
+            return True
+
         # move the cursor
         if key == "d":
             self.index[0] = 1
@@ -41,8 +48,7 @@ class ItemExchangeMenu(src.menues.SubMenu):
                 giver.inventory.remove(item)
                 taker.addToInventory(item)
 
-        # exit submenu
-        return key == "esc"
+        return False
 
     def getTitle(self):
         return "EXCHANGE ITEMS"
@@ -81,16 +87,6 @@ class ItemExchangeMenu(src.menues.SubMenu):
             text.append("\n")
 
         return text
-
-    @staticmethod
-    def beautify(source: str):
-        r = regex.Regex(r"(?<!^)[A-Z]")
-
-        m = r.findall(source)
-        if m:
-            source = r.sub(" \\g<0>", source)
-
-        return source.capitalize()
 
 # register the menu type
 src.menues.add_menu(ItemExchangeMenu)

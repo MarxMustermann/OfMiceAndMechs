@@ -1759,9 +1759,12 @@ I am working right now. I'll repriotize though.""")
         # add the advanced interaction options
         if not partner.registers.get("startedWorking"):
             partner.specialChatOptions.insert(0,("chat","chat idly"))
-            partner.specialChatOptions.insert(0,({"method":self.builder_set_priority_trigger,"params":{"character":character,"partner":partner}},"set priorities"))
-            partner.specialChatOptions.insert(0,({"method":self.builder_asked_help,"params":{"character":character,"partner":partner}},"ask for help"))
-            partner.specialChatOptions.insert(0,({"method":self.builder_offered_help,"params":{"character":character,"partner":partner}},"offer help"))
+            payload = {"method":self.builder_set_priority_trigger,"params":{"character":character,"partner":partner}}
+            partner.specialChatOptions.insert(0,(payload,"set priorities","set priorities"))
+            payload = {"method":self.builder_asked_help,"params":{"character":character,"partner":partner}}
+            partner.specialChatOptions.insert(0,(payload,"ask for help","ask for help"))
+            payload = {"method":self.builder_offered_help,"params":{"character":character,"partner":partner}}
+            partner.specialChatOptions.insert(0,(payload,"offer help","offer help"))
             partner.registers["startedWorking"] = True
             character.changed("fixed groundskeeper")
 

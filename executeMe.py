@@ -290,7 +290,7 @@ if __name__ == '__main__':
                                     def send_d():
                                         t = time.time()
                                         res = requests.post(
-                                            "http://ofmiceandmechs.com/bugReportDump.php",
+                                            "https://ofmiceandmechs.com/bugReportDump.php",
                                             {
                                                 "bugReport": exceptionText,
                                                 "info": info,

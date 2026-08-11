@@ -105,6 +105,23 @@ class ChatPartnerselection(src.menues.SubMenu):
         else:
             return False
 
+    def get_command_to_select_option(self,option_to_select,selectionCommand="j"):
+        """
+        generate the command to select a menu entry
+        """
+        command = ""
+        target_index = self.optionsByIdentifier.get(option_to_select)
+        print(self.optionsByIdentifier)
+
+        counter = 0
+        for option in self.options.values():
+            counter += 1
+            if option == option_to_select:
+                target_index = counter
+        if not target_index is None:
+            return "s"*(target_index-self.selectionIndex)+"w"*(self.selectionIndex-target_index)+selectionCommand
+        return None
+
     def render(self,size=None):
         if self.subMenu:
             return self.subMenu.render(size=size)

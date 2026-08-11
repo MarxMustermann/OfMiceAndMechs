@@ -169,16 +169,21 @@ class SubMenu(object):
             # convert options to ordered dict
             oldOptions = self.options
             oldNiceOptions = self.niceOptions
+            oldOptionsIdentifiers = self.optionsIdentifiers
 
             self.options = collections.OrderedDict()
             self.niceOptions = collections.OrderedDict()
+            self.optionsIdentifiers = collections.OrderedDict()
             counter = 1
             while counter < len(oldOptions):
                 self.options[str(counter)] = oldOptions[str(counter + 1)]
                 self.niceOptions[str(counter)] = oldNiceOptions[str(counter + 1)]
+                self.optionsIdentifiers[str(counter)] = oldOptionsIdentifiers[str(counter + 1)]
                 counter += 1
             self.options[str(counter)] = oldOptions[str(1)]
             self.niceOptions[str(counter)] = oldNiceOptions[str(1)]
+            self.optionsIdentifiers[str(counter)] = oldOptionsIdentifiers[str(1)]
+            self._calculate_identifier_map()
 
         if key == "d":
             self.shift += 1
@@ -194,11 +199,14 @@ class SubMenu(object):
             counter = 1
             self.options[str(counter)] = oldOptions[str(len(oldOptions))]
             self.niceOptions[str(counter)] = oldNiceOptions[str(len(oldOptions))]
+            self.optionsIdentifiers[str(counter)] = oldOptionsIdentifiers[str(len(oldOptions))]
             counter = 2
             while counter < len(oldOptions) + 1:
                 self.options[str(counter)] = oldOptions[str(counter - 1)]
                 self.niceOptions[str(counter)] = oldNiceOptions[str(counter - 1)]
+                self.optionsIdentifiers[str(counter)] = oldOptionsIdentifiers[str(counter - 1)]
                 counter += 1
+            self._calculate_identifier_map()
 
         # change the marked option
         if key in (

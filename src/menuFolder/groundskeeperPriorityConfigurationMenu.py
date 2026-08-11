@@ -58,11 +58,13 @@ class GroundskeeperPriorityConfigurationMenu(src.menues.SubMenu):
         return "GROUNDSKEEPER DUTY PRIORITY CONFIGURATION"
 
     def render(self,size=None):
+
         # ensure duties are sorted
         duties = self.partner.duties[:]
         duties.sort()
         duties.sort(key=lambda duty: self.partner.dutyPriorities.get(duty,1), reverse=True)
 
+        # generate the text
         text = []
         text.extend(["""
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You ask the groundskeeper to change its working priorities."),"""
@@ -86,6 +88,27 @@ press """,src.interaction.ActionMeta(payload="w",content="w"),"/",src.interactio
 """]))
 
         return text
+
+    def get_command_to_select_duty(self,target_duty):
+
+        # get sorted duties
+        duties = self.partner.duties[:]
+        duties.sort()
+        duties.sort(key=lambda duty: self.partner.dutyPriorities.get(duty,1), reverse=True)
+
+        current_index = None
+        target_index = None
+        counter = 0
+        for duty in duties:
+            if duty == target_duty:
+                target_index = counter
+            if duty == self.selected_duty:
+                current_index = counter
+            counter += 1
+
+        if current_index is None or target_index is None:
+            return None
+        return "s"*(target_index-current_index)+"w"*(current_index-target_index)
 
 # register the menu type
 src.menues.add_menu(GroundskeeperPriorityConfigurationMenu)

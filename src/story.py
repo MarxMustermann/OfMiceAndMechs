@@ -1779,84 +1779,14 @@ I am working right now. I'll repriotize though.""")
         '''
         start to configure the groundskeepers duty priorities
         '''
-        self.builder_set_priority({"character":character,"partner":partner})
 
-    def builder_set_priority(self,extraParam):
-        '''
-        configure the groundskeepers duty priorities
-        '''
-
-        # unwrap the parameters
         partner = extraParam["partner"]
         character = extraParam["character"]
-        key = extraParam.get("keyPressed")
-        selected_duty = extraParam.get("selected_duty")
 
-        # get sorted duties
-        duties = partner.duties[:]
-        duties.sort()
-        duties.sort(key=lambda duty: partner.dutyPriorities.get(duty,1), reverse=True)
-        if not selected_duty:
-            selected_duty = duties[0]
-
-        # handle keypresses
-        if key in ("esc",):
-            return
-        if key in ("w",):
-            index = duties.index(selected_duty)
-            index -= 1
-            if index < 0:
-                index = len(duties)-1
-            selected_duty = duties[index]
-        if key in ("s",):
-            index = duties.index(selected_duty)
-            index += 1
-            if index >= len(duties):
-                index = 0
-            selected_duty = duties[index]
-        if key in ("a",):
-            priority = partner.dutyPriorities.get(selected_duty,1)
-            priority -= 1
-            if priority < 1:
-                priority = 1
-            partner.dutyPriorities[selected_duty] = priority
-        if key in ("d",):
-            priority = partner.dutyPriorities.get(selected_duty,1)
-            priority += 1
-            partner.dutyPriorities[selected_duty] = priority
-
-        # ensure duties are still sorted
-        duties.sort()
-        duties.sort(key=lambda duty: partner.dutyPriorities.get(duty,1), reverse=True)
-
-        # generate information text
-        text = []
-        text.extend(["""
-""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You ask the groundskeeper to change its working priorities."),"""
-
-The groundskeepers duties and its priorities are listed bellow.
-High priority task will done before low priority tasks.
-A high number indicates a high priority.
-
-
-"""])
-        for duty in duties:
-            if duty == selected_duty:
-                text.append(f"=> ")
-            else:
-                text.append(f"*  ")
-            text.append(f"{duty}: {partner.dutyPriorities[duty]}\n")
-        text.append((src.interaction.urwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),["""
-press """,src.interaction.ActionMeta(payload="w",content="w"),"/",src.interaction.ActionMeta(payload="s",content="s"),""" to move cursor
-""",src.interaction.ActionMeta(payload="a",content="press a to decrease priority"),"""
-""",src.interaction.ActionMeta(payload="d",content="press a to increase priority"),"""
-"""]))
-
-        # show text to the player
-        submenu = src.menues.menuMap["OneKeystrokeMenu"](text)
+        submenu = src.menues.menuMap["GroundskeeperPriorityConfigurationMenu"](character,partner)
+        submenu.tag = "groundskeeper_priority_configuration"
         character.add_submenu(submenu)
-        extraParam["selected_duty"] = selected_duty
-        submenu.followUp = {"method":self.builder_set_priority,"params":extraParam}
+        return
 
     def builder_asked_nowork_post(self, extraParam):
         character = extraParam["character"]

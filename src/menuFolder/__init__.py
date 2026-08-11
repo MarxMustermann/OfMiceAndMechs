@@ -46,3 +46,4 @@ import src.menuFolder.contextListMenu
 import src.menuFolder.implantInteraction
 import src.menuFolder.characterObserveMenu
 import src.menuFolder.itemExchangeMenu
+import src.menuFolder.groundskeeperPriorityConfigurationMenu

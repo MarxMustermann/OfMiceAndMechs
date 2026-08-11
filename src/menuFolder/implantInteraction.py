@@ -944,7 +944,13 @@ They will complete tasks on the base.
             # set eddies work priorities
             extraDescriptions["configure groundskeeper priorities"] = "Times have changed.\nMake sure the groundskeeper is doing the important work"
             if groundsKeeper and groundsKeeper.dutyPriorities.get("scrap hammering",0) == 10:
-                options.append(("configure groundskeeper priorities","configure groundskeeper priorities"))
+                num_metal_bars = 0
+                for room in terrain.rooms:
+                    if room.tag == "ruin":
+                        continue
+                    num_metal_bars += len(room.getItemsByType("MetalBars"))
+                if num_metal_bars > 20:
+                    options.append(("configure groundskeeper priorities","configure groundskeeper priorities"))
 
             # improve equipment
             extraDescriptions["improve equipment"] = "Much of you combat power is based on your equipment. Upgrade it regulary"

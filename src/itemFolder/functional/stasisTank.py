@@ -64,11 +64,11 @@ but after some seconds it starts to move.""")
                     duty_string = f"{spwaned_character.duties[0]} duty"
                     if len(spwaned_character.duties) > 1:
                         duty_string = f'{" ".join(spwaned_character.duties)} duties'
-                    text.append(f"""
+                    text.extend([f"""
 
 
-This Clone is burned in and will only do the {duty_string}.
-""")
+This Clone is burned in and will only do the """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),duty_string),""".
+"""])
                 text.append(f"""
 The Clones nametag reads "{spwaned_character.name} ({short_code})"
 """)

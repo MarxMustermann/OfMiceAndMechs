@@ -1780,9 +1780,6 @@ I am working right now. I'll repriotize though.""")
         start to configure the groundskeepers duty priorities
         '''
 
-        partner = extraParam["partner"]
-        character = extraParam["character"]
-
         submenu = src.menues.menuMap["GroundskeeperPriorityConfigurationMenu"](character,partner)
         submenu.tag = "groundskeeper_priority_configuration"
         character.add_submenu(submenu)

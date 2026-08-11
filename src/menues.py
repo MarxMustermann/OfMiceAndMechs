@@ -35,6 +35,7 @@ class SubMenu(object):
 
         self.options = collections.OrderedDict()
         self.niceOptions = collections.OrderedDict()
+        self.optionsByIdentifier = {}
         self.default = default
         self.targetParamName = targetParamName
         self.extraDescriptions = {}
@@ -98,20 +99,38 @@ class SubMenu(object):
         """
 
         # convert options to ordered dict
-
         self.options = collections.OrderedDict()
         self.niceOptions = collections.OrderedDict()
+        self.optionsIdentifiers = collections.OrderedDict()
         counter = 1
         for option in options:
-            self.options[str(counter)] = option[0]
-            self.niceOptions[str(counter)] = option[1]
+            index = str(counter)
+            self.options[index] = option[0]
+            self.niceOptions[index] = option[1]
+            identifier = None
+            if len(option) > 2:
+                identifier = option[2]
+            else:
+                identifier = option[0]
+            self.optionsIdentifiers[index] = identifier
             counter += 1
+        self._calculate_identifier_map()
 
         # set related state
         self.query = query
         self.selectionIndex = 1
         self.selection = None
         self.origKey = None
+
+    def _calculate_identifier_map(self):
+        for (index,identifier) in self.optionsIdentifiers.items():
+            if not identifier:
+                continue
+            try:
+                self.optionsByIdentifier[identifier] = int(index)
+            except:
+                pass
+        print(self.optionsByIdentifier)
 
     def getSelection(self):
         """

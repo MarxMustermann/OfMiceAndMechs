@@ -74,7 +74,8 @@ class SelectionMenu(src.menues.SubMenu):
         generate the command to select a menu entry
         """
         command = ""
-        target_index = None
+        target_index = self.optionsByIdentifier.get(option_to_select)
+
         counter = 0
         for option in self.options.values():
             counter += 1

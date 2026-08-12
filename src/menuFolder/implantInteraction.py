@@ -221,6 +221,7 @@ class ImplantInteraction(src.menues.SubMenu):
                     if selection == "ascend":
                         quests.append(src.quests.questMap["Ascend"]())
                     if selection == "get promotion":
+                        src.gamestate.gamestate.stern["last_promotion_try"] = src.gamestate.gamestate.tick
                         quests.append(src.quests.questMap["GetPromotion"](2))
                     if selection == "convert_entryRoom":
                         for room in terrain.rooms:
@@ -995,7 +996,8 @@ They will complete tasks on the base.
 
             # get promotion
             if not (missing_anvil or missing_metalWorkingBench or missing_cityPlaner):
-                if character.rank > 2:
+                last_promotion = src.gamestate.gamestate.stern.get("last_promotion_try",0)
+                if character.rank > 2 and last_promotion < src.gamestate.gamestate.tick-1000:
                     name = "get promotion"
                     options.append((name,name))
                     extraDescriptions[name] = "Holding a higher rank will make you stronger"

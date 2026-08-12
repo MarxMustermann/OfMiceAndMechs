@@ -2114,6 +2114,22 @@ There are several things you can do to help me out:
                 tasks.append((name,"disable alarm"))
                 extraDescriptions[name] = "disabling the alarm will allow me to move more freely"
 
+        # ensure city planer
+        hasEmptyRoom = False
+        hasCityPlaner = False
+        for room in terrain.rooms:
+            if room.tag == None:
+                hasEmptyRoom = True
+            if room.tag == "ruin":
+                continue
+            if room.getItemsByType("CityPlaner",needsBolted=True):
+                hasCityPlaner = True
+        if hasEmptyRoom:
+            if not "CityPlaner" in itemsAvailabe and not hasCityPlaner:
+                name = "fetch CityPlaner"
+                tasks.append((name,"fetch CityPlaner"))
+                extraDescriptions[name] = "a city planer will allow to control how to expand the base"
+
         # spawn more workers
         growthTank = None
         for room in terrain.rooms:
@@ -2246,24 +2262,6 @@ There are several things you can do to help me out:
                     tasks.append((name,name))
                     extraDescriptions[name] = f"there is need for more {itemType}"
                     itemsNeeded.append(itemType)
-
-        # fill rooms with life
-        hasEmptyRoom = False
-        hasCityPlaner = False
-        for room in terrain.rooms:
-            if room.tag == None:
-                hasEmptyRoom = True
-            if room.tag == "ruin":
-                continue
-            if room.getItemsByType("CityPlaner",needsBolted=True):
-                hasCityPlaner = True
-        if hasEmptyRoom:
-
-            # ensure city planer
-            if not "CityPlaner" in itemsAvailabe and not hasCityPlaner:
-                name = "fetch CityPlaner"
-                tasks.append((name,"fetch CityPlaner"))
-                extraDescriptions[name] = "a city planer will allow to control how to expand the base"
 
         # expand base with temple
         if not terrain.alarm:

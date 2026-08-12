@@ -183,7 +183,7 @@ class GameState:
             rawState = {"worlds": [],"customPrefabs":[],"lastGameIndex":0,"wordCounter":0,}
         saves = rawState["worlds"]
         rawState["lastGameIndex"] = self.gameIndex
-        if self.gameIndex in rawState["worlds"]:
+        if self.gameIndex < len(rawState["worlds"]):
             rawState["worlds"][self.gameIndex]["hasSave"] = True
         else:
             print(self.gameIndex)

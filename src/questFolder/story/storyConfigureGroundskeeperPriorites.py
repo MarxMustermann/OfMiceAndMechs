@@ -3,16 +3,17 @@ import src
 
 class StoryConfigureGroundskeeperPriorites(src.quests.MetaQuestSequence):
     type = "StoryConfigureGroundskeeperPriorites"
-
     def __init__(self, description="configure groundskeeper priorities", creator=None, lifetime=None):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = description
 
     def triggerCompletionCheck(self,character=None,dryRun=True):
+        '''
+        checks if the quest has completed
+        '''
         if not character:
             return False
-
         keeper = self.getGroundsKeeper()
         if keeper and keeper.dutyPriorities.get("scrap hammering",0) < 3:
             if not dryRun:
@@ -21,6 +22,9 @@ class StoryConfigureGroundskeeperPriorites(src.quests.MetaQuestSequence):
         return False
 
     def getGroundsKeeper(self):
+        '''
+        get the groundskeeper NPC
+        '''
         keeper = None
         terrain = self.character.getHomeTerrain()
         for candidate in terrain.getAllCharacters():
@@ -30,6 +34,9 @@ class StoryConfigureGroundskeeperPriorites(src.quests.MetaQuestSequence):
         return keeper
 
     def getNextStep(self,character,ignoreCommands=False,dryRun=True):
+        '''
+        calculate the next step towards solving the quest
+        '''
 
         # no actions with sub quests
         if self.subQuests:
@@ -92,6 +99,9 @@ class StoryConfigureGroundskeeperPriorites(src.quests.MetaQuestSequence):
         return (None,("h","start talking"))
 
     def generateTextDescription(self):
+        '''
+        generates a text description of the text
+        '''
         text = ["""
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Talk to the groundskeeper and configure its duty priorities."),"""
 Those duties determine what work the groundskeeper is doing.
@@ -120,4 +130,24 @@ Reduce priority of that duty to ensure the groundskeeper is focussing on more im
 """,(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"""Press h to talk to nearby clones or left click on a clone to talk to it.""")])
         return text
 
+    def handleChangedDuty(self,extraInfo):
+        '''
+        handle the character having picked up an item
+        '''
+        self.triggerCompletionCheck(self.character,dryRun=False)
+
+    def assignToCharacter(self, character):
+        '''
+        make the quest listen to character events
+        '''
+        if self.character:
+            return None
+
+        result = super().assignToCharacter(character)
+        keeper = self.getGroundsKeeper()
+        if keeper:
+            self.startWatching(keeper,self.handleChangedDuty, "changedDutyPriority")
+        return result
+
+# register quest
 src.quests.addType(StoryConfigureGroundskeeperPriorites)

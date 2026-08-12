@@ -7,7 +7,6 @@ class FreeUpStorage(src.quests.MetaQuestSequence):
     A quest to free uo some storage in the base
     '''
     type = "FreeUpStorage"
-    lowLevel = True
     def __init__(self, description="free up storage", creator=None, lifetime=None, reason=None, amount=1):
         self.lastMoveDirection = None
         questList = []

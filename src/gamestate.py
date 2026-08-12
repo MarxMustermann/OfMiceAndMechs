@@ -183,7 +183,11 @@ class GameState:
             rawState = {"worlds": [],"customPrefabs":[],"lastGameIndex":0,"wordCounter":0,}
         saves = rawState["worlds"]
         rawState["lastGameIndex"] = self.gameIndex
-        rawState["worlds"][self.gameIndex]["hasSave"] = True
+        if self.gameIndex in rawState["worlds"]:
+            rawState["worlds"][self.gameIndex]["hasSave"] = True
+        else:
+            print(self.gameIndex)
+            print(rawState["worlds"])
         with open("gamestate/globalInfo.json", "w") as globalInfoFile:
             json.dump(rawState,globalInfoFile)
 

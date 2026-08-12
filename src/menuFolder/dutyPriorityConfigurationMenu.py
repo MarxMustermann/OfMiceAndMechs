@@ -4,9 +4,9 @@ import regex
 import src
 import tcod
 
-class GroundskeeperPriorityConfigurationMenu(src.menues.SubMenu):
+class DutyPriorityConfigurationMenu(src.menues.SubMenu):
     def __init__(self,character,partner):
-        self.type = "GroundskeeperPriorityConfigurationMenu"
+        self.type = "DutyPriorityConfigurationMenu"
         self.selected_duty = None
         self.character = character
         self.partner = partner
@@ -104,4 +104,4 @@ press """,src.interaction.ActionMeta(payload="w",content="w"),"/",src.interactio
         return "s"*(target_index-current_index)+"w"*(current_index-target_index)
 
 # register the menu type
-src.menues.add_menu(GroundskeeperPriorityConfigurationMenu)
+src.menues.add_menu(DutyPriorityConfigurationMenu)

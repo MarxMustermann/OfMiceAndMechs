@@ -18,7 +18,6 @@ class FreeUpStorage(src.quests.MetaQuestSequence):
         '''
         returns a text desrcibing the quest
         '''
-        out = []
         reasonText = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
             reasonText = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),","),f" to {self.reason}."]
@@ -32,8 +31,7 @@ class FreeUpStorage(src.quests.MetaQuestSequence):
 This quest will end when {self.amount} general storage slots are free.
 Currently {num_free_storage} storage slots are free.""")
 
-        out.append(text)
-        return out
+        return text
 
     def triggerCompletionCheck(self,character=None,dryRun=True):
         if not character:

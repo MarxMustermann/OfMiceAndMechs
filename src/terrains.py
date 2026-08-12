@@ -2325,6 +2325,12 @@ class Terrain:
                 if room.tag.startswith("main path"):
                     chars[room.yPosition][room.xPosition] = "MP"
 
+        for x in range(1,14):
+            for y in range(1,14):
+                items = self.getItemByPosition((x*15+7,y*15+7,0))
+                if len(items) and items[0].type == "RoomBuilder":
+                    chars[y][x] = (src.interaction.urwid.AttrSpec("#778","black"),"rb")
+
         homePos = (src.gamestate.gamestate.mainChar.registers.get("HOMEx"),src.gamestate.gamestate.mainChar.registers.get("HOMEy"))
         homePosTerrain = (src.gamestate.gamestate.mainChar.registers.get("HOMETx"),src.gamestate.gamestate.mainChar.registers.get("HOMETy"),0)
         if homePosTerrain == src.gamestate.gamestate.mainChar.getTerrainPosition() and homePos[0] and homePos[1]:

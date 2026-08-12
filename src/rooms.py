@@ -857,7 +857,7 @@ class Room:
         return out
 
     def getEnemies(self,character):
-        self.getEnemiesOnTile(character,self.getPosition())
+        return self.getEnemiesOnTile(character,self.getPosition())
 
     def getEnemiesOnTile(self,character,pos=None):
         if not pos:

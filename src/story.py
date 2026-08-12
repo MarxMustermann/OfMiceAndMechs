@@ -2926,6 +2926,46 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         entryroom.tag = "entryRoom"
         used_spots.append(entryroom.getPosition())
 
+        # add half done build site
+        big_position = (8,3,0)
+        used_spots.append(big_position)
+        pos = (big_position[0]*15+7,big_position[1]*15+7,0)
+        roomBuilder = src.items.itemMap["RoomBuilder"]()
+        currentTerrain.addItem(roomBuilder,pos)
+        for x in range(1,14):
+            for y in range(1,14):
+                if x not in (1,13) and y not in (1,13):
+                    continue
+                if x == 7 or y == 7:
+                    continue
+
+                pos = (big_position[0]*15+x,big_position[1]*15+y,0)
+                if (x in (1,13) and y in (1,13)) or random.random() > 0.3:
+                    wall = src.items.itemMap["Wall"]()
+                    wall.bolted = False
+                    currentTerrain.addItem(wall,pos)
+                else:
+                    scrap = src.items.itemMap["Scrap"](amount=random.randint(1,4))
+                    scrap.bolted = False
+                    currentTerrain.addItem(scrap,pos)
+
+        for x in range(2,13):
+            for y in range(2,13):
+                if random.random() > 0.3:
+                    continue
+                if (x,y) == (7,7,0):
+                    continue
+
+                amount = random.randint(1,15)
+                if x in (6,7,8) and y in (6,7,8):
+                    amount = random.randint(1,4)
+                if x in (2,12,) or y in (2,12,):
+                    amount = random.randint(1,4)
+                pos = (big_position[0]*15+x,big_position[1]*15+y,0)
+                scrap = src.items.itemMap["Scrap"](amount=amount)
+                scrap.bolted = False
+                currentTerrain.addItem(scrap,pos)
+
         # add alarm room
         alarmRoom = architect.doAddRoom(
                 {

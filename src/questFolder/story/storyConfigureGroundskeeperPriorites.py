@@ -88,7 +88,7 @@ class StoryConfigureGroundskeeperPriorites(src.quests.MetaQuestSequence):
                 return (None,(command+"j","continue conversation"))
             if submenue.tag == "groundskeeper_priority_configuration":
                 if submenue.selected_duty == "scrap hammering":
-                    return (None,("a","lower duty priority"))
+                    return (None,("a"*(keeper.dutyPriorities.get("scrap hammering",0)-2),"lower duty priority"))
                 command = submenue.get_command_to_select_duty("scrap hammering")
                 return (None,(command,"select duty"))
             return (None,(["esc"],"to close menu"))

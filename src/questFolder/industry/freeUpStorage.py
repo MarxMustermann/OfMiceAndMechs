@@ -15,8 +15,10 @@ class FreeUpStorage(src.quests.MetaQuestSequence):
         self.amount = amount
 
     def generateTextDescription(self):
+        '''
+        returns a text desrcibing the quest
+        '''
         out = []
-
         reasonText = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
             reasonText = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),","),f" to {self.reason}."]

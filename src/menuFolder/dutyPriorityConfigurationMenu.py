@@ -45,10 +45,12 @@ class DutyPriorityConfigurationMenu(src.menues.SubMenu):
             if priority < 1:
                 priority = 1
             self.partner.dutyPriorities[self.selected_duty] = priority
+            self.partner.changed("changedDutyPriority",{"duty":self.selected_duty,"character":self.partner})
         if key in ("d",):
             priority = self.partner.dutyPriorities.get(self.selected_duty,1)
             priority += 1
             self.partner.dutyPriorities[self.selected_duty] = priority
+            self.partner.changed("changedDutyPriority",{"duty":self.selected_duty,"character":self.partner})
 
         return False
 

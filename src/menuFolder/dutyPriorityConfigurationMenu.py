@@ -53,15 +53,15 @@ class DutyPriorityConfigurationMenu(src.menues.SubMenu):
         return False
 
     def getTitle(self):
-        return "GROUNDSKEEPER DUTY PRIORITY CONFIGURATION"
+        return "DUTY PRIORITY CONFIGURATION"
 
     def render(self,size=None):
         duties = self._get_sorted_duties()
         text = []
         text.extend(["""
-""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You ask the groundskeeper to change its working priorities."),"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You ask the clone to change its working priorities."),"""
 
-The groundskeepers duties and its priorities are listed bellow.
+The clones duties and its priorities are listed bellow.
 High priority task will done before low priority tasks.
 A high number indicates a high priority.
 

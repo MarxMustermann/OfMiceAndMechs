@@ -995,12 +995,14 @@ They will complete tasks on the base.
                     numGlassHearts += 1
 
             # get promotion
+            shown_promotion = False
+            name = "get promotion"
+            extraDescriptions[name] = "Holding a higher rank will make you stronger"
             if not (missing_anvil or missing_metalWorkingBench or missing_cityPlaner):
                 last_promotion = src.gamestate.gamestate.stern.get("last_promotion_try",0)
                 if character.rank > 2 and last_promotion < src.gamestate.gamestate.tick-1000:
-                    name = "get promotion"
                     options.append((name,name))
-                    extraDescriptions[name] = "Holding a higher rank will make you stronger"
+                    shown_promotion = True
 
             # convert entry rooms to trap rooms
             has_convertable_room = False
@@ -1092,6 +1094,10 @@ They will complete tasks on the base.
                 options.append(("fetch Door","fetch Doors"))
 
             # show options not yet shown
+            if not shown_promotion and not (missing_anvil or missing_metalWorkingBench or missing_cityPlaner):
+                if character.rank > 2:
+                    name = "get promotion"
+                    options.append((name,name))
             if groundsKeeper and not shown_help:
                 options.append(("help","help groundskeeper"))
             if not shown_obtain_weapon and not character.weapon:

@@ -2444,11 +2444,11 @@ Now i need a CityPlaner.
 """)
                 offer_accept_options = True
             else:
-                base_response_text.extend("""
+                base_response_text.extend(["""
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Thanks for the CityPlaner."),"""
 
 That will allow to coordinate how the base is getting expanded.
-""")
+"""])
                 character.inventory.remove(cityPlaner[0])
                 partner.inventory.append(cityPlaner[0])
                 self.builder_reset(partner)
@@ -3010,7 +3010,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         for pos in [(5,3,0),(5,5,0),(9,5,0),(9,3,0)]:
             enemy = src.characters.characterMap["MechanicalGuard"](level=3)
             cityPlanerRoom.addCharacter(enemy,pos[0],pos[1])
-        for y in range(1,12):
+        for y in range(1,11):
             if y in (8,9,10,):
                 cityPlanerRoom.addWalkingSpace((5,y,0))
                 cityPlanerRoom.addWalkingSpace((7,y,0))

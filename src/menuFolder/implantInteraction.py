@@ -855,10 +855,15 @@ They will complete tasks on the base.
             # help groundskeeper
             shown_help = False
             extraDescriptions["help"] = "Helping the groundskeeper will make it complete its work faster."
-            if groundsKeeper and (not groundskeepers_place.getItemByType("Anvil") or not groundskeepers_place.getItemByType("MetalWorkingBench")):
-                if src.gamestate.gamestate.stern.get("no_groundskeeper_quest",0) < src.gamestate.gamestate.tick-500:
-                    options.append(("help","help groundskeeper"))
-                    shown_help = True
+            if groundsKeeper:
+                if (not groundskeepers_place.getItemByType("Anvil") or not groundskeepers_place.getItemByType("MetalWorkingBench")):
+                    if src.gamestate.gamestate.stern.get("no_groundskeeper_quest",0) < src.gamestate.gamestate.tick-500:
+                        options.append(("help","help groundskeeper"))
+                        shown_help = True
+                elif hasEmptyRoom and not hasCityPlaner:
+                    if src.gamestate.gamestate.stern.get("no_groundskeeper_quest",0) < src.gamestate.gamestate.tick-500:
+                        options.append(("help","help groundskeeper"))
+                        shown_help = True
 
             # work around dead groundskeeper
             extraDescriptions["fetch Anvil"] = "The base needs an Anvil to produce MetalBars."

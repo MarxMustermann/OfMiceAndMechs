@@ -2782,6 +2782,8 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                 itemType = None
                 if y == 7 and x > 7:
                     itemType = "Door"
+                if y == 7 and x < 7:
+                    itemType = "Wall"
                 storageSlots.append(((x,y,0),None,{}))
         for y in (8,10):
             for x in range(1,12):

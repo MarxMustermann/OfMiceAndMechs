@@ -40,38 +40,32 @@ class IdleChatNPCMenu(src.menues.SubMenu):
 
         if self.instructionType == "charInfo":
             submenue = src.menues.menuMap["CharacterInfoMenu"](char=self.npc)
-            character.macroState["submenue"] = submenue
-            submenue.handleKey("~", noRender=noRender,character=character)
+            character.add_submenu(submenue)
             self.subMenu = None
             return True
         if self.instructionType == "showQuests":
             submenue = src.menues.menuMap["QuestMenu"](char=self.npc)
-            character.macroState["submenue"] = submenue
-            submenue.handleKey("~", noRender=noRender,character=character)
+            character.add_submenu(submenue)
             self.subMenu = None
             return True
         if self.instructionType == "showStats":
             submenue = src.menues.menuMap["CharacterStatsMenu"](self.npc)
-            character.macroState["submenue"] = submenue
-            submenue.handleKey("~", noRender=noRender,character=character)
+            character.add_submenu(submenue)
             self.subMenu = None
             return True
         if self.instructionType == "exchangeItems":
             submenue = src.menues.menuMap["ItemExchangeMenu"](character,self.npc)
-            character.macroState["submenue"] = submenue
-            submenue.handleKey("~", noRender=noRender,character=character)
+            character.add_submenu(submenue)
             self.subMenu = None
             return True
         if self.instructionType == "showInventory":
             submenue = src.menues.menuMap["InventoryMenu"](char=self.npc)
-            character.macroState["submenue"] = submenue
-            submenue.handleKey("~", noRender=noRender,character=character)
+            character.add_submenu(submenue)
             self.subMenu = None
             return True
         if self.instructionType == "setDutyPriorities":
             submenue = src.menues.menuMap["DutyPriorityConfigurationMenu"](character,self.npc)
-            character.macroState["submenue"] = submenue
-            submenue.handleKey("~", noRender=noRender,character=character)
+            character.add_submenu(submenue)
             self.subMenu = None
             return True
         if self.instructionType == "reset":

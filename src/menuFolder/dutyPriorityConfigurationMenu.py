@@ -27,26 +27,26 @@ class DutyPriorityConfigurationMenu(src.menues.SubMenu):
             self.selected_duty = duties[0]
 
         # handle general keypresses
-        if key in ("w",):
+        if key in ("w","up",):
             index = duties.index(self.selected_duty)
             index -= 1
             if index < 0:
                 index = len(duties)-1
             self.selected_duty = duties[index]
-        if key in ("s",):
+        if key in ("s","down",):
             index = duties.index(self.selected_duty)
             index += 1
             if index >= len(duties):
                 index = 0
             self.selected_duty = duties[index]
-        if key in ("a",):
+        if key in ("a","left",):
             priority = self.partner.dutyPriorities.get(self.selected_duty,1)
             priority -= 1
             if priority < 1:
                 priority = 1
             self.partner.dutyPriorities[self.selected_duty] = priority
             self.partner.changed("changedDutyPriority",{"duty":self.selected_duty,"character":self.partner})
-        if key in ("d",):
+        if key in ("d","right",):
             priority = self.partner.dutyPriorities.get(self.selected_duty,1)
             priority += 1
             self.partner.dutyPriorities[self.selected_duty] = priority

@@ -23,22 +23,19 @@ class ScavengeTile(src.quests.MetaQuestSequence):
         self.ignoreScrap = ignoreScrap
 
     def generateTextDescription(self):
-        out = []
-
-        reason = ""
+        reason = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
-            reason = f", to {self.reason}"
-        text = f"""
-Scavenge the tile {self.targetPositionBig}"""
+            reason = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),","),f" to {self.reason}"]
+        text = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"""
+Scavenge the tile {self.targetPositionBig}""")]
         if self.toCollect:
-            text += f" for {self.toCollect}"
-        text += f"""{reason}."""
-        text += """
+            text.append((src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f" for {self.toCollect}"))
+        text.append(reason)
+        text.append("""
 
-This quest will end when the target tile has no items left."""
+This quest will end when the target tile has no items left.""")
 
-        out.append(text)
-        return out
+        return text
 
     def triggerCompletionCheck(self,character=None,dryRun=True):
 

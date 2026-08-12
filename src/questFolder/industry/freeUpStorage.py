@@ -7,7 +7,7 @@ class FreeUpStorage(src.quests.MetaQuestSequence):
     A quest to free uo some storage in the base
     '''
     type = "FreeUpStorage"
-    def __init__(self, description="free up storage", creator=None, lifetime=None, reason=None, amount=1):
+    def __init__(self, description="free up storage", creator=None, lifetime=None, reason=None, amount=5):
         self.lastMoveDirection = None
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
@@ -82,6 +82,16 @@ Currently {num_free_storage} storage slots are free.""")
             quest = src.quests.questMap["DiscardItemsInside"]()
             return ([quest],None)
 
+        # get storage stockpiles that can be consolidated
+        to_consolidate = self.getConsolidatableStockpiles()
+        for (item_type,stockpiles) in to_consolidate.items():
+            stockpile_to_remove = stockpiles[0]
+            stockpile_to_fill = stockpiles[-1]
+            quests = []
+            quests.append(src.quests.questMap["CleanSpace"](targetPositionBig=stockpile_to_remove[0].getPosition(),targetPosition=stockpile_to_remove[1][0]))
+            quests.append(src.quests.questMap["RestockRoom"](targetPositionBig=stockpile_to_fill[0].getPosition(),targetPosition=stockpile_to_fill[1][0],toRestock=item_type,allowAny=True))
+            return (reversed(quests),None)
+
         # collect storage information
         inventory = self.getStored()
 
@@ -104,6 +114,40 @@ Currently {num_free_storage} storage slots are free.""")
         # pick up chosen item
         quest = src.quests.questMap["CleanSpace"](targetPositionBig=item.getBigPosition(),targetPosition=item.getPosition())
         return ([quest],None)
+
+    def getConsolidatableStockpiles(self):
+        '''
+        get stockpiles that can be consolidated
+        '''
+
+        # set up helper variables
+        terrain = self.character.getTerrain()
+        result = {}
+
+        # fetch half filles storage stockpiles
+        for room in terrain.rooms:
+            for storageSlot in room.storageSlots:
+                if storageSlot[1]:
+                    continue
+                items = room.getItemByPosition(storageSlot[0])
+                if not items:
+                    continue
+                if items[0].walkable == False:
+                    continue
+                if len(items) > 25:
+                    continue
+                if items[0].type not in result:
+                    result[items[0].type] = []
+                result[items[0].type].append((room,storageSlot))
+
+        # filters item types blocking only one stockpile
+        for (item_type, stockpiles) in list(result.items()):
+            if len(stockpiles) > 1:
+                continue
+            del result[item_type]
+
+        # return result
+        return result
 
     def getStored(self):
         '''

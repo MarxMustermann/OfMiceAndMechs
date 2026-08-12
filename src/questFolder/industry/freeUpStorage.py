@@ -3,9 +3,11 @@ import random
 import src
 
 class FreeUpStorage(src.quests.MetaQuestSequence):
+    '''
+    A quest to free uo some storage in the base
+    '''
     type = "FreeUpStorage"
     lowLevel = True
-
     def __init__(self, description="free up storage", creator=None, lifetime=None, reason=None, amount=1):
         self.lastMoveDirection = None
         questList = []
@@ -18,10 +20,13 @@ class FreeUpStorage(src.quests.MetaQuestSequence):
         '''
         returns a text desrcibing the quest
         '''
+
+        # create the description for why the quest was created
         reasonText = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
             reasonText = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),","),f" to {self.reason}."]
 
+        # generate the text description
         num_free_storage = self.getNumFreeStorageSlots()
         text = [f"""
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Free up general storage slots"""),reasonText,"""
@@ -31,9 +36,13 @@ class FreeUpStorage(src.quests.MetaQuestSequence):
 This quest will end when {self.amount} general storage slots are free.
 Currently {num_free_storage} storage slots are free.""")
 
+        # return the description
         return text
 
     def triggerCompletionCheck(self,character=None,dryRun=True):
+        '''
+        chcek if the quest has been completed
+        '''
         if not character:
             return False
         if self.getNumFreeStorageSlots() >= self.amount:
@@ -43,6 +52,9 @@ Currently {num_free_storage} storage slots are free.""")
         return False
 
     def getNumFreeStorageSlots(self):
+        '''
+        get the number of empty storage slots
+        '''
         num_empty_storage = 0
         for room in self.character.getTerrain().rooms:
             for storageSlot in room.storageSlots:
@@ -54,6 +66,9 @@ Currently {num_free_storage} storage slots are free.""")
         return num_empty_storage
 
     def getNextStep(self,character,ignoreCommands=False, dryRun = True):
+        '''
+        calculate the next step toward solving the quest
+        '''
 
         # handle weird edge cases
         if not character:
@@ -92,6 +107,9 @@ Currently {num_free_storage} storage slots are free.""")
         return ([quest],None)
 
     def getStored(self):
+        '''
+        get the items stored on the base
+        '''
         terrain = self.character.getTerrain()
 
         stored = {}
@@ -109,9 +127,15 @@ Currently {num_free_storage} storage slots are free.""")
         return stored
 
     def pickedUpItem(self,extraInfo):
+        '''
+        handle the character having picked up an item
+        '''
         self.triggerCompletionCheck(extraInfo[0],dryRun=False)
 
     def assignToCharacter(self, character):
+        '''
+        make the quest listen to character events
+        '''
         if self.character:
             return None
 
@@ -142,4 +166,5 @@ Currently {num_free_storage} storage slots are free.""")
             return ([quest],None)
         return (None,None)
 
+# register the quest
 src.quests.addType(FreeUpStorage)

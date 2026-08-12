@@ -6497,6 +6497,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
             # set up basic world
             doLoad()
+            src.gamestate.gamestate.gameIndex = gameIndex
 
             # start story
             if loadingControl["needsStart"] is True:

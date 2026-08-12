@@ -59,7 +59,7 @@ class DutyPriorityConfigurationMenu(src.menues.SubMenu):
         duties = self._get_sorted_duties()
         text = []
         text.extend(["""
-""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You ask the clone to change its working priorities."),"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"You ask {self.partner.name} to change its working priorities."),"""
 
 The clones duties and its priorities are listed bellow.
 High priority task will done before low priority tasks.

@@ -3364,6 +3364,13 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                     enemy = src.characters.characterMap[enemyType]()
                     currentTerrain.addCharacter(enemy,pos[0],pos[1])
 
+                if src.gamestate.gamestate.difficulty == "difficult":
+                    if random.random() < 0.1:
+                        for i in range(10,15):
+                            pos = (big_x*15+random.randint(1,13),big_y*15+random.randint(1,13),0)
+                            enemy = src.characters.characterMap["Snatcher"]()
+                            currentTerrain.addCharacter(enemy,pos[0],pos[1])
+
         # add enemies
         for big_x in range(1,14):
             for big_y in range(1,14):

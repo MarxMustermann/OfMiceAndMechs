@@ -117,12 +117,14 @@ After getting spawned the Clone will activate the item to the east of the Growth
             character: the character trying to refill the growth tank
         """
 
+        # ensure there are flask to refill the growthtank with
         flasks = self.getFlasks(character)
         if not flasks:
             character.changed("no flask", {})
             character.notify("you need to have 2 full goo flasks to refill the growth tank")
             return
 
+        # consume flask until the tank is filled
         while self.gooCharges <= 100:
             for flask in flasks[:]:
                 self.gooCharges += flask.uses
@@ -140,6 +142,7 @@ After getting spawned the Clone will activate the item to the east of the Growth
                     break
             break
 
+        # mark the growtank as filled
         if self.gooCharges > 100:
             self.gooCharges -= 100
             self.filled = True

@@ -1,1 +1,0 @@
-all the music in this folder is licensed under creative commons. Artists/tracks/albums are in the filename. Most stuff is loaded from https://freemusicarchive.org check it out for about 40 000 free tracks.

@@ -226,7 +226,7 @@ class ImplantInteraction(src.menues.SubMenu):
                         quests.append(src.quests.questMap["Ascend"]())
                     if selection == "get promotion":
                         src.gamestate.gamestate.stern["last_promotion_try"] = src.gamestate.gamestate.tick
-                        quests.append(src.quests.questMap["GetPromotion"](2))
+                        quests.append(src.quests.questMap["GetRank2PromotionStory"](lifetime=500))
                     if selection == "convert_entryRoom":
                         for room in terrain.rooms:
                             if room.tag != "entryRoom":

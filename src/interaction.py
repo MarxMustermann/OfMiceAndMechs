@@ -8704,6 +8704,9 @@ def showCredits():
 == data == 
 * names: Names data from Onomaverse (https://onomaverse.com/datasets), licensed CC BY 4.0.
 
+== fonts ==
+* The Oldschool PC Fonts: VileR - https://int10h.org, licensed CC BY-SA 4.0
+
 == testing ==
 
 == writing the actual game ==

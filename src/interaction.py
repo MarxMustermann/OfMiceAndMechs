@@ -2751,14 +2751,6 @@ def handlePriorityActions(params):
         doRepeat(params)
         return None
 
-    # save and quit
-    if key in (commandChars.quit_normal, commandChars.quit_instant):
-        if hasattr(urwid,"ExitMainLoop"):
-            raise urwid.ExitMainLoop()
-        if src.interaction.tcodMixer:
-            src.interaction.tcodMixer.close()
-        raise SystemExit()
-
     return (1,key)
 
 def doSetInterrupt(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
@@ -2895,10 +2887,6 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
         # open the debug menue
         if key in ("\'",):
             charState["submenue"] = src.menues.menuMap["DebugMenu"]()
-
-        # destroy save and quit
-        if key in (commandChars.quit_delete,):
-            doResetQuit(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame)
 
         """
         move the player into a direction
@@ -3577,9 +3565,7 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
     # discard key strokes, if they were not processed for too long
     ignoreList = (
         commandChars.autoAdvance,
-        commandChars.quit_instant,
         commandChars.ignore,
-        commandChars.quit_delete,
         commandChars.pause,
         commandChars.show_quests,
         commandChars.show_quests_detailed,

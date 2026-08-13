@@ -134,7 +134,7 @@ Build more rooms.
 There need to be at least 3 clones besides you on the base to allow any promptions.
 """]
                     character.showTextMenu(text, do_not_scale=True)
-                    character.changed("promotion blocked",{"reason":"terrain needs cleared from enemies"})
+                    character.changed("promotion blocked",{"reason":"needs 4 clones on base"})
                     return
             elif highestAllowed == 4 or character.rank == 4:
                 highestAllowed = 3
@@ -167,8 +167,7 @@ There need to be at least 3 clones besides you on the base to allow any promptio
 Kill all enemies on this terrain, to unlock the promotions to rank 2.
 """]
                     character.showTextMenu(text, do_not_scale=True)
-
-                    character.changed("promotion blocked",{"reason":"needs 4 clones on base"})
+                    character.changed("promotion blocked",{"reason":"terrain needs cleared from enemies"})
                     return
             elif highestAllowed == 3 or character.rank == 3:
                 highestAllowed = 2

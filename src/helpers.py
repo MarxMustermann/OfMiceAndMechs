@@ -42,6 +42,7 @@ def draw_frame_text(removeme, width, height, text, x, y, center=True):
     sdl_renderer2.fill_rect((x_pixels,y_pixels,line_width,height_pixels+padding*2))
     sdl_renderer2.fill_rect((x_pixels+width_pixels+2*padding-line_width,y_pixels,line_width,height_pixels+padding*2))
     sdl_renderer2.fill_rect((x_pixels,y_pixels+height_pixels+2*padding-line_width,width_pixels+padding*2,line_width))
+    sdl_renderer2.draw_color = (0,0,0,255)
 
 def fade_between_consoles_rgb(current, target, t):
     transition_array = ["?", "/", "."]

@@ -1583,60 +1583,60 @@ class Character:
             attacksOffered.append(random.choice(["u","i","o","g","b"]))
 
         if "o" in attacksOffered:
-            text.append("""
-press o/O for attack of opportunity
--exhaustion: +1 -damage multiplier: 1.5
-""")
+            text.extend(["""
+press o/O for """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"attack of opportunity"),"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"-exhaustion: +1 -damage multiplier: 1.5"),"""
+"""])
         if "g" in attacksOffered:
-            text.append("""
-press g/G for gambling attack
--exhaustion: +2 -damage multiplier: random(0,3)
-""")
+            text.extend(["""
+press g/G for """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"gambling attack"),"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"-exhaustion: +2 -damage multiplier: random(0,3)"),"""
+"""])
         if "b" in attacksOffered:
-            text.append("""
-press b/B for bestial attack
--exhaustion: random(0,10) -damage multiplier: 2
-""")
+            text.extend(["""
+press b/B for """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"bestial attack"),"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"-exhaustion: random(0,10) -damage multiplier: 2"),"""
+"""])
         if "n" in attacksOffered:
-            text.append("""
-press n/N for exhausting attack
--exhaustion: +4 -enemy exhaustion: +11 -damage multiplier: 0
-""")
+            text.extend(["""
+press n/N for """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"exhausting attack"),"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"-exhaustion: +4 -enemy exhaustion: +11 -damage multiplier: 0"),"""
+"""])
         if "i" in attacksOffered:
-            text.append("""
-press i/I for quick attack
--exhaustion: +1 -damage multiplier: 0.5 -attack speed multiplier: 0.5
-""")
+            text.extend(["""
+press i/I for """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"quick attack"),"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"-exhaustion: +1 -damage multiplier: 0.5 -attack speed multiplier: 0.5"),"""
+"""])
         if "u" in attacksOffered:
-            text.append("""
-press u/U for slow attack
--exhaustion: -1 -attack speed multiplier: 1.5
-""")
+            text.extend(["""
+press u/U for """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"slow attack"),"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"-exhaustion: -1 -attack speed multiplier: 1.5"),"""
+"""])
 
         text.append("\n")
 
         if "h" in attacksOffered:
-            text.append("""
-press h/H for heavy attack
--exhaustion: +3 -damage multiplier: 1.5
-""")
+            text.extend(["""
+press h/H for """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"heavy attack"),"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"-exhaustion: +3 -damage multiplier: 1.5"),"""
+"""])
         if "j" in attacksOffered:
-            text.append("""
-press j/J for ultraheavy attack
--exhaustion: +25 -damage multiplier: 3
-requires: exhaustion < 10
-""")
+            text.extend(["""
+press j/J for """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"ultraheavy attack"),"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"""-exhaustion: +25 -damage multiplier: 3
+requires: exhaustion < 10"""),"""
+"""])
         if "k" in attacksOffered:
-            text.append("""
-press k/K for initial strike
--exhaustion: +1 -damage multiplier: 3
-requires: no exhaustion
-""")
+            text.extend(["""
+press k/K for """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"initial strike"),"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"""-exhaustion: +1 -damage multiplier: 3
+requires: no exhaustion"""),"""
+"""])
         if "l" in attacksOffered:
-            text.append("""
-press l/L for light attack
--exhaustion: -5 -damage multiplier: 0.5
-""")
+            text.extend(["""
+press l/L for """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"light attack"),"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"-exhaustion: -5 -damage multiplier: 0.5"),"""
+"""])
 
 
         text.append("""

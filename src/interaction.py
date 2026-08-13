@@ -534,7 +534,6 @@ def setUpTcod():
     try:
         sound_clip, samplerate = src.interaction.soundloader.read('music/Lamoa.mp3',dtype='float32')
         sounds["dungeon_loop"] = sound_clip
-        print("loaded dungeon soundfile")
     except:
         pass
     global tcodAudio

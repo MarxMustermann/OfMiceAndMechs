@@ -4,8 +4,8 @@ import src
 class GetRank2PromotionStory(src.quests.MetaQuestSequence):
     type = "GetRank2PromotionStory"
 
-    def __init__(self, description="get promotion to rank 2", reason=None):
-        super().__init__()
+    def __init__(self, description="get promotion to rank 2", reason=None, lifetime=None):
+        super().__init__(lifetime=lifetime)
         self.metaDescription = description
         self.reason = reason
 
@@ -19,6 +19,9 @@ Gain rank 2 by getting promoted{reasonString}.
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"The base has a Promoter, use that to get promoted."),"""
 
 """]
+
+        if self.lifetime:
+            text.append(f"Do this for {self.lifetime} ticks. {self.getRemainingLifetime()} ticks remainging")
     
         return text
 
@@ -34,7 +37,7 @@ Gain rank 2 by getting promoted{reasonString}.
                 quest = src.quests.questMap["StoryExtendBase"](reason="be able to get promoted to base commander.\nThis will allow you to contact main base")
                 self.addQuest(quest)
             case "terrain needs cleared from enemies":
-                quest = src.quests.questMap["StoryClearTerrain"](reason="be able to get promoted to base commander")
+                quest = src.quests.questMap["ClearTerrain"](reason="be able to get promoted")
                 self.addQuest(quest)
             case _:
                 quest = src.quests.questMap["SpawnClone"](reason="have more clones on the base")

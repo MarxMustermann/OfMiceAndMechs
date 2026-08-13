@@ -8703,6 +8703,8 @@ credits_text = ["""
 ""","""
 == fonts ==
 * The Oldschool PC Fonts: VileR - https://int10h.org, licensed CC BY-SA 4.0
+== code contributions ==
+* HeroClashes, HexDecimal
 ""","""
 == writing the actual game ==
 * MarxMustermann

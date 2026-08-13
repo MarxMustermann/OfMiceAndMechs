@@ -236,11 +236,11 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
         return ([quest],None)
 
     def generateTextDescription(self):
-        reason_string = ""
+        reason_string = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
-            reason_string = f", {self.reason}"
+            reason_string = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),","),f" {self.reason}"]
         text = [f"""
-Clear the terrain from all enemies{reason_string}.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Clear the terrain from all enemies"),reason_string,"""
 This will allow you to contact main base.
 
 There are several types of enemies, that have different behaviour.

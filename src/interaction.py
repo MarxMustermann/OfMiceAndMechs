@@ -598,6 +598,8 @@ def setUpTcod():
         changeVolume()
 
 def sound_loop(ch):
+    if ch.busy:
+        return
     mainCharTerrain = src.gamestate.gamestate.mainChar.getTerrain()
     if mainCharTerrain:
         if mainCharTerrain.tag in ("shrine","statue room"):

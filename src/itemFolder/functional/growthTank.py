@@ -9,7 +9,7 @@ class GrowthTank(src.items.Item):
 
     type = "GrowthTank"
     description = "is used to spawn Clones using goo"
-    def __init__(self, filled=False):
+    def __init__(self, filled=False, homePosition=None):
         """
         setting properties of the base class
         """
@@ -31,6 +31,7 @@ After getting spawned the Clone will activate the item to the east of the Growth
         self.filled = filled
         self.commands = {}
         self.gooCharges = 0
+        self.homePosition = homePosition
 
         self.commandOptions = [
                 ("born", "set command for newly born npcs"),
@@ -207,6 +208,11 @@ After getting spawned the Clone will activate the item to the east of the Growth
         containerQuest.assignToCharacter(new_character)
         containerQuest.activate()
         containerQuest.autoSolve = True
+
+        # transfer th saved home position
+        if self.homePosition:
+            new_character.registers["HOMEx"] = self.homePosition[0]
+            new_character.registers["HOMEy"] = self.homePosition[1]
 
         # inhabit character
         # character.fallUnconcious()

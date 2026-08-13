@@ -282,7 +282,7 @@ class InventoryMenu(src.menues.SubMenu):
         return txt
 
     def trigger_clearInventory(self,extraParams=None):
-        quest = src.quests.questMap["ClearInventory"]()
+        quest = src.quests.questMap["ClearInventory"](returnToTile=False)
         quest.autoSolve = True
         self.char.assignQuest(quest,active=True)
 

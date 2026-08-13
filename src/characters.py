@@ -3018,6 +3018,8 @@ press any other key to attack normally""")
             terrain = self.getTerrain()
             if terrain.getPosition() not in self.terrainInfo:
                 self.terrainInfo[terrain.getPosition()] = {"tag":terrain.tag}
+            if self == src.gamestate.gamestate.mainChar:
+                src.interaction.tcodMixer.get_channel("background").stop()
 
         if tag in ("changedTile","entered room",):
             if src.gamestate.gamestate.mainChar == self:
@@ -3029,6 +3031,7 @@ press any other key to attack normally""")
                         continue
                     self.changed("encountered character",{"character":self, "other_character":other_character})
                     other_character.changed("encountered character",{"character":other_character, "other_character":self})
+
 
         # do nothing if nobody listens
         if tag not in self.listeners:

@@ -170,18 +170,6 @@ class InventoryMenu(src.menues.SubMenu):
             if key in ("c",):
                 self.trigger_clearInventory()
 
-        if not noRender:
-            src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\ninventory overview\n\n"))
-
-            # bad code: uses global function
-            self.persistentText = (
-                src.interaction.urwid.AttrSpec("default", "default"),
-                self.render(),
-            )
-
-            # show the render
-            src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.persistentText))
-
         return False
 
     # bad code: global function

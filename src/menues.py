@@ -193,6 +193,7 @@ class SubMenu(object):
             # convert options to ordered dict
             oldOptions = self.options
             oldNiceOptions = self.niceOptions
+            oldOptionsIdentifiers = self.optionsIdentifiers
 
             self.options = collections.OrderedDict()
             self.niceOptions = collections.OrderedDict()

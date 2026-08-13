@@ -3000,7 +3000,7 @@ press any other key to attack normally""")
         '''
         make the character remember an action
         '''
-        character.stats[stat_name] = character.stats.get(stat_name,0)+amount
+        self.stats[stat_name] = self.stats.get(stat_name,0)+amount
 
     # bad code: probably misnamed
     def changed(self, tag="default", info=None):

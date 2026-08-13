@@ -8964,7 +8964,10 @@ You grab hold onto it and harness it."""]
   |                                                                                             |
 
 """
-            printUrwidToTcod(text,(30,14))
+            textSize = (100,len(text.splitlines()))
+            offset_x = (window_charwidth-textSize[0])//2
+            offset_y = (window_charheight-textSize[1])//2
+            printUrwidToTcod(text,(offset_x,offset_y))
             
             '''
             (src.interaction.urwid.AttrSpec(painColor, "black"), painChar), (painPos[0] + c_offset, painPos[1])
@@ -9016,7 +9019,7 @@ credits:{credits_chunk}"""
 
                 if maxCursor <= 0:
                     break
-            printUrwidToTcod(text,(35,17))
+            printUrwidToTcod(text,(offset_x+5,offset_y+3))
 
             tcodPresent()
 

@@ -38,6 +38,7 @@ class DebugMenu(src.menues.SubMenu):
         "fix terrain state",
         "take over character on tile",
         "test tracking ping",
+        "show outro",
     ]
 
     def __init__(self):
@@ -402,6 +403,9 @@ class DebugMenu(src.menues.SubMenu):
                 case "test tracking ping":
                     if current_change:
                         src.interaction.send_tracking_ping("testevent")
+                case "show outro":
+                    if current_change:
+                        src.interaction.showRunOutro()
             text += "\n"
 
         self.persistentText = text

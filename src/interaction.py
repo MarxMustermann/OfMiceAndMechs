@@ -8969,10 +8969,6 @@ You grab hold onto it and harness it."""]
             offset_y = (window_charheight-textSize[1])//2
             printUrwidToTcod(text,(offset_x,offset_y))
             
-            '''
-            (src.interaction.urwid.AttrSpec(painColor, "black"), painChar), (painPos[0] + c_offset, painPos[1])
-            '''
-
             color_step = numStruggled
             if color_step > 15:
                 color_step = 15

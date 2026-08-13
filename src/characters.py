@@ -1578,70 +1578,70 @@ class Character:
         text = "no special attacks available"
         attacksOffered = []
         if self.hasSpecialAttacks:
-            text = ""
+            text = []
             attacksOffered = ["h","j","k","l"]
             attacksOffered.append(random.choice(["u","i","o","g","b"]))
 
         if "o" in attacksOffered:
-            text += """
+            text.append("""
 press o/O for attack of opportunity
 -exhaustion: +1 -damage multiplier: 1.5
-"""
+""")
         if "g" in attacksOffered:
-            text += """
+            text.append("""
 press g/G for gambling attack
 -exhaustion: +2 -damage multiplier: random(0,3)
-"""
+""")
         if "b" in attacksOffered:
-            text += """
+            text.append("""
 press b/B for bestial attack
 -exhaustion: random(0,10) -damage multiplier: 2
-"""
+""")
         if "n" in attacksOffered:
-            text += """
+            text.append("""
 press n/N for exhausting attack
 -exhaustion: +4 -enemy exhaustion: +11 -damage multiplier: 0
-"""
+""")
         if "i" in attacksOffered:
-            text += """
+            text.append("""
 press i/I for quick attack
 -exhaustion: +1 -damage multiplier: 0.5 -attack speed multiplier: 0.5
-"""
+""")
         if "u" in attacksOffered:
-            text += """
+            text.append("""
 press u/U for slow attack
 -exhaustion: -1 -attack speed multiplier: 1.5
-"""
+""")
 
-        text += "\n"
+        text.append("\n")
 
         if "h" in attacksOffered:
-            text += """
+            text.append("""
 press h/H for heavy attack
 -exhaustion: +3 -damage multiplier: 1.5
-"""
+""")
         if "j" in attacksOffered:
-            text += """
+            text.append("""
 press j/J for ultraheavy attack
 -exhaustion: +25 -damage multiplier: 3
 requires: exhaustion < 10
-"""
+""")
         if "k" in attacksOffered:
-            text += """
+            text.append("""
 press k/K for initial strike
 -exhaustion: +1 -damage multiplier: 3
 requires: no exhaustion
-"""
+""")
         if "l" in attacksOffered:
-            text += """
+            text.append("""
 press l/L for light attack
 -exhaustion: -5 -damage multiplier: 0.5
-"""
+""")
 
 
-        text += """
+        text.append("""
 
-press any other key to attack normally"""
+press any other key to attack normally""")
         submenu = src.menues.menuMap["OneKeystrokeMenu"](text)
         submenu.tag = "specialAttackSelection"
         submenu.followUp = {"container":self,"method":"doSpecialAttack","params":{"target":target,"attacksOffered":attacksOffered}}

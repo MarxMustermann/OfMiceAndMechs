@@ -74,7 +74,7 @@ The Clones nametag reads "{spwaned_character.name} ({short_code})"
 """)
                 character.showTextMenu(text,do_not_scale=True)
                 character.changed("woke clone",{"character":character,"awoken":spwaned_character})
-            self.destroy(generateScrap=False)
+            self.destroy()
 
     def apply(self, character):
         """

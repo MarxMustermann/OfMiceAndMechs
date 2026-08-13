@@ -8855,7 +8855,11 @@ def showRunOutro(endingType="bad"):
   |                                                                         |
 
 """
-            printUrwidToTcod(text,(40,14))
+            textSize = (80,len(text.splitlines()))
+            offset_x = (window_charwidth-textSize[0])//2
+            offset_y = (window_charheight-textSize[1])//2
+
+            printUrwidToTcod(text,(offset_x,offset_y))
             textBase = ["""
 You take the crown and put it on your head.      """+"""
 It latches on firmly and you grid your teeth.       """+"""
@@ -8866,7 +8870,7 @@ It connects and is ready to merge with you.
             text = "".join(textBase[0:subStep])
             if not subStep < len(textBase)-1:
                 text += textBase[-1][0:subStep2]
-            printUrwidToTcod(text,(45,17))
+            printUrwidToTcod(text,(offset_x+5,offset_y+3))
 
             if not subStep2 < len(textBase[-1]):
                 printUrwidToTcod("press enter to merge with the throne",(45,27))
@@ -8903,7 +8907,12 @@ It connects and is ready to merge with you.
   |                                                                         |
 
 """
-            printUrwidToTcod(text,(40,14))
+            textSize = (80,len(text.splitlines()))
+            offset_x = (window_charwidth-textSize[0])//2
+            offset_y = (window_charheight-textSize[1])//2
+
+            printUrwidToTcod(text,(offset_x,offset_y))
+            
             if endingType == "bad":
                 textBase = ["""
 You merge with the Throne.
@@ -8921,7 +8930,7 @@ You grab hold onto it and harness it."""]
             text = "".join(textBase[0:subStep])
             if not subStep < len(textBase)-1:
                 text += textBase[-1][0:subStep2]
-            printUrwidToTcod(text,(45,17))
+            printUrwidToTcod(text,(offset_x+5,offset_y+3))
 
             if not subStep2 < len(textBase[-1]):
                 if endingType == "bad":
@@ -9076,8 +9085,11 @@ press enter to continue playing"""]
                             raise EndGame("the game was won")
 
                 if key in (tcod.event.KeySym.RETURN, tcod.event.KeySym.KP_ENTER):
-                    if endingType == "bad" and stage == 2 and subStep2 > 150:
-                        numStruggled += 1
+                    if endingType == "bad" and stage == 2:
+                        if subStep2 > 150:
+                            numStruggled += 1
+                        else:
+                            subStep2 += 1
                     if not endingType == "bad" or stage < 2:
                         stage += 1
                         subStep = 0

@@ -48,7 +48,7 @@ class CityPlaner(src.items.Item):
             for _item in self.prefabs["ScrapToMetalBars"]:
                 index += 1
                 options.append((index,f"prefab{index}"))
-            submenue = src.menues.menuMap["SelectionMenu"]("what floorplan to use?",options,targetParamName="type")
+            submenue = src.menues.menuMap["SelectionMenu"]("what specific floorplan to use?",options,targetParamName="type")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"addScrapCompactorFromMap","params":params}
             return

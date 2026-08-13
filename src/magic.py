@@ -1128,6 +1128,7 @@ def setUpThroneDungeon(pos):
     architect = item
     item.godMode = True
     currentTerrain.addItem(item,(1,1,0))
+    currentTerrain.tag = "glassed city"
 
     mainRoom = architect.doAddRoom(
             {

@@ -7,7 +7,6 @@ import tcod
 class CharacterStatsMenu(src.menues.SubMenu):
     def __init__(self,character):
         self.type = "CharacterStatsMenu"
-        self.index = 0
         self.character = character
         super().__init__()
 

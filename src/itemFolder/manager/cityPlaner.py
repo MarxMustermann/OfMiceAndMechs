@@ -344,7 +344,32 @@ class CityPlaner(src.items.Item):
             room.addRandomItems()
         return room
 
+    def get_floorPlan_descriptions(self):
+        '''
+        get descriptions of all avaiable floor plans
+        '''
+        description = {}
+        description["storage"] = "stores a big number of items"
+        description["scrapStorage"] = "stores a lot of Scrap"
+        description["wallManufacturing"] = "a manufacturing room dedicated to producing Walls"
+        description["wallStorage"] = "stores a big number of Walls"
+        description["basicMaterialsManufacturing"] = "manufactures the basic raw materials"
+        description["trapMaterialsManufacturing"] = "manufactures traps and trap components"
+        description["basicRoombuildingItemsManufacturing"] = "manufactures the items needed to build rooms"
+        description["gooProcessing"] = "produces food"
+        description["weaponManufacturing"] = "manufactures weapons"
+        description["manufacturingHall"] = "holds multiple ManufacturingTables that can be reconfigured on demand"
+        description["electrifierHall"] = "turns Rods into LightningRods"
+        description["scrapCompactor"] = "compacts Scrap to MetalBars"
+        description["smokingRoom"] = "a place to heal and recover"
+        description["trapRoom"] = "a defensive structure ment to kill invaders"
+        description["temple"] = "a place of worship and wonders"
+        return description
+
     def get_available_floorplans(self):
+        '''
+        get list of floor plans available to build
+        '''
 
         # set up raw options
         options = []
@@ -402,9 +427,10 @@ class CityPlaner(src.items.Item):
 
         # get user input on what floorplan to set
         if "type" not in params:
+            extraDescriptions = self.get_floorPlan_descriptions()
             options = self.get_available_floorplans()
             options.append(("exit","exit menu"))
-            submenue = src.menues.menuMap["SelectionMenu"]("what floorplan to use?",options,targetParamName="type")
+            submenue = src.menues.menuMap["SelectionMenu"]("what floorplan to use?\n",options,targetParamName="type",extraDescriptions=extraDescriptions)
             submenue.tag = "floorplanSelection"
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"setFloorplanFromMap","params":params}

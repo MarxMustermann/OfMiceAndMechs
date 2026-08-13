@@ -167,6 +167,26 @@ class StoryExploreHomeTerrain(src.quests.MetaQuestSequence):
                                             )
                 return ([quest],None)
 
+        # pick fights
+        if character.health > 100:
+            for room in currentTerrain.rooms:
+                enemies = room.getEnemies(character)
+                if not enemies:
+                    continue
+                if len(enemies) > 1:
+                    continue
+                quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition(), endWhenCleared=True)
+                return ([quest],None)
+            candidates = []
+            for x in range(1,14):
+                for y in range(1,14):
+                    pos = (x,y,0)
+                    if currentTerrain.getEnemiesOnTile(character,pos=pos):
+                        candidates.append(pos)
+            if candidates:
+                quest = src.quests.questMap["SecureTile"](toSecure=random.choice(candidates), endWhenCleared=True)
+                return ([quest],None)
+
         # loot current tile
         if character.container.isRoom:
             itemsOnFloor = character.container.itemsOnFloor

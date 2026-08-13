@@ -2996,6 +2996,12 @@ press any other key to attack normally""")
         if not self.listeners[tag]:
             del self.listeners[tag]
 
+    def increase_stat_counter(self,stat_name,amount=1):
+        '''
+        make the character remember an action
+        '''
+        character.stats[stat_name] = character.stats.get(stat_name,0)+amount
+
     # bad code: probably misnamed
     def changed(self, tag="default", info=None):
         '''

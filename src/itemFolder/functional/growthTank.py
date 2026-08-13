@@ -210,6 +210,10 @@ After getting spawned the Clone will activate the item to the east of the Growth
         containerQuest.autoSolve = True
 
         # transfer th saved home position
+        try:
+            self.homePosition
+        except:
+            self.homePosition = None
         if self.homePosition:
             new_character.registers["HOMEx"] = self.homePosition[0]
             new_character.registers["HOMEy"] = self.homePosition[1]

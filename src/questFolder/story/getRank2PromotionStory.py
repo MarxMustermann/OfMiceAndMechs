@@ -14,20 +14,12 @@ class GetRank2PromotionStory(src.quests.MetaQuestSequence):
         if self.reason:
             reasonString = ", to "+self.reason
 
-        text = f"""
-You reach out to your implant and it answers:
+        text = [f"""
+Gain rank 2 by getting promoted{reasonString}.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"The base has a Promoter, use that to get promoted."),"""
 
-The Communicator does not let you contact the main base with your current rank.
-Gain rank 2 by getting promoted using the normal way{reasonString}.
-The base has a Promoter, use that to get promoted.
-
-"""
+"""]
     
-        if self.subQuests:
-            text += """
-this quest has sub quests. Press d to show subquest.
-"""
-
         return text
 
     def handleGotPromotion(self, extraInfo):

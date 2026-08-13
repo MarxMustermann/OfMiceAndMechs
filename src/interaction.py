@@ -518,19 +518,25 @@ def setUpTcod():
     sound_clip, samplerate = src.interaction.soundloader.read('sounds/machineUsed.ogg',dtype='float32')
     sounds["machineUsed"] = sound_clip
     try:
-        sound_clip, samplerate = src.interaction.soundloader.read('sounds/ASCIIGAME_v1_FULL_loop.wav',dtype='float32')
+        sound_clip, samplerate = src.interaction.soundloader.read('music/ASCIIGAME_v1_FULL_loop.wav',dtype='float32')
         sounds["loop1"] = sound_clip
-        sound_clip, samplerate = src.interaction.soundloader.read('sounds/ASCIIGAME_v1_FULL_loop.wav',dtype='float32')
+        sound_clip, samplerate = src.interaction.soundloader.read('music/ASCIIGAME_v1_FULL_loop.wav',dtype='float32')
         sounds["loop2"] = sound_clip
-        sound_clip, samplerate = src.interaction.soundloader.read("sounds/ASCIIGAME_v1_FULL_start.wav", dtype="float32")
+        sound_clip, samplerate = src.interaction.soundloader.read("music/ASCIIGAME_v1_FULL_start.wav", dtype="float32")
         sounds["loop1_start"] = sound_clip
     except:
-        sound_clip, samplerate = src.interaction.soundloader.read('sounds/loop1.wav',dtype='float32')
+        sound_clip, samplerate = src.interaction.soundloader.read('music/loop1.wav',dtype='float32')
         sounds["loop1"] = sound_clip
-        sound_clip, samplerate = src.interaction.soundloader.read('sounds/loop2.wav',dtype='float32')
+        sound_clip, samplerate = src.interaction.soundloader.read('music/loop2.wav',dtype='float32')
         sounds["loop2"] = sound_clip
-        sound_clip, samplerate = src.interaction.soundloader.read("sounds/loop1_start.wav", dtype="float32")
+        sound_clip, samplerate = src.interaction.soundloader.read("music/loop1_start.wav", dtype="float32")
         sounds["loop1_start"] = sound_clip
+    try:
+        sound_clip, samplerate = src.interaction.soundloader.read('music/Lamoa.mp3',dtype='float32')
+        sounds["dungeon_loop"] = sound_clip
+        print("loaded dungeon soundfile")
+    except:
+        pass
     global tcodAudio
     tcodAudio = audio
 
@@ -569,6 +575,14 @@ def setUpTcod():
         changeVolume()
 
 def sound_loop(ch):
+    mainCharTerrain = src.gamestate.gamestate.mainChar.getTerrain()
+    if mainCharTerrain and mainCharTerrain.tag == "dungeon":
+        sound = sounds.get("dungeon_loop")
+        if sound is not None:
+            print("dungeon")
+            ch.play(sound = sound,volume = settings["sound"]/160.0,on_end = sound_loop)
+            changeVolume()
+            return
     if random.random() < 0.5:
         ch.play(sound = sounds["loop1"],volume = settings["sound"]/160.0,on_end = sound_loop)
         changeVolume()

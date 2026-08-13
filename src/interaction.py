@@ -8693,25 +8693,24 @@ press esc to return to main menu
             src.gamestate.gamestate = None
             raise EndGame("the game was ended manually")
 
-def showCredits():
-    while 1:
-
-        text = ["""
+credits_text = ["""
 == music ==
 * main Theme: Matthias Meeh - https://matthias-meeh.com
 * dungeon Theme: Wattmo - https://www.youtube.com/@Wattmo101
-
+""","""
 == data == 
 * names: Names data from Onomaverse (https://onomaverse.com/datasets), licensed CC BY 4.0.
-
+""","""
 == fonts ==
 * The Oldschool PC Fonts: VileR - https://int10h.org, licensed CC BY-SA 4.0
-
-== testing ==
-
+""","""
 == writing the actual game ==
 * MarxMustermann
 """]
+def showCredits():
+    while 1:
+
+        text = credits_text
 
         printUrwidToTcod(text,(40,14))
 
@@ -8942,27 +8941,30 @@ You grab hold onto it and harness it."""]
             if stageState is None:
                 stageState = {"substep":1,"lastChange":time.time()}
             text = """
-  |                                                                         |
---+-------------------------------------------------------------------------+--
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
---+-------------------------------------------------------------------------+--
-  |                                                                         |
+  |                                                                                             |
+--+---------------------------------------------------------------------------------------------+--
+  |                                                                                             |
+  |                                                                                             |
+  |                                                                                             |
+  |                                                                                             |
+  |                                                                                             |
+  |                                                                                             |
+  |                                                                                             |
+  |                                                                                             |
+  |                                                                                             |
+  |                                                                                             |
+  |                                                                                             |
+  |                                                                                             |
+  |                                                                                             |
+  |                                                                                             |
+  |                                                                                             |
+  |                                                                                             |
+  |                                                                                             |
+--+---------------------------------------------------------------------------------------------+--
+  |                                                                                             |
 
 """
-            printUrwidToTcod(text,(40,14))
+            printUrwidToTcod(text,(30,14))
             
             '''
             (src.interaction.urwid.AttrSpec(painColor, "black"), painChar), (painPos[0] + c_offset, painPos[1])
@@ -8975,27 +8977,46 @@ You grab hold onto it and harness it."""]
             color1 = "#"+(hex(15-color_step)[-1])*3
             color2 = "#"+(hex(color_step)[-1])*3
 
-            textBase = [(src.interaction.urwid.AttrSpec(color1, "black"),"""
+            textBase = []
+            text1 = """
 The implant answers:
 
-You served me well, but you served your purpose."""),(src.interaction.urwid.AttrSpec(color2, "black"),"""
-credits:"""),(src.interaction.urwid.AttrSpec(color1, "black"),"""
-You rule the world now, but i control you."""),(src.interaction.urwid.AttrSpec(color2, "black"),"""
-MarxMustermann
-"""),(src.interaction.urwid.AttrSpec(color2, "black"),"""
-
-press esc to end the game"""),(src.interaction.urwid.AttrSpec(color1, "black"),"""
-press enter to fight for control""")]
+You served me well, but you served your purpose.
+You rule the world now, but i control you."""
+            credits_index = numStruggled-15
+            if credits_index < 0:
+                credits_index = 0
+            credits_index = credits_index%len(credits_text)
+            credits_chunk = credits_text[credits_index]
+            credits_chunk += "\n"*(5-len(credits_chunk.splitlines()))
+            text2 = f"""
+credits:{credits_chunk}"""
+            splitted_text_1 = text1.splitlines()
+            splitted_text_2 = text2.splitlines()
+            counter = 0
+            while counter < len(splitted_text_1) or counter < len(splitted_text_2):
+                if counter < len(splitted_text_1):
+                    textBase.append((src.interaction.urwid.AttrSpec(color1, "black"),splitted_text_1[counter]))
+                    textBase.append((src.interaction.urwid.AttrSpec(color1, "black"),"\n"))
+                if counter < len(splitted_text_2):
+                    if subStep2 > len(text1):
+                        textBase.append((src.interaction.urwid.AttrSpec(color2, "black"),splitted_text_2[counter]))
+                    textBase.append((src.interaction.urwid.AttrSpec(color2, "black"),"\n"))
+                counter += 1
+            textBase.append((src.interaction.urwid.AttrSpec(color2, "black"),"""\n"""))
+            textBase.append((src.interaction.urwid.AttrSpec(color2, "black"),"""press esc to end the game\n"""))
+            textBase.append((src.interaction.urwid.AttrSpec(color1, "black"),"""press enter to fight for control\n"""))
 
             text = []
             maxCursor = subStep2
             for subtext in textBase:
                 text.append((subtext[0],subtext[1][0:maxCursor]))
-                maxCursor -= len(subtext[1])
+                if subStep2 < len(text1):
+                    maxCursor -= len(subtext[1])
 
                 if maxCursor <= 0:
                     break
-            printUrwidToTcod(text,(45,17))
+            printUrwidToTcod(text,(35,17))
 
             tcodPresent()
 
@@ -9005,47 +9026,24 @@ press enter to fight for control""")]
         elif stage == 2:
             if stageState is None:
                 stageState = {"substep":1,"lastChange":time.time()}
-            text = """
-  |                                                                         |
---+-------------------------------------------------------------------------+--
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
-  |                                                                         |
---+-------------------------------------------------------------------------+--
-  |                                                                         |
-
-"""
-            printUrwidToTcod(text,(40,14))
             textBase = ["""
 credits:
 
-MarxMustermann
-
-
-
-
-
+""",*credits_text,"""
 
 press enter to continue playing"""]
             text = "".join(textBase[0:subStep])
             if not subStep < len(textBase)-1:
                 text += textBase[-1][0:subStep2]
-            printUrwidToTcod(text,(45,17))
+            sdl_renderer2.clear()
+            text_size = (100,30)
+            offset_x = (window_charwidth-text_size[0])//2
+            offset_y = (window_charheight-text_size[1])//2
+            src.helpers.draw_frame_text(None,text_size[0],text_size[1],text,offset_x,offset_y)
+            src.interaction.sdl_renderer2.present()
 
-            tcodPresent()
             if subStep < len(textBase)-1:
-                time.sleep(0.5)
+                time.sleep(1)
                 subStep += 1
             elif subStep2 < len(textBase[-1]):
                 subStep2 += 1
@@ -9079,7 +9077,7 @@ press enter to continue playing"""]
                             raise EndGame("the game was won")
 
                 if key in (tcod.event.KeySym.RETURN, tcod.event.KeySym.KP_ENTER):
-                    if endingType == "bad" and stage == 2 and subStep2 > 200:
+                    if endingType == "bad" and stage == 2 and subStep2 > 150:
                         numStruggled += 1
                     if not endingType == "bad" or stage < 2:
                         stage += 1

@@ -312,7 +312,7 @@ def playSound(soundName,channelName,loop=False,abort_sound=False):
             channel = src.interaction.tcodMixer.get_channel(channelName)
             if not channel.busy or abort_sound:
                 on_end = None
-                if "background":
+                if channelName == "background":
                     on_end = sound_loop
                 if soundName in sounds:
                     channel.play(sounds[soundName], volume = settings["sound"]/160.0, on_end=on_end)

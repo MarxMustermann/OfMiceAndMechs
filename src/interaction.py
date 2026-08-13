@@ -306,12 +306,16 @@ settings = None
 sdl_cache = []
 sdl_map = {}
 
-def playSound(soundName,channelName,loop=False):
+def playSound(soundName,channelName,loop=False,abort_sound=False):
     if settings["sound"] != 0 and settings.get("sound_enabled"):
         if src.interaction.tcodMixer:
             channel = src.interaction.tcodMixer.get_channel(channelName)
-            if not channel.busy:
-                channel.play(sounds[soundName], volume = settings["sound"]/160.0)
+            if not channel.busy or abort_sound:
+                on_end = None
+                if "background":
+                    on_end = sound_loop
+                if soundName in sounds:
+                    channel.play(sounds[soundName], volume = settings["sound"]/160.0, on_end=on_end)
 
 zoom = 0
 window_width = None
@@ -532,8 +536,28 @@ def setUpTcod():
         sound_clip, samplerate = src.interaction.soundloader.read("music/loop1_start.wav", dtype="float32")
         sounds["loop1_start"] = sound_clip
     try:
+        sound_clip, samplerate = src.interaction.soundloader.read('music/LamoaNEW.mp3',dtype='float32')
+        sounds["religous_loop"] = sound_clip
+    except:
+        pass
+    try:
         sound_clip, samplerate = src.interaction.soundloader.read('music/Lamoa.mp3',dtype='float32')
-        sounds["dungeon_loop"] = sound_clip
+        sounds["religous_loop_happy"] = sound_clip
+    except:
+        pass
+    try:
+        sound_clip, samplerate = src.interaction.soundloader.read('music/Reach2.mp3',dtype='float32')
+        sounds["glassed_city_loop"] = sound_clip
+    except:
+        pass
+    try:
+        sound_clip, samplerate = src.interaction.soundloader.read('sounds/teleport_magic.mp3',dtype='float32')
+        sounds["teleport_magic"] = sound_clip
+    except:
+        pass
+    try:
+        sound_clip, samplerate = src.interaction.soundloader.read('sounds/teleport_map_edge.mp3',dtype='float32')
+        sounds["teleport_map_edge"] = sound_clip
     except:
         pass
     global tcodAudio
@@ -575,13 +599,25 @@ def setUpTcod():
 
 def sound_loop(ch):
     mainCharTerrain = src.gamestate.gamestate.mainChar.getTerrain()
-    if mainCharTerrain and mainCharTerrain.tag == "dungeon":
-        sound = sounds.get("dungeon_loop")
-        if sound is not None:
-            print("dungeon")
-            ch.play(sound = sound,volume = settings["sound"]/160.0,on_end = sound_loop)
-            changeVolume()
-            return
+    if mainCharTerrain:
+        if mainCharTerrain.tag in ("shrine","statue room"):
+            sound = sounds.get("religous_loop_happy")
+            if sound is not None:
+                ch.play(sound = sound,volume = settings["sound"]/160.0,on_end = sound_loop)
+                changeVolume()
+                return
+        if mainCharTerrain.tag == "dungeon":
+            sound = sounds.get("religous_loop")
+            if sound is not None:
+                ch.play(sound = sound,volume = settings["sound"]/160.0,on_end = sound_loop)
+                changeVolume()
+                return
+        if mainCharTerrain.tag == "glassed city":
+            sound = sounds.get("glassed_city_loop")
+            if sound is not None:
+                ch.play(sound = sound,volume = settings["sound"]/160.0,on_end = sound_loop)
+                changeVolume()
+                return
     if random.random() < 0.5:
         ch.play(sound = sounds["loop1"],volume = settings["sound"]/160.0,on_end = sound_loop)
         changeVolume()

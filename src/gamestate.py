@@ -226,6 +226,8 @@ class GameState:
                 with open(f"gamestate/gamestate_{savestateId}_backup", 'rb') as file:
                     newSelf = pickle.loads(zlib.decompress(file.read()))
 
+        src.interaction.tcodMixer.get_channel("background").stop()
+
         return newSelf
 
 def setup(gameIndex):

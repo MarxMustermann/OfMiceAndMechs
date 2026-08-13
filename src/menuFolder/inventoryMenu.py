@@ -166,6 +166,7 @@ class InventoryMenu(src.menues.SubMenu):
             if self.cursor < 0:
                 self.cursor = len(self.char.inventory) - 1
 
+            # trigger clearing the inventory
             if key in ("c",):
                 self.trigger_clearInventory()
 

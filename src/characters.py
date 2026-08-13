@@ -3026,7 +3026,7 @@ press any other key to attack normally""")
                 self.terrainInfo[terrain.getPosition()] = {"tag":terrain.tag}
             if self == src.gamestate.gamestate.mainChar:
                 src.interaction.tcodMixer.get_channel("background").stop()
-            character.stats["terrain changes"] += 1
+            character.increase_stat_counter("terrain changes")
 
         if tag in ("changedTile","entered room",):
             if src.gamestate.gamestate.mainChar == self:

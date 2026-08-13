@@ -160,6 +160,10 @@ class ImplantInteraction(src.menues.SubMenu):
                         # get item type
                         item_type = selection.split(" ")[1]
 
+                        # ensure inventory space
+                        if character.inventory:
+                            quests.append(src.quests.questMap["ClearInventory"](returnToTile=False))
+
                         # loot rooms containing the item
                         found_loot_room = False
                         assignedQuest = False

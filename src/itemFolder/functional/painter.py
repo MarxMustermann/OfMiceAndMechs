@@ -242,6 +242,10 @@ This should be used in cases where you can not place the Painter on the position
             room = character.container
             pos = character.getPosition(offset=self.offset)
 
+            # track the room building activity in the stats
+            stat_name = "spots painted"
+            character.stats[stat_name] = character.stats.get(stat_name,0)+1
+
             # delete old marking
             if pos in room.walkingSpace:
                 room.walkingSpace.remove(pos)

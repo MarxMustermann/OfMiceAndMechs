@@ -6277,7 +6277,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
         start_name = "start run"
         if gameIndex < len(saves) and saves[gameIndex]["hasSave"]:
             start_name = "continue run"
-        main_menu_entries = [start_name,"open feedback form","change game settings","manage worlds",]
+        main_menu_entries = [start_name,"open feedback form","change game settings","manage worlds","credits",]
 
         tcodConsole.clear()
         time.sleep(0.01)
@@ -7123,6 +7123,8 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                             case "open feedback form":
                                 import webbrowser
                                 webbrowser.open("https://ofmiceandmechs.com/playtest_questionaire.php", new=1)
+                            case "credits":
+                                showCredits()
                             case _:
                                 pass
 
@@ -8677,6 +8679,49 @@ press esc to return to main menu
             src.gamestate.gamestate.save()
             src.gamestate.gamestate = None
             raise EndGame("the game was ended manually")
+
+def showCredits():
+    while 1:
+
+        text = ["""
+== music ==
+* main Theme: Matthias Meeh - https://matthias-meeh.com
+* dungeon Theme: Wattmo - https://www.youtube.com/@Wattmo101
+
+== data == 
+* names: Names data from Onomaverse (https://onomaverse.com/datasets), licensed CC BY 4.0.
+
+== testing ==
+
+== writing the actual game ==
+* MarxMustermann
+"""]
+
+        printUrwidToTcod(text,(40,14))
+
+        tcodPresent()
+
+        continue_game = False
+        events = tcod.event.get()
+        for event in events:
+            if isinstance(event, tcod.event.Quit):
+                if src.interaction.tcodMixer:
+                    src.interaction.tcodMixer.close()
+                raise SystemExit()
+            if isinstance(event, tcod.event.WindowResized):
+                checkResetWindowSize(event.width,event.height)
+            if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
+                if src.interaction.tcodMixer:
+                    src.interaction.tcodMixer.close()
+                raise SystemExit()
+            if isinstance(event,tcod.event.KeyDown):
+                key = event.sym
+                if key == tcod.event.KeySym.F11:
+                    sdl_window.fullscreen = not sdl_window.fullscreen
+                else:
+                    return
+
+        time.sleep(0.1)
 
 def showExplosionDeath():
 

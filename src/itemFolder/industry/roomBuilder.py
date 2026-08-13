@@ -496,8 +496,7 @@ The room has to be a rectangle.
         oldTerrain.addRooms([room])
 
         # track the room building activity in the stats
-        stat_name = "rooms built"
-        character.stats[stat_name] = character.stats.get(stat_name,0)+1
+        character.character.increase_stat_counter("rooms built")
 
         # set up animations
         for character_to_move in self.getTerrain().getCharactersOnTile(self.getBigPosition())[:]:

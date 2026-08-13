@@ -146,7 +146,8 @@ def teleportToTerrain(character, terrainPosition, spawnOutside=False):
         terrain.addCharacter(character, 15 * target_tile_position[0] + 7, 15 * target_tile_position[1] + 7)
     character.changed("teleported",{"character":character})
     character.changed("changedTerrain",{"character":character})
-    src.interaction.playSound("teleport_magic","background",abort_sound=True)
+    if character == src.gamestate.gamestate.mainChar:
+        src.interaction.playSound("teleport_magic","background",abort_sound=True)
     if "itemMarkedLast" in character.macroState:
         del character.macroState["itemMarkedLast"]
 

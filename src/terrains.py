@@ -934,7 +934,8 @@ class Terrain:
                     self.removeCharacter(char)
                     newTerrain.addCharacter(char,char.xPosition,14*15)
                     char.changed("changedTerrain",{"character":char})
-                    src.interaction.playSound("teleport_map_edge","background",abort_sound=True)
+                    if char == src.gamestate.gamestate.mainChar:
+                        src.interaction.playSound("teleport_map_edge","background",abort_sound=True)
 
                     if char == src.gamestate.gamestate.mainChar:
                         src.gamestate.gamestate.terrain = newTerrain
@@ -960,7 +961,8 @@ class Terrain:
                     self.removeCharacter(char)
                     newTerrain.addCharacter(char,char.xPosition,15)
                     char.changed("changedTerrain",{"character":char})
-                    src.interaction.playSound("teleport_map_edge","background",abort_sound=True)
+                    if char == src.gamestate.gamestate.mainChar:
+                        src.interaction.playSound("teleport_map_edge","background",abort_sound=True)
 
                     if char == src.gamestate.gamestate.mainChar:
                         src.gamestate.gamestate.terrain = newTerrain
@@ -986,7 +988,8 @@ class Terrain:
                     self.removeCharacter(char)
                     newTerrain.addCharacter(char,14*15,char.yPosition)
                     char.changed("changedTerrain",{"character":char})
-                    src.interaction.playSound("teleport_map_edge","background",abort_sound=True)
+                    if char == src.gamestate.gamestate.mainChar:
+                        src.interaction.playSound("teleport_map_edge","background",abort_sound=True)
 
                     if char == src.gamestate.gamestate.mainChar:
                         src.gamestate.gamestate.terrain = newTerrain
@@ -1012,7 +1015,8 @@ class Terrain:
                     self.removeCharacter(char)
                     newTerrain.addCharacter(char,15,char.yPosition)
                     char.changed("changedTerrain",{"character":char})
-                    src.interaction.playSound("teleport_map_edge","background",abort_sound=True)
+                    if char == src.gamestate.gamestate.mainChar:
+                        src.interaction.playSound("teleport_map_edge","background",abort_sound=True)
 
                     if char == src.gamestate.gamestate.mainChar:
                         src.gamestate.gamestate.terrain = newTerrain

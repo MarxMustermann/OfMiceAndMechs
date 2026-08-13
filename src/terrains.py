@@ -1584,7 +1584,6 @@ class Terrain:
         self.charactersByTile[bigPos].append(character)
 
         character.changed("entered terrain")
-        character.stats["terrains visited"] += 1
         self.changed("entered terrain", character)
 
     def addRooms(self, rooms):

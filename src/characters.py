@@ -305,7 +305,7 @@ class Character:
             "damage taken": {},
             "damage dealt": 0,
             "steps taken": 0,
-            "terrains visited": 0,
+            "terrain changes": 0,
         }
 
         self.hasPushbackAttack = False
@@ -3020,6 +3020,7 @@ press any other key to attack normally""")
                 self.terrainInfo[terrain.getPosition()] = {"tag":terrain.tag}
             if self == src.gamestate.gamestate.mainChar:
                 src.interaction.tcodMixer.get_channel("background").stop()
+            character.stats["terrain changes"] += 1
 
         if tag in ("changedTile","entered room",):
             if src.gamestate.gamestate.mainChar == self:

@@ -20,6 +20,7 @@ class DebugMenu(src.menues.SubMenu):
         "Add Mana",
         "Get Item",
         "Obtain Glass hearts",
+        "Return Glass heart",
         "Execute Code",
         "Test Crash",
         "Debug Memory",
@@ -238,6 +239,11 @@ class DebugMenu(src.menues.SubMenu):
                         for (godId,godInfo) in src.gamestate.gamestate.gods.items():
                             lastPos = godInfo["lastHeartPos"]
                             godInfo["lastHeartPos"] = (terrain.xPosition,terrain.yPosition)
+                        return True
+                case "Return Glass heart":
+                    if current_change:
+                        for (godId,godInfo) in src.gamestate.gamestate.gods.items():
+                            godInfo["lastHeartPos"] = godInfo["home"]
                         return True
                 case "clear path cache":
                     if current_change:

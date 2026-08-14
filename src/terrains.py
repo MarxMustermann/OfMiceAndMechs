@@ -1042,7 +1042,7 @@ class Terrain:
             return foundItem
         return None
 
-    def getInventory(self):
+    def getInventory(self,count_only=False):
         '''
         gets the items stored within stockpiles in all of the terrain
         '''
@@ -1054,9 +1054,17 @@ class Terrain:
             for slot in slots:
                 items = room.getItemByPosition(slot[0])
                 for item in items:
-                    if not item.type in inventory:
-                        inventory[item.type] = []
-                    inventory[item.type].append(item)
+                    if count_only:
+                        if not item.type in inventory:
+                            inventory[item.type] = 0
+                        if not item.type == "Scrap":
+                            inventory[item.type] += 1
+                        else:
+                            inventory[item.type] += item.amount
+                    else:
+                        if not item.type in inventory:
+                            inventory[item.type] = []
+                        inventory[item.type].append(item)
         return inventory
 
     def getPathCommand(self,startPos,targetPos,localRandom=None,tryHard=False):

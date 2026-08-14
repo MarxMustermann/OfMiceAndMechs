@@ -59,7 +59,7 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         text.append((src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"accumulated production stats:\n"))
 
         stats = list(self.productionStats.items())
-        stats.sort(key=lambda x: x[1])
+        stats.sort(key=lambda x: x[1],reverse=True)
         for (item_type,amount) in stats:
             text.append(f"{item_type}: {amount}\n")
         character.showTextMenu(text)

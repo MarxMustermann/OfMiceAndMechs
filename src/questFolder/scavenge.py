@@ -270,6 +270,13 @@ This quest will end when your inventory is full.""")
         if terrain.alarm:
             return (None,None)
 
+        # leave some storage available
+        freeStorageSpace = 0
+        for room in terrain.rooms:
+            freeStorageSpace += len(room.getEmptyInputslots(forceGenericStorage=True))
+        if freeStorageSpace < 12:
+            return (None,None)
+
         # clear inventory
         if not character.getFreeInventorySpace():
             if not dryRun:
@@ -286,13 +293,6 @@ This quest will end when your inventory is full.""")
             if not dryRun:
                 beUsefull.idleCounter = 0
             return ([quest],None)
-
-        # leave some storage available
-        freeStorageSpace = 0
-        for room in terrain.rooms:
-            freeStorageSpace += len(room.getEmptyInputslots(forceGenericStorage=True))
-        if freeStorageSpace < 12:
-            return (None,None)
 
         # go scavenging
         quest =  src.quests.questMap["Scavenge"](lifetime=1000)

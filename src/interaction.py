@@ -306,7 +306,7 @@ settings = None
 sdl_cache = []
 sdl_map = {}
 
-def playSound(soundName,channelName,loop=False,abort_sound=False):
+def playSound(soundName,channelName,loop=False,abort_sound=False,volume_modifier=1):
     if settings["sound"] != 0 and settings.get("sound_enabled"):
         if src.interaction.tcodMixer:
             channel = src.interaction.tcodMixer.get_channel(channelName)
@@ -315,7 +315,8 @@ def playSound(soundName,channelName,loop=False,abort_sound=False):
                 if channelName == "background":
                     on_end = sound_loop
                 if soundName in sounds:
-                    channel.play(sounds[soundName], volume = settings["sound"]/160.0, on_end=on_end)
+                    print("played sound",soundName)
+                    channel.play(sounds[soundName], volume = settings["sound"]/160.0*volume_modifier, on_end=on_end)
 
 zoom = 0
 window_width = None
@@ -597,8 +598,13 @@ def setUpTcod():
         tcodMixer.get_channel("background").play(sound = sounds["loop1_start"],volume = settings["sound"]/ 160.0,on_end = sound_loop)
         changeVolume()
 
-def sound_loop(ch):
+abort_sound_loop = False
+def sound_loop(ch,first_run=False):
+    global abort_sound_loop
     if ch.busy:
+        return
+    if abort_sound_loop:
+        abort_sound_loop = False
         return
     mainCharTerrain = src.gamestate.gamestate.mainChar.getTerrain()
     if mainCharTerrain:
@@ -620,6 +626,11 @@ def sound_loop(ch):
                 ch.play(sound = sound,volume = settings["sound"]/160.0,on_end = sound_loop)
                 changeVolume()
                 return
+    if first_run:
+        ch.play(sound = sounds["loop1_start"],volume = settings["sound"]/160.0,on_end = sound_loop)
+        changeVolume()
+        return
+
     if random.random() < 0.5:
         ch.play(sound = sounds["loop1"],volume = settings["sound"]/160.0,on_end = sound_loop)
         changeVolume()
@@ -6386,6 +6397,11 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
         if startGame and difficulty:
             difficultyMap = global_difficultyMap[difficulty]
 
+            # stop the music
+            global abort_sound_loop
+            abort_sound_loop = True
+            tcodMixer.get_channel("background").fadeout(0.5)
+
             global new_chars
             new_chars = set()
             tcodConsole.clear()
@@ -6552,6 +6568,9 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
                 global lastTerrain
                 lastTerrain = terrain
+
+            # start playing music
+            sound_loop(tcodMixer.get_channel("background"),first_run=True)
 
             break
 

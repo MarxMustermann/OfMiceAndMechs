@@ -74,7 +74,7 @@ A high number indicates a high priority.
                 text.append(f"=> ")
             else:
                 text.append(f"*  ")
-            text.append(f"{duty}: {self.partner.dutyPriorities[duty]}\n")
+            text.append(f"{duty}: {self.partner.dutyPriorities.get(duty,1)}\n")
         text.append((src.interaction.urwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),["""
 press """,src.interaction.ActionMeta(payload="w",content="w"),"/",src.interaction.ActionMeta(payload="s",content="s"),""" to move cursor
 """,src.interaction.ActionMeta(payload="a",content="press a to decrease priority"),"""

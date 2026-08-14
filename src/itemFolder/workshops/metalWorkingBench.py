@@ -16,12 +16,14 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
                                                                 ("produce item", "produce item"),
                                                                 ("check schedule production", "check schedule"),
                                                                 ("schedule production", "schedule production"),
+                                                                ("check production stats", "check production stats"),
                                                                 ("repeat", "repeat last production"),
                         ]
                         )
         self.applyMap = {
                     "produce item": self.produceItemHook,
                     "check schedule production": self.checkProductionScheduleHook,
+                    "check production stats": self.checkProductionStats,
                     "schedule production": self.scheduleProductionHook,
                     "repeat": self.repeat,
                     "repeat_k": self.repeat_k,
@@ -35,6 +37,32 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         self.inUse = False
         self.lastInteraction = None
         self.lastHandleTick = None
+        self.productionHistory = []
+        self.productionStats = {}
+
+    def checkProductionStats(self,character):
+        '''
+        show the production stats for this item
+        '''
+        try:
+            self.productionHistory
+        except:
+            self.productionHistory = []
+        text = []
+        if self.inUse:
+            text.extend([(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"currently in production: "),f"{self.lastProduction}\n\n"])
+        else:
+            text.extend([(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"last produced: "),f"{self.lastProduction}\n\n"])
+        produchtion_history_text = ", ".join(self.productionHistory)
+        text.extend([(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"production history:\n"),f"{produchtion_history_text}\n\n"])
+        text.append("\n")
+        text.append((src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"accumulated production stats:\n"))
+
+        stats = list(self.productionStats.items())
+        stats.sort(key=lambda x: x[1])
+        for (item_type,amount) in stats:
+            text.append(f"{item_type}: {amount}\n")
+        character.showTextMenu(text)
 
     def produceItemHook(self,character):
         '''
@@ -252,6 +280,25 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         # show user feedback
         character.addMessage("You produce a %s"%(params["type"],))
         character.addMessage("It took you %s turns to do that"%(params["doneTime"],))
+
+        try:
+            self.productionStats
+        except:
+            self.productionStats = {}
+        try:
+            self.productionHistory
+        except:
+            self.productionHistory = []
+        # track the production history
+        self.productionHistory.insert(0,params["type"])
+        if len(self.productionHistory) > 10:
+            self.productionHistory.pop()
+
+        # track production stats
+        item_type = params["type"]
+        if item_type not in self.productionStats:
+            self.productionStats[item_type] = 0
+        self.productionStats[item_type] += 1
 
         # create the new item
         badListed = ["Sword","Armor","Rod"]

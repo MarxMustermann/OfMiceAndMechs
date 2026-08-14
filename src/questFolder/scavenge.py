@@ -262,15 +262,21 @@ This quest will end when your inventory is full.""")
         '''
         generate the quests for the scavenging duty
         '''
+
+        # ste up helper variables
         terrain = character.getTerrain()
+
+        # do nothing on alarms
         if terrain.alarm:
             return (None,None)
 
+        # clear inventory
         if not character.getFreeInventorySpace():
             if not dryRun:
                 beUsefull.idleCounter = 0
             return ([src.quests.questMap["ClearInventory"]()],None)
 
+        # scavenge collection spots
         terrain = character.getTerrain()
         while terrain.collectionSpots:
             if not terrain.itemsByBigCoordinate.get(terrain.collectionSpots[-1]):
@@ -281,12 +287,14 @@ This quest will end when your inventory is full.""")
                 beUsefull.idleCounter = 0
             return ([quest],None)
 
+        # leave some storage available
         freeStorageSpace = 0
         for room in terrain.rooms:
             freeStorageSpace += len(room.getEmptyInputslots(forceGenericStorage=True))
         if freeStorageSpace < 12:
             return (None,None)
 
+        # go scavenging
         quest =  src.quests.questMap["Scavenge"](lifetime=1000)
         if not dryRun:
             beUsefull.idleCounter = 0

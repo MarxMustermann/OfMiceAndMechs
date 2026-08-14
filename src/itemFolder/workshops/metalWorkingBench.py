@@ -338,7 +338,23 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
             character.notify("The item can only be used when it is bolted down")
             return
 
-        character.addMessage(self.scheduledItems)
+        # show the current schedule to the use
+        text = []
+        if self.scheduledItems:
+            text.append("The currently scheduled production is:\n\n")
+            line = ""
+            for item_type in self.scheduledItems:
+                if len(line)+len(item_type) > 60:
+                    text.append(line)
+                    text.append("\n")
+                    line = ""
+                if line != "":
+                    line += ", "
+                line += item_type
+            text.append(line)
+        else:
+            text.append("Currently no production is scheduled")
+        character.showTextMenu(text)
 
     def scheduleProductionHook(self,character):
         '''

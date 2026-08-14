@@ -277,28 +277,28 @@ This quest will end when your inventory is full.""")
         if freeStorageSpace < 12:
             return (None,None)
 
-        # clear inventory
-        if not character.getFreeInventorySpace():
-            if not dryRun:
-                beUsefull.idleCounter = 0
-            return ([src.quests.questMap["ClearInventory"]()],None)
-
         # scavenge collection spots
         terrain = character.getTerrain()
         while terrain.collectionSpots:
             if not terrain.itemsByBigCoordinate.get(terrain.collectionSpots[-1]):
                 terrain.collectionSpots.pop()
                 continue
-            quest = src.quests.questMap["ScavengeTile"](targetPositionBig=(terrain.collectionSpots[-1]),lifetime=1000)
+            quests = []
+            if not character.getFreeInventorySpace():
+                quests.append(src.quests.questMap["ClearInventory"]())
+            quests.append(src.quests.questMap["ScavengeTile"](targetPositionBig=(terrain.collectionSpots[-1]),lifetime=1000))
             if not dryRun:
                 beUsefull.idleCounter = 0
-            return ([quest],None)
+            return (reversed(quests),None)
 
         # go scavenging
-        quest =  src.quests.questMap["Scavenge"](lifetime=1000)
+        quests = []
+        if not character.getFreeInventorySpace():
+            quests.append(src.quests.questMap["ClearInventory"]())
+        quests.append(src.quests.questMap["Scavenge"](lifetime=1000))
         if not dryRun:
             beUsefull.idleCounter = 0
-        return ([quest],None)
+        return (reversed(quests),None)
 
 # register the quest type
 src.quests.addType(Scavenge)

@@ -117,7 +117,7 @@ If you don't find a source, produce new items.
                     break
                 numItems += 1
 
-            if numItems >= self.amount:
+            if numItems >= min(self.amount,10):
                 collectedItems = True
         else:
             if character.getFreeInventorySpace() <= 0 and character.inventory[-1].type == self.toCollect:
@@ -196,7 +196,12 @@ If you don't find a source, produce new items.
                 if item.type != self.toCollect:
                     break
                 numItemsCollected += 1
-            if (numItemsCollected+character.getFreeInventorySpace()) < 5 and character.inventory:
+            non_target_items_in_inventory = False
+            for item in character.inventory:
+                if item.type == self.toCollect:
+                    continue
+                non_target_items_in_inventory = True
+            if (numItemsCollected+character.getFreeInventorySpace()) < 5 and non_target_items_in_inventory:
                 quest = src.quests.questMap["ClearInventory"](reason="be able to store the needed amount of items",returnToTile=False,tryHard=True)
                 return ([quest],None)
         if self.amount:
@@ -206,7 +211,12 @@ If you don't find a source, produce new items.
                     break
                 numItemsCollected += 1
 
-            if character.getFreeInventorySpace() < self.amount-numItemsCollected and character.inventory:
+            non_target_items_in_inventory = False
+            for item in character.inventory:
+                if item.type == self.toCollect:
+                    continue
+                non_target_items_in_inventory = True
+            if character.getFreeInventorySpace() < self.amount-numItemsCollected and non_target_items_in_inventory:
                 quest = src.quests.questMap["ClearInventory"](reason="be able to store the needed amount of items",returnToTile=False,tryHard=True)
                 return ([quest],None)
 

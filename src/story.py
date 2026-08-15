@@ -7858,11 +7858,15 @@ Once you understand things try to find better solutions.
         '''
         maintain the story every round
         '''
+
+        # set up helper variables
         main_char = self.activeStory["mainChar"]
 
+        # track states
         if main_char.container.isRoom and main_char.container.tag == "trapRoom":
             src.gamestate.gamestate.stern["reached_base"] = True
 
+        # ensure correct "reach implant state"
         if not main_char.quests:
             self.reachImplant()
         if len(main_char.quests) > 1:
@@ -7872,9 +7876,9 @@ Once you understand things try to find better solutions.
                     quest.postHandler()
                     break
 
+        # retrigger next tick
         event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
         event.setCallback({"container": self, "method": "doMaintenance"})
-
         terrain = src.gamestate.gamestate.terrainMap[7][7]
         terrain.addEvent(event)
 

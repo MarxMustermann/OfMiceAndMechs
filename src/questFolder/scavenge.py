@@ -311,12 +311,15 @@ This quest will end when your inventory is full.""")
                     quests.append(src.quests.questMap["Scavenge"](toCollect=toScavenge[0],amountToCollect=min(toScavenge[1],10)))
                     quests.append(src.quests.questMap["ClearInventory"]())
                     return (list(reversed(quests)),None)
+        ignoreItemtypes = []
+        if scavengingManager:
+            ignoreItemtypes = scavengingManager.getAvoidItemtypes()
 
         # go scavenging
         quests = []
         if not character.getFreeInventorySpace():
             quests.append(src.quests.questMap["ClearInventory"]())
-        quests.append(src.quests.questMap["Scavenge"](lifetime=1000))
+        quests.append(src.quests.questMap["Scavenge"](lifetime=1000,ignoreItemtypes=ignoreItemtypes))
         if not dryRun:
             beUsefull.idleCounter = 0
         return (list(reversed(quests)),None)

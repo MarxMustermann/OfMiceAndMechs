@@ -7855,6 +7855,9 @@ Once you understand things try to find better solutions.
         containerQuest.assignToCharacter(src.gamestate.gamestate.mainChar)
 
     def doMaintenance(self):
+        '''
+        maintain the story every round
+        '''
         main_char = self.activeStory["mainChar"]
 
         if main_char.container.isRoom and main_char.container.tag == "trapRoom":

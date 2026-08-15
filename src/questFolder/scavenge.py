@@ -127,7 +127,11 @@ This quest will end when your inventory is full.""")
             if hasIdleSubordinate:
                 return (None,("Hjsssssj","make subordinate scavenge"))
             else:
-                quest = src.quests.questMap["ScavengeTile"](targetPositionBig=target,toCollect=self.toCollect,reason="fill your inventory",ignoreAlarm=self.ignoreAlarm,tryHard=self.tryHard,ignoreScrap=self.ignoreScrap,ignoreItemtypes=ignoreItemtypes)
+                try:
+                    self.ignoreItemtypes
+                except:
+                    self.ignoreItemtypes = None
+                quest = src.quests.questMap["ScavengeTile"](targetPositionBig=target,toCollect=self.toCollect,reason="fill your inventory",ignoreAlarm=self.ignoreAlarm,tryHard=self.tryHard,ignoreScrap=self.ignoreScrap,ignoreItemtypes=self.ignoreItemtypes)
                 return ([quest],None)
 
         # mark current tile as completed
@@ -288,7 +292,7 @@ This quest will end when your inventory is full.""")
             quests = []
             if not character.getFreeInventorySpace():
                 quests.append(src.quests.questMap["ClearInventory"]())
-            quests.append(src.quests.questMap["ScavengeTile"](targetPositionBig=(terrain.collectionSpots[-1]),lifetime=1000,ignoreItemtypes=ignoreItemtypes))
+            quests.append(src.quests.questMap["ScavengeTile"](targetPositionBig=(terrain.collectionSpots[-1]),lifetime=1000))
             if not dryRun:
                 beUsefull.idleCounter = 0
             return (list(reversed(quests)),None)

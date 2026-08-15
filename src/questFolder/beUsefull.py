@@ -154,6 +154,8 @@ Reputation is rewarded for picking up items from walkways.\n\n""")
             failedDuty = "mold farming"
         if quest.type in ("FreeUpStorage",):
             failedDuty = "storage management"
+        if quest.type in ("Scavenge","ScavengeTile",):
+            failedDuty = "scavenging"
         if failedDuty:
             self.dutySkipps[failedDuty] = 3
 

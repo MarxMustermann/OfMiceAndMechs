@@ -70,6 +70,7 @@ This quest will end when your inventory is full.""")
         '''
         check and end if the quest is completed
         '''
+
         if not character:
             return False
         if not character.getFreeInventorySpace():
@@ -289,7 +290,7 @@ This quest will end when your inventory is full.""")
             quests.append(src.quests.questMap["ScavengeTile"](targetPositionBig=(terrain.collectionSpots[-1]),lifetime=1000))
             if not dryRun:
                 beUsefull.idleCounter = 0
-            return (reversed(quests),None)
+            return (list(reversed(quests)),None)
 
         # go scavenging
         quests = []
@@ -298,7 +299,7 @@ This quest will end when your inventory is full.""")
         quests.append(src.quests.questMap["Scavenge"](lifetime=1000))
         if not dryRun:
             beUsefull.idleCounter = 0
-        return (reversed(quests),None)
+        return (list(reversed(quests)),None)
 
 # register the quest type
 src.quests.addType(Scavenge)

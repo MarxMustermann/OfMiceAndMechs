@@ -41,24 +41,28 @@ class NameNumberPairSetter(src.menues.SubMenu):
             return False
 
         # handle general keypresses
-        if key in ("w","up","W","a"):
+        if key in ("w","up","W","a","A"):
             index = names.index(self.selected_name)
             change_amount = 1
             if key == "W":
                 change_amount = 10
             if key == "a":
                 change_amount = self.page_size
+            if key == "A":
+                change_amount = self.page_size*5
             index -= change_amount
             if index < 0:
                 index = len(names)-1
             self.selected_name = names[index]
-        if key in ("s","down","S","d"):
+        if key in ("s","down","S","d","D"):
             index = names.index(self.selected_name)
             change_amount = 1
             if key == "S":
                 change_amount = 10
             if key == "d":
                 change_amount = self.page_size
+            if key == "D":
+                change_amount = self.page_size*5
             index += change_amount
             if index >= len(names):
                 index = 0

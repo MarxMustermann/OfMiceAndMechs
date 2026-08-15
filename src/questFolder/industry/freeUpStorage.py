@@ -190,7 +190,27 @@ Currently {num_free_storage} storage slots are free.""")
         '''
         generate the quests for the storage management duty
         '''
+
+        # set up helper variables
         terrain = character.getTerrain()
+
+        # enforce storage limits
+        stockplaner = None
+        for room in terrain.rooms:
+            stockplaner = room.getItemByType("StockPlaner",needsBolted=True)
+            if stockplaner:
+                break
+        limit_violations = stockplaner.getStockLimitViolations()
+        if limit_violations:
+            random.shuffle(limit_violations)
+            violation = limit_violations[0]
+            quests = []
+            quests.append(src.quests.questMap["ClearInventory"]())
+            quests.append(src.quests.questMap["FetchItems"](toCollect=violation[0],amount=min(violation[1],10)))
+            quests.append(src.quests.questMap["DiscardItemsInside"]())
+            return (list(reversed(quests)),None)
+
+        # free up storage
         num_empty_storage = 0
         num_storage = 0
         for room in terrain.rooms:

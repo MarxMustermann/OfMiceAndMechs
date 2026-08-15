@@ -23,7 +23,7 @@ class StockPlaner(src.items.Item):
                     "set limits": self.setLimits,
                         }
 
-        self.stock_limits = {}
+        self.stock_limits = {"Scrap":60}
 
     def setLimits(self,character):
         '''

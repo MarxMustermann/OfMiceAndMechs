@@ -45,7 +45,7 @@ Clones with the "storage management" duty will remove excess items.
 
     def getStockLimitViolations(self):
         '''
-        get a lit of the violations against the stockpile limit
+        get a list of the violations against the stockpile limit
         '''
         terrain = self.getTerrain()
         violations = []

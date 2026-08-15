@@ -6,7 +6,7 @@ import src
 class ScavengeTile(src.quests.MetaQuestSequence):
     type = "ScavengeTile"
 
-    def __init__(self, description="scavenge tile", creator=None, targetPositionBig=None,toCollect=None, reason=None, endOnFullInventory=False,tryHard=False,lifetime=None,ignoreAlarm=False, ignoreScrap=False):
+    def __init__(self, description="scavenge tile", creator=None, targetPositionBig=None,toCollect=None, reason=None, endOnFullInventory=False,tryHard=False,lifetime=None,ignoreAlarm=False, ignoreScrap=False,ignoreItemtypes=None):
         questList = []
         super().__init__(questList, creator=creator,lifetime=None)
         self.metaDescription = description
@@ -20,7 +20,11 @@ class ScavengeTile(src.quests.MetaQuestSequence):
         self.targetPositionBig = targetPositionBig
         self.tryHard = tryHard
         self.ignoreAlarm = ignoreAlarm
-        self.ignoreScrap = ignoreScrap
+        if ignoreItemtypes is None:
+            ignoreItemtypes = []
+        self.ignoreItemtypes = ignoreItemtypes
+        if self.ignoreScrap:
+            self.ignoreItemtypes.append("Scrap")
 
     def generateTextDescription(self):
         reason = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
@@ -126,7 +130,7 @@ This quest will end when the target tile has no items left.""")
                 continue
             if item.bolted:
                 continue
-            if self.ignoreScrap and item.type == "Scrap":
+            if item.type in self.ignoreItemtypes:
                 continue
 
             leftOverItems.append(item)
@@ -170,7 +174,7 @@ This quest will end when the target tile has no items left.""")
                     continue
                 if self.toCollect and item.type != self.toCollect:
                     continue
-                if self.ignoreScrap and item.type == "Scrap":
+                if item.type in self.ignoreItemtypes:
                     continue
                 result.append((item.getPosition(),"target"))
 

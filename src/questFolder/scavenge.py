@@ -8,7 +8,7 @@ class Scavenge(src.quests.MetaQuestSequence):
     quest to collect items from the outside on a terrain
     '''
     type = "Scavenge"
-    def __init__(self, description="scavenge", creator=None, toCollect=None, lifetime=None, reason=None, ignoreAlarm=False, tryHard=False, ignoreScrap=False, amountToCollect=None):
+    def __init__(self, description="scavenge", creator=None, toCollect=None, lifetime=None, reason=None, ignoreAlarm=False, tryHard=False, ignoreScrap=False, amountToCollect=None, ignoreItemtypes=None):
         self.lastMoveDirection = None
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
@@ -22,6 +22,7 @@ class Scavenge(src.quests.MetaQuestSequence):
         self.tryHard = tryHard
         self.ignoreScrap = ignoreScrap
         self.amountToCollect = amountToCollect
+        self.ignoreItemtypes = ignoreItemtypes
 
     def generateTextDescription(self):
         '''
@@ -126,7 +127,7 @@ This quest will end when your inventory is full.""")
             if hasIdleSubordinate:
                 return (None,("Hjsssssj","make subordinate scavenge"))
             else:
-                quest = src.quests.questMap["ScavengeTile"](targetPositionBig=target,toCollect=self.toCollect,reason="fill your inventory",ignoreAlarm=self.ignoreAlarm,tryHard=self.tryHard,ignoreScrap=self.ignoreScrap)
+                quest = src.quests.questMap["ScavengeTile"](targetPositionBig=target,toCollect=self.toCollect,reason="fill your inventory",ignoreAlarm=self.ignoreAlarm,tryHard=self.tryHard,ignoreScrap=self.ignoreScrap,ignoreItemtypes=ignoreItemtypes)
                 return ([quest],None)
 
         # mark current tile as completed
@@ -287,7 +288,7 @@ This quest will end when your inventory is full.""")
             quests = []
             if not character.getFreeInventorySpace():
                 quests.append(src.quests.questMap["ClearInventory"]())
-            quests.append(src.quests.questMap["ScavengeTile"](targetPositionBig=(terrain.collectionSpots[-1]),lifetime=1000))
+            quests.append(src.quests.questMap["ScavengeTile"](targetPositionBig=(terrain.collectionSpots[-1]),lifetime=1000,ignoreItemtypes=ignoreItemtypes))
             if not dryRun:
                 beUsefull.idleCounter = 0
             return (list(reversed(quests)),None)

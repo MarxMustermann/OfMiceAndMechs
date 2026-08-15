@@ -2062,8 +2062,10 @@ press any other key to attack normally""")
         Returns:
             the active quest
         '''
-        if self.quests:
-            return self.quests[0].getActiveQuest()
+        for quest in self.quests:
+            result = quest.getActiveQuest()
+            if result:
+                return result
         return None
 
     def getActiveQuests(self):
@@ -2073,9 +2075,10 @@ press any other key to attack normally""")
         Returns:
             a list of the active quest and its parents
         '''
-        if self.quests:
-            return self.quests[0].getActiveQuests()
-        return []
+        result = []
+        for quest in self.quests:
+            result.extend(quest.getActiveQuests())
+        return result
 
     # bad code: should be removed
     def getQuest(self):

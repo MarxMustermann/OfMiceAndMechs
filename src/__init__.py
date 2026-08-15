@@ -1,3 +1,4 @@
+import src.overlays
 import src.pseudoUrwid
 import src.menues
 import src.characters           # holds the logic for characters

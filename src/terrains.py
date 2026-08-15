@@ -1,6 +1,7 @@
 """
 terrains and terrain related code belongs here
 """
+import src
 
 import copy
 import logging
@@ -8,14 +9,6 @@ import random
 
 import numpy as np
 import tcod
-
-import src.canvas
-import src.events
-import src.gameMath
-import src.gamestate
-import src.overlays
-import src.quests
-import src.rooms
 
 logger = logging.getLogger(__name__)
 

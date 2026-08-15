@@ -48,6 +48,11 @@ This quest will end when your inventory is full.""")
         if self.amountToCollect:
             text.append(f"\nCollect {self.amountToCollect} more items")
 
+        if self.ignoreItemtypes:
+            ignore_text = ", ".join(self.ignoreItemtypes)
+            text.append("""
+Do not scavenge {ignore_text}.""")
+
         if self.doneTiles:
 
             text.append(f"""\n\ncompleted spots:\n""")

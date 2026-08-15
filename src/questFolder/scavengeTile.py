@@ -38,6 +38,10 @@ Scavenge the tile {self.targetPositionBig}""")]
         text.append("""
 
 This quest will end when the target tile has no items left.""")
+        if self.ignoreItemtypes:
+            ignore_text = ", ".join(self.ignoreItemtypes)
+            text.append("""
+Do not scavenge {ignore_text}.""")
 
         return text
 

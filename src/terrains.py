@@ -2121,13 +2121,11 @@ class Terrain:
 
             # add overlays
             if not mapHidden:
-                # src.overlays.QuestMarkerOverlay().apply(chars,src.gamestate.gamestate.mainChar,src.canvas.displayChars)
                 src.overlays.NPCsOverlay().apply(chars, self,size=size,coordinateOffset=coordinateOffset)
                 src.overlays.MainCharOverlay().apply(
                     chars, src.gamestate.gamestate.mainChar,size=size,coordinateOffset=coordinateOffset
                 )
 
-            #for quest in src.gamestate.gamestate.mainChar.getActiveQuests():
             quests = src.gamestate.gamestate.mainChar.getActiveQuests()
             blockedPositions = []
             for quest in quests:

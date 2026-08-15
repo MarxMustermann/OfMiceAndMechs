@@ -1959,19 +1959,15 @@ press any other key to attack normally""")
             amount: the amount of health healed
             reason: the reason why the character was healed
         '''
+
+        # determine how much the character should be healed
         amount = int(amount*self.healingModifier)
-
-        #if self.reduceExhaustionOnHeal:
-        #    self.exhaustion = max(0,self.exhaustion-(amount//self.reduceExhaustionDividend+self.reduceExhaustionBonus))
-        #if self.removeExhaustionOnHeal:
-        #    self.exhaustion = 0
-
         if self.adjustedMaxHealth - self.health < amount:
             amount = self.adjustedMaxHealth - self.health
-
         if not amount:
             return
 
+        # heal the character
         self.health += amount
         self.changed("healed",{})
         message = f"you heal for {amount} and have {self.health} health"

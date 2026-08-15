@@ -47,3 +47,4 @@ import src.menuFolder.implantInteraction
 import src.menuFolder.characterObserveMenu
 import src.menuFolder.itemExchangeMenu
 import src.menuFolder.dutyPriorityConfigurationMenu
+import src.menuFolder.nameNumberPairSetter

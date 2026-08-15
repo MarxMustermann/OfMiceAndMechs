@@ -292,6 +292,25 @@ This quest will end when your inventory is full.""")
                 beUsefull.idleCounter = 0
             return (list(reversed(quests)),None)
 
+        # scavenge for specific item
+        scavengingManager = None
+        for room in terrain.rooms:
+            scavengingManager = room.getItemByType("ScavengingManager",needsBolted=True)
+            if scavengingManager:
+                break
+        if scavengingManager:
+            items_to_scavenge = scavengingManager.getItemtypesToScavenge()
+            if items_to_scavenge:
+                random.shuffle(items_to_scavenge)
+                for toScavenge in items_to_scavenge:
+                    if not terrain.search_item_by_type(toScavenge):
+                        continue
+                    quests = []
+                    quests.append(src.quests.questMap["ClearInventory"]())
+                    quests.append(src.quests.questMap["Scavenge"](toCollect=toScavenge[0],amountToCollect=min(toScavenge[1],10)))
+                    quests.append(src.quests.questMap["ClearInventory"]())
+                    return (list(reversed(quests)),None)
+
         # go scavenging
         quests = []
         if not character.getFreeInventorySpace():

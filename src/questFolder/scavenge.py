@@ -35,7 +35,7 @@ class Scavenge(src.quests.MetaQuestSequence):
 
         reason = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
-            reason = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f",")," to {self.reason}."]
+            reason = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),","),f" to {self.reason}."]
         text = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""
 Scavenge the outside area""")]
         if self.toCollect:
@@ -50,7 +50,7 @@ This quest will end when your inventory is full.""")
 
         if self.ignoreItemtypes:
             ignore_text = ", ".join(self.ignoreItemtypes)
-            text.append("""
+            text.append(f"""
 Do not scavenge {ignore_text}.""")
 
         if self.doneTiles:
@@ -139,7 +139,7 @@ Do not scavenge {ignore_text}.""")
                     self.ignoreItemtypes
                 except:
                     self.ignoreItemtypes = None
-                quest = src.quests.questMap["ScavengeTile"](targetPositionBig=target,toCollect=self.toCollect,reason="fill your inventory",ignoreAlarm=self.ignoreAlarm,tryHard=self.tryHard,ignoreScrap=self.ignoreScrap,ignoreItemtypes=self.ignoreItemtypes)
+                quest = src.quests.questMap["ScavengeTile"](targetPositionBig=target,toCollect=self.toCollect,reason="fill your inventory",ignoreAlarm=self.ignoreAlarm,tryHard=self.tryHard,ignoreItemtypes=self.ignoreItemtypes)
                 return ([quest],None)
 
         # mark current tile as completed

@@ -23,7 +23,7 @@ class ScavengeTile(src.quests.MetaQuestSequence):
         if ignoreItemtypes is None:
             ignoreItemtypes = []
         self.ignoreItemtypes = ignoreItemtypes
-        if ignoreScrap:
+        if ignoreScrap and not "Scrap" in self.ignoreItemtypes:
             self.ignoreItemtypes.append("Scrap")
 
     def generateTextDescription(self):

@@ -200,15 +200,16 @@ Currently {num_free_storage} storage slots are free.""")
             stockplaner = room.getItemByType("StockPlaner",needsBolted=True)
             if stockplaner:
                 break
-        limit_violations = stockplaner.getStockLimitViolations()
-        if limit_violations:
-            random.shuffle(limit_violations)
-            violation = limit_violations[0]
-            quests = []
-            quests.append(src.quests.questMap["ClearInventory"]())
-            quests.append(src.quests.questMap["FetchItems"](toCollect=violation[0],amount=min(violation[1],10)))
-            quests.append(src.quests.questMap["DiscardItemsInside"]())
-            return (list(reversed(quests)),None)
+        if stockplaner:
+            limit_violations = stockplaner.getStockLimitViolations()
+            if limit_violations:
+                random.shuffle(limit_violations)
+                violation = limit_violations[0]
+                quests = []
+                quests.append(src.quests.questMap["ClearInventory"]())
+                quests.append(src.quests.questMap["FetchItems"](toCollect=violation[0],amount=min(violation[1],10)))
+                quests.append(src.quests.questMap["DiscardItemsInside"]())
+                return (list(reversed(quests)),None)
 
         # free up storage
         num_empty_storage = 0

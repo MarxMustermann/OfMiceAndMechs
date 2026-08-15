@@ -53,6 +53,7 @@ disabled_ui_color = "#777"
 highlighted_ui_color = "#ff0"
 ui_hint_color = "#fa0"
 shadowed_ui_color = "#666"
+warning_ui_color = "#f00"
 
 class EndGame(Exception):
     pass

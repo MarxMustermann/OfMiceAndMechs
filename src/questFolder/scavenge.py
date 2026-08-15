@@ -20,9 +20,12 @@ class Scavenge(src.quests.MetaQuestSequence):
         self.doneTiles = []
         self.ignoreAlarm = ignoreAlarm
         self.tryHard = tryHard
-        self.ignoreScrap = ignoreScrap
         self.amountToCollect = amountToCollect
+        if ignoreItemtypes is None:
+            ignoreItemtypes = []
         self.ignoreItemtypes = ignoreItemtypes
+        if ignoreScrap and not "Scrap" in self.ignoreItemtypes:
+            self.ignoreItemtypes.append("Scrap")
 
     def generateTextDescription(self):
         '''
@@ -100,7 +103,7 @@ This quest will end when your inventory is full.""")
             # filter for appropriate items
             if self.toCollect and item.type != self.toCollect:
                 continue
-            if self.ignoreScrap and item.type == "Scrap":
+            if item.type in self.ignoreItemtypes:
                 continue
             if item.bolted:
                 continue
@@ -257,7 +260,7 @@ This quest will end when your inventory is full.""")
                         continue
                     if self.toCollect and item.type != self.toCollect:
                         continue
-                    if self.ignoreScrap and item.type == "Scrap":
+                    if item.type in self.ignoreItemtypes:
                         continue
                     result.append((item.getPosition(),"target"))
 

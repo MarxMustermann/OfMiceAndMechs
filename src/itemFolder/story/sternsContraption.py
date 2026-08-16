@@ -128,7 +128,7 @@ class MainContraption(src.items.Item):
                     damage = int(character.health/2)
                     baseText = [f"something explodes and sends shrapnel into the room.\n\n",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"The shrapnel hits you for {damage} HP"),"\nYour health is shown above your character or on top of the screen."]
                     character.showTextMenu([baseText,"\n\n\n",(src.interaction.urwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"press ? to show help+keybindings\npress tab to reach out to implant\npress enter/esc/j/k to close this menu")])
-                    character.addMessage(baseText)
+                    character.addMessage(src.interaction.stringifyUrwid(baseText))
 
                     character.hurt(damage,reason="hit by shrapnel")
                     if character == src.gamestate.gamestate.mainChar:

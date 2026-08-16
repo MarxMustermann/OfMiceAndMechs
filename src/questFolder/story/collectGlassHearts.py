@@ -542,7 +542,7 @@ You did {self.room_building_streak_length} room building tasks in a row."""))
 
 The quest has been running for {quest_age} ticks."""))
         if self.softLifetime:
-            text.append("""
+            text.append(f"""
 Try to complete the quest for at least {self.softLifetime} ticks.""")
 
         # return the description
@@ -585,7 +585,7 @@ Try to complete the quest for at least {self.softLifetime} ticks.""")
         if reason:
             if reason.startswith("no source for item "):
                 if reason.split(" ")[4] == "Door":
-                    newQuest = src.quests.questMap["MetalWorking"](toProduce=reason.split(" ")[4],amount=1,produceToInventory=True,tryHard=True)
+                    newQuest = src.quests.questMap["MetalWorking"](toProduce=reason.split(" ")[4],amount=1,produceToInventory=True,tryHard=True,reason="obtain mising item")
                     self.addQuest(newQuest)
 
                     self.startWatching(newQuest,self.handleQuestFailure,"failed")
@@ -605,7 +605,7 @@ Try to complete the quest for at least {self.softLifetime} ticks.""")
             else:
                 self.subQuests.remove(extraParam["quest"])
 
-                newQuest = src.quests.questMap["Heal"](noVialHeal=False,noWaitHeal=False,lifetime=500)
+                newQuest = src.quests.questMap["Heal"](noVialHeal=False,noWaitHeal=False,lifetime=500,reason="be prepared for future fights")
                 self.addQuest(newQuest)
                 self.startWatching(newQuest,self.handleQuestFailure,"failed")
                 return

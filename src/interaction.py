@@ -6324,7 +6324,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
             with open("gamestate/globalInfo.json") as globalInfoFile:
                 rawState = json.loads(globalInfoFile.read())
         except:
-            rawState = {"worlds": [],"customPrefabs":[],"lastGameIndex":0,"wordCounter":0}
+            rawState = {"worlds": [{"savestateId":1,"hasSave":False}],"customPrefabs":[],"lastGameIndex":0,"wordCounter":0}
 
         if gameIndex >= len(rawState["worlds"]):
             gameIndex = 0
@@ -6448,7 +6448,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                             rawState = json.loads(globalInfoFile.read())
                     except:
                         rawState = {
-                            "worlds": [],
+                            "worlds": [{"savestateId":1,"hasSave":False}],
                             "customPrefabs": [],
                             "lastGameIndex": 0,
                             "wordCounter":0,
@@ -7134,7 +7134,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                                     rawState = json.loads(globalInfoFile.read())
                             except:
                                 rawState = {
-                                    "worlds": [],
+                                    "worlds": [{"savestateId":1,"hasSave":False}],
                                     "customPrefabs": [],
                                     "lastGameIndex": 0,
                                     "wordCounter":0,
@@ -7169,7 +7169,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                                         rawState = json.loads(globalInfoFile.read())
                                 except:
                                     rawState = {
-                                        "worlds": [],
+                                        "worlds": [{"savestateId":1,"hasSave":False}],
                                         "customPrefabs": [],
                                         "lastGameIndex": 0,
                                         "wordCounter":0,
@@ -7464,7 +7464,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                                     rawState = json.loads(globalInfoFile.read())
                             except:
                                 rawState = {
-                                    "worlds": [],
+                                    "worlds": [{"savestateId":1,"hasSave":False}],
                                     "customPrefabs": [],
                                     "lastGameIndex": 0,
                                     "wordCounter":0,

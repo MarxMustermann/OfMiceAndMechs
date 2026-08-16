@@ -1115,6 +1115,7 @@ def setUpRuin(pos):
 
             # add low level loot
             for i in range(random.randint(1,3)):
+                pos = (random.randint(1,11),random.randint(1,11),0)
                 loot_types = ["Flask", "GooFlask", "Scrap", "Scrap", "MemoryFragment"]
                 item = src.items.itemMap[random.choice(loot_types)]()
                 if item.type == "GooFlask":

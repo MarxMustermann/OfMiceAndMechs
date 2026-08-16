@@ -2442,6 +2442,11 @@ press any other key to attack normally""")
             return False
         return True
 
+    def is_good_health(self):
+        if self.health < self.adjustedMaxHealth*0.75:
+            return False
+        return True
+
     def respawn_reach_implant(self):
         if self.quests:
             return

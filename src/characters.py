@@ -1111,7 +1111,12 @@ class Character:
         random.shuffle(candidates)
         for candidate in candidates:
             self.inventory.remove(bolt)
-            candidate.hurt(50,reason="got hit by a bolt",actor=self)
+            damage_amount = 50
+            candidate.hurt(damage_amount,reason="got hit by a bolt",actor=self)
+            enemy_reference = candidate.charType
+            if candidate.charType == "Clone":
+                enemy_reference = candidate.name
+            self.addMessage(f"you attach the {enemy_reference} for {damage_amount}")
             return
 
         self.addMessage("no target to shoot at")

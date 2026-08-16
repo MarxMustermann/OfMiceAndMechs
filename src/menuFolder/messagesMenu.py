@@ -1,6 +1,51 @@
 import src
 
 class MessagesMenu(src.menues.SubMenu):
+    type = "MessagesMenu"
+
+    def __init__(self, char=None):
+        self.char = char
+        self.scrollIndex = 0
+        self.skipKeypress = True
+        self.sidebared = False
+        super().__init__()
+
+    def getTitle(self):
+        return "MESSAGE LOG"
+
+    def handleKey(self, key, noRender=False, character = None):
+        """
+        show the attributes and ignore keystrokes
+
+        Parameters:
+            key: the key pressed
+            noRender: flag to skip rendering
+        Returns:
+            returns True when done
+        """
+
+        if self.skipKeypress:
+            self.skipKeypress = False
+            key = "~"
+
+        # exit the submenu
+        if key in ("esc","x"):
+            character.changed("closedMessages")
+            return True
+        if key in ("ESC","lESC",):
+            self.sidebared = True
+            self.char.rememberedMenu.append(self)
+            return True
+        if key in ("rESC",):
+            self.sidebared = True
+            self.char.rememberedMenu2.append(self)
+            return True
+        if key == "w" and self.scrollIndex > 0:
+            self.scrollIndex -= 1
+        if key == "s":
+            self.scrollIndex += 1
+
+        char = self.char
 
     def render(self,size=None):
         char = self.char
@@ -56,52 +101,6 @@ class MessagesMenu(src.menues.SubMenu):
 
             out.append((src.interaction.urwid.AttrSpec(color, "default"),f"- {adapted_message}"))
         return out
-
-    type = "MessagesMenu"
-
-    def __init__(self, char=None):
-        self.char = char
-        self.scrollIndex = 0
-        self.skipKeypress = True
-        self.sidebared = False
-        super().__init__()
-
-    def getTitle(self):
-        return "MESSAGE LOG"
-
-    def handleKey(self, key, noRender=False, character = None):
-        """
-        show the attributes and ignore keystrokes
-
-        Parameters:
-            key: the key pressed
-            noRender: flag to skip rendering
-        Returns:
-            returns True when done
-        """
-
-        if self.skipKeypress:
-            self.skipKeypress = False
-            key = "~"
-
-        # exit the submenu
-        if key in ("esc","x"):
-            character.changed("closedMessages")
-            return True
-        if key in ("ESC","lESC",):
-            self.sidebared = True
-            self.char.rememberedMenu.append(self)
-            return True
-        if key in ("rESC",):
-            self.sidebared = True
-            self.char.rememberedMenu2.append(self)
-            return True
-        if key == "w" and self.scrollIndex > 0:
-            self.scrollIndex -= 1
-        if key == "s":
-            self.scrollIndex += 1
-
-        char = self.char
 
 # register the menu type
 src.menues.add_menu(MessagesMenu)

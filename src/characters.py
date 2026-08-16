@@ -1296,22 +1296,24 @@ class Character:
             message: the message
         '''
 
+        # set up helper variable
         if not tick:
             tick = src.gamestate.gamestate.tick
         
+        # merge messages with old messages
         if len(self.messages):
             last_message:str = self.messages[-1][0]
 
-            if last_message.startswith(str(message)):
-                m = regex.search("x(\\d+)", last_message)
-                if m:
-                    self.messages[-1] = (self.messages[-1][0][:-len(m.group())] +"x" +str(int(m.group()[1:]) + 1), tick)
-                else:
-                    self.messages[-1] = (self.messages[-1][0]+" x2", tick)
-            else:
-                self.messages.append((str(message),tick))
-        else:
-            self.messages.append((str(message),tick))
+            if isinstance(self.messages[-1][1],int): #DELETE
+                self.messages = []
+                return
+
+            if last_message == message:
+                self.messages[-1][1].append(tick)
+                return
+                
+        # add message
+        self.messages.append((str(message),[tick]))
 
     def convertCommandString(self,commandString,nativeKey=False, extraFlags=None):
         '''
@@ -1974,7 +1976,7 @@ press any other key to attack normally""")
         self.changed("healed",{})
         message = f"you heal for {amount} and have {self.health} health"
         if reason:
-            message += f"\nbecause {reason}"
+            message += f" because {reason}"
         self.addMessage(message)
 
     # bad code: only works in a certain room type

@@ -17,6 +17,7 @@ class ShieldBug(src.characters.characterMap["Insect"]):
         if quests is None:
             quests = []
 
+        self.level = level
         multiplier = level
 
         super().__init__(
@@ -30,8 +31,7 @@ class ShieldBug(src.characters.characterMap["Insect"]):
             characterId=characterId,
         )
         self.charType = "Insect"
-        self.specialDisplay = (*self.color_for_multiplier(multiplier, start=(0, 66, 46), end=(33, 255, 101)), "/>")
-
+        self.specialDisplay = "/>"
         self.baseDamage = 5
         self.baseDamage = int(self.baseDamage * (1 - runModifier))
 
@@ -48,6 +48,26 @@ class ShieldBug(src.characters.characterMap["Insect"]):
         self.movementSpeed = 2.2
 
         self.autoAdvance = True
+
+    def render(self):
+        """
+        force static render
+        """
+        try:
+            self.level
+        except:
+            self.level = 1
+        if self.level is None:
+            self.level = 1
+        color_1 = self.color_for_multiplier(self.level, start=(255, 255, 255), end=(255, 0, 0))[0]
+        color_2 = self.color_for_multiplier(self.level, start=(0, 66, 46), end=(33, 255, 101))[0]
+        return [(color_1,"<"),(color_2,"/")]
+
+    """
+    def render(self):
+        self.level = self.maxHealth//100
+        return (src.interaction.urwid.AttrSpec(front_color_1,"black"), "/")
+    """
 
     def changed(self, tag="default", info=None):
         if tag == "pickup bolted fail":

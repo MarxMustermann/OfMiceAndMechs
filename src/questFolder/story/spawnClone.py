@@ -192,10 +192,10 @@ class SpawnClone(src.quests.MetaQuestSequence):
         # go to room with growth tank
         growthTank = None
         if character.container.isRoom:
-            growthTank = character.container.getItemByType("GrowthTank")
+            growthTank = character.container.getItemByType("GrowthTank",needsBolted=True)
         if not growthTank:
             for room in character.getTerrain().rooms:
-                growthTank = room.getItemByType("GrowthTank")
+                growthTank = room.getItemByType("GrowthTank",needsBolted=True)
                 if not growthTank:
                     continue
                 if not growthTank.bolted:

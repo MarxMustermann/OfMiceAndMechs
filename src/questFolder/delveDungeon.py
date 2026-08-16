@@ -258,6 +258,16 @@ suicidal""")
             # get to the terrain the dungeon is on
             if terrain.xPosition != self.targetTerrain[0] or terrain.yPosition != self.targetTerrain[1]:
 
+                # clear inventory
+                should_clear_inventory = False
+                for check_item in character.inventory:
+                    if check_item.type in ("Vial","Bolt",):
+                        continue
+                    should_clear_inventory = True
+                if should_clear_inventory:
+                    quest = src.quests.questMap["ClearInventory"]()
+                    return ([quest],None)
+
                 # stock up on consumables
                 itemType = "Vial"
                 if not character.searchInventory(itemType,):
@@ -286,15 +296,8 @@ suicidal""")
                                 continue
 
                             quests = []
-                            should_clear_inventory = False
-                            for check_item in character.inventory:
-                                if check_item.type in ("Vial","Bolt",):
-                                    continue
-                                should_clear_inventory = True
-                            if should_clear_inventory:
-                                quests.append(src.quests.questMap["ClearInventory"]())
                             quests.append(src.quests.questMap["ActivateGlassStatue"](targetPositionBig=room.getPosition(),targetPosition=item.getPosition(),reason="get to the dungeon"))
-                            return (reversed(quests),None)
+                            return (list(reversed(quests)),None)
 
                 # try to go to the dungeon using other means
                 if not self.walkToTarget:

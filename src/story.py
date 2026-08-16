@@ -7909,6 +7909,11 @@ Once you understand things try to find better solutions.
                     story_tooltip_text = " press J to open activation menu "
                     story_tooltip_lifetime = 10
                     src.gamestate.gamestate.stern["shown_fight_tooltip"] = True
+            if not src.gamestate.gamestate.stern.get("shown_pickup_tooltip") and not story_tooltip_text:
+                if main_char.container.tag == "ruin":
+                    story_tooltip_text = " press K to open pickup menu "
+                    story_tooltip_lifetime = 10
+                    src.gamestate.gamestate.stern["shown_pickup_tooltip"] = True
 
         # ensure correct "reach implant state"
         if not main_char.quests:

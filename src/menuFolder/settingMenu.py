@@ -40,8 +40,13 @@ class SettingMenu(src.menues.SubMenu):
             if change_event and self.index == i:
                 match setting:
                     case "sound":
-                        src.interaction.settings["sound_enabled"] = not src.interaction.settings.get("sound_enabled",False)
-                        src.interaction.changeVolume()
+                        if src.interaction.settings["sound_enabled"]:
+                            src.interaction.settings["sound_enabled"] = False
+                            src.interaction.tcodMixer.get_channel("background").fadeout(0.5)
+                        else:
+                            src.interaction.settings["sound_enabled"] = True
+                            ch = src.interaction.tcodMixer.get_channel("background")
+                            src.interaction.sound_loop(ch)
                     case "set sound volume":
                         src.interaction.settings["sound"] += -1 if key in ("a","left") else +1
                         src.interaction.settings["sound"] = src.helpers.clamp(src.interaction.settings["sound"], 0, 32)

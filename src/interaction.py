@@ -3276,23 +3276,26 @@ press key to set fire direction
                 del charState["itemMarkedLast"]
             return None
         if key in ("K",):
-            text = """
+            text = ["""
 
-press key for advanced pickup
+""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"press key to select what to pick up"),"""
 
-* w = pick up north
-* a = pick up west
-* s = pick up south
-* d = pick up east
-* . = pick item on floor
-* W = auto pick up north
-* A = auto pick up west
-* S = auto pick up south
-* D = auto pick up east
+press
+""",src.interaction.ActionMeta(content="* w to pick up north",payload="w"),"""
+""",src.interaction.ActionMeta(content="* a to pick up west",payload="a"),"""
+""",src.interaction.ActionMeta(content="* s to pick up south",payload="s"),"""
+""",src.interaction.ActionMeta(content="* d to pick up east",payload="d"),"""
+""",src.interaction.ActionMeta(content="* . = pick item on floor",payload="."),"""
+""",src.interaction.ActionMeta(content="* W = auto pick up north",payload="W"),"""
+""",src.interaction.ActionMeta(content="* A = auto pick up west",payload="A"),"""
+""",src.interaction.ActionMeta(content="* S = auto pick up south",payload="S"),"""
+""",src.interaction.ActionMeta(content="* D = auto pick up east",payload="D"),"""
 
-"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"You can also press k instead of K for simple pickup"),"""
 
-            submenue = src.menues.menuMap["OneKeystrokeMenu"](text,ignoreFirstKey=False)
+"""]
+            title = "ADVANCED PICKUP"
+            submenue = src.menues.menuMap["OneKeystrokeMenu"](text,ignoreFirstKey=False,title=title)
             submenue.followUp = {"method":doAdvancedPickup,"params":{"character":char}}
             submenue.tag = "advancedPickupSelection"
             char.macroState["submenue"] = submenue

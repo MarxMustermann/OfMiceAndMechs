@@ -596,7 +596,7 @@ Try to complete the quest for at least {self.softLifetime} ticks.""")
             terrain = self.character.getTerrain()
             character = self.character
             if not character.is_low_health():
-                newQuest = src.quests.questMap["Adventure"]()
+                newQuest = src.quests.questMap["Adventure"](reason="do something exciting")
                 self.addQuest(newQuest)
                 if not character.getFreeInventorySpace():
                     newQuest = src.quests.questMap["ClearInventory"](returnToTile=False)

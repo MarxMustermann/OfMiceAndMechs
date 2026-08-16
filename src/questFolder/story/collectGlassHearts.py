@@ -119,7 +119,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                         quest = src.quests.questMap["Heal"](noWaitHeal=True,reason="be able to fight better")
                         return ([quest],None)
 
-                quest = src.quests.questMap["BeUsefull"](numTasksToDo=1,failOnIdle=True,reason="pass time")
+                quest = src.quests.questMap["BeUsefull"](numTasksToDo=1,failOnIdle=True,reason="pass time and heal")
                 return ([quest],None)
 
         # ensure that you are not starving 

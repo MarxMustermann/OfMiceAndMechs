@@ -1886,7 +1886,7 @@ I am working right now. I'll repriotize though.""")
                 for room in terrain.rooms:
                     if room.tag != "ruin":
                         continue
-                    if not room.getItemsByType(item_type):
+                    if not room.getItemsByType(item_type, needsUnbolted=True):
                         continue
                     found_loot_room = True
                     if item_type == "MetalWorkingBench":

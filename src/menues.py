@@ -10,7 +10,7 @@ class SubMenu(object):
     The base class for submenus offering selections
     """
 
-    def __init__(self, default=None, targetParamName="selection",tag=None):
+    def __init__(self, default=None, targetParamName="selection",tag=None,title=None):
         """
         set up basic state
 
@@ -44,6 +44,7 @@ class SubMenu(object):
 
         self.escape = False
         self.query = ""
+        self.title = title
 
     def getTitle(self):
         """
@@ -52,7 +53,7 @@ class SubMenu(object):
         Returns:
             the title as string of None if there is no title
         """
-        return None
+        return self.title
 
     def rerender(self):
         pass

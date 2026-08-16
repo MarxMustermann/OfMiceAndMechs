@@ -2125,6 +2125,9 @@ class Terrain:
                 src.overlays.MainCharOverlay().apply(
                     chars, src.gamestate.gamestate.mainChar,size=size,coordinateOffset=coordinateOffset
                 )
+                src.overlays.ToolTipHelpOverlay().apply(
+                    chars, src.gamestate.gamestate.mainChar,size=size,coordinateOffset=coordinateOffset
+                )
 
             quests = src.gamestate.gamestate.mainChar.getActiveQuests()
             blockedPositions = []

@@ -22,6 +22,8 @@ logger = logging.getLogger(__name__)
 phasesByName = None
 
 groundskeeper_room_tag = "the groundskeepers place"
+story_tooltip_text = None
+story_tooltip_lifetime = 0
 
 #####################################
 #
@@ -7865,6 +7867,29 @@ Once you understand things try to find better solutions.
         # track states
         if main_char.container.isRoom and main_char.container.tag == "trapRoom":
             src.gamestate.gamestate.stern["reached_base"] = True
+
+        # show story tool tips
+        global story_tooltip_text
+        global story_tooltip_lifetime
+        if story_tooltip_lifetime > 0:
+            story_tooltip_lifetime -= 1
+        elif story_tooltip_text:
+            story_tooltip_text = None
+        else:
+            if not src.gamestate.gamestate.stern.get("shown_movement_tooltip") and not story_tooltip_text:
+                story_tooltip_text = " press wasd to move "
+                story_tooltip_lifetime = 3
+                src.gamestate.gamestate.stern["shown_movement_tooltip"] = True
+            if not src.gamestate.gamestate.stern.get("shown_talk_tooltip") and not story_tooltip_text:
+                if main_char.getNearbyAllies():
+                    story_tooltip_text = " press h to chat "
+                    story_tooltip_lifetime = 10
+                    src.gamestate.gamestate.stern["shown_talk_tooltip"] = True
+            if not src.gamestate.gamestate.stern.get("shown_fight_tooltip") and not story_tooltip_text:
+                if main_char.getNearbyEnemies():
+                    story_tooltip_text = " bump/walk into enemies to fight "
+                    story_tooltip_lifetime = 3
+                    src.gamestate.gamestate.stern["shown_fight_tooltip"] = True
 
         # ensure correct "reach implant state"
         if not main_char.quests:

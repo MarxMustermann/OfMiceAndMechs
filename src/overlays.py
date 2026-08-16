@@ -357,3 +357,49 @@ class MainCharOverlay:
 
             display = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
             chars[mainChar.yPosition-coordinateOffset[0]][mainChar.xPosition-coordinateOffset[1]] = src.interaction.CharacterMeta(content=display,character=mainChar)
+
+class ToolTipHelpOverlay:
+    """
+    overly showing the story tooltip near the main character
+    """
+
+    def apply(self, chars, mainChar, size=None,coordinateOffset=(0,0)):
+        """
+        add overlayed information
+
+        Parameters:
+            chars: the currently rendered chars
+            mainChar: the main character
+        """
+
+        # get text to show
+        text = src.story.story_tooltip_text
+        if not text:
+            return
+
+        # handle weird edge case
+        if not mainChar.container:
+            return
+
+        # calculate drawing position
+        big_pos = mainChar.getBigPosition()
+        small_pos = mainChar.getSpacePosition()
+        if mainChar.container.isRoom:
+            small_pos = (small_pos[0]+1,small_pos[1]+1,0)
+        real_pos = (big_pos[0]*15+small_pos[0],big_pos[1]*15+small_pos[1],0)
+        real_pos = (real_pos[0],real_pos[1]+2,0)
+
+        # draw tooltip
+        if len(text)%2 == 1:
+            text += " "
+        offset = -len(text)//4+1
+        while text:
+            draw_pos = (real_pos[0]+offset,real_pos[1],0)
+            if not mainChar.dead and not (
+                      draw_pos[0] < coordinateOffset[1] or draw_pos[0] > coordinateOffset[1]+size[1] or
+                      draw_pos[1] < coordinateOffset[0] or draw_pos[1] > coordinateOffset[0]+size[0]):
+
+                display = (src.interaction.urwid.AttrSpec(src.interaction.ui_hint_color, "black"), text[0:2])
+                chars[draw_pos[1]-coordinateOffset[0]][draw_pos[0]-coordinateOffset[1]] = display
+            text = text[2:]
+            offset += 1

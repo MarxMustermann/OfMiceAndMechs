@@ -7904,6 +7904,11 @@ Once you understand things try to find better solutions.
                     story_tooltip_text = " bump/walk into enemies to fight "
                     story_tooltip_lifetime = 3
                     src.gamestate.gamestate.stern["shown_fight_tooltip"] = True
+            if not src.gamestate.gamestate.stern.get("shown_use_tooltip") and not story_tooltip_text:
+                if main_char.container.tag == src.story.groundskeeper_room_tag:
+                    story_tooltip_text = " press J to open activation menu "
+                    story_tooltip_lifetime = 10
+                    src.gamestate.gamestate.stern["shown_fight_tooltip"] = True
 
         # ensure correct "reach implant state"
         if not main_char.quests:

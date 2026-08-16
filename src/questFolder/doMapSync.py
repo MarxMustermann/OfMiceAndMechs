@@ -15,13 +15,13 @@ class DoMapSync(src.quests.MetaQuestSequence):
         '''
         get a long text description to show on the UI
         '''
-        reasonString = ""
+        reasonString = (src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),".")
         if self.reason:
-            reasonString = ", to "+self.reason
-        text = f"""
-Update you map knowledge{reasonString}.
+            reasonString = [(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),","),f" to "+self.reason+"."]
+        text = [f"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Update you map knowledge"),reasonString,"""
 Use the MapTable to do this.
-"""
+"""]
         return text
 
     def handleSyncedMap(self, extraInfo):

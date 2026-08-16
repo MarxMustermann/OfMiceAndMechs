@@ -177,52 +177,58 @@ class QuestMenu(src.menues.SubMenu):
 
         # make the selected quest active
         if key == "j" and self.questCursor[0]:
-            quest = self.char.quests[self.questCursor[0]]
-            self.char.quests.remove(quest)
-            self.char.quests.insert(0, quest)
-            self.char.setPathToQuest(quest)
-            self.questCursor[0] = 0
-            self.char.runCommandString(["esc"])
+            if self.char.quests:
+                quest = self.char.quests[self.questCursor[0]]
+                self.char.quests.remove(quest)
+                self.char.quests.insert(0, quest)
+                self.char.setPathToQuest(quest)
+                self.questCursor[0] = 0
+                self.char.runCommandString(["esc"])
         if key == "K":
             quest = None
             baseList = self.char.quests
-            for index in self.questCursor:
-                quest = baseList[index]
-                baseList = quest.subQuests
-            quest.autoSolve = True
-            self.char.runCommandString(["esc"])
+            if baseList:
+                for index in self.questCursor:
+                    quest = baseList[index]
+                    baseList = quest.subQuests
+                quest.autoSolve = True
+                self.char.runCommandString(["esc"])
         if key == "r":
             quest = None
             baseList = self.char.quests
-            for index in self.questCursor:
-                quest = baseList[index]
-                baseList = quest.subQuests
-            quest.generateSubquests(self.char)
+            if baseList:
+                for index in self.questCursor:
+                    quest = baseList[index]
+                    baseList = quest.subQuests
+                quest.generateSubquests(self.char)
         if key == "R":
             baseList = self.char.quests
-            for index in self.questCursor:
-                quest = baseList[index]
-                baseList = quest.subQuests
-            quest.clearSubQuests()
-            quest.generateSubquests(self.char)
+            if baseList:
+                for index in self.questCursor:
+                    quest = baseList[index]
+                    baseList = quest.subQuests
+                quest.clearSubQuests()
+                quest.generateSubquests(self.char)
         if key == "x":
             baseList = self.char.quests
-            for index in self.questCursor:
-                quest = baseList[index]
-                try:
-                    baseList = quest.subQuests
-                except:
-                    baseList = None
-            quest.fail()
+            if baseList:
+                for index in self.questCursor:
+                    quest = baseList[index]
+                    try:
+                        baseList = quest.subQuests
+                    except:
+                        baseList = None
+                quest.fail()
         if key == "X":
             baseList = self.char.quests
-            for index in self.questCursor:
-                quest = baseList[index]
-                try:
-                    baseList = quest.subQuests
-                except:
-                    baseList = None
-            quest.clearSubQuests()
+            if baseList:
+                for index in self.questCursor:
+                    quest = baseList[index]
+                    try:
+                        baseList = quest.subQuests
+                    except:
+                        baseList = None
+                quest.clearSubQuests()
 
         self.lockOptions = False
 

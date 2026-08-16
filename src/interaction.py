@@ -10153,10 +10153,11 @@ def advanceChar(char,render=True, pull_events = True, singleStep=False):
             if newInputs:
                 skipNextRender = False
 
-            desiredTime = 0.01
-            timeDiff = time.time()-lastLoop
-            if timeDiff < desiredTime:
-                time.sleep(desiredTime-timeDiff)
+            if not src.interaction.performance_debug:
+                desiredTime = 0.01
+                timeDiff = time.time()-lastLoop
+                if timeDiff < desiredTime:
+                    time.sleep(desiredTime-timeDiff)
             lastLoop = time.time()
 
             if mouseCombatMove:

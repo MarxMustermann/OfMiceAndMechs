@@ -6339,7 +6339,9 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
         saves = rawState["worlds"]
 
-        difficulty = saves[gameIndex].get("difficulty")
+        difficulty = None
+        if saves:
+            difficulty = saves[gameIndex].get("difficulty")
         if startGame and not difficulty:
 
             # show the difficulty selection

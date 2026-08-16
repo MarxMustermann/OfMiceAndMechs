@@ -35,6 +35,7 @@ jobs:
           cp -r Game/Data/config/ OfMiceAndMechs/internal/
           cp -r Game/Data/README.md OfMiceAndMechs/internal/
           cp -r Game/Data/sounds/ OfMiceAndMechs/internal/
+          cp -r Game/Data/music/ OfMiceAndMechs/internal/
           cp -r Game/Data/src/ OfMiceAndMechs/internal/
           cp -r Game/Data/PxPlus_IBM_BIOS-2y.ttf OfMiceAndMechs/internal/
 

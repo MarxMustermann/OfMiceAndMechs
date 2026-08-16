@@ -2715,8 +2715,8 @@ sure i'll produce equipment for you as long as you bring me the raw material.
             if currentTerrain.getItemByPosition(pos):
                 continue
             mold = src.items.itemMap["Mold"]()
-            mold.startSpawn()
             currentTerrain.addItem(mold,pos)
+            mold.startSpawn()
 
         for _i in range(3):
             pos = (big_pos[0]*15+random.randint(1,13),big_pos[1]*15+random.randint(1,13),0)
@@ -3398,6 +3398,13 @@ sure i'll produce equipment for you as long as you bring me the raw material.
 
                 if big_x > 5 and big_x < 9 and big_y > 2 and big_y < 9:
                     continue
+
+                if random.random() < 0.2:
+                    for _i in range(10):
+                        pos = (big_x*15+random.randint(1,14),big_y*15+random.randint(1,14),0)
+                        mold = src.items.itemMap["Mold"]()
+                        currentTerrain.addItem(mold,pos)
+                        mold.startSpawn()
 
                 wall_was_spawned = False
                 for spawn_item in toSpawn:

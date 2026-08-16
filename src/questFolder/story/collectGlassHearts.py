@@ -62,10 +62,6 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["GoHome"](reason="get back to base",endOnHomeTerrain=True)
             return ([quest],None)
 
-        try:
-            self.softLifetime
-        except:
-            self.softLifetime = None
         # stop after some time
         if self.softLifetime and src.gamestate.gamestate.tick-self.startTime > self.softLifetime:
            return self._solver_trigger_fail(dryRun,f"soft lifetime reached") 

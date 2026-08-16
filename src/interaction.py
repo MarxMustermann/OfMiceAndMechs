@@ -3126,26 +3126,26 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
             if charState.get("itemMarkedLast"):
                 del charState["itemMarkedLast"]
 
-        # drink from the first available item in inventory
-        # bad pattern: the user has to have the choice from what item to drink from
-        # bad code: drinking should happen in character
         if key in ("J",):
-            text = """
+            text = ["""
 
-press key for the advanced interaction
+""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"press key to select what to pick up"),"""
 
-* w = activate north
-* a = activate west
-* s = activate south
-* d = activate east
-* . = activate item on floor
-* i = activate last item in inventory
-* h = single heal
-* H = batch heal
+press
+""",src.interaction.ActionMeta(content="* w to activate north",payload="w"),"""
+""",src.interaction.ActionMeta(content="* a to activate west",payload="a"),"""
+""",src.interaction.ActionMeta(content="* s to activate south",payload="s"),"""
+""",src.interaction.ActionMeta(content="* d to activate east",payload="d"),"""
+""",src.interaction.ActionMeta(content="* . to activate item on floor",payload="."),"""
+""",src.interaction.ActionMeta(content="* i to activate last item in inventory",payload="i"),"""
+""",src.interaction.ActionMeta(content="* h to single heal",payload="h"),"""
+""",src.interaction.ActionMeta(content="* H to batch heal",payload="H"),"""
 
-"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"You can also press j instead of J for simple interaction"),"""
+"""]
 
-            submenue = src.menues.menuMap["OneKeystrokeMenu"](text,ignoreFirstKey=False)
+            title = "ADVANCED INTERACTION"
+            submenue = src.menues.menuMap["OneKeystrokeMenu"](text,ignoreFirstKey=False,title=title)
             submenue.followUp = {"method":doAdvancedInteraction,"params":{"character":char}}
             submenue.tag = "advancedInteractionSelection"
             char.macroState["submenue"] = submenue

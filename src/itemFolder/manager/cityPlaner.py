@@ -588,6 +588,21 @@ class CityPlaner(src.items.Item):
         # generate prefab for a goo processing unit
         # TODO: should be capsuled
         if floorPlanType == "gooProcessing":
+
+            # add walkways
+            for y in (2,4,8,11,):
+                for x in range(1,12):
+                    walkingSpaces.append((x,y,0))
+            for x in (1,6,11,):
+                for y in range(2,12):
+                    if x == 6 and y < 4:
+                        continue
+                    pos = (x,y,0)
+                    if not pos in walkingSpaces:
+                        walkingSpaces.append((x,y,0))
+            walkingSpaces.append((6,1,0))
+
+            # add goo production line
             inputSlots.append(((2,3,0),"VatMaggot",{}))
             buildSites.append(((3,3,0),"MaggotFermenter",{}))
             inputSlots.append(((4,3,0),"BioMass",{}))
@@ -596,7 +611,14 @@ class CityPlaner(src.items.Item):
             buildSites.append(((7,3,0),"GooProducer",{}))
             buildSites.append(((8,3,0),"GooDispenser",{}))
             buildSites.append(((9,3,0),"VialFiller",{}))
+            inputSlots.append(((2,5,0),"Bloom",{}))
+            buildSites.append(((3,5,0),"BloomShredder",{}))
+            storageSlots.append(((4,5,0),"BioMass",{}))
+
+            # add spawning items
             buildSites.append(((9,9,0),"GrowthTank",{}))
+
+            # add corpse items
             buildSites.append(((3,9,0),"CorpseAnimator",{}))
             buildSites.append(((3,10,0),"CorpseShredder",{}))
 

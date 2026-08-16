@@ -30,7 +30,7 @@ class ShieldBug(src.characters.characterMap["Insect"]):
             creator=creator,
             characterId=characterId,
         )
-        self.charType = "Insect"
+        self.charType = "ShieldBug"
         self.specialDisplay = "/>"
         self.baseDamage = 5
         self.baseDamage = int(self.baseDamage * (1 - runModifier))

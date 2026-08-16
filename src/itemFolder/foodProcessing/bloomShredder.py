@@ -3,7 +3,7 @@ import src
 
 class BloomShredder(src.items.Item):
     """
-    ingame item thats part of the production chain for goo from bloomb
+    ingame item thats part of the production chain for goo from bloom
     """
 
     type = "BloomShredder"

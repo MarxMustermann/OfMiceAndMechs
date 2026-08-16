@@ -50,10 +50,6 @@ class MessagesMenu(src.menues.SubMenu):
     def render(self,size=None):
         char = self.char
         out = []
-        try:
-            self.sidebared
-        except:
-            self.sidebared = True
 
         if not self.sidebared:
             out.append(f"press w/s to scroll\npress esc to close menu\n\noldest message on top - skipping {self.scrollIndex} messages\n\n")

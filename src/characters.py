@@ -1038,6 +1038,8 @@ class Character:
         parameters:
             offset: offset to shift the coordinate by
         '''
+        if not self.container:
+            return None
         if offset:
             self.getBigPosition_test1(offset)
             return self.getBigPosition_test2(offset)

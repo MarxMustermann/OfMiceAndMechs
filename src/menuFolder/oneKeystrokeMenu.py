@@ -7,8 +7,8 @@ class OneKeystrokeMenu(src.menues.SubMenu):
         text: the text to show
     '''
     type = "OneKeystrokeMenu"
-    def __init__(self, text="",targetParamName="keyPressed",ignoreFirstKey=True,do_not_scale=False,tag=None):
-        super().__init__()
+    def __init__(self, text="",targetParamName="keyPressed",ignoreFirstKey=True,do_not_scale=False,tag=None, title=None):
+        super().__init__(title=title)
         self.text = text
         self.firstRun = True
         if not ignoreFirstKey:

@@ -119,7 +119,7 @@ machine = (urwid.AttrSpec("#aaa", "black"), "X\\")
 scrapCompactor = (urwid.AttrSpec("#aaa", "black"), "RC")
 metalBars = (urwid.AttrSpec("#aaa", "black"), "==")
 wall = (urwid.AttrSpec("#334", "black"), "⛝ ")
-dirt = (urwid.AttrSpec("#330", "black"), ".´")
+dirt = (urwid.AttrSpec("#330", "black"), ".'")
 grass = (urwid.AttrSpec("#030", "black"), ",`")
 pipe = (urwid.AttrSpec("#337", "black"), "✠✠")
 corpse = "࿊ "

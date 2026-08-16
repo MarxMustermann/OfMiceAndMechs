@@ -561,7 +561,11 @@ class Canvas:
             y += 1
 
     def printTcod(self, console, offsetX, offsetY, warning):
+        '''
+        print a canvas to the screen using tcod
+        '''
 
+        # print each character
         y = offsetY
         out = []
         for line in self.chars:
@@ -569,6 +573,7 @@ class Canvas:
             for char in line:
                 mapped = None
 
+                # unwrap meta objects
                 actionMeta = None
                 if isinstance(char, src.interaction.ActionMeta):
                     actionMeta = char.payload
@@ -579,14 +584,17 @@ class Canvas:
                     item = char.item
                     char = char.content
 
+                # resolve index based references
                 if isinstance(char, int):
                     mapped = self.displayChars.indexedMapping[char]
                 else:
                     mapped = char
 
+                # ensure everything is a list
                 if not isinstance(mapped, list):
                     mapped = [mapped]
 
+                # prepare color info
                 tcodPrepared = []
                 for item in mapped:
                     if isinstance(item, str):
@@ -594,8 +602,11 @@ class Canvas:
                     if isinstance(item, tuple):
                         tcodPrepared.append((tuple(item[0].get_rgb_values()[:3]),tuple(item[0].get_rgb_values()[3:]),item[1]))
 
+                # print each chracter tuple
                 numPrinted = 0
                 for item in tcodPrepared:
+
+                    # handle weird edge case
                     text = item[2]
                     if text == None:
                         logger.error("error drawing stuff")
@@ -603,24 +614,34 @@ class Canvas:
                         logger.error(tcodPrepared)
                         logger.error(char)
                         continue
-                    text = text.replace("ò","o")
-                    text = text.replace("＠","@ ")
-                    text = text.replace("🝆","<")
-                    text = text.replace("´","'")
-                    text = text.replace("┃","|")
-                    text = text.replace("━","-")
-                    text = text.replace("┳","+")
-                    text = text.replace("┛","+")
-                    text = text.replace("┓","+")
-                    text = text.replace("┛","+")
-                    try:
-                       console.print(x=2*x+numPrinted,y=y,fg=item[0],bg=item[1],string=text)
-                    except:
-                        logger.error(f"cound not draw {item} {text}")
 
+                    # print normal strings
+                    if isinstance(text,str):
+                        try:
+                           console.print(x=2*x+numPrinted,y=y,fg=item[0],bg=item[1],string=text)
+                        except:
+                            logger.error(f"cound not draw {item} {text}")
+                    if isinstance(text,list):
+                        display_list = text
+                        try:
+                           
+                           text = display_list[0][1]
+                           fg_color = display_list[0][0].get_rgb_values()[:3]
+                           bg_color = display_list[0][0].get_rgb_values()[3:]
+                           console.print(x=2*x+numPrinted,y=y,fg=fg_color,bg=bg_color,string=text)
+                           text = display_list[1][1]
+                           fg_color = display_list[1][0].get_rgb_values()[:3]
+                           bg_color = display_list[1][0].get_rgb_values()[3:]
+                           console.print(x=2*x+numPrinted+1,y=y,fg=fg_color,bg=bg_color,string=text)
+                        except:
+                            logger.error(f"cound not draw {item} {text}")
+
+                    # register action meta
                     if actionMeta:
                         src.gamestate.gamestate.clickMap[(2*x+numPrinted,y)] = actionMeta
                         src.gamestate.gamestate.clickMap[(2*x+numPrinted+1,y)] = actionMeta
+
+                    # keep track of amount characters printed
                     numPrinted += 1
                 x += 1
             y += 1

@@ -857,20 +857,28 @@ class Room:
         return out
 
     def getEnemies(self,character):
+        '''
+        get enemies in the same room
+        '''
         return self.getEnemiesOnTile(character,self.getPosition())
 
     def getEnemiesOnTile(self,character,pos=None):
+        '''
+        get enemies on big position
+        '''
         if not pos:
             pos = character.getBigPosition()
         return self.getCharactersOnTile(pos,character=character,enemiesOnly=True)
 
     def getCharactersOnTile(self,pos,character=None,enemiesOnly=False,alliesOnly=False):
+        '''
+        get characters on big position
+        '''
         if pos:
             if not self.terrain:
                 return self.terrain.getEnemiesOnTile(character,pos)
             else:
                 return []
-
         out = []
         otherChars = self.characters
         for otherChar in otherChars:
@@ -879,9 +887,7 @@ class Room:
             if alliesOnly and character.faction != otherChar.faction:
                continue
             out.append(otherChar)
-
         return out
-
 
     def getResistance(self):
         """

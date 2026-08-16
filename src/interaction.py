@@ -3144,7 +3144,7 @@ press
 """,(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"You can also press j instead of J for simple interaction"),"""
 """]
 
-            title = "ADVANCED INTERACTION"
+            title = "INTERACTION SELECTION"
             submenue = src.menues.menuMap["OneKeystrokeMenu"](text,ignoreFirstKey=False,title=title)
             submenue.followUp = {"method":doAdvancedInteraction,"params":{"character":char}}
             submenue.tag = "advancedInteractionSelection"
@@ -3182,19 +3182,22 @@ press key for the advanced complex interaction
             return None
 
         if key in ("E",):
-            text = """
+            text = ["""
 
-press key for the configuration interaction
+""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"press key to select what to examine"),"""
 
-* w = examine north
-* a = examine west
-* s = examine south
-* d = examine east
-* . = examine your position
+press
+""",src.interaction.ActionMeta(content="* w to examine north",payload="w"),"""
+""",src.interaction.ActionMeta(content="* a to examine west",payload="a"),"""
+""",src.interaction.ActionMeta(content="* s to examine south",payload="s"),"""
+""",src.interaction.ActionMeta(content="* d to examine east",payload="d"),"""
+""",src.interaction.ActionMeta(content="* . to examine your position",payload="."),"""
 
-"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"You can also press e instead of E for simple examine"),"""
 
-            submenue = src.menues.menuMap["OneKeystrokeMenu"](text,ignoreFirstKey=False)
+"""]
+            title = "EXAMINE SELECTION"
+            submenue = src.menues.menuMap["OneKeystrokeMenu"](text,ignoreFirstKey=False,title=title)
             submenue.followUp = {"method":doAdvancedExamine,"params":{"character":char}}
             submenue.tag = "advancedExamineSelection"
             char.macroState["submenue"] = submenue
@@ -3294,7 +3297,7 @@ press
 """,(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"You can also press k instead of K for simple pickup"),"""
 
 """]
-            title = "ADVANCED PICKUP"
+            title = "PICKUP SELECTION"
             submenue = src.menues.menuMap["OneKeystrokeMenu"](text,ignoreFirstKey=False,title=title)
             submenue.followUp = {"method":doAdvancedPickup,"params":{"character":char}}
             submenue.tag = "advancedPickupSelection"

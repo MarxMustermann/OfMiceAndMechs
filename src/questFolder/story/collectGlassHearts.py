@@ -536,20 +536,11 @@ So apease the gods and obtain their GlassHearts.
         text.append((src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),f"""
 You did {self.room_building_streak_length} room building tasks in a row."""))
 
-        try:
-            self.startTime
-        except:
-            self.startTime = None
-
         if self.startTime:
             quest_age = src.gamestate.gamestate.tick-self.startTime
             text.append((src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),f"""
 
 The quest has been running for {quest_age} ticks."""))
-        try:
-            self.softLifetime
-        except:
-            self.softLifetime = None
         if self.softLifetime:
             text.append("""
 Try to complete the quest for at least {self.softLifetime} ticks.""")

@@ -2968,6 +2968,12 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                 scrap.bolted = False
                 currentTerrain.addItem(scrap,pos)
 
+        # add forest
+        forest = [(9,6,0),(5,6,0)]
+        for pos in forest:
+            src.magic.spawnForest(currentTerrain,pos)
+            used_spots.append(pos)
+
         # add alarm room
         alarmRoom = architect.doAddRoom(
                 {
@@ -3374,7 +3380,8 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                 ]
         for big_x in range(1,14):
             for big_y in range(1,14):
-                if (big_x,big_y,0) in used_spots:
+                big_pos = (big_x,big_y,0)
+                if big_pos in used_spots and big_pos not in forest:
                     continue
                 scrap_amount = 80
                 if big_x > 5 and big_x < 9 and big_y > 1 and big_y < 5:

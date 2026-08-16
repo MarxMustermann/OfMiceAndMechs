@@ -88,6 +88,9 @@ Reputation is rewarded for picking up items from walkways.\n\n""")
             for (duty,num_to_skip) in self.dutySkipps.items():
                 text.append(f" * {duty}: skip {num_to_skip}\n")
 
+        if self.numTasksToDo:
+            text.append(f"""\n\nDo {self.numTasksToDo} tasks. {self.numTasksDone} task done.\n""")
+
         return text
 
     def awardnearbyKillReputation(self,extraInfo):
@@ -329,6 +332,9 @@ Reputation is rewarded for picking up items from walkways.\n\n""")
         if self.subQuests:
             return (None,None)
 
+        if self.numTasksToDo and self.numTasksDone >= self.numTasksToDo:
+            return self._solver_trigger_success(dryRun)
+
         if not self.subQuests:
             submenue = character.macroState.get("submenue")
             if submenue:
@@ -466,7 +472,7 @@ Reputation is rewarded for picking up items from walkways.\n\n""")
                 quest = src.quests.questMap["GoToTile"](targetPosition=checkRoom.getPosition())
                 return ([quest],None)
 
-        if self.numTasksToDo and self.numTasksDone > self.numTasksToDo:
+        if self.numTasksToDo and self.numTasksDone >= self.numTasksToDo:
             return self._solver_trigger_success(dryRun)
 
         room = character.container

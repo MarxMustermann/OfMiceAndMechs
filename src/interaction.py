@@ -316,7 +316,6 @@ def playSound(soundName,channelName,loop=False,abort_sound=False,volume_modifier
                 if channelName == "background":
                     on_end = sound_loop
                 if soundName in sounds:
-                    print("played sound",soundName)
                     channel.play(sounds[soundName], volume = settings["sound"]/160.0*volume_modifier, on_end=on_end)
 
 zoom = 0

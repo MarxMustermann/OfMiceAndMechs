@@ -54,24 +54,26 @@ class MessagesMenu(src.menues.SubMenu):
         if not self.sidebared:
             out.append(f"press w/s to scroll\npress esc to close menu\n\noldest message on top - skipping {self.scrollIndex} messages\n\n")
 
+        if char.messages and isinstance(char.messages[-1][1],int):
+            char.messages = []
         if self.scrollIndex:
             to_print = char.messages[-46-self.scrollIndex:-self.scrollIndex]
         else:
             to_print = char.messages[-46:]
         for message in reversed(to_print):
-            if message[1] == src.gamestate.gamestate.tick:
+            if message[1][-1] == src.gamestate.gamestate.tick:
                 color = "#fff"
-            elif message[1] > src.gamestate.gamestate.tick - 1:
+            elif message[1][-1] > src.gamestate.gamestate.tick - 1:
                 color = "#fff"
-            elif message[1] > src.gamestate.gamestate.tick - 2:
+            elif message[1][-1] > src.gamestate.gamestate.tick - 2:
                 color = "#fff"
-            elif message[1] > src.gamestate.gamestate.tick - 3:
+            elif message[1][-1] > src.gamestate.gamestate.tick - 3:
                 color = "#aaa"
-            elif message[1] > src.gamestate.gamestate.tick - 4:
+            elif message[1][-1] > src.gamestate.gamestate.tick - 4:
                 color = "#999"
-            elif message[1] > src.gamestate.gamestate.tick - 5:
+            elif message[1][-1] > src.gamestate.gamestate.tick - 5:
                 color = "#888"
-            elif message[1] > src.gamestate.gamestate.tick - 6:
+            elif message[1][-1] > src.gamestate.gamestate.tick - 6:
                 color = "#777"
             else:
                 color = "#666"
@@ -93,7 +95,14 @@ class MessagesMenu(src.menues.SubMenu):
                             adapted_message += line_to_add+"\n"
                             line_to_add = ""
                     line_to_add += word
-                adapted_message += line_to_add+"\n"
+                if adapted_message and adapted_message[-1] != "\n":
+                    adapted_message += "\n"
+                adapted_message += line_to_add
+            if len(message[1]) > 1:
+                num_condesed_messages = len(message[1])
+                adapted_message += f" x{num_condesed_messages}"
+            adapted_message += "\n"
+
 
             out.append((src.interaction.urwid.AttrSpec(color, "default"),f"- {adapted_message}"))
         return out

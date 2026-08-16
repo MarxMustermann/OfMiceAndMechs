@@ -16,8 +16,6 @@ class ShieldBug(src.characters.characterMap["Insect"]):
     ):
         if quests is None:
             quests = []
-
-        self.level = level
         multiplier = level
 
         super().__init__(
@@ -30,7 +28,10 @@ class ShieldBug(src.characters.characterMap["Insect"]):
             creator=creator,
             characterId=characterId,
         )
+
+        self.level = level
         self.charType = "ShieldBug"
+
         self.specialDisplay = "/>"
         self.baseDamage = 5
         self.baseDamage = int(self.baseDamage * (1 - runModifier))
@@ -61,7 +62,9 @@ class ShieldBug(src.characters.characterMap["Insect"]):
             self.level = 1
         color_1 = self.color_for_multiplier(self.level, start=(255, 255, 255), end=(255, 0, 0))[0]
         color_2 = self.color_for_multiplier(self.level, start=(0, 66, 46), end=(33, 255, 101))[0]
-        return [(color_1,"<"),(color_2,"/")]
+        front_color_1 = (255,int(255-((255/7)*self.level)),int(255-((255/7)*self.level)))
+        front_color_2 = (int(((33/7)*self.level)),66+int((((255-66)/7)*self.level)),46+int((((101-46)/7)*self.level)))
+        return [(src.interaction.urwid.AttrSpec(front_color_1,"black"),"<"),(src.interaction.urwid.AttrSpec(front_color_2,"black"),"/")]
 
     """
     def render(self):

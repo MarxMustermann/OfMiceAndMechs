@@ -155,7 +155,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                 if otherChar.faction != character.faction:
                     enemyCount += 1
                     if not room.alarm:
-                        quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition(),endWhenCleared=True,reasoreason="kill enemies that breached the defences")
+                        quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition(),endWhenCleared=True,reason="kill enemies that breached the defences")
                         return ([quest],None)
                 else:
                     if otherChar.charType != "Ghoul" and not otherChar.burnedIn:

@@ -613,7 +613,7 @@ Look around to see, if you can find something useful.
 
 
 There is a StasisTank in this room. 
-It should contain a survivior.
+It should contain a survivor.
 That could be useful for us.
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Free the survivor."""),"""

@@ -131,7 +131,7 @@ suicidal""")
                     return ([quest],None)
 
                 if character.canHeal():
-                    quest = src.quests.questMap["Heal"](reason="be able to fight better")
+                    quest = src.quests.questMap["Heal"](reason="be able to fight better",noWaitHeal=True)
                     return ([quest],None)
 
                 # wait to heal
@@ -265,7 +265,7 @@ suicidal""")
                         continue
                     should_clear_inventory = True
                 if should_clear_inventory:
-                    quest = src.quests.questMap["ClearInventory"]()
+                    quest = src.quests.questMap["ClearInventory"](returnToTile=False)
                     return ([quest],None)
 
                 # stock up on consumables

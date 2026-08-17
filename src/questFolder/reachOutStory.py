@@ -28,7 +28,7 @@ class ReachOutStory(src.quests.MetaQuestSequence):
 
 Right now you are looking at the quest menu.
 The quest menu shows you general instructions on how to do things.
-Currently you are looking at the quest to reach out to you implant.
+Currently you are looking at the quest to reach out to your implant.
 
 Once you contacted the implant this menu will hold more useful information.
 """]

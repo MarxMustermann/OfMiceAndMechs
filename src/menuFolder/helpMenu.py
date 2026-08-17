@@ -105,7 +105,7 @@ class HelpMenu(src.menues.SubMenu):
             txt.append("On easy difficuly you can finish the game by blindly typing down the keys shown.\n")
             txt.append("The keys to press are shown on the left side of the screen as \"suggested action\".\n\n")
             txt.append("You are very welcome to not do what the implant suggests.\n")
-            txt.append("The implants instructions will try to adpapt as good as it can.\n")
+            txt.append("The implants instructions will try to adapt as good as it can.\n")
             txt.extend(["""
 
 Instructions on how to complete your quests will be shown on the left side on the screen.
@@ -137,7 +137,7 @@ if the suggested action is \" """,(src.interaction.urwid.AttrSpec(src.interactio
             txt.append("  uppercase keys open a secondary menu for selection what to interact with\n")
             txt.append("\n= fighting =\n\n")
             txt.append("  w/a/s/d - attack north/east/south/west\n")
-            txt.extend(["  ",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"W"),"/",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"A"),"/",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"S"),"/",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"D")," - alterne atttack north/east/south/west\n"])
+            txt.extend(["  ",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"W"),"/",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"A"),"/",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"S"),"/",(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"D")," - alternate attack north/east/south/west\n"])
             txt.append("  f       - shoot\n")
             txt.append("  m       - attack enemy on the same square\n")
 

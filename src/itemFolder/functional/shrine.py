@@ -501,7 +501,8 @@ class Shrine(src.items.Item):
             pass
 
         # show the selection menu to the user
-        submenue = src.menues.menuMap["SelectionMenu"](f"what do you wish for? You currently have {self.getTerrain().mana} mana",options,targetParamName="rewardType")
+        amount_mana = round(self.getTerrain().mana,2)
+        submenue = src.menues.menuMap["SelectionMenu"]([(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),f"what do you wish for?\n"),f"\nYou currently have {amount_mana} mana\n\n"],options,targetParamName="rewardType")
         counter = 0
         for option in options:
             counter += 1

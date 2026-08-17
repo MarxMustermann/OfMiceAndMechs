@@ -66,7 +66,7 @@ class GlassStatue(src.items.Item):
                 # ensure that there is enough scrap around
                 if not numScrapFound:
                     if character:
-                        text = "no Scrap to offer\n\nPlace the Scrap to offer on the floor of this room."
+                        text = "No Scrap to offer\n\nPlace the Scrap to offer on the floor of this room."
                         submenue = src.menues.menuMap["TextMenu"](text)
                         character.macroState["submenue"] = submenue
                         character.addMessage(text)
@@ -89,7 +89,7 @@ class GlassStatue(src.items.Item):
                         if numScrapRemoved >= amount:
                             completed = True
                             break
-                text = f"you sacrifice {numScrapRemoved}/{amount} Scrap"
+                text = f"You sacrifice {numScrapRemoved}/{amount} Scrap"
             else:
                 ##
                 # handle normal items
@@ -100,7 +100,7 @@ class GlassStatue(src.items.Item):
                 # ensure item requirement can be fullfilled
                 if not len(itemsFound):
                     if character:
-                        text = f"you need to offer {itemType}.\n\nPlace the offered items on the floor of this room."
+                        text = f"You need to offer {itemType}.\n\nPlace the offered items on the floor of this room."
                         submenue = src.menues.menuMap["TextMenu"](text)
                         submenue.do_not_scale = True
                         character.macroState["submenue"] = submenue
@@ -140,17 +140,17 @@ class GlassStatue(src.items.Item):
         result = self.handleItemRequirements(removeItems=True,character=character)
         if not result:
             return
-        text = result[1]
+        text = [result[1]]
         completed = result[0]
 
         if completed:
             self.charges += 1
             self.numSubSacrifices = 0
-            text += f"\n\nThe GlassStatue has {self.charges} charges now."
+            text.append((src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"\n\nThe GlassStatue has {self.charges} charges now."))
             if self.charges == 5:
-                text += f"\nYou can use the GlassStatue to teleport to the dungeon now."
+                text.append((src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"\nYou can use the GlassStatue to teleport to the dungeon now."))
         else:
-            text += f"\n\nyour saccrifice was not enough for another charge"
+            text.append((src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"\n\nYour saccrifice was not enough to add a charge to the statue."))
 
 
         submenue = src.menues.menuMap["TextMenu"](text)

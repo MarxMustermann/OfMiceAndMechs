@@ -150,7 +150,7 @@ if the suggested action is \" """,(src.interaction.urwid.AttrSpec(src.interactio
             txt.extend([(src.interaction.urwid.AttrSpec(src.interaction.upper_case_letter_color,"#000"),"Q"),"   - open advanced quest menu\n"])
             txt.append("i   - open inventory\n")
             txt.append("x   - open message log\n")
-            txt.append("v   - open character overwiev\n")
+            txt.append("v   - open character overview\n")
             txt.append("p   - cast magic\n")
             txt.append("\n\nPress esc to close submenues.\nSome menues can be docked/undocked by pressing esc+rCTRL or esc+lCTRL.")
 

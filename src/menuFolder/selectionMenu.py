@@ -88,7 +88,11 @@ class SelectionMenu(src.menues.SubMenu):
     def render(self,size=None):
         result = []
         result.append(super().render(size=size))
-        result.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"\npress w/s/up/down to move cursor\npress j/k/enter to select option\npress esc to close menu\npress a/d/left/right to shift options"))
+        result.append((src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),["""
+press """,src.interaction.ActionMeta(payload="w",content="w"),"/",src.interaction.ActionMeta(payload="l",content="s"),"/",src.interaction.ActionMeta(payload=["up"],content="up"),"/",src.interaction.ActionMeta(payload=["down"],content="down"),""" to move cursor
+press """,src.interaction.ActionMeta(payload="j",content="j"),"/",src.interaction.ActionMeta(payload="k",content="k"),"/",src.interaction.ActionMeta(payload=["enter"],content="enter"),""" to select option
+""",src.interaction.ActionMeta(payload=["esc"],content="press esc to close menu"),"""
+press """,src.interaction.ActionMeta(payload="a",content="a"),"/",src.interaction.ActionMeta(payload="d",content="d"),"/",src.interaction.ActionMeta(payload=["left"],content="left"),"/",src.interaction.ActionMeta(payload=["right"],content="right"),""" to shift options"""]))
         return result
 
 # register the menu type

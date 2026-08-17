@@ -345,7 +345,7 @@ class QuestMenu(src.menues.SubMenu):
                 solvingCommangString = char.getActiveQuest().getSolvingCommandString(char)
 
             if not sidebared:
-                txt.append("select quest:\n\n")
+                txt.append("Your quests:\n\n")
 
             counter = 0
             for quest in char.quests:

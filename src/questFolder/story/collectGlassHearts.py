@@ -105,7 +105,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                 return ([quest],None)
 
         # ensure a good amount of health
-        if character.health < character.adjustedMaxHealth*0.75:
+        if character.is_good_health():
             if not (terrain.xPosition == character.registers["HOMETx"] and
                     terrain.yPosition == character.registers["HOMETy"]):
                 quest = src.quests.questMap["GoHome"](reason="heal in safety")
@@ -595,7 +595,7 @@ Try to complete the quest for at least {self.softLifetime} ticks.""")
         if reason == "no job":
             terrain = self.character.getTerrain()
             character = self.character
-            if not character.is_low_health():
+            if character.is_good_health():
                 newQuest = src.quests.questMap["Adventure"](reason="do something exciting")
                 self.addQuest(newQuest)
                 if not character.getFreeInventorySpace():

@@ -113,7 +113,7 @@ So if an enemy is to directly east of you:
                 return (None,("v","open character menu"))
             if not isinstance(submenue,src.menues.menuMap["CharacterInfoMenu"]):
                 return (None,(["esc"],"close menu"))
-            return (None,("t","drop tool"))
+            return (None,("gT","drop tool"))
 
         # check for direct attacks
         directEnemies = []

@@ -82,6 +82,8 @@ class Door(src.items.Item):
         """
 
         options = super().getConfigurationOptions(character)
+        if "b" in options:
+            del options["b"]
         if self.bolted and self.walkable:
             options["x"] = ("block door", self.blockDoor)
         else:

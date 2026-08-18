@@ -183,6 +183,8 @@ you can eat it to gain %s satiation.
         '''
 
         options = super().getConfigurationOptions(character)
+        if "b" in options:
+            del options["b"]
         if self.bolted:
             options["b"] = ("rip out", self.unboltAction)
         return options

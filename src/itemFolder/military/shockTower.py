@@ -187,6 +187,4 @@ The shock tower has %s charges
     def configureTarget(self,params):
         self.configureTargetPosition(params)
 
-
-
 src.items.addType(ShockTower)

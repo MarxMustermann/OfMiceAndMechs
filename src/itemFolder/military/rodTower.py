@@ -178,10 +178,6 @@ class RodTower(src.items.Item):
         """
 
         options = super().getConfigurationOptions(character)
-        if self.bolted:
-            options["b"] = ("unbolt", self.unboltAction)
-        else:
-            options["b"] = ("bolt down", self.boltAction)
         options["w"] = ("replace weapon", self.replaceWeapon)
         return options
 

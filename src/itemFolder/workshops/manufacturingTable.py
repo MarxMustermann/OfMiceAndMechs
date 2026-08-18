@@ -388,10 +388,6 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
         """
 
         options = super().getConfigurationOptions(character)
-        if self.bolted:
-            options["b"] = ("unbolt", self.unboltAction)
-        else:
-            options["b"] = ("bolt down", self.boltAction)
         if self.disabled:
             options["d"] = ("enable", self.enable)
         else:

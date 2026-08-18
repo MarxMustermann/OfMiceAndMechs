@@ -1216,10 +1216,6 @@ class CityPlaner(src.items.Item):
             character: the character trying to conigure the machine
         """
         options = super().getConfigurationOptions(character)
-        if self.bolted:
-            options["b"] = ("unbolt", self.unboltAction)
-        else:
-            options["b"] = ("bolt down", self.boltAction)
         options["a"] = ("set auto extension threashold", self.setAutoExtensionThreashold)
         return options
 

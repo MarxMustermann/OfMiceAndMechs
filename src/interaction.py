@@ -2978,22 +2978,22 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
             if char.tool:
                 char.tool.raw_apply(char)
                 if key in ("W",):
-                    charState["itemMarkedLast"] = moveCharacter("north",char,noAdvanceGame,header,urwid,dash=True)
+                    charState["itemMarkedLast"] = moveCharacter("north",char,noAdvanceGame,header,urwid,dash=False)
                     if charState["itemMarkedLast"]:
                         handleCollision(char,charState)
                     return None
                 if key in ("S",):
-                    charState["itemMarkedLast"] = moveCharacter("south",char,noAdvanceGame,header,urwid,dash=True)
+                    charState["itemMarkedLast"] = moveCharacter("south",char,noAdvanceGame,header,urwid,dash=False)
                     if charState["itemMarkedLast"]:
                         handleCollision(char,charState)
                     return None
                 if key in ("D",):
-                    charState["itemMarkedLast"] = moveCharacter("east",char,noAdvanceGame,header,urwid,dash=True)
+                    charState["itemMarkedLast"] = moveCharacter("east",char,noAdvanceGame,header,urwid,dash=False)
                     if charState["itemMarkedLast"]:
                         handleCollision(char,charState)
                     return None
                 if key in ("A",):
-                    charState["itemMarkedLast"] = moveCharacter("west",char,noAdvanceGame,header,urwid,dash=True)
+                    charState["itemMarkedLast"] = moveCharacter("west",char,noAdvanceGame,header,urwid,dash=False)
                     if charState["itemMarkedLast"]:
                         handleCollision(char,charState)
                     return None

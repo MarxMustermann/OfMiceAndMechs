@@ -54,21 +54,6 @@ It changes your implant and sets your faction marker to {self.faction}.
         character.registers["HOMETx"] = terrainPos[0]
         character.registers["HOMETy"] = terrainPos[1]
 
-    def getConfigurationOptions(self, character):
-        '''
-        register the configuration options with superclass
-
-        Parameters:
-            character: the character trying to conigure the machine
-        '''
-        options = super().getConfigurationOptions(character)
-        if self.bolted:
-            options["b"] = ("unbolt", self.unboltAction)
-        else:
-            options["b"] = ("bolt down", self.boltAction)
-        #options["f"] = ("set faction",self.setFaction)
-        return options
-
     def setFaction(self,character):
         '''
         set the faction of the faction setter

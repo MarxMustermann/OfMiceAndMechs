@@ -3250,6 +3250,18 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         anvilRoom.addItem(stasisTank,(9,9,0))
         for pos in [(7,8,0),(7,9,0),(8,9,0),(8,7,0),(9,7,0),(9,8,0)]:
             anvilRoom.addWalkingSpace(pos)
+        for base_position in [(7,1,0),(1,7,0)]:
+            for offset in [(1,0,0),(2,0,0),(3,0,0),(3,1,0),(4,1,0),(4,2,0),(4,3,0),(3,3,0),(2,3,0),(1,3,0),(0,3,0),(0,2,0),(0,1,0),(1,1,0)]:
+                pos = (base_position[0]+offset[0],base_position[1]+offset[1],base_position[2]+offset[2])
+                anvilRoom.addWalkingSpace(pos)
+            pos = (base_position[0]+2,base_position[1]+2,base_position[2]+0)
+            anvilRoom.spawnItem("Anvil",pos,bolted=True)
+            pos = (base_position[0]+1,base_position[1]+2,base_position[2]+0)
+            anvilRoom.addInputSlot(pos,"Scrap")
+            pos = (base_position[0]+3,base_position[1]+2,base_position[2]+0)
+            anvilRoom.addInputSlot(pos,"Scrap")
+            pos = (base_position[0]+2,base_position[1]+1,base_position[2]+0)
+            anvilRoom.addOutputSlot(pos,"MetalBars")
 
         # add metalWorking room
         metalWorkingRoom = architect.doAddRoom(

@@ -1988,15 +1988,6 @@ class Room:
                         character.exhaustion -= min(1,character.exhaustion)
                         character.takeTime(character.adjustedMovementSpeed,"moved 2")
             else:
-                try:
-                    character.hasJump
-                except:
-                    character.hasJump = False
-                try:
-                    character.hasRun
-                except:
-                    character.hasRun = False
-
                 if character.hasJump:
                     character.takeTime(character.adjustedMovementSpeed/2,"moved 3")
                     character.exhaustion += 5

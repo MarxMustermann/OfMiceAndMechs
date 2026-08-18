@@ -3274,7 +3274,24 @@ sure i'll produce equipment for you as long as you bring me the raw material.
             metalWorkingRoom.addWalkingSpace((6,y,0))
         metalWorkingRoom.addWalkingSpace((3,6,0))
         metalWorkingRoom.addWalkingSpace((4,6,0))
-
+        for position in [(7,3,0),(8,3,0),(8,2,0),(8,1,0),(9,1,0),(10,1,0),(10,2,0),(11,2,0),(11,3,0),(11,4,0),(10,4,0),(10,5,0),(9,5,0),(8,5,0),]:
+            metalWorkingRoom.addWalkingSpace(position)
+        metalWorkingRoom.addOutputSlot((9,2,0),None)
+        metalWorkingRoom.addOutputSlot((9,4,0),None)
+        metalWorkingRoom.addInputSlot((10,3,0),"MetalBars")
+        if random.random() < 0.5:
+            for _i in range(random.randint(1,5)):
+                metalWorkingRoom.spawnItem("MetalBars",(10,3,0))
+        metalWorkingRoom.spawnItem("MetalWorkingBench",(9,3,0),bolted=True)
+        for position in [(7,9,0),(8,9,0),(8,10,0),(8,11,0),(9,11,0),(10,11,0),(10,10,0),(11,10,0),(11,9,0),(11,8,0),(10,8,0),(10,7,0),(9,7,0),(8,7,0),]:
+            metalWorkingRoom.addWalkingSpace(position)
+        metalWorkingRoom.addOutputSlot((9,10,0),None)
+        metalWorkingRoom.addOutputSlot((9,8,0),None)
+        metalWorkingRoom.addInputSlot((10,9,0),"MetalBars")
+        if random.random() < 0.5:
+            for _i in range(random.randint(1,5)):
+                metalWorkingRoom.spawnItem("MetalBars",(10,9,0))
+        metalWorkingRoom.spawnItem("MetalWorkingBench",(9,9,0),bolted=True)
         stasisTank = src.items.itemMap["StasisTank"]()
         metal_working_npc = src.magic.createBurnedInClone("metal working",homeTerrain=currentTerrain,homePosition=(7,4,0),faction=faction)
         stasisTank.character = metal_working_npc

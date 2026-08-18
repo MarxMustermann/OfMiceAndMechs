@@ -130,20 +130,5 @@ This will heal you for up to {heal_amount} HP.
 """])
         character.runCommandString(".",nativeKey=False)
 
-    def getConfigurationOptions(self, character):
-        '''
-        register the configuration options with superclass
-
-        Parameters:
-            character: the character trying to conigure the machine
-        '''
-
-        options = super().getConfigurationOptions(character)
-        if self.bolted:
-            options["b"] = ("unbolt", self.unboltAction)
-        else:
-            options["b"] = ("bolt down", self.boltAction)
-        return options
-
 # register the item type
 src.items.addType(CoalBurner)

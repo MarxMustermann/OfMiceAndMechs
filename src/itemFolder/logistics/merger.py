@@ -123,28 +123,4 @@ Activate the mover to move one item from the north and one item to the south to 
         self.container.addItem(item1,out_pos)
         self.container.addItem(item2,out_pos)
 
-    def getConfigurationOptions(self, character):
-        """
-        register the configuration options with superclass
-
-        Parameters:
-            character: the character trying to conigure the machine
-        """
-        options = super().getConfigurationOptions(character)
-        if self.bolted:
-            options["b"] = ("unbolt", self.unboltAction)
-        else:
-            options["b"] = ("bolt down", self.boltAction)
-        return options
-
-    def boltAction(self,character):
-        self.bolted = True
-        character.addMessage("you bolt down the Merger")
-        character.changed("boltedItem",{"character":character,"item":self})
-
-    def unboltAction(self,character):
-        self.bolted = False
-        character.addMessage("you unbolt the Merger")
-        character.changed("unboltedItem",{"character":character,"item":self})
-
 src.items.addType(Merger)

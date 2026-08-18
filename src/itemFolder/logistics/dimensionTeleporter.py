@@ -62,17 +62,6 @@ class DimensionTeleporter(src.items.Item):
             "choose output direction", self.direction, self.d_change
         )
 
-    def getConfigurationOptions(self, character):
-        '''
-        show option to bolt item down
-        '''
-        options = super().getConfigurationOptions(character)
-        if self.bolted:
-            options["b"] = ("unbolt", self.unboltAction)
-        else:
-            options["b"] = ("bolt down", self.boltAction)
-        return options
-
     def boltAction(self, character):
         '''
         bolt the item down

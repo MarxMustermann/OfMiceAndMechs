@@ -81,19 +81,5 @@ class MapTable(src.items.Item):
                 character.terrainInfo[coordinate][key] = value
         character.addMessage("you extracted the maps knowledge")
 
-    def getConfigurationOptions(self, character):
-        '''
-        register the configuration options with superclass
-
-        Parameters:
-            character: the character trying to conigure the machine
-        '''
-        options = super().getConfigurationOptions(character)
-        if self.bolted:
-            options["b"] = ("unbolt", self.unboltAction)
-        else:
-            options["b"] = ("bolt down", self.boltAction)
-        return options
-
 # register item type
 src.items.addType(MapTable)

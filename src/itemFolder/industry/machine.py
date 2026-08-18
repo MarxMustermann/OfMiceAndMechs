@@ -492,10 +492,6 @@ Currently the machine has no charges
         """
 
         options = super().getConfigurationOptions(character)
-        if self.bolted:
-            options["b"] = ("unbolt", self.unboltAction)
-        else:
-            options["b"] = ("bolt down", self.boltAction)
         if self.disabled:
             options["d"] = ("enable", self.enable)
         else:
@@ -509,15 +505,5 @@ Currently the machine has no charges
     def disable(self,character):
         character.addMessage("you disable the Machine")
         self.disabled = True
-
-    def boltAction(self,character):
-        self.bolted = True
-        character.addMessage("you bolt down the Machine")
-        character.changed("boltedItem",{"character":character,"item":self})
-
-    def unboltAction(self,character):
-        self.bolted = False
-        character.addMessage("you unbolt the Machine")
-        character.changed("unboltedItem",{"character":character,"item":self})
 
 src.items.addType(Machine, nonManufactured=True)

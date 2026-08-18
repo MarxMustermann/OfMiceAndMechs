@@ -3413,7 +3413,7 @@ press key for advanced drop
 
     # doesn't open the dev menu and toggles rendering mode instead
     # bad code: code should act as advertised
-    if key in (commandChars.devMenu,):
+    if key in (commandChars.devMenu,) and src.interaction.debug:
         if src.canvas.displayChars.mode == "unicode":
             src.canvas.displayChars.setRenderingMode("pureASCII")
         else:

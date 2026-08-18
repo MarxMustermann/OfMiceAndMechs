@@ -178,8 +178,6 @@ The shock tower has %s charges
         """
 
         options = super().getConfigurationOptions(character)
-        #options["a"] = ("toggle active", self.toggleActive)
-        #options["t"] = ("configure target", self.configureTargetHook)
         options["r"] = ("reload tower", self.reload)
         return options
 

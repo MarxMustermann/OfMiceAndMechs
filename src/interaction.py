@@ -1169,6 +1169,10 @@ def doActivity(params):
         char.getEmergencyHealth()
     if key == "c":
         char.terrainInfo[char.getTerrain().getPosition()]["looted"] = True
+    if key == "T":
+        item = char.tool
+        char.tool = None
+        char.addToInventory(item)
     if key == "M":
         terrain = char.getTerrain()
 
@@ -3227,6 +3231,7 @@ press key to select action
 """,src.interaction.ActionMeta(content="* c = mark terrain as explored",payload="c"),"""
 """,src.interaction.ActionMeta(content="* t = wait till end of epoch",payload="t"),"""
 """,src.interaction.ActionMeta(content="* x = hurt yourself",payload="x"),"""
+""",src.interaction.ActionMeta(content="* T = drop tool",payload="x"),"""
 
 """]
 

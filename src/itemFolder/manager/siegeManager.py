@@ -412,20 +412,6 @@ class SiegeManager(src.items.Item):
         if character:
             character.addMessage("you orderd a mopup operation")
 
-    def getConfigurationOptions(self, character):
-        '''
-        register the configuration options with superclass
-
-        Parameters:
-            character: the character trying to conigure the machine
-        '''
-        options = super().getConfigurationOptions(character)
-        if self.bolted:
-            options["b"] = ("unbolt", self.unboltAction)
-        else:
-            options["b"] = ("bolt down", self.boltAction)
-        return options
-
     def soundAlarms(self,character=None):
         '''
         trigger the alarms on the base

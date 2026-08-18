@@ -94,21 +94,6 @@ class Wall(src.items.Item):
             renderer.fill_rect((basePos[0],basePos[1]+tileSize-border_width,tileSize,border_width))
             renderer.fill_rect((basePos[0]+tileSize-border_width,basePos[1],border_width,tileSize))
 
-    def getConfigurationOptions(self, character):
-        """
-        register the configuration options with superclass
-
-        Parameters:
-            character: the character trying to conigure the machine
-        """
-
-        options = super().getConfigurationOptions(character)
-        if self.bolted:
-            options["b"] = ("unbolt", self.unboltAction)
-        else:
-            options["b"] = ("bolt down", self.boltAction)
-        return options
-
     def render(self):
         if self.bolted and (self.xPosition in (0,12,) or self.yPosition in (0,12,)):
             return src.canvas.displayChars.outer_wall

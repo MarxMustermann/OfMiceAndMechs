@@ -3054,13 +3054,13 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
                 char.attack(enemy)
                 break
 
-        # activate an item
+        # complex activate an item
         if key in ("c",):
-            # activate the marked item
+            # complex activate the marked item
             if charState["itemMarkedLast"]:
                 charState["itemMarkedLast"].configure(char)
 
-            # activate an item on floor
+            # complex activate an item on floor
             else:
                 # for item in char.container.itemsOnFloor:
                 #    if item.xPosition == char.xPosition and item.yPosition == char.yPosition:

@@ -1743,6 +1743,13 @@ def doStackPush(key,char,charState,main,header,footer,urwid,flags):
     char.registers[key].append(0)
     char.doStackPush = False
 
+def forwardKeystroke(extraInfo):
+    character = extraInfo["character"]
+    key = extraInfo["keyPressed"]
+    if key not in ("j","k","c","e",):
+        return
+    character.runCommandString([key])
+
 def doRangedAttack(extraInfo=None):
     extraInfo["character"].doRangedAttack(direction=extraInfo["keyPressed"])
 
@@ -3053,6 +3060,77 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
                     char.enterPhase5()
                 char.attack(enemy)
                 break
+
+        # show all interaction possibilities
+        if key in ("enter",):
+
+            # get item to work on
+            item = charState["itemMarkedLast"]
+
+            # set up helper variables
+            text = []
+            if not item:
+
+                # show simple explainer text
+                text.extend(["""
+There is no item to interact with.
+"""])
+
+            else:
+
+                # show normal interaction instructions
+                text.extend(["""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"press j to interact"),"""
+Those are the day to day normal interactions, like using a machine
+"""])
+
+                # show complex interaction instructions
+                text.extend(["""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"press c to complex interact"),"""
+Those are the more absurd interactions, like unbolting or configuring a machine
+"""])
+                detail_text = []
+                detail_text.extend(["""
+This allows you to:
+"""])
+                for (key,payload) in item.getConfigurationOptions(char).items():
+                    name = payload[0]
+                    option_text = f"{key} - {name}"
+                    detail_text.extend([f" * {option_text}\n"])
+                text.append(detail_text)
+
+                # show pickup instructions
+                error_text = []
+                if item.bolted:
+                    error_text.extend([
+(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"you cannot pick up the item, because the item is bolted down"),"""
+"""])
+                if not char.getFreeInventorySpace():
+                    error_text.extend([
+(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"you cannot pick up the item, because you inventory is full"),"""
+"""])
+
+                color = src.interaction.highlighted_ui_color
+                if error_text:
+                    color = src.interaction.shadowed_ui_color
+                text.extend(["""
+""",(src.pseudoUrwid.AttrSpec(color,"black"),"press k to pick up"),"""
+"""])
+                if error_text:
+                    text.append(error_text)
+
+                # show examine instructions
+                text.extend(["""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"press e to examine"),"""
+"""])
+
+            # show the instruction text
+            title = "ITEM INTERACTION PORTAL"
+            submenue = src.menues.menuMap["OneKeystrokeMenu"](text,ignoreFirstKey=False,title=title)
+            submenue.followUp = {"method":forwardKeystroke,"params":{"character":char}}
+            submenue.tag = "interactionPortal"
+            char.add_submenu(submenue)
+            return None
 
         # complex activate an item
         if key in ("c",):

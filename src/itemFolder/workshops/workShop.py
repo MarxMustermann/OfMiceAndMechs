@@ -5,14 +5,6 @@ class WorkShop(src.items.Item):
     type = "WorkShop"
     name = "WorkShop"
 
-    def getConfigurationOptions(self, character):
-        options = super().getConfigurationOptions(character)
-        if self.bolted:
-            options["b"] = ("unbolt", self.unboltAction)
-        else:
-            options["b"] = ("bolt down", self.boltAction)
-        return options
-
     def getInputItems(self):
         result = []
 

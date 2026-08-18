@@ -83,19 +83,5 @@ Clones with the "storage management" duty will remove excess items.
             text.extend([f"{item_type}:{spacer} ",(src.pseudoUrwid.AttrSpec(color,"black"),f"{amount}/{limit}\n")])
         character.showTextMenu(text)
 
-    def getConfigurationOptions(self, character):
-        '''
-        register the configuration options with superclass
-
-        Parameters:
-            character: the character trying to conigure the machine
-        '''
-        options = super().getConfigurationOptions(character)
-        if self.bolted:
-            options["b"] = ("unbolt", self.unboltAction)
-        else:
-            options["b"] = ("bolt down", self.boltAction)
-        return options
-
 # register the item
 src.items.addType(StockPlaner)

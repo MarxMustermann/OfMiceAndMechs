@@ -737,6 +737,12 @@ class Item:
             options["r"] = ("reset", self.reset)
         if self.hasMaintenance:
             options["m"] = ("do maintenance", self.doMaintenance)
+
+        if self.bolted:
+            options["b"] = ("unbolt", self.unboltAction)
+        else:
+            options["b"] = ("bolt down", self.boltAction)
+
         return options
 
     def spawnSetCommand(self,character):

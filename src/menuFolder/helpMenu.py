@@ -152,6 +152,7 @@ if the suggested action is \" """,(src.interaction.urwid.AttrSpec(src.interactio
             txt.append("x   - open message log\n")
             txt.append("v   - open character overview\n")
             txt.append("p   - cast magic\n")
+            txt.append("g   - open action menu\n")
             txt.append("\n\nPress esc to close submenues.\nSome menues can be docked/undocked by pressing esc+rCTRL or esc+lCTRL.")
 
         if self.index == 4:

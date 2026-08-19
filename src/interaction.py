@@ -331,6 +331,7 @@ def checkResetWindowSize(width=None,height=None):
     global tileHeight
     global tileWidth
     global window_width
+    global zoom
     if width is None:
         width = window_width
     else:
@@ -346,8 +347,10 @@ def checkResetWindowSize(width=None,height=None):
 
     if tileHeight < 6:
         tileHeight = 6
+        zoom += 1
     if tileHeight > 28:
         tileHeight = 28
+        zoom -= 1
     tileWidth = tileHeight//2
 
     global tileset_map

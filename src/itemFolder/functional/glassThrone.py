@@ -66,4 +66,6 @@ Collect all glass hearts and activate it to attune it.
 
 Survive the wave to complete the attuning proccess.
 """
+
+# register item class
 src.items.addType(GlassThrone)

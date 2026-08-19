@@ -350,6 +350,15 @@ class SiegeManager(src.items.Item):
             character.addMessage("restricted outside")
             character.changed("did restricted outside",{})
 
+            text = ["""
+The alarms outside start blaring.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You restricted the outside movement."),"""
+
+This means that all Clones working on this terrain are prohibited from going outside.
+Be aware that no resources can be gathered from outside the rooms.
+"""]
+            character.showTextMenu(text)
+
     def unrestrictOutside(self,character=None):
         '''
         unrestrict the outside movement
@@ -368,6 +377,15 @@ class SiegeManager(src.items.Item):
         if character:
             character.addMessage("unrestricted outside")
             character.changed("did unrestricted outside",{})
+
+            text = ["""
+The alarm outside fall silent.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You unrestricted the outside movement."),"""
+
+This means that all Clones working on this terrain are free to go outside.
+Make sure the outside movement is always restricted when leaving rooms is dangerous.
+"""]
+            character.showTextMenu(text)
 
     def checkCharacter(self,toCheck,faction=None):
         '''
@@ -412,6 +430,15 @@ class SiegeManager(src.items.Item):
         if character:
             character.addMessage("you orderd a mopup operation")
 
+            text = ["""
+A shrill sound echoes through the whole terrain.
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You ordered a mopop operation."),"""
+
+Every Clone on this terrain will start attacking enemies.
+This will end when all enemies are dead.
+"""]
+            character.showTextMenu(text)
+
     def soundAlarms(self,character=None):
         '''
         trigger the alarms on the base
@@ -423,19 +450,37 @@ class SiegeManager(src.items.Item):
         # trigger the room alarms
         terrain = self.getTerrain()
         foundAlarm = False
+        num_alarms_triggered = 0
         for room in terrain.rooms:
             for alarmbell in room.getItemsByType("AlarmBell"):
                 if not alarmbell.bolted:
                     continue
                 room.alarm = True
                 foundAlarm = True
+                num_alarms_triggered += 1
 
         # handle effect on the actor
         if character:
             if foundAlarm:
                 character.addMessage("you sound the AlarmBells")
+
+                text = ["""
+A signal ripples through the terrain and
+it gets picked up by AlarmBells.
+
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"Movement restrictions have been applied to {num_alarms_triggered} rooms."),"""
+"""]
+                character.showTextMenu(text)
             else:
                 character.addMessage("no AlarmBells to sound")
+
+                text = ["""
+A signal ripples through the terrain,
+but there are no AlarmBells to pick the signal up.
+
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"No movement restriction was applied to any room."),"""
+"""]
+                character.showTextMenu(text)
 
     def silenceAlarms(self,character=None):
         '''
@@ -447,12 +492,21 @@ class SiegeManager(src.items.Item):
 
         # stop the room alarms
         terrain = self.getTerrain()
+        num_alarms_silenced = 0
         for room in terrain.rooms:
-            room.alarm = False
+            if room.alarm:
+                room.alarm = False
+                num_alarms_silenced += 1
 
         # handle effect on the actor
         if character:
             character.addMessage("you silence the AlarmBells")
+            text = ["""
+A signal ripples through the terrain and silences the alarms.
+
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"Movement restrictions were removed from {num_alarms_silenced} rooms."),"""
+"""]
+            character.showTextMenu(text)
 
     def handleTick(self):
         '''

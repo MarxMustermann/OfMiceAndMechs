@@ -64,10 +64,6 @@ class MotionSensor(src.items.Item):
         self.faction = character.faction
 
         options = super().getConfigurationOptions(character)
-        if self.bolted:
-            options["b"] = ("unbolt", self.unboltAction)
-        else:
-            options["b"] = ("bolt down", self.boltAction)
         options["a"] = ("toggle active", self.toggleActive)
         options["t"] = ("configure target", self.configureTargetHook)
         return options

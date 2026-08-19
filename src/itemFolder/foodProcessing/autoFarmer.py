@@ -160,19 +160,4 @@ class AutoFarmer(src.items.Item):
 
         character.runCommandString(command)
 
-    def getConfigurationOptions(self, character):
-        """
-        register the configuration options with superclass
-
-        Parameters:
-            character: the character trying to conigure the machine
-        """
-
-        options = super().getConfigurationOptions(character)
-        if self.bolted:
-            options["b"] = ("unbolt", self.unboltAction)
-        else:
-            options["b"] = ("bolt down", self.boltAction)
-        return options
-
 src.items.addType(AutoFarmer)

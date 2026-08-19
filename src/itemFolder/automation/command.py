@@ -206,10 +206,6 @@ it holds the command:
         return text
     def getConfigurationOptions(self, character):
         options = super().getConfigurationOptions(character)
-        if self.bolted:
-            options["b"] = ("unbolt", self.unboltAction)
-        else:
-            options["b"] = ("bolt down", self.boltAction)
         if self.repeat:
             options["r"] = ("set the command to not repeat", self.changeRepeat)
         else:

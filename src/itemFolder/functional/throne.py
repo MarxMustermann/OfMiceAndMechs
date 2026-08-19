@@ -145,21 +145,6 @@ Do you you want to teleport there now?
         target_terrain_position = (7,7)
         src.magic.teleportToTerrain(character, target_terrain_position, spawnOutside=True)
 
-    def getConfigurationOptions(self, character):
-        """
-        register the configuration options with superclass
-
-        Parameters:
-            character: the character trying to conigure the machine
-        """
-
-        options = super().getConfigurationOptions(character)
-        if self.bolted:
-            options["b"] = ("unbolt", self.unboltAction)
-        else:
-            options["b"] = ("bolt down", self.boltAction)
-        return options
-
     def getLongInfo(self, character=None):
         if self.wavesSpawned:
             return f"""The Throne did not attune to you.

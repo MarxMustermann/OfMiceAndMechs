@@ -23,21 +23,6 @@ Activate the maggot fermenter to add a charge to the goo dispenser.
         self.activated = False
         self.level = 1
 
-    def getConfigurationOptions(self, character):
-        """
-        register the configuration options with superclass
-
-        Parameters:
-            character: the character trying to conigure the machine
-        """
-
-        options = super().getConfigurationOptions(character)
-        if self.bolted:
-            options["b"] = ("unbolt", self.unboltAction)
-        else:
-            options["b"] = ("bolt down", self.boltAction)
-        return options
-
     def apply(self, character):
         """
         handle a character trying to produce goo

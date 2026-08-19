@@ -40,19 +40,4 @@ class KnowledgeBase(src.items.Item):
         submenu.followUp = {"container":self,"method":"show_info","params":params}
         character.macroState["submenue"] = submenu
 
-    def getConfigurationOptions(self, character):
-        """
-        register the configuration options with superclass
-
-        Parameters:
-            character: the character trying to conigure the machine
-        """
-
-        options = super().getConfigurationOptions(character)
-        if self.bolted:
-            options["b"] = ("unbolt", self.unboltAction)
-        else:
-            options["b"] = ("bolt down", self.boltAction)
-        return options
-
 src.items.addType(KnowledgeBase)

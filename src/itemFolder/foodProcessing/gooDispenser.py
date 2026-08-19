@@ -47,21 +47,6 @@ Filling a flask will use up a charge from your goo dispenser.
                     "refill_flask": self.refill_flask,
                         }
 
-    def getConfigurationOptions(self, character):
-        """
-        register the configuration options with superclass
-
-        Parameters:
-            character: the character trying to conigure the machine
-        """
-
-        options = super().getConfigurationOptions(character)
-        if self.bolted:
-            options["b"] = ("unbolt", self.unboltAction)
-        else:
-            options["b"] = ("bolt down", self.boltAction)
-        return options
-
     def render(self):
         if self.readyToUse():
             baseDisplay = "%="

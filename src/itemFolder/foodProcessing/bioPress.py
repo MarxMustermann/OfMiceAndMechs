@@ -20,21 +20,6 @@ Place 10 bio mass to the left/west of the bio press.
 Activate the bio press to produce press cake.
 """
 
-    def getConfigurationOptions(self, character):
-        """
-        register the configuration options with superclass
-
-        Parameters:
-            character: the character trying to conigure the machine
-        """
-
-        options = super().getConfigurationOptions(character)
-        if self.bolted:
-            options["b"] = ("unbolt", self.unboltAction)
-        else:
-            options["b"] = ("bolt down", self.boltAction)
-        return options
-
     def render(self):
         if self.readyToUse():
             return "%H"

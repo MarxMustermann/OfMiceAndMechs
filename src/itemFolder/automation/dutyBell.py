@@ -78,10 +78,6 @@ class DutyBell(src.items.Item):
 
         options = super().getConfigurationOptions(character)
         options["d"] = ("set duty", self.dutySelection)
-        if self.bolted:
-            options["b"] = ("unbolt", self.unboltAction)
-        else:
-            options["b"] = ("bolt down", self.boltAction)
         return options
 
     def dutySelection(self,character):
@@ -105,14 +101,6 @@ class DutyBell(src.items.Item):
         character = extraParams["character"]
         self.duty = extraParams["selection"]
         character.addMessage(f"you set the duty to {self.duty}")
-
-    def boltAction(self,character):
-        self.bolted = True
-        character.addMessage("you bolt down the Machine")
-
-    def unboltAction(self,character):
-        self.bolted = False
-        character.addMessage("you unbolt the Machine")
 
     def getLongInfo(self, character=None):
         """

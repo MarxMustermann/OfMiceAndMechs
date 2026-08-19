@@ -20,4 +20,7 @@ class IncreaseHealthRegenPotion(src.items.itemMap["BuffPotion"]):
     def getLongInfo(self, character=None):
         return f"This Potion increases the amount you regenerate {self.healthBonus} for {self.duration} ticks"
 
+    def ingredients():
+        return [src.items.itemMap["SpiderEye"]]
+
 src.items.addType(IncreaseHealthRegenPotion,potion=True)

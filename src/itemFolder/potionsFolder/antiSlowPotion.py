@@ -16,4 +16,7 @@ class AntiSlowPotion(src.items.itemMap["Potion"]):
     def getLongInfo(self, character=None):
         return f"This Potion removes \"slowed\" effect from you"
 
+    def ingredients():
+        return [src.items.itemMap["SpiderEye"]]
+
 src.items.addType(AntiSlowPotion,potion=True)

@@ -19,4 +19,7 @@ class IncreaseMaxHealthPotion(src.items.itemMap["BuffPotion"]):
     def getLongInfo(self, character=None):
         return f"This Potion increases you max HP by {self.healthBonus} for {self.duration} ticks"
 
+    def ingredients():
+        return [src.items.itemMap["SpiderEye"]]
+
 src.items.addType(IncreaseMaxHealthPotion,potion=True)

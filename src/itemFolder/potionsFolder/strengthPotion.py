@@ -18,4 +18,7 @@ class StrengthPotion(src.items.itemMap["BuffPotion"]):
     def getLongInfo(self, character=None):
         return f"This Potion increases your melee damage dealt by {self.damageBonus} for {self.duration} ticks"
 
+    def ingredients():
+        return [src.items.itemMap["SpiderEye"]]
+
 src.items.addType(StrengthPotion,potion=True)

@@ -150,7 +150,7 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
         for enemy in enemies:
             enemyPosition = enemy.getPosition()
             if enemyPosition == characterPosition:
-                return (None,("m","attack Snatcher (bellow you)"))
+                return (None,("m","attack Snatcher (below you)"))
             
             direction = None
             if enemyPosition == (characterPosition[0]-1,characterPosition[1],characterPosition[2]):

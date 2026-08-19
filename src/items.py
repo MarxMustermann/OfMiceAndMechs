@@ -545,7 +545,7 @@ class Item:
 
     def is_bolted_over(self):
         """
-        check if the item is bellow a bolted down item
+        check if the item is below a bolted down item
         """
         for item in self.get_items_on_tile():
             if item == self:

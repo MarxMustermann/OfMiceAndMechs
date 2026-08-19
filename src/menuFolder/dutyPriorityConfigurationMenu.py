@@ -64,7 +64,7 @@ class DutyPriorityConfigurationMenu(src.menues.SubMenu):
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"You ask {self.partner.name} to change its working priorities."),"""
 
 The clones duties and its priorities are listed below.
-High priority task will done before low priority tasks.
+High priority tasks will done before low priority tasks.
 A high number indicates a high priority.
 
 

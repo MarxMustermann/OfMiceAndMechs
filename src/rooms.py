@@ -1718,6 +1718,8 @@ class Room:
         for itemPair in items[:]:
             if (itemPair[1][0] in (0,12,) or itemPair[1][1] in (0,12,)) and self.getItemByPosition(itemPair[1]):
                 items.remove(itemPair)
+                if actor:
+                    actor.addMessage("you throw the item into the static and it vanishes")
 
         # add the items to the item list
         for itemPair in items:

@@ -184,6 +184,14 @@ if __name__ == '__main__':
                     if is_debug:
                         raise e
 
+                    # store crash files localy
+                    from pathlib import Path
+                    Path("crashes").mkdir(parents=True, exist_ok=True)
+                    folder_name = str(random.randint(1,100000))
+                    Path(f"crashes/{folder_name}/").mkdir(parents=True, exist_ok=True)
+                    import shutil
+                    shutil.copyfile(f"gamestate/gamestate_{src.gamestate.gamestate.gameIndex}",f"crashes/{folder_name}/gamestate_{src.gamestate.gamestate.gameIndex}")
+
                     import time
                     import traceback
                     from datetime import datetime
@@ -199,7 +207,8 @@ if __name__ == '__main__':
                     text+= "(the report doesn't include any personal data)\n"
 
                     exceptionText = ''.join(traceback.format_exception(None, e, e.__traceback__))
-
+                    with open(f"crashes/{folder_name}/crash.txt","w") as f:
+                        f.write(exceptionText)
 
                     def askToOpenDiscordChannel():
                         text = "do you want to open the game discord channel?\npress y to accept or press n to decline"
@@ -285,6 +294,8 @@ if __name__ == '__main__':
                                                             src.interaction.tcodPresent()
 
                                     info = askForAdditionalInfo()
+                                    with open(f"crashes/{folder_name}/info.txt","w") as f:
+                                        f.write(info)
 
                                     import requests
                                     def send_d():
@@ -307,18 +318,6 @@ if __name__ == '__main__':
                                         diff = time.time() - t
                                         if diff < 2:
                                             time.sleep(diff)
-
-                                    # store crash files localy
-                                    from pathlib import Path
-                                    Path("crashes").mkdir(parents=True, exist_ok=True)
-                                    folder_name = str(random.randint(1,100000))
-                                    Path(f"crashes/{folder_name}/").mkdir(parents=True, exist_ok=True)
-                                    import shutil
-                                    shutil.copyfile(f"gamestate/gamestate_{src.gamestate.gamestate.gameIndex}",f"crashes/{folder_name}/gamestate_{src.gamestate.gamestate.gameIndex}")
-                                    with open(f"crashes/{folder_name}/crash.txt","w") as f:
-                                        f.write(exceptionText)
-                                    with open(f"crashes/{folder_name}/info.txt","w") as f:
-                                        f.write(info)
 
                                     # send bug report over internet
                                     t = Thread(target=send_d)

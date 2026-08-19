@@ -556,6 +556,8 @@ class Terrain:
         if not (char.xPosition and char.yPosition):
             return None
 
+        destroy_message = "An item blocked your way, but the static destroys it"
+        destroy_animation = ("charsequence",5,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
         char.container.addAnimation(char.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "#000"), "  ")})
         if direction == "west":
             if char.yPosition % 15 == 0 or char.yPosition % 15 == 14:
@@ -585,8 +587,11 @@ class Terrain:
                 new_pos = char.getBigPosition()
                 old_pos = (new_pos[0]+1,new_pos[1],new_pos[2])
                 char.changed("changedTile",{"old_pos":old_pos,"new_pos":new_pos})
-                if not self.getPositionWalkable((char.xPosition-1,char.yPosition,char.zPosition)):
-                    self.removeItems(self.getItemByPosition((char.xPosition-1,char.yPosition,char.zPosition)))
+                step_pos = (char.xPosition-1,char.yPosition,char.zPosition)
+                if not self.getPositionWalkable(step_pos):
+                    self.removeItems(self.getItemByPosition(step_pos))
+                    char.container.addAnimation(step_pos,destroy_animation[0],destroy_animation[1],destroy_animation[2])
+                    char.addMessage(destroy_message)
                 char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
             if char.xPosition % 15 == 0:
                 oldBigPos = char.getBigPosition()
@@ -624,8 +629,11 @@ class Terrain:
                 new_pos = char.getBigPosition()
                 old_pos = (new_pos[0]-1,new_pos[1],new_pos[2])
                 char.changed("changedTile",{"old_pos":old_pos,"new_pos":new_pos})
-                if not self.getPositionWalkable((char.xPosition+1,char.yPosition,char.zPosition)):
-                    self.removeItems(self.getItemByPosition((char.xPosition+1,char.yPosition,char.zPosition)))
+                step_pos = (char.xPosition+1,char.yPosition,char.zPosition)
+                if not self.getPositionWalkable(step_pos):
+                    self.removeItems(self.getItemByPosition(step_pos))
+                    char.container.addAnimation(step_pos,destroy_animation[0],destroy_animation[1],destroy_animation[2])
+                    char.addMessage(destroy_message)
                 char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
             if char.xPosition % 15 == 14:
                 oldBigPos = char.getBigPosition()
@@ -666,8 +674,11 @@ class Terrain:
                 new_pos = char.getBigPosition()
                 old_pos = (new_pos[0],new_pos[1]+1,new_pos[2])
                 char.changed("changedTile",{"old_pos":old_pos,"new_pos":new_pos})
-                if not self.getPositionWalkable((char.xPosition,char.yPosition-1,char.zPosition)):
-                    self.removeItems(self.getItemByPosition((char.xPosition,char.yPosition-1,char.zPosition)))
+                step_pos = (char.xPosition,char.yPosition-1,char.zPosition)
+                if not self.getPositionWalkable(step_pos):
+                    self.removeItems(self.getItemByPosition(step_pos))
+                    char.container.addAnimation(step_pos,destroy_animation[0],destroy_animation[1],destroy_animation[2])
+                    char.addMessage(destroy_message)
                 char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
             if char.yPosition % 15 == 0:
                 oldBigPos = char.getBigPosition()
@@ -706,8 +717,11 @@ class Terrain:
                 new_pos = char.getBigPosition()
                 old_pos = (new_pos[0],new_pos[1]-1,new_pos[2])
                 char.changed("changedTile",{"old_pos":old_pos,"new_pos":new_pos})
-                if not self.getPositionWalkable((char.xPosition,char.yPosition+1,char.zPosition)):
-                    self.removeItems(self.getItemByPosition((char.xPosition,char.yPosition+1,char.zPosition)))
+                step_pos = (char.xPosition,char.yPosition+1,char.zPosition)
+                if not self.getPositionWalkable(step_pos):
+                    self.removeItems(self.getItemByPosition(step_pos))
+                    char.container.addAnimation(step_pos,destroy_animation[0],destroy_animation[1],destroy_animation[2])
+                    char.addMessage(destroy_message)
                 char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
             if char.yPosition % 15 == 14:
                 oldBigPos = char.getBigPosition()

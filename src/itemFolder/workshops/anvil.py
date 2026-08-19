@@ -71,7 +71,7 @@ class Anvil(src.items.itemMap["WorkShop"]):
 
         if self.inUse:
             if self.lastInteraction > src.gamestate.gamestate.tick-10:
-                character.addMessage("This item is in use")
+                character.notify("This item is in use by another Clone.\n\nIt can only used by one Clone at the same time.")
                 character.changed("failed scrap hammering",{})
                 return
             else:

@@ -71,20 +71,5 @@ This item can enhance your stats.
 
         character.container.addAnimation(character.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#f00", "#000"), "++")]})
 
-    def getConfigurationOptions(self, character):
-        '''
-        register the configuration options with superclass
-
-        Parameters:
-            character: the character trying to conigure the machine
-        '''
-
-        options = super().getConfigurationOptions(character)
-        if self.bolted:
-            options["b"] = ("unbolt", self.unboltAction)
-        else:
-            options["b"] = ("bolt down", self.boltAction)
-        return options
-
 # register the item type
 src.items.addType(GeneEnhancer)

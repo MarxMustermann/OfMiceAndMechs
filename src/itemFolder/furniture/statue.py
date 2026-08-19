@@ -26,10 +26,7 @@ class Statue(src.items.Item):
 
         options = super().getConfigurationOptions(character)
         if self.bolted:
-            options["b"] = ("unbolt", self.unboltAction)
             options["p"] = ("pray", self.pray)
-        else:
-            options["b"] = ("bolt down", self.boltAction)
         return options
 
     def apply(self,character):
@@ -72,16 +69,6 @@ class Statue(src.items.Item):
         event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick+(15*15*15-src.gamestate.gamestate.tick%(15*15*15))+10)
         event.setCallback({"container": new, "method": "handleEpochChange"})
         container.addEvent(event)
-
-    def boltAction(self,character):
-        self.bolted = True
-        character.addMessage("you bolt down the Statue")
-        character.changed("boltedItem",{"character":character,"item":self})
-
-    def unboltAction(self,character):
-        self.bolted = False
-        character.addMessage("you unbolt the Statue")
-        character.changed("unboltedItem",{"character":character,"item":self})
 
     def getLongInfo(self, character=None):
         return f"""Statues are mainly of decorative purposes.

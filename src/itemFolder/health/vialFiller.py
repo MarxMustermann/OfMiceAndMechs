@@ -20,31 +20,6 @@ class VialFiller(src.items.Item):
         self.name = "vial filler"
         self.ins = [(-1,0,0)]
 
-    def getConfigurationOptions(self, character):
-        """
-        register the configuration options with superclass
-
-        Parameters:
-            character: the character trying to conigure the machine
-        """
-
-        options = super().getConfigurationOptions(character)
-        if self.bolted:
-            options["b"] = ("unbolt", self.unboltAction)
-        else:
-            options["b"] = ("bolt down", self.boltAction)
-        return options
-
-    def boltAction(self,character):
-        self.bolted = True
-        character.addMessage("you bolt down the VialFiller")
-        character.changed("boltedItem",{"character":character,"item":self})
-
-    def unboltAction(self,character):
-        self.bolted = False
-        character.addMessage("you unbolt the VialFiller")
-        character.changed("unboltedItem",{"character":character,"item":self})
-
     def render(self):
         if self.readyToUse():
             baseDisplay = "o="

@@ -279,14 +279,11 @@ class GlassStatue(src.items.Item):
         '''
         options = super().getConfigurationOptions(character)
         if self.bolted:
-            options["b"] = ("unbolt", self.unboltAction)
             if not self.hasItem:
                 options["g"] = ("set glass heart", self.setGlassHeart)
             else:
                 options["g"] = ("remove glass heart", self.removeGlassHeart)
                 options["r"] = ("release glass heart", self.releaseGlassHeart)
-        else:
-            options["b"] = ("bolt down", self.boltAction)
         return options
 
     def getSetHeart(self,character):
@@ -370,22 +367,6 @@ The GlassHeart scream and its agony takes physical form.
         character.macroState["submenue"] = submenue
 
         src.magic.spawnWaves()
-
-    def boltAction(self,character):
-        '''
-        bolt the item down
-        '''
-        self.bolted = True
-        character.addMessage("you bolt down the Statue")
-        character.changed("boltedItem",{"character":character,"item":self})
-
-    def unboltAction(self,character):
-        '''
-        unbolt the item
-        '''
-        self.bolted = False
-        character.addMessage("you unbolt the Statue")
-        character.changed("unboltedItem",{"character":character,"item":self})
 
     def getLongInfo(self, character=None):
         '''

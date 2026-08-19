@@ -56,21 +56,6 @@ After getting spawned the Clone will activate the item to the east of the Growth
         else:
             return src.canvas.displayChars.growthTank_unfilled
 
-    def getConfigurationOptions(self, character):
-        """
-        register the configuration options with superclass
-
-        Parameters:
-            character: the character trying to conigure the machine
-        """
-
-        options = super().getConfigurationOptions(character)
-        if self.bolted:
-            options["b"] = ("unbolt", self.unboltAction)
-        else:
-            options["b"] = ("bolt down", self.boltAction)
-        return options
-
     """
     manually eject character
     """

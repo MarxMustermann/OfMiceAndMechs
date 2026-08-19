@@ -239,10 +239,6 @@ class Anvil(src.items.itemMap["WorkShop"]):
             return
 
         # prevent event flooding
-        try:
-            self.lastHandleTick
-        except:
-            self.lastHandleTick = None
         if self.lastHandleTick == src.gamestate.gamestate.tick:
             return
         self.lastHandleTick = src.gamestate.gamestate.tick

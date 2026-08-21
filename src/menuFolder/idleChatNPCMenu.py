@@ -30,7 +30,8 @@ class IdleChatNPCMenu(src.menues.SubMenu):
                 options.append(("showInventory","What is in your inventory?"))
                 options.append(("showStats","What have you been doing?"))
                 options.append(("exchangeItems","Let us exchange items"))
-                options.append(("setDutyPriorities","Let us talk about work priorities"))
+                if not self.npc.burnedIn:
+                    options.append(("setDutyPriorities","Let us talk about work priorities"))
                 options.append(("reset","You are behaving eratically. Get yourself together!"))
                 self.subMenu = src.menues.menuMap["SelectionMenu"]("", options)
                 self.handleKey("~", noRender=noRender, character=character)

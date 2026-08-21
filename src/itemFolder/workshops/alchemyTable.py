@@ -42,11 +42,20 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
 
         # get user input for the type of potion to produce
         if "type" not in params:
+            extraDescriptions = {}
+            extraDescriptions["byName"] = "produce a potion by enterying the name of the potion"
             options = []
             for potionType in src.items.potionTypes:
                 options.append((potionType,potionType))
+                item_class = src.items.itemMap[potionType]
+                description_text = f"{item_class.name} => \n{item_class.description}\n\n"
+                description_text += "\ningredients: Flask"
+                for ingedient in item_class.ingredients():
+                    name = ingedient.type
+                    description_text += f" - {name}"
+                extraDescriptions[potionType] = description_text
             options.append(("byName","produce by name"))
-            submenue = src.menues.menuMap["SelectionMenu"]("what item to produce?",options,targetParamName="type")
+            submenue = src.menues.menuMap["SelectionMenu"]("what item to produce?",options,targetParamName="type",extraDescriptions=extraDescriptions)
             submenue.tag = "alchemyTableProductSelection"
             submenue.extraInfo["item"] = self
             character.macroState["submenue"] = submenue

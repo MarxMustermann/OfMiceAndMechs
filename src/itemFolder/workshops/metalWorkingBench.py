@@ -90,7 +90,6 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         options.append(("CorpseAnimator","Corpseanimator"))
         options.append(("Shrine","Shrine"))
         options.append(("Throne","Throne"))
-        options.append(("ItemCollector","ItemCollector"))
         options.append(("PersonnelTracker","PersonnelTracker"))
         options.append(("ArmorStand","ArmorStand"))
         options.append(("WeaponRack","WeaponRack"))

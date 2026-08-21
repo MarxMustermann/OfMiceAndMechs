@@ -3100,6 +3100,8 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                 continue
             lootRoom.addWalkingSpace((6,y,0))
         lootRoom.spawnItem("ArmorReinforcer",(6,6,0),bolted=True)
+        for _i in range(2):
+            lootRoom.spawnItem("ChitinPlates")
 
         # add loot room
         lootRoom = architect.doAddRoom(
@@ -3154,6 +3156,8 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         for y in range(8,12):
             lootRoom.addWalkingSpace((6,y,0))
         lootRoom.spawnItem("SwordSharpener",(6,6,0),bolted=True)
+        for _i in range(2):
+            lootRoom.spawnItem("Grindstone")
         lootRoom.spawnItem("Painter",(3,5,0))
 
         # add promotion room

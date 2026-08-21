@@ -29,6 +29,7 @@ class PotionOfSpeed(src.items.itemMap["BuffPotion"]):
         '''
         return f"This Potion decreases your the time you need to move by {(1-self.speedUp)*100}% for {self.duration} ticks"
 
+    @staticmethod
     def ingredients():
         '''
         generate a list of ingredients

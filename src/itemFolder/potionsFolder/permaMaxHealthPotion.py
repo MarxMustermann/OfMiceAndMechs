@@ -25,6 +25,7 @@ class PermaMaxHealthPotion(src.items.itemMap["Potion"]):
     def getLongInfo(self, character=None):
         return f"This Potion increases your max health by {self.healingamount}"
 
+    @staticmethod
     def ingredients():
         return [src.items.itemMap["Bloom"],src.items.itemMap["ManaCrystal"]]
 

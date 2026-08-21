@@ -2055,7 +2055,7 @@ class Room:
 
     def spawnItem(self,itemType,pos=None,bolted=False):
         if pos == None:
-            pos = (random.randint(1,12),random.randint(1,12),0)
+            pos = self.getRandomPosition()
         item =  src.items.itemMap[itemType]()
         self.addItem(item,pos)
         item.bolted = bolted

@@ -51,6 +51,44 @@ class Item:
 
     description = "missing description"
 
+    def __init__(self, display=None, name=None, seed=0, noId=False):
+        """
+        the constructor
+
+        Parameters:
+            display: information on how the item is shown, can be a string
+            name: name shown to the user
+            seed: rng seed
+            noId: flag to prevent generating useless ids (obsolete?)
+        """
+        self.commandOptions = []
+        self.applyOptions = []
+        self.ignoreAttributes = []
+        self.applyMap = {}
+        self.settings = {}
+        self.charges = 0
+        self.watched = []
+        super().__init__()
+
+        if display:
+            self.display = display
+        else:
+            self.display = "??"
+
+        # basic information
+        self.seed = seed
+        if name:
+            self.name = name
+
+        # storage for other entities listening to changes
+        self.listeners = {"default": []}
+
+        # management for movement
+        self.chainedTo = []
+
+        # properties for traits
+        self.commands = {}
+
     def drawSDL(self, renderer, basePos, fg_color=(255,255,255,255), bg_color=(0,0,0,255), tileSize=None, borders=False):
         self.drawTileSDL(renderer, basePos, fg_color=fg_color, bg_color=bg_color, tileSize=tileSize, tileName=self.type, borders=borders)
 
@@ -118,44 +156,6 @@ class Item:
         get the position of the terrain this item is on
         '''
         return self.getTerrain().getPosition()
-
-    def __init__(self, display=None, name=None, seed=0, noId=False):
-        """
-        the constructor
-
-        Parameters:
-            display: information on how the item is shown, can be a string
-            name: name shown to the user
-            seed: rng seed
-            noId: flag to prevent generating useless ids (obsolete?)
-        """
-        self.commandOptions = []
-        self.applyOptions = []
-        self.ignoreAttributes = []
-        self.applyMap = {}
-        self.settings = {}
-        self.charges = 0
-        self.watched = []
-        super().__init__()
-
-        if display:
-            self.display = display
-        else:
-            self.display = "??"
-
-        # basic information
-        self.seed = seed
-        if name:
-            self.name = name
-
-        # storage for other entities listening to changes
-        self.listeners = {"default": []}
-
-        # management for movement
-        self.chainedTo = []
-
-        # properties for traits
-        self.commands = {}
 
     def callIndirect(self, callback, extraParams=None):
         """

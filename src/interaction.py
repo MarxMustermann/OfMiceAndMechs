@@ -4565,9 +4565,14 @@ def getTcodEvents():
                                 elif items:
                                     item = items[0]
                                     if item.bolted:
-                                        quest = src.quests.questMap["ActivateItem"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
-                                        quest.autoSolve = True
-                                        mainChar.assignQuest(quest,active=True)
+                                        if item.getApplyOptions() or type(item).apply != src.items.Item.apply:
+                                            quest = src.quests.questMap["ActivateItem"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
+                                            quest.autoSolve = True
+                                            mainChar.assignQuest(quest,active=True)
+                                        else:
+                                            quest = src.quests.questMap["GoToPosition"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
+                                            quest.autoSolve = True
+                                            mainChar.assignQuest(quest,active=True)
                                     else:
                                         quest = src.quests.questMap["CleanSpace"](targetPosition=smallCoordinate,targetPositionBig=bigCoordinate)
                                         quest.autoSolve = True

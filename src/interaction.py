@@ -1749,7 +1749,7 @@ def doStackPush(key,char,charState,main,header,footer,urwid,flags):
 def forwardKeystroke(extraInfo):
     character = extraInfo["character"]
     key = extraInfo["keyPressed"]
-    if key not in ("j","k","c","e",):
+    if key not in ("j","k","c","e","o","O",".","h",):
         return
     character.runCommandString([key])
 
@@ -3068,28 +3068,78 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
         if key in ("enter",):
 
             # get item to work on
-            item = charState["itemMarkedLast"]
+            item_marked = charState.get("itemMarkedLast")
+            items_below = char.container.getItemByPosition(char.getPosition())
 
             # set up helper variables
             text = []
-            if not item:
+            text.extend([(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"""
+This is the portal menu for all interactions with your environment.
 
-                # show simple explainer text
-                text.extend(["""
-There is no item to interact with.
+""")])
+
+            if char.getNearbyAllies():
+                    text.extend([f"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"press h to chat"),"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"talk to allies to get information and give instructions."),"""
 """])
 
-            else:
+            if char.getNearbyEnemies():
+                    text.extend([f"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Bump into enemies to attack them."),"""
+You can do this by walking into the enemies.
+"""])
+
+
+            if item_marked or items_below:
+                if item_marked:
+                    text.extend([
+f"""
+You have marked an item for interaction by bumping into it.
+The item is a {item_marked.type}.
+If didn't mean interact with this item, press . to unselect it.
+
+
+"""])
+                    item = item_marked
+                elif items_below:
+                    top_item = items_below[0]
+                    item_names = ""
+                    for item_below in items_below:
+                        item_names += item_below.type+" - "
+                    item_names = item_names[:-3]
+                    text.append(f"""
+You are standing on top of some items:
+{item_names}
+The topmost item is a {top_item.type}. You will interact with this item.
+
+""")
+                    item = top_item
 
                 # show normal interaction instructions
-                text.extend(["""
-""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"press j to interact"),"""
+                options = item.getApplyOptions()
+                if options or type(item).apply != src.items.Item.apply:
+                    text.extend(["""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"press j to activate"),"""
 Those are the day to day normal interactions, like using a machine
 """])
+                    if options:
+                        detail_text = []
+                        detail_text.extend(["""
+This allows you to:
+"""])
+                        for (key,name) in item.getApplyOptions():
+                            detail_text.extend([f" * {name}\n"])
+                        text.append(detail_text)
+                else:
+                    text.extend(["""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"""press j to activate
+This item cannot be interacted with meaningfully.
+""")])
 
                 # show complex interaction instructions
                 text.extend(["""
-""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"press c to complex interact"),"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"press c to complex activate"),"""
 Those are the more absurd interactions, like unbolting or configuring a machine
 """])
                 detail_text = []
@@ -3126,9 +3176,32 @@ This allows you to:
                 text.extend(["""
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"press e to examine"),"""
 """])
+            else:
+                # show simple explainer text
+                text.extend(["""
+There is no item to interact with.
+Bump against an item to select it for activation.
+"""])
+
+                text.extend(["""
+"""])
+                if char.inventory:
+                    text.extend(["""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"press l to drop last item from inventory"),"""
+"""])
+
+                text.extend(["""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"press o to start observing your environment."),"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"This will allow you see what types of items are around you."),"""
+""","press O to start observing your environment in specific ways.","""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"For example counting items around you or observing enemies."),"""
+
+""","press ? for more information","""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"This will explain other activities like opening your inventory or similar."),"""
+"""])
 
             # show the instruction text
-            title = "ITEM INTERACTION PORTAL"
+            title = "INTERACTION PORTAL"
             submenue = src.menues.menuMap["OneKeystrokeMenu"](text,ignoreFirstKey=False,title=title)
             submenue.followUp = {"method":forwardKeystroke,"params":{"character":char}}
             submenue.tag = "interactionPortal"

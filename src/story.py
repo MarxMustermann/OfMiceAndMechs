@@ -7935,7 +7935,7 @@ Once you understand things try to find better solutions.
                     src.gamestate.gamestate.stern["shown_fight_tooltip"] = True
             if not src.gamestate.gamestate.stern.get("shown_use_tooltip") and not story_tooltip_text:
                 if main_char.container.tag == src.story.groundskeeper_room_tag:
-                    story_tooltip_text = " press J to open activation menu "
+                    story_tooltip_text = " press enter to open interaction menu "
                     story_tooltip_lifetime = 10
                     src.gamestate.gamestate.stern["shown_use_tooltip"] = True
             if not src.gamestate.gamestate.stern.get("shown_pickup_tooltip") and not story_tooltip_text:

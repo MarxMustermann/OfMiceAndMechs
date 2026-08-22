@@ -732,6 +732,7 @@ Equip yourself with that equipment.
             hasGooProcessing = False
             hasTemple = False
             hasTrapMaterialsManufacturing = False
+            hasScrapCompactor = False
             for room in terrain.rooms:
                 if room.tag is None:
                     hasEmptyRoom = True
@@ -756,6 +757,9 @@ Equip yourself with that equipment.
                 if room.tag == "trapMaterialsManufacturing":
                     hasTrapMaterialsManufacturing = True
                     continue
+                if room.tag == "scrapCompactor":
+                    hasScrapCompactor = True
+                    continue
                 if room.getItemsByType("CityPlaner",needsBolted=True):
                     hasCityPlaner = True
             if hasEmptyRoom and hasCityPlaner:
@@ -767,6 +771,7 @@ Equip yourself with that equipment.
                 extraDescriptions["gooProcessing"] = "Allows to produce goo and to spawn Clones"
                 extraDescriptions["temple"] = "Allows to pray and wish for miracles"
                 extraDescriptions["trapMaterialsManufacturing"] = "Produces the materials to set up traps"
+                extraDescriptions["scrapCompactor"] = "Converts Scrap to MetalBars"
                 if not hasStorage:
                     available_roomTypes.append("storage")
                 if not hasManufacturingHall:
@@ -779,6 +784,8 @@ Equip yourself with that equipment.
                     available_roomTypes.append("temple")
                 if not hasTrapMaterialsManufacturing:
                     available_roomTypes.append("trapMaterialsManufacturing")
+                if not hasScrapCompactor:
+                    available_roomTypes.append("scrapCompactor")
                 if available_roomTypes:
                     base_text = ["""
 """,(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"""Your base has an empty room to fill."""),"""

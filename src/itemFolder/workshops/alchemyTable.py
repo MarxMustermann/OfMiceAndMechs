@@ -141,11 +141,29 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
 
         # remove the ingredients used
         to_remove = [flask] + [needed_ingredients[ing] for ing in needed_ingredients]
+        consumed_from_inventory = []
+        consumed_from_nearby = []
         for item in to_remove:
             if item in character.inventory:
                 character.removeItemFromInventory(item)
+                consumed_from_inventory.append(item)
             else:
                 self.container.removeItem(item)
+                consumed_from_nearby.append(item)
+        if consumed_from_inventory:
+            inventory_item_text = ""
+            for item in consumed_from_inventory:
+                itemType_text = item.type
+                inventory_item_text += f"{itemType_text} - "
+            inventory_item_text = inventory_item_text[:-3]
+            character.addMessage(f"You use up {inventory_item_text} from your inventory")
+        if consumed_from_nearby:
+            nearby_item_text = ""
+            for item in consumed_from_nearby:
+                itemType_text = item.type
+                nearby_item_text += f"{itemType_text} - "
+            nearby_item_text = nearby_item_text[:-3]
+            character.addMessage(f"You use up {nearby_item_text} from the workshops input spots")
 
         # wait and actually produce the potion
         self.lastProduction = params["type"]

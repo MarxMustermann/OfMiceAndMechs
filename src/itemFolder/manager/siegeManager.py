@@ -357,7 +357,7 @@ The alarms outside start blaring.
 This means that all Clones working on this terrain are prohibited from going outside.
 Be aware that no resources can be gathered from outside the rooms.
 """]
-            character.showTextMenu(text)
+            character.showTextMenu(text,title="RESTRICTED OUTSIDE MOVEMENT")
 
     def unrestrictOutside(self,character=None):
         '''
@@ -385,7 +385,7 @@ The alarm outside fall silent.
 This means that all Clones working on this terrain are free to go outside.
 Make sure the outside movement is always restricted when leaving rooms is dangerous.
 """]
-            character.showTextMenu(text)
+            character.showTextMenu(text,title="UNRESTRICTED OUTSIDE MOVEMENT")
 
     def checkCharacter(self,toCheck,faction=None):
         '''
@@ -437,7 +437,7 @@ A shrill sound echoes through the whole terrain.
 Every Clone on this terrain will start attacking enemies.
 This will end when all enemies are dead.
 """]
-            character.showTextMenu(text)
+            character.showTextMenu(text,title="ORDERED MOP UP OPERATION")
 
     def soundAlarms(self,character=None):
         '''
@@ -470,7 +470,7 @@ it gets picked up by AlarmBells.
 
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"Movement restrictions have been applied to {num_alarms_triggered} rooms."),"""
 """]
-                character.showTextMenu(text)
+                character.showTextMenu(text,title="SOUNDED ALARM BELLS")
             else:
                 character.addMessage("no AlarmBells to sound")
 
@@ -480,7 +480,7 @@ but there are no AlarmBells to pick the signal up.
 
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"No movement restriction was applied to any room."),"""
 """]
-                character.showTextMenu(text)
+                character.showTextMenu(text,title="SOUNDED ALARM BELLS")
 
     def silenceAlarms(self,character=None):
         '''
@@ -506,7 +506,7 @@ A signal ripples through the terrain and silences the alarms.
 
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"Movement restrictions were removed from {num_alarms_silenced} rooms."),"""
 """]
-            character.showTextMenu(text)
+            character.showTextMenu(text,title="SILENCED ALARM BELLS")
 
     def handleTick(self):
         '''

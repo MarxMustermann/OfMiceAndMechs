@@ -7,6 +7,7 @@ class HealthPotion(src.items.itemMap["Potion"]):
     name = "Healing Potion"
 
     def __init__(self, healingamount=25):
+        super().__init__()
         self.healingamount = healingamount
 
     def apply(self, character):

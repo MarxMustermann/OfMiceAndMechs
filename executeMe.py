@@ -27,7 +27,6 @@ if __name__ == '__main__':
             action="store_true",
             help="spawn a tile based view of the map (requires pygame)",
         )
-        parser.add_argument("--urwid", action="store_true", help="do shell based")
         parser.add_argument("-ts", "--tileSize", type=int, help="the base size of tiles")
         parser.add_argument("-T", "--terrain", type=str, help="select the terrain")
         parser.add_argument("-s", "--seed", type=str, help="select the seed of a new game")
@@ -49,10 +48,7 @@ if __name__ == '__main__':
         ################################################################################
 
         # set rendering mode
-        if args.urwid or not args.notcod:
-            displayChars = canvas.DisplayMapping("unicode") if args.unicode else canvas.DisplayMapping("pureASCII")
-        else:
-            displayChars = canvas.TileMapping("testTiles")
+        displayChars = canvas.DisplayMapping("unicode") if args.unicode else canvas.DisplayMapping("pureASCII")
 
         # bad code: common variables with modules
         canvas.displayChars = displayChars
@@ -89,20 +85,7 @@ if __name__ == '__main__':
             + ([logging.FileHandler("debug.log", "w", "utf-8")] if interaction.debug else []),
         )
 
-        if not args.urwid:
-            interaction.nourwid = True
-
-            import src.pseudoUrwid
-
-            interaction.urwid = src.pseudoUrwid
-            characters.urwid = src.pseudoUrwid
-        else:
-            interaction.nourwid = False
-            import urwid
-
-            interaction.urwid = urwid
-            characters.urwid = urwid
-            interaction.setUpUrwid()
+        interaction.nourwid = True
 
         ################################################################################
         #
@@ -157,213 +140,208 @@ if __name__ == '__main__':
         ################################################################################
 
         # start the interaction loop of the underlying library
-        if args.urwid:
-            input("game ready. press enter to start")
-            interaction.loop.run()
-
         logger = logging.getLogger(__name__)
-        if not args.urwid:
+        try:
+            interaction.showIntro()
+        except src.interaction.EndGame:
+            logger.info("ended game")
+
+        while 1:
             try:
-                interaction.showIntro()
-            except src.interaction.EndGame:
-                logger.info("ended game")
-
-            while 1:
                 try:
-                    try:
-                        interaction.showMainMenu(args)
-                        interaction.gameLoop(None, None)
-                    except src.interaction.EndGame:
-                        logger.info("ended game")
-                except Exception as e:
-                    print("CRASH HAPPENED")
-                    import sys
-                    has_trace = hasattr(sys, 'gettrace') and sys.gettrace() is not None
-                    has_breakpoint = sys.breakpointhook.__module__ != "sys"
-                    is_debug = has_trace or has_breakpoint
-                    if is_debug:
-                        raise e
+                    interaction.showMainMenu(args)
+                    interaction.gameLoop(None, None)
+                except src.interaction.EndGame:
+                    logger.info("ended game")
+            except Exception as e:
+                print("CRASH HAPPENED")
+                import sys
+                has_trace = hasattr(sys, 'gettrace') and sys.gettrace() is not None
+                has_breakpoint = sys.breakpointhook.__module__ != "sys"
+                is_debug = has_trace or has_breakpoint
+                if is_debug:
+                    raise e
 
-                    # store crash files localy
-                    from pathlib import Path
-                    Path("crashes").mkdir(parents=True, exist_ok=True)
-                    folder_name = str(random.randint(1,100000))
-                    Path(f"crashes/{folder_name}/").mkdir(parents=True, exist_ok=True)
-                    import shutil
-                    shutil.copyfile(f"gamestate/gamestate_{src.gamestate.gamestate.gameIndex}",f"crashes/{folder_name}/gamestate_{src.gamestate.gamestate.gameIndex}")
+                # store crash files localy
+                from pathlib import Path
+                Path("crashes").mkdir(parents=True, exist_ok=True)
+                folder_name = str(random.randint(1,100000))
+                Path(f"crashes/{folder_name}/").mkdir(parents=True, exist_ok=True)
+                import shutil
+                shutil.copyfile(f"gamestate/gamestate_{src.gamestate.gamestate.gameIndex}",f"crashes/{folder_name}/gamestate_{src.gamestate.gamestate.gameIndex}")
 
-                    import time
-                    import traceback
-                    from datetime import datetime
-                    from threading import Thread
+                import time
+                import traceback
+                from datetime import datetime
+                from threading import Thread
 
-                    import tcod
+                import tcod
 
 
+                interaction.tcodConsole.clear()
+
+                text = "something happened and the game crashed. Do you consent to uploading the bug report?\n\n"
+                text+= "press y to accept or press n to deny\n\n"
+                text+= "(the report doesn't include any personal data)\n"
+
+                exceptionText = ''.join(traceback.format_exception(None, e, e.__traceback__))
+                with open(f"crashes/{folder_name}/crash.txt","w") as f:
+                    f.write(exceptionText)
+
+                def askToOpenDiscordChannel():
+                    text = "do you want to open the game discord channel?\npress y to accept or press n to decline"
                     interaction.tcodConsole.clear()
-
-                    text = "something happened and the game crashed. Do you consent to uploading the bug report?\n\n"
-                    text+= "press y to accept or press n to deny\n\n"
-                    text+= "(the report doesn't include any personal data)\n"
-
-                    exceptionText = ''.join(traceback.format_exception(None, e, e.__traceback__))
-                    with open(f"crashes/{folder_name}/crash.txt","w") as f:
-                        f.write(exceptionText)
-
-                    def askToOpenDiscordChannel():
-                        text = "do you want to open the game discord channel?\npress y to accept or press n to decline"
-                        interaction.tcodConsole.clear()
-                        w = len(max(text.splitlines(), key=len))
-                        x = int(src.interaction.tcodConsole.width / 2 - w / 2 )
-                        h = len(text.splitlines())
-                        y = int(src.interaction.tcodConsole.height / 2 - h / 2)
+                    w = len(max(text.splitlines(), key=len))
+                    x = int(src.interaction.tcodConsole.width / 2 - w / 2 )
+                    h = len(text.splitlines())
+                    y = int(src.interaction.tcodConsole.height / 2 - h / 2)
 
 
-                        src.interaction.tcodPresent(noPresent=True)
-                        src.helpers.draw_frame_text(src.interaction.tcodConsole ,w, h, text, x, y)
-                        src.interaction.sdl_renderer2.present()
+                    src.interaction.tcodPresent(noPresent=True)
+                    src.helpers.draw_frame_text(src.interaction.tcodConsole ,w, h, text, x, y)
+                    src.interaction.sdl_renderer2.present()
 
-                        while True:
-                            events = tcod.event.get()
-                            for event in events:
-                                if isinstance(event, tcod.event.KeyDown):
-                                    if event.sym == tcod.event.KeySym.y:
-                                        import webbrowser
-                                        webbrowser.open_new_tab("https://discord.gg/z5QfwfzWCn")
-                                        return
-                                    if event.sym == tcod.event.KeySym.n:
-                                        return
-
-                                if isinstance(event, tcod.event.Quit):
-                                    raise SystemExit()
-                                if isinstance(event, tcod.event.WindowEvent):
-                                    match event.type:
-                                        case "WINDOWCLOSE":
-                                            raise SystemExit()
-                                        case "WindowHidden":
-                                            pass
-                                        case _:
-                                            src.interaction.tcodPresent()
-                    while 1:
+                    while True:
                         events = tcod.event.get()
                         for event in events:
                             if isinstance(event, tcod.event.KeyDown):
                                 if event.sym == tcod.event.KeySym.y:
-                                    def askForAdditionalInfo():
-                                        import textwrap
+                                    import webbrowser
+                                    webbrowser.open_new_tab("https://discord.gg/z5QfwfzWCn")
+                                    return
+                                if event.sym == tcod.event.KeySym.n:
+                                    return
 
-                                        #clear prev events so it doesn't register as text
-                                        events = tcod.event.get()
-                                        for event in events:
-                                            pass
-
-                                        question = "you can provide additional info, press enter to send it"
-                                        info = ""
-                                        while True:
-                                            events = tcod.event.get()
-                                            for event in events:
-                                                text = question + "\n\n" + textwrap.fill(info, width=90) + "_"
-                                                interaction.tcodConsole.clear()
-                                                w = len(max(text.splitlines(), key=len))
-                                                x = int(src.interaction.tcodConsole.width / 2 - w / 2 )
-                                                h = len(text.splitlines())
-                                                y = int(src.interaction.tcodConsole.height / 2 - h / 2)
-
-
-                                                src.interaction.tcodPresent(noPresent=True)
-                                                src.helpers.draw_frame_text(src.interaction.tcodConsole ,w, h, text, x, y)
-                                                src.interaction.sdl_renderer2.present()
-                                                if isinstance(event,tcod.event.TextInput):
-                                                    info += event.text
-
-                                                if isinstance(event, tcod.event.KeyDown):
-                                                    if event.sym in (tcod.event.KeySym.RETURN, tcod.event.KeySym.KP_ENTER):
-                                                        return info
-                                                    if event.sym == tcod.event.KeySym.BACKSPACE:
-                                                        if len(info):
-                                                            info = info[:-1]
-                                                if isinstance(event, tcod.event.Quit):
-                                                    raise SystemExit()
-                                                if isinstance(event, tcod.event.WindowEvent):
-                                                    match event.type:
-                                                        case "WINDOWCLOSE":
-                                                            raise SystemExit()
-                                                        case "WindowHidden":
-                                                            pass
-                                                        case _:
-                                                            src.interaction.tcodPresent()
-
-                                    info = askForAdditionalInfo()
-                                    with open(f"crashes/{folder_name}/info.txt","w") as f:
-                                        f.write(info)
-
-                                    import requests
-                                    def send_d():
-                                        t = time.time()
-                                        res = requests.post(
-                                            "https://ofmiceandmechs.com/bugReportDump.php",
-                                            {
-                                                "bugReport": exceptionText,
-                                                "info": info,
-                                                "time": datetime.now().strftime("%m/%d/%Y, %H:%M:%S"),
-                                            },
-                                            files={
-                                                "upload_file": open(
-                                                    f"gamestate/gamestate_{src.gamestate.gamestate.gameIndex}", "rb"
-                                                )
-                                            },
-                                        )
-                                        print(res)
-                                        print(res.text)
-                                        diff = time.time() - t
-                                        if diff < 2:
-                                            time.sleep(diff)
-
-                                    # send bug report over internet
-                                    t = Thread(target=send_d)
-                                    t.start()
-                                    interaction.tcodConsole.clear()
-                                    text = "thanks a lot, i hope i'll get to fixing the bug soon\n"
-                                    text+= "please wait until the data upload is done"
-                                    w = len(max(text.splitlines(), key=len))
-                                    x = int(src.interaction.tcodConsole.width / 2 - w / 2 )
-                                    src.interaction.tcodPresent(noPresent=True)
-                                    src.helpers.draw_frame_text(src.interaction.tcodConsole ,w, 2, text, x, y)
-                                    src.interaction.sdl_renderer2.present()
-                                    while t.is_alive():
-                                        src.helpers.deal_with_window_events(e)
-                                    askToOpenDiscordChannel()
-                                    raise e
-                                elif event.sym == tcod.event.KeySym.n:
-                                    t = Thread(target=lambda: time.sleep(3))
-                                    interaction.tcodConsole.clear()
-                                    text = "okay then, here is the trace copied to your clipboard in case you feel better writing me an email"
-                                    x = int(src.interaction.tcodConsole.width / 2 - len(text) / 2)
-                                    tcod.sdl.sys._set_clipboard(exceptionText)
-                                    src.interaction.tcodPresent(noPresent=True)
-                                    src.helpers.draw_frame_text(src.interaction.tcodConsole ,len(text), 1, text, x, y)
-                                    src.interaction.sdl_renderer2.present()
-                                    t.start()
-                                    while t.is_alive():
-                                        src.helpers.deal_with_window_events(e)
-                                    askToOpenDiscordChannel()
-                                    raise e
                             if isinstance(event, tcod.event.Quit):
-                                raise e
+                                raise SystemExit()
                             if isinstance(event, tcod.event.WindowEvent):
                                 match event.type:
                                     case "WINDOWCLOSE":
-                                        raise e
+                                        raise SystemExit()
+                                    case "WindowHidden":
+                                        pass
+                                    case _:
+                                        src.interaction.tcodPresent()
+                while 1:
+                    events = tcod.event.get()
+                    for event in events:
+                        if isinstance(event, tcod.event.KeyDown):
+                            if event.sym == tcod.event.KeySym.y:
+                                def askForAdditionalInfo():
+                                    import textwrap
 
-                        splitted = text.splitlines()
-                        width = len(max(splitted, key=len))
-                        height = len(splitted)
-                        x = int(src.interaction.tcodConsole.width / 2 - width / 2)
-                        y = int(src.interaction.tcodConsole.height / 2 - 3 - height)
+                                    #clear prev events so it doesn't register as text
+                                    events = tcod.event.get()
+                                    for event in events:
+                                        pass
 
-                        src.interaction.tcodPresent(noPresent=True)
-                        src.helpers.draw_frame_text(src.interaction.tcodConsole ,width, height, text, x, y)
-                        src.interaction.sdl_renderer2.present()
+                                    question = "you can provide additional info, press enter to send it"
+                                    info = ""
+                                    while True:
+                                        events = tcod.event.get()
+                                        for event in events:
+                                            text = question + "\n\n" + textwrap.fill(info, width=90) + "_"
+                                            interaction.tcodConsole.clear()
+                                            w = len(max(text.splitlines(), key=len))
+                                            x = int(src.interaction.tcodConsole.width / 2 - w / 2 )
+                                            h = len(text.splitlines())
+                                            y = int(src.interaction.tcodConsole.height / 2 - h / 2)
+
+
+                                            src.interaction.tcodPresent(noPresent=True)
+                                            src.helpers.draw_frame_text(src.interaction.tcodConsole ,w, h, text, x, y)
+                                            src.interaction.sdl_renderer2.present()
+                                            if isinstance(event,tcod.event.TextInput):
+                                                info += event.text
+
+                                            if isinstance(event, tcod.event.KeyDown):
+                                                if event.sym in (tcod.event.KeySym.RETURN, tcod.event.KeySym.KP_ENTER):
+                                                    return info
+                                                if event.sym == tcod.event.KeySym.BACKSPACE:
+                                                    if len(info):
+                                                        info = info[:-1]
+                                            if isinstance(event, tcod.event.Quit):
+                                                raise SystemExit()
+                                            if isinstance(event, tcod.event.WindowEvent):
+                                                match event.type:
+                                                    case "WINDOWCLOSE":
+                                                        raise SystemExit()
+                                                    case "WindowHidden":
+                                                        pass
+                                                    case _:
+                                                        src.interaction.tcodPresent()
+
+                                info = askForAdditionalInfo()
+                                with open(f"crashes/{folder_name}/info.txt","w") as f:
+                                    f.write(info)
+
+                                import requests
+                                def send_d():
+                                    t = time.time()
+                                    res = requests.post(
+                                        "https://ofmiceandmechs.com/bugReportDump.php",
+                                        {
+                                            "bugReport": exceptionText,
+                                            "info": info,
+                                            "time": datetime.now().strftime("%m/%d/%Y, %H:%M:%S"),
+                                        },
+                                        files={
+                                            "upload_file": open(
+                                                f"gamestate/gamestate_{src.gamestate.gamestate.gameIndex}", "rb"
+                                            )
+                                        },
+                                    )
+                                    print(res)
+                                    print(res.text)
+                                    diff = time.time() - t
+                                    if diff < 2:
+                                        time.sleep(diff)
+
+                                # send bug report over internet
+                                t = Thread(target=send_d)
+                                t.start()
+                                interaction.tcodConsole.clear()
+                                text = "thanks a lot, i hope i'll get to fixing the bug soon\n"
+                                text+= "please wait until the data upload is done"
+                                w = len(max(text.splitlines(), key=len))
+                                x = int(src.interaction.tcodConsole.width / 2 - w / 2 )
+                                src.interaction.tcodPresent(noPresent=True)
+                                src.helpers.draw_frame_text(src.interaction.tcodConsole ,w, 2, text, x, y)
+                                src.interaction.sdl_renderer2.present()
+                                while t.is_alive():
+                                    src.helpers.deal_with_window_events(e)
+                                askToOpenDiscordChannel()
+                                raise e
+                            elif event.sym == tcod.event.KeySym.n:
+                                t = Thread(target=lambda: time.sleep(3))
+                                interaction.tcodConsole.clear()
+                                text = "okay then, here is the trace copied to your clipboard in case you feel better writing me an email"
+                                x = int(src.interaction.tcodConsole.width / 2 - len(text) / 2)
+                                tcod.sdl.sys._set_clipboard(exceptionText)
+                                src.interaction.tcodPresent(noPresent=True)
+                                src.helpers.draw_frame_text(src.interaction.tcodConsole ,len(text), 1, text, x, y)
+                                src.interaction.sdl_renderer2.present()
+                                t.start()
+                                while t.is_alive():
+                                    src.helpers.deal_with_window_events(e)
+                                askToOpenDiscordChannel()
+                                raise e
+                        if isinstance(event, tcod.event.Quit):
+                            raise e
+                        if isinstance(event, tcod.event.WindowEvent):
+                            match event.type:
+                                case "WINDOWCLOSE":
+                                    raise e
+
+                    splitted = text.splitlines()
+                    width = len(max(splitted, key=len))
+                    height = len(splitted)
+                    x = int(src.interaction.tcodConsole.width / 2 - width / 2)
+                    y = int(src.interaction.tcodConsole.height / 2 - 3 - height)
+
+                    src.interaction.tcodPresent(noPresent=True)
+                    src.helpers.draw_frame_text(src.interaction.tcodConsole ,width, height, text, x, y)
+                    src.interaction.sdl_renderer2.present()
 
     except Exception as e:
         try:

@@ -22,6 +22,7 @@ import src.monster
 import src.quests
 import src.rooms
 import src.terrains
+import src.pseudoUrwid
 from config import commandChars
 from src import cinematics
 from multiprocessing import Process
@@ -39,7 +40,7 @@ logger = logging.getLogger(__name__)
 continousOperation = 0
 main = None
 frame = None
-urwid = None
+urwid = src.pseudoUrwid
 fixedTicks = False
 speed = None
 libtcodpy = None
@@ -53,6 +54,7 @@ disabled_ui_color = "#777"
 highlighted_ui_color = "#ff0"
 ui_hint_color = "#fa0"
 shadowed_ui_color = "#666"
+shadowed_ui_attr = urwid.AttrSpec(shadowed_ui_color,"black")
 warning_ui_color = "#f00"
 
 class EndGame(Exception):
@@ -678,49 +680,6 @@ def send_tracking_ping(eventType):
 footer = None
 main = None
 header = None
-
-def setUpUrwid():
-    """
-    initialise console based rendering
-    """
-
-    import urwid
-
-    # the containers for the shown text
-    urwidHeader = urwid.Text("")
-    urwidMain = urwid.Text("")
-    urwidFooter = urwid.Text("", align="right")
-
-    global footer
-    global main
-    global header
-
-    global frame
-    global loop
-
-    if not src.gamestate.gamestate.header:
-        src.gamestate.gamestate.header = AbstractedDisplay(urwidHeader)
-    if not src.gamestate.gamestate.main:
-        src.gamestate.gamestate.main = AbstractedDisplay(urwidMain)
-    if not src.gamestate.gamestate.footer:
-        src.gamestate.gamestate.footer = AbstractedDisplay(urwidFooter)
-
-    header = src.gamestate.gamestate.header
-    main = src.gamestate.gamestate.main
-    footer = src.gamestate.gamestate.footer
-
-    urwidMain.set_layout("left", "clip")
-    frame = urwid.Frame(
-        urwid.Filler(urwidMain, "top"), header=urwidHeader, footer=urwidFooter
-    )
-
-    # get the interaction loop from the library
-    loop = urwid.MainLoop(frame, unhandled_input=keyboardListener)
-
-    loop.set_alarm_in(0.1, gameLoop)
-
-    loop.set_alarm_in(0.1, handleMultiplayerClients)
-
 
 def setUpNoUrwid():
     """

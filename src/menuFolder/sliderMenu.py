@@ -36,11 +36,11 @@ class SliderMenu(src.menues.SubMenu):
         self.stepValue = D(stepValue)
         self.bigStepValue = D(bigStepValue)
         super().__init__(title=title)
-        self.footerText = [
+        self.footerText = (src.interaction.shadowed_ui_attr,[
             "press",src.interaction.ActionMeta(content=" enter or j ",payload="j"),"to confirm\n",
             "press",src.interaction.ActionMeta(content=" a ",payload="a"),"and",src.interaction.ActionMeta(content=" d ",payload="d"),"to change the value\n",
             "pressing",src.interaction.ActionMeta(content=" A ",payload="A"),"and",src.interaction.ActionMeta(content=" D ",payload="D"),"will modify the value by ",str(self.bigStepValue)
-        ]
+        ])
         self.targetParamName = targetParamName
         self.done = False
         self.additionalInfoCallBack = additionalInfoCallBack
@@ -100,16 +100,21 @@ class SliderMenu(src.menues.SubMenu):
         return False
 
     def render(self,size=None):
+        '''
+        generate the text representation of the menu
+        '''
+
+        # generate the slider bar
         percentage = (self.value - self.minValue) / (self.maxValue - self.minValue)
         number_of_bars = 35
         center_len = int(len(self.query) / 2)
-
         svalue = str(self.value)
         base_text = (center_len - int(len(svalue) / 2)) * " " + svalue + "\n"
         filled = int(percentage * number_of_bars)
         base_text += (center_len - int(number_of_bars / 2)) * " " + filled * "║"
         base_text += (number_of_bars - filled) * "|"
 
+        # get additional informtaion to show
         additional = (
             self.additionalInfoCallBack(
                 float(self.value) if not (self.stepValue % 1).is_zero() else int(self.value)
@@ -118,8 +123,10 @@ class SliderMenu(src.menues.SubMenu):
             else ""
         )
 
+        # stitch together the text
         text = ["\n",self.query,"\n\n",base_text,"\n\n",additional,"\n\n",self.footerText]
 
+        # return the text
         return text
 
 # register the menu type

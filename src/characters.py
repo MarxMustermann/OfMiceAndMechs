@@ -9,7 +9,6 @@ import regex
 import config
 import src
 
-urwid = None
 logger = logging.getLogger(__name__)
 
 

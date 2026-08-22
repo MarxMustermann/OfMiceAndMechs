@@ -6,14 +6,14 @@ class StrengthPotion(src.items.itemMap["BuffPotion"]):
     description = "Increases damage dealt in melee"
     name = "Potion of violent impact"
 
-    def getBuffsToAdd(self):
-        return [src.statusEffects.statusEffectMap["AddDamageOverTicks"](damageBonus=self.damageBonus,duration=self.duration)]
-
     def __init__(self, damageBonus=10, duration=200):
         self.damageBonus = damageBonus
         self.duration = duration
         self.walkable = True
         self.bolted = False
+
+    def getBuffsToAdd(self):
+        return [src.statusEffects.statusEffectMap["AddDamageOverTicks"](damageBonus=self.damageBonus,duration=self.duration)]
 
     def getLongInfo(self, character=None):
         return f"This Potion increases your melee damage dealt by {self.damageBonus} for {self.duration} ticks"

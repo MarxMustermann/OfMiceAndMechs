@@ -246,6 +246,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             bigStepValue=2,
             targetParamName="amount",
             additionalInfoCallBack=amountNeededToLevel,
+            title="SHARPEN SWORD",
         )
         character.macroState["submenue"] = submenue
         submenue.tag = "SwordSharpenerSlider"

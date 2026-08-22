@@ -7,7 +7,7 @@ class SliderMenu(src.menues.SubMenu):
     menu to get a string input from the user
     """
 
-    type = "InputMenu"
+    type = "SliderMenu"
 
     def __init__(
         self,
@@ -19,7 +19,8 @@ class SliderMenu(src.menues.SubMenu):
         bigStepValue=10,
         targetParamName="value",
         additionalInfoCallBack=None,
-        title=None
+        title=None,
+        unit=None,
     ):
         """
         initialise internal state
@@ -29,13 +30,13 @@ class SliderMenu(src.menues.SubMenu):
             ignoreFirst: flag to ignore first keypress
         """
 
-        self.query = query
         self.value = D(defaultValue)
         self.minValue = D(minValue)
         self.maxValue = D(maxValue)
         self.stepValue = D(stepValue)
         self.bigStepValue = D(bigStepValue)
         super().__init__(title=title)
+        self.query = query
         self.footerText = (src.interaction.shadowed_ui_attr,[
             "press",src.interaction.ActionMeta(content=" enter or j ",payload="j"),"to confirm\n",
             "press",src.interaction.ActionMeta(content=" a ",payload="a"),"and",src.interaction.ActionMeta(content=" d ",payload="d"),"to change the value\n",
@@ -44,6 +45,7 @@ class SliderMenu(src.menues.SubMenu):
         self.targetParamName = targetParamName
         self.done = False
         self.additionalInfoCallBack = additionalInfoCallBack
+        self.unit = unit
 
     def handleKey(self, key, noRender=False, character=None):
         """
@@ -107,11 +109,12 @@ class SliderMenu(src.menues.SubMenu):
         # generate the slider bar
         percentage = (self.value - self.minValue) / (self.maxValue - self.minValue)
         number_of_bars = 35
-        center_len = int(len(self.query) / 2)
         svalue = str(self.value)
-        base_text = (center_len - int(len(svalue) / 2)) * " " + svalue + "\n"
+        if self.unit:
+            svalue += " "+self.unit
+        base_text = svalue + "\n"
         filled = int(percentage * number_of_bars)
-        base_text += (center_len - int(number_of_bars / 2)) * " " + filled * "║"
+        base_text += filled * "║"
         base_text += (number_of_bars - filled) * "|"
 
         # get additional informtaion to show

@@ -188,8 +188,10 @@ class ScrapCompactor(src.items.Item):
         if scrap.amount <= 1:
             if scrap in character.inventory:
                 character.removeItemFromInventory(scrap)
+                character.addMessage("You use Scrap from you inventory to feed the ScrapCompactor")
             else:
                 self.container.removeItem(scrap)
+                character.addMessage("The ScrapCompactor takes Scrap from its input spots to feed itself")
         else:
             scrap.amount -= 1
             scrap.setWalkable()

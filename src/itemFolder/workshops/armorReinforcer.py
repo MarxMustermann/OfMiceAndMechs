@@ -202,7 +202,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
             params["armor"] = armor
             params["chitinPlates"] = chitinPlates
             submenue = src.menues.menuMap["SliderMenu"](
-                "choose the armor level to upgrade to",
+                query="choose the armor level to upgrade to",
                 defaultValue=defaultValue,
                 minValue=D(1),
                 maxValue=D(8),
@@ -210,6 +210,8 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
                 bigStepValue=D(1.0),
                 targetParamName="amount",
                 additionalInfoCallBack=amountNeededToLevel,
+                title="REINFORCE ARMOR",
+                unit="armor value",
             )
             character.macroState["submenue"] = submenue
             submenue.tag = "ArmorReinforcerSlider"
@@ -273,12 +275,15 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         spawns the UI for setting the max upgrade amount
         """
 
+        maxDefence = self.preferredMaxDefense
+        if not maxDefence:
+            maxDefence = 8
         character.macroState["submenue"] = src.menues.menuMap["SliderMenu"](
-            "set the preferred max amount of defense to upgrade to",
-            self.preferredMaxDefense if self.preferredMaxDefense else 3,
-            3,
-            8,
-            D(0.5),
+            query="set the preferred max amount of defense to upgrade to",
+            defaultValue=maxDefence,
+            minValue=1,
+            maxValue=8,
+            stepValue=D(0.5),
         )
         character.macroState["submenue"].followUp = {
             "container": self,

@@ -19,6 +19,7 @@ class SliderMenu(src.menues.SubMenu):
         bigStepValue=10,
         targetParamName="value",
         additionalInfoCallBack=None,
+        title=None
     ):
         """
         initialise internal state
@@ -34,7 +35,7 @@ class SliderMenu(src.menues.SubMenu):
         self.maxValue = D(maxValue)
         self.stepValue = D(stepValue)
         self.bigStepValue = D(bigStepValue)
-        super().__init__()
+        super().__init__(title=title)
         self.footerText = [
             "press",src.interaction.ActionMeta(content=" enter or j ",payload="j"),"to confirm\n",
             "press",src.interaction.ActionMeta(content=" a ",payload="a"),"and",src.interaction.ActionMeta(content=" d ",payload="d"),"to change the value\n",

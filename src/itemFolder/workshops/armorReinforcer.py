@@ -237,12 +237,20 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
 
         # remove the resources to pay for the upgrade
         chitinPlates = params["chitinPlates"]
+        consumed_from_inventory = 0
+        consumed_from_nearby = 0
         if chitinPlates_consumed:
             for chitinPlate in chitinPlates[:chitinPlates_consumed]:
                 if chitinPlate in character.inventory:
                     character.removeItemFromInventory(chitinPlate)
+                    consumed_from_inventory += 1
                 else:
                     self.container.removeItem(chitinPlate)
+                    consumed_from_nearby += 1
+        if consumed_from_inventory:
+                character.addMessage(f"You use up {consumed_from_inventory} ChitinPlates from your inventory")
+        if consumed_from_nearby:
+            character.addMessage(f"You use up {consumed_from_nearby} ChitinPlates from the workshops input spots")
 
         # trigger the actual productions process
         improvementAmount = chosenDefenseValue - armorOriginalDamage

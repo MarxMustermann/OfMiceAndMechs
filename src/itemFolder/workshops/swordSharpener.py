@@ -116,23 +116,39 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
 
         # start the actual sword sharpening
         if "amount" in params:
+
+            # set up helper variables
             chosenDamageValue = params["amount"]
             swordOriginalDamage = params["sword"].baseDamage
             amount_grindstone_consumed = 0
+
+            # do nothing if nothing needs to be done
             if chosenDamageValue == swordOriginalDamage:
+                character.addMessage("No sword sharpening needs to be done")
                 return
 
+            # get the total upgrade costs
             for i in range(swordOriginalDamage, chosenDamageValue):
                 amount_grindstone_consumed += self.amountNeededForOneUpgrade(i)
 
+            # actually consume items
             grindstones = params["grindstones"]
+            consumed_from_inventory = 0
+            consumed_from_nearby = 0
             if amount_grindstone_consumed:
                 for grindStone in grindstones[:amount_grindstone_consumed]:
                     if grindStone in character.inventory:
                         character.removeItemFromInventory(grindStone)
+                        consumed_from_inventory += 1
                     else:
                         self.container.removeItem(grindStone)
+                        consumed_from_nearby += 1
+            if consumed_from_inventory:
+                character.addMessage(f"You use up {consumed_from_inventory} Grindstones from your inventory")
+            if consumed_from_nearby:
+                character.addMessage(f"You use up {consumed_from_nearby} Grindstones from the workshops input spots")
 
+            # calculate how much the sword should be improved by
             improvementAmount = chosenDamageValue - swordOriginalDamage
 
             # trigger the actual productions process

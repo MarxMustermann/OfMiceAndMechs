@@ -14,7 +14,7 @@ if __name__ == '__main__':
         import argparse
         import logging
 
-        from src import canvas, characters, interaction, story
+        from src import canvas, characters, interaction, story, gamestate
 
         parser = argparse.ArgumentParser()
         parser.add_argument("-p", "--phase", type=str, help="the phase to start in")
@@ -143,7 +143,7 @@ if __name__ == '__main__':
         logger = logging.getLogger(__name__)
         try:
             interaction.showIntro()
-        except src.interaction.EndGame:
+        except interaction.EndGame:
             logger.info("ended game")
 
         while 1:
@@ -151,7 +151,7 @@ if __name__ == '__main__':
                 try:
                     interaction.showMainMenu(args)
                     interaction.gameLoop(None, None)
-                except src.interaction.EndGame:
+                except interaction.EndGame:
                     logger.info("ended game")
             except Exception as e:
                 print("CRASH HAPPENED")
@@ -168,7 +168,7 @@ if __name__ == '__main__':
                 folder_name = str(random.randint(1,100000))
                 Path(f"crashes/{folder_name}/").mkdir(parents=True, exist_ok=True)
                 import shutil
-                shutil.copyfile(f"gamestate/gamestate_{src.gamestate.gamestate.gameIndex}",f"crashes/{folder_name}/gamestate_{src.gamestate.gamestate.gameIndex}")
+                shutil.copyfile(f"gamestate/gamestate_{gamestate.gamestate.gameIndex}",f"crashes/{folder_name}/gamestate_{gamestate.gamestate.gameIndex}")
 
                 import time
                 import traceback

@@ -148,9 +148,33 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         # prevents the item to be used by multiple characters at once
         if self.inUse:
             if self.lastInteraction > src.gamestate.gamestate.tick-10:
-                character.notify("This item is in use by another Clone.\n\nIt can only used by one Clone at the same time.")
-                character.changed("failed manufacturing",{})
-                return
+                if "inUse_action" not in params:
+                    remaining_block_time = 0
+                    for (process_id,info) in self.inProcessDelayedAction.items():
+                        process_params = info["params"]
+                        remaining_block_time = process_params["delayTime"]-process_params.get("doneTime",0)
+                    options = []
+                    options.append(("go away","go away"))
+                    options.append(("interrupt","interrupt"))
+                    text = [f"""This item is """,(src.interaction.highlighted_ui_attr,"in use"),f""" by another Clone.
+It can only used by one Clone at the same time.
+
+The item will be blocked for {remaining_block_time} ticks
+
+""",(src.interaction.shadowed_ui_attr,"What do you want to do?"),"""
+"""]
+                    submenue = src.menues.menuMap["SelectionMenu"](text,options,targetParamName="inUse_action")
+                    submenue.tag = "metalWorkingProductSelection"
+                    character.macroState["submenue"] = submenue
+                    character.macroState["submenue"].followUp = {"container":self,"method":"produceItem","params":params}
+                    return
+                inUse_action = params["inUse_action"]
+                if inUse_action == "interrupt":
+                    self.cancelDelayedActions()
+                else:
+                    character.addMessage("workshop is in use")
+                    character.changed("failed manufacturing",{})
+                    return
             else:
                 self.inUse = False
 

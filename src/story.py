@@ -1290,6 +1290,9 @@ class MainGame(BasicPhase):
             src.cinematicsFolder.death.Death(extraParam)
 
     def kickoff(self):
+        global story_tooltip_text
+        global story_tooltip_lifetime
+
         if self.activeStory["type"] == "story start":
             if len(self.activeStory["mainChar"].messages) == 0:
                 text = "You."
@@ -1304,6 +1307,9 @@ class MainGame(BasicPhase):
 try to remember how you got here ...
 until the explosions fully wake you."""
                 self.activeStory["mainChar"].addMessage(text)
+
+                story_tooltip_text = " press wasd to move "
+                story_tooltip_lifetime = 1
             else:
                 self.activeStory["mainChar"].messages.append(("""until the explosions fully wake you.""",0))
             self.activeStory["sternsContraption"].startMeltdown()
@@ -7924,8 +7930,8 @@ Once you understand things try to find better solutions.
             story_tooltip_lifetime -= 1
         elif story_tooltip_text:
             story_tooltip_text = None
-        else:
-            if not src.gamestate.gamestate.stern.get("shown_movement_tooltip") and not story_tooltip_text:
+        if story_tooltip_lifetime <= 0:
+            if not src.gamestate.gamestate.stern.get("shown_movement_tooltip") and not story_tooltip_text and src.gamestate.gamestate.tick > 1:
                 story_tooltip_text = " press wasd to move "
                 story_tooltip_lifetime = 3
                 src.gamestate.gamestate.stern["shown_movement_tooltip"] = True

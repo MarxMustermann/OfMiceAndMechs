@@ -364,6 +364,8 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         '''
         checks if there are free drop spots
         '''
+        if self.xPosition is None:
+            return True
         for output in self.outs:
             targetPos = (self.xPosition+output[0], self.yPosition+output[1], self.zPosition+output[2])
             targetFull = False

@@ -5457,11 +5457,12 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                             else:
                                 statusEffectDisplay += k + " "
 
-                        text = [
-                            "health: " , healthDisplay ,
-                            " exhaustion: ", exhaustionDisplay,
-                            "  effects: " , statusEffectDisplay
-                        ]
+                        text = []
+                        text.append(["health: " , healthDisplay])
+                        if char.exhaustion:
+                            text.append([" exhaustion: " , exhaustionDisplay])
+                        if char.statusEffects:
+                            text.append([" effects: " , statusEffectDisplay])
 
                         x = max(uiElement["offset"][0]+uiElement["width"]//2-len(stringifyUrwid(text))//2,0)
                         y = uiElement["offset"][1]
@@ -5469,34 +5470,8 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                         printUrwidToTcod(text,(x,y),size=(uiElement["width"],1))
                         printUrwidToDummy(pseudoDisplay,text,(x,y),size=(uiElement["width"],1))
 
-                        """
-                        offset = (uiElement["offset"][0]+44-len(stringifyUrwid(footer.get_text()))//2,uiElement["offset"][1])
-                        width = uiElement["width"]
-                        printUrwidToTcod(footer.get_text(),offset,size=(width,100))
-                        printUrwidToDummy(pseudoDisplay,footer.get_text(),offset,size=(width,100))
-                        """
                     if uiElement["type"] == "indicators":
                         autoIndicator = ActionMeta(content="*",payload="*")
-                        if char.macroState["commandKeyQueue"] or (char.getActiveQuest() and char.getActiveQuest().autoSolve):
-                            """
-                            def test():
-                                char.clearCommandString()
-                                char.macroState["loop"] = []
-                                char.macroState["replay"].clear()
-                                char.huntkilling = False
-                                if "ifCondition" in char.interactionState:
-                                    char.interactionState["ifCondition"].clear()
-                                    char.interactionState["ifParam1"].clear()
-                                    char.interactionState["ifParam2"].clear()
-                                activeQuest = char.getActiveQuest()
-                                if activeQuest and activeQuest.autoSolve:
-                                    activeQuest.autoSolve = False
-                                char.runCommandString("~")
-
-                            autoIndicator = ActionMeta(content=(urwid.AttrSpec("#f00", "default"),"*"),payload=test)
-                            """
-
-                        #indicators = [ActionMeta(content="x",payload="x~")," ",ActionMeta(content="q",payload="q~")," ",ActionMeta(content="v",payload="v~")," ",autoIndicator," ",ActionMeta(content="t",payload="t~")]
                         indicators = []
                         if tcod.event.get_modifier_state() & tcod.event.Modifier.CAPS:
                             cap_warning = (src.pseudoUrwid.AttrSpec((255, 68, 51), (0, 0, 0)),"CAPS")

@@ -2879,7 +2879,6 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         main_npc.flask = src.items.itemMap["GooFlask"]()
         main_npc.flask.uses = 100
         main_npc.faction = faction
-        main_npc.autoCounterAttack = True
 
         main_npc.weapon = src.items.itemMap["Sword"](baseDamage=23)
 
@@ -2890,8 +2889,8 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         main_npc.registers["HOMETy"] = currentTerrain.yPosition
 
         main_npc.personality["autoFlee"] = False
-        main_npc.personality["abortMacrosOnAttack"] = False
-        main_npc.personality["autoCounterAttack"] = False
+        main_npc.personality["abortMacrosOnAttack"] = True
+        main_npc.personality["autoCounterAttack"] = True
 
         quest = src.quests.questMap["WaitQuest"]()
         quest.autoSolve = True

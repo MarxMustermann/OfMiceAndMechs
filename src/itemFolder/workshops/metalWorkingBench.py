@@ -44,10 +44,6 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         '''
         show the production stats for this item
         '''
-        try:
-            self.productionHistory
-        except:
-            self.productionHistory = []
         text = []
         if self.inUse:
             text.extend([(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"currently in production: "),f"{self.lastProduction}\n\n"])

@@ -3353,7 +3353,7 @@ press key to select action
 
 """]
 
-            submenue = src.menues.menuMap["OneKeystrokeMenu"](text,ignoreFirstKey=False)
+            submenue = src.menues.menuMap["OneKeystrokeMenu"](text,ignoreFirstKey=False,title="ACTION SELCTION")
             submenue.followUp = {"method":doActivity,"params":{"character":char}}
             submenue.tag = "activitySelection"
             char.macroState["submenue"] = submenue

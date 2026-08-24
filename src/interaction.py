@@ -50,12 +50,17 @@ performance_debug = False
 click_map = []
 
 upper_case_letter_color = "#66f"
+upper_case_letter_attr = urwid.AttrSpec(upper_case_letter_color,"black")
 disabled_ui_color = "#777"
+disabled_ui_attr = urwid.AttrSpec(disabled_ui_color,"black")
 highlighted_ui_color = "#ff0"
+highlighted_ui_attr = urwid.AttrSpec(highlighted_ui_color,"black")
 ui_hint_color = "#fa0"
+ui_hint_attr = urwid.AttrSpec(ui_hint_color,"black")
 shadowed_ui_color = "#666"
 shadowed_ui_attr = urwid.AttrSpec(shadowed_ui_color,"black")
 warning_ui_color = "#f00"
+warning_ui_attr = urwid.AttrSpec(warning_ui_color,"black")
 
 class EndGame(Exception):
     pass

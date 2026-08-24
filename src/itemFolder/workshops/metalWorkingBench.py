@@ -276,14 +276,6 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         character.addMessage("You produce a %s"%(params["type"],))
         character.addMessage("It took you %s turns to do that"%(params["doneTime"],))
 
-        try:
-            self.productionStats
-        except:
-            self.productionStats = {}
-        try:
-            self.productionHistory
-        except:
-            self.productionHistory = []
         # track the production history
         self.productionHistory.insert(0,params["type"])
         if len(self.productionHistory) > 10:

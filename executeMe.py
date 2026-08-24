@@ -243,14 +243,14 @@ if __name__ == '__main__':
                                             text = question + "\n\n" + textwrap.fill(info, width=90) + "_"
                                             interaction.tcodConsole.clear()
                                             w = len(max(text.splitlines(), key=len))
-                                            x = int(src.interaction.tcodConsole.width / 2 - w / 2 )
+                                            x = int(interaction.tcodConsole.width / 2 - w / 2 )
                                             h = len(text.splitlines())
-                                            y = int(src.interaction.tcodConsole.height / 2 - h / 2)
+                                            y = int(interaction.tcodConsole.height / 2 - h / 2)
 
 
-                                            src.interaction.tcodPresent(noPresent=True)
-                                            src.helpers.draw_frame_text(src.interaction.tcodConsole ,w, h, text, x, y)
-                                            src.interaction.sdl_renderer2.present()
+                                            interaction.tcodPresent(noPresent=True)
+                                            helpers.draw_frame_text(interaction.tcodConsole ,w, h, text, x, y)
+                                            interaction.sdl_renderer2.present()
                                             if isinstance(event,tcod.event.TextInput):
                                                 info += event.text
 
@@ -304,10 +304,10 @@ if __name__ == '__main__':
                                 text = "thanks a lot, i hope i'll get to fixing the bug soon\n"
                                 text+= "please wait until the data upload is done"
                                 w = len(max(text.splitlines(), key=len))
-                                x = int(src.interaction.tcodConsole.width / 2 - w / 2 )
-                                src.interaction.tcodPresent(noPresent=True)
-                                src.helpers.draw_frame_text(src.interaction.tcodConsole ,w, 2, text, x, y)
-                                src.interaction.sdl_renderer2.present()
+                                x = int(interaction.tcodConsole.width / 2 - w / 2 )
+                                interaction.tcodPresent(noPresent=True)
+                                helpers.draw_frame_text(src.interaction.tcodConsole ,w, 2, text, x, y)
+                                interaction.sdl_renderer2.present()
                                 while t.is_alive():
                                     src.helpers.deal_with_window_events(e)
                                 askToOpenDiscordChannel()
@@ -318,9 +318,9 @@ if __name__ == '__main__':
                                 text = "okay then, here is the trace copied to your clipboard in case you feel better writing me an email"
                                 x = int(src.interaction.tcodConsole.width / 2 - len(text) / 2)
                                 tcod.sdl.sys._set_clipboard(exceptionText)
-                                src.interaction.tcodPresent(noPresent=True)
-                                src.helpers.draw_frame_text(src.interaction.tcodConsole ,len(text), 1, text, x, y)
-                                src.interaction.sdl_renderer2.present()
+                                interaction.tcodPresent(noPresent=True)
+                                helpers.draw_frame_text(interaction.tcodConsole ,len(text), 1, text, x, y)
+                                interaction.sdl_renderer2.present()
                                 t.start()
                                 while t.is_alive():
                                     src.helpers.deal_with_window_events(e)
@@ -336,12 +336,12 @@ if __name__ == '__main__':
                     splitted = text.splitlines()
                     width = len(max(splitted, key=len))
                     height = len(splitted)
-                    x = int(src.interaction.tcodConsole.width / 2 - width / 2)
-                    y = int(src.interaction.tcodConsole.height / 2 - 3 - height)
+                    x = int(interaction.tcodConsole.width / 2 - width / 2)
+                    y = int(interaction.tcodConsole.height / 2 - 3 - height)
 
-                    src.interaction.tcodPresent(noPresent=True)
-                    src.helpers.draw_frame_text(src.interaction.tcodConsole ,width, height, text, x, y)
-                    src.interaction.sdl_renderer2.present()
+                    interaction.tcodPresent(noPresent=True)
+                    helpers.draw_frame_text(src.interaction.tcodConsole ,width, height, text, x, y)
+                    interaction.sdl_renderer2.present()
 
     except Exception as e:
         try:

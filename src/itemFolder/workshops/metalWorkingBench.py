@@ -148,13 +148,14 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         # prevents the item to be used by multiple characters at once
         if self.inUse:
             if self.lastInteraction > src.gamestate.gamestate.tick-10:
+                remaining_block_time = 0
+                for (process_id,info) in self.inProcessDelayedAction.items():
+                    process_params = info["params"]
+                    remaining_block_time = process_params["delayTime"]-process_params.get("doneTime",0)
                 if "inUse_action" not in params:
-                    remaining_block_time = 0
-                    for (process_id,info) in self.inProcessDelayedAction.items():
-                        process_params = info["params"]
-                        remaining_block_time = process_params["delayTime"]-process_params.get("doneTime",0)
                     options = []
                     options.append(("go away","go away"))
+                    options.append(("wait","wait"))
                     options.append(("interrupt","interrupt"))
                     text = [f"""This item is """,(src.interaction.highlighted_ui_attr,"in use"),f""" by another Clone.
 It can only used by one Clone at the same time.
@@ -171,6 +172,11 @@ The item will be blocked for {remaining_block_time} ticks
                 inUse_action = params["inUse_action"]
                 if inUse_action == "interrupt":
                     self.cancelDelayedActions()
+                elif inUse_action == "wait":
+                    quest = src.quests.questMap["WaitQuest"](lifetime=remaining_block_time)
+                    quest.autoSolve = True
+                    character.assignQuest(quest,active=True)
+                    return
                 else:
                     character.addMessage("workshop is in use")
                     character.changed("failed manufacturing",{})

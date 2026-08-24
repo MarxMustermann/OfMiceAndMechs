@@ -237,6 +237,13 @@ class InventoryMenu(src.menues.SubMenu):
             txt.append("\n")
             num_rows += 1
             if not sidebared:
+                num_used = len(char.inventory)
+                num_available = 10
+                if num_available > num_used:
+                    txt.append((src.interaction.shadowed_ui_attr,f"{num_used} inventrory slots used out of {num_available}"))
+                else:
+                    txt.append((src.interaction.shadowed_ui_attr,f"inventory full"))
+                txt.append("\n\n")
                 if num_rows <= self.min_lines-5:
                     extra_rows = (self.min_lines-5)-num_rows
                     txt.append("\n"*(extra_rows))
@@ -254,7 +261,14 @@ class InventoryMenu(src.menues.SubMenu):
             txt.append("empty Inventory\n")
             num_rows += 1
         if sidebared:
-                txt.append(src.interaction.ActionMeta(payload=(self.trigger_clearInventory,{}),content="c"))
+                num_used = len(char.inventory)
+                num_available = 10
+                if num_available > num_used:
+                    txt.append((src.interaction.shadowed_ui_attr,f"{num_used}/{num_available} "))
+                else:
+                    txt.append((src.interaction.shadowed_ui_attr,f"inventory full "))
+                txt.append((src.interaction.shadowed_ui_attr,src.interaction.ActionMeta(payload=(self.trigger_clearInventory,{}),content="c")))
+                txt.append("\n")
                 num_rows += 1
         txt.append("\n")
         num_rows += 1

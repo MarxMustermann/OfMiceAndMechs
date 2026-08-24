@@ -14,7 +14,7 @@ if __name__ == '__main__':
         import argparse
         import logging
 
-        from src import canvas, characters, interaction, story, gamestate
+        from src import canvas, characters, interaction, story, gamestate, helpers
 
         parser = argparse.ArgumentParser()
         parser.add_argument("-p", "--phase", type=str, help="the phase to start in")
@@ -340,7 +340,7 @@ if __name__ == '__main__':
                     y = int(interaction.tcodConsole.height / 2 - 3 - height)
 
                     interaction.tcodPresent(noPresent=True)
-                    helpers.draw_frame_text(src.interaction.tcodConsole ,width, height, text, x, y)
+                    helpers.draw_frame_text(interaction.tcodConsole ,width, height, text, x, y)
                     interaction.sdl_renderer2.present()
 
     except Exception as e:

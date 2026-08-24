@@ -5177,7 +5177,7 @@ def calculate_UI_layout(char):
         displayString = f" mana: {round(terrain.mana,2)}/{terrain.maxMana}"
         displayWidth = len(displayString)
         uiElements.append({"type":"text","offset":[(assumedScreenWidth-mapWidth)//2+(mapWidth-displayWidth)//2,3],"width":mapWidth,"text":displayString})
-    uiElements.append({"type":"time","offset":[(assumedScreenWidth//2)-10,4]})
+    uiElements.append({"type":"time","offset":[(assumedScreenWidth-mapWidth)//2,4],"width":mapWidth})
 
     if tcodConsole.width > mapWidth + 15*4:
         uiElements.append({"type":"rememberedMenu","offset":[2,18],"size":(max(0,(assumedScreenWidth-mapWidth)//2-4),tcodConsole.height-18)})
@@ -5497,8 +5497,12 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                         printUrwidToDummy(pseudoDisplay,uiElement["text"],uiElement["offset"])
                     if uiElement["type"] == "time":
                         text = f"epoch: {src.gamestate.gamestate.tick//(15*15*15)} tick: {src.gamestate.gamestate.tick%(15*15*15)} {round(char.timeTaken,2)}"
-                        printUrwidToTcod(text,uiElement["offset"])
-                        printUrwidToDummy(pseudoDisplay,text,uiElement["offset"])
+
+                        x = max(uiElement["offset"][0]+uiElement["width"]//2-len(text)//2,0)
+                        y = uiElement["offset"][1]
+
+                        printUrwidToTcod(text,(x,y))
+                        printUrwidToDummy(pseudoDisplay,text,(x,y))
                     if uiElement["type"] == "rememberedMenu" and char.rememberedMenu:
                         chars = []
                         counter = 0

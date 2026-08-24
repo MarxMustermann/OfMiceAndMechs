@@ -69,6 +69,8 @@ class Item:
         self.charges = 0
         self.watched = []
         super().__init__()
+        self.inProcessDelayedAction = None
+        self.delayedActionId = 0
 
         if display:
             self.display = display
@@ -1083,6 +1085,9 @@ class Item:
             generateScrap: a flag indication wether scrap should be left by the destruction
         """
 
+        # cancel prcesses dependend on this item
+        self.cancelDelayedActions()
+
         # ensure container
         container = self.container
         if not container:
@@ -1144,29 +1149,66 @@ class Item:
         self.bolted = False
         character.addMessage("you unbolt the item")
         character.changed("unboltedItem",{"character":character,"item":self})
+        self.cancelDelayedActions()
 
-    
+    def cancelDelayedActions(self):
+        if not self.inProcessDelayedAction:
+            return
+        for (process_id,info) in self.inProcessDelayedAction.items():
+            params = info["params"]
+            abortAction = params.get("abortAction")
+            if abortAction:
+                abortAction(params)
+            character = info.get("character")
+            submenu = character.macroState["submenue"]
+            if submenu:
+                submenu.followUp = None
+            character.macroState["submenue"] = None
+
     def delayedAction(self, params):
+
+        # ensure a datastructure track the in progress actions
+        try:
+            self.inProcessDelayedAction
+        except:
+            self.inProcessDelayedAction = None
+        try:
+            self.delayedActionId
+        except:
+            self.delayedActionId = 0
+        if self.inProcessDelayedAction is None:
+            self.inProcessDelayedAction = {}
+
+        # ensure the process has an id
+        processId = params.get("id")
+        if not processId:
+            self.delayedActionId += 1
+            processId = self.delayedActionId
+            params["id"] = processId
+
+        # unpack parameters
         character = params["character"]
 
+        # trigger callback for inbetween steps
         if "callback" in params:
             params["callback"]()
 
-        if not "doneTime" in params:
-            params["doneTime"] = 0
-
+        # abort when getting hit
         if not "hitCounter" in params:
             params["hitCounter"] = character.numAttackedWithoutResponse
-
         if params["hitCounter"] != character.numAttackedWithoutResponse:
             character.addMessage("You got hit while working")
             return
 
+        # track time the character has waited
+        if not "doneTime" in params:
+            params["doneTime"] = 0
         ticksLeft = params["delayTime"] - params["doneTime"]
         if params["doneTime"] > 0:
             character.takeTime(1,"working")
         params["doneTime"] += 1
 
+        # generate progress bar
         barLength = params["delayTime"]//10
         if params["delayTime"]%10:
             barLength += 1
@@ -1179,23 +1221,32 @@ class Item:
             baseProgressbar = baseProgressbar[10:]
         progressBar += baseProgressbar
 
+        # generate text
         description = ""
         if params.get("description"):
             description = [params.get("description"),"\n"]
         text = [description,progressBar]
 
+        # decide wether to loop or end
+        followUp_method = "delayedAction"
+        if ticksLeft <= 1:
+            followUp_method = params["action"]
+            if processId in self.inProcessDelayedAction:
+                del self.inProcessDelayedAction[processId]
+
+        # generate menue to show to the player
         submenue = src.menues.menuMap["OneKeystrokeMenu"](text, targetParamName="abortKey")
         submenue.tag = "Wait"
         submenue.do_not_scale = True
         character.macroState["submenue"] = submenue
-        followUp_method = "delayedAction"
-        if ticksLeft <= 1:
-            followUp_method = params["action"]
         character.macroState["submenue"].followUp = {
             "container": self,
             "method": followUp_method,
             "params": params,
         }
+
+        # track the in progress action
+        self.inProcessDelayedAction[processId] = {"params":params,"submenue":submenue,"character":character}
 
         character.runCommandString(".", nativeKey=False)
 

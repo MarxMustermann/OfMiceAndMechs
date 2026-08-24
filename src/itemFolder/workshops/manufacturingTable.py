@@ -240,6 +240,7 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
             params["delayTime"] = params["delayTime"]//10
         params["action"]= "output_produced_item"
         params["description"] = f"you produce a {self.toProduce}\n"
+        params["abortAction"] = self.abortAction
         params["callback"] = self.trackAction
         self.delayedAction(params)
         self.numUsed += 1
@@ -247,6 +248,14 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
         self.lastInteraction = src.gamestate.gamestate.tick
         character.working = True
         self.handleTick()
+
+    def abortAction(self,params):
+        '''
+        handle a character aborting the items usage
+        '''
+        character = params["character"]
+        character.working = False
+        self.inUse = False
 
     def trackAction(self):
         self.lastInteraction = src.gamestate.gamestate.tick

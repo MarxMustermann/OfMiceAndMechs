@@ -127,12 +127,21 @@ class Anvil(src.items.itemMap["WorkShop"]):
         params["delayTime"] = 10
         params["action"]= "output_produced_item"
         params["callback"] = self.trackAction
+        params["abortAction"] = self.abortAction
         self.delayedAction(params)
 
         self.inUse = True
         self.lastInteraction = src.gamestate.gamestate.tick
         character.working = True
         self.handleTick()
+
+    def abortAction(self,params):
+        '''
+        handle a character aborting the items usage
+        '''
+        character = params["character"]
+        character.working = False
+        self.inUse = False
 
     def trackAction(self):
         self.lastInteraction = src.gamestate.gamestate.tick

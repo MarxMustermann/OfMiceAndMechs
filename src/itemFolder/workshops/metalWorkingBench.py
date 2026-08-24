@@ -250,6 +250,7 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         params["action"]= "output_produced_item"
         params["description"] = f"you produce a {params['type']}\n"
         params["callback"] = self.trackAction
+        params["abortAction"] = self.abortAction
         amount = params.get("amount")
         if amount > 1:
             params["description"] += f"{amount} remaining\n"
@@ -260,6 +261,14 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         self.lastInteraction = src.gamestate.gamestate.tick
         character.working = True
         self.handleTick()
+
+    def abortAction(self,params):
+        '''
+        handle a character aborting the items usage
+        '''
+        character = params["character"]
+        character.working = False
+        self.inUse = False
 
     def trackAction(self):
         self.lastInteraction = src.gamestate.gamestate.tick

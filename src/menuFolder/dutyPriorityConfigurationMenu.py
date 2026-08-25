@@ -61,7 +61,7 @@ class DutyPriorityConfigurationMenu(src.menues.SubMenu):
         duties = self._get_sorted_duties()
         text = []
         text.extend(["""
-""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"You ask {self.partner.name} to change its working priorities."),"""
+""",(src.interaction.highlighted_ui_attr,f"You ask {self.partner.name} to change its working priorities."),"""
 
 The clones duties and its priorities are listed below.
 High priority tasks will done before low priority tasks.
@@ -75,7 +75,7 @@ A high number indicates a high priority.
             else:
                 text.append(f"*  ")
             text.append(f"{duty}: {self.partner.dutyPriorities.get(duty,1)}\n")
-        text.append((src.interaction.urwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),["""
+        text.append((src.interaction.shadowed_ui_attr,["""
 press """,src.interaction.ActionMeta(payload="w",content="w"),"/",src.interaction.ActionMeta(payload="s",content="s"),""" to move cursor
 """,src.interaction.ActionMeta(payload="a",content="press a to decrease priority"),"""
 """,src.interaction.ActionMeta(payload="d",content="press a to increase priority"),"""

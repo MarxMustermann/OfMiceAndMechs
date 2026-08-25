@@ -258,7 +258,7 @@ class InventoryMenu(src.menues.SubMenu):
                                    src.interaction.ActionMeta(payload="c",content="press c to clear inventory")]))
                 num_rows += 4
         else:
-            txt.append("empty Inventory\n")
+            txt.append("empty Inventory\n\n")
             num_rows += 1
         if sidebared:
                 num_used = len(char.inventory)

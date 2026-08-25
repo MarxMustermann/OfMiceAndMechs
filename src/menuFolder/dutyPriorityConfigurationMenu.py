@@ -4,6 +4,24 @@ class DutyPriorityConfigurationMenu(src.menues.SubMenu):
     '''
     the menu to configure the duty priorities of a NPC
     '''
+    _quest_descriptions = {
+            "resource gathering": """Collecting Scrap from scrap fields""",
+            "machine operation": """Using machines like ScrapCompactors""",
+            "storage management": """Ensuring items are stacked and some storage is free""",
+            "hauling": """Carrying items between stockpiles within rooms""",
+            "maggot gathering": """Collecting VatMaggots from Trees""",
+            "metal working": """Producing items at a MetalWorkingBench""",
+            "painting": """Painting markers and draw floor plans""",
+            "praying": """Praying and sacrifice""",
+            "resource fetching": """Carrying items between stockpiles between rooms""",
+            "room building": """Building new rooms""",
+            "scavenging": """Collecting items from outside the base""",
+            "scrap hammering": """Hammering Scrap into MetalBars""",
+            "cleaning": """Ensuring that the walkinspaces are traversable""",
+            "machine placing": """Placing items on build sites""",
+            "manufacturing": """Producing items at ManufacturingTables""",
+            "mold farming": """Farming and harvest mold""",
+        }
     def __init__(self,character,partner):
         self.type = "DutyPriorityConfigurationMenu"
         self.selected_duty = None
@@ -89,6 +107,13 @@ A high number indicates a high priority.
             else:
                 text.append(f"*  ")
             text.append(f"{duty}: {self.partner.dutyPriorities.get(duty,1)}\n")
+
+        # show a descrition for the selected duty
+        description = self._quest_descriptions.get(self.selected_duty)
+        if description:
+            text.append("\n\n")
+            text.append(description)
+            text.append("\n\n")
 
         # show the general usage instructions
         text.append((src.interaction.shadowed_ui_attr,["""

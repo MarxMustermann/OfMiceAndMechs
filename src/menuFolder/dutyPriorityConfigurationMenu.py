@@ -66,8 +66,11 @@ class DutyPriorityConfigurationMenu(src.menues.SubMenu):
         '''
         generate the text representation of the menu
         '''
-        duties = self._get_sorted_duties()
+
+        # set up helper variables
         text = []
+
+        # show general description
         text.extend(["""
 """,(src.interaction.highlighted_ui_attr,f"You ask {self.partner.name} to change its working priorities."),"""
 
@@ -77,18 +80,24 @@ A high number indicates a high priority.
 
 
 """])
+
+        # generate the list of duties
+        duties = self._get_sorted_duties()
         for duty in duties:
             if duty == self.selected_duty:
                 text.append(f"=> ")
             else:
                 text.append(f"*  ")
             text.append(f"{duty}: {self.partner.dutyPriorities.get(duty,1)}\n")
+
+        # show the general usage instructions
         text.append((src.interaction.shadowed_ui_attr,["""
 press """,src.interaction.ActionMeta(payload="w",content="w"),"/",src.interaction.ActionMeta(payload="s",content="s"),""" to move cursor
 """,src.interaction.ActionMeta(payload="a",content="press a to decrease priority"),"""
 """,src.interaction.ActionMeta(payload="d",content="press a to increase priority"),"""
 """]))
 
+        # return the generated text
         return text
 
     def _get_sorted_duties(self):
@@ -104,6 +113,8 @@ press """,src.interaction.ActionMeta(payload="w",content="w"),"/",src.interactio
         '''
         generate a series of keystrokes to select a certain duty
         '''
+
+        # get the indices
         duties = self._get_sorted_duties()
         current_index = None
         target_index = None
@@ -115,6 +126,7 @@ press """,src.interaction.ActionMeta(payload="w",content="w"),"/",src.interactio
                 current_index = counter
             counter += 1
 
+        # return the actual command
         if current_index is None or target_index is None:
             return None
         return "s"*(target_index-current_index)+"w"*(current_index-target_index)

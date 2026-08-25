@@ -49,7 +49,7 @@ class Contraption(src.items.Item):
 
         renderer.draw_color = fg_color
 
-        if self.bolted:
+        if self.bolted and self.container:
             items = self.container.getItemByPosition(self.getPosition(offset=(0,-1,0)))
             if not (len(items) == 1 and items[0].type in ("Contraption","Scrap","MainContraption",)):
                 renderer.fill_rect((basePos[0],basePos[1],tileSize,border_width))

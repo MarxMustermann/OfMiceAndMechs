@@ -63,6 +63,7 @@ class ImplantInteraction(src.menues.SubMenu):
 
         # set up helper variable
         terrain = character.getHomeTerrain()
+
         # wake builder
         wakeable_builder = False
         groundskeepers_place = None
@@ -426,6 +427,7 @@ What do you want to do?
 
         # leave the inital room
         if character.container.tag == "the architects tomb":    
+            sample_machinery = src.items.itemMap["Contraption"]()
             base_text = ["""
 """,(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),f"""
 
@@ -433,7 +435,7 @@ The machinery around you is """,(src.pseudoUrwid.AttrSpec(src.interaction.highli
 So i recommend leaving the room before you get hurt.
 
 The exit is on the north side of the room.
-Big items like the machinery will block your movement.
+Big items like the machinery (""",sample_machinery.metaRender(),""") will block your movement.
 
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"""Shall i assign you a quest to leave the room to avoid the explosion?"""),"""

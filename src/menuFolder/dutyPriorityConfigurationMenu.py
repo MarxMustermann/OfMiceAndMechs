@@ -1,8 +1,4 @@
-import numpy
-import regex
-
 import src
-import tcod
 
 class DutyPriorityConfigurationMenu(src.menues.SubMenu):
     '''

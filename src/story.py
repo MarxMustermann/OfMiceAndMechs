@@ -3474,12 +3474,12 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                             enemy = src.characters.characterMap["Snatcher"]()
                             currentTerrain.addCharacter(enemy,pos[0],pos[1])
 
-        # add enemies
+        # add scattered enemies
         for big_x in range(1,14):
             for big_y in range(1,14):
                 if (big_x,big_y,0) in used_spots:
                     continue
-                if big_x > 5 and big_x < 9 and big_y > 2 and big_y < 9:
+                if big_x > 4 and big_x < 10 and big_y > 1 and big_y < 9:
                     continue
                 if random.random() < 0.2:
                     pos = (big_x*15+random.randint(1,13),big_y*15+random.randint(1,13),0)
@@ -3487,6 +3487,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                     enemy = src.characters.characterMap[enemyType]()
                     currentTerrain.addCharacter(enemy,pos[0],pos[1])
 
+        # add enemies to ruins
         for room in currentTerrain.getRoomsByTag("ruin"):
             if room.characters:
                 continue

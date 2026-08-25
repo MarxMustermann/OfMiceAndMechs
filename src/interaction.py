@@ -3144,7 +3144,7 @@ This allows you to:
                 # show simple explainer text
                 text.extend(["""
 There is no item to interact with.
-Bump against an item to select it for activation.
+Bump against an item or stand ontop of an item to select it for activation.
 """])
 
                 text.extend(["""
@@ -5926,10 +5926,10 @@ def renderGameDisplay(renderChar=None,showSaving=False):
         output = ""
         loopCounter = 0
         while loopCounter*2 < window_charheight:
-            line = ""
-            while len(line) < window_charwidth+40:
-                line += "You will rule the world some day, but first follow your orders.    "
             offset = 7+loopCounter*3
+            line = ""
+            while len(line) < window_charwidth+offset+10:
+                line += "You will rule the world some day, but first follow your orders.    "
             line = line[offset:]
             line += "\n\n"
             output += line

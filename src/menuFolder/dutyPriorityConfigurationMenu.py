@@ -5,6 +5,9 @@ import src
 import tcod
 
 class DutyPriorityConfigurationMenu(src.menues.SubMenu):
+    '''
+    the menu to configure the duty priorities of a NPC
+    '''
     def __init__(self,character,partner):
         self.type = "DutyPriorityConfigurationMenu"
         self.selected_duty = None
@@ -13,6 +16,9 @@ class DutyPriorityConfigurationMenu(src.menues.SubMenu):
         super().__init__()
 
     def handleKey(self, key, noRender=False, character=None):
+        '''
+        handle keypresses
+        '''
 
         # exit menu
         if key in ("esc",):
@@ -55,9 +61,15 @@ class DutyPriorityConfigurationMenu(src.menues.SubMenu):
         return False
 
     def getTitle(self):
+        '''
+        generates the menu title
+        '''
         return "DUTY PRIORITY CONFIGURATION"
 
     def render(self,size=None):
+        '''
+        generate the text representation of the menu
+        '''
         duties = self._get_sorted_duties()
         text = []
         text.extend(["""
@@ -84,12 +96,18 @@ press """,src.interaction.ActionMeta(payload="w",content="w"),"/",src.interactio
         return text
 
     def _get_sorted_duties(self):
+        '''
+        returns the duties sorted in a specific way
+        '''
         duties = self.partner.duties[:]
         duties.sort()
         duties.sort(key=lambda duty: self.partner.dutyPriorities.get(duty,1), reverse=True)
         return duties
 
     def get_command_to_select_duty(self,target_duty):
+        '''
+        generate a series of keystrokes to select a certain duty
+        '''
         duties = self._get_sorted_duties()
         current_index = None
         target_index = None

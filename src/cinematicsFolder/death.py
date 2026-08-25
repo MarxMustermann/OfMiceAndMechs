@@ -195,7 +195,7 @@ def Death(extraParam):
                 # darken screen
                 new_console = tcod.console.Console(src.interaction.tcodConsole.width,src.interaction.tcodConsole.height,src.interaction.tcodConsole._order)
                 src.interaction.render(src.gamestate.gamestate.mainChar,mapWidth).printTcod(new_console, (assumedScreenWidth-mapWidth)//4, 6, False)
-                src.helpers.draw_frame_text(new_console, width, height, text, x, y)
+                src.helpers.draw_frame_text(new_console, width, height, text, 0, 0)
                 target_console = new_console.rgb
                 total_frames = 5
                 for i in range(total_frames+1):

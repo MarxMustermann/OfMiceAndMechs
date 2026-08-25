@@ -167,6 +167,9 @@ def Death(extraParam):
         src.helpers.deal_with_window_events()
         time.sleep(0.014)
 
+    # destroy old keystrokes
+    tcod.event.get()
+
     # do post death interaction
     while 1:
 
@@ -179,9 +182,6 @@ def Death(extraParam):
                 event = events.pop(0)
             else:
                 event = None
-
-            # ensure there is always something to print
-            text = []
 
             # show stats menu
             if not pre and isinstance(event, tcod.event.KeyDown) and event.sym == tcod.event.KeySym.s:
@@ -221,48 +221,47 @@ def Death(extraParam):
                 # actually the run
                 raise src.interaction.EndGame("character died")
 
-            # handle window events again (bug?)
-            src.helpers.deal_with_window_events()
+        # set up text container
+        text = []
 
-            # create the text to show to the player
-            text.append("")
-            text.append((src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),reason))
-            if killer:
-                killer_description = killer.charType
-                if isinstance(killer,src.characters.characterMap["Clone"]):
-                    killer_description = killer.name
-                text.append((src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"by {killer_description}"))
+        # create the text to show to the player
+        text.append("")
+        text.append((src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),reason))
+        if killer:
+            killer_description = killer.charType
+            if isinstance(killer,src.characters.characterMap["Clone"]):
+                killer_description = killer.name
+            text.append((src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),f"by {killer_description}"))
+        text.append("")
+        text.append("press s to see the characters stats")
+        text.append("press enter to return to main menu")
 
-            text.append("")
-            text.append("press s to see the characters stats")
-            text.append("press enter to return to main menu")
+        # calculate text width
+        longestLine = 0
+        numLines = 0
+        for line in text:
+            numLines += 1
+            line = src.urwidSpecials.flattenToPeseudoString(line)
+            if len(line) <= longestLine:
+                continue
+            longestLine = len(line)
 
-            # calculate text width
-            longestLine = 0
-            numLines = 0
-            for line in text:
-                numLines += 1
-                line = src.urwidSpecials.flattenToPeseudoString(line)
-                if len(line) <= longestLine:
-                    continue
-                longestLine = len(line)
+        # center text
+        newText = []
+        for line in text:
+            newText.append(" "*((longestLine-len(src.urwidSpecials.flattenToPeseudoString(line)))//2))
+            newText.append(line)
+            newText.append("\n")
 
-            # center text
-            newText = []
-            for line in text:
-                newText.append(" "*((longestLine-len(src.urwidSpecials.flattenToPeseudoString(line)))//2))
-                newText.append(line)
-                newText.append("\n")
-
-            # show text
-            width = longestLine
-            height = numLines
-            x = int(playerpos[0]- width / 2)
-            y = int(src.interaction.tcodConsole.height / 2 - 3 - height)
-            original_window_content = src.interaction.tcodConsole.rgba.copy()
-            src.interaction.tcodPresent(noPresent=True)
-            src.helpers.draw_frame_text(src.interaction.tcodConsole ,width, height, newText, x, y)
-            src.interaction.sdl_renderer2.present()
+        # show text
+        width = longestLine
+        height = numLines
+        x = int(playerpos[0]- width / 2)
+        y = int(src.interaction.tcodConsole.height / 2 - 3 - height)
+        original_window_content = src.interaction.tcodConsole.rgba.copy()
+        src.interaction.tcodPresent(noPresent=True)
+        src.helpers.draw_frame_text(src.interaction.tcodConsole ,width, height, newText, x, y)
+        src.interaction.sdl_renderer2.present()
 
 def show_Stats(original_window_content, character):
     numpy.copyto(src.interaction.tcodConsole.rgba, original_window_content)

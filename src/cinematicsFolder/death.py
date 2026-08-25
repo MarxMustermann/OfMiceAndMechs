@@ -4,14 +4,36 @@ import time
 import numpy
 import tcod
 import tcod.constants
+import os
 
 import src
+import json
 
 def in_dest(source, target, radius):
     return pow(target[0] - source[0], 2) + pow(target[1] - source[1], 2) <= pow(radius, 2)
 
 
 def Death(extraParam):
+
+    # delete savestate
+    try:
+        # register the save
+        with open("gamestate/globalInfo.json") as globalInfoFile:
+            rawState = json.loads(globalInfoFile.read())
+    except:
+        rawState = {
+            "worlds": [{"savestateId":1,"hasSave":False}],
+            "customPrefabs": [],
+            "lastGameIndex": 0,
+            "wordCounter":0,
+        }
+    world_info = rawState["worlds"][src.gamestate.gamestate.gameIndex]
+    savestate_id = world_info["savestateId"]
+    rawState["worlds"].remove(world_info)
+    os.remove("gamestate/gamestate_"+str(savestate_id))
+    os.remove("gamestate/gamestate_"+str(savestate_id)+"_backup")
+    with open("gamestate/globalInfo.json", "w") as globalInfoFile:
+        json.dump(rawState, globalInfoFile)
 
     # unpack parameter
     character = extraParam["character"]

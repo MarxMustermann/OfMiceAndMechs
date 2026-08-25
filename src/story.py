@@ -2679,6 +2679,8 @@ sure i'll produce equipment for you as long as you bring me the raw material.
            )
         used_spots.append(startRoom.getPosition())
         startRoom.tag = "the architects tomb"
+        startRoom.spawnItem("Vial",(10,5,0))
+        startRoom.spawnItem("Vial",(2,7,0))
 
         # add the first tile the npc steps on
         big_pos = (7,6,0)

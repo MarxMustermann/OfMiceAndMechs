@@ -5827,7 +5827,7 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                                 extra_info += str(marker[1][2])+" "
                         output.append([marker_render,(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),[" ",marker[0]," ",extra_info,str(smallCoordinate)," "])])
 
-            # draw thw legend onto the screen
+            # draw the legend onto the screen
             output_width = len(stringifyUrwid(output))
             output.insert(0," "*((root_console.width-output_width)//2))
             output.insert(0,"\n")

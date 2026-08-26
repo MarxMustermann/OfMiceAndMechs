@@ -225,15 +225,32 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
             character.changed("failed manufacturing",{})
             return
 
+        # consume the resources needed for production
+        consumed_from_inventory = []
+        consumed_from_nearby = []
         if not self.toProduce == "MetalBars" or itemsFound[0].amount == 1:
             for item in itemsFound:
                 if item in character.inventory:
                     character.removeItemFromInventory(item)
+                    consumed_from_inventory.append(item.type)
                 else:
                     self.container.removeItem(item)
+                    consumed_from_nearby.append(item.type)
         else:
-            itemsFound[0].amount -= 1
-            itemsFound[0].setWalkable()
+            item = itemsFound[0]
+            item.amount -= 1
+            item.setWalkable()
+            if item in character.inventory:
+                consumed_from_inventory.append(item.type)
+            else:
+                consumed_from_nearby.append(item.type)
+        if consumed_from_inventory:
+            item_type_text = ", ".join(consumed_from_inventory)
+            character.addMessage(f"You use up {item_type_text} from your inventory")
+        if consumed_from_nearby:
+            item_type_text = ", ".join(consumed_from_nearby)
+            character.addMessage(f"You use up {item_type_text} from the workshops input spots")
+
 
         params["delayTime"] = 75-min(50,self.numUsed)
         if self.toProduce == "MetalBars":

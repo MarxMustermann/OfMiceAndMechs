@@ -3370,7 +3370,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                 for _i in range(1,10):
                     wall = src.items.itemMap["Wall"]()
                     wall.bolted = False
-                    pos = (big_pos[0]*15+random.randint(1,14),big_pos[1]*15+random.randint(1,14),0)
+                    pos = (big_pos[0]*15+random.randint(1,13),big_pos[1]*15+random.randint(1,13),0)
                     if not currentTerrain.getItemByPosition(pos):
                         currentTerrain.addItem(wall,pos)
 
@@ -3444,7 +3444,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
 
                 if random.random() < 0.2:
                     for _i in range(10):
-                        pos = (big_x*15+random.randint(1,14),big_y*15+random.randint(1,14),0)
+                        pos = (big_x*15+random.randint(1,13),big_y*15+random.randint(1,13),0)
                         mold = src.items.itemMap["Mold"]()
                         currentTerrain.addItem(mold,pos)
                         mold.startSpawn()
@@ -3459,7 +3459,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                                 wall_was_spawned = True
                             if spawn_item[2] == "Vial":
                                 item.uses = random.randint(1,3)
-                            pos = (big_x*15+random.randint(1,14),big_y*15+random.randint(1,14),0)
+                            pos = (big_x*15+random.randint(1,13),big_y*15+random.randint(1,13),0)
                             if not currentTerrain.getItemByPosition(pos):
                                 currentTerrain.addItem(item,pos)
 

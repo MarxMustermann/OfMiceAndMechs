@@ -240,13 +240,21 @@ The item will be blocked for {remaining_block_time} ticks
         for item in character.inventory+self.getInputItems():
             if item.type == "MetalBars":
                 metalBarsFound.append(item)
+
+        # indicate error to user
         if not metalBarsFound:
             message = "You need to have metal bars in your inventory to use the metal working bench"
             character.addMessage(message)
             character.showTextMenu(message,do_not_scale=True)
             character.changed("no metalBars error",{})
             return
+
+        # get the item to use
         metalBar = metalBarsFound[-1]
+        if metalBar in character.inventory:
+            character.addMessage(f"You use Metalbars from your inventory")
+        else:
+            character.addMessage(f"You use Metalbars from the workshops input spots")
 
         # check if there is enough space to drop things
         dropsSpotsFull = self.checkForDropSpotsFull()

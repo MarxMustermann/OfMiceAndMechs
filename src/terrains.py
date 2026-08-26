@@ -192,6 +192,26 @@ class Terrain:
                 out.append(character)
         return out
 
+    def isTileTransferPossible(self,startPosition,direction):
+        endPosition = (startPosition[0]+direction[0], startPosition[1]+direction[1], startPosition[2]+direction[2])
+        rooms = self.getRoomByPosition(endPosition)
+        if not rooms:
+            return True
+        room = rooms[0]
+        check_pos = None
+        if direction == (1,0,0):
+            check_pos = (0,6,0)
+        if direction == (-1,0,0):
+            check_pos = (12,6,0)
+        if direction == (0,1,0):
+            check_pos = (6,0,0)
+        if direction == (0,-1,0):
+            check_pos = (6,12,0)
+        passable = room.getPositionWalkable(check_pos)
+        if not passable:
+            return False
+        return True
+
     def handleFloorClick(self,extraInfo):
         if not src.gamestate.gamestate.mainChar.quests:
             return

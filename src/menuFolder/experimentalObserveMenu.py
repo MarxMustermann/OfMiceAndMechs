@@ -57,65 +57,99 @@ class ExperimentalObserveMenu(src.menues.SubMenu):
         coordinate_line += " "*(68-len(coordinate_line))+"\n"
         text.append(coordinate_line)
 
+        # get click position
         click_position = self.index
         if not rooms:
             click_position = (self.index_big[0]*15+self.index[0],self.index_big[1]*15+self.index[1],0)
 
-        # list characters on postion
-        text.append("\n")
-        show_characters = container.getCharactersOnPosition(click_position)
-        if not show_characters:
-            text.append((src.pseudoUrwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"no characters found\n"))
-        else:
-            text.append((src.pseudoUrwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"characters:\n\n"))
-        for show_character in show_characters:
-            text.append("- ")
-            text.append(show_character.charType)
-            if show_character == self.character:
-                text.append(" (You)")
-            elif show_character.faction == self.character.faction:
-                text.append(f" - {show_character.name}")
-                text.append(" (ally)")
+        # check for boundary clicks
+        boundary_click = False
+        if (click_position[0]%15 in (0,14,) or click_position[1]%15 in (0,14,)):
+            boundary_click = True
+
+        # handle click on a boundary
+        if boundary_click:
+            text.append("\n")
+            text.append(f"A wall of static energy dividing the world into tiles.\n")
+            text.append((src.interaction.highlighted_ui_attr,f"You cannot interact with this spot\n"))
+            text.append("\n")
+            passable = False
+            if (click_position[0]%15 in (7,) or click_position[1]%15 in (7,)):
+                passable = True
+                offset = None
+                if click_position[0]%15 == 0:
+                    offset = (-1,0,0)
+                if click_position[1]%15 == 0:
+                    offset = (0,-1,0)
+                if click_position[0]%15 == 14:
+                    offset = (1,0,0)
+                if click_position[1]%15 == 14:
+                    offset = (0,1,0)
+                if not terrain.isTileTransferPossible(self.index_big,offset):
+                    passable = False
+            if passable:
+                text.append(f"You can cross into to neighbour tile here.")
             else:
-                text.append(" (enemy)")
+                text.append(f"You cannot cross this spot")
+
+        # handle click on the actual map
+        if not boundary_click:
+
+            # list characters on postion
+            text.append("\n")
+            show_characters = container.getCharactersOnPosition(click_position)
+            if not show_characters:
+                text.append((src.pseudoUrwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"no characters found\n"))
+            else:
+                text.append((src.pseudoUrwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"characters:\n\n"))
+            for show_character in show_characters:
+                text.append("- ")
+                text.append(show_character.charType)
+                if show_character == self.character:
+                    text.append(" (You)")
+                elif show_character.faction == self.character.faction:
+                    text.append(f" - {show_character.name}")
+                    text.append(" (ally)")
+                else:
+                    text.append(" (enemy)")
+
+                text.append("\n")
+
+            # list found items
+            text.append("\n")
+            items = container.getItemByPosition(click_position)
+            if not items:
+                text.append((src.pseudoUrwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"no items found\n"))
+            else:
+                text.append((src.pseudoUrwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"items:\n\n"))
+            for item in items:
+                text.append("- ")
+                text.append(item.metaRender())
+                text.append(" ")
+                text.append(item.name)
+                text.append(" => ")
+                text.append(item.description)
+                text.append("\n")
+
+            # list markers on floor
+            text.append("\n")
+            markers = []
+            if rooms:
+                markers = container.getMarkersOnPosition(click_position)
+            if not markers:
+                text.append((src.pseudoUrwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"no markings found\n"))
+            else:
+                text.append((src.pseudoUrwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"markings:\n\n"))
+            for marker in markers:
+                text.append("- ")
+                text.append(str(marker[0]))
+                text.append("\n")
 
             text.append("\n")
-
-        # list found items
-        text.append("\n")
-        items = container.getItemByPosition(click_position)
-        if not items:
-            text.append((src.pseudoUrwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"no items found\n"))
-        else:
-            text.append((src.pseudoUrwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"items:\n\n"))
-        for item in items:
-            text.append("- ")
-            text.append(item.metaRender())
-            text.append(" ")
-            text.append(item.name)
-            text.append(" => ")
-            text.append(item.description)
-            text.append("\n")
-
-        # list markers on floor
-        text.append("\n")
-        markers = []
-        if rooms:
-            markers = container.getMarkersOnPosition(click_position)
-        if not markers:
-            text.append((src.pseudoUrwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"no markings found\n"))
-        else:
-            text.append((src.pseudoUrwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"markings:\n\n"))
-        for marker in markers:
-            text.append("- ")
-            text.append(str(marker[0]))
-            text.append("\n")
-
-        text.append("\n")
-        if container.isRoom:
-            text.append((src.pseudoUrwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"steel floor (inside)\n"))
-        else:
-            text.append((src.pseudoUrwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"mud floor (outside)\n"))
+            if container.isRoom:
+                text.append((src.pseudoUrwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"steel floor (inside)\n"))
+            else:
+                text.append((src.pseudoUrwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"mud floor (outside)\n"))
 
         # return rendered text
         return text

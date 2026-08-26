@@ -7350,16 +7350,16 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                     import webbrowser
                     webbrowser.open("https://github.com/MarxMustermann/OfMiceAndMechs", new=1)
 
-                if isinstance(event, tcod.event.Quit):
-                    if src.interaction.tcodMixer:
-                        src.interaction.tcodMixer.close()
-                    raise SystemExit()
-                if isinstance(event, tcod.event.WindowResized):
-                    checkResetWindowSize(event.width, event.height)
-                if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
-                    if src.interaction.tcodMixer:
-                        src.interaction.tcodMixer.close()
-                    raise SystemExit()
+            if isinstance(event, tcod.event.Quit):
+                if src.interaction.tcodMixer:
+                    src.interaction.tcodMixer.close()
+                raise SystemExit()
+            if isinstance(event, tcod.event.WindowResized):
+                checkResetWindowSize(event.width, event.height)
+            if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
+                if src.interaction.tcodMixer:
+                    src.interaction.tcodMixer.close()
+                raise SystemExit()
             continue
 
             match current_submenu:

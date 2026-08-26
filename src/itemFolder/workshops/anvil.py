@@ -158,6 +158,7 @@ class Anvil(src.items.itemMap["WorkShop"]):
         character.addMessage("It takes you 10 turns to do that")
         if scrap in character.inventory:
             character.removeItemFromInventory(scrap)
+            character.addMessage("You hammer Scrap from your inventory")
         else:
             self.container.addAnimation(scrap.getPosition(),"showchar",1,{"char":"--"})
             if scrap.amount == 1:
@@ -165,6 +166,7 @@ class Anvil(src.items.itemMap["WorkShop"]):
             else:
                 scrap.amount -= 1
                 scrap.setWalkable()
+            character.addMessage("You hammer Scrap from the workshops input spots")
 
         if dropsSpotsFull or (preferInventoryOut and character.getFreeInventorySpace() > 0):
             character.addToInventory(new)

@@ -83,5 +83,10 @@ baseDamage:
         self.baseDamage -= 1
         super().downgrade()
 
+    def render(self):
+        quality_colors = {10:"#aaf",9:"#aad",8:"#aac",7:"#aab",6:"#aaa",5:"#999",4:"#888"}
+        color = quality_colors.get(self.baseDamage,"#888")
+        return (src.interaction.urwid.AttrSpec(color, "black"), "+|")
+
 # register the item
 src.items.addType(Rod)

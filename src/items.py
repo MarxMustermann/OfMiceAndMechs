@@ -1152,6 +1152,10 @@ class Item:
         self.cancelDelayedActions()
 
     def cancelDelayedActions(self):
+        try:
+            self.inProcessDelayedAction
+        except:
+            self.inProcessDelayedAction = None
         if not self.inProcessDelayedAction:
             return
         for (process_id,info) in self.inProcessDelayedAction.items():

@@ -5774,58 +5774,104 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                     # get content to show in legend
                     terrain = src.gamestate.gamestate.mainChar.getTerrain()
                     rooms = terrain.getRoomByPosition(bigCoordinate)
+                    items = []
+                    other_characters = []
+                    markers = []
                     if rooms:
                         if not src.gamestate.gamestate.mainChar.container.isRoom:
                             smallCoordinate = (smallCoordinate[0]-1,smallCoordinate[1]-1,0)
-                        items = rooms[0].getItemByPosition(smallCoordinate)
-                        other_characters = rooms[0].getCharactersOnPosition(smallCoordinate)
-                        markers = rooms[0].getMarkersOnPosition(smallCoordinate)
+                        if smallCoordinate[0] <= 12 and smallCoordinate[1] <= 12:
+                            items = rooms[0].getItemByPosition(smallCoordinate)
+                            other_characters = rooms[0].getCharactersOnPosition(smallCoordinate)
+                            markers = rooms[0].getMarkersOnPosition(smallCoordinate)
+                        else:
+                            smallCoordinate = (smallCoordinate[0]+1,smallCoordinate[1]+1,0)
+                            if smallCoordinate[0] == 15:
+                                smallCoordinate = (0,smallCoordinate[1],0)
+                                bigCoordinate = (bigCoordinate[0]+1,bigCoordinate[1],0)
+                            if smallCoordinate[1] == 15:
+                                smallCoordinate = (smallCoordinate[0],0,0)
+                                bigCoordinate = (bigCoordinate[0],bigCoordinate[1]+1,0)
+                            rooms = []
                     else:
                         if src.gamestate.gamestate.mainChar.container.isRoom:
                             click_coordinate = (click_coordinate[0]+1,click_coordinate[1]+1,0)
+                            smallCoordinate = (click_coordinate[0]%15,click_coordinate[1]%15,0)
                         items = terrain.getItemByPosition(click_coordinate)
                         other_characters = terrain.getCharactersOnPosition(click_coordinate)
                         markers = []
+                    static_wall = False
+                    passable = False
+                    if (not rooms) or (smallCoordinate[0] > 12 or smallCoordinate[1] > 12):
+                        if smallCoordinate[0] in (0,14,) or smallCoordinate[1] in (0,14,):
+                            static_wall = True
+                            if smallCoordinate[0] == 7 or smallCoordinate[1] == 7:
+                                passable = True
+                                static_wall = True
+                                offset = None
+                                if smallCoordinate[0] == 0:
+                                    offset = (-1,0,0)
+                                if smallCoordinate[1] == 0:
+                                    offset = (0,-1,0)
+                                if smallCoordinate[0] == 14:
+                                    offset = (1,0,0)
+                                if smallCoordinate[1] == 14:
+                                    offset = (0,1,0)
+                                if not terrain.isTileTransferPossible(bigCoordinate,offset):
+                                    passable = False
+                                reverse_offset = (-offset[0],-offset[1],-offset[2])
+                                reverse_position = (bigCoordinate[0]+offset[0],bigCoordinate[1]+offset[1],bigCoordinate[2]+offset[2])
+                                if not terrain.isTileTransferPossible(reverse_position,reverse_offset):
+                                    passable = False
+                                reverse_offset = (-offset[0],-offset[1],-offset[2])
 
                     # generate the content for the legend
                     output = []
-                    for other_character in other_characters:
-                        description = other_character.charType
-                        if other_character.charType == "Clone":
-                            description = other_character.name
-                        output.append([other_character.render()," ",(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),[description," ",str(other_character.getSpacePosition())," "])])
-                    for item in items:
-                        output.append([item.metaRender()," ",(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),item.name)," ",(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),f"{item.getSmallPosition()}")," "])
-                    for marker in markers:
-                        marker_render = "::"
-                        marker_type = marker[0]
-                        extra_info = ""
-                        if marker_type == "walkingSpace":
-                            marker_render = (src.interaction.urwid.AttrSpec("#888", "black"), "::")
-                        if marker_type == "inputSlot":
-                            marker_render = (src.interaction.urwid.AttrSpec("#f88", "black"), "::")
-                        if marker_type == "outputSlot":
-                            marker_render = (src.interaction.urwid.AttrSpec("#88f", "black"), "::")
-                        if marker_type == "storageSlot":
-                            if marker[1][2]:
-                                marker_render = (src.interaction.urwid.AttrSpec("#f00", "black"), "::")
-                            elif marker[1][1]:
-                                marker_render = (src.interaction.urwid.AttrSpec("#f0f", "black"), "::")
-                            else:
-                                marker_render = (src.interaction.urwid.AttrSpec("#fff", "black"), "::")
-                        if marker_type == "buildSite":
-                            if marker[1] == "TriggerPlate":
-                                marker_render = (src.interaction.urwid.AttrSpec("#292", "black"), "::")
-                            else:
-                                marker_render = (src.interaction.urwid.AttrSpec("#0f0", "black"), "::")
-                        extra_info = ""
-                        if marker_type != "walkingSpace":
+                    if not static_wall:
+                        for other_character in other_characters:
+                            description = other_character.charType
+                            if other_character.charType == "Clone":
+                                description = other_character.name
+                            output.append([other_character.render()," ",(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),[description," ",str(other_character.getSpacePosition())," "])])
+                        for item in items:
+                            output.append([item.metaRender()," ",(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),item.name)," ",(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),f"{item.getSmallPosition()}")," "])
+                        for marker in markers:
+                            marker_render = "::"
+                            marker_type = marker[0]
                             extra_info = ""
-                            if marker[1][1]:
-                                extra_info += str(marker[1][1])+" "
-                            if marker[1][2]:
-                                extra_info += str(marker[1][2])+" "
-                        output.append([marker_render,(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),[" ",marker[0]," ",extra_info,str(smallCoordinate)," "])])
+                            if marker_type == "walkingSpace":
+                                marker_render = (src.interaction.urwid.AttrSpec("#888", "black"), "::")
+                            if marker_type == "inputSlot":
+                                marker_render = (src.interaction.urwid.AttrSpec("#f88", "black"), "::")
+                            if marker_type == "outputSlot":
+                                marker_render = (src.interaction.urwid.AttrSpec("#88f", "black"), "::")
+                            if marker_type == "storageSlot":
+                                if marker[1][2]:
+                                    marker_render = (src.interaction.urwid.AttrSpec("#f00", "black"), "::")
+                                elif marker[1][1]:
+                                    marker_render = (src.interaction.urwid.AttrSpec("#f0f", "black"), "::")
+                                else:
+                                    marker_render = (src.interaction.urwid.AttrSpec("#fff", "black"), "::")
+                            if marker_type == "buildSite":
+                                if marker[1] == "TriggerPlate":
+                                    marker_render = (src.interaction.urwid.AttrSpec("#292", "black"), "::")
+                                else:
+                                    marker_render = (src.interaction.urwid.AttrSpec("#0f0", "black"), "::")
+                            extra_info = ""
+                            if marker_type != "walkingSpace":
+                                extra_info = ""
+                                if marker[1][1]:
+                                    extra_info += str(marker[1][1])+" "
+                                if marker[1][2]:
+                                    extra_info += str(marker[1][2])+" "
+                            output.append([marker_render,(src.interaction.urwid.AttrSpec(disabled_ui_color, "black"),[" ",marker[0]," ",extra_info,str(smallCoordinate)," "])])
+                    if static_wall:
+                        if passable:
+                            output.extend([(disabled_ui_attr,f"wall of static - passable ({smallCoordinate})")])
+                        else:
+                            output.extend([(src.interaction.urwid.AttrSpec((80,80,90), "black"), "~~"),(disabled_ui_attr,f" wall of static - not passable ({smallCoordinate})")])
+                    if not output:
+                        output.append((disabled_ui_attr,f"({smallCoordinate})"))
 
             # draw the legend onto the screen
             output_width = len(stringifyUrwid(output))

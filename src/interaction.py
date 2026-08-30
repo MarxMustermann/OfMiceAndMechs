@@ -315,9 +315,9 @@ sdl_cache = []
 sdl_map = {}
 
 def playSound(soundName,channelName,loop=False,abort_sound=False,volume_modifier=1):
-    if not settings.get("sound_enabled"):
+    if not settings.get("sound_enabled",True):
         return
-    if settings["sound"] != 0 and settings.get("sound_enabled"):
+    if settings["sound"] != 0 and settings.get("sound_enabled",True):
         if src.interaction.tcodMixer:
             channel = src.interaction.tcodMixer.get_channel(channelName)
             if not channel.busy or abort_sound:
@@ -607,13 +607,13 @@ def setUpTcod():
     )
     """
     if tcodMixer:
-        if settings.get("sound_enabled"):
+        if settings.get("sound_enabled",True):
             tcodMixer.get_channel("background").play(sound = sounds["loop1_start"],volume = settings["sound"]/ 160.0,on_end = sound_loop)
         changeVolume()
 
 abort_sound_loop = False
 def sound_loop(ch,first_run=False):
-    if not settings.get("sound_enabled"):
+    if not settings.get("sound_enabled",True):
         return
     global abort_sound_loop
     if ch.busy:

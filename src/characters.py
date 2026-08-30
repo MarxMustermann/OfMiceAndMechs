@@ -1881,13 +1881,13 @@ press any other key to attack normally""")
 
         enemyHP = target.health
         target.hurt(damage, reason=reason, actor=self)
-        message = f"you attack the enemy for {damage} damage {bonus}"
+        message = f"you attack the enemy for {damage} damage {bonus}."
         self.stats["damage dealt"] = self.stats.get("damage dealt", 0) + damage
         if not target.dead:
-            message += f"\nthe enemy has {target.health}/{target.adjustedMaxHealth} health left"
+            message += f"\nThe enemy has {target.health}/{target.adjustedMaxHealth} health left."
         else:
             overkill = damage-enemyHP
-            message += f"\nthe enemy is dead. You overkilled by {overkill}"
+            message += f"\nThe enemy is dead. You overkilled by {overkill}."
             if self.weapon:
                 self.weapon.degrade(multiplier=overkill,character=self)
 

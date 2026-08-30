@@ -3326,7 +3326,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         # create horizontal paths
         for big_pos in [(5,5,0),(6,5,0),(8,5,0),(9,5,0),(9,9,0),(8,9,0),(6,9,0),(5,9,0)]:
             used_spots.append(big_pos)
-            for _i in range(100):
+            for _i in range(50):
                 amount = random.randint(1,15)
                 pos = (big_pos[0]*15+random.randint(1,13),big_pos[1]*15+random.randint(1,13),0)
                 if (pos[0]%15,pos[1]%15,0) in [(1,7,0),(7,1,0),(13,7,0),(7,13,0)]:
@@ -3356,7 +3356,7 @@ sure i'll produce equipment for you as long as you bring me the raw material.
         # create vertical paths
         for big_pos in [(10,6,0),(10,8,0),(4,6,0),(4,8,0),(7,10,0)]:
             used_spots.append(big_pos)
-            for _i in range(100):
+            for _i in range(50):
                 amount = random.randint(1,15)
                 pos = (big_pos[0]*15+random.randint(1,13),big_pos[1]*15+random.randint(1,13),0)
                 if (pos[0]%15,pos[1]%15,0) in [(1,7,0),(7,1,0),(13,7,0),(7,13,0)]:
@@ -3394,9 +3394,37 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                     continue
                 room.spawnItem(itemType,pos)
 
+        # spawn room remains
+        for big_x in range(1,14):
+            for big_y in range(1,14):
+                big_pos = (big_x,big_y,0)
+                if big_pos in used_spots:
+                    continue
+                if big_x > 5 and big_x < 9 and big_y > 1 and big_y < 9:
+                    continue
+                spawn_walls = False
+                if random.random() < 0.5:
+                    spawn_walls = True
+                for x in range(1,14):
+                    for y in range(1,14):
+                        if not (x in (1,13,) or y in (1,13,)):
+                            continue
+                        if (x == 7 or y == 7):
+                            continue
+                        pos = (big_x*15+x,big_y*15+y,0)
+                        if currentTerrain.getItemByPosition(pos):
+                            continue
+                        if spawn_walls and random.random() < 0.3:
+                            currentTerrain.spawnItem("Wall",pos)
+                        elif random.random() < 0.5:
+                            scrap = src.items.itemMap["Scrap"](amount=random.randint(7,12))
+                            currentTerrain.addItem(scrap,pos)
+                        elif random.random() < 0.5:
+                            scrap = src.items.itemMap["Scrap"](amount=random.randint(1,4))
+                            currentTerrain.addItem(scrap,pos)
+
         # spawn background items
         toSpawn = [
-                    (0.5,10,"Wall"),
                     (0.5,1,"Door"),
                     (0.2,1,"Rod"),
                     (0.2,1,"Bolt"),
@@ -3426,9 +3454,9 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                 big_pos = (big_x,big_y,0)
                 if big_pos in used_spots and big_pos not in forest:
                     continue
-                scrap_amount = 80
+                scrap_amount = 40
                 if big_x > 5 and big_x < 9 and big_y > 1 and big_y < 5:
-                    scrap_amount = 40
+                    scrap_amount = 20
                 for _i in range(scrap_amount):
                     amount = random.randint(1,15)
                     pos = (big_x*15+random.randint(1,13),big_y*15+random.randint(1,13),0)

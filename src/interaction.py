@@ -7270,7 +7270,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                     case _:
                         pass
 
-                if key in (tcod.event.KeySym.RETURN, tcod.event.KeySym.KP_ENTER, tcod.event.KeySym.d, tcod.event.KeySym.j, tcod.event.KeySym.RIGHT, tcod.event.KeySym.a, tcod.event.KeySym.LEFT ):
+                if key in (tcod.event.KeySym.RETURN, tcod.event.KeySym.KP_ENTER, tcod.event.KeySym.d, tcod.event.KeySym.j, tcod.event.KeySym.a ):
                     if manage_worlds:
                         if index < len(saves):
 

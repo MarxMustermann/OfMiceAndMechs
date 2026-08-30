@@ -1514,7 +1514,7 @@ class Character:
                 damageAbsorbtion += 2
                 self.addMessage("passive combat bonus")
 
-            self.addMessage(f"your armor absorbs {damageAbsorbtion} damage")
+            self.addMessage(f"your armor absorbs {damageAbsorbtion} damage.")
             damage -= damageAbsorbtion
 
             self.container.addAnimation(self.getPosition(),"shielded",damageAbsorbtion,{})

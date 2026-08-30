@@ -2059,7 +2059,6 @@ class Room:
         item =  src.items.itemMap[itemType]()
         self.addItem(item,pos)
         item.bolted = bolted
-
         return item
 
     def moveCharacter(self, character, newPosition):

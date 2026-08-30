@@ -5915,11 +5915,11 @@ This memorial contains:
         if extraParameters["old_pos"] == (7,7,0):
             if mainChar.getTerrain().getRoomsByTag("the architects tomb"):
                 base_text = ["""
-""",(src.interaction.urwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"You implant interrupts:"),"""
+""","Your implant interrupts:","""
 
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"You managed to leave the burning room."),"""
 
-""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"Press tab to get more instructions from the implant.\nOnce you got a quest press q to see high level instructions\nor press the keys given in the \"suggested action\" shown on the left side of the screen."),"""
+""",(src.pseudoUrwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"You can reach out to me for further instructions."),"""
 """]
                 mainChar.showTextMenu(base_text)
         return

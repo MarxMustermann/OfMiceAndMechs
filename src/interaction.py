@@ -6716,6 +6716,10 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
             doLoad()
             src.gamestate.gamestate.gameIndex = gameIndex
 
+            # start playing music
+            channel = tcodMixer.get_channel("background")
+            sound_loop(channel,first_run=True)
+
             # start story
             if loadingControl["needsStart"] is True:
 
@@ -6732,9 +6736,6 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
                 global lastTerrain
                 lastTerrain = terrain
-
-            # start playing music
-            sound_loop(tcodMixer.get_channel("background"),first_run=True)
 
             break
 

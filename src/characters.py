@@ -1431,10 +1431,8 @@ class Character:
         else:
             self.macroState["commandKeyQueue"] = convertedCommand + oldCommand
 
-        """
-        if len(self.macroState["commandKeyQueue"]) > 100:
-            self.macroState["commandKeyQueue"] = self.macroState["commandKeyQueue"][0:100]
-        """
+        if len(self.macroState["commandKeyQueue"]) > 1000:
+            self.macroState["commandKeyQueue"] = self.macroState["commandKeyQueue"][0:1000]
 
     def getCommandString(self):
         '''

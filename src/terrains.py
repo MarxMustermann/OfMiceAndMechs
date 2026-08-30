@@ -192,6 +192,14 @@ class Terrain:
                 out.append(character)
         return out
 
+    def spawnItem(self,itemType,pos=None,bolted=False):
+        if pos == None:
+            pos = self.getRandomPosition()
+        item =  src.items.itemMap[itemType]()
+        self.addItem(item,pos)
+        item.bolted = bolted
+        return item
+
     def isTileTransferPossible(self,startPosition,direction):
         endPosition = (startPosition[0]+direction[0], startPosition[1]+direction[1], startPosition[2]+direction[2])
         rooms = self.getRoomByPosition(endPosition)

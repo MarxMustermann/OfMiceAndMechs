@@ -393,7 +393,7 @@ def setUpTcod():
                 with open("config/globalSettings.json") as f:
                     settings = json.loads(f.read())
     else:
-        settings = {"auto save": False, "sound": 16, "fullscreen": True, "SDL":True, "sound_enabled": True} #Default Settings
+        settings = {"auto save": True, "sound": 16, "fullscreen": True, "SDL":True, "sound_enabled": True} #Default Settings
     
     import tcod as internalTcod
     global tcod

@@ -60,7 +60,7 @@ class SettingMenu(src.menues.SubMenu):
                         src.interaction.settings["tracking"] = not src.interaction.settings["tracking"]
                         src.interaction.ensure_tracking_id()
                     case "auto save":
-                        src.interaction.settings["auto save"] = not src.interaction.settings.get("auto save",False)
+                        src.interaction.settings["auto save"] = not src.interaction.settings.get("auto save",True)
                     case "change npc rendering":
                         character.macroState["submenue"] = src.menues.menuMap["ChangeViewsMenu"]()
 
@@ -105,7 +105,7 @@ class SettingMenu(src.menues.SubMenu):
                         text += "Off"
                 case "auto save":
                     text+= "auto save:           "
-                    if src.interaction.settings.get("auto save"):
+                    if src.interaction.settings.get("auto save",True):
                         text += "On"
                     else:
                         text += "Off"

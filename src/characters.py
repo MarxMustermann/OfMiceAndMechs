@@ -1494,7 +1494,6 @@ class Character:
         if self.addExhaustionOnHurt:
             self.exhaustion += damage//10+1
         if self.addRandomExhaustionOnHurt:
-            #self.exhaustion += int(damage//4)
             self.exhaustion += int(random.random()*damage//2)
 
         if reason.startswith("attacked"):
@@ -1508,7 +1507,6 @@ class Character:
                 self.runCommandString(random.choice(["a", "w", "s", "d"]))
 
             self.numAttackedWithoutResponse += 1
-            #damage += self.numAttackedWithoutResponse
 
         if self.armor:
             damageAbsorbtion = self.armor.getArmorValue(reason)

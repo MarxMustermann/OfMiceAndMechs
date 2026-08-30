@@ -3174,8 +3174,9 @@ Bump against an item or stand ontop of an item to select it for activation.
 
         # complex activate an item
         if key in ("c",):
+
             # complex activate the marked item
-            if charState["itemMarkedLast"]:
+            if charState.get("itemMarkedLast"):
                 charState["itemMarkedLast"].configure(char)
 
             # complex activate an item on floor

@@ -244,7 +244,7 @@ def advanceGame():
         src.gamestate.gamestate.stern["implant_override_ticks"] = amount
 
     # auto save
-    if settings.get("auto save"):
+    if settings.get("auto save",True):
         if src.gamestate.gamestate.tick % 150 == 0 and not src.gamestate.gamestate.savedThisTurn:
             src.gamestate.gamestate.save()
             src.gamestate.gamestate.mainChar.addMessage("auto saved")

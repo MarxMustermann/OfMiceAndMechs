@@ -1540,7 +1540,7 @@ class Character:
             if reason:
                 message += f", because you got {reason}"
             message += "."
-            message += f"\nYou have {self.health}/{self.adjustedMaxHealth} health left"
+            message += f"\nYou have {self.health}/{self.adjustedMaxHealth} health left."
             self.addMessage(message)
 
             if self.combatMode == "defensive":
@@ -1849,7 +1849,7 @@ press any other key to attack normally""")
         ):
             baseDamage = int(baseDamage * 1.25)
             #reason+= " with timing bonus"
-            bonus+= "with timing bonus"
+            bonus+= " with timing bonus"
 
         damage = baseDamage
 
@@ -1877,11 +1877,11 @@ press any other key to attack normally""")
         for statusEffect in self.statusEffects:
             if issubclass(type(statusEffect), src.statusEffects.DamageBuff):
                 damage, bonus = statusEffect.modDamage(attacker=self,attacked= target, damage = damage, bonus = bonus)
-                bonus+= " "
+                bonus = " "+bonus+" "
 
         enemyHP = target.health
         target.hurt(damage, reason=reason, actor=self)
-        message = f"you attack the enemy for {damage} damage {bonus}."
+        message = f"you attack the enemy for {damage} damage{bonus}."
         self.stats["damage dealt"] = self.stats.get("damage dealt", 0) + damage
         if not target.dead:
             message += f"\nThe enemy has {target.health}/{target.adjustedMaxHealth} health left."

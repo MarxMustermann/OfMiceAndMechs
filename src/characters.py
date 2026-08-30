@@ -1540,9 +1540,11 @@ class Character:
 
             self.health -= damage
             self.frustration += 10 * damage
-            message = "you took " + str(damage) + f" damage. You have {self.health}/{self.adjustedMaxHealth} health left"
+            message = "you took " + str(damage) + f" damage"
             if reason:
-                message += f"\nbecause you got {reason}"
+                message += f", because you got {reason}"
+            message += "."
+            message += f"\nYou have {self.health}/{self.adjustedMaxHealth} health left"
             self.addMessage(message)
 
             if self.combatMode == "defensive":

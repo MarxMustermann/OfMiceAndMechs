@@ -3336,14 +3336,6 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                 scrap = src.items.itemMap["Scrap"](amount=amount)
                 currentTerrain.addItem(scrap,pos)
 
-            if not (big_pos[0] > 5 and big_pos[0] < 9 and big_pos[1] > 2 and big_pos[1] < 9):
-                for _i in range(1,10):
-                    wall = src.items.itemMap["Wall"]()
-                    wall.bolted = False
-                    pos = (big_pos[0]*15+random.randint(1,13),big_pos[1]*15+random.randint(1,13),0)
-                    if not currentTerrain.getItemByPosition(pos):
-                        currentTerrain.addItem(wall,pos)
-
             for x in range(1,14):
                 pos = (big_pos[0]*15+x,big_pos[1]*15+7,0)
                 items = currentTerrain.getItemByPosition(pos)
@@ -3365,14 +3357,6 @@ sure i'll produce equipment for you as long as you bring me the raw material.
                     continue
                 scrap = src.items.itemMap["Scrap"](amount=amount)
                 currentTerrain.addItem(scrap,pos)
-
-            if not (big_pos[0] > 5 and big_pos[0] < 9 and big_pos[1] > 2 and big_pos[1] < 9):
-                for _i in range(1,10):
-                    wall = src.items.itemMap["Wall"]()
-                    wall.bolted = False
-                    pos = (big_pos[0]*15+random.randint(1,13),big_pos[1]*15+random.randint(1,13),0)
-                    if not currentTerrain.getItemByPosition(pos):
-                        currentTerrain.addItem(wall,pos)
 
             for y in range(1,14):
                 pos = (big_pos[0]*15+7,big_pos[1]*15+y,0)

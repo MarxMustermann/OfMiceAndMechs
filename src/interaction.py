@@ -6031,8 +6031,8 @@ def renderGameDisplay(renderChar=None,showSaving=False):
 
                     # set up some helper variables
                     map_width = ui_element["map_width"]
-                    line_width = 5
-                    padding = 15
+                    line_width = tileHeight//5
+                    padding = line_width*3
 
                     # gets the screen position of the map
                     distance_left = ui_element["offset"][0]
@@ -6132,10 +6132,10 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                 display_height = tileHeight*height
                 display_width = tileWidth*width
 
-                padding = 15
-                line_width = 5
-                overhang = 25
-                outline = 4
+                line_width = tileHeight//5
+                padding = line_width*3
+                overhang = line_width*5
+                outline = line_width
                 sdl_renderer2.draw_color = (0,0,0,255)
 
                 # draw backgound

@@ -6230,6 +6230,8 @@ def renderGameDisplay(renderChar=None,showSaving=False):
             renderGameDisplay(shadowCharacter)
 
 def showMainMenu(args=None):
+    global abort_sound_loop
+
     from pathlib import Path
     Path("gamestate").mkdir(parents=True, exist_ok=True)
 
@@ -6700,6 +6702,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
             # start playing music
             channel = tcodMixer.get_channel("background")
+            abort_sound_loop = False
             sound_loop(channel,first_run=True)
 
             # start story

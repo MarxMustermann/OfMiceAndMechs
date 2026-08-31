@@ -6016,6 +6016,7 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                     width = last_menu_dimension[0]
                     height = last_menu_dimension[1]
 
+            # get special position to draw the menu on
             pos = None
             if submenue:
                 pos = submenue.get_map_position()

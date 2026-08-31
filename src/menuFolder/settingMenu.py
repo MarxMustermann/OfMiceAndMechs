@@ -4,7 +4,7 @@ import src
 
 class SettingMenu(src.menues.SubMenu):
     type = "SettingMenu"
-    setting_options = ["auto save", "sound", "set sound volume", "fullscreen", "change npc rendering","SDL","tracking"]
+    setting_options = ["auto save", "sound", "set sound volume", "fullscreen", "change npc rendering","SDL","tracking","framedropping"]
 
     def __init__(self, default=None, targetParamName="selection"):
         self.index = 0
@@ -39,6 +39,8 @@ class SettingMenu(src.menues.SubMenu):
         for i,setting in enumerate(self.setting_options):
             if change_event and self.index == i:
                 match setting:
+                    case "framedropping":
+                        src.interaction.settings["framedropping"] = not src.interaction.settings.get("framedropping",True)
                     case "sound":
                         if src.interaction.settings.get("sound_enabled",True):
                             src.interaction.settings["sound_enabled"] = False
@@ -75,6 +77,12 @@ class SettingMenu(src.menues.SubMenu):
             if self.index == i:
                 text+= "> "
             match setting:
+                case "framedropping":
+                    text += setting + ":      "
+                    if not src.interaction.settings.get("framedropping",True):
+                        text += "Off"
+                    else:
+                        text += "On"
                 case "sound":
                     text += setting + ":               "
                     if not src.interaction.settings.get("sound_enabled",True):

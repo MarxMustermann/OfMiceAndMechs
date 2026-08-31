@@ -10265,7 +10265,7 @@ def advanceChar(char,render=True, pull_events = True, singleStep=False):
                     if not quest.autoSolve:
                         continue
                     automated = True
-                if not automated or src.gamestate.gamestate.tick%5 == 0:
+                if (not automated) or src.gamestate.gamestate.tick%5 == 0 or (not src.interaction.settings.get("framedropping",True)):
                     renderGameDisplay()
             lastRender = time.time()
             rerender = False

@@ -2054,11 +2054,34 @@ class Room:
         return None
 
     def spawnItem(self,itemType,pos=None,bolted=False):
-        if pos == None:
-            pos = self.getRandomPosition()
+
+        # create the item to be placed
         item =  src.items.itemMap[itemType]()
-        self.addItem(item,pos)
         item.bolted = bolted
+
+        # get a position to spawn the item on
+        if pos == None:
+            secondary_position = None
+            for i in range(1,20):
+                candidate = self.getRandomPosition()
+                items = self.getItemByPosition(pos)
+                if not items:
+                    pos = candidate
+                    break
+                if not item.walkable:
+                    continue
+                if items[0].walkable == False:
+                    continue
+                if len(items[0].walkable) >= 25:
+                    continue
+                secondary_position = pos
+            if not pos:
+                pos = secondary_position
+
+        # place item
+        if pos == None:
+            return None
+        self.addItem(item,pos)
         return item
 
     def moveCharacter(self, character, newPosition):

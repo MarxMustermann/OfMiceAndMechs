@@ -6181,7 +6181,7 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                 # draw title line
                 if submenue and submenue.getTitle():
                     sdl_renderer2.draw_color = (100,100,100,255)
-                    sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop-padding-line_width+2*tileHeight,display_width+2*(padding+overhang),line_width))
+                    sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop+tileHeight+(tileHeight-line_width)//2,display_width+2*(padding+overhang),line_width))
     else:
         last_menu_dimension = None
 

@@ -6694,24 +6694,6 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
                     loadingControl["needsStart"] = True
 
-            """
-            def loader():
-                doLoad()
-                loadingControl["done"] = True
-
-            async def redrawer():
-                while not loadingControl["done"]:
-                    showLoading()
-
-            async def asyncTask():
-                loop = asyncio.get_running_loop()
-                await asyncio.gather(
-                    loop.run_in_executor(None,loader),
-                    redrawer()
-                )
-            asyncio.run(asyncTask())
-            """
-
             # set up basic world
             doLoad()
             src.gamestate.gamestate.gameIndex = gameIndex

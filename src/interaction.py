@@ -6111,10 +6111,6 @@ def renderGameDisplay(renderChar=None,showSaving=False):
                     sdl_renderer2.fill_rect((offsetLeft,offsetTop,line_width,display_height+padding*2))
                     sdl_renderer2.fill_rect((offsetLeft+display_width+2*padding-line_width,offsetTop,line_width,display_height+padding*2))
                     sdl_renderer2.fill_rect((offsetLeft,offsetTop+display_height+2*padding-line_width,display_width+padding*2,line_width))
-                    #sdl_renderer2.fill_rect((offsetLeft-line_width,offsetTop-line_width,tileHeight+line_width*2,line_width))
-                    #sdl_renderer2.fill_rect((offsetLeft-line_width,offsetTop-line_width,line_width,tileHeight+line_width*2))
-                    #sdl_renderer2.fill_rect((offsetLeft+tileHeight,offsetTop-line_width,line_width,tileHeight+line_width*2))
-                    #sdl_renderer2.fill_rect((offsetLeft-line_width,offsetTop+tileHeight,tileHeight+line_width*2,line_width))
 
             # draw submenues 
             if not pos:

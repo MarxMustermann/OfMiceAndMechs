@@ -1,19 +1,23 @@
+= basic setup =
 The relevant part of the setting of the game is basically that an ultraauthoritarian society broke. Everything degraded even further, since nobody is left capable of original thought and everybody that is left just repeats obsolete commands.
 Everyone has mind control implants that act as task helpers and most people delegated their entire thinking to it.
 
+= basic story =
+
 The story of the first playthrough should be:
 
-1. Wake up in a room
-2. Go to a shelter
-3. Wake up eddi the groundskeeper
-4. Do some tasks, rebuild a base with eddi
-5. build temple
-6. Do dungeons to steal GlassHearts and collect in temple to unlock endgame dungeon
-7. Use throne in endgame dungeon to rule the world. The architect will take over and the player gets the bad ending
+1. Wake up in an exploding room
+2. leave
+3. Go to a shelter
+4. Wake up eddi the groundskeeper
+5. Do some tasks, rebuild a base with eddi
+6. build temple
+7. Do dungeons to steal GlassHearts and collect in temple to unlock endgame dungeon
+8. Use throne in endgame dungeon to rule the world. The architect will take over and the player gets the bad ending
 
 There is currently only two character in game right now:
 
-1. The architect
+== The architect ==
 The architect lives in your implant and generates quests for you.
 It will try its best to lead you through the default story, so it can take you over in the end. If you take other paths, it should get agressive.
 The idea is that the architect is absolutely ruthless and muderours. Basically evil, but the idea is not to be commically evil or actually crual. More like no understanding of human emotions and no care for them.
@@ -44,7 +48,7 @@ This will trigger an attack.
 
 Shall i assign you a quest to kill the enemy?"""
 
-2. eddi, the groundskeeper
+== eddi, the groundskeeper ==
 The idea is basically that Eddi is the groundskeeper of the destroyed base you start.
 He should give you a point to focus on and a person to relate to.
 He will also give you quests, like killing monsters and fetching some items etc.

@@ -168,7 +168,10 @@ if __name__ == '__main__':
                 folder_name = str(random.randint(1,100000))
                 Path(f"crashes/{folder_name}/").mkdir(parents=True, exist_ok=True)
                 import shutil
-                shutil.copyfile(f"gamestate/gamestate_{gamestate.gamestate.gameIndex}",f"crashes/{folder_name}/gamestate_{gamestate.gamestate.gameIndex}")
+                try:
+                    shutil.copyfile(f"gamestate/gamestate_{gamestate.gamestate.gameIndex}",f"crashes/{folder_name}/gamestate_{gamestate.gamestate.gameIndex}")
+                except:
+                    pass
 
                 import time
                 import traceback

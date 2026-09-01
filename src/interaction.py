@@ -6470,6 +6470,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
     index = 0
     manage_worlds = False
+    manage_worlds_delete_confirm = False
     change_game_settings = False
 
     while 1:
@@ -6816,25 +6817,28 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
         y = 20
         if manage_worlds:
-            counter = 0
-            for save_entry in saves:
-                difficulty = save_entry.get("difficulty","no difficulty set")
-                menu_entry = f"world {save_entry['savestateId']} ({difficulty})"
+            if manage_worlds_delete_confirm:
+                printUrwidToTcod("Do you realy want to delete the save?\npress uppercase Y to confirm.",(3,offsetY+y),explecitConsole=root_console)
+            else:
+                counter = 0
+                for save_entry in saves:
+                    difficulty = save_entry.get("difficulty","no difficulty set")
+                    menu_entry = f"world {save_entry['savestateId']} ({difficulty})"
+                    indicator = ""
+                    if counter == index:
+                        indicator = "=> "
+                    color = "#fff"
+                    if counter == gameIndex:
+                        color = "#ff0"
+                    line = (src.interaction.urwid.AttrSpec(color, "black"), indicator+menu_entry)
+                    printUrwidToTcod(line,(3,offsetY+y+counter),explecitConsole=root_console)
+                    counter += 1
+
                 indicator = ""
                 if counter == index:
                     indicator = "=> "
-                color = "#fff"
-                if counter == gameIndex:
-                    color = "#ff0"
-                line = (src.interaction.urwid.AttrSpec(color, "black"), indicator+menu_entry)
-                printUrwidToTcod(line,(3,offsetY+y+counter),explecitConsole=root_console)
+                printUrwidToTcod(indicator+"create new world",(3,offsetY+y+counter),explecitConsole=root_console)
                 counter += 1
-
-            indicator = ""
-            if counter == index:
-                indicator = "=> "
-            printUrwidToTcod(indicator+"create new world",(3,offsetY+y+counter),explecitConsole=root_console)
-            counter += 1
         elif change_game_settings:
             counter = 0
             #for setting in ["rendering","UI font","sound","volume",]:
@@ -7254,6 +7258,20 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                     case _:
                         pass
 
+                # handle confirmation of world deletion
+                if manage_worlds_delete_confirm:
+                    if key in (tcod.event.KeySym.LSHIFT,tcod.event.KeySym.RSHIFT,):
+                        continue
+                    manage_worlds_delete_confirm = False
+                    if key in (tcod.event.KeySym.y,) and event.mod & tcod.event.Modifier.SHIFT:
+                        if index < len(rawState["worlds"]):
+                            rawState["worlds"].remove(rawState["worlds"][index])
+                            saves = rawState["worlds"]
+                            with open("gamestate/globalInfo.json", "w") as globalInfoFile:
+                                json.dump(rawState, globalInfoFile)
+                    else:
+                        continue
+
                 if key in (tcod.event.KeySym.RETURN, tcod.event.KeySym.KP_ENTER, tcod.event.KeySym.d, tcod.event.KeySym.j, tcod.event.KeySym.a ):
                     if manage_worlds:
                         if index < len(saves):
@@ -7333,11 +7351,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
                 if key in (tcod.event.KeySym.x,):
                     if manage_worlds:
-                        if index < len(rawState["worlds"]):
-                            rawState["worlds"].remove(rawState["worlds"][index])
-                            saves = rawState["worlds"]
-                            with open("gamestate/globalInfo.json", "w") as globalInfoFile:
-                                json.dump(rawState, globalInfoFile)
+                        manage_worlds_delete_confirm = True
 
                 if manage_worlds:
                     if key in (tcod.event.KeySym.s, tcod.event.KeySym.DOWN,):

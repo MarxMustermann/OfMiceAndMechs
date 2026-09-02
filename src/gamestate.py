@@ -2,6 +2,7 @@
 import json
 import zlib
 import tcod
+import os.path
 
 import src.canvas
 import src.characters
@@ -216,6 +217,10 @@ class GameState:
         rawState["lastGameIndex"] = gameIndex
         with open("gamestate/globalInfo.json", "w") as globalInfoFile:
             json.dump(rawState,globalInfoFile)
+
+        # check if a save exists
+        if (not os.path.isfile("gamestate/gamestate_{savestateId}")) and (not os.path.isfile(f"gamestate/gamestate_{savestateId}_backup")):
+            return None
 
         # load the actual gamefile
         import pickle

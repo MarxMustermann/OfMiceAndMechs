@@ -6588,8 +6588,12 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 '''
                 sets up a basic world
                 '''
+                gamestate = None
                 if gameIndex < len(saves) and saves[gameIndex]["hasSave"]:
-                    src.gamestate.gamestate = src.gamestate.gamestate.loadP(gameIndex)
+                    gamestate = src.gamestate.gamestate.loadP(gameIndex)
+
+                if gamestate:
+                    src.gamestate.gamestate = gamestate
                     setUpNoUrwid()
 
                     if tcod.event.get_modifier_state() & tcod.event.Modifier.CAPS:

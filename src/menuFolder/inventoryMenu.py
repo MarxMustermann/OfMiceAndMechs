@@ -240,7 +240,7 @@ class InventoryMenu(src.menues.SubMenu):
                 num_used = len(char.inventory)
                 num_available = 10
                 if num_available > num_used:
-                    txt.append((src.interaction.shadowed_ui_attr,f"{num_used} inventrory slots used out of {num_available}"))
+                    txt.append((src.interaction.shadowed_ui_attr,f"{num_used} inventory slots used out of {num_available}"))
                 else:
                     txt.append((src.interaction.shadowed_ui_attr,f"inventory full"))
                 txt.append("\n\n")

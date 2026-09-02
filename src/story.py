@@ -2505,7 +2505,7 @@ Protocol forbids to leave the base while the alarm is running.
 
 """,(src.interaction.urwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"Disable the alarm so i can go out"),""" and collect resources.
 
-Find the SiegeManger (""",sample_siegeManager.metaRender(),f""") and use it, to unrestrict the outside movement.
+Find the SiegeManager (""",sample_siegeManager.metaRender(),f""") and use it, to unrestrict the outside movement.
 The old guard room is {direction_string}.
 Look for the SiegeManager there, but be wary of the MechanicalGuards.
 They seem to have gotten aggressive after all the time.

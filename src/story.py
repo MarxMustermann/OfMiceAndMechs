@@ -1746,7 +1746,7 @@ Since i'm a groundskeeper my duty is to maintain the premises."""])
 """),f"""
 The City that was once standing here has fallen into ruins.
 There is almost nothing left except for rusty scrap.
-Everything would have to be build anew.
+Everything would have to be built anew.
 
 """])
 

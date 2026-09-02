@@ -2008,7 +2008,7 @@ It allows me to draw storage markers onto the floor.
 It is hard to do anything without a storage system.
 
 """,(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"I'll be busy and will not need your help for a bit."),"""
-But once i am done painting, help will be appreachiated.
+But once i am done painting, help will be appreciated.
 """])
                 character.inventory.remove(painter[0])
                 partner.inventory.append(painter[0])
@@ -2508,7 +2508,7 @@ Protocol forbids to leave the base while the alarm is running.
 Find the SiegeManager (""",sample_siegeManager.metaRender(),f""") and use it, to unrestrict the outside movement.
 The old guard room is {direction_string}.
 Look for the SiegeManager there, but be wary of the MechanicalGuards.
-They seem to have gotten aggressive after all the time.
+They seem to have gotten aggressive after all this time.
 """])
                 offer_accept_options = True
             else:

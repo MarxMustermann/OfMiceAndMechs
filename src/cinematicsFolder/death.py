@@ -30,8 +30,12 @@ def Death(extraParam):
     world_info = rawState["worlds"][src.gamestate.gamestate.gameIndex]
     savestate_id = world_info["savestateId"]
     rawState["worlds"].remove(world_info)
-    os.remove("gamestate/gamestate_"+str(savestate_id))
-    os.remove("gamestate/gamestate_"+str(savestate_id)+"_backup")
+    fileName = "gamestate/gamestate_"+str(savestate_id)
+    if os.path.isfile(fileName):
+        os.remove(fileName)
+    fileName = "gamestate/gamestate_"+str(savestate_id)+"_backup"
+    if os.path.isfile(fileName):
+        os.remove(fileName)
     with open("gamestate/globalInfo.json", "w") as globalInfoFile:
         json.dump(rawState, globalInfoFile)
 

@@ -195,14 +195,14 @@ if __name__ == '__main__':
                     text = "do you want to open the game discord channel?\npress y to accept or press n to decline"
                     interaction.tcodConsole.clear()
                     w = len(max(text.splitlines(), key=len))
-                    x = int(src.interaction.tcodConsole.width / 2 - w / 2 )
+                    x = int(interaction.tcodConsole.width / 2 - w / 2 )
                     h = len(text.splitlines())
-                    y = int(src.interaction.tcodConsole.height / 2 - h / 2)
+                    y = int(interaction.tcodConsole.height / 2 - h / 2)
 
 
-                    src.interaction.tcodPresent(noPresent=True)
-                    src.helpers.draw_frame_text(src.interaction.tcodConsole ,w, h, text, x, y)
-                    src.interaction.sdl_renderer2.present()
+                    interaction.tcodPresent(noPresent=True)
+                    helpers.draw_frame_text(interaction.tcodConsole ,w, h, text, x, y)
+                    interaction.sdl_renderer2.present()
 
                     while True:
                         events = tcod.event.get()
@@ -224,7 +224,7 @@ if __name__ == '__main__':
                                     case "WindowHidden":
                                         pass
                                     case _:
-                                        src.interaction.tcodPresent()
+                                        interaction.tcodPresent()
                 while 1:
                     events = tcod.event.get()
                     for event in events:
@@ -309,7 +309,7 @@ if __name__ == '__main__':
                                 w = len(max(text.splitlines(), key=len))
                                 x = int(interaction.tcodConsole.width / 2 - w / 2 )
                                 interaction.tcodPresent(noPresent=True)
-                                helpers.draw_frame_text(src.interaction.tcodConsole ,w, 2, text, x, y)
+                                helpers.draw_frame_text(interaction.tcodConsole ,w, 2, text, x, y)
                                 interaction.sdl_renderer2.present()
                                 while t.is_alive():
                                     src.helpers.deal_with_window_events(e)

@@ -6497,6 +6497,13 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
         difficulty = None
         if saves:
             difficulty = saves[gameIndex].get("difficulty")
+        while startGame and gameIndex > len(saves)-1:
+            rawState["wordCounter"] += 1
+            rawState["worlds"].append({"savestateId":rawState["wordCounter"],"hasSave":False,})
+
+            rawState["lastGameIndex"] = gameIndex
+            with open("gamestate/globalInfo.json", "w") as globalInfoFile:
+                json.dump(rawState, globalInfoFile)
         if startGame and not difficulty:
 
             # show the difficulty selection

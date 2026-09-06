@@ -3919,25 +3919,11 @@ This memorial contains:
             craftingRoom.addStorageSlot((1,y,0),None)
             craftingRoom.addStorageSlot((11,y,0),None)
 
-        craftingRoom.addWalkingSpace((2,11,0))
-        craftingRoom.addWalkingSpace((2,7,0))
-        craftingRoom.addWalkingSpace((2,6,0))
-        craftingRoom.addWalkingSpace((2,5,0))
-        craftingRoom.addWalkingSpace((2,4,0))
-        craftingRoom.addWalkingSpace((2,3,0))
-        craftingRoom.addWalkingSpace((2,2,0))
-        craftingRoom.addWalkingSpace((2,1,0))
-        craftingRoom.addWalkingSpace((1,6,0))
+        for position in [(2,11,0),(2,7,0),(2,6,0),(2,5,0),(2,4,0),(2,3,0),(2,2,0),(2,1,0),(1,6,0)]:
+            craftingRoom.addWalkingSpace(position)
 
-        craftingRoom.addWalkingSpace((10,11,0))
-        craftingRoom.addWalkingSpace((10,7,0))
-        craftingRoom.addWalkingSpace((10,6,0))
-        craftingRoom.addWalkingSpace((10,5,0))
-        craftingRoom.addWalkingSpace((10,4,0))
-        craftingRoom.addWalkingSpace((10,3,0))
-        craftingRoom.addWalkingSpace((10,2,0))
-        craftingRoom.addWalkingSpace((10,1,0))
-        craftingRoom.addWalkingSpace((11,6,0))
+        for position in [(10,11,0),(10,7,0),(10,6,0),(10,5,0),(10,4,0),(10,3,0),(10,2,0),(10,1,0),(11,6,0)]:
+            craftingRoom.addWalkingSpace(position)
 
         scrap = src.items.itemMap["Scrap"](amount=2)
         craftingRoom.addItem(scrap,(1,10,0))

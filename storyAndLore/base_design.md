@@ -6,11 +6,11 @@ Note: I'm mostly happy with the stuff that is written here and people seem to li
 The long past is mostly forgotten. Some authoritarians fully took over the world.
 
 What authoritarians doesn't really matter, the point is that ultra-authoritarians took over the world.
-Ii don't care if it is nazis, communists, cults or a megacorp.
+I don't care if it is nazis, stalinists, cults or a megacorp.
 I was considering just doing a random selection. It would be cool to have it be nazis on one playthrough, a fanatic sect on the other.
 Let's call the ruling class "the deciders"
 
-They don't need to be evil besides beeing authoritarian.
+They can but don't need to be evil besides beeing authoritarian.
 I don't want the deciders to be comically evil. They should be absolutely ruthless and amoral, but rational and goal oriented.
 
 Most information about that time should be forgotten, this is more background info for writers.
@@ -42,7 +42,7 @@ This leaves only the highest ranking deciders with an ability to think and act i
 This leaves them bored and they build bigger factories and wilder automations.
 Control stopped beeing a means to an end and now is the goal itself.
 The implants are perfected to a point where they can keep dead workers moving, but with limited capabilities.
-The diciders do weirder and wilder experiments and discover magic.
+The deciders do weirder and wilder experiments and discover magic.
 
 After discovering magic the deciders harnessed it and declared themself gods.
 They decide to build a machine to truely become gods.
@@ -51,14 +51,14 @@ All high ranking deciders meet and turn on the machine.
 The machine basically is a magical nuke and explodes.
 The whole base with the machine in it, turns into glass.
 The high ranking deciders all die and get turned into gods.
-As gods they are a nonsentient forces of nature and cannot act on their own.
-wether the machine malfunctioned or worked should be left undecided.
+As gods they are a nonsentient forces of nature and cannot act on their own. They are ghosts basically.
+Wether the machine malfunctioned or worked should be left open.
 The age of the deciders ends and no active intelligence remains in the world.
 
 This information should be available to the player, but it should need to be dug up.
 Like i want the player to spend time and effort and get the informaiton as a reward.
-This information should unlock the #good ending
-Since the information has liitle impact on actual gameplay, i'm fine if many player miss that completely.
+This information should be important to unlock the good ending
+Since the information has liitle impact on actual gameplay, i'm fine if many players miss that completely.
 
 = recent past =
 
@@ -74,42 +74,68 @@ I think this is the main place to go wild with storytelling and worldbuilding.
 
 Like there could be many stories told like:
 * automated outposts that are just killing everybody everybody on sight
-* The production plant with the last order to just as much of something as possible. (the paperclip problem)
+* The production plant with the last order to just produce as much of something as possible. (the paperclip problem)
 * civil wars over conflicting orders
 * starved out cities because nobody send the army the hunt down insects
 * military drills that were never stopped. Like making 2 faction have a full on war against each other with training weapons only.
 * deliveries made into burning ruins
-* insects running over a city and still getting regular food supplies
+* insects running over a base and still getting regular food supplies that they feed on.
 * parasitic insects that just eat enough workers to not wipe out a base
 * self contained bases that just kept working all the time
 * Sentient life remaining in stasis that can be awoken
 * The gods having influence on the world as sentientless forces
 * The experiments taking over the labs
 * untreated industry byproduct accumulated and turned a factory in toxic wasteland
+* failing implants resulting in accidential free will
+* failing implants leading to work slowing more and more
+* people breaking mind control and running amok
 
-Those could be largely self contained and stories could be cut if for example the storyline with the training weapons doesn't land.
-I'd love to have something like a traveling circus that basically abducts people and makes them train for the big circus performance. The performance on the celebration of the deciders return.
-But if it lands as too silly with the players, it can be removed as long as we don't interconnet the stories
+Those could be largely self contained and stories could be cut, if for example the storyline with the training weapons lands as too absurd.
+I'd love to have something like a traveling circus that basically abducts people and makes them train for the big circus performance. The performance on the celebration of the deciders return ;-)
+But if it lands as too silly with the players, it can be removed as long as the stories are not interconnected.
 
-Interconected stories building bigger arcs would be aweseome as well, but that seems relatively far into the future. In general i would try not to connect substories without a good reason to.
+Interconected stories building bigger arcs would be awesome as well, but that seems relatively far into the future.
+In general i would try not to connect substories without a good reason to. Connections between stories ahould be tracked.
+Some dead references would not be that bad as well, since it could just be forgotten past.
 
-Stories can be told through notes and memorial plates and memory fragments etc...
+Those Stories can be told through notes, memory fragments, reports, memorial plates, dialogs.
+I guess this is the part to go wild with actual writing text.
+
+Environmental storytelling couls also go wild here, as long as it doesn't hurt game balance.
+Like placing a room with corpses and empty goo flasks. From that the player figure out that a base starved without reading.
 
 = present =
 
 Some systems big or small are still running. Especially if you press buttons.
-Basiaclly the same as the recent past story wise.
+Basically the same as the recent past story wise.
+The only difference is that everything in the present should be implemented and visitable by the player.
 
-== implementation ==
+Like if there the story of "insects running over a city and still getting regular food supplies that they feed on" is declared as present, then the player should be able to both visit the insect base and the sending base. Also to food suplies itself should be implemented.
+That would allow the player to 
+* kill the insects and get the deliveries
+* burn the sending base to  the insects
+* raid the supplies to get some extra supplies
 
-Everything that happens in the past should be implemented in game.
-The other lore should be tales of the past from notes, memory fragments, reports, memorial plates, dialogs and environmental storytelling.
-Notes and ruins could keep the player entertained while looking for cool stuff in the ruins.
-Which the player would do a lot.
+Things that are not implemented should just happen in the past
+Implementing stories should move them from the past to the present
 
-The game has not much in interesting ingame remains yet, but i think changing that will be a big part of the practical storytelling.
-Like placing a room with corpses and empty goo flasks. From that the player figure out the story without reading.
-It would be cool to have something like complex factions and butterfly effects that take effect after some time.
+= the future =
 
+The future should be the result of the player interaction with the simulated world.
+The player shapes the future, the writing does not.
+
+Stories are taking place in the future stil can be told.
+* Actions can trigger chain reactions
+* remains can be teft for the player to be found
+* conditions can be set for things to happen in the future
+
+For example food could be limited for the player and a nonagressive base with big foodstorage could be placed nearby.
+This would present the story of the moral dillema to starve or murder for food.
+
+Since the game is very sandboxy we cannot really assume anything about the future.
+The player will kill the main npcs and eat the quest items and should be allowed to do so.
+So best to not talk about the future in fact terms and check preconditions for stories ingame.
+
+It would be cool to have something like complex factions and butterfly effects, that take effect after some time.
 The engine is able have fully simulated enemy bases that can be used for story purposed, but it will take a long time for me to get to such stuff.
 So the idea is to start small and modular and continue from there.

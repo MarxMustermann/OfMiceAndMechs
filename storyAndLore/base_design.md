@@ -73,10 +73,10 @@ Vast areas of the world are derelict and insects started to fill the void humani
 I think this is the main place to go wild with storytelling and worldbuilding.
 
 Like there could be many stories told like:
-* automated outposts that are just killing everybody everybody on sight
+* automated outposts that are just killing everybody everybody on sight, except for their dead commanders
 * The production plant with the last order to just produce as much of something as possible. (the paperclip problem)
 * civil wars over conflicting orders
-* starved out cities because nobody send the army the hunt down insects
+* starved out cities because nobody send the army the hunt down insects eating the fieldss
 * military drills that were never stopped. Like making 2 faction have a full on war against each other with training weapons only.
 * deliveries made into burning ruins
 * insects running over a base and still getting regular food supplies that they feed on.
@@ -139,3 +139,11 @@ So best to not talk about the future in fact terms and check preconditions for s
 It would be cool to have something like complex factions and butterfly effects, that take effect after some time.
 The engine is able have fully simulated enemy bases that can be used for story purposed, but it will take a long time for me to get to such stuff.
 So the idea is to start small and modular and continue from there.
+
+Currently there are 2 main stories in planning:
+
+* implant loyal (main playable storyline - bad ending)
+* power grab (main playable storyline - good ending)
+
+Ideally there would be more playable storylines in the future, but implementing one or two is a lot already.
+So i would not pland further for now.

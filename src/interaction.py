@@ -9324,7 +9324,7 @@ def showRunIntro():
             row.append("\n")
         return render
 
-    stage = 0
+    stage = -2
     stageState = None
     room = None
     subStep = 0
@@ -9418,7 +9418,96 @@ press any key to go back to main menu
             # draw
             sdl_renderer2.present()
 
-        elif stage == 0:
+        elif stage == -2:
+            if stageState is None:
+                stageState = {"substep":1,"lastChange":time.time(),"send_tracking_ping":False}
+
+            if not stageState.get("send_tracking_ping"):
+                src.interaction.send_tracking_ping("run_intro_stage_0")
+                stageState["send_tracking_ping"] = True
+
+            tcodPresent(noPresent=True)
+
+            padding = 15
+            line_width = 5
+            overhang = 25
+            outline = 4
+
+            width = 71
+            height = 13
+            display_width = width*tileWidth
+            display_height = height*tileHeight
+
+            offsetLeft = (45 + c_offset) * tileWidth
+            offsetTop = 17 * tileHeight
+
+            # draw background
+            sdl_renderer2.fill_rect((offsetLeft-padding,offsetTop-padding,display_width+2*padding,display_height+2*padding))
+            # draw top line background
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop-padding-line_width-outline,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
+            # draw logo divider background
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop-padding-line_width-outline+17*tileHeight,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
+            # draw lower line backgound
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop+padding+display_height-outline,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
+            # left line background
+            sdl_renderer2.fill_rect((offsetLeft-padding-line_width-outline,offsetTop-padding-overhang-outline,line_width+2*outline,display_height+2*(padding+overhang+outline)))
+            # right line background
+            sdl_renderer2.fill_rect((offsetLeft+padding+display_width-outline,offsetTop-padding-overhang-outline,line_width+2*outline,display_height+2*(padding+overhang)+2*outline))
+
+            sdl_renderer2.draw_color = (255,255,255,255)
+            # draw upper line
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop-padding-line_width,display_width+2*(padding+overhang),line_width))
+            # draw lower line
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop+padding+display_height,display_width+2*(padding+overhang),line_width))
+            # left line
+            sdl_renderer2.fill_rect((offsetLeft-padding-line_width,offsetTop-padding-overhang,line_width,display_height+2*(padding+overhang)))
+            # right line
+            sdl_renderer2.fill_rect((offsetLeft+padding+display_width,offsetTop-padding-overhang,line_width,display_height+2*(padding+overhang)))
+
+            # add text
+            textBase = ["""
+Do you want to rule the world some day?
+
+
+
+
+
+
+
+
+
+press tab to accept - press enter to reject
+""",
+            ]
+            text = "".join(textBase[0:subStep])
+            if not subStep < len(textBase)-1:
+                text += textBase[-1][0:subStep2]
+
+            root_console = tcod.console.Console(width+1, height, order="F")
+            printUrwidToTcod(text, (0,0), explecitConsole=root_console)
+
+            if subStep2 > 170:
+                printUrwidToTcod("press tab to stop struggling", (0, 12),explecitConsole=root_console)
+            if subStep2 >= 425:
+                gameEnded = True
+                continue
+
+            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
+            console_render = tcod.render.SDLConsoleRender(atlas)
+            renderedToTexture = console_render.render(root_console)
+            sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
+
+            # draw
+            sdl_renderer2.present()
+
+            if subStep < len(textBase)-1:
+                time.sleep(0.5)
+                subStep += 1
+            elif subStep2 < len(textBase[-1]):
+                subStep2 += 1
+                time.sleep(0.03)
+
+        elif stage == -1:
             if stageState is None:
                 stageState = {"substep":1,"lastChange":time.time(),"send_tracking_ping":False}
 
@@ -9464,6 +9553,87 @@ press any key to go back to main menu
             # right line
             sdl_renderer2.fill_rect((offsetLeft+padding+display_width,offsetTop-padding-overhang,line_width,display_height+2*(padding+overhang)))
     
+            # add text
+            textBase = ["""
+To claim the glassed throne means to rule the world.
+
+It will be a long journey to get there, but trust me.
+""",(highlighted_ui_attr,"""I'm your implant and i have a plan."""),"""
+Just follow my instructions and you will claim the throne.
+
+You likely lost your memory, but i will reeducate you.
+There is much to teach, but over time you will learn.
+
+""",(highlighted_ui_attr,"But first you need to survive!"),"""
+
+press tab to continue
+""",
+            ]
+            text = textBase
+            root_console = tcod.console.Console(width+1, height, order="F")
+            printUrwidToTcod(text, (0,0), explecitConsole=root_console)
+
+            atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
+            console_render = tcod.render.SDLConsoleRender(atlas)
+            renderedToTexture = console_render.render(root_console)
+            sdl_renderer2.copy(renderedToTexture,(0,0,renderedToTexture.width,renderedToTexture.height),(offsetLeft,offsetTop,renderedToTexture.width,renderedToTexture.height),)
+
+            # draw
+            sdl_renderer2.present()
+
+            if subStep < len(textBase)-1:
+                time.sleep(0.5)
+                subStep += 1
+            elif subStep2 < len(textBase[-1]):
+                subStep2 += 1
+                time.sleep(0.03)
+
+        elif stage == 0:
+            if stageState is None:
+                stageState = {"substep":1,"lastChange":time.time(),"send_tracking_ping":False}
+
+            if not stageState.get("send_tracking_ping"):
+                src.interaction.send_tracking_ping("run_intro_stage_0")
+                stageState["send_tracking_ping"] = True
+
+            tcodPresent(noPresent=True)
+
+            padding = 15
+            line_width = 5
+            overhang = 25
+            outline = 4
+
+            width = 71
+            height = 13
+            display_width = width*tileWidth
+            display_height = height*tileHeight
+
+            offsetLeft = (45 + c_offset) * tileWidth
+            offsetTop = 17 * tileHeight
+
+            # draw background
+            sdl_renderer2.fill_rect((offsetLeft-padding,offsetTop-padding,display_width+2*padding,display_height+2*padding))
+            # draw top line background
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop-padding-line_width-outline,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
+            # draw logo divider background
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop-padding-line_width-outline+17*tileHeight,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
+            # draw lower line backgound
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang-outline,offsetTop+padding+display_height-outline,display_width+2*(padding+overhang)+2*outline,line_width+2*outline))
+            # left line background
+            sdl_renderer2.fill_rect((offsetLeft-padding-line_width-outline,offsetTop-padding-overhang-outline,line_width+2*outline,display_height+2*(padding+overhang+outline)))
+            # right line background
+            sdl_renderer2.fill_rect((offsetLeft+padding+display_width-outline,offsetTop-padding-overhang-outline,line_width+2*outline,display_height+2*(padding+overhang)+2*outline))
+
+            sdl_renderer2.draw_color = (255,255,255,255)
+            # draw upper line
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop-padding-line_width,display_width+2*(padding+overhang),line_width))
+            # draw lower line
+            sdl_renderer2.fill_rect((offsetLeft-padding-overhang,offsetTop+padding+display_height,display_width+2*(padding+overhang),line_width))
+            # left line
+            sdl_renderer2.fill_rect((offsetLeft-padding-line_width,offsetTop-padding-overhang,line_width,display_height+2*(padding+overhang)))
+            # right line
+            sdl_renderer2.fill_rect((offsetLeft+padding+display_width,offsetTop-padding-overhang,line_width,display_height+2*(padding+overhang)))
+
             # add text
             textBase = ["""
 You see """,".",".",".",""" nothing
@@ -10037,7 +10207,20 @@ to remember"""
                     stage = 7
                 if key in (tcod.event.KeySym.RETURN, tcod.event.KeySym.KP_ENTER, tcod.event.KeySym.TAB,):
                     src.interaction.send_tracking_ping("moved_run_intro")
-                    if stage != 3:
+                    if stage == -2:
+                        if key in (tcod.event.KeySym.TAB,):
+                            stage = -1
+                        else:
+                            stage = 0
+                        stageState = None
+                        subStep = 0
+                        subStep2 = 0
+                    elif stage == -1:
+                        stage = 3
+                        stageState = None
+                        subStep = 0
+                        subStep2 = 0
+                    elif stage != 3:
                         # move to next stage
                         stageState = None
                         stage += 1

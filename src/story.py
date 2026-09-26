@@ -7932,6 +7932,10 @@ Once you understand things try to find better solutions.
         elif story_tooltip_text:
             story_tooltip_text = None
         if story_tooltip_lifetime <= 0:
+            if not src.gamestate.gamestate.stern.get("shown_impant_tooltip") and not story_tooltip_text and src.gamestate.gamestate.tick > 1:
+                story_tooltip_text = " press tab to reach out to implant "
+                story_tooltip_lifetime = 3
+                src.gamestate.gamestate.stern["shown_impant_tooltip"] = True
             if not src.gamestate.gamestate.stern.get("shown_movement_tooltip") and not story_tooltip_text and src.gamestate.gamestate.tick > 1:
                 story_tooltip_text = " press wasd to move "
                 story_tooltip_lifetime = 3

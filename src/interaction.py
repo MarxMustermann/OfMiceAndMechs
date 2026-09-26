@@ -9561,8 +9561,8 @@ It will be a long journey to get there, but trust me.
 """,(highlighted_ui_attr,"""I'm your implant and i have a plan."""),"""
 Just follow my instructions and you will claim the throne.
 
-You likely lost your memory, but i will reeducate you.
-There is much to teach, but over time you will learn.
+You likely lost your memory, so i will reeducate you.
+There is much to teach and over time you will learn.
 
 """,(highlighted_ui_attr,"But first you need to survive!"),"""
 

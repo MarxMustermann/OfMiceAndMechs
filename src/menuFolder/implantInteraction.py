@@ -19,6 +19,7 @@ class ImplantInteraction(src.menues.SubMenu):
         super().__init__()
         self.character = character
         self.submenu = None
+        self.substep = None
 
     def getTitle(self):
         '''
@@ -51,6 +52,68 @@ class ImplantInteraction(src.menues.SubMenu):
         Returns:
             returns True when done
         '''
+
+        # show the quest creation menu
+        if self.substep == "quest":
+            return self.handleQuestKey(key, noRender=noRender, character = character)
+        if self.substep == "configure UI":
+            return self.handleUIKey(key, noRender=noRender, character = character)
+
+        # close the menu
+        if key == "esc":
+            return True
+
+        if self.submenu:
+            self.submenu.handleKey(key, noRender, character)
+            selection = self.submenu.selection
+            if selection:
+                if selection == "quest":
+                    self.substep = "quest"
+                    key = "~"
+                if selection == "configure UI":
+                    self.substep = "configure UI"
+                    key = "~"
+                if selection == "show plan":
+                    self.substep = "show plan"
+                    key = "~"
+                if selection == "quit":
+                    return True
+                self.submenu = None
+                return self.handleKey(key,noRender=noRender,character=character)
+            else:
+                return False
+
+        # show the selection on what to do with the implant
+        base_text = """
+Hello!
+
+I'm you implant. I'm here to help you.
+
+What can i do for you?
+"""
+        options = [("quest","tell me what to do"),("plan","tell me what the plan is"),("configure UI","configure UI"),("quit","quit")]
+        extraDescriptions = {
+        }
+        self.submenu = src.menues.menuMap["SelectionMenu"](base_text,options=options,extraDescriptions=extraDescriptions)
+        return False
+
+    def handleUIKey(self, key, noRender=False, character = None):
+
+        # close the menu
+        if key == "esc":
+            return True
+
+        # show the selection on what to do with the implant
+        base_text = """
+What should i change about the UI?
+"""
+        options = [("show legend","show legend"),("nothing","nothing")]
+        extraDescriptions = {
+        }
+        self.submenu = src.menues.menuMap["SelectionMenu"](base_text,options=options,extraDescriptions=extraDescriptions)
+        return False
+
+    def handleQuestKey(self, key, noRender=False, character = None):
 
         # close the menu
         if key == "esc":
@@ -85,32 +148,6 @@ class ImplantInteraction(src.menues.SubMenu):
                 selection = self.submenu.selection
                 if selection == "abort quest":
                     character.clear_quests()
-
-            elif self.submenu.tag == "first_implant_interaction":
-                self.submenu.handleKey(key, noRender, character)
-                if self.submenu.done:
-                    selection = self.submenu.selection
-                    self.submenu = None
-                    if selection == "confirm":
-                        src.gamestate.gamestate.stern["first_implant_interaction_confirmed"] = True
-                    else:
-                        self.done = True
-                        return True
-                else:
-                    return False
-
-            elif self.submenu.tag == "implant_basic_explainer_interaction":
-                self.submenu.handleKey(key, noRender, character)
-                if self.submenu.done:
-                    selection = self.submenu.selection
-                    self.submenu = None
-                    if selection == "confirm":
-                        src.gamestate.gamestate.stern["implant_basic_explainer_confirmed"] = True
-                    else:
-                        self.done = True
-                        return True
-                else:
-                    return False
 
             elif self.submenu.tag == "implant_room_planning_selection":
 
@@ -355,55 +392,6 @@ class ImplantInteraction(src.menues.SubMenu):
                 # wait for keystrokes
                 if self.submenu:
                     return False
-
-        # show special text for first reach out
-        if src.gamestate.gamestate.stern.get("first_implant_interaction_confirmed") is None:
-            src.gamestate.gamestate.stern["first_implant_interaction_confirmed"] = False
-        if not src.gamestate.gamestate.stern["first_implant_interaction_confirmed"]:
-            base_text = ["""
-""",(src.interaction.urwid.AttrSpec(src.interaction.disabled_ui_color,"black"),"You reach out to your implant and it answers:"),f"""
-
-
-You must be confused.
-
-
-""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"I'm your implant and i'm here to help you."),"""
-
-
-""",(src.pseudoUrwid.AttrSpec(src.interaction.ui_hint_color,"black"),"You can contact me any time by pressing tab."),"""
-
-
-""",(src.interaction.urwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"""Do you confirm?"""),"""
-"""]
-            src.gamestate.gamestate.stern["first_reachout_done"] = True
-
-            options = [("confirm","confirm"),("ignore","ignore")]
-            self.submenu = src.menues.menuMap["SelectionMenu"](base_text,options=options)
-            self.submenu.handleKey(key, noRender, character)
-            self.submenu.tag = "first_implant_interaction"
-            return False
-
-        # show special text for explaining the very basics
-        if src.gamestate.gamestate.stern.get("implant_basic_explainer_confirmed") is None:
-            src.gamestate.gamestate.stern["implant_basic_explainer_confirmed"] = False
-        if not src.gamestate.gamestate.stern["implant_basic_explainer_confirmed"]:
-            base_text = ["""
-""",(src.pseudoUrwid.AttrSpec(src.interaction.highlighted_ui_color,"black"),"I will generate quests"),""" for you in order to achieve our goals.
-
-Those quests will be shown on the left side of the screen.
-
-Additionally a "suggested action" is generated, which shows what keys can be pressed to complete the quest.
-A more high level description on how to complete the quest is given in the quest description.
-
-""",(src.interaction.urwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"""Do you confirm?"""),"""
-"""]
-            src.gamestate.gamestate.stern["first_reachout_done"] = True
-
-            options = [("confirm","confirm"),("ignore","ignore")]
-            self.submenu = src.menues.menuMap["SelectionMenu"](base_text,options=options)
-            self.submenu.handleKey(key, noRender, character)
-            self.submenu.tag = "implant_basic_explainer_interaction"
-            return False
 
         # handle interation while there are quests assigned
         if len(character.quests) > 0 and not character.quests[0].type == "ReachOutStory":

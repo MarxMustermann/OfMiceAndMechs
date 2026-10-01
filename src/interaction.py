@@ -2792,7 +2792,7 @@ def handle_main_menu_selected():
         src.gamestate.gamestate = None
         raise EndGame("the game was ended manually")
 
-def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
+def doShowMenu(char,charState,flags=None,key=None,main=None,header=None,footer=None,urwid=None,noAdvanceGame=None):
     options = [("save", "save"),
                ("main menu","save and back to main menu"),
                ("quit", "save and quit"),

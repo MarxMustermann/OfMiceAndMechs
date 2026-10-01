@@ -58,6 +58,8 @@ class ImplantInteraction(src.menues.SubMenu):
             return self.handleQuestKey(key, noRender=noRender, character = character)
         if self.substep == "configure UI":
             return self.handleUIKey(key, noRender=noRender, character = character)
+        if self.substep == "show plan":
+            return self.handlePlanKey(key, noRender=noRender, character = character)
 
         # close the menu
         if key == "esc":
@@ -70,12 +72,15 @@ class ImplantInteraction(src.menues.SubMenu):
                 if selection == "quest":
                     self.substep = "quest"
                     key = "~"
-                if selection == "configure UI":
-                    self.substep = "configure UI"
-                    key = "~"
-                if selection == "show plan":
+                if selection == "plan":
                     self.substep = "show plan"
                     key = "~"
+                if selection == "help":
+                    character.macroState["submenue"] = src.menues.menuMap["HelpMenu"]()
+                    return False
+                if selection == "main_menu":
+                    src.interaction.doShowMenu(character,character.macroState)
+                    return False
                 if selection == "quit":
                     return True
                 self.submenu = None
@@ -91,26 +96,39 @@ I'm you implant. I'm here to help you.
 
 What can i do for you?
 """
-        options = [("quest","tell me what to do"),("plan","tell me what the plan is"),("configure UI","configure UI"),("quit","quit")]
+        options = [("quest","tell me what i should do"),("plan","tell me what your plan is"),("help","show help"),("main_menu","show main menu"),("quit","continue playing")]
         extraDescriptions = {
         }
         self.submenu = src.menues.menuMap["SelectionMenu"](base_text,options=options,extraDescriptions=extraDescriptions)
         return False
 
-    def handleUIKey(self, key, noRender=False, character = None):
+    def handlePlanKey(self, key, noRender=False, character = None):
 
         # close the menu
         if key == "esc":
             return True
 
         # show the selection on what to do with the implant
-        base_text = """
-What should i change about the UI?
-"""
-        options = [("show legend","show legend"),("nothing","nothing")]
-        extraDescriptions = {
-        }
-        self.submenu = src.menues.menuMap["SelectionMenu"](base_text,options=options,extraDescriptions=extraDescriptions)
+        base_text = ["""
+To rule the world you have to claim the """,(src.interaction.highlighted_ui_attr,"""glass throne."""),"""
+The glass throne sits at the center of the world in the glassed city.
+The """,(src.interaction.highlighted_ui_attr,"glassed city"),""" has been destroyed a long time ago.
+
+The best way to get there and not die afterwards is to use a """,(src.interaction.highlighted_ui_attr,"temple."),"""
+The Temples """,(src.interaction.highlighted_ui_attr,"Throne"),""" will open the path to the glassed city.
+The Throne will be ready for you once you """,(src.interaction.highlighted_ui_attr,"collect all glass hearts."),"""
+
+The temple can be build at a base.
+To complete this huge task it is best to """,(src.interaction.highlighted_ui_attr,"set up a base."),"""
+Look around and see what """,(src.interaction.highlighted_ui_attr,"useful things"),""" you can find.
+
+
+But first you need to """,(src.interaction.highlighted_ui_attr,"survive."),"""
+
+
+""",src.interaction.ActionMeta(payload=["esc"],content=(src.interaction.shadowed_ui_attr,"press escape to close this menu")),"""
+"""]
+        self.submenu = src.menues.menuMap["TextMenu"](base_text)
         return False
 
     def handleQuestKey(self, key, noRender=False, character = None):

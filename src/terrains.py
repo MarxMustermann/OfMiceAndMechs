@@ -891,7 +891,7 @@ class Terrain:
             for item in foundItems:
                 if item and not char.getItemWalkable(item):
                     # print some info
-                    char.addMessage("You cannot walk there")
+                    char.addMessage("You bump into a "+item.name+"\nso you cannot walk " + str(direction) + ".\npress enter to interact")
                     # if noAdvanceGame == False:
                     #    header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
 

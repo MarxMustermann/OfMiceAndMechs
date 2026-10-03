@@ -1066,6 +1066,9 @@ def doObserveSelection(params):
     if key == "c":
         submenue = src.menues.menuMap["CombatInfoMenu"](char=char)
         char.macroState["submenue"] = submenue
+    elif key == "t":
+        submenue = src.menues.menuMap["ItemtypesInfoMenu"](char=char)
+        char.macroState["submenue"] = submenue
     elif key == "i":
         submenue = src.menues.menuMap["ItemByTileInfoMenu"](char=char)
         char.macroState["submenue"] = submenue
@@ -3576,13 +3579,14 @@ press key for advanced drop
 press key for what to observe
 
 * c =  observe combat
-* C =  observe characters
+* t =  observe item types
+* C =  observe characters on terrain
 * i =  observe items on tile
 * I =  observe items on terrain
 
 """
 
-        submenue = src.menues.menuMap["OneKeystrokeMenu"](text,ignoreFirstKey=False)
+        submenue = src.menues.menuMap["OneKeystrokeMenu"](text,ignoreFirstKey=False,title="OBSERVE PORTAL")
         submenue.followUp = {"method":doObserveSelection,"params":{"character":char}}
         submenue.tag = "observeSelection"
         char.macroState["submenue"] = submenue

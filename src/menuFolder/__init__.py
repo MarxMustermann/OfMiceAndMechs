@@ -49,3 +49,4 @@ import src.menuFolder.itemExchangeMenu
 import src.menuFolder.dutyPriorityConfigurationMenu
 import src.menuFolder.nameNumberPairSetter
 import src.menuFolder.uIConfigMenu
+import src.menuFolder.itemtypesInfoMenu

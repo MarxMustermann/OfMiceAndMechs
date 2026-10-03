@@ -56,8 +56,6 @@ class ImplantInteraction(src.menues.SubMenu):
         # show the quest creation menu
         if self.substep == "quest":
             return self.handleQuestKey(key, noRender=noRender, character = character)
-        if self.substep == "configure UI":
-            return self.handleUIKey(key, noRender=noRender, character = character)
         if self.substep == "show plan":
             return self.handlePlanKey(key, noRender=noRender, character = character)
 
@@ -75,6 +73,9 @@ class ImplantInteraction(src.menues.SubMenu):
                 if selection == "plan":
                     self.substep = "show plan"
                     key = "~"
+                if selection == "configure UI":
+                    character.macroState["submenue"] = src.menues.menuMap["UIConfigMenu"](character=character)
+                    return False
                 if selection == "help":
                     character.macroState["submenue"] = src.menues.menuMap["HelpMenu"]()
                     return False
@@ -96,7 +97,7 @@ I'm you implant. I'm here to help you.
 
 What can i do for you?
 """
-        options = [("quest","tell me what i should do"),("plan","tell me what your plan is"),("help","show help"),("main_menu","show main menu"),("quit","continue playing")]
+        options = [("quest","tell me what i should do"),("plan","tell me what your plan is"),("help","show help"),("configure UI","configure UI"),("main_menu","show main menu"),("quit","continue playing")]
         extraDescriptions = {
         }
         self.submenu = src.menues.menuMap["SelectionMenu"](base_text,options=options,extraDescriptions=extraDescriptions)

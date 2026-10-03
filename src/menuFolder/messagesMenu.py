@@ -105,6 +105,7 @@ class MessagesMenu(src.menues.SubMenu):
 
 
             out.append((src.interaction.urwid.AttrSpec(color, "default"),f"- {adapted_message}"))
+        out.append("\n")
         return out
 
 # register the menu type

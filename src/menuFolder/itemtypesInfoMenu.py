@@ -49,6 +49,8 @@ class ItemtypesInfoMenu(src.menues.SubMenu):
 
             text.append((src.interaction.urwid.AttrSpec("#888", "black"),details))
 
+        text.append("\n")
+
         return text
 
     def handleKey(self, key, noRender=False, character = None):

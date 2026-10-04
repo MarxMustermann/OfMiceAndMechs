@@ -42,26 +42,30 @@ class CombatInfoMenu(src.menues.SubMenu):
             text += f"attacksp:    {char.attackSpeed}\n"
             text += "\n"
 
-        text += """nearby enemies:
-"""
-
         enemies = char.getNearbyEnemies()
+        if not self.sidebared or enemies:
+            text += """nearby enemies:
+"""
         for enemy in enemies:
             name = enemy.charType
             if isinstance(enemy,src.characters.characterMap["Clone"]):
                 name = enemy.name
 
-            text += "-------------  \n"
-            text += f"name:        {name} {enemy.getSpacePosition()}\n"
-            text += f"health:      {enemy.health}/{enemy.adjustedMaxHealth}\n"
-            if enemy.level:
-                text += f"level:       {enemy.level}\n"
-            text += f"exhaustion:  {enemy.exhaustion}\n"
-            text += f"timeTaken:   {round(enemy.timeTaken,2)}\n"
-            text += f"movemmentsp: {enemy.adjustedMovementSpeed}\n"
-            text += f"attacksp:    {enemy.attackSpeed}\n"
+            if not self.sidebared:
+                text += "-------------  \n"
+                text += f"name:        {name} {enemy.getSpacePosition()}\n"
+                text += f"health:      {enemy.health}/{enemy.adjustedMaxHealth}\n"
+                if enemy.level:
+                    text += f"level:       {enemy.level}\n"
+                text += f"exhaustion:  {enemy.exhaustion}\n"
+                text += f"timeTaken:   {round(enemy.timeTaken,2)}\n"
+                text += f"movemmentsp: {enemy.adjustedMovementSpeed}\n"
+                text += f"attacksp:    {enemy.attackSpeed}\n"
+            else:
+                text += f" {name} {enemy.getSpacePosition()} hp:{enemy.health}/{enemy.adjustedMaxHealth} ex:{enemy.exhaustion} tt:{round(enemy.timeTaken,2)} ms:{enemy.adjustedMovementSpeed} as:{enemy.attackSpeed}\n"
 
-        text += """
+        if not self.sidebared or char.subordinates:
+            text += """
 subordinates:
 """
         for ally in char.subordinates:
@@ -69,15 +73,18 @@ subordinates:
             if isinstance(ally,src.characters.characterMap["Clone"]):
                 name = ally.name
 
-            text += "-------------  \n"
-            text += f"name:        {name} {ally.getSpacePosition()}\n"
-            text += f"health:      {ally.health}/{ally.adjustedMaxHealth}\n"
-            if ally.level:
-                text += f"level:       {ally.level}\n"
-            text += f"exhaustion:  {ally.exhaustion}\n"
-            text += f"timeTaken:   {round(ally.timeTaken,2)}\n"
-            text += f"movemmentsp: {ally.adjustedMovementSpeed}\n"
-            text += f"attacksp:    {ally.attackSpeed}\n"
+            if not self.sidebared:
+                text += "-------------  \n"
+                text += f"name:        {name} {ally.getSpacePosition()}\n"
+                text += f"health:      {ally.health}/{ally.adjustedMaxHealth}\n"
+                if ally.level:
+                    text += f"level:       {ally.level}\n"
+                text += f"exhaustion:  {ally.exhaustion}\n"
+                text += f"timeTaken:   {round(ally.timeTaken,2)}\n"
+                text += f"movemmentsp: {ally.adjustedMovementSpeed}\n"
+                text += f"attacksp:    {ally.attackSpeed}\n"
+            else:
+                text += f"{name} {ally.getSpacePosition()} hp:{ally.health}/{ally.adjustedMaxHealth} ex:{ally.exhaustion} tt:{round(ally.timeTaken,2)} ms:{ally.adjustedMovementSpeed} as:{ally.attackSpeed}\n"
 
         text += "\n"
 

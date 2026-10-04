@@ -21,14 +21,10 @@ class StasisTank(src.items.Item):
         self.display = src.canvas.displayChars.stasisTank
 
         self.name = "stasis tank"
-        self.description = "Allows you to enter stasis. In stasis you do not need food and can not do anything"
+        self.description = "Something is held in stasis within it and it looks breakable"
         self.usageInfo = """
-Use an empty stasis tank to enter it.
-In stasis you do not need food and can not do anything.
-You cannot leave the stasis tank on your own.
-
-Use an occupied stasis tank to eject the inhabitant.
-The ejected character will be placed to the south of the stasis tank and will start to act again.
+There is a humanoid figure inside the tank.
+You can break the tank to free what is inside it.
 """
 
         self.character = None

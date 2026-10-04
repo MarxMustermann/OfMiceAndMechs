@@ -26,11 +26,6 @@ class CombatInfoMenu(src.menues.SubMenu):
 
         text = ""
 
-        try:
-            char.level
-        except:
-            char.level = None
-
         if not self.sidebared:
             name = char.charType
             if isinstance(char,src.characters.characterMap["Clone"]):
@@ -59,10 +54,6 @@ class CombatInfoMenu(src.menues.SubMenu):
             text += "-------------  \n"
             text += f"name:        {name} {enemy.getSpacePosition()}\n"
             text += f"health:      {enemy.health}/{enemy.adjustedMaxHealth}\n"
-            try:
-                enemy.level
-            except:
-                enemy.level = None
             if enemy.level:
                 text += f"level:       {enemy.level}\n"
             text += f"exhaustion:  {enemy.exhaustion}\n"
@@ -81,10 +72,6 @@ subordinates:
             text += "-------------  \n"
             text += f"name:        {name} {ally.getSpacePosition()}\n"
             text += f"health:      {ally.health}/{ally.adjustedMaxHealth}\n"
-            try:
-                ally.level
-            except:
-                ally.level = None
             if ally.level:
                 text += f"level:       {ally.level}\n"
             text += f"exhaustion:  {ally.exhaustion}\n"

@@ -62,7 +62,8 @@ class CombatInfoMenu(src.menues.SubMenu):
                 text.append(f"movemmentsp: {enemy.adjustedMovementSpeed}\n")
                 text.append(f"attacksp:    {enemy.attackSpeed}\n")
             else:
-                text.append(f"{name} {enemy.getSpacePosition()} hp:{enemy.health}/{enemy.adjustedMaxHealth} ex:{enemy.exhaustion} tt:{round(enemy.timeTaken,2)} ms:{enemy.adjustedMovementSpeed} as:{enemy.attackSpeed}\n")
+                text.append(src.interaction.CharacterMeta(content=enemy.render(),character=enemy))
+                text.append(f" {name} {enemy.getSpacePosition()} hp:{enemy.health}/{enemy.adjustedMaxHealth} ex:{enemy.exhaustion} tt:{round(enemy.timeTaken,2)} ms:{enemy.adjustedMovementSpeed} as:{enemy.attackSpeed}\n")
 
         if not self.sidebared or char.subordinates:
             text.append("""
@@ -84,7 +85,8 @@ subordinates:
                 text.append(f"movemmentsp: {ally.adjustedMovementSpeed}\n")
                 text.append(f"attacksp:    {ally.attackSpeed}\n")
             else:
-                text.append(f"{name} {ally.getSpacePosition()} hp:{ally.health}/{ally.adjustedMaxHealth} ex:{ally.exhaustion} tt:{round(ally.timeTaken,2)} ms:{ally.adjustedMovementSpeed} as:{ally.attackSpeed}\n")
+                text.append(src.interaction.CharacterMeta(content=enemy.render(),character=ally))
+                text.append(f" {name} {ally.getSpacePosition()} hp:{ally.health}/{ally.adjustedMaxHealth} ex:{ally.exhaustion} tt:{round(ally.timeTaken,2)} ms:{ally.adjustedMovementSpeed} as:{ally.attackSpeed}\n")
 
         text.append("\n")
 

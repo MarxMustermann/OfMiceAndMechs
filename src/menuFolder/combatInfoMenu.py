@@ -24,69 +24,69 @@ class CombatInfoMenu(src.menues.SubMenu):
         if char.dead:
             return ""
 
-        text = ""
+        text = []
 
         if not self.sidebared:
             name = char.charType
             if isinstance(char,src.characters.characterMap["Clone"]):
                 name = char.name
 
-            text += "you: \n\n"
-            text += f"name:        {name} {char.getSpacePosition()}\n"
-            text += f"health:      {char.health}/{char.adjustedMaxHealth}\n"
+            text.append("you: \n\n")
+            text.append(f"name:        {name} {char.getSpacePosition()}\n")
+            text.append(f"health:      {char.health}/{char.adjustedMaxHealth}\n")
             if char.level:
-                text += f"level:       {char.level}\n"
-            text += f"exhaustion:  {char.exhaustion}\n"
-            text += f"timeTaken:   {round(char.timeTaken,2)}\n"
-            text += f"movemmentsp: {char.adjustedMovementSpeed}\n"
-            text += f"attacksp:    {char.attackSpeed}\n"
-            text += "\n"
+                text.append(f"level:       {char.level}\n")
+            text.append(f"exhaustion:  {char.exhaustion}\n")
+            text.append(f"timeTaken:   {round(char.timeTaken,2)}\n")
+            text.append(f"movemmentsp: {char.adjustedMovementSpeed}\n")
+            text.append(f"attacksp:    {char.attackSpeed}\n")
+            text.append("\n")
 
         enemies = char.getNearbyEnemies()
         if not self.sidebared or enemies:
-            text += """nearby enemies:
-"""
+            text.append("""nearby enemies:
+""")
         for enemy in enemies:
             name = enemy.charType
             if isinstance(enemy,src.characters.characterMap["Clone"]):
                 name = enemy.name
 
             if not self.sidebared:
-                text += "-------------  \n"
-                text += f"name:        {name} {enemy.getSpacePosition()}\n"
-                text += f"health:      {enemy.health}/{enemy.adjustedMaxHealth}\n"
+                text.append("-------------  \n")
+                text.append(f"name:        {name} {enemy.getSpacePosition()}\n")
+                text.append(f"health:      {enemy.health}/{enemy.adjustedMaxHealth}\n")
                 if enemy.level:
-                    text += f"level:       {enemy.level}\n"
-                text += f"exhaustion:  {enemy.exhaustion}\n"
-                text += f"timeTaken:   {round(enemy.timeTaken,2)}\n"
-                text += f"movemmentsp: {enemy.adjustedMovementSpeed}\n"
-                text += f"attacksp:    {enemy.attackSpeed}\n"
+                    text.append(f"level:       {enemy.level}\n")
+                text.append(f"exhaustion:  {enemy.exhaustion}\n")
+                text.append(f"timeTaken:   {round(enemy.timeTaken,2)}\n")
+                text.append(f"movemmentsp: {enemy.adjustedMovementSpeed}\n")
+                text.append(f"attacksp:    {enemy.attackSpeed}\n")
             else:
-                text += f" {name} {enemy.getSpacePosition()} hp:{enemy.health}/{enemy.adjustedMaxHealth} ex:{enemy.exhaustion} tt:{round(enemy.timeTaken,2)} ms:{enemy.adjustedMovementSpeed} as:{enemy.attackSpeed}\n"
+                text.append(f"{name} {enemy.getSpacePosition()} hp:{enemy.health}/{enemy.adjustedMaxHealth} ex:{enemy.exhaustion} tt:{round(enemy.timeTaken,2)} ms:{enemy.adjustedMovementSpeed} as:{enemy.attackSpeed}\n")
 
         if not self.sidebared or char.subordinates:
-            text += """
+            text.append("""
 subordinates:
-"""
+""")
         for ally in char.subordinates:
             name = ally.charType
             if isinstance(ally,src.characters.characterMap["Clone"]):
                 name = ally.name
 
             if not self.sidebared:
-                text += "-------------  \n"
-                text += f"name:        {name} {ally.getSpacePosition()}\n"
-                text += f"health:      {ally.health}/{ally.adjustedMaxHealth}\n"
+                text.append("-------------  \n")
+                text.append(f"name:        {name} {ally.getSpacePosition()}\n")
+                text.append(f"health:      {ally.health}/{ally.adjustedMaxHealth}\n")
                 if ally.level:
-                    text += f"level:       {ally.level}\n"
-                text += f"exhaustion:  {ally.exhaustion}\n"
-                text += f"timeTaken:   {round(ally.timeTaken,2)}\n"
-                text += f"movemmentsp: {ally.adjustedMovementSpeed}\n"
-                text += f"attacksp:    {ally.attackSpeed}\n"
+                    text.append(f"level:       {ally.level}\n")
+                text.append(f"exhaustion:  {ally.exhaustion}\n")
+                text.append(f"timeTaken:   {round(ally.timeTaken,2)}\n")
+                text.append(f"movemmentsp: {ally.adjustedMovementSpeed}\n")
+                text.append(f"attacksp:    {ally.attackSpeed}\n")
             else:
-                text += f"{name} {ally.getSpacePosition()} hp:{ally.health}/{ally.adjustedMaxHealth} ex:{ally.exhaustion} tt:{round(ally.timeTaken,2)} ms:{ally.adjustedMovementSpeed} as:{ally.attackSpeed}\n"
+                text.append(f"{name} {ally.getSpacePosition()} hp:{ally.health}/{ally.adjustedMaxHealth} ex:{ally.exhaustion} tt:{round(ally.timeTaken,2)} ms:{ally.adjustedMovementSpeed} as:{ally.attackSpeed}\n")
 
-        text += "\n"
+        text.append("\n")
 
         return text
 

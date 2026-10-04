@@ -92,6 +92,8 @@ subordinates:
             text += f"movemmentsp: {ally.adjustedMovementSpeed}\n"
             text += f"attacksp:    {ally.attackSpeed}\n"
 
+        text += "\n"
+
         return text
 
     def handleKey(self, key, noRender=False, character = None):

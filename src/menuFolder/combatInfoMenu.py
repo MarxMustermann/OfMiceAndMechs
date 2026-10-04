@@ -44,8 +44,7 @@ class CombatInfoMenu(src.menues.SubMenu):
 
         enemies = char.getNearbyEnemies()
         if not self.sidebared or enemies:
-            text.append("""nearby enemies:
-""")
+            text.append((shadowed_ui_attr,"""nearby enemies:\n"""))
         for enemy in enemies:
             name = enemy.charType
             if isinstance(enemy,src.characters.characterMap["Clone"]):
@@ -66,9 +65,7 @@ class CombatInfoMenu(src.menues.SubMenu):
                 text.append(f" {name} {enemy.getSpacePosition()} hp:{enemy.health}/{enemy.adjustedMaxHealth} ex:{enemy.exhaustion} tt:{round(enemy.timeTaken,2)} ms:{enemy.adjustedMovementSpeed} as:{enemy.attackSpeed}\n")
 
         if not self.sidebared or char.subordinates:
-            text.append("""
-subordinates:
-""")
+            text.append((shadowed_ui_attr,"""subordinates:\n"""))
         for ally in char.subordinates:
             name = ally.charType
             if isinstance(ally,src.characters.characterMap["Clone"]):

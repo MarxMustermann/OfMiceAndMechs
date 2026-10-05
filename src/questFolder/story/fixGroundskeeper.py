@@ -19,6 +19,18 @@ class FixGroundskeeper(src.quests.MetaQuestSequence):
         # no actions with sub quests
         if self.subQuests:
             return (None,None)
+
+        # find the groundskeeper
+        keeper_position = None
+        keeper = None
+        terrain = character.getHomeTerrain()
+        for candidate in terrain.getAllCharacters():
+            if not isinstance(candidate,src.characters.characterMap["GroundsKeeper"]):
+                continue
+            keeper_position = candidate.getBigPosition()
+            keeper = candidate
+        if not keeper_position:
+            return self._solver_trigger_fail(dryRun,"keeper not found")
         
         # close open menues
         submenue = character.macroState.get("submenue")
@@ -39,18 +51,6 @@ class FixGroundskeeper(src.quests.MetaQuestSequence):
                     pass
                 return (None,("j","continue conversation"))
             return (None,(["esc"],"to close menu"))
-
-        # find the groundskeeper
-        keeper_position = None
-        keeper = None
-        terrain = character.getHomeTerrain()
-        for candidate in terrain.getAllCharacters():
-            if not isinstance(candidate,src.characters.characterMap["GroundsKeeper"]):
-                continue
-            keeper_position = candidate.getBigPosition()
-            keeper = candidate
-        if not keeper_position:
-            return self._solver_trigger_fail(dryRun,"keeper not found")
 
         # go to the groundskeeper
         if not character.getBigPosition() == keeper_position:

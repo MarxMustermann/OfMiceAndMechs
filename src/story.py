@@ -1250,17 +1250,8 @@ class MainGame(BasicPhase):
             mainChar.maxHealth = int(mainChar.maxHealth*0.5)
             mainChar.health = int(mainChar.health*0.5)
 
-        messagesMenu = src.menues.menuMap["MessagesMenu"](mainChar)
-        messagesMenu.sidebared = True
-        mainChar.rememberedMenu2.append(messagesMenu)
-
-        questMenu = src.menues.menuMap["QuestMenu"](mainChar)
-        questMenu.sidebared = True
-        mainChar.rememberedMenu.append(questMenu)
-
-        inventoryMenu = src.menues.menuMap["InventoryMenu"](mainChar)
-        inventoryMenu.sidebared = True
-        mainChar.rememberedMenu2.append(inventoryMenu)
+        uiConfigMenu = src.menues.menuMap["UIConfigMenu"](mainChar)
+        uiConfigMenu.resetSidebars()
 
         mainChar.disableCommandsOnPlus = True
         mainChar.autoExpandQuests2 = True

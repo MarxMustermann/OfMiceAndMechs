@@ -15,6 +15,7 @@ class UIConfigMenu(src.menues.SubMenu):
         self.character = character
         self.menu_creation = False
         self.menu_to_add = None
+        self.info_menu_creation = False
 
     def getTitle(self):
         return "UI CONFIGURATION"
@@ -64,9 +65,21 @@ class UIConfigMenu(src.menues.SubMenu):
                 self.menu_to_add = src.menues.menuMap["CharacterInfoMenu"](char=character)
             if key in ("x",):
                 self.menu_to_add = src.menues.menuMap["MessagesMenu"](char=character)
+            if key in ("O",):
+                self.info_menu_creation = True
             if self.menu_to_add:
                 self.menu_to_add.sidebared = True
             self.menu_creation = False
+            return False
+
+        if self.info_menu_creation:
+            if key in ("c",):
+                self.menu_to_add = src.menues.menuMap["CombatInfoMenu"](char=character)
+            if key in ("t",):
+                self.menu_to_add = src.menues.menuMap["ItemtypesInfoMenu"](char=character)
+            if self.menu_to_add:
+                self.menu_to_add.sidebared = True
+            self.info_menu_creation = False
             return False
 
         if self.menu_to_add:
@@ -119,8 +132,15 @@ class UIConfigMenu(src.menues.SubMenu):
             commands = [
                             src.interaction.ActionMeta(payload=["q"],content="press q to add quest menu"),
                             src.interaction.ActionMeta(payload=["i"],content="press i to add inventory"),
-                            src.interaction.ActionMeta(payload=["v"],content="press v to add character information"),
                             src.interaction.ActionMeta(payload=["x"],content="press x to add message log"),
+                            src.interaction.ActionMeta(payload=["O"],content="press O to add an information menu"),
+                            src.interaction.ActionMeta(payload=["v"],content="press v to add character information"),
+                       ]
+        if self.info_menu_creation:
+            infos = ["What information menu do you want to add?",""]
+            commands = [
+                            src.interaction.ActionMeta(payload=["c"],content="press c to show combat information menu"),
+                            src.interaction.ActionMeta(payload=["t"],content="press t to show item type menu"),
                        ]
         if self.menu_to_add:
             infos = [self.menu_to_add.getTitle(),"","Where do you want to add the menu?",""]

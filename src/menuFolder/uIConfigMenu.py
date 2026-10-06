@@ -19,6 +19,30 @@ class UIConfigMenu(src.menues.SubMenu):
     def getTitle(self):
         return "UI CONFIGURATION"
 
+    def clearSidebars(self):
+        self.character.rememberedMenu = []
+        self.character.rememberedMenu2 = []
+
+    def resetSidebars(self):
+        self.clearSidebars()
+
+        menu = src.menues.menuMap["ItemtypesInfoMenu"](char=self.character)
+        menu.sidebared = True
+        self.character.rememberedMenu.append(menu)
+        menu = src.menues.menuMap["CombatInfoMenu"](char=self.character)
+        menu.sidebared = True
+        self.character.rememberedMenu.append(menu)
+        menu = src.menues.menuMap["QuestMenu"](char=self.character)
+        menu.sidebared = True
+        self.character.rememberedMenu.append(menu)
+
+        menu = src.menues.menuMap["MessagesMenu"](char=self.character)
+        menu.sidebared = True
+        self.character.rememberedMenu2.append(menu)
+        menu = src.menues.menuMap["InventoryMenu"](char=self.character)
+        menu.sidebared = True
+        self.character.rememberedMenu2.append(menu)
+
     def handleKey(self, key, noRender=False, character = None):
         """
         show the help text and ignore keypresses
@@ -70,21 +94,10 @@ class UIConfigMenu(src.menues.SubMenu):
                 self.character.rememberedMenu2.pop()
         if key in ("j","J",):
             self.menu_creation = True
-        if key in ("C","R",):
-            self.character.rememberedMenu = []
-            self.character.rememberedMenu2 = []
+        if key in ("C",):
+            self.clearSidebars()
         if key in ("R",):
-            menu = src.menues.menuMap["QuestMenu"](char=character)
-            menu.sidebared = True
-            self.character.rememberedMenu.append(menu)
-
-            menu = src.menues.menuMap["InventoryMenu"](char=character)
-            menu.sidebared = True
-            self.character.rememberedMenu2.append(menu)
-
-            menu = src.menues.menuMap["MessagesMenu"](char=character)
-            menu.sidebared = True
-            self.character.rememberedMenu2.append(menu)
+            self.resetSidebars()
 
         return False
 

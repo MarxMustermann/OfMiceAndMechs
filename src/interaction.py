@@ -10211,7 +10211,7 @@ to remember"""
                 if key == tcod.event.KeySym.ESCAPE:
                     src.interaction.send_tracking_ping("skipped_run_intro")
                     stage = 7
-                if key in (tcod.event.KeySym.RETURN, tcod.event.KeySym.KP_ENTER, tcod.event.KeySym.TAB,):
+                if key in (tcod.event.KeySym.RETURN, tcod.event.KeySym.KP_ENTER, tcod.event.KeySym.TAB,) and not ((event.mod & tcod.event.Modifier.CTRL) or (event.mod & tcod.event.Modifier.ALT)):
                     src.interaction.send_tracking_ping("moved_run_intro")
                     if stage == -2:
                         if key in (tcod.event.KeySym.TAB,):

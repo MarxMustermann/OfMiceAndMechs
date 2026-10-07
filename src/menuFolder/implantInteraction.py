@@ -127,7 +127,7 @@ Look around and see what """,(src.interaction.highlighted_ui_attr,"useful things
 But first you need to """,(src.interaction.highlighted_ui_attr,"survive."),"""
 
 
-""",src.interaction.ActionMeta(payload=["esc"],content=(src.interaction.shadowed_ui_attr,"press escape to close this menu")),"""
+""",src.interaction.ActionMeta(payload=["esc"],content=(src.interaction.shadowed_ui_attr,"press esc to close this menu")),"""
 """]
         self.submenu = src.menues.menuMap["TextMenu"](base_text)
         return False

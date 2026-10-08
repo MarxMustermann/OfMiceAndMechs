@@ -9491,12 +9491,6 @@ press tab to accept - press enter to reject
             root_console = tcod.console.Console(width+1, height, order="F")
             printUrwidToTcod(text, (0,0), explecitConsole=root_console)
 
-            if subStep2 > 170:
-                printUrwidToTcod("press tab to stop struggling", (0, 12),explecitConsole=root_console)
-            if subStep2 >= 425:
-                gameEnded = True
-                continue
-
             atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
             console_render = tcod.render.SDLConsoleRender(atlas)
             renderedToTexture = console_render.render(root_console)

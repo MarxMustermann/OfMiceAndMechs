@@ -3168,7 +3168,7 @@ Bump against an item or stand ontop of an item to select it for activation.
 """])
 
             # show the instruction text
-            title = "INTERACTION PORTAL"
+            title = "INTERACTION HELPER"
             submenue = src.menues.menuMap["OneKeystrokeMenu"](text,ignoreFirstKey=False,title=title)
             submenue.followUp = {"method":forwardKeystroke,"params":{"character":char}}
             submenue.tag = "interactionPortal"

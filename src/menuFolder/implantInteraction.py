@@ -120,7 +120,10 @@ What can i do for you?
                     src.gamestate.gamestate.stern["goal"] = None
                     self.handleKey("~", noRender, character)
                     return False
-                return True
+                self.submenu = None
+                self.substep = None
+                self.handleKey("~", noRender, character)
+                return False
 
             goal = src.gamestate.gamestate.stern["goal"]
             base_text = ["""unkown goal""",goal]
@@ -180,7 +183,7 @@ Keep in mind that fighting seems simple, but is not.
 There is """,(src.interaction.highlighted_ui_attr,"a lot to learn"),""" and the more you study, the more powerful you will be.
 
 """]
-            options = [("continue","close menue"),("change","change the goal")]
+            options = [("continue","continue with this goal"),("change","change the goal")]
             self.submenu = src.menues.menuMap["SelectionMenu"](base_text,options=options)
             return False
         else:

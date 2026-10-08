@@ -109,28 +109,109 @@ What can i do for you?
         if key == "esc":
             return True
 
-        # show the selection on what to do with the implant
-        base_text = ["""
-To rule the world you have to claim the """,(src.interaction.highlighted_ui_attr,"""glass throne."""),"""
-The glass throne sits at the center of the world in the glassed city.
-The """,(src.interaction.highlighted_ui_attr,"glassed city"),""" has been destroyed a long time ago.
+        if src.gamestate.gamestate.stern.get("goal"):
+            if self.submenu:
+                done = self.submenu.handleKey(key, noRender, character)
+                if not done:
+                    return False
+                selection = self.submenu.selection
+                self.submenu = None
+                if selection == "change":
+                    src.gamestate.gamestate.stern["goal"] = None
+                    self.handleKey("~", noRender, character)
+                    return False
+                return True
 
-The best way to get there and not die afterwards is to use a """,(src.interaction.highlighted_ui_attr,"temple."),"""
-The Temples """,(src.interaction.highlighted_ui_attr,"Throne"),""" will open the path to the glassed city.
-The Throne will be ready for you once you """,(src.interaction.highlighted_ui_attr,"collect all glass hearts."),"""
+            goal = src.gamestate.gamestate.stern["goal"]
+            base_text = ["""unkown goal""",goal]
+            if goal == "rule":
+                base_text = ["""
+To rule the world, you have to claim the """,(src.interaction.highlighted_ui_attr,"""GlassThrone."""),"""
+The GlassThrone sits at the """,(src.interaction.highlighted_ui_attr,"center of the world"),""" in the glassed city.
+
+The best way to get there and not die afterwards, is to use a """,(src.interaction.highlighted_ui_attr,"temple."),"""
+The temples """,(src.interaction.highlighted_ui_attr,"Throne"),""" will open the path to the glassed city.
+The Throne will be ready for you, once you """,(src.interaction.highlighted_ui_attr,"collect all glass hearts."),"""
 
 The temple can be build at a base.
 To complete this huge task it is best to """,(src.interaction.highlighted_ui_attr,"set up a base."),"""
 Look around and see what """,(src.interaction.highlighted_ui_attr,"useful things"),""" you can find.
 
 
-But first you need to """,(src.interaction.highlighted_ui_attr,"survive."),"""
+But for all of this you need to """,(src.interaction.highlighted_ui_attr,"survive."),"""
 
-
-""",src.interaction.ActionMeta(payload=["esc"],content=(src.interaction.shadowed_ui_attr,"press esc to close this menu")),"""
 """]
-        self.submenu = src.menues.menuMap["TextMenu"](base_text)
-        return False
+            if goal == "rebuild":
+                base_text = ["""
+To rebuild the world means to """,(src.interaction.highlighted_ui_attr,"build a base and colonize."),"""
+
+The first step for setting up a base is selecting a good spot.
+Starting with a """,(src.interaction.highlighted_ui_attr,"pre existing room"),""" will speed things up a lot.
+
+The next thing needed is """,(src.interaction.highlighted_ui_attr,"workshops and machines."),"""
+Since you are too important to do the crafting, you will need """,(src.interaction.highlighted_ui_attr,"crew"),""" as well.
+If you run out of living bodies consider making use of """,(src.interaction.highlighted_ui_attr,"Ghuls."),"""
+
+With crew on the base, """,(src.interaction.highlighted_ui_attr,"base management items"),""" like the CityPlaner and DutyArtwork are important.
+Those help to """,(src.interaction.highlighted_ui_attr,"expand the base"),""" and keep control what your subordinates are doing.
+
+"""]
+            if goal == "explore":
+                base_text = ["""
+Exploring is more than just wandering around aimlessly.
+""",(src.interaction.highlighted_ui_attr,"Walking around"),""" and seeing what you find, is part of it.
+
+You should look hints where interesting things could be.
+Locations can be found in for example in """,(src.interaction.highlighted_ui_attr,"paths, notes and maps."),"""
+Rooms have a higher chance to be interesting.
+
+Some of the most interesting places are """,(src.interaction.highlighted_ui_attr,"dangerous,"),"""
+so ensure you are always equipped for the challenge.
+
+"""]
+            if goal == "fight":
+                base_text = ["""
+""",(src.interaction.highlighted_ui_attr,"Ruthless."),"""
+
+Remember that the bigger they are, the harder they fall.
+Seek out the biggest beasts for example by freeing """,(src.interaction.highlighted_ui_attr,"experiments from the laboratories."),"""
+
+Keep in mind that fighting seems simple, but is not.
+There is """,(src.interaction.highlighted_ui_attr,"a lot to learn"),""" and the more you study, the more powerful you will be.
+
+"""]
+            options = [("continue","close menue"),("change","change the goal")]
+            self.submenu = src.menues.menuMap["SelectionMenu"](base_text,options=options)
+            return False
+        else:
+            if self.submenu:
+                done = self.submenu.handleKey(key, noRender, character)
+                if not done:
+                    return False
+                selection = self.submenu.selection
+
+                if selection == "refuse":
+                    self.submenu = None
+                    src.gamestate.gamestate.stern["goal"] = None
+                    self.done = True
+                    return True
+
+                src.gamestate.gamestate.stern["goal"] = selection
+                self.submenu = None
+                self.handleKey("~", noRender, character)
+                return False
+
+            base_text = ["""I cannot generate a plan as long there is no goal set.
+
+If you do not want to rule the world,
+""",(src.interaction.highlighted_ui_attr,"you have to choose a goal!"),"""
+
+
+""",(src.interaction.shadowed_ui_attr,"What should your goal be?"),"""
+"""]
+            options = [("rule","rule the world"),("rebuild","rebuild the world"),("explore","explore the world"),("fight","fight and kill"),("refuse","refuse to set goal")]
+            self.submenu = src.menues.menuMap["SelectionMenu"](base_text,options=options)
+            return False
 
     def handleQuestKey(self, key, noRender=False, character = None):
 

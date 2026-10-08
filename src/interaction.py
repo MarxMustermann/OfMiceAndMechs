@@ -4132,7 +4132,7 @@ def keyboardListener(key, targetCharacter=None):
             ] = char.macroStateBackup["macros"]
             char.macroStateBackup = None
 
-    elif key == "ctrl x":
+    elif key == "ctrl x" and src.interaction.debug:
         src.gamestate.gamestate.save()
         raise urwid.ExitMainLoop()
 
@@ -4211,7 +4211,7 @@ def keyboardListener(key, targetCharacter=None):
         char = newChar
         state = char.macroState
 
-    elif key == "ctrl i":
+    elif key == "ctrl i" and src.interaction.debug:
         foundChar = None
         for character in char.container.characters:
             if character == char:

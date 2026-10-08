@@ -9515,6 +9515,8 @@ press tab to accept - press enter to reject
             if stageState is None:
                 stageState = {"substep":1,"lastChange":time.time(),"send_tracking_ping":False}
 
+            src.gamestate.gamestate.stern["goal"] = "rule"
+
             if not stageState.get("send_tracking_ping"):
                 src.interaction.send_tracking_ping("run_intro_stage_0")
                 stageState["send_tracking_ping"] = True

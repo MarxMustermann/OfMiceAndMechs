@@ -218,6 +218,19 @@ If you do not want to rule the world,
 
     def handleQuestKey(self, key, noRender=False, character = None):
 
+        if not src.gamestate.gamestate.stern.get("goal"):
+            base_text = ["""
+You need to set a goal or i can not advice you.
+
+""",(src.interaction.urwid.AttrSpec(src.interaction.shadowed_ui_color,"black"),"press any key to set a goal")]
+            self.submenu = src.menues.menuMap["TextMenu"](base_text)
+            self.substep = "show plan"
+            return False
+
+        return self.handleRuleQuestKey(key,noRender=noRender,character=character)
+
+    def handleRuleQuestKey(self, key, noRender=False, character = None):
+
         # close the menu
         if key == "esc":
             return True

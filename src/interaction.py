@@ -9607,7 +9607,7 @@ There is much to teach and over time you will learn.
             outline = 4
 
             width = 71
-            height = 13
+            height = 14
             display_width = width*tileWidth
             display_height = height*tileHeight
 
@@ -9660,8 +9660,7 @@ d.d..ddd.dd..d.d.d...ddd.d..d.dd.dd.d..d....d....d.....d.....dd.....d...
             if subStep2 > 170:
                 printUrwidToTcod("press tab to stop struggling", (0, 12),explecitConsole=root_console)
             if subStep2 >= 425:
-                gameEnded = True
-                continue
+                printUrwidToTcod("press enter to keep figthing", (0, 13),explecitConsole=root_console)
 
             atlas = tcod.render.SDLTilesetAtlas(sdl_renderer2,tileset_ui)
             console_render = tcod.render.SDLConsoleRender(atlas)
@@ -10223,6 +10222,9 @@ to remember"""
                         stageState = None
                         subStep = 0
                         subStep2 = 0
+                    elif stage == 0 and key in (tcod.event.KeySym.RETURN, tcod.event.KeySym.KP_ENTER,):
+                        if subStep2 >= 425:
+                            gameEnded = True
                     elif stage != 3:
                         # move to next stage
                         stageState = None

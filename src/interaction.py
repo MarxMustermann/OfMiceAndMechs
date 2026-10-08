@@ -3147,7 +3147,7 @@ This allows you to:
                 # show simple explainer text
                 text.extend(["""
 There is no item to interact with.
-Bump against an item or stand ontop of an item to select it for activation.
+Bump against an item or stand ontop of an item to select it for interaction.
 """])
 
                 text.extend(["""

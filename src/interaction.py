@@ -2739,13 +2739,14 @@ def handlePriorityActions(params):
         handleStartMacroReplayChar(key,char,charState,main,header,footer,urwid,flags)
         return None
 
-    if charState[numberStr] and key not in (
-        commandChars.ignore,
-        "lagdetection",
-        "lagdetection_",
-    ):
-        doRepeat(params)
-        return None
+    if char != src.gamestate.gamestate.mainChar:
+        if charState[numberStr] and key not in (
+            commandChars.ignore,
+            "lagdetection",
+            "lagdetection_",
+        ):
+            doRepeat(params)
+            return None
 
     return (1,key)
 
